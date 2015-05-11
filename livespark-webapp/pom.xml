@@ -213,24 +213,21 @@
 
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
+        <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
+            <id>copy-annotations</id>
+            <phase>compile</phase>
             <goals>
-              <goal>parse-version</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
+              <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <sources>
-                <source>target/generated-sources/annotations</source>
-              </sources>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>target/generated-sources/annotations</directory>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
