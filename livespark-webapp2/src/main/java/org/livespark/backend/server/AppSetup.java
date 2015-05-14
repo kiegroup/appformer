@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.workbench.backend.server;
+package org.livespark.backend.server;
 
 import java.io.File;
 import java.io.FileFilter;

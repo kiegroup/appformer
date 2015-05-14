@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.workbench.backend.server;
+package org.livespark.backend.server;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
