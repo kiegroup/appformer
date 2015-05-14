@@ -1,4 +1,4 @@
-package org.drools.workbench.client.home;
+package org.livespark.client.home;
 
 import java.util.Arrays;
 import javax.annotation.PostConstruct;

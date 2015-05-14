@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.drools.workbench.client;
+package org.livespark.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
-import org.drools.workbench.client.resources.i18n.AppConstants;
+import org.livespark.client.resources.i18n.AppConstants;
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
@@ -67,7 +67,7 @@ import static org.uberfire.workbench.model.menu.MenuFactory.*;
  * GWT's Entry-point for Drools Workbench
  */
 @EntryPoint
-public class DroolsWorkbenchEntryPoint {
+public class LiveSparkEntryPoint {
 
     @Inject
     private Caller<AppConfigService> appConfigService;

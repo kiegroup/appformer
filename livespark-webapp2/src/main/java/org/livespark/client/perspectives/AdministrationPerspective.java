@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.drools.workbench.client.perspectives;
+package org.livespark.client.perspectives;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.ui.PopupPanel;
-import org.drools.workbench.client.resources.i18n.AppConstants;
+import org.livespark.client.resources.i18n.AppConstants;
 import org.guvnor.common.services.shared.security.AppRoles;
 import org.guvnor.structure.client.editors.repository.clone.CloneRepositoryForm;
 import org.guvnor.asset.management.client.editors.repository.wizard.CreateRepositoryWizard;

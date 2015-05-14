@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.drools.workbench.client.navbar;
+package org.livespark.client.navbar;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

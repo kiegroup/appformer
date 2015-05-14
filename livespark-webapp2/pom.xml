@@ -799,13 +799,13 @@
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
           <localWorkers>1</localWorkers>
           <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=/home/wmedvede/development/projects/droolsjbpm/livespark/livespark-webapp2/target/wildfly-8.1.0.Final</extraJvmArgs>
-          <module>org.drools.workbench.FastCompiledDroolsWorkbench</module>
+          <module>org.livespark.FastCompiledLiveSpark</module>
 
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
           <server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
           <disableCastChecking>true</disableCastChecking>
-          <runTarget>drools-wb.html</runTarget>
+          <runTarget>live-spark.html</runTarget>
           <hostedWebapp>src/main/webapp</hostedWebapp>
           <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
           <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
@@ -930,7 +930,7 @@
         <executions>
           <execution>
             <configuration>
-              <module>org.drools.workbench.FastCompiledDroolsWorkbench</module>
+              <module>org.livespark.FastCompiledLiveSpark</module>
             </configuration>
             <goals>
               <goal>compile</goal>
