@@ -30,8 +30,7 @@
   <artifactId>livespark-webapp2</artifactId>
   <packaging>war</packaging>
 
-  <name>Drools Workbench - WebApp</name>
-  <description>Drools Workbench - WebApp</description>
+  <name>LiveSpark :: WebApp</name>
 
   <properties>
     <errai.version>${version.org.jboss.errai}</errai.version>
@@ -798,7 +797,7 @@
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
           <localWorkers>1</localWorkers>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=/home/wmedvede/development/projects/droolsjbpm/livespark/livespark-webapp2/target/wildfly-8.1.0.Final</extraJvmArgs>
+          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.util.prefs.syncInterval=2000000 -Dorg.uberfire.nio.git.dir=/tmp/niogit</extraJvmArgs>
           <module>org.livespark.FastCompiledLiveSpark</module>
 
           <logLevel>INFO</logLevel>
@@ -964,7 +963,7 @@
             <fileset>
               <directory>${basedir}</directory>
               <includes>
-                <include>src/main/webapp/org.drools.workbench.DroolsWorkbench/</include>
+                <include>src/main/webapp/org.livespark.LiveSpark/</include>
                 <include>src/main/webapp/WEB-INF/deploy/</include>
                 <include>src/main/webapp/WEB-INF/classes/</include>
                 <include>src/main/webapp/WEB-INF/lib/</include>
