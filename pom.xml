@@ -4,12 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <!--parent>
-    <groupId>org.jboss</groupId>
-    <artifactId>jboss-parent</artifactId>
-    <version>10</version>
-  </parent-->
-
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-parent-with-dependencies</artifactId>
@@ -73,12 +67,13 @@
   </issueManagement>
 
   <modules>
-    <!--module>livespark-webapp</module-->
+    <module>livespark-form-modeler</module>
     <module>livespark-webapp2</module>
   </modules>
 
-  <!--dependencyManagement>
+  <dependencyManagement>
     <dependencies>
+      <!--
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>uberfire-bom</artifactId>
@@ -93,9 +88,40 @@
         <type>pom</type>
         <version>${errai.version}</version>
         <scope>import</scope>
+      </dependency>    
+      -->
+
+      <!--
+      Added Form Modeler deps here to make livespark module self-contained.
+      They should be moved to droolsjbpm-build-bootstrap module as soon as possible.
+       -->
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-codegen-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-codegen-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-codegen-data-modeller</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-rendering-api</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
-  </dependencyManagement-->
+  </dependencyManagement>
 
   <distributionManagement>
     <repository>
