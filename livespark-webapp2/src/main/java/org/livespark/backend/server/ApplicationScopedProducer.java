@@ -26,7 +26,10 @@ import javax.inject.Named;
 import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
 import org.guvnor.messageconsole.backend.DefaultIndexEngineObserver;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.service.AuthenticationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
 import org.uberfire.commons.cluster.ClusterServiceFactory;
 import org.uberfire.commons.services.cdi.Startup;
@@ -45,6 +48,7 @@ import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 @Startup(StartupType.BOOTSTRAP)
 @ApplicationScoped
 public class ApplicationScopedProducer {
+    private static transient Logger log = LoggerFactory.getLogger( ApplicationScopedProducer.class );
 
     @Inject
     private IOWatchServiceNonDotImpl watchService;
@@ -88,7 +92,12 @@ public class ApplicationScopedProducer {
     @Produces
     @RequestScoped
     public User getIdentity() {
-        return authenticationService.getUser();
+        try {
+            return authenticationService.getUser();
+        } catch ( final Exception ex ) {
+            // There is a NPE while creating the form sources injecting the User. Added this to avoid the error.
+            return new UserImpl( "system" );
+        }
     }
 
     @Produces

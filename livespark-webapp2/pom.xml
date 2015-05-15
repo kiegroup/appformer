@@ -575,6 +575,45 @@
       <scope>runtime</scope>
     </dependency>
 
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-validation</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-validation</artifactId>
+      <classifier>sources</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+    </dependency>
+
+
     <!-- Start Form Modeler Modules -->
 
     <dependency>
@@ -729,6 +768,9 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-bs2</compileSourcesArtifact>
+
+            <!-- Form Modeler -->
+            <compileSourcesArtifact>org.kie:form-modeler-rendering-api</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>
         <executions>
