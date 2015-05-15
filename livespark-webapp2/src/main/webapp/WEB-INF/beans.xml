@@ -5,22 +5,6 @@
     <!-- End of Errai exclusions -->
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <exclude name="org.livespark.client.**"/>
 
   </scan>

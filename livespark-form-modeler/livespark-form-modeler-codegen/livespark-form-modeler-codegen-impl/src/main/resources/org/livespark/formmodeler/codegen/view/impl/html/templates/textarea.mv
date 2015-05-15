@@ -1,0 +1,9 @@
+            <div id="@{field.name}_form_group" class="control-group">
+                <label class="control-label" class="control-label" for="@{field.name}">@{field.label}</label>
+                <div class="controls">
+                    <textarea  class="form-control"
+                        id="@{field.name}" rows="@{field.rows}" cols="@{field.cols}"
+                        placeholder="@{field.placeHolder}" tabindex="@{tabIndex}"></textarea>
+                    <p id="@{field.name}_help_block" class="help-block"></p>
+                </div>
+            </div>
