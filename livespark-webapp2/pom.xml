@@ -458,28 +458,6 @@
 
     <!-- Drools Workbench Screens -->
 
-   <dependency>
-     <groupId>org.drools</groupId>
-     <artifactId>drools-wb-drl-text-editor-client</artifactId>
-     <scope>provided</scope>
-   </dependency>
-
-   <dependency>
-     <groupId>org.drools</groupId>
-     <artifactId>drools-wb-drl-text-editor-backend</artifactId>
-   </dependency>
-
-   <dependency>
-     <groupId>org.drools</groupId>
-     <artifactId>drools-wb-workitems-editor-client</artifactId>
-     <scope>provided</scope>
-   </dependency>
-
-   <dependency>
-     <groupId>org.drools</groupId>
-     <artifactId>drools-wb-workitems-editor-backend</artifactId>
-   </dependency>
-
    <!-- UberFire PlugIn Extension -->
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -694,11 +672,6 @@
             <compileSourcesArtifact>org.drools:drools-workbench-models-guided-dtable</compileSourcesArtifact>
 
             <!-- drools-wb -->
-            <!-- WM compileSourcesArtifact>org.drools:drools-wb-categories-editor-client</compileSourcesArtifact-->
-            <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
 
             <!-- KIE UberFire extensions -->
             <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
@@ -715,13 +688,6 @@
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-client</compileSourcesArtifact>
-
-            <!-- Wires -->
-            <!-- REMOVE
-            <compileSourcesArtifact>org.uberfire:uberfire-wires-core-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-wires-core-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-wires-core-trees</compileSourcesArtifact>
-            -->
 
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>

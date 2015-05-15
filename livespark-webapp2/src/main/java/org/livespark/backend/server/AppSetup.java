@@ -27,7 +27,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.drools.workbench.screens.workitems.service.WorkItemsEditorService;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
@@ -126,8 +125,6 @@ public class AppSetup {
             //Define mandatory properties
             defineGlobalProperties();
 
-            defineEditorProperties();
-
         } catch ( final Exception e ) {
             logger.error( "Error during update config", e );
             throw new RuntimeException( e );
@@ -205,24 +202,6 @@ public class AppSetup {
         }
     }
 
-    private void defineEditorProperties() {
-        List<ConfigGroup> editorConfigGroups = configurationService.getConfiguration( ConfigType.EDITOR );
-        defineWorkItemsProperties( editorConfigGroups );
-    }
-
-    private void defineWorkItemsProperties( List<ConfigGroup> editorConfigGroups ) {
-        boolean settingsDefined = false;
-        for ( ConfigGroup editorConfigGroup : editorConfigGroups ) {
-            if ( WorkItemsEditorService.WORK_ITEMS_EDITOR_SETTINGS.equals( editorConfigGroup.getName() ) ) {
-                settingsDefined = true;
-                break;
-            }
-        }
-        if ( !settingsDefined ) {
-            configurationService.addConfiguration( getWorkItemElementDefinitions() );
-        }
-    }
-
     private ConfigGroup getGlobalConfiguration() {
         //Global Configurations used by many of Drools Workbench editors
         final ConfigGroup group = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
@@ -240,45 +219,6 @@ public class AppSetup {
                                                                  "true" ) );
         group.addConfigItem( configurationFactory.newConfigItem( "rule-modeller-onlyShowDSLStatements",
                                                                  "false" ) );
-        return group;
-    }
-
-    private ConfigGroup getWorkItemElementDefinitions() {
-        // Work Item Definition elements used when creating Work Item Definitions.
-        // Each entry in this file represents a Button in the Editor's Palette:-
-        //   - Underscores ('_') in the key will be converted in whitespaces (' ') and
-        //     will be used as Button's labels.
-        //   - The value will be the text pasted into the editor when an element in the
-        //     palette is selected. You can use a pipe ('|') to specify the place where
-        //     the cursor should be put after pasting the element into the editor.
-        final ConfigGroup group = configurationFactory.newConfigGroup( ConfigType.EDITOR,
-                                                                       WorkItemsEditorService.WORK_ITEMS_EDITOR_SETTINGS,
-                                                                       "" );
-        group.addConfigItem( configurationFactory.newConfigItem( WorkItemsEditorService.WORK_ITEMS_EDITOR_SETTINGS_DEFINITION,
-                                                                 "import org.drools.core.process.core.datatype.impl.type.StringDataType;\n" +
-                                                                         "import org.drools.core.process.core.datatype.impl.type.ObjectDataType;\n" +
-                                                                         "\n" +
-                                                                         "[\n" +
-                                                                         "  [\n" +
-                                                                         "    \"name\" : \"MyTask|\", \n" +
-                                                                         "    \"parameters\" : [ \n" +
-                                                                         "        \"MyFirstParam\" : new StringDataType(), \n" +
-                                                                         "        \"MySecondParam\" : new StringDataType(), \n" +
-                                                                         "        \"MyThirdParam\" : new ObjectDataType() \n" +
-                                                                         "    ], \n" +
-                                                                         "    \"results\" : [ \n" +
-                                                                         "        \"Result\" : new ObjectDataType(\"java.util.Map\") \n" +
-                                                                         "    ], \n" +
-                                                                         "    \"displayName\" : \"My Task\", \n" +
-                                                                         "    \"icon\" : \"\" \n" +
-                                                                         "  ]\n" +
-                                                                         "]" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( WorkItemsEditorService.WORK_ITEMS_EDITOR_SETTINGS_PARAMETER,
-                                                                 "\"MyParam|\" : new StringDataType()" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( WorkItemsEditorService.WORK_ITEMS_EDITOR_SETTINGS_RESULT,
-                                                                 "\"Result|\" : new ObjectDataType()" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( WorkItemsEditorService.WORK_ITEMS_EDITOR_SETTINGS_DISPLAY_NAME,
-                                                                 "\"displayName\" : \"My Task|\"" ) );
         return group;
     }
 

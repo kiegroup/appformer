@@ -9,6 +9,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     <exclude name="org.livespark.client.**"/>
 
   </scan>

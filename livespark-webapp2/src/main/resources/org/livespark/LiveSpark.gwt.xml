@@ -60,8 +60,6 @@
   <inherits name="org.drools.workbench.models.guided.dtable.DroolsWorkbenchModelsGuidedDTable"/>
 
   <!-- Drools Workbench Screens -->
-  <inherits name="org.drools.workbench.screens.drltext.DroolsWorkbenchDRLTextEditorClient"/>
-  <inherits name="org.drools.workbench.screens.workitems.DroolsWorkbenchWorkItemsEditorClient"/>
   <inherits name="org.drools.workbench.models.datamodel.DroolsWorkbenchDataModelAPI"/>
 
   <inherits name="org.kie.workbench.common.screens.defaulteditor.DroolsWorkbenchDefaultEditorClient"/>

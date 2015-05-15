@@ -49,7 +49,7 @@
 
     <init-param>
       <param-name>realmName</param-name>
-      <param-value>Drools Workbench</param-value>
+      <param-value>LiveSpark</param-value>
     </init-param>
   </filter>
 
