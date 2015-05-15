@@ -54,7 +54,7 @@ import org.uberfire.workbench.model.menu.Menus;
  */
 @Roles({ "admin" })
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "org.drools.workbench.client.perspectives.AdministrationPerspective")
+@WorkbenchPerspective(identifier = "AdministrationPerspective")
 public class AdministrationPerspective {
 
     private static String[] PERMISSIONS_ADMIN = new String[]{ AppRoles.ADMIN.getName() };
@@ -97,9 +97,6 @@ public class AdministrationPerspective {
                 .endMenu()
                 .newTopLevelMenu( AppConstants.INSTANCE.MenuRepositories() )
                 .withItems( getRepositoriesMenuItems() )
-                .endMenu()
-                .newTopLevelMenu( "Editor Properties" )
-                .withItems( getEditorsMenuItem() )
                 .endMenu()
                 .build();
     }
@@ -147,20 +144,6 @@ public class AdministrationPerspective {
                     }
                 } ).endMenu().build().getItems().get( 0 ) );
 
-
-        return menuItems;
-    }
-
-    private List<? extends MenuItem> getEditorsMenuItem() {
-        ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
-
-        menuItems.add(MenuFactory.newSimpleItem("Test Scenario Editor").withRoles(PERMISSIONS_ADMIN).respondsWith(
-                new Command() {
-                    @Override
-                    public void execute() {
-                        placeManager.goTo("WiresPropertiesScreen");
-                    }
-                }).endMenu().build().getItems().get(0));
 
         return menuItems;
     }

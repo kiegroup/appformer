@@ -64,7 +64,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.uberfire.workbench.model.menu.MenuFactory.*;
 
 /**
- * GWT's Entry-point for Drools Workbench
+ * GWT's Entry-point for LiveSpark
  */
 @EntryPoint
 public class LiveSparkEntryPoint {
@@ -131,8 +131,11 @@ public class LiveSparkEntryPoint {
                     }
                 } )
                 .endMenu()
-                .newTopLevelMenu( AppConstants.INSTANCE.Perspectives() )
-                .withItems( getPerspectives() )
+                .newTopLevelMenu( "Authoring" )
+                .withItems( getAuthoringViews() )
+                .endMenu()
+                .newTopLevelMenu( "Extensions" )
+                .withItems( getExtensionsViews() )
                 .endMenu()
                 .newTopLevelMenu( AppConstants.INSTANCE.Logout() )
                 .respondsWith( new Command() {
@@ -162,24 +165,51 @@ public class LiveSparkEntryPoint {
         menubar.addMenus( menus );
     }
 
-    private List<MenuItem> getPerspectives() {
-        final List<MenuItem> perspectives = new ArrayList<MenuItem>();
-        for ( final PerspectiveActivity perspective : getPerspectiveActivities() ) {
-            final String name = perspective.getDefaultPerspectiveLayout().getName();
-            final Command cmd = new Command() {
+    private List<? extends MenuItem> getAuthoringViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 4 );
 
-                @Override
-                public void execute() {
-                    placeManager.goTo( new DefaultPlaceRequest( perspective.getIdentifier() ) );
-                }
+        result.add( MenuFactory.newSimpleItem( "Project Authoring" ).withRoles( kieACL.getGrantedRoles( "wb_project_authoring" ) ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "AuthoringPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
 
-            };
-            final MenuItem item = newSimpleItem( name ).respondsWith( cmd ).endMenu().build().getItems().get( 0 );
-            perspectives.add( item );
-        }
+        result.add( MenuFactory.newSimpleItem( "Artifact Repository" ).withRoles( kieACL.getGrantedRoles( "wb_artifact_repository" ) ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "org.guvnor.m2repo.client.perspectives.GuvnorM2RepoPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
 
-        return perspectives;
+        result.add( MenuFactory.newSimpleItem( "Administration" ).withRoles( kieACL.getGrantedRoles( "wb_administration" ) ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "AdministrationPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+
+        return result;
     }
+
+    private List<? extends MenuItem> getExtensionsViews() {
+        final List<MenuItem> result = new ArrayList<MenuItem>( 2 );
+        result.add( MenuFactory.newSimpleItem( "PlugIn Management" ).withRoles( kieACL.getGrantedRoles( "wb_plugin_management" ) ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "PlugInAuthoringPerspective" ) );
+            }
+        } ).endMenu().build().getItems().get( 0 ) );
+        result.add( MenuFactory.newSimpleItem( "Apps" ).withRoles( kieACL.getGrantedRoles( "wb_apps" ) ).respondsWith( new Command() {
+            @Override
+            public void execute() {
+                placeManager.goTo( new DefaultPlaceRequest( "AppsPerspective" ) );
+            }
+
+        } ).endMenu().build().getItems().get( 0 ) );
+        return result;
+    }
+
 
     private AbstractWorkbenchPerspectiveActivity getDefaultPerspectiveActivity() {
         AbstractWorkbenchPerspectiveActivity defaultPerspective = null;

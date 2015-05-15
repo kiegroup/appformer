@@ -30,13 +30,17 @@ public class HomeProducer {
     @PostConstruct
     public void init() {
         final String url = GWT.getModuleBaseURL();
-        model = new HomeModel( "The KIE Knowledge Development Cycle" );
-        model.addCarouselEntry( ModelUtils.makeCarouselEntry( "Author",
-                                                              "Formalize your Business Knowledge",
+        model = new HomeModel( "Welcome to the LiveSpark platform" );
+        model.addCarouselEntry( ModelUtils.makeCarouselEntry( "Model",
+                                                              "Create your persistable models",
                                                               url + "/images/HandHome.jpg" ) );
-        model.addCarouselEntry( ModelUtils.makeCarouselEntry( "Deploy",
-                                                              "Learn how to configure your environment",
+        model.addCarouselEntry( ModelUtils.makeCarouselEntry( "Desing",
+                                                              "Design your forms",
                                                               url + "/images/HandHome.jpg" ) );
+        model.addCarouselEntry( ModelUtils.makeCarouselEntry( "Develop",
+                "Create your KieApplications",
+                url + "/images/HandHome.jpg" ) );
+
         final Section s1 = new Section( "Discover and Author:" );
         s1.addEntry( ModelUtils.makeSectionEntry( "Author",
                                                   new Command() {

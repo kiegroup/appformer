@@ -18,7 +18,7 @@
 <%@page import="org.jboss.errai.security.server.FormAuthenticationScheme"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Drools Workbench</title>
+  <title>LiveSpark</title>
 
   <style type="text/css">
     * {

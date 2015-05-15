@@ -94,9 +94,6 @@ public class AuthoringPerspective {
                 .newTopLevelMenu( AppConstants.INSTANCE.New() )
                 .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
-                .newTopLevelMenu( AppConstants.INSTANCE.Project() )
-                .withItems( projectMenu.getMenuItems() )
-                .endMenu()
                 .newTopLevelMenu( AppConstants.INSTANCE.Repository() )
                 .withItems( repositoryMenu.getMenuItems() )
                 .endMenu().build();
