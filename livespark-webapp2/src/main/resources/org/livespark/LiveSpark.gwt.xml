@@ -22,6 +22,9 @@
   <inherits name="org.uberfire.UberfireClientAll"/>
   <inherits name="org.uberfire.client.views.Bootstrap2"/>
 
+  <inherits name="org.hibernate.validator.HibernateValidator" />
+  <inherits name="org.jboss.errai.validation.Validation" />
+
   <!-- Uberfire Extensions - Runtime Plugin -->
   <inherits name="org.uberfire.ext.plugin.RuntimePluginClient"/>
 
