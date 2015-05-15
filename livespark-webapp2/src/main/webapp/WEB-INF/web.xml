@@ -115,30 +115,12 @@ profile in pom.xml to use that. -->
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>DTableXLSFileServlet</servlet-name>
-    <servlet-class>org.drools.workbench.screens.dtablexls.backend.server.DecisionTableXLSFileServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>DTableXLSFileServlet</servlet-name>
-    <url-pattern>/org.livespark.LiveSpark/dtablexls/file</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
     <servlet-name>ArchiveServlet</servlet-name>
     <servlet-class>org.guvnor.common.services.backend.archive.ArchiveServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ArchiveServlet</servlet-name>
     <url-pattern>/org.livespark.LiveSpark/archive</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>ScoreCardFileServlet</servlet-name>
-    <servlet-class>org.drools.workbench.screens.scorecardxls.backend.server.ScoreCardXLSFileServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>ScoreCardFileServlet</servlet-name>
-    <url-pattern>/org.livespark.LiveSpark/scorecardxls/file</url-pattern>
   </servlet-mapping>
 
   <servlet>

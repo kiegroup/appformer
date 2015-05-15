@@ -47,27 +47,6 @@ public class HomeProducer {
                                                       }
                                                   } ) );
         model.addSection( s1 );
-
-        final Section s2 = new Section( "Deploy:" );
-        s2.addEntry( ModelUtils.makeSectionEntry( "Manage and Deploy Your Assets",
-                                                  new Command() {
-
-                                                      @Override
-                                                      public void execute() {
-                                                          placeManager.goTo( "org.drools.workbench.client.perspectives.AdministrationPerspective" );
-                                                      }
-                                                  },
-                                                  Arrays.asList( PERMISSIONS_ADMIN ) ) );
-        s2.addEntry( ModelUtils.makeSectionEntry( "Assets Repository",
-                                                  new Command() {
-
-                                                      @Override
-                                                      public void execute() {
-                                                          placeManager.goTo( "org.guvnor.m2repo.client.perspectives.GuvnorM2RepoPerspective" );
-                                                      }
-                                                  },
-                                                  Arrays.asList( PERMISSIONS_ADMIN ) ) );
-        model.addSection( s2 );
     }
 
     @Produces

@@ -27,7 +27,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.drools.workbench.screens.testscenario.service.ScenarioTestEditorService;
 import org.drools.workbench.screens.workitems.service.WorkItemsEditorService;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.POM;
@@ -209,25 +208,6 @@ public class AppSetup {
     private void defineEditorProperties() {
         List<ConfigGroup> editorConfigGroups = configurationService.getConfiguration( ConfigType.EDITOR );
         defineWorkItemsProperties( editorConfigGroups );
-        defineTestScenarioProperties( editorConfigGroups );
-    }
-
-    private void defineTestScenarioProperties( List<ConfigGroup> editorConfigGroups ) {
-        boolean settingsDefined = false;
-        for ( ConfigGroup editorConfigGroup : editorConfigGroups ) {
-            if ( ScenarioTestEditorService.TEST_SCENARIO_EDITOR_SETTINGS.equals( editorConfigGroup.getName() ) ) {
-                settingsDefined = true;
-                break;
-            }
-        }
-        if ( !settingsDefined ) {
-            /**
-             *
-             * TODO : get TEST SCENARIO ELEMENT DEFINITIONS
-             *
-             */
-            configurationService.addConfiguration( getTestScenarioElementDefinitions() );
-        }
     }
 
     private void defineWorkItemsProperties( List<ConfigGroup> editorConfigGroups ) {
@@ -260,19 +240,6 @@ public class AppSetup {
                                                                  "true" ) );
         group.addConfigItem( configurationFactory.newConfigItem( "rule-modeller-onlyShowDSLStatements",
                                                                  "false" ) );
-        return group;
-    }
-
-    private ConfigGroup getTestScenarioElementDefinitions() {
-        final ConfigGroup group = configurationFactory.newConfigGroup( ConfigType.EDITOR,
-                                                                       ScenarioTestEditorService.TEST_SCENARIO_EDITOR_SETTINGS,
-                                                                       "" );
-
-        ConfigItem<Integer> configItem = new ConfigItem<Integer>();
-        configItem.setName( ScenarioTestEditorService.TEST_SCENARIO_EDITOR_MAX_RULE_FIRINGS );
-        configItem.setValue( 10000 );
-        group.addConfigItem( configItem );
-
         return group;
     }
 
