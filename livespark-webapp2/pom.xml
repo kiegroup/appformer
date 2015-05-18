@@ -770,7 +770,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-bs2</compileSourcesArtifact>
 
             <!-- Form Modeler -->
-            <compileSourcesArtifact>org.kie:form-modeler-rendering-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>
         <executions>
