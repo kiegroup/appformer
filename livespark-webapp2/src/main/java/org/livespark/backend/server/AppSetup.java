@@ -65,6 +65,13 @@ public class AppSetup {
     private static final String DROOLS_WB_PLAYGROUND_UID = "guvnorngtestuser1";
     private static final String DROOLS_WB_PLAYGROUND_PWD = "test1234";
 
+    private static final String LIVE_SPARK_PLAYGROUND_SCHEME = "git";
+    private static final String LIVE_SPARK_PLAYGROUND_ALIAS = "lf-playground";
+    private static final String LIVE_SPARK_PLAYGROUND_ORIGIN = "https://github.com/pefernan/test-playground";
+    private static final String LIVE_SPARK_PLAYGROUND_UID = "";
+    private static final String LIVE_SPARK_PLAYGROUND_PWD = "";
+
+
     private static final String GLOBAL_SETTINGS = "settings";
     // default repository section - end
 
@@ -130,6 +137,36 @@ public class AppSetup {
             throw new RuntimeException( e );
         } finally {
             configurationService.endBatch();
+        }
+
+        try {
+            configurationService.startBatch();
+            loadLiveSparkExamples();
+        } catch ( final Exception e ) {
+            logger.error( "Error during live spark demo repositories configuration", e );
+            throw new RuntimeException( e );
+        } finally {
+            configurationService.endBatch();
+        }
+
+    }
+
+    private void loadLiveSparkExamples() {
+
+        Repository repository = createRepository(
+                LIVE_SPARK_PLAYGROUND_ALIAS,
+                LIVE_SPARK_PLAYGROUND_SCHEME,
+                LIVE_SPARK_PLAYGROUND_ORIGIN,
+                LIVE_SPARK_PLAYGROUND_UID,
+                LIVE_SPARK_PLAYGROUND_PWD );
+
+        OrganizationalUnit defaultOU = organizationalUnitService.getOrganizationalUnit( DROOLS_WB_ORGANIZATIONAL_UNIT1 );
+        if ( defaultOU == null ) {
+            createOU( repository,
+                    DROOLS_WB_ORGANIZATIONAL_UNIT1,
+                    DROOLS_WB_ORGANIZATIONAL_UNIT1_OWNER );
+        } else {
+            organizationalUnitService.addRepository( defaultOU, repository );
         }
     }
 
