@@ -38,6 +38,7 @@
     <errai.version>3.2.0-SNAPSHOT</errai.version>
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
+    <jdk.min.version>1.7.0</jdk.min.version>
   </properties>
 
   <!-- Repositories -->
