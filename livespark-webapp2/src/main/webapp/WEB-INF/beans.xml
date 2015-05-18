@@ -6,8 +6,6 @@
 
 
 
-
-    <exclude name="org.livespark.formmodeler.rendering.client.**"/>
     <exclude name="org.livespark.client.**"/>
 
   </scan>
