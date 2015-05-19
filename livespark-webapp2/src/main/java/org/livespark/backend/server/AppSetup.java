@@ -34,7 +34,6 @@ import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigGroup;
-import org.guvnor.structure.server.config.ConfigItem;
 import org.guvnor.structure.server.config.ConfigType;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
@@ -66,7 +65,7 @@ public class AppSetup {
     private static final String DROOLS_WB_PLAYGROUND_PWD = "test1234";
 
     private static final String LIVE_SPARK_PLAYGROUND_SCHEME = "git";
-    private static final String LIVE_SPARK_PLAYGROUND_ALIAS = "lf-playground";
+    private static final String LIVE_SPARK_PLAYGROUND_ALIAS = "ls-playground";
     private static final String LIVE_SPARK_PLAYGROUND_ORIGIN = "https://github.com/pefernan/test-playground";
     private static final String LIVE_SPARK_PLAYGROUND_UID = "";
     private static final String LIVE_SPARK_PLAYGROUND_PWD = "";
