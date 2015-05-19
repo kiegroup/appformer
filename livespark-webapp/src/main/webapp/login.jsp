@@ -1,3 +1,18 @@
+<%--
+  ~ Copyright 2012 JBoss Inc
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  --%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@page import="org.jboss.errai.security.server.FormAuthenticationScheme"%>
@@ -14,7 +29,7 @@
       margin: 0;
       padding: 0;
       color: #fff;
-      background: url('/livespark/images/bg-login.png') repeat #1b1b1b;
+      background: url('images/bg-login.png') repeat #1b1b1b;
       font-size: 14px;
       text-shadow: #050505 0 -1px 0;
       font-weight: bold;
@@ -31,7 +46,7 @@
       border-bottom: solid 3px #777973;
       height: 250px;
       width: 100%;
-      background: url('/livespark/images/bg-login-top.png') repeat #fff;
+      background: url('images/bg-login-top.png') repeat #fff;
       z-index: 1;
     }
 
@@ -128,7 +143,7 @@
 
 <div id="login-wrapper" class="png_bg">
   <div id="login-top">
-    <img src="/livespark/images/uf_logo.png" alt="UberFire Logo" title="Powered By Uberfire"/>
+    <img src="images/uf_logo.png" alt="UberFire Logo" title="Powered By Uberfire"/>
   </div>
 
   <div id="login-content">
@@ -146,17 +161,11 @@
       </p>
 
       <p>
-        <input id="nosplash" name="nosplash" type="checkbox"/>
-        Deactivate Splash Screen
-        <br style="clear: both"/>
-      </p>
-
-      <p>
         <% if (request.getParameter("gwt.codesvr") != null) { %>
-          <input type="hidden" name="gwt.codesvr" value="<%= org.owasp.encoder.Encode.forHtmlAttribute(request.getParameter("gwt.codesvr")) %>"/>
+        <input type="hidden" name="gwt.codesvr" value="<%= org.owasp.encoder.Encode.forHtmlAttribute(request.getParameter("gwt.codesvr")) %>"/>
         <% } %>
         <% if (request.getParameter( FormAuthenticationScheme.LOGIN_ERROR_QUERY_PARAM ) != null) { %>
-          <span class="error">Login failed. Please try again.</span>
+        <span class="error">Login failed. Please try again.</span>
         <% } %>
         <input class="button" type="submit" value="Sign In"/>
       </p>

@@ -71,7 +71,7 @@
 
   <modules>
     <module>livespark-form-modeler</module>
-    <module>livespark-webapp2</module>
+    <module>livespark-webapp</module>
   </modules>
 
   <dependencyManagement>

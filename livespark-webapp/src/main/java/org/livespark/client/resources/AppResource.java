@@ -9,6 +9,4 @@ public interface AppResource
 
     AppResource INSTANCE = GWT.create( AppResource.class );
 
-    AppImages images();
-
 }
