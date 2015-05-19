@@ -189,6 +189,10 @@
     <!-- Guvnor -->
     <dependency>
       <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-asset-mgmt-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.guvnor</groupId>
       <artifactId>guvnor-asset-mgmt-client</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -196,17 +200,16 @@
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-asset-mgmt-backend</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-structure-backend</artifactId>
+      <artifactId>guvnor-structure-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-structure-client</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-structure-backend</artifactId>
@@ -513,7 +516,7 @@
    <!-- UberFire PlugIn Extension -->
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-runtime-plugins-backend</artifactId>
+      <artifactId>uberfire-runtime-plugins-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -637,6 +640,15 @@
       <scope>runtime</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-data-binding</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
