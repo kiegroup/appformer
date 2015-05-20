@@ -31,7 +31,7 @@
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
-  </licenses>  
+  </licenses>
 
   <properties>
     <uberfire.version>0.7.0-SNAPSHOT</uberfire.version>
@@ -39,6 +39,7 @@
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <jdk.min.version>1.7.0</jdk.min.version>
+    <version.org.eclipse.jgit>3.7.1.201504261725-r</version.org.eclipse.jgit>
   </properties>
 
   <!-- Repositories -->
@@ -98,6 +99,12 @@
       Added Form Modeler deps here to make livespark module self-contained.
       They should be moved to droolsjbpm-build-bootstrap module as soon as possible.
        -->
+      <!-- Override needed by UberFire -->
+      <dependency>
+        <groupId>org.eclipse.jgit</groupId>
+        <artifactId>org.eclipse.jgit</artifactId>
+        <version>${version.org.eclipse.jgit}</version>
+      </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
