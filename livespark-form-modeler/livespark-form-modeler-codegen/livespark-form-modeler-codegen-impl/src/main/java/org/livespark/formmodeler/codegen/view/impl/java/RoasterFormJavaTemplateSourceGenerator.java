@@ -2,6 +2,7 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -13,6 +14,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -24,8 +26,6 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
  */
 @ApplicationScoped
 public class RoasterFormJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
-    public static final String READONLY_PARAM = "readOnly";
-
     @Inject
     private KieProjectService projectService;
 
@@ -95,7 +95,7 @@ public class RoasterFormJavaTemplateSourceGenerator implements FormJavaTemplateS
                 .setBody( readOnlyMethod.toString() )
                 .setPublic()
                 .setReturnTypeVoid();
-        readonlyMethod.addParameter( boolean.class, READONLY_PARAM );
+        readonlyMethod.addParameter( boolean.class, SourceGenerationUtil.READONLY_PARAM );
         readonlyMethod.addAnnotation( JAVA_LANG_OVERRIDE );
 
         return viewClass.toString();

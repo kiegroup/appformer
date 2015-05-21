@@ -21,7 +21,7 @@ import org.livespark.formmodeler.rendering.client.shared.FormModel;
  */
 public abstract class FormView<M extends FormModel> extends Composite implements HasModel<M> {
 
-    protected List inputNames = new ArrayList(  );
+    protected List<String> inputNames = new ArrayList<String>(  );
 
     @Inject
     protected Validator validator;
@@ -70,7 +70,7 @@ public abstract class FormView<M extends FormModel> extends Composite implements
         clearFieldErrors();
 
         Set<ConstraintViolation<M>> result = validator.validate( binder.getModel() );
-        for (ConstraintViolation validation : result) {
+        for (ConstraintViolation<M> validation : result) {
             String property = validation.getPropertyPath().toString().replace( ".", "_" );
             if (!getInputNames().contains( property )) continue;
             isValid = false;

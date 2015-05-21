@@ -1,6 +1,7 @@
 package org.livespark.formmodeler.codegen;
 
 import java.util.Date;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -10,6 +11,8 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.view.ListItemView;
+import org.livespark.formmodeler.codegen.view.ListView;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,34 +44,64 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @Inject
     private FormHTMLTemplateSourceGenerator htmlTemplateSourceGenerator;
 
+    @Inject
+    @ListView
+    private FormJavaTemplateSourceGenerator javaListTemplateSourceGenerator;
+
+    @Inject
+    @ListItemView
+    private FormJavaTemplateSourceGenerator javaListItemTemplateSourceGenerator;
 
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
         SourceGenerationContext context = new SourceGenerationContext( form, resourcePath );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
+
         String javaTemplate = javaTemplateSourceGenerator.generateJavaTemplateSource( context );
         String htmlTemplate = htmlTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
-        if ( StringUtils.isEmpty( modelSource ) || StringUtils.isEmpty( javaTemplate ) || StringUtils.isEmpty( htmlTemplate )) {
+        String listJavaTemplate = javaListTemplateSourceGenerator.generateJavaTemplateSource( context );
+        String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
+
+        if ( StringUtils.isEmpty( modelSource )
+                || StringUtils.isEmpty( javaTemplate )
+                || StringUtils.isEmpty( htmlTemplate )
+                || StringUtils.isEmpty( listJavaTemplate )
+                || StringUtils.isEmpty( listItemJavaTemplate )) {
             log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
             return;
         }
 
-        org.uberfire.java.nio.file.Path path = Paths.convert( resourcePath );
-        org.uberfire.java.nio.file.Path parent = path.getParent();
+        org.uberfire.java.nio.file.Path parent = Paths.convert( resourcePath ).getParent();
 
-        org.uberfire.java.nio.file.Path modelPath = parent.resolve( context.getModelName() + ".java" );
+        writeJavaSource( resourcePath, context.getModelName(), modelSource, parent );
+        writeJavaSource( resourcePath, context.getViewName(), javaTemplate, parent );
+        writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
+        writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
 
-        ioService.write( modelPath, modelSource, makeCommentedOption( "Added Java Source for Form Model '" + resourcePath + "'" ) );
+        writeHTMLSource( resourcePath, context.getViewName(), htmlTemplate, parent );
+    }
 
-        org.uberfire.java.nio.file.Path javaPath = parent.resolve( context.getViewName() + ".java" );
+    private void writeHTMLSource( Path resourcePath,
+                                  String name,
+                                  String htmlTemplate,
+                                  org.uberfire.java.nio.file.Path parent ) {
+        org.uberfire.java.nio.file.Path htmlPath = parent.resolve( name + ".html" );
 
-        ioService.write( javaPath, javaTemplate, makeCommentedOption( "Added Java Source for Form Template '" + resourcePath + "'" ) );
+        ioService.write( htmlPath,
+                         htmlTemplate,
+                         makeCommentedOption( "Added HTML Source for Form Template '" + resourcePath + "'" ) );
+    }
 
-        org.uberfire.java.nio.file.Path htmlPath = parent.resolve( context.getViewName() + ".html" );
-
-        ioService.write( htmlPath, htmlTemplate, makeCommentedOption( "Added HTML Source for Form Template '" + resourcePath + "'" ) );
+    private void writeJavaSource( Path resourcePath,
+                                  String name,
+                                  String javaSource,
+                                  org.uberfire.java.nio.file.Path parent ) {
+        org.uberfire.java.nio.file.Path filePath = parent.resolve( name + ".java" );
+        ioService.write( filePath,
+                         javaSource,
+                         makeCommentedOption( "Added Java Source for Form Model '" + resourcePath + "'" ) );
     }
 
     public CommentedOption makeCommentedOption( String commitMessage ) {

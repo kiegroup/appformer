@@ -15,20 +15,17 @@
  */
 package org.livespark.formmodeler.codegen.services.datamodeller;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.guvnor.common.services.project.model.*;
-import org.guvnor.common.services.project.service.ProjectService;
+import org.guvnor.common.services.project.model.Project;
+import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
-import org.kie.workbench.common.screens.datamodeller.model.EditorModelContent;
-import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;

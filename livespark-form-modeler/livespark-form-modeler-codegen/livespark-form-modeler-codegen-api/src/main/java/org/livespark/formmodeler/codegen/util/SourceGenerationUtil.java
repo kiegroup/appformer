@@ -24,4 +24,11 @@ public interface SourceGenerationUtil {
 
     public static final String FORM_MODEL_CLASS = "org.livespark.formmodeler.rendering.client.shared.FormModel";
     public static final String FORM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.FormView";
+    public static final String LIST_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListView";
+    public static final String LIST_ITEM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListItemView";
+
+    public static final String LIST_VIEW_HTML_PATH = "/org/livespark/formmodeler/rendering/client/view/ListView.html";
+
+
+    public static final String READONLY_PARAM = "readOnly";
 }
