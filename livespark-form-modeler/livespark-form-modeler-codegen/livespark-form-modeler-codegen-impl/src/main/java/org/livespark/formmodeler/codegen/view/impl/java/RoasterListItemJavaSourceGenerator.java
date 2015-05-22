@@ -49,4 +49,5 @@ public class RoasterListItemJavaSourceGenerator implements FormJavaTemplateSourc
         return viewClass.toString();
     }
 
+
 }
