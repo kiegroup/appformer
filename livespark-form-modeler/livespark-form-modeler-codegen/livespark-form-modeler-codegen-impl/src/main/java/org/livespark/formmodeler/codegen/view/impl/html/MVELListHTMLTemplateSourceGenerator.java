@@ -4,16 +4,17 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.uberfire.java.nio.base.NotImplementedException;
 
 @ListView
+@ListItemView // TODO make separate ListItemView implementation
 @ApplicationScoped
 public class MVELListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
 
     @Override
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
-        throw new NotImplementedException();
+        return "Not yet implemented";
     }
 
 }
