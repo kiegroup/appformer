@@ -11,14 +11,11 @@ public class SourceGenerationContext {
     public static final String FORM_VIEW_SUFFIX = "FormView";
     public static final String LIST_VIEW_SUFFIX = "ListView";
     public static final String LIST_ITEM_VIEW_SUFFIX = "ListItemView";
+    public static final String REST_SERVICE_SUFFIX = "RestService";
 
     private FormDefinition formDefinition;
     private Path path;
 
-    private String modelName;
-    private String viewName;
-    private String listViewName;
-    private String listItemViewName;
 
 
     public SourceGenerationContext( FormDefinition form, Path path ) {
@@ -32,10 +29,6 @@ public class SourceGenerationContext {
 
     public void setFormDefinition( FormDefinition formDefinition ) {
         this.formDefinition = formDefinition;
-        this.modelName = formDefinition.getName() + FORM_MODEL_SUFFIX;
-        this.viewName = formDefinition.getName() + FORM_VIEW_SUFFIX;
-        this.listViewName = formDefinition.getName() + LIST_VIEW_SUFFIX;
-        this.listItemViewName = formDefinition.getName() + LIST_ITEM_VIEW_SUFFIX;
     }
 
     public Path getPath() {
@@ -47,34 +40,22 @@ public class SourceGenerationContext {
     }
 
     public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName( String modelName ) {
-        this.modelName = modelName;
+        return formDefinition.getName() + FORM_MODEL_SUFFIX;
     }
 
     public String getViewName() {
-        return viewName;
-    }
-
-    public void setViewName( String viewName ) {
-        this.viewName = viewName;
+        return formDefinition.getName() + FORM_VIEW_SUFFIX;
     }
 
     public String getListViewName() {
-        return listViewName;
-    }
-
-    public void setListViewName( String listViewName ) {
-        this.listViewName = listViewName;
+        return formDefinition.getName() + LIST_VIEW_SUFFIX;
     }
 
     public String getListItemViewName() {
-        return listItemViewName;
+        return formDefinition.getName() + LIST_ITEM_VIEW_SUFFIX;
     }
 
-    public void setListItemViewName( String listItemViewName ) {
-        this.listItemViewName = listItemViewName;
+    public String getRestServiceName() {
+        return formDefinition.getName() + REST_SERVICE_SUFFIX;
     }
 }

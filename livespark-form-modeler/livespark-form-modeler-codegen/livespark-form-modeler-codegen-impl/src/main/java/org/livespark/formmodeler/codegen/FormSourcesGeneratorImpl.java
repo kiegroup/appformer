@@ -13,6 +13,7 @@ import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
+import org.livespark.formmodeler.codegen.view.RestService;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,10 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @ListItemView
     private FormHTMLTemplateSourceGenerator htmlListItemTemplateSourceGenerator;
 
+    @Inject
+    @RestService
+    private FormJavaTemplateSourceGenerator javaRestTemplateSourceGenerator;
+
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
         SourceGenerationContext context = new SourceGenerationContext( form, resourcePath );
@@ -69,13 +74,17 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
         String htmlListItemTemplate = htmlListItemTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
+        String restServiceTemplate = javaRestTemplateSourceGenerator.generateJavaTemplateSource( context );
+
         if ( StringUtils.isEmpty( modelSource )
                 || StringUtils.isEmpty( javaTemplate )
                 || StringUtils.isEmpty( htmlTemplate )
                 || StringUtils.isEmpty( listJavaTemplate )
                 || StringUtils.isEmpty( listItemJavaTemplate )
-                || StringUtils.isEmpty( htmlListItemTemplate )) {
-            log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
+                || StringUtils.isEmpty( htmlListItemTemplate )
+                || StringUtils.isEmpty( restServiceTemplate ) ) {
+            log.warn( "Unable to generate the required form assets for Data Object: {}",
+                      resourcePath );
             return;
         }
 
@@ -85,6 +94,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         writeJavaSource( resourcePath, context.getViewName(), javaTemplate, parent );
         writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
         writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
+        writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, parent );
 
         writeHTMLSource( resourcePath, context.getViewName(), htmlTemplate, parent );
         writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, parent );
