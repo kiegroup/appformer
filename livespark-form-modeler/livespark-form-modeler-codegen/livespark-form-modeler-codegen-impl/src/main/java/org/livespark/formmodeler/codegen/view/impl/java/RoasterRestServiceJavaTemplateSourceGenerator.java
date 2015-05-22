@@ -48,7 +48,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
         MethodSource<JavaInterfaceSource> create = restIface.addMethod(  )
                  .setName( "create" )
                  .setReturnType( context.getModelName() );
-        create.addAnnotation( Path.class ).setLiteralValue( "\"create\"" );
+        create.addAnnotation( Path.class ).setStringValue( "create" );
 
         for (FieldDefinition<?> field : context.getFormDefinition().getFields()) {
             create.addParameter( field.getStandaloneClassName(), field.getName() );
@@ -60,7 +60,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
         MethodSource<JavaInterfaceSource> load = restIface.addMethod(  )
                  .setName( "load" )
                  .setReturnType( "List<" + context.getModelName() + ">" );
-        load.addAnnotation( Path.class ).setLiteralValue( "\"load\"" );
+        load.addAnnotation( Path.class ).setStringValue( "load" );
     }
 
     private void addDeleteMethod( SourceGenerationContext context,
@@ -68,7 +68,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
         MethodSource<JavaInterfaceSource> delete = restIface.addMethod(  )
                  .setName( "delete" )
                  .setReturnType( Boolean.class );
-        delete.addAnnotation( Path.class ).setLiteralValue( "\"delete\"" );
+        delete.addAnnotation( Path.class ).setStringValue( "delete" );
         // TODO The parameter should be a unique identifier, not the entire model.
         delete.addParameter( context.getModelName(), "model" );
     }
@@ -86,7 +86,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
     }
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {
-        restIface.addAnnotation( Path.class ).setLiteralValue( "\"" + context.getModelName().toLowerCase() + "\"" );
+        restIface.addAnnotation( Path.class ).setStringValue( context.getModelName().toLowerCase() );
     }
 
     private void addImports( SourceGenerationContext context,
