@@ -3,6 +3,7 @@ package org.livespark.formmodeler.rendering.client.view;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -17,6 +18,14 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     @Inject
     @DataField
     protected ListWidget<M, W> items;
+
+    private final DeleteExecutor<M> deleteCommand = new DeleteExecutor<M>() {
+
+        @Override
+        public void execute( M model ) {
+            delete(model);
+        }
+    };
 
     @PostConstruct
     protected void init() {
@@ -45,6 +54,15 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                               }
                           }
                       } );
+    }
+
+    @Produces
+    public DeleteExecutor<M> createDeleteCommand() {
+        return deleteCommand;
+    }
+
+    public interface DeleteExecutor<T> {
+        public void execute(T model);
     }
 
 }
