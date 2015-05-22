@@ -1,10 +1,12 @@
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_REST_CLIENT;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_HTML_PATH;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -27,39 +29,105 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
         JavaClassSource viewClass = Roaster.create( JavaClassSource.class );
+        String packageName = getPackageName( context );
 
-        String packageName = projectService.resolvePackage( context.getPath() ).getPackageName();
+        addTypeSignature( context, viewClass, packageName );
+        addTemplatedAnnotation( viewClass );
+        addImports( context, viewClass, packageName );
 
+        addDeleteExecutorProducer( viewClass, context );
+        addLoadDataImpl( viewClass, context );
+        addRemoteDeleteImpl( viewClass, context );
+
+        return viewClass.toString();
+    }
+
+    private void addDeleteExecutorProducer( JavaClassSource viewClass,
+                                            SourceGenerationContext context ) {
+        viewClass.addMethod()
+                 .setName( "produceDeleteCommand" )
+                 .setReturnType( "org.livespark.formmodeler.rendering.client.view.ListView.DeleteCommand" )
+                 .setBody( "return deleteCommand;" ).addAnnotation( Produces.class );
+
+    }
+
+    private String getPackageName( SourceGenerationContext context ) {
+        return projectService.resolvePackage( context.getPath() ).getPackageName();
+    }
+
+    private void addTypeSignature( SourceGenerationContext context,
+                            JavaClassSource viewClass,
+                            String packageName ) {
         viewClass.setPackage( packageName )
                  .setPublic()
                  .setName( context.getListViewName() )
                  .setSuperType( LIST_VIEW_CLASS + "<" + context.getModelName() + ", " + context.getListItemViewName() + ">" );
+    }
 
+    private void addTemplatedAnnotation( JavaClassSource viewClass ) {
+        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( LIST_VIEW_HTML_PATH );
+    }
 
+    private void addImports( SourceGenerationContext context,
+                            JavaClassSource viewClass,
+                            String packageName ) {
         viewClass.addImport( packageName + "." + context.getModelName() );
         viewClass.addImport( packageName + "." + context.getListItemViewName() );
+        viewClass.addImport( packageName + "." + context.getRestServiceName() );
+    }
 
-        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( LIST_VIEW_HTML_PATH );
-
-        // TODO Implement callback
-        MethodSource<JavaClassSource> loadData = viewClass.addMethod();
-        loadData.setProtected()
-                .setName( "loadData" )
-                .setReturnType( void.class )
-                .setBody( "throw new RuntimeException(\"Not yet implemented.\");" )
-                .addParameter( RemoteCallback.class, "callback" );
-        loadData.addAnnotation( Override.class );
-
-        // TODO Implement callback
+    private void addRemoteDeleteImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {
         MethodSource<JavaClassSource> remoteDelete = viewClass.addMethod();
         remoteDelete.setProtected()
                     .setName( "remoteDelete" )
                     .setReturnType( void.class )
-                    .setBody( "throw new RuntimeException(\"Not yet implemented.\");" )
-                    .addParameter( RemoteCallback.class, "callback" );
+                    .addParameter( RemoteCallback.class,
+                                   "callback" );
         remoteDelete.addAnnotation( Override.class );
 
-        return viewClass.toString();
+        remoteDelete.setBody( generateRestCall( "delete",
+                                                "callback",
+                                                context,
+                                                "model") );
+    }
+
+    private void addLoadDataImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {
+        MethodSource<JavaClassSource> loadData = viewClass.addMethod();
+        loadData.setProtected()
+                .setName( "loadData" )
+                .setReturnType( void.class )
+                .addParameter( RemoteCallback.class,
+                               "callback" );
+        loadData.addAnnotation( Override.class );
+
+        loadData.setBody( generateRestCall( "load",
+                                            "callback",
+                                            context ) );
+    }
+
+    private String generateRestCall( String restMethodName,
+                                     String callbackParamName,
+                                     SourceGenerationContext context,
+                                     String... params) {
+        StringBuilder body = new StringBuilder()
+                                  .append( ERRAI_REST_CLIENT )
+                                  .append( ".create(" )
+                                  .append( context.getRestServiceName() )
+                                  .append( ".class, " )
+                                  .append( callbackParamName )
+                                  .append( ")." )
+                                  .append( restMethodName )
+                                  .append( "(" );
+
+        for (String p : params) {
+            body.append( p )
+                .append( ", " );
+        }
+        if (params.length > 0) body.delete( body.length() - ", ".length(), body.length() );
+
+        body.append( ");" );
+
+        return body.toString();
     }
 
 }

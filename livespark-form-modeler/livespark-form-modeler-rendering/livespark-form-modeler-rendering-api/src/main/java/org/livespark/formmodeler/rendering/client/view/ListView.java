@@ -31,18 +31,20 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract void loadData( RemoteCallback<List<M>> callback );
 
-    protected abstract void remoteDelete( RemoteCallback<Boolean> callback );
+    protected abstract void remoteDelete( M model,
+                                          RemoteCallback<Boolean> callback );
 
     public void delete( final M model ) {
-        remoteDelete( new RemoteCallback<Boolean>() {
+        remoteDelete( model,
+                      new RemoteCallback<Boolean>() {
 
-            @Override
-            public void callback( Boolean response ) {
-                if ( response ) {
-                    items.getValue().remove( model );
-                }
-            }
-        } );
+                          @Override
+                          public void callback( Boolean response ) {
+                              if ( response ) {
+                                  items.getValue().remove( model );
+                              }
+                          }
+                      } );
     }
 
 }
