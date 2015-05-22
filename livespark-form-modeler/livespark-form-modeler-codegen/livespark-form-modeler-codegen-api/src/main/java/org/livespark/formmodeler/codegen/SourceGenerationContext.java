@@ -43,7 +43,7 @@ public class SourceGenerationContext {
         return formDefinition.getName() + FORM_MODEL_SUFFIX;
     }
 
-    public String getViewName() {
+    public String getFormViewName() {
         return formDefinition.getName() + FORM_VIEW_SUFFIX;
     }
 

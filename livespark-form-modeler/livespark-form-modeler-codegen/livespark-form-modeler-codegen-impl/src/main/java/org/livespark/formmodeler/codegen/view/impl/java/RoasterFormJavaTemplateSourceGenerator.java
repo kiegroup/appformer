@@ -49,14 +49,14 @@ public class RoasterFormJavaTemplateSourceGenerator implements FormJavaTemplateS
 
         viewClass.setPackage( packageName )
                 .setPublic()
-                .setName( context.getViewName() )
+                .setName( context.getFormViewName() )
                 .setSuperType( FORM_VIEW_CLASS + "<" + context.getModelName() + ">" );
 
 
         viewClass.addImport( packageName + "." + context.getModelName() );
 
         viewClass.addAnnotation( ERRAI_TEMPLATED );
-        viewClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getViewName() );
+        viewClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormViewName() );
 
         StringBuffer inputNames = new StringBuffer(  );
         StringBuffer readOnlyMethod = new StringBuffer(  );

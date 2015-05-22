@@ -91,12 +91,12 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         org.uberfire.java.nio.file.Path parent = Paths.convert( resourcePath ).getParent();
 
         writeJavaSource( resourcePath, context.getModelName(), modelSource, parent );
-        writeJavaSource( resourcePath, context.getViewName(), javaTemplate, parent );
+        writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, parent );
         writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
         writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
         writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, parent );
 
-        writeHTMLSource( resourcePath, context.getViewName(), htmlTemplate, parent );
+        writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, parent );
         writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, parent );
     }
 
