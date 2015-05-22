@@ -36,4 +36,9 @@ public class TextAreaFieldDefinition extends FieldDefinition<String> {
     public void setPlaceHolder( String placeHolder ) {
         this.placeHolder = placeHolder;
     }
+
+    @Override
+    public String getStandaloneClassName() {
+        return String.class.getName();
+    }
 }

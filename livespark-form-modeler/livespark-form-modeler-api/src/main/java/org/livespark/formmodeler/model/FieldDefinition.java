@@ -12,6 +12,8 @@ public abstract class FieldDefinition<T> {
 
     protected String bindingExpression;
 
+    public abstract String getStandaloneClassName();
+
     public String getCode() {
         return this.getClass().getName();
     }

@@ -7,4 +7,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  */
 @Portable
 public class LongBoxFieldDefinition extends AbstractIntputFieldDefinition<Long> {
+
+    @Override
+    public String getStandaloneClassName() {
+        return Long.class.getName();
+    }
 }

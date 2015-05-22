@@ -9,4 +9,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  */
 @Portable
 public class DateBoxFieldDefinition extends AbstractIntputFieldDefinition<Date> {
+
+    @Override
+    public String getStandaloneClassName() {
+        return Date.class.getCanonicalName();
+    }
 }

@@ -7,4 +7,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  */
 @Portable
 public class DoubleBoxFieldDefinition extends AbstractIntputFieldDefinition<Double> {
+
+    @Override
+    public String getStandaloneClassName() {
+        return Double.class.getName();
+    }
 }

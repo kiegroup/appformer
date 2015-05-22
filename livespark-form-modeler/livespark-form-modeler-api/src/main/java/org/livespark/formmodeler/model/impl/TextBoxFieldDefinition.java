@@ -7,4 +7,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  */
 @Portable
 public class TextBoxFieldDefinition extends AbstractIntputFieldDefinition<String> {
+
+    @Override
+    public String getStandaloneClassName() {
+        return String.class.getName();
+    }
 }

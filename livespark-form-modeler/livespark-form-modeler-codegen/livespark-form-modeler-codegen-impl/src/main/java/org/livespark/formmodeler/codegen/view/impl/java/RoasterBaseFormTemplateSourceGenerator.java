@@ -2,9 +2,7 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_BOUND;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_DATAFIELD;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_INJECT;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_NAMED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.READONLY_PARAM;
 

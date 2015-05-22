@@ -8,4 +8,9 @@ import org.livespark.formmodeler.model.FieldDefinition;
  */
 @Portable
 public class CheckBoxFieldDefinition extends FieldDefinition<Boolean> {
+
+    @Override
+    public String getStandaloneClassName() {
+        return Boolean.class.getName();
+    }
 }
