@@ -1,53 +1,45 @@
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_ITEM_VIEW_CLASS;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_ITEM_HTML_PATH;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
-import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
-
 
 @ListItemView
 @ApplicationScoped
-public class RoasterListItemJavaSourceGenerator implements FormJavaTemplateSourceGenerator {
-
-    @Inject
-    private KieProjectService projectService;
+public class RoasterListItemJavaSourceGenerator extends RoasterBaseFormTemplateSourceGenerator {
 
     @Override
-    public String generateJavaTemplateSource( SourceGenerationContext context ) {
-        JavaClassSource viewClass = Roaster.create( JavaClassSource.class );
+    protected void addAdditional( SourceGenerationContext context,
+                                  JavaClassSource viewClass ) {
+    }
 
-        String packageName = projectService.resolvePackage( context.getPath() ).getPackageName();
+    @Override
+    protected void addAnnotations( SourceGenerationContext context,
+                                   JavaClassSource viewClass ) {
+        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( LIST_VIEW_ITEM_HTML_PATH );
+    }
 
+    @Override
+    protected void addImports( SourceGenerationContext context,
+                               JavaClassSource viewClass,
+                               String packageName ) {
+        viewClass.addImport( packageName + "." + context.getModelName() );
+    }
+
+    @Override
+    protected void addTypeSignature( SourceGenerationContext context,
+                                     JavaClassSource viewClass,
+                                     String packageName ) {
         viewClass.setPackage( packageName )
                  .setPublic()
                  .setName( context.getListItemViewName() )
                  .setSuperType( LIST_ITEM_VIEW_CLASS + "<" + context.getModelName() + ">" );
-
-
-        viewClass.addImport( packageName + "." + context.getModelName() );
-
-        // TODO Generate templated file
-//        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( LIST_VIEW_HTML_PATH );
-
-        // TODO Implement callback
-        MethodSource<JavaClassSource> initInputNames = viewClass.addMethod();
-        initInputNames.setProtected()
-                .setName( "initInputNames" )
-                .setReturnType( void.class )
-                .setBody( "throw new RuntimeException(\"Not yet implemented.\");" )
-                .addAnnotation( Override.class );
-
-        return viewClass.toString();
     }
-
 
 }

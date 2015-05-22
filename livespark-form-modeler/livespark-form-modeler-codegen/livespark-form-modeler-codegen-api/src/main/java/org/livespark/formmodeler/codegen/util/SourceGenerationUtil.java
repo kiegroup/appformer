@@ -30,7 +30,8 @@ public interface SourceGenerationUtil {
     public static final String LIST_ITEM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListItemView";
 
     public static final String LIST_VIEW_HTML_PATH = "/org/livespark/formmodeler/rendering/client/view/ListView.html";
-
+    public static final String LIST_VIEW_ITEM_HTML_PATH = "/org/livespark/formmodeler/rendering/client/view/ListItemView.html";
 
     public static final String READONLY_PARAM = "readOnly";
+
 }
