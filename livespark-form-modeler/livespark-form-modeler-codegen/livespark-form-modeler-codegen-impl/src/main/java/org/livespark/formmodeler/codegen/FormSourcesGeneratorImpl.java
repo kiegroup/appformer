@@ -52,6 +52,10 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @ListItemView
     private FormJavaTemplateSourceGenerator javaListItemTemplateSourceGenerator;
 
+    @Inject
+    @ListItemView
+    private FormHTMLTemplateSourceGenerator htmlListItemTemplateSourceGenerator;
+
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
         SourceGenerationContext context = new SourceGenerationContext( form, resourcePath );
@@ -63,12 +67,14 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         String listJavaTemplate = javaListTemplateSourceGenerator.generateJavaTemplateSource( context );
         String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
+        String htmlListItemTemplate = htmlListItemTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
         if ( StringUtils.isEmpty( modelSource )
                 || StringUtils.isEmpty( javaTemplate )
                 || StringUtils.isEmpty( htmlTemplate )
                 || StringUtils.isEmpty( listJavaTemplate )
-                || StringUtils.isEmpty( listItemJavaTemplate )) {
+                || StringUtils.isEmpty( listItemJavaTemplate )
+                || StringUtils.isEmpty( htmlListItemTemplate )) {
             log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
             return;
         }
@@ -81,6 +87,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
 
         writeHTMLSource( resourcePath, context.getViewName(), htmlTemplate, parent );
+        writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, parent );
     }
 
     private void writeHTMLSource( Path resourcePath,
