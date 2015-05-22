@@ -20,9 +20,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.model.*;
 import org.guvnor.common.services.project.service.ProjectService;
+import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
+import org.kie.workbench.common.services.shared.project.KieProject;
+import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.kie.workbench.common.screens.datamodeller.model.EditorModelContent;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
@@ -45,7 +48,7 @@ public class DataObjectChangeObserver {
     private static final Logger logger = LoggerFactory.getLogger( DataObjectChangeObserver.class );
 
     @Inject
-    private ProjectService<? extends Project> projectService;
+    private KieProjectService projectService;
 
     @Inject
     private DataModelerService dataModelerService;
@@ -55,7 +58,9 @@ public class DataObjectChangeObserver {
 
 
     public void processResourceAdd( @Observes final ResourceAddedEvent resourceAddedEvent ) {
-        generateSources( resourceAddedEvent.getPath() );
+        if ( isFormAware( resourceAddedEvent.getPath() ) ) {
+            generateSources( resourceAddedEvent.getPath() );
+        }
     }
 
     public void processResourceDelete( @Observes final ResourceDeletedEvent resourceDeletedEvent ) {
@@ -63,7 +68,9 @@ public class DataObjectChangeObserver {
     }
 
     public void processResourceUpdate( @Observes final ResourceUpdatedEvent resourceUpdatedEvent ) {
-        generateSources( resourceUpdatedEvent.getPath() );
+        if ( isFormAware( resourceUpdatedEvent.getPath() ) ) {
+            generateSources( resourceUpdatedEvent.getPath() );
+        }
     }
 
     protected void generateSources (Path path) {
@@ -83,11 +90,14 @@ public class DataObjectChangeObserver {
 
     protected DataObject getDataObjectForPath(Path path) {
         if (!path.getFileName().endsWith( ".java" )) return null;
-        try {
-            EditorModelContent content = dataModelerService.loadContent( path );
-            if ( content != null && content.getDataObject() != null ) {
-                DataObject dataObject = content.getDataObject();
 
+        try {
+            KieProject project = projectService.resolveProject( path );
+            DataModel dataModel = dataModelerService.loadModel( project );
+            String className = calculateClassName( project, path );
+            DataObject dataObject = dataModel != null ? dataModel.getDataObject( className ) : null;
+
+            if ( dataObject != null ) {
                 if ( !dataObject.getSuperClassName().equals( SourceGenerationUtil.FORM_MODEL_CLASS )
                         && !dataObject.getSuperClassName().equals( SourceGenerationUtil.FORM_VIEW_CLASS ) )
                     return dataObject;
@@ -97,5 +107,42 @@ public class DataObjectChangeObserver {
             logger.warn( "Error loading Data Object for path '{}': {}", path.toURI(), e );
         }
         return null;
+    }
+
+    protected boolean isFormAware( final Path path ) {
+        return path != null &&
+                path.getFileName().endsWith( ".java" ) &&
+                !path.getFileName().endsWith( "FormModel.java" ) &&
+                !path.getFileName().endsWith( "FormView.java" );
+
+    }
+
+    private String calculateClassName(Project project,
+            Path path) {
+
+        Path rootPath = project.getRootPath();
+        if (!path.toURI().startsWith(rootPath.toURI())) {
+            return null;
+        }
+
+        org.guvnor.common.services.project.model.Package defaultPackage = projectService.resolveDefaultPackage(project);
+        Path srcPath = null;
+
+        if (path.toURI().startsWith(defaultPackage.getPackageMainSrcPath().toURI())) {
+            srcPath = defaultPackage.getPackageMainSrcPath();
+        } else if (path.toURI().startsWith(defaultPackage.getPackageTestSrcPath().toURI())) {
+            srcPath = defaultPackage.getPackageTestSrcPath();
+        }
+
+        //project: default://master@uf-playground/mortgages/main/src/Pojo.java
+        if (srcPath == null) {
+            return null;
+        }
+
+        String strPath = path.toURI().substring(srcPath.toURI().length() + 1, path.toURI().length());
+        strPath = strPath.replace("/", ".");
+        strPath = strPath.substring(0, strPath.indexOf(".java"));
+
+        return strPath;
     }
 }
