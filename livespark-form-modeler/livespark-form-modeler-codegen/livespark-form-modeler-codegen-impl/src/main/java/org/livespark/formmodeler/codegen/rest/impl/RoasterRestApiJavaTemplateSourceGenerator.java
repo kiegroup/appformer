@@ -1,9 +1,6 @@
 package org.livespark.formmodeler.codegen.rest.impl;
 
-import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,7 +9,6 @@ import javax.ws.rs.Path;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.RestApi;
 
@@ -20,9 +16,6 @@ import org.livespark.formmodeler.codegen.rest.RestApi;
 @ApplicationScoped
 @RestApi
 public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTemplateSourceGenerator<JavaInterfaceSource> {
-
-    @Inject
-    private KieProjectService projectService;
 
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
@@ -81,10 +74,6 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
         delete.addAnnotation( DELETE.class );
     }
 
-    private String getPackageName( SourceGenerationContext context ) {
-        return projectService.resolvePackage( context.getPath() ).getPackageName();
-    }
-
     private void addTypeSignature( SourceGenerationContext context,
                                    JavaInterfaceSource restIface,
                                    String packageName ) {
@@ -95,13 +84,6 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {
         restIface.addAnnotation( Path.class ).setStringValue( context.getDataObjectName().toLowerCase() );
-    }
-
-    private void addImports( SourceGenerationContext context,
-                            JavaInterfaceSource restIface,
-                            String packageName ) {
-        restIface.addImport( packageName + "." + context.getModelName() );
-        restIface.addImport( List.class );
     }
 
 }
