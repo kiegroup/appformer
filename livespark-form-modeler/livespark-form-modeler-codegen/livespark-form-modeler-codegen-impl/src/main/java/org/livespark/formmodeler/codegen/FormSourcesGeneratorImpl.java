@@ -9,11 +9,11 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
+import org.livespark.formmodeler.codegen.rest.RestApi;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.livespark.formmodeler.codegen.view.RestService;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormHTMLTemplateSourceGenerator htmlListItemTemplateSourceGenerator;
 
     @Inject
-    @RestService
+    @RestApi
     private FormJavaTemplateSourceGenerator javaRestTemplateSourceGenerator;
 
     @Override

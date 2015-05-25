@@ -1,4 +1,4 @@
-package org.livespark.formmodeler.codegen.view.impl.java;
+package org.livespark.formmodeler.codegen.rest.impl;
 
 import java.util.List;
 
@@ -14,14 +14,14 @@ import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.codegen.rest.RestApi;
 import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
-import org.livespark.formmodeler.codegen.view.RestService;
 import org.livespark.formmodeler.model.FieldDefinition;
 
 
 @ApplicationScoped
-@RestService
-public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
+@RestApi
+public class RoasterRestApiJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
 
     @Inject
     private KieProjectService projectService;
