@@ -90,14 +90,21 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         org.uberfire.java.nio.file.Path parent = Paths.convert( resourcePath ).getParent();
 
-        writeJavaSource( resourcePath, context.getModelName(), modelSource, parent );
-        writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, parent );
-        writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
-        writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
-        writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, parent );
+        ioService.startBatch( parent.getFileSystem() );
+        try {
+            writeJavaSource( resourcePath, context.getModelName(), modelSource, parent );
+            writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, parent );
+            writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
+            writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
+            writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, parent );
 
-        writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, parent );
-        writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, parent );
+            writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, parent );
+            writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, parent );
+        } catch ( Exception e ) {
+            log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
+        } finally {
+            ioService.endBatch();
+        }
     }
 
     private void writeHTMLSource( Path resourcePath,
