@@ -13,9 +13,9 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.RestApi;
-import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.model.FieldDefinition;
 
 

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Qualifier;
 
-import org.livespark.formmodeler.codegen.view.FormJavaTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 
 /**
  * Used for implementations of {@link FormJavaTemplateSourceGenerator} that generate a JAX-RS interface.

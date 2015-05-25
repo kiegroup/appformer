@@ -1,6 +1,5 @@
-package org.livespark.formmodeler.codegen.view;
+package org.livespark.formmodeler.codegen;
 
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
 
 /**
  * Created by pefernan on 4/28/15.
