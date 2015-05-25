@@ -92,7 +92,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
     }
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {
-        restIface.addAnnotation( Path.class ).setStringValue( context.getModelName().toLowerCase() );
+        restIface.addAnnotation( Path.class ).setStringValue( context.getDataObjectName().toLowerCase() );
     }
 
     private void addImports( SourceGenerationContext context,
