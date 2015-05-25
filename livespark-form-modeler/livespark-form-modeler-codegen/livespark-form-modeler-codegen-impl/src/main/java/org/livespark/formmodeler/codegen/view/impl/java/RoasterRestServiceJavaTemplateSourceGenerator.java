@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import org.jboss.forge.roaster.Roaster;
@@ -49,6 +52,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
                  .setName( "create" )
                  .setReturnType( context.getModelName() );
         create.addAnnotation( Path.class ).setStringValue( "create" );
+        create.addAnnotation( POST.class );
 
         for (FieldDefinition<?> field : context.getFormDefinition().getFields()) {
             create.addParameter( field.getStandaloneClassName(), field.getName() );
@@ -61,6 +65,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
                  .setName( "load" )
                  .setReturnType( "List<" + context.getModelName() + ">" );
         load.addAnnotation( Path.class ).setStringValue( "load" );
+        load.addAnnotation( GET.class );
     }
 
     private void addDeleteMethod( SourceGenerationContext context,
@@ -69,6 +74,7 @@ public class RoasterRestServiceJavaTemplateSourceGenerator implements FormJavaTe
                  .setName( "delete" )
                  .setReturnType( Boolean.class );
         delete.addAnnotation( Path.class ).setStringValue( "delete" );
+        delete.addAnnotation( DELETE.class );
         // TODO The parameter should be a unique identifier, not the entire model.
         delete.addParameter( context.getModelName(), "model" );
     }
