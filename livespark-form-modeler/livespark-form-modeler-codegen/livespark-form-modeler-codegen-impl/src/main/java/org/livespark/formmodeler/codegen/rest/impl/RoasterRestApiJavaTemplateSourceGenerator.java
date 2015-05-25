@@ -13,15 +13,13 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.RestApi;
-import org.livespark.formmodeler.model.FieldDefinition;
 
 
 @ApplicationScoped
 @RestApi
-public class RoasterRestApiJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
+public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTemplateSourceGenerator<JavaInterfaceSource> {
 
     @Inject
     private KieProjectService projectService;
@@ -48,35 +46,39 @@ public class RoasterRestApiJavaTemplateSourceGenerator implements FormJavaTempla
 
     private void addCreateMethod( SourceGenerationContext context,
                                   JavaInterfaceSource restIface ) {
-        MethodSource<JavaInterfaceSource> create = restIface.addMethod(  )
-                 .setName( "create" )
-                 .setReturnType( context.getModelName() );
+        MethodSource<JavaInterfaceSource> create = restIface.addMethod(  );
+
+        setCreateMethodSignature( context, create );
+        addCreateAnnotations( create );
+    }
+
+    private void addCreateAnnotations( MethodSource<JavaInterfaceSource> create ) {
         create.addAnnotation( Path.class ).setStringValue( "create" );
         create.addAnnotation( POST.class );
-
-        for (FieldDefinition<?> field : context.getFormDefinition().getFields()) {
-            create.addParameter( field.getStandaloneClassName(), field.getName() );
-        }
     }
 
     private void addLoadMethod( SourceGenerationContext context,
                                 JavaInterfaceSource restIface ) {
-        MethodSource<JavaInterfaceSource> load = restIface.addMethod(  )
-                 .setName( "load" )
-                 .setReturnType( "List<" + context.getModelName() + ">" );
+        MethodSource<JavaInterfaceSource> load = restIface.addMethod(  );
+        setLoadMethodSignature( context, load );
+        addLoadMethodAnnotations( load );
+    }
+
+    private void addLoadMethodAnnotations( MethodSource<JavaInterfaceSource> load ) {
         load.addAnnotation( Path.class ).setStringValue( "load" );
         load.addAnnotation( GET.class );
     }
 
     private void addDeleteMethod( SourceGenerationContext context,
                                   JavaInterfaceSource restIface ) {
-        MethodSource<JavaInterfaceSource> delete = restIface.addMethod(  )
-                 .setName( "delete" )
-                 .setReturnType( Boolean.class );
+        MethodSource<JavaInterfaceSource> delete = restIface.addMethod(  );
+        setDeleteMethodSignature( context, delete );
+        addDeleteMethodAnnotations( delete );
+    }
+
+    private void addDeleteMethodAnnotations( MethodSource<JavaInterfaceSource> delete ) {
         delete.addAnnotation( Path.class ).setStringValue( "delete" );
         delete.addAnnotation( DELETE.class );
-        // TODO The parameter should be a unique identifier, not the entire model.
-        delete.addParameter( context.getModelName(), "model" );
     }
 
     private String getPackageName( SourceGenerationContext context ) {
