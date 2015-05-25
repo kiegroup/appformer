@@ -22,6 +22,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +31,7 @@ import javax.inject.Named;
 
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.POM;
+import org.guvnor.common.services.project.model.Project;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -92,6 +95,9 @@ public class AppSetup {
 
     @Inject
     private ConfigurationFactory configurationFactory;
+    
+    @Inject
+    private LiveSparkModelLoaderCache liveSparkModelLoaderCache;
 
     @PostConstruct
     public void assertPlayground() {
@@ -140,7 +146,9 @@ public class AppSetup {
 
         try {
             configurationService.startBatch();
+            
             loadLiveSparkExamples();
+            
         } catch ( final Exception e ) {
             logger.error( "Error during live spark demo repositories configuration", e );
             throw new RuntimeException( e );
@@ -166,6 +174,12 @@ public class AppSetup {
                     DROOLS_WB_ORGANIZATIONAL_UNIT1_OWNER );
         } else {
             organizationalUnitService.addRepository( defaultOU, repository );
+        }
+        
+        Set<Project> projects = projectService.getProjects(repository, "master");
+        
+        for (Project p : projects) {
+        	liveSparkModelLoaderCache.initProject(p);
         }
     }
 
