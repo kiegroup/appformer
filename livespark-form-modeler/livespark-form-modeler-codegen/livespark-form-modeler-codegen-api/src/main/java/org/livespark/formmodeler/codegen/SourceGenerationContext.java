@@ -12,6 +12,7 @@ public class SourceGenerationContext {
     public static final String LIST_VIEW_SUFFIX = "ListView";
     public static final String LIST_ITEM_VIEW_SUFFIX = "ListItemView";
     public static final String REST_SERVICE_SUFFIX = "RestService";
+    private static final String ENTITY_SERVICE = "EntityService";
 
     private FormDefinition formDefinition;
     private Path path;
@@ -61,5 +62,9 @@ public class SourceGenerationContext {
 
     public String getRestServiceName() {
         return formDefinition.getName() + REST_SERVICE_SUFFIX;
+    }
+
+    public String getEntityServiceName() {
+        return formDefinition.getName() + ENTITY_SERVICE;
     }
 }
