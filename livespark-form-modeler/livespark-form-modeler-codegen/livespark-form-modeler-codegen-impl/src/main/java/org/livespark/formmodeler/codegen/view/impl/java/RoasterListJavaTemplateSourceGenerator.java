@@ -81,7 +81,8 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         remoteDelete.setProtected()
                     .setName( "remoteDelete" )
                     .setReturnType( void.class )
-                    .addParameter( RemoteCallback.class,
+                    .addParameter( context.getModelName(), "model" );
+        remoteDelete.addParameter( RemoteCallback.class,
                                    "callback" );
         remoteDelete.addAnnotation( Override.class );
 
