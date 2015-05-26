@@ -6,15 +6,11 @@ import javax.inject.Inject;
 
 import org.jboss.forge.roaster.model.source.JavaSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.model.impl.ModelConstructorGenerator;
 
 public abstract class RoasterRestJavaTemplateSourceGenerator<O extends JavaSource<O>> implements FormJavaTemplateSourceGenerator {
-
-    @Inject
-    private KieProjectService projectService;
 
     @Inject
     private ModelConstructorGenerator constructorGenerator;
@@ -42,7 +38,7 @@ public abstract class RoasterRestJavaTemplateSourceGenerator<O extends JavaSourc
     }
 
     protected String getPackageName( SourceGenerationContext context ) {
-        return projectService.resolvePackage( context.getPath() ).getPackageName();
+        return context.getPackage().getPackageName();
     }
 
     protected void addImports( SourceGenerationContext context,

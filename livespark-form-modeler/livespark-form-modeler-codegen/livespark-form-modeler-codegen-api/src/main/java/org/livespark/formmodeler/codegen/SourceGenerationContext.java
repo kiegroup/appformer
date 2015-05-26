@@ -2,6 +2,7 @@ package org.livespark.formmodeler.codegen;
 
 import org.livespark.formmodeler.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
+import org.guvnor.common.services.project.model.Package;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -16,11 +17,13 @@ public class SourceGenerationContext {
 
     private FormDefinition formDefinition;
     private Path path;
+    private Package resPackage;
 
 
 
-    public SourceGenerationContext( FormDefinition form, Path path ) {
+    public SourceGenerationContext( FormDefinition form, Path path, Package resPackage ) {
         this.path = path;
+        this.resPackage = resPackage;
         setFormDefinition( form );
     }
 
@@ -34,10 +37,6 @@ public class SourceGenerationContext {
 
     public Path getPath() {
         return path;
-    }
-
-    public void setPath( Path path ) {
-        this.path = path;
     }
 
     public String getDataObjectName() {
@@ -66,5 +65,9 @@ public class SourceGenerationContext {
 
     public String getEntityServiceName() {
         return formDefinition.getName() + ENTITY_SERVICE;
+    }
+
+    public Package getPackage() {
+        return resPackage;
     }
 }

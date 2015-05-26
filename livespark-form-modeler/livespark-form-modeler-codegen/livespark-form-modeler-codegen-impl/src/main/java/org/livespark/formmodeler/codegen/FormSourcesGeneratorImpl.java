@@ -7,7 +7,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.guvnor.common.services.project.model.Package;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
@@ -35,6 +37,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
     @Inject
     private User identity;
+
+    @Inject
+    private KieProjectService projectService;
 
     @Inject
     private FormModelSourceGenerator modelSourceGenerator;
@@ -67,7 +72,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
-        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath );
+        Package resourcePackage = projectService.resolvePackage( resourcePath );
+        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, resourcePackage );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
 

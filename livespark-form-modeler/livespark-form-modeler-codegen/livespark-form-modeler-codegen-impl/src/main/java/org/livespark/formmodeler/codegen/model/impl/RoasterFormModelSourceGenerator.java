@@ -10,7 +10,6 @@ import javax.inject.Inject;
 
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 
@@ -21,16 +20,13 @@ import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator {
 
     @Inject
-    private KieProjectService projectService;
-
-    @Inject
     private ModelConstructorGenerator constructorGenerator;
 
     @Override
     public String generateFormModelSource( SourceGenerationContext context ) {
 
         JavaClassSource modelClass = Roaster.create( JavaClassSource.class );
-        modelClass.setPackage( projectService.resolvePackage( context.getPath() ).getPackageName() )
+        modelClass.setPackage( context.getPackage().getPackageName() )
                 .setPublic()
                 .setName( context.getModelName() );
 

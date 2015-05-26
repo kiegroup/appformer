@@ -7,13 +7,11 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_V
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
@@ -22,9 +20,6 @@ import org.livespark.formmodeler.codegen.view.ListView;
 @ListView
 @ApplicationScoped
 public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
-
-    @Inject
-    private KieProjectService projectService;
 
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
@@ -52,7 +47,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     }
 
     private String getPackageName( SourceGenerationContext context ) {
-        return projectService.resolvePackage( context.getPath() ).getPackageName();
+        return context.getPackage().getPackageName();
     }
 
     private void addTypeSignature( SourceGenerationContext context,

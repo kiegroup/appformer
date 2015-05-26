@@ -6,11 +6,9 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.EJB_TR
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ENTITY_SERVICE_CLASS;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.EntityService;
@@ -19,9 +17,6 @@ import org.livespark.formmodeler.codegen.rest.EntityService;
 @ApplicationScoped
 @EntityService
 public class RoasterEntityServiceJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
-
-    @Inject
-    private KieProjectService projectService;
 
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
@@ -57,7 +52,7 @@ public class RoasterEntityServiceJavaTemplateSourceGenerator implements FormJava
     }
 
     private String getPackageName( SourceGenerationContext context ) {
-        return projectService.resolvePackage( context.getPath() ).getPackageName();
+        return context.getPackage().getPackageName();
     }
 
 }

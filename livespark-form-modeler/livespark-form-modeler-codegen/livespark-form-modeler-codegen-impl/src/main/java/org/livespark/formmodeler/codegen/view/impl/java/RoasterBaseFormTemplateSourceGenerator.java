@@ -18,7 +18,6 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
@@ -26,9 +25,6 @@ import org.livespark.formmodeler.model.FieldDefinition;
 
 
 public abstract class RoasterBaseFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
-
-    @Inject
-    private KieProjectService projectService;
 
     @Inject
     private Instance<InputCreatorHelper> creatorInstances;
@@ -117,6 +113,6 @@ public abstract class RoasterBaseFormTemplateSourceGenerator implements FormJava
                                               String packageName );
 
     private String getPackageName( SourceGenerationContext context ) {
-        return projectService.resolvePackage( context.getPath() ).getPackageName();
+        return context.getPackage().getPackageName();
     }
 }
