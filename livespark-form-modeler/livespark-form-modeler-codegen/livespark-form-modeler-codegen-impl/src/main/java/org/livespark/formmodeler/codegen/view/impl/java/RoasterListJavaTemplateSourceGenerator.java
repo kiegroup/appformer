@@ -3,6 +3,7 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_REST_CLIENT;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_DELETE_EXECUTOR;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_HTML_PATH;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -41,7 +42,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
                                             SourceGenerationContext context ) {
         viewClass.addMethod()
                  .setName( "produceDeleteCommand" )
-                 .setReturnType( "org.livespark.formmodeler.rendering.client.view.ListView.DeleteCommand" )
+                 .setReturnType( LIST_VIEW_DELETE_EXECUTOR )
                  .setBody( "return deleteCommand;" ).addAnnotation( Produces.class );
 
     }
