@@ -24,11 +24,11 @@ public interface SourceGenerationUtil {
     public static final String VALIDATION_NOT_NULL = "javax.validation.constraints.NotNull";
     public static final String HIBERNATE_NOT_EMPTY = "org.hibernate.validator.constraints.NotEmpty";
 
-    public static final String EJB_STATELESS = "java.ejb.Stateless";
-    public static final String EJB_ENTITY_MANAGER = "java.persistence.EntityManager";
-    public static final String EJB_PERSISTENCE_CONTEXT = "java.persistence.PersistenceContext";
-    public static final String EJB_TRANSACTION_ATTR = "java.ejb.TransactionAttribute";
-    public static final String EJB_REQUIRES_NEW = "java.ejb.TransactionAttributeType.REQUIRES_NEW";
+    public static final String EJB_STATELESS = "javax.ejb.Stateless";
+    public static final String EJB_ENTITY_MANAGER = "javax.persistence.EntityManager";
+    public static final String EJB_PERSISTENCE_CONTEXT = "javax.persistence.PersistenceContext";
+    public static final String EJB_TRANSACTION_ATTR = "javax.ejb.TransactionAttribute";
+    public static final String EJB_REQUIRES_NEW = "javax.ejb.TransactionAttributeType.REQUIRES_NEW";
 
     public static final String FORM_MODEL_CLASS = "org.livespark.formmodeler.rendering.client.shared.FormModel";
     public static final String FORM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.FormView";
