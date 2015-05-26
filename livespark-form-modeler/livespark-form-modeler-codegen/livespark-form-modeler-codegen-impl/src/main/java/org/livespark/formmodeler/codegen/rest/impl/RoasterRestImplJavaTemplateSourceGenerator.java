@@ -2,6 +2,9 @@ package org.livespark.formmodeler.codegen.rest.impl;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.EJB_STATELESS;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -9,16 +12,15 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.model.impl.ModelConstructorGenerator;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
+import org.livespark.formmodeler.model.DataHolder;
 
 
 @ApplicationScoped
 @RestImpl
 public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaTemplateSourceGenerator<JavaClassSource> {
 
-    @Inject
-    ModelConstructorGenerator constructorGenerator;
+    private static final String ENTITY_SERVICE = "entityService";
 
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
@@ -39,6 +41,7 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
         restImpl.addField()
                 .setPrivate()
                 .setType( context.getEntityServiceName() )
+                .setName( ENTITY_SERVICE )
                 .addAnnotation( Inject.class );
     }
 
@@ -49,36 +52,111 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
 
     @Override
     protected void addImports( SourceGenerationContext context,
-                               JavaClassSource restIface,
+                               JavaClassSource restImpl,
                                String packageName ) {
-        super.addImports( context, restIface, packageName );
-        restIface.addImport( packageName + "." + context.getRestServiceName() );
+        super.addImports( context, restImpl, packageName );
+        restImpl.addImport( packageName + "." + context.getRestServiceName() );
+        restImpl.addImport( packageName + "." + context.getEntityServiceName() );
+        restImpl.addImport( ArrayList.class );
     }
 
     private void addCrudMethodImpls( SourceGenerationContext context,
                                      JavaClassSource restImpl ) {
         addCreateMethodImpl( context, restImpl );
         addLoadMethodImpl( context, restImpl );
+        addUpdateMethodImpl( context, restImpl );
         addDeleteMethodImpl( context, restImpl );
+    }
+
+    private void addUpdateMethodImpl( SourceGenerationContext context,
+                                      JavaClassSource restImpl ) {
+        MethodSource<JavaClassSource> update = restImpl.addMethod();
+        setUpdateMethodSignature( context, update );
+        setUpdateMethodBody( context, update );
+    }
+
+    private void setUpdateMethodBody( SourceGenerationContext context,
+                                      MethodSource<JavaClassSource> update ) {
+        update.setBody( ENTITY_SERVICE + ".updateFromFormModel(model); return true;" );
+    }
+
+    @Override
+    protected void setUpdateMethodSignature( SourceGenerationContext context,
+                                             MethodSource<JavaClassSource> update ) {
+        super.setUpdateMethodSignature( context, update );
+        update.addAnnotation( Override.class );
     }
 
     private void addDeleteMethodImpl( SourceGenerationContext context,
                                       JavaClassSource restImpl ) {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not yet implemented.");
+        MethodSource<JavaClassSource> delete = restImpl.addMethod();
+        setDeleteMethodSignature( context, delete );
+        setDeleteMethodBody( context, delete );
+    }
+
+    private void setDeleteMethodBody( SourceGenerationContext context,
+                                      MethodSource<JavaClassSource> delete ) {
+        delete.setBody( ENTITY_SERVICE + ".deleteFromFormModel(model); return true;" );
+    }
+
+    @Override
+    protected void setDeleteMethodSignature( SourceGenerationContext context,
+                                             MethodSource<JavaClassSource> delete ) {
+        super.setDeleteMethodSignature( context, delete );
+        delete.addAnnotation( Override.class );
     }
 
     private void addLoadMethodImpl( SourceGenerationContext context,
                                     JavaClassSource restImpl ) {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not yet implemented.");
+        MethodSource<JavaClassSource> load = restImpl.addMethod();
+        setLoadMethodSignature( context, load );
+        setLoadMethodBody( context, load );
+    }
+
+    /*
+     * TODO support loading form models with multiple data models
+     */
+    private void setLoadMethodBody( SourceGenerationContext context,
+                                    MethodSource<JavaClassSource> load ) {
+        StringBuilder body = new StringBuilder();
+        List<DataHolder> dataHolders = context.getFormDefinition().getDataHolders();
+        if ( dataHolders.size() > 1 )
+            throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
+
+        DataHolder holder = dataHolders.get( 0 );
+        body.append( "List<" )
+                .append( holder.getType() )
+                .append( "> dataModels = " )
+                .append( ENTITY_SERVICE )
+                .append( ".listAll(" )
+                .append( holder.getType() )
+                .append( ".class);" )
+            .append( "List<" )
+                .append( context.getModelName() )
+                .append( "> formModels = new ArrayList(dataModels.size());" )
+            .append( "for (" )
+                .append( holder.getType() )
+                .append( " dataModel : dataModels) {" )
+                    .append( "formModels.add(new " )
+                        .append( context.getModelName() )
+                        .append( "(dataModel)); }" )
+            .append( "return formModels;" );
+
+        load.setBody( body.toString() );
+    }
+
+    @Override
+    protected void setLoadMethodSignature( SourceGenerationContext context,
+                                           MethodSource<JavaClassSource> load ) {
+        super.setLoadMethodSignature( context, load );
+        load.addAnnotation( Override.class );
     }
 
     private void addCreateMethodImpl( SourceGenerationContext context,
                                       JavaClassSource restImpl ) {
         MethodSource<JavaClassSource> create = restImpl.addMethod();
         setCreateMethodSignature( context, create );
-
+        setCreateMethodBody( context, create );
     }
 
     @Override
@@ -86,13 +164,16 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
                                              MethodSource<JavaClassSource> create ) {
         super.setCreateMethodSignature( context, create );
         create.addAnnotation( Override.class );
-        addCreateMethodBody( context, create );
     }
 
-    private void addCreateMethodBody( SourceGenerationContext context,
+    private void setCreateMethodBody( SourceGenerationContext context,
                                       MethodSource<JavaClassSource> create ) {
-        String invocation = constructorGenerator.getConstructorInvocation( context );
-        create.setBody( "return " + invocation + ";" );
+        StringBuilder body = new StringBuilder();
+        body.append( ENTITY_SERVICE )
+            .append( ".createFromFormModel(model);" )
+            .append( "return model;" );
+
+        create.setBody( body.toString() );
     }
 
     private void addTypeSignature( SourceGenerationContext context,

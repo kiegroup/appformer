@@ -9,6 +9,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.livespark.formmodeler.rendering.client.shared.FormModel;
+
 public abstract class BaseEntityService {
 
     @PersistenceContext
@@ -17,13 +19,31 @@ public abstract class BaseEntityService {
     @Inject
     protected CriteriaBuilder builder;
 
-    protected <E> void create( E entity ) {
+    public <F extends FormModel> void createFromFormModel( F model ) {
+        for ( Object dataModel : model.getDataModels() ) {
+            create( dataModel );
+        }
+    }
+
+    public <E> void create( E entity ) {
         em.persist( entity );
+    }
+
+    public <F extends FormModel> void deleteFromFormModel( F model ) {
+        for ( Object dataModel : model.getDataModels() ) {
+            delete( dataModel );
+        }
     }
 
     // TODO this should use an identifier
     public <E> void delete( E entity ) {
         em.remove( entity );
+    }
+
+    public <F extends FormModel> void updateFromFormModel( F model ) {
+        for ( Object dataModel : model.getDataModels() ) {
+            update( dataModel );
+        }
     }
 
     public <E> void update( E entity ) {

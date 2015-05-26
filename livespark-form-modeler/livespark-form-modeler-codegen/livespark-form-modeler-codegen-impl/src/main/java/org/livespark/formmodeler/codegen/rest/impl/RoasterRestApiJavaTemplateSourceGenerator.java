@@ -1,10 +1,13 @@
 package org.livespark.formmodeler.codegen.rest.impl;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
@@ -34,7 +37,21 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
                                  JavaInterfaceSource restIface ) {
         addCreateMethod( context, restIface );
         addLoadMethod( context, restIface );
+        addUpdateMethod( context, restIface );
         addDeleteMethod( context, restIface );
+    }
+
+    private void addUpdateMethod( SourceGenerationContext context,
+                                  JavaInterfaceSource restIface ) {
+        MethodSource<JavaInterfaceSource> update = restIface.addMethod();
+        setUpdateMethodSignature( context, update );
+        addUpdateAnnotations( update );
+    }
+
+    private void addUpdateAnnotations( MethodSource<JavaInterfaceSource> update ) {
+        update.addAnnotation( Path.class ).setStringValue( "update" );
+        update.addAnnotation( PUT.class );
+        update.addAnnotation( Consumes.class ).setStringValue( "application/json" );
     }
 
     private void addCreateMethod( SourceGenerationContext context,
@@ -46,30 +63,31 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addCreateAnnotations( MethodSource<JavaInterfaceSource> create ) {
-        create.addAnnotation( Path.class ).setStringValue( "create" );
         create.addAnnotation( POST.class );
+        create.addAnnotation( Consumes.class ).setStringValue( "application/json" );
     }
 
     private void addLoadMethod( SourceGenerationContext context,
                                 JavaInterfaceSource restIface ) {
         MethodSource<JavaInterfaceSource> load = restIface.addMethod(  );
         setLoadMethodSignature( context, load );
-        addLoadMethodAnnotations( load );
+        addLoadAnnotations( load );
     }
 
-    private void addLoadMethodAnnotations( MethodSource<JavaInterfaceSource> load ) {
+    private void addLoadAnnotations( MethodSource<JavaInterfaceSource> load ) {
         load.addAnnotation( Path.class ).setStringValue( "load" );
         load.addAnnotation( GET.class );
+        load.addAnnotation( Produces.class ).setStringValue( "application/json" );
     }
 
     private void addDeleteMethod( SourceGenerationContext context,
                                   JavaInterfaceSource restIface ) {
         MethodSource<JavaInterfaceSource> delete = restIface.addMethod(  );
         setDeleteMethodSignature( context, delete );
-        addDeleteMethodAnnotations( delete );
+        addDeleteAnnotations( delete );
     }
 
-    private void addDeleteMethodAnnotations( MethodSource<JavaInterfaceSource> delete ) {
+    private void addDeleteAnnotations( MethodSource<JavaInterfaceSource> delete ) {
         delete.addAnnotation( Path.class ).setStringValue( "delete" );
         delete.addAnnotation( DELETE.class );
     }

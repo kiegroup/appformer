@@ -13,6 +13,7 @@ import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
+import org.livespark.formmodeler.codegen.rest.RestImpl;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
@@ -70,6 +71,10 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @EntityService
     private FormJavaTemplateSourceGenerator javaEntityServiceTemplateSourceGenerator;
 
+    @Inject
+    @RestImpl
+    private FormJavaTemplateSourceGenerator javaRestImplTemplateSourceGenerator;
+
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
         Package resourcePackage = projectService.resolvePackage( resourcePath );
@@ -85,6 +90,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String htmlListItemTemplate = htmlListItemTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
         String restServiceTemplate = javaRestTemplateSourceGenerator.generateJavaTemplateSource( context );
+        String restImplTemplate = javaRestImplTemplateSourceGenerator.generateJavaTemplateSource( context );
         String entityServiceTemplate = javaEntityServiceTemplateSourceGenerator.generateJavaTemplateSource( context );
 
         if ( !allNonEmpty( resourcePath,
@@ -95,6 +101,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                              listItemJavaTemplate,
                              htmlListItemTemplate,
                              restServiceTemplate,
+                             restImplTemplate,
                              entityServiceTemplate ) ) {
             log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
             return;
@@ -109,6 +116,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
             writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
             writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
             writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, parent );
+            writeJavaSource( resourcePath, context.getRestServiceImplName(), restImplTemplate, parent );
             writeJavaSource( resourcePath, context.getEntityServiceName(), entityServiceTemplate, parent );
 
             writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, parent );
