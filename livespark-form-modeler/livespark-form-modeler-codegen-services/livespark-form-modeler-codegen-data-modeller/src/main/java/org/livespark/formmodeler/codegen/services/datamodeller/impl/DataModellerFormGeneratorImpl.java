@@ -1,9 +1,13 @@
 package org.livespark.formmodeler.codegen.services.datamodeller.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.kie.workbench.common.screens.datamodeller.model.AnnotationDefinitionTO;
 import org.kie.workbench.common.services.datamodeller.core.Annotation;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
@@ -14,7 +18,6 @@ import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.AbstractIntputFieldDefinition;
 import org.livespark.formmodeler.service.FieldManager;
-import org.kie.workbench.common.screens.datamodeller.model.AnnotationDefinitionTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
@@ -34,6 +37,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     protected FormSourcesGenerator formSourcesGenerator;
 
     @Override
+    @SuppressWarnings("rawtypes")
     public void generateFormForDataObject( DataObject dataObject, Path path ) {
 
         if (dataObject.getProperties().isEmpty()) return;
@@ -43,7 +47,8 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         String holderName = WordUtils.uncapitalize( dataObject.getName() );
 
-        DataHolder holder = new DataHolder( holderName, dataObject.getClassName() );
+        List<FieldDefinition> fields = new ArrayList<FieldDefinition>( dataObject.getProperties().size() );
+        DataHolder holder = new DataHolder( holderName, dataObject.getClassName(), fields );
 
         form.addDataHolder( holder );
 
@@ -55,7 +60,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
             if (field == null) continue;
 
-            form.addField( field );
+            fields.add( field );
 
             field.setName( propertyName );
             String label = getPropertyLabel( property );

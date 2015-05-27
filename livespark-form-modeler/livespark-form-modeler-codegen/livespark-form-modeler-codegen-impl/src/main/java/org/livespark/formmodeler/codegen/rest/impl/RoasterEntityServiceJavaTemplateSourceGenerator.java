@@ -24,19 +24,8 @@ public class RoasterEntityServiceJavaTemplateSourceGenerator implements FormJava
         String packageName = getPackageName( context );
 
         addTypeSignature( context, entityService, packageName );
-        addMethods( context, entityService );
 
         return entityService.toString();
-    }
-
-    private void addMethods( SourceGenerationContext context,
-                             JavaClassSource entityService ) {
-        entityService.addMethod()
-                     .setProtected()
-                     .setName( "getEntityServiceType" )
-                     .setReturnType( "Class<" + context.getDataObjectName() + ">" )
-                     .setBody( "return " + context.getDataObjectName() + ".class;" )
-                     .addAnnotation( Override.class );
     }
 
     private void addTypeSignature( SourceGenerationContext context,
@@ -45,7 +34,7 @@ public class RoasterEntityServiceJavaTemplateSourceGenerator implements FormJava
         entityService.setPackage( packageName )
                      .setPublic()
                      .setName( context.getEntityServiceName() )
-                     .setSuperType( ENTITY_SERVICE_CLASS + "<" + context.getDataObjectName() + ">" );
+                     .setSuperType( ENTITY_SERVICE_CLASS );
         entityService.addAnnotation( EJB_STATELESS );
         entityService.addAnnotation( EJB_TRANSACTION_ATTR )
                      .setLiteralValue( EJB_REQUIRES_NEW );

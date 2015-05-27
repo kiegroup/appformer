@@ -39,10 +39,6 @@ public class SourceGenerationContext {
         return path;
     }
 
-    public String getDataObjectName() {
-        return formDefinition.getName();
-    }
-
     public String getModelName() {
         return formDefinition.getName() + FORM_MODEL_SUFFIX;
     }

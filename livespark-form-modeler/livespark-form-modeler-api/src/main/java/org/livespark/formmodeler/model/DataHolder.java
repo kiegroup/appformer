@@ -1,5 +1,7 @@
 package org.livespark.formmodeler.model;
 
+import java.util.List;
+
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -10,10 +12,14 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class DataHolder {
     private String name;
     private String type;
+    private List<FieldDefinition> fields;
 
-    public DataHolder( @MapsTo( "name" ) String name, @MapsTo( "type" ) String type ) {
+    public DataHolder( @MapsTo("name") String name,
+                       @MapsTo("type") String type,
+                       @MapsTo("fields") List<FieldDefinition> fields ) {
         this.name = name;
         this.type = type;
+        this.setFields( fields );
     }
 
     public String getName() {
@@ -30,6 +36,14 @@ public class DataHolder {
 
     public void setType( String type ) {
         this.type = type;
+    }
+
+    public List<FieldDefinition> getFields() {
+        return fields;
+    }
+
+    public void setFields( List<FieldDefinition> fields ) {
+        this.fields = fields;
     }
 
 

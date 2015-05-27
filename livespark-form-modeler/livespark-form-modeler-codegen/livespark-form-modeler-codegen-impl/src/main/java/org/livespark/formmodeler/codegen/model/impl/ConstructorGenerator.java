@@ -48,24 +48,4 @@ public class ConstructorGenerator {
         }
     }
 
-    public <O extends JavaSource<O>> String getDataObjectConstructorInvocation( SourceGenerationContext context ) {
-        StringBuilder call = new StringBuilder();
-        call.append( "new " )
-                       .append( context.getDataObjectName() )
-                       .append( "(" );
-
-        for ( FieldDefinition<?> field : context.getFormDefinition().getFields() ) {
-            call.append( field.getName() )
-                .append( ", " );
-        }
-        if ( context.getFormDefinition().getFields().size() > 0 ) {
-            call.delete( call.length() - ", ".length(),
-                         call.length() );
-        }
-
-        call.append( ")" );
-
-        return call.toString();
-    }
-
 }

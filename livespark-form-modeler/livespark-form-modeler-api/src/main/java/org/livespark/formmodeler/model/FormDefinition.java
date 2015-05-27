@@ -1,6 +1,7 @@
 package org.livespark.formmodeler.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,8 +12,6 @@ public class FormDefinition {
     private String name;
 
     private List<DataHolder> dataHolders = new ArrayList<DataHolder>(  );
-
-    private List<FieldDefinition> fields = new ArrayList<FieldDefinition>(  );
 
     public String getName() {
         return name;
@@ -26,8 +25,26 @@ public class FormDefinition {
         return dataHolders;
     }
 
+    @SuppressWarnings("rawtypes")
     public List<FieldDefinition> getFields() {
+        int numFields = getNumberOfFields();
+        if ( numFields == 0 ) return Collections.<FieldDefinition>emptyList();
+
+        List<FieldDefinition> fields = new ArrayList<FieldDefinition>( numFields );
+        for ( DataHolder holder : dataHolders ) {
+            fields.addAll( holder.getFields() );
+        }
+
         return fields;
+    }
+
+    private int getNumberOfFields() {
+        int accum = 0;
+        for ( DataHolder holder : dataHolders ) {
+            accum += holder.getFields().size();
+        }
+
+        return accum;
     }
 
     public void addDataHolder (DataHolder dataH) {
@@ -38,20 +55,6 @@ public class FormDefinition {
         for (Iterator<DataHolder> it = dataHolders.iterator(); it.hasNext();) {
             DataHolder dataHolder = it.next();
             if (dataHolder.getName().equals( holderName ) ) {
-                it.remove();
-                return;
-            }
-        }
-    }
-
-    public void addField( FieldDefinition field ) {
-        this.fields.add( field );
-    }
-
-    public void removeField( String fieldId) {
-        for (Iterator<FieldDefinition> it = fields.iterator(); it.hasNext();) {
-            FieldDefinition definition = it.next();
-            if (definition.getName().equals( fieldId ) ) {
                 it.remove();
                 return;
             }

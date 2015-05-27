@@ -83,7 +83,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {
-        restIface.addAnnotation( Path.class ).setStringValue( context.getDataObjectName().toLowerCase() );
+        restIface.addAnnotation( Path.class ).setStringValue( context.getFormDefinition().getName().toLowerCase() );
     }
 
 }

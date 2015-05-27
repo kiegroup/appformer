@@ -9,7 +9,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-public abstract class BaseEntityService<E> {
+public abstract class BaseEntityService {
 
     @PersistenceContext
     protected EntityManager em;
@@ -17,30 +17,28 @@ public abstract class BaseEntityService<E> {
     @Inject
     protected CriteriaBuilder builder;
 
-    protected abstract Class<E> getEntityServiceType();
-
-    protected void create( E entity ) {
+    protected <E> void create( E entity ) {
         em.persist( entity );
     }
 
     // TODO this should use an identifier
-    public void delete( E entity ) {
+    public <E> void delete( E entity ) {
         em.remove( entity );
     }
 
-    public void updated( E entity ) {
+    public <E> void update( E entity ) {
         em.merge( entity );
     }
 
-    public List<E> listAll() {
-        CriteriaQuery<E> selectAllQuery = createSelectAllQuery( getEntityServiceType() );
+    public <E> List<E> listAll( Class<E> type ) {
+        CriteriaQuery<E> selectAllQuery = createSelectAllQuery( type );
 
         return em.createQuery( selectAllQuery ).getResultList();
     }
 
-    private <T> CriteriaQuery<T> createSelectAllQuery( Class<T> entityType ) {
-        CriteriaQuery<T> criteriaQuery = builder.createQuery( entityType );
-        Root<T> rootEntity = criteriaQuery.from( entityType );
+    private <E> CriteriaQuery<E> createSelectAllQuery( Class<E> entityType ) {
+        CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
+        Root<E> rootEntity = criteriaQuery.from( entityType );
 
         return criteriaQuery.select( rootEntity );
     }
