@@ -40,6 +40,8 @@ import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigType;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
+import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
+import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,8 +99,8 @@ public class AppSetup {
     private ConfigurationFactory configurationFactory;
     
     @Inject
-    private LiveSparkModelLoaderCache liveSparkModelLoaderCache;
-
+	private DataModelerService dataModelerService;
+    
     @PostConstruct
     public void assertPlayground() {
         try {
@@ -179,7 +181,7 @@ public class AppSetup {
         Set<Project> projects = projectService.getProjects(repository, "master");
         
         for (Project p : projects) {
-        	liveSparkModelLoaderCache.initProject(p);
+        	dataModelerService.loadModel((KieProject) p);
         }
     }
 

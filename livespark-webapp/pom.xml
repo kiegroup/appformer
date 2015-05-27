@@ -22,18 +22,9 @@
     <as.version>8.1.0.Final</as.version>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
     <errai.jboss.home>${project.build.directory}/wildfly-${as.version}</errai.jboss.home>
-    <enforcer.skip>true</enforcer.skip>    
   </properties>
 
   <dependencies>
-
-	<dependency>
-	  <groupId>javax.annotation</groupId>
-	  <artifactId>javax.annotation-api</artifactId>
-	  <version>1.2</version>
-	  <scope>provided</scope>
-	</dependency>
-	
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
       <groupId>org.apache.lucene</groupId>
@@ -936,11 +927,26 @@
                 </pluginExecution>
                 <pluginExecution>
                 	<pluginExecutionFilter>
-                		<groupId></groupId>
-                		<artifactId></artifactId>
-                		<versionRange>[,)</versionRange>
+                		<groupId>org.apache.maven.plugins</groupId>
+                		<artifactId>maven-dependency-plugin</artifactId>
+                		<versionRange>[2.8,)</versionRange>
                 		<goals>
-                			<goal></goal>
+                			<goal>unpack</goal>
+                		</goals>
+                	</pluginExecutionFilter>
+                	<action>
+                		<ignore></ignore>
+                	</action>
+                </pluginExecution>
+                <pluginExecution>
+                	<pluginExecutionFilter>
+                		<groupId>org.codehaus.mojo</groupId>
+                		<artifactId>
+                			build-helper-maven-plugin
+                		</artifactId>
+                		<versionRange>[1.7,)</versionRange>
+                		<goals>
+                			<goal>parse-version</goal>
                 		</goals>
                 	</pluginExecutionFilter>
                 	<action>

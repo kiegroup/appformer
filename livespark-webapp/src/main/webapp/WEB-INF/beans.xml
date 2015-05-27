@@ -3,11 +3,6 @@
   <scan>
     <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
     <!-- End of Errai exclusions -->
-
     <exclude name="org.livespark.client.**"/>
-    
-	<alternatives>
-	  <class>org.livespark.backend.server.DataModelerServiceImpl</class>
-	</alternatives>
   </scan>
 </beans>
