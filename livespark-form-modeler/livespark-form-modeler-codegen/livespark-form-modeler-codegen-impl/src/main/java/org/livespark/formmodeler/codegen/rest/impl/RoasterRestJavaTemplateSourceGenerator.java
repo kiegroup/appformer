@@ -8,19 +8,19 @@ import org.jboss.forge.roaster.model.source.JavaSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.model.impl.ModelConstructorGenerator;
+import org.livespark.formmodeler.codegen.model.impl.ConstructorGenerator;
 
 public abstract class RoasterRestJavaTemplateSourceGenerator<O extends JavaSource<O>> implements FormJavaTemplateSourceGenerator {
 
     @Inject
-    private ModelConstructorGenerator constructorGenerator;
+    private ConstructorGenerator constructorGenerator;
 
     protected void setCreateMethodSignature( SourceGenerationContext context,
                                              MethodSource<O> create ) {
         create.setName( "create" )
               .setReturnType( context.getModelName() );
 
-        constructorGenerator.addModelFieldsAsParameters( context, create );
+        constructorGenerator.addFormFieldsAsParameters( context, create );
     }
 
     protected void setLoadMethodSignature( SourceGenerationContext context,
