@@ -12,7 +12,7 @@ import org.livespark.formmodeler.codegen.view.ListItemView;
 
 @ListItemView
 @ApplicationScoped
-public class RoasterListItemJavaSourceGenerator extends RoasterBaseFormTemplateSourceGenerator {
+public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplateSourceGenerator {
 
     @Override
     protected void addAdditional( SourceGenerationContext context,
@@ -27,9 +27,8 @@ public class RoasterListItemJavaSourceGenerator extends RoasterBaseFormTemplateS
 
     @Override
     protected void addImports( SourceGenerationContext context,
-                               JavaClassSource viewClass,
-                               String packageName ) {
-        viewClass.addImport( packageName + "." + context.getModelName() );
+                               JavaClassSource viewClass ) {
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
     }
 
     @Override

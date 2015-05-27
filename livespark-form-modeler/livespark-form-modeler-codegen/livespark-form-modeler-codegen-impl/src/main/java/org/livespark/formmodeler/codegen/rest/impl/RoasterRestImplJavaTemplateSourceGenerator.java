@@ -25,11 +25,10 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
         JavaClassSource restImpl = Roaster.create( JavaClassSource.class );
-        String packageName = getPackageName( context );
 
-        addImports( context, restImpl, packageName );
+        addImports( context, restImpl );
         addFields( context, restImpl );
-        addTypeSignature( context, restImpl, packageName );
+        addTypeSignature( context, restImpl );
         addTypeAnnotations( context, restImpl );
         addCrudMethodImpls( context, restImpl );
 
@@ -52,11 +51,10 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
 
     @Override
     protected void addImports( SourceGenerationContext context,
-                               JavaClassSource restImpl,
-                               String packageName ) {
-        super.addImports( context, restImpl, packageName );
-        restImpl.addImport( packageName + "." + context.getRestServiceName() );
-        restImpl.addImport( packageName + "." + context.getEntityServiceName() );
+                               JavaClassSource restImpl ) {
+        super.addImports( context, restImpl );
+        restImpl.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
+        restImpl.addImport( context.getServerPackage().getPackageName() + "." + context.getEntityServiceName() );
         restImpl.addImport( ArrayList.class );
     }
 
@@ -177,12 +175,16 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
     }
 
     private void addTypeSignature( SourceGenerationContext context,
-                                   JavaClassSource restImpl,
-                                   String packageName ) {
-        restImpl.setPackage( packageName )
+                                   JavaClassSource restImpl ) {
+        restImpl.setPackage( context.getServerPackage().getPackageName() )
                 .setPublic()
                 .setName( context.getRestServiceName() + "Impl" )
                 .addInterface( context.getRestServiceName() );
+    }
+
+    @Override
+    protected String getPackageName( SourceGenerationContext context ) {
+        return context.getServerPackage().getPackageName();
     }
 
 }

@@ -41,7 +41,7 @@ public class RoasterEntityServiceJavaTemplateSourceGenerator implements FormJava
     }
 
     private String getPackageName( SourceGenerationContext context ) {
-        return context.getPackage().getPackageName();
+        return context.getServerPackage().getPackageName();
     }
 
 }

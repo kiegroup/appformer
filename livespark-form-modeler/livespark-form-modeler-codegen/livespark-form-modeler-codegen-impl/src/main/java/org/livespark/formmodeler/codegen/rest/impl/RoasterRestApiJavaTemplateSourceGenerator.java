@@ -27,7 +27,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
 
         addTypeSignature( context, restIface, packageName );
         addTypeLevelPath( restIface, context );
-        addImports( context, restIface, packageName );
+        addImports( context, restIface );
         addCrudMethods( context, restIface );
 
         return restIface.toString();
@@ -102,6 +102,11 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {
         restIface.addAnnotation( Path.class ).setStringValue( context.getFormDefinition().getName().toLowerCase() );
+    }
+
+    @Override
+    protected String getPackageName( SourceGenerationContext context ) {
+        return context.getSharedPackage().getPackageName();
     }
 
 }

@@ -41,14 +41,11 @@ public abstract class RoasterRestJavaTemplateSourceGenerator<O extends JavaSourc
         delete.addParameter( context.getModelName(), "model" );
     }
 
-    protected String getPackageName( SourceGenerationContext context ) {
-        return context.getPackage().getPackageName();
-    }
+    protected abstract String getPackageName( SourceGenerationContext context );
 
     protected void addImports( SourceGenerationContext context,
-                               O restIface,
-                               String packageName ) {
-        restIface.addImport( packageName + "." + context.getModelName() );
+                               O restIface ) {
+        restIface.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
         restIface.addImport( List.class );
     }
 

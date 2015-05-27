@@ -18,13 +18,24 @@ public class SourceGenerationContext {
 
     private FormDefinition formDefinition;
     private Path path;
-    private Package resPackage;
+    private Package root;
+    private Package local;
+    private Package shared;
+    private Package server;
 
 
 
-    public SourceGenerationContext( FormDefinition form, Path path, Package resPackage ) {
+    public SourceGenerationContext( FormDefinition form,
+                                    Path path,
+                                    Package root,
+                                    Package local,
+                                    Package shared,
+                                    Package server ) {
         this.path = path;
-        this.resPackage = resPackage;
+        this.root = root;
+        this.local = local;
+        this.shared = shared;
+        this.server = server;
         setFormDefinition( form );
     }
 
@@ -64,8 +75,20 @@ public class SourceGenerationContext {
         return formDefinition.getName() + ENTITY_SERVICE_SUFFIX;
     }
 
-    public Package getPackage() {
-        return resPackage;
+    public Package getRootPackage() {
+        return root;
+    }
+
+    public Package getLocalPackage() {
+        return local;
+    }
+
+    public Package getSharedPackage() {
+        return shared;
+    }
+
+    public Package getServerPackage() {
+        return server;
     }
 
     public String getRestServiceImplName() {

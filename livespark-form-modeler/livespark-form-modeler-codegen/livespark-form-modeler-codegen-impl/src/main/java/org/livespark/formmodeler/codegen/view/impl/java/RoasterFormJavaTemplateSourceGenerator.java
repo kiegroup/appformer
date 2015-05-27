@@ -13,7 +13,7 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
  * Created by pefernan on 4/28/15.
  */
 @ApplicationScoped
-public class RoasterFormJavaTemplateSourceGenerator extends RoasterBaseFormTemplateSourceGenerator {
+public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTemplateSourceGenerator {
 
     @Override
     protected void addAdditional( SourceGenerationContext context,
@@ -32,9 +32,8 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterBaseFormTempl
 
     @Override
     protected void addImports( SourceGenerationContext context,
-                               JavaClassSource viewClass,
-                               String packageName ) {
-        viewClass.addImport( packageName + "." + context.getModelName() );
+                               JavaClassSource viewClass ) {
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
     }
 
     @Override

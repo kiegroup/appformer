@@ -77,8 +77,16 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
-        Package resourcePackage = projectService.resolvePackage( resourcePath );
-        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, resourcePackage );
+        Package resPackage = projectService.resolvePackage( resourcePath );
+
+        Package root = getRootPackage( resPackage );
+
+        Package client = projectService.newPackage( root, "client" );
+        Package local = projectService.newPackage( client, "local" );
+        Package shared = projectService.newPackage( client, "shared" );
+        Package server = projectService.newPackage( root, "server" );
+
+        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, server );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
 
@@ -111,21 +119,29 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         ioService.startBatch( parent.getFileSystem() );
         try {
-            writeJavaSource( resourcePath, context.getModelName(), modelSource, parent );
-            writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, parent );
-            writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, parent );
-            writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, parent );
-            writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, parent );
-            writeJavaSource( resourcePath, context.getRestServiceImplName(), restImplTemplate, parent );
-            writeJavaSource( resourcePath, context.getEntityServiceName(), entityServiceTemplate, parent );
+            writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
+            writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, local );
+            writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, local );
+            writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, shared );
+            writeJavaSource( resourcePath, context.getRestServiceImplName(), restImplTemplate, server );
+            writeJavaSource( resourcePath, context.getEntityServiceName(), entityServiceTemplate, server );
 
-            writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, parent );
-            writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, parent );
+            writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
+            writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, local );
         } catch ( Exception e ) {
             log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
         } finally {
             ioService.endBatch();
         }
+    }
+
+    private Package getRootPackage( Package resPackage ) {
+        Package cur = resPackage;
+        while ( cur.getPackageName().contains( "client.local" ) )
+            cur = projectService.resolveParentPackage( cur );
+
+        return cur;
     }
 
     private boolean allNonEmpty(Path resourcePath, String... templates) {
@@ -138,25 +154,27 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         return true;
     }
 
-    private void writeHTMLSource( Path resourcePath,
+    private void writeHTMLSource( Path dataObjectPath,
                                   String name,
                                   String htmlTemplate,
-                                  org.uberfire.java.nio.file.Path parent ) {
-        org.uberfire.java.nio.file.Path htmlPath = parent.resolve( name + ".html" );
+                                  Package sourcePackage ) {
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainSrcPath() );
+        org.uberfire.java.nio.file.Path htmlPath = parentPath.resolve( name + ".html" );
 
         ioService.write( htmlPath,
                          htmlTemplate,
-                         makeCommentedOption( "Added HTML Source for Form Template '" + resourcePath + "'" ) );
+                         makeCommentedOption( "Added HTML Source for Form Template '" + dataObjectPath + "'" ) );
     }
 
-    private void writeJavaSource( Path resourcePath,
+    private void writeJavaSource( Path dataObjectPath,
                                   String name,
                                   String javaSource,
-                                  org.uberfire.java.nio.file.Path parent ) {
-        org.uberfire.java.nio.file.Path filePath = parent.resolve( name + ".java" );
+                                  Package sourcePackage ) {
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainResourcesPath() );
+        org.uberfire.java.nio.file.Path filePath = parentPath.resolve( name + ".java" );
         ioService.write( filePath,
                          javaSource,
-                         makeCommentedOption( "Added Java Source for Form Model '" + resourcePath + "'" ) );
+                         makeCommentedOption( "Added Java Source for Form Model '" + dataObjectPath + "'" ) );
     }
 
     public CommentedOption makeCommentedOption( String commitMessage ) {

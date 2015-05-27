@@ -32,7 +32,7 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
     public String generateFormModelSource( SourceGenerationContext context ) {
 
         JavaClassSource modelClass = Roaster.create( JavaClassSource.class );
-        modelClass.setPackage( context.getPackage().getPackageName() )
+        modelClass.setPackage( context.getSharedPackage().getPackageName() )
                 .setPublic()
                 .setName( context.getModelName() );
 

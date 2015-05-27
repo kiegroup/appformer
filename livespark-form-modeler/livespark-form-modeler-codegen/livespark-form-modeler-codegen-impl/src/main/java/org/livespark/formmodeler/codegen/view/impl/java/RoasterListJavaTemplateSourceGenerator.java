@@ -29,7 +29,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
 
         addTypeSignature( context, viewClass, packageName );
         addTemplatedAnnotation( viewClass );
-        addImports( context, viewClass, packageName );
+        addImports( context, viewClass );
 
         addDeleteExecutorProducer( viewClass, context );
         addLoadDataImpl( viewClass, context );
@@ -48,7 +48,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     }
 
     private String getPackageName( SourceGenerationContext context ) {
-        return context.getPackage().getPackageName();
+        return context.getLocalPackage().getPackageName();
     }
 
     private void addTypeSignature( SourceGenerationContext context,
@@ -65,11 +65,10 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     }
 
     private void addImports( SourceGenerationContext context,
-                            JavaClassSource viewClass,
-                            String packageName ) {
-        viewClass.addImport( packageName + "." + context.getModelName() );
-        viewClass.addImport( packageName + "." + context.getListItemViewName() );
-        viewClass.addImport( packageName + "." + context.getRestServiceName() );
+                            JavaClassSource viewClass ) {
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
+        viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getListItemViewName() );
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
     }
 
     private void addRemoteDeleteImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {

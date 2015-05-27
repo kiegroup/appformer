@@ -24,7 +24,7 @@ import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.model.FieldDefinition;
 
 
-public abstract class RoasterBaseFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
+public abstract class RoasterClientFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
 
     @Inject
     private Instance<InputCreatorHelper> creatorInstances;
@@ -45,7 +45,7 @@ public abstract class RoasterBaseFormTemplateSourceGenerator implements FormJava
         String packageName = getPackageName( context );
 
         addTypeSignature( context, viewClass, packageName );
-        addImports( context, viewClass, packageName );
+        addImports( context, viewClass );
         addAnnotations( context, viewClass );
 
         addBaseViewFieldsAndMethodImpls( context, viewClass );
@@ -105,14 +105,13 @@ public abstract class RoasterBaseFormTemplateSourceGenerator implements FormJava
                             JavaClassSource viewClass );
 
     protected abstract void addImports( SourceGenerationContext context,
-                            JavaClassSource viewClass,
-                            String packageName );
+                            JavaClassSource viewClass );
 
     protected abstract void addTypeSignature( SourceGenerationContext context,
                                               JavaClassSource viewClass,
                                               String packageName );
 
     private String getPackageName( SourceGenerationContext context ) {
-        return context.getPackage().getPackageName();
+        return context.getLocalPackage().getPackageName();
     }
 }
