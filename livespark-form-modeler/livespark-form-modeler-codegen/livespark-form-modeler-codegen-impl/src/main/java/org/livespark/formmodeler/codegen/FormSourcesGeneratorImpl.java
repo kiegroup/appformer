@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.CommentedOption;
 
@@ -81,10 +82,10 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         Package root = getRootPackage( resPackage );
 
-        Package client = projectService.newPackage( root, "client" );
-        Package local = projectService.newPackage( client, "local" );
-        Package shared = projectService.newPackage( client, "shared" );
-        Package server = projectService.newPackage( root, "server" );
+        Package client = getOrCreateClientPackage( root );
+        Package local = getOrCreateLocalPackage( client );
+        Package shared = getOrCreateSharedPackage( client );
+        Package server = getOrCreateServerPackage( root );
 
         SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, server );
 
@@ -136,9 +137,36 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         }
     }
 
+    private Package getOrCreateServerPackage( Package root ) {
+        return getOrCreateSubpackage( root, "server" );
+    }
+
+    private Package getOrCreateSharedPackage( Package client ) {
+        return getOrCreateSubpackage( client, "shared" );
+    }
+
+    private Package getOrCreateLocalPackage( Package client ) {
+        return getOrCreateSubpackage( client, "local" );
+    }
+
+    private Package getOrCreateClientPackage( Package root ) {
+        return getOrCreateSubpackage( root, "client" );
+    }
+
+    private Package getOrCreateSubpackage( Package root, String subPackage ) {
+        Path fullPath = PathFactory.newPath( "/", root.getPackageMainSrcPath().toURI() + "/" + subPackage );
+        Package resolved = projectService.resolvePackage( fullPath );
+
+        if ( resolved == null ) resolved = projectService.newPackage( root, subPackage );
+
+        return resolved;
+    }
+
     private Package getRootPackage( Package resPackage ) {
+        if ( !resPackage.getPackageName().endsWith( "client.local" ) ) return resPackage;
+
         Package cur = resPackage;
-        while ( cur.getPackageName().contains( "client.local" ) )
+        while ( cur.getPackageName().matches( ".*\\.client(\\..*)?" ) )
             cur = projectService.resolveParentPackage( cur );
 
         return cur;
