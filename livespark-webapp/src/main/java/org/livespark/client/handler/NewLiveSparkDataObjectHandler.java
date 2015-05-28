@@ -58,7 +58,7 @@ public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
         busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Saving() );
         dataModelerService.call( getSuccessCallback( presenter ),
                                  new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) )
-                          .createJavaFile( idempotentAppend(pkg.getPackageMainSrcPath(), "/client/local"),
+                          .createJavaFile( idempotentAppend(pkg.getPackageMainSrcPath(), "/client/shared"),
                                            buildFileName( baseFileName,
                                                           resourceType ),
                                            "",
