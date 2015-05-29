@@ -163,7 +163,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     }
 
     private Package getRootPackage( Package resPackage ) {
-        if ( !resPackage.getPackageName().endsWith( "client.local" ) ) return resPackage;
+        if ( !resPackage.getPackageName().endsWith( "client.shared" ) ) return resPackage;
 
         Package cur = resPackage;
         while ( cur.getPackageName().matches( ".*\\.client(\\..*)?" ) )
