@@ -186,7 +186,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                                   String name,
                                   String htmlTemplate,
                                   Package sourcePackage ) {
-        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainSrcPath() );
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainResourcesPath() );
         org.uberfire.java.nio.file.Path htmlPath = parentPath.resolve( name + ".html" );
 
         ioService.write( htmlPath,
@@ -198,7 +198,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                                   String name,
                                   String javaSource,
                                   Package sourcePackage ) {
-        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainResourcesPath() );
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainSrcPath() );
         org.uberfire.java.nio.file.Path filePath = parentPath.resolve( name + ".java" );
         ioService.write( filePath,
                          javaSource,
