@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.backend.server;
+package org.livespark.backend.server.producer;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

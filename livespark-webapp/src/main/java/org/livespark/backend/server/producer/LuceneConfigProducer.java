@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.backend.server;
+package org.livespark.backend.server.producer;
 
 import java.util.HashMap;
 import java.util.Map;

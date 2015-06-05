@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.backend.server;
+package org.livespark.backend.server.startup;
 
 import java.io.File;
 import java.io.FileFilter;
