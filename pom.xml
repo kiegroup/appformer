@@ -38,7 +38,9 @@
     <errai.version>3.2.0-SNAPSHOT</errai.version>
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
+    <javaee.version>1.0.2.Final</javaee.version>
     <jdk.min.version>1.7.0</jdk.min.version>
+    <maven.invoker.version>2.1.1</maven.invoker.version>
     <version.org.eclipse.jgit>3.7.1.201504261725-r</version.org.eclipse.jgit>
   </properties>
 
@@ -141,6 +143,20 @@
         <version>${errai.version}</version>
         <classifier>sources</classifier>
       </dependency>
+
+      <dependency>
+        <groupId>org.jboss.spec</groupId>
+        <artifactId>jboss-javaee-7.0</artifactId>
+        <version>${javaee.version}</version>
+        <type>pom</type>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-invoker</artifactId>
+        <version>${maven.invoker.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-form-modeler-api</artifactId>
