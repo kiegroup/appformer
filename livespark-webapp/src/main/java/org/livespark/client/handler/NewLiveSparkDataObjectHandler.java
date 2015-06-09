@@ -1,5 +1,6 @@
 package org.livespark.client.handler;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -13,6 +14,7 @@ import org.kie.workbench.common.widgets.client.handlers.DefaultNewResourceHandle
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.workbench.type.ResourceTypeDefinition;
@@ -34,6 +36,12 @@ public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
 
     @Inject
     private JavaFileOptions options;
+
+    @PostConstruct
+    private void setupExtensions() {
+        extensions.add( new Pair<String, JavaFileOptions>( "JavaFileOptions",
+                options ) );
+    }
 
     @Override
     public String getDescription() {
