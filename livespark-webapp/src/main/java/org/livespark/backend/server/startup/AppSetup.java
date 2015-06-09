@@ -71,7 +71,7 @@ public class AppSetup {
 
     private static final String LIVE_SPARK_PLAYGROUND_SCHEME = "git";
     private static final String LIVE_SPARK_PLAYGROUND_ALIAS = "ls-playground";
-    private static final String LIVE_SPARK_PLAYGROUND_ORIGIN = "https://github.com/pefernan/test-playground";
+    private static final String LIVE_SPARK_PLAYGROUND_ORIGIN = "https://github.com/mbarkley/test-playground";
     private static final String LIVE_SPARK_PLAYGROUND_UID = "";
     private static final String LIVE_SPARK_PLAYGROUND_PWD = "";
 
@@ -97,10 +97,10 @@ public class AppSetup {
 
     @Inject
     private ConfigurationFactory configurationFactory;
-    
+
     @Inject
 	private DataModelerService dataModelerService;
-    
+
     @PostConstruct
     public void assertPlayground() {
         try {
@@ -148,9 +148,9 @@ public class AppSetup {
 
         try {
             configurationService.startBatch();
-            
+
             loadLiveSparkExamples();
-            
+
         } catch ( final Exception e ) {
             logger.error( "Error during live spark demo repositories configuration", e );
             throw new RuntimeException( e );
@@ -177,9 +177,9 @@ public class AppSetup {
         } else {
             organizationalUnitService.addRepository( defaultOU, repository );
         }
-        
+
         Set<Project> projects = projectService.getProjects(repository, "master");
-        
+
         for (Project p : projects) {
         	dataModelerService.loadModel((KieProject) p);
         }

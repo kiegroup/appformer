@@ -72,6 +72,7 @@ public class ApplicationScopedProducer {
 
     @PostConstruct
     public void setup() {
+        @SuppressWarnings("unchecked")
         final IOService service = new IOServiceIndexedImpl( watchService,
                                                             config.getIndexEngine(),
                                                             defaultIndexEngineObserver,
