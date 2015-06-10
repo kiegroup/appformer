@@ -4,17 +4,17 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
-import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
 
 @ListView
-@ListItemView // TODO make separate ListItemView implementation
 @ApplicationScoped
-public class MVELListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
+public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
+
+    private static final String LIST_WIDGET_FIELD_NAME = "items";
 
     @Override
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
-        return "Not yet implemented";
+        return "<div><div data-field=\"" + LIST_WIDGET_FIELD_NAME + "\"></div></div>";
     }
 
 }
