@@ -1,6 +1,9 @@
 package org.livespark.formmodeler.codegen;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -9,6 +12,9 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.guvnor.common.services.project.model.Package;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
+import org.kie.workbench.common.services.datamodeller.core.DataObject;
+import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
@@ -44,6 +50,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private KieProjectService projectService;
 
     @Inject
+    private DataModelerService dataModelerService;
+
+    @Inject
     private FormModelSourceGenerator modelSourceGenerator;
 
     @Inject
@@ -76,9 +85,13 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @RestImpl
     private FormJavaTemplateSourceGenerator javaRestImplTemplateSourceGenerator;
 
+    @Inject
+    private ErraiAppPropertiesSerializableTypesGenerator serializableTypesGenerator;
+
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
         Package resPackage = projectService.resolvePackage( resourcePath );
+        KieProject project = projectService.resolveProject( resourcePath );
 
         Package root = getRootPackage( resPackage );
 
@@ -102,6 +115,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String restImplTemplate = javaRestImplTemplateSourceGenerator.generateJavaTemplateSource( context );
         String entityServiceTemplate = javaEntityServiceTemplateSourceGenerator.generateJavaTemplateSource( context );
 
+        String serializableTypesDeclaration = serializableTypesGenerator.generateSerializableTypesDeclaration( getSerializableTypeClassNames( project ) );
+
         if ( !allNonEmpty( resourcePath,
                              modelSource,
                              javaTemplate,
@@ -111,7 +126,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                              htmlListItemTemplate,
                              restServiceTemplate,
                              restImplTemplate,
-                             entityServiceTemplate ) ) {
+                             entityServiceTemplate,
+                             serializableTypesDeclaration ) ) {
             log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
             return;
         }
@@ -130,11 +146,50 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
             writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
             writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, local );
+
+            writeErraiAppProperties( serializableTypesDeclaration, project );
         } catch ( Exception e ) {
             log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
         } finally {
             ioService.endBatch();
         }
+    }
+
+    private Collection<String> getSerializableTypeClassNames( KieProject project ) {
+        Set<DataObject> dataObjects = dataModelerService.loadModel( project ).getDataObjects();
+        Collection<String> retVal = new ArrayList<String>( dataObjects.size() );
+
+        for ( DataObject dataObject : dataObjects ) {
+            String className = dataObject.getClassName();
+            if ( isNotDerivedObject( className ) ) {
+                retVal.add( className );
+            }
+        }
+
+        return retVal;
+    }
+
+    private boolean isNotDerivedObject( String className ) {
+        // TODO figure out a less hacky implementation of this method
+        return !( className.endsWith( SourceGenerationContext.ENTITY_SERVICE_SUFFIX )
+        || className.endsWith( SourceGenerationContext.FORM_MODEL_SUFFIX )
+        || className.endsWith( SourceGenerationContext.FORM_VIEW_SUFFIX )
+        || className.endsWith( SourceGenerationContext.LIST_ITEM_VIEW_SUFFIX )
+        || className.endsWith( SourceGenerationContext.LIST_VIEW_SUFFIX )
+        || className.endsWith( SourceGenerationContext.REST_IMPL_SUFFIX )
+        || className.endsWith( SourceGenerationContext.REST_SERVICE_SUFFIX )
+        || className.endsWith( "MainPage" ) );
+    }
+
+    private void writeErraiAppProperties( String serializableTypesDeclaration, KieProject project  ) {
+        Package defaultPackage = projectService.resolveDefaultPackage( project );
+        Path resourceRoot = defaultPackage.getPackageMainResourcesPath();
+
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( resourceRoot );
+        org.uberfire.java.nio.file.Path filePath = parentPath.resolve( "ErraiApp.properties" );
+        ioService.write( filePath,
+                         serializableTypesDeclaration,
+                         makeCommentedOption( "Updated ErraiApp.properties." ) );
     }
 
     private Package getOrCreateServerPackage( Package root ) {
