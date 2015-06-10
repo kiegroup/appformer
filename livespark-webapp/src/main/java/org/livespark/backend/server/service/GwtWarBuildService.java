@@ -224,7 +224,12 @@ public class GwtWarBuildService implements BuildService {
         final Future<List<BuildMessage>> buildFuture = execService.submit( producer.get( project, req ) );
 
         try {
-            buildResults.addAllBuildMessages( buildFuture.get() );
+        	
+        	final BuildMessage message = new BuildMessage();
+            message.setLevel( Level.INFO );
+            message.setText( "Build started..." );
+            buildResults.addBuildMessage(message);
+            
         } catch (Exception e) {
             logBuildException( project, e );
             final BuildMessage errorMsg = generateErrorBuildMessage( e );

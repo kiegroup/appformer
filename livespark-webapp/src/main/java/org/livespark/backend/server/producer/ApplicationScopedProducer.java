@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
-import org.guvnor.messageconsole.backend.DefaultIndexEngineObserver;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.service.AuthenticationService;
@@ -64,9 +63,6 @@ public class ApplicationScopedProducer {
     @Inject
     private AuthenticationService authenticationService;
 
-    @Inject
-    private DefaultIndexEngineObserver defaultIndexEngineObserver;
-
     private IOService ioService;
     private IOSearchService ioSearchService;
 
@@ -75,7 +71,6 @@ public class ApplicationScopedProducer {
         @SuppressWarnings("unchecked")
         final IOService service = new IOServiceIndexedImpl( watchService,
                                                             config.getIndexEngine(),
-                                                            defaultIndexEngineObserver,
                                                             DublinCoreView.class,
                                                             VersionAttributeView.class,
                                                             OtherMetaView.class );

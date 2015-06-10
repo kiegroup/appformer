@@ -90,7 +90,7 @@ public class AuthoringPerspective {
         final PanelDefinition south = new PanelDefinitionImpl( SimpleDnDWorkbenchPanelPresenter.class.getName() );
         south.setWidth( 400 );
         south.setMinWidth( 350 );
-		south.setMinHeight(200);
+        south.setHeight(300);
         south.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "MavenBuildOutput" ) ) );
         perspective.getRoot().insertChild( CompassPosition.SOUTH, 
         									south );

@@ -41,7 +41,7 @@
   <inherits name="org.guvnor.common.services.project.GuvnorProjectAPI"/>
   <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetAPI"/>
   <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetClient"/>
-  <inherits name="org.guvnor.messageconsole.GuvnorMessageConsoleClient"/>
+  <inherits name="org.guvnor.messageconsole.GuvnorMessageConsoleAPI"/>
   <inherits name='org.guvnor.organizationalunit.manager.GuvnorOrganizationalUnitManager'/>
 
   <!--Common Screens -->
@@ -93,5 +93,7 @@
   <extend-property name="locale" values="ja_JP"/>
   <extend-property name="locale" values="pt_BR"/>
   <extend-property name="locale" values="zh_CN"/>
+  
+  <collapse-all-properties />
 
 </module>
