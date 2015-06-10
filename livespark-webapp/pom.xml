@@ -725,7 +725,7 @@
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
           <localWorkers>1</localWorkers>
           <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.util.prefs.syncInterval=2000000 -Dorg.uberfire.nio.git.dir=/tmp/niogit</extraJvmArgs>
-          <module>org.livespark.FastCompiledLiveSpark</module>
+          <module>org.livespark.LiveSpark</module>
 
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
@@ -831,7 +831,6 @@
           <execution>
             <id>gwt-compile</id>
             <goals>
-              <goal>resources</goal>
               <goal>compile</goal>
             </goals>
           </execution>
@@ -933,7 +932,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute/>
+                    <skip/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
