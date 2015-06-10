@@ -42,6 +42,7 @@
     <jdk.min.version>1.7.0</jdk.min.version>
     <maven.invoker.version>2.1.1</maven.invoker.version>
     <version.org.eclipse.jgit>3.7.1.201504261725-r</version.org.eclipse.jgit>
+    <enforcer.skip>true</enforcer.skip>
   </properties>
 
   <!-- Repositories -->
