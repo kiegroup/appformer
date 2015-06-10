@@ -2,7 +2,7 @@ package org.livespark.formmodeler.rendering.server.rest;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,8 +16,12 @@ public abstract class BaseEntityService {
     @PersistenceContext
     protected EntityManager em;
 
-    @Inject
     protected CriteriaBuilder builder;
+
+    @PostConstruct
+    private void init() {
+        builder = em.getCriteriaBuilder();
+    }
 
     public <F extends FormModel> void createFromFormModel( F model ) {
         for ( Object dataModel : model.getDataModels() ) {
