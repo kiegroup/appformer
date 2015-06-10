@@ -86,7 +86,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormJavaTemplateSourceGenerator javaRestImplTemplateSourceGenerator;
 
     @Inject
-    private ErraiAppPropertiesSerializableTypesGenerator serializableTypesGenerator;
+    private ErraiAppPropertiesGenerator serializableTypesGenerator;
 
     @Override
     public void generateFormSources( FormDefinition form, Path resourcePath ) {
@@ -115,7 +115,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String restImplTemplate = javaRestImplTemplateSourceGenerator.generateJavaTemplateSource( context );
         String entityServiceTemplate = javaEntityServiceTemplateSourceGenerator.generateJavaTemplateSource( context );
 
-        String serializableTypesDeclaration = serializableTypesGenerator.generateSerializableTypesDeclaration( getSerializableTypeClassNames( project ) );
+        String serializableTypesDeclaration = serializableTypesGenerator.generate( getSerializableTypeClassNames( project ) );
 
         if ( !allNonEmpty( resourcePath,
                              modelSource,
