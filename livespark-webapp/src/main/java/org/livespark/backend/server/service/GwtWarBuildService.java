@@ -23,9 +23,9 @@ import javax.inject.Named;
 
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationOutputHandler;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.SystemOutHandler;
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildMessage.Level;
@@ -33,7 +33,11 @@ import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.model.Project;
+import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jboss.errai.bus.server.api.RpcContext;
+import org.jboss.errai.bus.server.api.ServerMessageBus;
+import org.jboss.errai.common.client.protocols.MessageParts;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +56,19 @@ import org.uberfire.workbench.events.ResourceChange;
 @Priority( value = 100 )
 public class GwtWarBuildService implements BuildService {
 
+	@Inject
+    private ServerMessageBus bus;
+	
     private abstract class BaseBuildCallable implements Callable<List<BuildMessage>> {
 
         private final Project project;
         private final InvocationRequest req;
+        private final String sessionId;
 
-        private BaseBuildCallable( Project project, InvocationRequest req ) {
+        private BaseBuildCallable( Project project, InvocationRequest req, String sessionId ) {
             this.project = project;
             this.req = req;
+            this.sessionId = sessionId;
         }
 
         protected abstract List<BuildMessage> postBuildTasks( InvocationResult res );
@@ -69,7 +78,25 @@ public class GwtWarBuildService implements BuildService {
             final List<BuildMessage> retVal = new ArrayList<BuildMessage>();
 
             try {
-                final InvocationResult res = new DefaultInvoker().execute( req );
+            	MessageBuilder.createMessage()
+            		.toSubject( "MavenBuilderOutput" )
+            		.signalling()
+            		.with( MessageParts.SessionID, sessionId )
+            		.with( "clean", Boolean.TRUE )
+            		.noErrorHandling().sendNowWith( bus );
+            	
+                req.setOutputHandler(new InvocationOutputHandler() {
+					@Override
+					public void consumeLine(String line) {
+						MessageBuilder.createMessage()
+                        	.toSubject( "MavenBuilderOutput" )
+                        	.signalling()
+                        	.with( MessageParts.SessionID, sessionId )
+                        	.with( "output", line + "\n")
+                        	.noErrorHandling().sendNowWith( bus );
+					}
+				});
+				final InvocationResult res = new DefaultInvoker().execute( req );
                 retVal.addAll( postBuildTasks( res ) );
             } catch (Throwable t) {
                 logBuildException( project, t );
@@ -80,8 +107,8 @@ public class GwtWarBuildService implements BuildService {
     }
 
     private class OnlyBuildCallable extends BaseBuildCallable {
-        private OnlyBuildCallable( Project project, InvocationRequest req ) {
-            super( project, req );
+        private OnlyBuildCallable( Project project, InvocationRequest req, String sessionId ) {
+            super( project, req, sessionId );
         }
 
         @Override
@@ -94,8 +121,8 @@ public class GwtWarBuildService implements BuildService {
     }
 
     private class BuildAndDeployCallable extends BaseBuildCallable {
-        private BuildAndDeployCallable( Project project, InvocationRequest req ) {
-            super( project, req );
+        private BuildAndDeployCallable( Project project, InvocationRequest req, String sessionId ) {
+            super( project, req, sessionId );
         }
 
         @Override
@@ -165,12 +192,14 @@ public class GwtWarBuildService implements BuildService {
 
     @Override
     public BuildResults build( final Project project ) {
-        return buildHelper( project, new CallableProducer() {
-            @Override
-            public Callable<List<BuildMessage>> get( Project project, InvocationRequest req ) {
-                return new OnlyBuildCallable( project, req );
-            }
-        });
+//    	final String sessionId = RpcContext.getQueueSession().getSessionId();
+//        return buildHelper( project, new CallableProducer() {
+//            @Override
+//            public Callable<List<BuildMessage>> get( Project project,  InvocationRequest req ) {
+//                return new OnlyBuildCallable( project, req, sessionId );
+//            }
+//        });
+    	return new BuildResults();
     }
 
     private BuildResults buildHelper( final Project project, CallableProducer producer ) {
@@ -191,8 +220,6 @@ public class GwtWarBuildService implements BuildService {
 
         req.setPomFile( pomXml );
         req.setGoals( Collections.singletonList( "package" ) );
-        // TODO send this output to the client
-        req.setOutputHandler( new SystemOutHandler() );
 
         final Future<List<BuildMessage>> buildFuture = execService.submit( producer.get( project, req ) );
 
@@ -312,10 +339,11 @@ public class GwtWarBuildService implements BuildService {
 
     @Override
     public BuildResults buildAndDeploy( Project project, boolean suppressHandlers ) {
+    	final String sessionId = RpcContext.getQueueSession().getSessionId();
         return buildHelper( project, new CallableProducer() {
             @Override
             public Callable<List<BuildMessage>> get( Project project, InvocationRequest req ) {
-                return new BuildAndDeployCallable( project, req );
+                return new BuildAndDeployCallable( project, req, sessionId );
             }
         } );
     }

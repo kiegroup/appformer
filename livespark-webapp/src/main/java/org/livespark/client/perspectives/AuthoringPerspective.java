@@ -17,20 +17,23 @@ package org.livespark.client.perspectives;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.livespark.client.resources.i18n.AppConstants;
 import org.guvnor.inbox.client.InboxPresenter;
 import org.kie.workbench.common.screens.projecteditor.client.menu.ProjectMenu;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
+import org.livespark.client.MavenBuildOutput;
+import org.livespark.client.resources.i18n.AppConstants;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter;
+import org.uberfire.client.workbench.panels.impl.SimpleDnDWorkbenchPanelPresenter;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -65,6 +68,9 @@ public class AuthoringPerspective {
 
     @Inject
     private RepositoryMenu repositoryMenu;
+    
+    @Inject
+    private MavenBuildOutput buildOutput;
 
     @Inject
     private PlaceManager placeManager;
@@ -78,9 +84,16 @@ public class AuthoringPerspective {
         west.setWidth( 400 );
         west.setMinWidth( 350 );
         west.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "org.kie.guvnor.explorer" ) ) );
-
         perspective.getRoot().insertChild( CompassPosition.WEST,
                                            west );
+
+        final PanelDefinition south = new PanelDefinitionImpl( SimpleDnDWorkbenchPanelPresenter.class.getName() );
+        south.setWidth( 400 );
+        south.setMinWidth( 350 );
+		south.setMinHeight(200);
+        south.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "MavenBuildOutput" ) ) );
+        perspective.getRoot().insertChild( CompassPosition.SOUTH, 
+        									south );
 
         return perspective;
     }
