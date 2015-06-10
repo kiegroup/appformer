@@ -289,8 +289,8 @@ public class GwtWarBuildService implements BuildService {
 
     private BuildMessage createSuccessMessage() {
         final BuildMessage message = new BuildMessage();
-        message.setLevel( Level.ERROR );
-        message.setText( "Build was failed" );
+        message.setLevel( Level.INFO );
+        message.setText( "Build successful" );
 
         return message;
     }
