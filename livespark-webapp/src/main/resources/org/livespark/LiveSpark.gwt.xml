@@ -82,7 +82,7 @@
   <inherits name="org.livespark.formmodeler.rendering.FormModelerRenderingAPI"/>
 
   <!-- Specify the application specific style sheet. -->
-  <stylesheet src='css/live-spark.css'/>
+  <stylesheet src='css/livespark.css'/>
 
   <!-- Specify the paths for translatable code -->
   <source path='client'/>
