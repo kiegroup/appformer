@@ -1,9 +1,9 @@
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_REST_CLIENT;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_DELETE_EXECUTOR;
+import static org.livespark.formmodeler.codegen.view.impl.java.RestCodegenUtil.generateRestCall;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -30,11 +30,49 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         addTemplatedAnnotation( viewClass );
         addImports( context, viewClass );
 
+        addMethods( viewClass, context );
+
+        return viewClass.toString();
+    }
+
+    private void addMethods( JavaClassSource viewClass,
+                             SourceGenerationContext context ) {
         addDeleteExecutorProducer( viewClass, context );
         addLoadDataImpl( viewClass, context );
         addRemoteDeleteImpl( viewClass, context );
+        addGetFormTypeImpl( viewClass, context );
+        addGetFormTitleImpl( viewClass, context );
+        addGetFormIdImpl( viewClass, context );
+    }
 
-        return viewClass.toString();
+    private void addGetFormTypeImpl( JavaClassSource viewClass,
+                                     SourceGenerationContext context ) {
+        viewClass.addMethod()
+                 .setProtected()
+                 .setName( "getFormType" )
+                 .setReturnType( "Class<" + context.getFormViewName() + ">" )
+                 .setBody( "return " + context.getFormViewName() + ".class;" )
+                 .addAnnotation( Override.class );
+    }
+
+    private void addGetFormIdImpl( JavaClassSource viewClass,
+                                   SourceGenerationContext context ) {
+        viewClass.addMethod()
+                 .setName( "getFormId" )
+                 .setProtected()
+                 .setReturnType( String.class )
+                 .setBody( "return \"" + context.getFormDefinition().getName() + " Form\";" )
+                 .addAnnotation( Override.class );
+    }
+
+    private void addGetFormTitleImpl( JavaClassSource viewClass,
+                                      SourceGenerationContext context ) {
+        viewClass.addMethod()
+                 .setName( "getFormTitle" )
+                 .setProtected()
+                 .setReturnType( String.class )
+                 .setBody( "return \"" + context.getFormDefinition().getName() + "Form\";" )
+                 .addAnnotation( Override.class );
     }
 
     private void addDeleteExecutorProducer( JavaClassSource viewClass,
@@ -66,6 +104,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     private void addImports( SourceGenerationContext context,
                             JavaClassSource viewClass ) {
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
+        viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getFormViewName() );
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getListItemViewName() );
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
     }
@@ -98,31 +137,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         loadData.setBody( generateRestCall( "load",
                                             "callback",
                                             context ) );
-    }
-
-    private String generateRestCall( String restMethodName,
-                                     String callbackParamName,
-                                     SourceGenerationContext context,
-                                     String... params) {
-        StringBuilder body = new StringBuilder()
-                                  .append( ERRAI_REST_CLIENT )
-                                  .append( ".create(" )
-                                  .append( context.getRestServiceName() )
-                                  .append( ".class, " )
-                                  .append( callbackParamName )
-                                  .append( ")." )
-                                  .append( restMethodName )
-                                  .append( "(" );
-
-        for (String p : params) {
-            body.append( p )
-                .append( ", " );
-        }
-        if (params.length > 0) body.delete( body.length() - ", ".length(), body.length() );
-
-        body.append( ");" );
-
-        return body.toString();
     }
 
 }

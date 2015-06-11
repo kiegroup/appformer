@@ -8,4 +8,5 @@
             @end{}
         </fieldset>
     </form>
+    <button data-field="submit">Submit</button>
 </div>

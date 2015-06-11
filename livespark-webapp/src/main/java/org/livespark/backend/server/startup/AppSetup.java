@@ -61,7 +61,7 @@ public class AppSetup {
 
     private static final String LIVE_SPARK_PLAYGROUND_SCHEME = "git";
     private static final String LIVE_SPARK_PLAYGROUND_ALIAS = "ls-playground";
-    private static final String LIVE_SPARK_PLAYGROUND_ORIGIN = "https://github.com/csadilek/test-playground";
+    private static final String LIVE_SPARK_PLAYGROUND_ORIGIN = "https://github.com/mbarkley/test-playground";
     private static final String LIVE_SPARK_PLAYGROUND_UID = "";
     private static final String LIVE_SPARK_PLAYGROUND_PWD = "";
 
