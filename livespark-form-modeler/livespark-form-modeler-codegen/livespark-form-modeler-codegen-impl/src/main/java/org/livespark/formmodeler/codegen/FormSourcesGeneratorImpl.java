@@ -185,7 +185,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         || className.endsWith( SourceGenerationContext.LIST_VIEW_SUFFIX )
         || className.endsWith( SourceGenerationContext.REST_IMPL_SUFFIX )
         || className.endsWith( SourceGenerationContext.REST_SERVICE_SUFFIX )
-        || className.endsWith( "MainPage" ) );
+        || className.contains( ".builtin." ) );
     }
 
     private void writeErraiAppProperties( String serializableTypesDeclaration, KieProject project  ) {
