@@ -66,6 +66,10 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormJavaTemplateSourceGenerator javaListTemplateSourceGenerator;
 
     @Inject
+    @ListView
+    private FormHTMLTemplateSourceGenerator htmlListTemplateSourceGenerator;
+
+    @Inject
     @ListItemView
     private FormJavaTemplateSourceGenerator javaListItemTemplateSourceGenerator;
 
@@ -108,6 +112,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String htmlTemplate = htmlTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
         String listJavaTemplate = javaListTemplateSourceGenerator.generateJavaTemplateSource( context );
+        String listHtmlTemplate = htmlListTemplateSourceGenerator.generateHTMLTemplateSource( context );
         String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
         String htmlListItemTemplate = htmlListItemTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
@@ -122,6 +127,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                              javaTemplate,
                              htmlTemplate,
                              listJavaTemplate,
+                             listHtmlTemplate,
                              listItemJavaTemplate,
                              htmlListItemTemplate,
                              restServiceTemplate,
@@ -145,6 +151,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
             writeJavaSource( resourcePath, context.getEntityServiceName(), entityServiceTemplate, server );
 
             writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
+            writeHTMLSource( resourcePath, context.getListViewName(), listHtmlTemplate, local );
             writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, local );
 
             writeErraiAppProperties( serializableTypesDeclaration, project );
