@@ -23,15 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.animation.client.Animation;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
-import org.livespark.client.resources.i18n.AppConstants;
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
@@ -48,6 +43,7 @@ import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
 import org.kie.workbench.common.widgets.client.menu.AboutMenuBuilder;
 import org.kie.workbench.common.widgets.client.menu.ResetPerspectivesMenuBuilder;
+import org.livespark.client.resources.i18n.AppConstants;
 import org.uberfire.client.menu.CustomSplashHelp;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
@@ -55,13 +51,19 @@ import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.uberfire.workbench.model.menu.MenuFactory.*;
+import com.google.gwt.animation.client.Animation;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * GWT's Entry-point for LiveSpark
@@ -92,7 +94,7 @@ public class LiveSparkEntryPoint {
 
     @Inject
     private Caller<AuthenticationService> authService;
-
+    
     @AfterInitialization
     public void startApp() {
         kieSecurityService.call( new RemoteCallback<String>() {
@@ -106,6 +108,12 @@ public class LiveSparkEntryPoint {
         } ).loadPolicy();
     }
 
+	private void onAppReady(@Observes AppReady appReady) {
+		PlaceRequest request = new DefaultPlaceRequest("app");
+		request.addParameter("url", appReady.getUrl());
+		placeManager.goTo(request);
+	}
+    
     private void loadPreferences() {
         appConfigService.call( new RemoteCallback<Map<String, String>>() {
             @Override

@@ -10,7 +10,6 @@ import org.jboss.errai.bus.client.api.messaging.MessageCallback;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 
 @ApplicationScoped

@@ -39,15 +39,19 @@ import org.jboss.errai.bus.server.api.RpcContext;
 import org.jboss.errai.bus.server.api.ServerMessageBus;
 import org.jboss.errai.common.client.protocols.MessageParts;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
+import org.livespark.client.AppReady;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardDeleteOption;
 import org.uberfire.workbench.events.ResourceChange;
+
+import javax.enterprise.event.Event;
 
 
 @ApplicationScoped
@@ -58,6 +62,9 @@ public class GwtWarBuildService implements BuildService {
 
 	@Inject
     private ServerMessageBus bus;
+	
+	@Inject
+	private Event<AppReady> appReadyEvent;
 	
     private abstract class BaseBuildCallable implements Callable<List<BuildMessage>> {
 
@@ -98,6 +105,9 @@ public class GwtWarBuildService implements BuildService {
 				});
 				final InvocationResult res = new DefaultInvoker().execute( req );
                 retVal.addAll( postBuildTasks( res ) );
+                
+                appReadyEvent.fire(new AppReady("http://redhat.com"));
+                
             } catch (Throwable t) {
                 logBuildException( project, t );
             }
