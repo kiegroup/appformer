@@ -35,8 +35,6 @@ public interface SourceGenerationUtil {
     public static final String LIST_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListView";
     public static final String LIST_ITEM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListItemView";
 
-    public static final String LIST_VIEW_HTML_PATH = "/org/livespark/formmodeler/rendering/client/view/ListView.html";
-    public static final String LIST_VIEW_ITEM_HTML_PATH = "/org/livespark/formmodeler/rendering/client/view/ListItemView.html";
     public static final String LIST_VIEW_DELETE_EXECUTOR = "org.livespark.formmodeler.rendering.client.view.ListView.DeleteExecutor";
 
     public static final String ENTITY_SERVICE_CLASS = "org.livespark.formmodeler.rendering.server.rest.BaseEntityService";

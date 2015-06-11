@@ -2,7 +2,6 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_ITEM_VIEW_CLASS;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_ITEM_HTML_PATH;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -22,7 +21,7 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
     @Override
     protected void addAnnotations( SourceGenerationContext context,
                                    JavaClassSource viewClass ) {
-        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( LIST_VIEW_ITEM_HTML_PATH );
+        viewClass.addAnnotation( ERRAI_TEMPLATED );
     }
 
     @Override

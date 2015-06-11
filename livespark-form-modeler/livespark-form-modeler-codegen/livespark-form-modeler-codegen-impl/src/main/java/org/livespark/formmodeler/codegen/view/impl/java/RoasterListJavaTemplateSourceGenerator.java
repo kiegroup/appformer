@@ -4,7 +4,6 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_DELETE_EXECUTOR;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_HTML_PATH;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -61,7 +60,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     }
 
     private void addTemplatedAnnotation( JavaClassSource viewClass ) {
-        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( LIST_VIEW_HTML_PATH );
+        viewClass.addAnnotation( ERRAI_TEMPLATED );
     }
 
     private void addImports( SourceGenerationContext context,
