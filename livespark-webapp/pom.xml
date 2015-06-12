@@ -557,7 +557,7 @@
       <artifactId>errai-cdi-jboss</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    
     <!-- CDI Integration Modules -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -580,7 +580,7 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>compile</scope>
-    </dependency>
+    </dependency>    
 
     <dependency>
       <groupId>com.github.gwtbootstrap</groupId>

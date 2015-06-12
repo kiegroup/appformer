@@ -17,10 +17,12 @@ import javax.annotation.Priority;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationOutputHandler;
@@ -43,15 +45,12 @@ import org.livespark.client.AppReady;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardDeleteOption;
 import org.uberfire.workbench.events.ResourceChange;
-
-import javax.enterprise.event.Event;
 
 
 @ApplicationScoped
@@ -106,8 +105,16 @@ public class GwtWarBuildService implements BuildService {
 				final InvocationResult res = new DefaultInvoker().execute( req );
                 retVal.addAll( postBuildTasks( res ) );
                 
-                appReadyEvent.fire(new AppReady("http://redhat.com"));
-                
+                final File targetDir = new File (req.getPomFile().getParent(), "/target");
+                final Collection<File> wars = FileUtils.listFiles(targetDir, new String[]{"war"}, false);
+				// TODO handle production mode, cleanup
+				for (File war: wars) {
+					String home = System.getProperty("errai.jboss.home");
+					File deployDir = new File(home, "/standalone/deployments");
+					FileUtils.copyFileToDirectory(war, deployDir);
+					// TODO port conf.
+	                appReadyEvent.fire(new AppReady("http://localhost:" + 8888 + "/" + war.getName().replace(".war", "")));
+                }
             } catch (Throwable t) {
                 logBuildException( project, t );
             }
