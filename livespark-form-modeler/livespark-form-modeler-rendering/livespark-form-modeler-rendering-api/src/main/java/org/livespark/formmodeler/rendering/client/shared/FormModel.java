@@ -10,21 +10,5 @@ public abstract class FormModel {
     protected List<String> fieldNames = new ArrayList<String>(  );
     protected List<DataHolderMeta> dataHolderMetas = new ArrayList<DataHolderMeta>(  );
 
-    public DataHolderMeta[] getDataHolders() {
-        return dataHolderMetas.toArray( new DataHolderMeta[ dataHolderMetas.size()] );
-    }
-
-    public List<String> getFieldNames() {
-        return fieldNames;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Object> getDataModels() {
-        List<Object> dataModels = new ArrayList<Object>();
-        for ( DataHolderMeta<FormModel, Object> holderMeta : getDataHolders() ) {
-            dataModels.add( holderMeta.getModel( this ) );
-        }
-
-        return dataModels;
-    }
+    public abstract List<Object> getDataModels();
 }
