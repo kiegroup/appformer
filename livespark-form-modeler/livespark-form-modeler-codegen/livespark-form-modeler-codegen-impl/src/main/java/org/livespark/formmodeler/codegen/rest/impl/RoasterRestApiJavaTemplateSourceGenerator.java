@@ -65,6 +65,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     private void addCreateAnnotations( MethodSource<JavaInterfaceSource> create ) {
         create.addAnnotation( POST.class );
         create.addAnnotation( Consumes.class ).setStringValue( "application/json" );
+        create.addAnnotation( Produces.class ).setStringValue( "application/json" );
     }
 
     private void addLoadMethod( SourceGenerationContext context,
