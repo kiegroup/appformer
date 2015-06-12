@@ -11,6 +11,8 @@ import org.livespark.formmodeler.model.FieldDefinition;
 @ApplicationScoped
 public class ListItemHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
 
+    private static final String DELETE_BUTTON_NAME = "delete";
+
     @Override
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
         final StringBuilder builder = new StringBuilder();
@@ -22,6 +24,10 @@ public class ListItemHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
                    .append( field.getName() )
                    .append( "\">\n" );
         }
+
+        builder.append( "<div data-field=\"" )
+               .append( DELETE_BUTTON_NAME )
+               .append( "\"></div>\n" );
 
         builder.append( "</div>" );
 
