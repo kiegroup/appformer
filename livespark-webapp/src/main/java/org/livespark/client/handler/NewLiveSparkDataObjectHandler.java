@@ -1,12 +1,22 @@
 package org.livespark.client.handler;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.project.model.Package;
 import org.jboss.errai.common.client.api.Caller;
-import org.kie.workbench.common.screens.datamodeller.client.handlers.JavaFileOptions;
+import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainOptionsHandler;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.screens.javaeditor.client.resources.JavaEditorResources;
 import org.kie.workbench.common.screens.javaeditor.client.type.JavaResourceType;
@@ -21,6 +31,7 @@ import org.uberfire.workbench.type.ResourceTypeDefinition;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 
 @ApplicationScoped
 public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
@@ -35,12 +46,29 @@ public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
     private Caller<DataModelerService> dataModelerService;
 
     @Inject
-    private JavaFileOptions options;
+    private SyncBeanManager iocBeanManager;
+    
+    private List<DomainOptionsHandler> optionsHandler = new ArrayList<DomainOptionsHandler>(  );
 
     @PostConstruct
     private void setupExtensions() {
-        extensions.add( new Pair<String, JavaFileOptions>( "JavaFileOptions",
-                options ) );
+    	 final Collection<IOCBeanDef<DomainOptionsHandler>> optionsHandlerBeans = iocBeanManager.lookupBeans( DomainOptionsHandler.class );
+         if ( optionsHandlerBeans != null && optionsHandlerBeans.size() > 0 ) {
+             for ( IOCBeanDef<DomainOptionsHandler> beanDef : optionsHandlerBeans ) {
+                 optionsHandler.add( beanDef.getInstance() );
+             }
+         }
+         Collections.sort( optionsHandler, new Comparator<DomainOptionsHandler>() {
+             @Override public int compare( DomainOptionsHandler handler1, DomainOptionsHandler handler2 ) {
+                 Integer key1 = handler1.getPriority();
+                 Integer key2 = handler2.getPriority();
+                 return key1.compareTo( key2 );
+             }
+         } );
+
+         for ( DomainOptionsHandler handler : optionsHandler ) {
+             extensions.add( new Pair<String, Widget>( handler.getName(), handler.getWidget() ) );
+         }
     }
 
     @Override
@@ -63,6 +91,11 @@ public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
     public void create( Package pkg,
                         String baseFileName,
                         NewResourcePresenter presenter ) {
+    	  Map<String, Object> params = new HashMap<String, Object>( );
+          for ( DomainOptionsHandler handler : optionsHandler ) {
+              params.putAll( handler.getOptions() );
+          }
+          
         busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Saving() );
         dataModelerService.call( getSuccessCallback( presenter ),
                                  new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) )
@@ -70,8 +103,7 @@ public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
                                            buildFileName( baseFileName,
                                                           resourceType ),
                                            "",
-                                           options.isPersitable(),
-                                           options.getTableName() );
+                                           params);
 
     }
 
