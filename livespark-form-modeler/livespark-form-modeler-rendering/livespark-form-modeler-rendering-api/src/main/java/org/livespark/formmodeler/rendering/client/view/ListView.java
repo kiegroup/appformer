@@ -2,7 +2,6 @@ package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -38,8 +37,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         }
     };
 
-    @PostConstruct
-    protected void init() {
+    public void init() {
         create.setText( "Create" );
         loadData( new RemoteCallback<List<M>>() {
 
