@@ -23,6 +23,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationOutputHandler;
@@ -105,19 +110,32 @@ public class GwtWarBuildService implements BuildService {
 				final InvocationResult res = new DefaultInvoker().execute( req );
                 retVal.addAll( postBuildTasks( res ) );
                 
-                final File targetDir = new File (req.getPomFile().getParent(), "/target");
-                final Collection<File> wars = FileUtils.listFiles(targetDir, new String[]{"war"}, false);
-				// TODO handle production mode, cleanup
-				for (File war: wars) {
+				final File targetDir = new File(req.getPomFile().getParent(), "/target");
+				final Collection<File> wars = FileUtils.listFiles(targetDir, new String[] { "war" }, false);
+				// TODO handle production mode
+				for (final File war : wars) {
 					String home = System.getProperty("errai.jboss.home");
 					File deployDir = new File(home, "/standalone/deployments");
+					FileUtils.deleteQuietly(new File(deployDir, war.getName()));
 					FileUtils.copyFileToDirectory(war, deployDir);
-					// TODO port conf.
-	                appReadyEvent.fire(new AppReady("http://localhost:" + 8888 + "/" + war.getName().replace(".war", "")));
-                }
-            } catch (Throwable t) {
-                logBuildException( project, t );
-            }
+
+					FileAlterationMonitor monitor = new FileAlterationMonitor(500);
+					IOFileFilter filter = FileFilterUtils.nameFileFilter(war.getName() + ".deployed");
+					FileAlterationObserver observer = new FileAlterationObserver(deployDir, filter);
+					observer.addListener(new FileAlterationListenerAdaptor() {
+						
+						@Override
+						public void onFileCreate(final File file) {
+							// TODO port conf.
+							appReadyEvent.fire(new AppReady("http://localhost:" + 8888 + "/" + war.getName().replace(".war", "")));
+						}
+					});
+					monitor.addObserver(observer);
+					monitor.start();
+				}
+			} catch (Throwable t) {
+				logBuildException(project, t);
+			}
 
             return retVal;
         }
