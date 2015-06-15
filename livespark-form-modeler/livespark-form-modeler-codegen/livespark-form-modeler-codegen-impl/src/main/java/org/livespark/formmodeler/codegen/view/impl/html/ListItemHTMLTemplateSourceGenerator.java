@@ -19,7 +19,7 @@ public class ListItemHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
 
         builder.append( "<div>\n" );
 
-        for ( FieldDefinition<?> field : context.getFormDefinition().getFields() ) {
+        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
             builder.append( "  <span data-field=\"" )
                    .append( field.getName() )
                    .append( "\">\n" );

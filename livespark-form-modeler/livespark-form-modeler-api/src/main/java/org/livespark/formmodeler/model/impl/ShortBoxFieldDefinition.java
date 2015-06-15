@@ -6,10 +6,10 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class IntBoxFieldDefinition extends AbstractIntputFieldDefinition<Integer> {
+public class ShortBoxFieldDefinition extends AbstractIntputFieldDefinition {
 
     @Override
     public String getStandaloneClassName() {
-        return Integer.class.getName();
+        return Short.class.getName();
     }
 }

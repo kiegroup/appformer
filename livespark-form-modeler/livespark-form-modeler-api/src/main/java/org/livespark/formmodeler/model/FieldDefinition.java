@@ -1,6 +1,6 @@
 package org.livespark.formmodeler.model;
 
-public abstract class FieldDefinition<T> {
+public abstract class FieldDefinition {
 
     protected String name;
 

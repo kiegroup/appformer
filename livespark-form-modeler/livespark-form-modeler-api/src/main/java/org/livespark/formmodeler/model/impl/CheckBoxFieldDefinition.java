@@ -7,7 +7,7 @@ import org.livespark.formmodeler.model.FieldDefinition;
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class CheckBoxFieldDefinition extends FieldDefinition<Boolean> {
+public class CheckBoxFieldDefinition extends FieldDefinition {
 
     @Override
     public String getStandaloneClassName() {

@@ -1,5 +1,7 @@
 package org.livespark.formmodeler.service;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 
 import org.livespark.formmodeler.model.FieldDefinition;
@@ -9,19 +11,26 @@ import org.livespark.formmodeler.model.FieldDefinition;
  */
 public interface FieldManager {
     public static final String[] BASIC_TYPES = new String[]{
-            String.class.getName(),
-            Integer.class.getName(),
-            Short.class.getName(),
-            Long.class.getName(),
-            Float.class.getName(),
-            Double.class.getName(),
+            BigDecimal.class.getName(),
+            BigInteger.class.getName(),
+            Byte.class.getName(),
+            byte.class.getName(),
             Boolean.class.getName(),
-            Date.class.getName(),
-            int.class.getName(),
-            long.class.getName(),
             boolean.class.getName(),
+            Character.class.getName(),
+            char.class.getName(),
+            Date.class.getName(),
+            Double.class.getName(),
+            double.class.getName(),
+            Float.class.getName(),
+            float.class.getName(),
+            Integer.class.getName(),
+            int.class.getName(),
+            Long.class.getName(),
+            long.class.getName(),
+            Short.class.getName(),
             short.class.getName(),
-            double.class.getName()
+            String.class.getName()
     };
 
     FieldDefinition getDefinitionByType( String typeCode );

@@ -42,7 +42,7 @@ public class ConstructorGenerator {
 
     public <O extends JavaSource<O>> void addFormFieldsAsParameters( SourceGenerationContext context,
                                                                      MethodSource<O> method ) {
-        for ( FieldDefinition<?> field : context.getFormDefinition().getFields() ) {
+        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
             method.addParameter( field.getStandaloneClassName(),
                                  field.getName() );
         }

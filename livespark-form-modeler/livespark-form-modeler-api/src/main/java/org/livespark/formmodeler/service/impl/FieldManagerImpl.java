@@ -1,5 +1,7 @@
 package org.livespark.formmodeler.service.impl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,11 +13,17 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.BigDecimalBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.BigIntegerBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.ByteBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.CharacterBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.CheckBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.DateBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.DoubleBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.IntBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.FloatBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.IntegerBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.LongBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.ShortBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.TextBoxFieldDefinition;
 import org.livespark.formmodeler.service.FieldManager;
 import org.slf4j.Logger;
@@ -29,43 +37,30 @@ public class FieldManagerImpl implements FieldManager {
     private static transient Logger log = LoggerFactory.getLogger( FieldManagerImpl.class );
 
     @Inject
-    private Instance<FieldDefinition<Boolean>> booleanFields;
-
-    @Inject
-    private Instance<FieldDefinition<Date>> dateFields;
-
-    @Inject
-    private Instance<FieldDefinition<Double>> doubleFields;
-
-    @Inject
-    private Instance<FieldDefinition<Float>> floatFields;
-
-    @Inject
-    private Instance<FieldDefinition<Integer>> intFields;
-
-    @Inject
-    private Instance<FieldDefinition<Long>> longFields;
-
-    @Inject
-    private Instance<FieldDefinition<Short>> shortFields;
-
-    @Inject
-    private Instance<FieldDefinition<String>> stringFields;
-
-
+    private Instance<FieldDefinition> instances;
 
     protected Map<String, String> defaultFields = new HashMap<String, String>(  );
 
     {
+        defaultFields.put( BigDecimal.class.getName(), BigDecimalBoxFieldDefinition.class.getName() );
+        defaultFields.put( BigInteger.class.getName(), BigIntegerBoxFieldDefinition.class.getName() );
+        defaultFields.put( Byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
+        defaultFields.put( byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
         defaultFields.put( Boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
         defaultFields.put( boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
+        defaultFields.put( Character.class.getName(), CharacterBoxFieldDefinition.class.getName() );
+        defaultFields.put( char.class.getName(), CharacterBoxFieldDefinition.class.getName() );
         defaultFields.put( Date.class.getName(), DateBoxFieldDefinition.class.getName() );
         defaultFields.put( Double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
         defaultFields.put( double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
-        defaultFields.put( Integer.class.getName(), IntBoxFieldDefinition.class.getName() );
-        defaultFields.put( int.class.getName(), IntBoxFieldDefinition.class.getName() );
+        defaultFields.put( Float.class.getName(), FloatBoxFieldDefinition.class.getName() );
+        defaultFields.put( float.class.getName(), FloatBoxFieldDefinition.class.getName() );
+        defaultFields.put( Integer.class.getName(), IntegerBoxFieldDefinition.class.getName() );
+        defaultFields.put( int.class.getName(), IntegerBoxFieldDefinition.class.getName() );
         defaultFields.put( Long.class.getName(), LongBoxFieldDefinition.class.getName() );
         defaultFields.put( long.class.getName(), LongBoxFieldDefinition.class.getName() );
+        defaultFields.put( Short.class.getName(), ShortBoxFieldDefinition.class.getName() );
+        defaultFields.put( short.class.getName(), ShortBoxFieldDefinition.class.getName() );
         defaultFields.put( String.class.getName(), TextBoxFieldDefinition.class.getName() );
     }
 
@@ -76,68 +71,33 @@ public class FieldManagerImpl implements FieldManager {
 
     @PostConstruct
     protected void init() {
-        List <String> compatibles = new ArrayList<String>(  );
 
-        for (FieldDefinition fieldDefinition : booleanFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
+        for (FieldDefinition definition : instances) {
+            fieldDefinitions.put( definition.getCode(), definition );
+            List<String> compatibles = compatibleFields.get( definition.getStandaloneClassName() );
+            if (compatibles == null) {
+                compatibles = new ArrayList<String>(  );
+                compatibleFields.put( definition.getStandaloneClassName(), compatibles );
+                if (definition.getStandaloneClassName().equals( Boolean.class.getName() )) {
+                    compatibleFields.put( boolean.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Byte.class.getName() ) ) {
+                    compatibleFields.put( byte.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Character.class.getName() )) {
+                    compatibleFields.put( char.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Double.class.getName() ) ) {
+                    compatibleFields.put( double.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Float.class.getName() ) ) {
+                    compatibleFields.put( float.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Integer.class.getName() ) ) {
+                    compatibleFields.put( int.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Long.class.getName() ) ) {
+                    compatibleFields.put( long.class.getName(), compatibles );
+                } else if (definition.getStandaloneClassName().equals( Short.class.getName() ) ) {
+                    compatibleFields.put( short.class.getName(), compatibles );
+                }
+            }
+            compatibles.add( definition.getCode() );
         }
-        compatibleFields.put( Boolean.class.getName(), compatibles );
-        compatibleFields.put( boolean.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : dateFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( Date.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : doubleFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( Double.class.getName(), compatibles );
-        compatibleFields.put( double.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : floatFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( Float.class.getName(), compatibles );
-        compatibleFields.put( float.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : intFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( Integer.class.getName(), compatibles );
-        compatibleFields.put( int.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : longFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( Long.class.getName(), compatibles );
-        compatibleFields.put( long.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : shortFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( Short.class.getName(), compatibles );
-        compatibleFields.put( short.class.getName(), compatibles );
-
-        compatibles = new ArrayList<String>(  );
-        for (FieldDefinition fieldDefinition : stringFields ) {
-            fieldDefinitions.put( fieldDefinition.getCode(), fieldDefinition );
-            compatibles.add( fieldDefinition.getCode() );
-        }
-        compatibleFields.put( String.class.getName(), compatibles );
     }
 
     @Override

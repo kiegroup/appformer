@@ -5,7 +5,7 @@ import org.livespark.formmodeler.model.FieldDefinition;
 /**
  * Created by pefernan on 4/29/15.
  */
-public abstract class AbstractIntputFieldDefinition<T> extends FieldDefinition<T> {
+public abstract class AbstractIntputFieldDefinition extends FieldDefinition {
     protected Integer size = 15;
     protected Integer maxLength = 100;
     protected String placeHolder;

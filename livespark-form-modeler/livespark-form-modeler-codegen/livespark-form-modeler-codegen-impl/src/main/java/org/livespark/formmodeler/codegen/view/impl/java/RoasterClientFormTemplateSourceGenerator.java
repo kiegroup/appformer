@@ -63,7 +63,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         StringBuffer inputNames = new StringBuffer(  );
         StringBuffer readOnlyMethod = new StringBuffer(  );
 
-        for ( FieldDefinition<?> fieldDefinition : context.getFormDefinition().getFields() ) {
+        for ( FieldDefinition fieldDefinition : context.getFormDefinition().getFields() ) {
             InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
             if (helper == null) continue;
 

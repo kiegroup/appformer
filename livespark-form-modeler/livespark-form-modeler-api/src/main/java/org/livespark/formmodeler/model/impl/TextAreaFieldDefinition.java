@@ -7,7 +7,7 @@ import org.livespark.formmodeler.model.FieldDefinition;
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class TextAreaFieldDefinition extends FieldDefinition<String> {
+public class TextAreaFieldDefinition extends FieldDefinition {
 
     protected Integer rows = 4;
     protected Integer cols = 15;
