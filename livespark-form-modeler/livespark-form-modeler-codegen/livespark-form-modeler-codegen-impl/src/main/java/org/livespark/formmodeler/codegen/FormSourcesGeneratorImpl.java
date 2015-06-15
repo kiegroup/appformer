@@ -74,10 +74,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormJavaTemplateSourceGenerator javaListItemTemplateSourceGenerator;
 
     @Inject
-    @ListItemView
-    private FormHTMLTemplateSourceGenerator htmlListItemTemplateSourceGenerator;
-
-    @Inject
     @RestApi
     private FormJavaTemplateSourceGenerator javaRestTemplateSourceGenerator;
 
@@ -114,7 +110,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String listJavaTemplate = javaListTemplateSourceGenerator.generateJavaTemplateSource( context );
         String listHtmlTemplate = htmlListTemplateSourceGenerator.generateHTMLTemplateSource( context );
         String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
-        String htmlListItemTemplate = htmlListItemTemplateSourceGenerator.generateHTMLTemplateSource( context );
 
         String restServiceTemplate = javaRestTemplateSourceGenerator.generateJavaTemplateSource( context );
         String restImplTemplate = javaRestImplTemplateSourceGenerator.generateJavaTemplateSource( context );
@@ -129,7 +124,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                              listJavaTemplate,
                              listHtmlTemplate,
                              listItemJavaTemplate,
-                             htmlListItemTemplate,
                              restServiceTemplate,
                              restImplTemplate,
                              entityServiceTemplate,
@@ -152,7 +146,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
             writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
             writeHTMLSource( resourcePath, context.getListViewName(), listHtmlTemplate, local );
-            writeHTMLSource( resourcePath, context.getListItemViewName(), htmlListItemTemplate, local );
 
             writeErraiAppProperties( serializableTypesDeclaration, project );
         } catch ( Exception e ) {

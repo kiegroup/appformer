@@ -21,7 +21,7 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
     @Override
     protected void addAnnotations( SourceGenerationContext context,
                                    JavaClassSource viewClass ) {
-        viewClass.addAnnotation( ERRAI_TEMPLATED );
+        viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( context.getListViewName() + ".html#" + context.getListItemRowId() );
     }
 
     @Override

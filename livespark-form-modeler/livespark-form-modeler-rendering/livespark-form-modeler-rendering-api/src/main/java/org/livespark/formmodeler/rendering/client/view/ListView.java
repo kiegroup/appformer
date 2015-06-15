@@ -8,6 +8,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ui.client.widget.ListWidget;
+import org.jboss.errai.ui.client.widget.Table;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
@@ -24,6 +25,11 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     @Inject
     @DataField
+    protected Button delete;
+
+    @Inject
+    @DataField
+    @Table(root = "tbody")
     protected ListWidget<M, W> items;
 
     @Inject
@@ -38,7 +44,6 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     };
 
     public void init() {
-        create.setText( "Create" );
         loadData( new RemoteCallback<List<M>>() {
 
             @Override

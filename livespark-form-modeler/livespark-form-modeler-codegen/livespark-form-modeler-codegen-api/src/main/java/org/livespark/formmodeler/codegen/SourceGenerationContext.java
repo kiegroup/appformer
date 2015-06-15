@@ -94,4 +94,13 @@ public class SourceGenerationContext {
     public String getRestServiceImplName() {
         return formDefinition.getName() + REST_IMPL_SUFFIX;
     }
+
+    public String getListItemRowId() {
+        return getFormDefinition().getName() + "-row";
+    }
+
+    public String getListTBodyId() {
+        return getFormDefinition().getName() + "-table";
+    }
+
 }
