@@ -41,7 +41,8 @@ public abstract class BaseEntityService {
 
     // TODO this should use an identifier
     public <E> void delete( E entity ) {
-        em.remove( entity );
+        final E attachedEntity = em.merge( entity );
+        em.remove( attachedEntity );
     }
 
     public <F extends FormModel> void updateFromFormModel( F model ) {
