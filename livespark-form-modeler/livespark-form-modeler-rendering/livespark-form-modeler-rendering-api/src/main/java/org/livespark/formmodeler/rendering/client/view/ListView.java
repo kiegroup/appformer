@@ -76,7 +76,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                           @Override
                           public void callback( Boolean response ) {
                               if ( response ) {
-                                  items.getValue().remove( model );
+                                  init();
                               }
                           }
                       } );
