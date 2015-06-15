@@ -30,7 +30,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
                .append( "<thead>" );
 
         builder.append( "<tr>" );
-        for ( FieldDefinition<?> field : context.getFormDefinition().getFields() ) {
+        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
             String label = field.getLabel();
             if ( label == null || "".equals( label ) ) {
                 label = field.getName();
@@ -54,7 +54,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
         builder.append( "<tr valign=\"top\" class=\"item\" id=\"")
                .append( rowId )
                .append( "\">" );
-        for ( FieldDefinition<?> field : context.getFormDefinition().getFields() ) {
+        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
             builder.append( "<td data-field=\"" )
                    .append( field.getName() )
                    .append( "\"></td>" );
