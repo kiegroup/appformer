@@ -70,6 +70,8 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         }
     }
 
+    public abstract void setReadOnly( boolean readOnly );
+
     public boolean validate() {
 
         boolean isValid = true;

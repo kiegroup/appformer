@@ -5,9 +5,12 @@ package org.livespark.formmodeler.codegen.view.impl.java;
  */
 public interface InputCreatorHelper {
     String getSupportedFieldType();
-    boolean isInjectable();
+    boolean isInputInjectable();
+    boolean isDisplayInjectable();
+    String getDisplayInitLiteral();
     String getInputWidget();
-    String getInitLiteral();
+    String getDisplayWidget();
+    String getInputInitLiteral();
 
     String getReadonlyMethod( String fieldName, String readonlyParam );
 }

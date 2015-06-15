@@ -2,7 +2,6 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_BOUND;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_DATAFIELD;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_INJECT;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.READONLY_PARAM;
 
@@ -67,13 +66,12 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
             if (helper == null) continue;
 
-            PropertySource<JavaClassSource> property = viewClass.addProperty( helper.getInputWidget(), fieldDefinition.getName() );
+            PropertySource<JavaClassSource> property = viewClass.addProperty( getWidgetFromHelper( helper ), fieldDefinition.getName() );
 
             FieldSource<JavaClassSource> field = property.getField();
             field.setPrivate();
 
-            if (helper.isInjectable()) field.addAnnotation( INJECT_INJECT );
-            else field.setLiteralInitializer( helper.getInitLiteral() );
+            initializeProperty( helper, field );
 
             field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
             field.addAnnotation( ERRAI_DATAFIELD );
@@ -92,14 +90,23 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
                 .setReturnTypeVoid()
                 .addAnnotation( JAVA_LANG_OVERRIDE );
 
-        MethodSource<JavaClassSource> readonlyMethod = viewClass.addMethod()
-                .setName( "setReadOnly" )
-                .setBody( readOnlyMethod.toString() )
-                .setPublic()
-                .setReturnTypeVoid();
-        readonlyMethod.addParameter( boolean.class, SourceGenerationUtil.READONLY_PARAM );
-        readonlyMethod.addAnnotation( JAVA_LANG_OVERRIDE );
+
+        if ( isEditable() ) {
+            MethodSource<JavaClassSource> readonlyMethod = viewClass.addMethod()
+                    .setName( "setReadOnly" )
+                    .setBody( readOnlyMethod.toString() )
+                    .setPublic()
+                    .setReturnTypeVoid();
+            readonlyMethod.addParameter( boolean.class, SourceGenerationUtil.READONLY_PARAM );
+            readonlyMethod.addAnnotation( JAVA_LANG_OVERRIDE );
+        }
     }
+
+    protected abstract void initializeProperty( InputCreatorHelper helper, FieldSource<JavaClassSource> field );
+
+    protected abstract boolean isEditable();
+
+    protected abstract String getWidgetFromHelper( InputCreatorHelper helper );
 
     protected abstract void addAnnotations( SourceGenerationContext context,
                             JavaClassSource viewClass );

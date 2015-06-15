@@ -8,13 +8,28 @@ import org.livespark.formmodeler.codegen.view.impl.java.InputCreatorHelper;
 public abstract class AbstractInputCreatorHelper implements InputCreatorHelper {
 
     @Override
-    public boolean isInjectable() {
+    public boolean isInputInjectable() {
         return true;
     }
 
     @Override
-    public String getInitLiteral() {
+    public String getInputInitLiteral() {
         return null;
+    }
+
+    @Override
+    public boolean isDisplayInjectable() {
+        return false;
+    }
+
+    @Override
+    public String getDisplayInitLiteral() {
+        return "com.google.gwt.user.client.DOM.createTD()";
+    }
+
+    @Override
+    public String getDisplayWidget() {
+        return "com.google.gwt.user.client.Element";
     }
 
     @Override

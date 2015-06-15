@@ -40,8 +40,6 @@ public abstract class BaseView<M extends FormModel> extends Composite implements
         return inputNames;
     }
 
-    public abstract void setReadOnly( boolean readOnly );
-
     protected abstract void initInputNames();
 
 }

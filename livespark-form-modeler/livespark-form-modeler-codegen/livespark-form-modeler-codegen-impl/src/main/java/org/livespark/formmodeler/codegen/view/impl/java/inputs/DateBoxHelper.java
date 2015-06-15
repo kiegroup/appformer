@@ -13,7 +13,7 @@ public class DateBoxHelper extends AbstractInputCreatorHelper {
     }
 
     @Override
-    public boolean isInjectable() {
+    public boolean isInputInjectable() {
         return false;
     }
 
@@ -23,7 +23,7 @@ public class DateBoxHelper extends AbstractInputCreatorHelper {
     }
 
     @Override
-    public String getInitLiteral() {
+    public String getInputInitLiteral() {
         return "new DateBox()";
     }
 }
