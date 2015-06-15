@@ -126,26 +126,34 @@ public class GwtWarBuildService implements BuildService {
 
                         @Override
                         public void onFileCreate( final File file ) {
-                            final String url = "http://" + 
-                                    sreq.getServerName() + ":" + 
-                                    sreq.getServerPort() + "/" + 
-                                    war.getName().replace( ".war", "" );
-                             
-                            appReadyEvent.fire( new AppReady( url ) );
+                           fireAppReadyEvent(war, sreq);
+                        }
+                        
+                        @Override
+                        public void onFileChange(final File file) {
+                            fireAppReadyEvent(war, sreq); 
                         }
                     } );
                     monitor.addObserver( observer );
                     monitor.start();
                 }
             } catch ( Throwable t ) {
-                logBuildException( project,
-                                   t );
+                logBuildException( project, t );
             }
 
             return retVal;
         }
     }
 
+    private void fireAppReadyEvent(File war, ServletRequest sreq) {
+        final String url = "http://" + 
+                sreq.getServerName() + ":" + 
+                sreq.getServerPort() + "/" + 
+                war.getName().replace( ".war", "" );
+         
+        appReadyEvent.fire( new AppReady( url ) );
+    }
+    
     private void sendOutputToClient(String output, String sessionId) {
         MessageBuilder.createMessage()
             .toSubject( "MavenBuilderOutput" )
