@@ -21,6 +21,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -74,13 +75,16 @@ public class GwtWarBuildService implements BuildService {
         private final Project project;
         private final InvocationRequest req;
         private final String sessionId;
+        private final ServletRequest sreq;
 
         private BaseBuildCallable( Project project,
                                    InvocationRequest req,
-                                   String sessionId ) {
+                                   String sessionId,
+                                   ServletRequest sreq) {
             this.project = project;
             this.req = req;
             this.sessionId = sessionId;
+            this.sreq = sreq;
         }
 
         protected abstract List<BuildMessage> postBuildTasks( InvocationResult res );
@@ -98,15 +102,9 @@ public class GwtWarBuildService implements BuildService {
                               .noErrorHandling().sendNowWith( bus );
 
                 req.setOutputHandler( new InvocationOutputHandler() {
-
                     @Override
                     public void consumeLine( String line ) {
-                        MessageBuilder.createMessage()
-                                      .toSubject( "MavenBuilderOutput" )
-                                      .signalling()
-                                      .with( MessageParts.SessionID, sessionId )
-                                      .with( "output", line + "\n" )
-                                      .noErrorHandling().sendNowWith( bus );
+                        sendOutputToClient(line, sessionId);
                     }
                 } );
                 final InvocationResult res = new DefaultInvoker().execute( req );
@@ -114,8 +112,8 @@ public class GwtWarBuildService implements BuildService {
 
                 final File targetDir = new File( req.getPomFile().getParent(), "/target" );
                 final Collection<File> wars = FileUtils.listFiles( targetDir, new String[]{"war"}, false );
-                // TODO handle production mode
                 for ( final File war : wars ) {
+                    sendOutputToClient("Deploying " + war.getName() + "...", sessionId);
                     String home = System.getProperty( "errai.jboss.home" );
                     File deployDir = new File( home, "/standalone/deployments" );
                     FileUtils.deleteQuietly( new File( deployDir, war.getName() ) );
@@ -128,8 +126,12 @@ public class GwtWarBuildService implements BuildService {
 
                         @Override
                         public void onFileCreate( final File file ) {
-                            // TODO port conf.
-                            appReadyEvent.fire( new AppReady( "http://localhost:" + 8888 + "/" + war.getName().replace( ".war", "" ) ) );
+                            final String url = "http://" + 
+                                    sreq.getServerName() + ":" + 
+                                    sreq.getServerPort() + "/" + 
+                                    war.getName().replace( ".war", "" );
+                             
+                            appReadyEvent.fire( new AppReady( url ) );
                         }
                     } );
                     monitor.addObserver( observer );
@@ -144,14 +146,25 @@ public class GwtWarBuildService implements BuildService {
         }
     }
 
+    private void sendOutputToClient(String output, String sessionId) {
+        MessageBuilder.createMessage()
+            .toSubject( "MavenBuilderOutput" )
+            .signalling()
+            .with( MessageParts.SessionID, sessionId )
+            .with( "output", output + "\n" )
+            .noErrorHandling().sendNowWith( bus );
+    }
+    
     private class OnlyBuildCallable extends BaseBuildCallable {
 
         private OnlyBuildCallable( Project project,
                                    InvocationRequest req,
-                                   String sessionId ) {
+                                   String sessionId,
+                                   ServletRequest sreq) {
             super( project,
                    req,
-                   sessionId );
+                   sessionId,
+                   sreq );
         }
 
         @Override
@@ -167,10 +180,12 @@ public class GwtWarBuildService implements BuildService {
 
         private BuildAndDeployCallable( Project project,
                                         InvocationRequest req,
-                                        String sessionId ) {
+                                        String sessionId,
+                                        ServletRequest sreq) {
             super( project,
                    req,
-                   sessionId );
+                   sessionId,
+                   sreq );
         }
 
         @Override
@@ -430,7 +445,8 @@ public class GwtWarBuildService implements BuildService {
                                                                          InvocationRequest req ) {
                                     return new BuildAndDeployCallable( project,
                                                                        req,
-                                                                       sessionId );
+                                                                       sessionId,
+                                                                       RpcContext.getServletRequest());
                                 }
                             } );
     }
