@@ -91,6 +91,8 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     private void addDeleteAnnotations( MethodSource<JavaInterfaceSource> delete ) {
         delete.addAnnotation( Path.class ).setStringValue( "delete" );
         delete.addAnnotation( DELETE.class );
+        delete.addAnnotation( Consumes.class ).setStringValue( "application/json" );
+        delete.addAnnotation( Produces.class ).setStringValue( "application/json" );
     }
 
     private void addTypeSignature( SourceGenerationContext context,

@@ -2,9 +2,6 @@ package org.livespark.formmodeler.codegen.rest.impl;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-
 import org.jboss.forge.roaster.model.source.JavaSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
@@ -40,8 +37,6 @@ public abstract class RoasterRestJavaTemplateSourceGenerator<O extends JavaSourc
         delete.setName( "delete" )
               .setPublic()
               .setReturnType( Boolean.class );
-        delete.addAnnotation( Consumes.class ).setStringValue( "application/json" );
-        delete.addAnnotation( Produces.class ).setStringValue( "application/json" );
         // TODO The parameter should be a unique identifier, not the entire model.
         delete.addParameter( context.getModelName(), "model" );
     }
