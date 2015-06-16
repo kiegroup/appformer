@@ -60,7 +60,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
     protected void addBaseViewFieldsAndMethodImpls( SourceGenerationContext context,
                             JavaClassSource viewClass ) {
         StringBuffer inputNames = new StringBuffer(  );
-        StringBuffer readOnlyMethod = new StringBuffer(  );
+        StringBuffer readOnlyMethodSrc = new StringBuffer(  );
 
         for ( FieldDefinition fieldDefinition : context.getFormDefinition().getFields() ) {
             InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
@@ -80,7 +80,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             property.removeMutator();
 
             inputNames.append( "inputNames.add(\"" ).append( fieldDefinition.getName() ).append( "\");" );
-            readOnlyMethod.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
         }
 
         viewClass.addMethod()
@@ -94,7 +94,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         if ( isEditable() ) {
             MethodSource<JavaClassSource> readonlyMethod = viewClass.addMethod()
                     .setName( "setReadOnly" )
-                    .setBody( readOnlyMethod.toString() )
+                    .setBody( readOnlyMethodSrc.toString() )
                     .setPublic()
                     .setReturnTypeVoid();
             readonlyMethod.addParameter( boolean.class, SourceGenerationUtil.READONLY_PARAM );
