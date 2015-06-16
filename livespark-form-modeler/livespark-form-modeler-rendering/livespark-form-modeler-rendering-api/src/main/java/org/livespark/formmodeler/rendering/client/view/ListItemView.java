@@ -23,8 +23,16 @@ public abstract class ListItemView<M extends FormModel> extends BaseView<M> {
     @Inject
     protected Event<DeleteEvent<M>> deleteEvent;
 
+    @Inject
+    protected Event<EditEvent<M>> editEvent;
+
+    @EventHandler("edit")
+    protected void onEdit( ClickEvent e ) {
+        editEvent.fire( new EditEvent<M>( getModel() ) );
+    }
+
     @EventHandler("delete")
-    protected void onClick( ClickEvent e ) {
+    protected void onDelete( ClickEvent e ) {
         deleteEvent.fire( new DeleteEvent<M>( getModel() ) );
     }
 }

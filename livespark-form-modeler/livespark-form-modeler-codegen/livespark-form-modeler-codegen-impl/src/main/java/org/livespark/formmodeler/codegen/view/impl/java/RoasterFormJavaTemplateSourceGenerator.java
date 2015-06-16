@@ -23,20 +23,33 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
     @Override
     protected void addAdditional( SourceGenerationContext context,
                                   JavaClassSource viewClass ) {
-        addSubmitNewModelImpl( viewClass, context );
+        addCreateModelImpl( viewClass, context );
+        addUpdateModelImpl( viewClass, context );
     }
 
-    private void addSubmitNewModelImpl( JavaClassSource viewClass,
+    private void addCreateModelImpl( JavaClassSource viewClass,
                                         SourceGenerationContext context ) {
-        MethodSource<JavaClassSource> submitNewModel = viewClass.addMethod();
-        submitNewModel.setProtected()
-                      .setName( "submitNewModel" )
+        MethodSource<JavaClassSource> createModel = viewClass.addMethod();
+        createModel.setProtected()
+                      .setName( "createModel" )
                       .addParameter( context.getModelName(), "model" );
-        submitNewModel.addParameter( ERRAI_REMOTE_CALLBACK, "callback" );
-        submitNewModel.setReturnType( void.class );
+        createModel.addParameter( ERRAI_REMOTE_CALLBACK, "callback" );
+        createModel.setReturnType( void.class );
 
-        submitNewModel.setBody( generateRestCall( "create", "callback", context, "model" ) );
+        createModel.setBody( generateRestCall( "create", "callback", context, "model" ) );
     }
+    
+    private void addUpdateModelImpl( JavaClassSource viewClass,
+                                           SourceGenerationContext context ) {
+           MethodSource<JavaClassSource> updateModel = viewClass.addMethod();
+           updateModel.setProtected()
+                         .setName( "updateModel" )
+                         .addParameter( context.getModelName(), "model" );
+           updateModel.addParameter( ERRAI_REMOTE_CALLBACK, "callback" );
+           updateModel.setReturnType( void.class );
+
+           updateModel.setBody( generateRestCall( "update", "callback", context, "model" ) );
+       }
 
     @Override
     protected void addTypeSignature( SourceGenerationContext context,

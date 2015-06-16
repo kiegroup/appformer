@@ -28,7 +28,8 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         }
     }
 
-    private RemoteCallback<M> callback = new NoOpCallback();
+    private RemoteCallback<M> createCallback = new NoOpCallback();
+    private RemoteCallback<Boolean> updateCallback;
 
     @Inject
     @DataField
@@ -37,11 +38,25 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     @Inject
     protected Validator validator;
 
-    public void setCallback( RemoteCallback<M> callback ) {
+    private boolean edit;
+    
+    public void setCreateCallback( RemoteCallback<M> callback ) {
         if ( callback == null ) {
-            this.callback = new NoOpCallback();
+            this.createCallback = new NoOpCallback();
         } else {
-            this.callback = callback;
+            this.createCallback = callback;
+        }
+    }
+    
+    public void setUpdateCallback( RemoteCallback<Boolean> callback ) {
+        if ( callback == null ) {
+            this.updateCallback = new RemoteCallback<Boolean>() {
+                @Override
+                public void callback( Boolean response ) {
+                }
+            };
+        } else {
+            this.updateCallback = callback;
         }
     }
 
@@ -50,14 +65,25 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         super.setModel( model );
         clearFieldErrors();
     }
+    
+    public void setEdit(boolean edit) {
+        this.edit = edit;
+    }
 
     @EventHandler( "submit" )
     private void onSubmit( ClickEvent event ) {
         M model = binder.getModel();
-        submitNewModel( model, callback );
+        if (edit) {
+            updateModel( model, updateCallback );
+        }
+        else {
+            createModel( model, createCallback );
+        }
     }
 
-    protected abstract void submitNewModel( M model, RemoteCallback<M> callback );
+    protected abstract void createModel( M model, RemoteCallback<M> callback );
+    
+    protected abstract void updateModel( M model, RemoteCallback<Boolean> callback );
 
     protected void clearFieldErrors() {
         for ( String field : getInputNames() ) {

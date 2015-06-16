@@ -52,6 +52,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
         update.addAnnotation( Path.class ).setStringValue( "update" );
         update.addAnnotation( PUT.class );
         update.addAnnotation( Consumes.class ).setStringValue( "application/json" );
+        update.addAnnotation( Produces.class ).setStringValue( "application/json" );
     }
 
     private void addCreateMethod( SourceGenerationContext context,

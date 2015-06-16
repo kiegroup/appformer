@@ -45,10 +45,9 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     protected abstract void loadData( RemoteCallback<List<M>> callback );
 
     protected abstract void remoteDelete( M model, RemoteCallback<Boolean> callback );
-
+    
     protected FormView<M> getForm() {
         IOCBeanDef<? extends FormView<M>> beanDef = beanManager.lookupBean( getFormType() );
-
         return beanDef.getInstance();
     }
 
@@ -70,13 +69,13 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                           }
                       } );
     }
-
+    
     @EventHandler( "create" )
     public void onCreateClick( ClickEvent event ) {
         FormView<M> form = getForm();
         final ModalForm modalForm = new ModalForm( form, getFormTitle(), getFormId() );
         
-        form.setCallback( new RemoteCallback<M>() {
+        form.setCreateCallback( new RemoteCallback<M>() {
             @Override
             public void callback( M response ) {
                 items.getValue().add( response );
@@ -88,7 +87,25 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     }
 
     public void onDelete( @Observes DeleteEvent<M> deleteEvent ) {
-        delete( deleteEvent.getDeletedModel() );
+        delete( deleteEvent.getModel() );
+    }
+    
+    public void onEdit( @Observes EditEvent<M> editEvent ) {
+        FormView<M> form = getForm();
+        form.setModel( editEvent.getModel() );
+        form.setEdit( true );
+        final ModalForm modalForm = new ModalForm( form, getFormTitle(), getFormId() );
+        
+        form.setUpdateCallback( new RemoteCallback<Boolean>() {
+            @Override
+            public void callback( Boolean response ) {
+                if (response) {
+                    modalForm.hide();
+                }
+            }
+        } );
+
+        modalForm.show();
     }
 
 }
