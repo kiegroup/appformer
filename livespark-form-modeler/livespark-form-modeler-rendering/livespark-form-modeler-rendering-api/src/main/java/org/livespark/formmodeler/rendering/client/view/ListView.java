@@ -2,6 +2,7 @@ package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.List;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -25,23 +26,11 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     @Inject
     @DataField
-    protected Button delete;
-
-    @Inject
-    @DataField
     @Table(root = "tbody")
     protected ListWidget<M, W> items;
 
     @Inject
     protected SyncBeanManager beanManager;
-
-    protected final DeleteExecutor<M> deleteCommand = new DeleteExecutor<M>() {
-
-        @Override
-        public void execute( M model ) {
-            delete(model);
-        }
-    };
 
     public void init() {
         loadData( new RemoteCallback<List<M>>() {
@@ -76,7 +65,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                           @Override
                           public void callback( Boolean response ) {
                               if ( response ) {
-                                  init();
+                                  items.getValue().remove( model );
                               }
                           }
                       } );
@@ -95,8 +84,8 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         new ModalForm( form, getFormTitle(), getFormId() ).show();
     }
 
-    public interface DeleteExecutor<T> {
-        public void execute(T model);
+    public void onDelete( @Observes DeleteEvent<M> deleteEvent ) {
+        delete( deleteEvent.getDeletedModel() );
     }
 
 }

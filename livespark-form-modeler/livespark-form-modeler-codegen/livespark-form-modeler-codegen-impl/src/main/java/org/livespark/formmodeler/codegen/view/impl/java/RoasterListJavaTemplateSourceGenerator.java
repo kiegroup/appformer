@@ -2,11 +2,9 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_DELETE_EXECUTOR;
 import static org.livespark.formmodeler.codegen.view.impl.java.RestCodegenUtil.generateRestCall;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.forge.roaster.Roaster;
@@ -37,7 +35,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
 
     private void addMethods( JavaClassSource viewClass,
                              SourceGenerationContext context ) {
-        addDeleteExecutorProducer( viewClass, context );
         addLoadDataImpl( viewClass, context );
         addRemoteDeleteImpl( viewClass, context );
         addGetFormTypeImpl( viewClass, context );
@@ -73,15 +70,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
                  .setReturnType( String.class )
                  .setBody( "return \"" + context.getFormDefinition().getName() + "Form\";" )
                  .addAnnotation( Override.class );
-    }
-
-    private void addDeleteExecutorProducer( JavaClassSource viewClass,
-                                            SourceGenerationContext context ) {
-        viewClass.addMethod()
-                 .setName( "produceDeleteCommand" )
-                 .setReturnType( LIST_VIEW_DELETE_EXECUTOR )
-                 .setBody( "return deleteCommand;" ).addAnnotation( Produces.class );
-
     }
 
     private String getPackageName( SourceGenerationContext context ) {
