@@ -57,4 +57,9 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
         if (helper.isDisplayInjectable()) field.addAnnotation( INJECT_INJECT );
         else field.setLiteralInitializer( helper.getDisplayInitLiteral() );
     }
+
+    @Override
+    protected boolean displaysId() {
+        return true;
+    }
 }

@@ -41,5 +41,7 @@ public interface SourceGenerationUtil {
     public static final String ENTITY_SERVICE_CLASS = "org.livespark.formmodeler.rendering.server.rest.BaseEntityService";
 
     public static final String READONLY_PARAM = "readOnly";
+    
+    public static final String JAVAX_PERSISTENCE_ID = "javax.persistence.Id";
 
 }

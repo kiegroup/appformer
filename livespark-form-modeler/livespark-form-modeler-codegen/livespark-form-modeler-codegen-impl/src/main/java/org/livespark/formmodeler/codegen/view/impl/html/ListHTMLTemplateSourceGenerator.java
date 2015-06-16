@@ -22,11 +22,14 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
         final StringBuilder builder = new StringBuilder();
         builder.append( "<div>" );
 
-        builder.append( "<button data-field=\"")
+        builder.append("<div class=\"span8 cols offset2\">")
+               .append( "<button class=\"btn btn-primary\" data-field=\"")
                .append( LIST_WIDGET_BUTTON_NAME )
-               .append( "\">Create</button>" );
+               .append( "\">Create</button>" )
+               .append("</div>");
 
-        builder.append( "<table class=\"table blackened\">" )
+        builder.append("<div class=\"span8 cols\">")
+               .append( "<table class=\"table blackened\">" )
                .append( "<thead>" );
 
         builder.append( "<tr>" );
@@ -71,7 +74,8 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
 
         builder.append( "</tbody>")
                .append( "</table>" )
-               .append( "</div>");
+               .append( "</div>")
+               .append("</div>");
 
         return builder.toString();
     }

@@ -74,14 +74,17 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     @EventHandler( "create" )
     public void onCreateClick( ClickEvent event ) {
         FormView<M> form = getForm();
+        final ModalForm modalForm = new ModalForm( form, getFormTitle(), getFormId() );
+        
         form.setCallback( new RemoteCallback<M>() {
             @Override
             public void callback( M response ) {
                 items.getValue().add( response );
+                modalForm.hide();
             }
         } );
 
-        new ModalForm( form, getFormTitle(), getFormId() ).show();
+        modalForm.show();
     }
 
     public void onDelete( @Observes DeleteEvent<M> deleteEvent ) {

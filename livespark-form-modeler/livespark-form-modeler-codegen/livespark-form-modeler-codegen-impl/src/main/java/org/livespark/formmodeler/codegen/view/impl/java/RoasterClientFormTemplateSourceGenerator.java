@@ -63,6 +63,10 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         StringBuffer readOnlyMethodSrc = new StringBuffer(  );
 
         for ( FieldDefinition fieldDefinition : context.getFormDefinition().getFields() ) {
+            
+            if (fieldDefinition.isAnnotatedId() && !displaysId()) 
+                continue;
+            
             InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
             if (helper == null) continue;
 
@@ -117,6 +121,8 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
     protected abstract void addTypeSignature( SourceGenerationContext context,
                                               JavaClassSource viewClass,
                                               String packageName );
+    
+    protected abstract boolean displaysId();
 
     private String getPackageName( SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName();

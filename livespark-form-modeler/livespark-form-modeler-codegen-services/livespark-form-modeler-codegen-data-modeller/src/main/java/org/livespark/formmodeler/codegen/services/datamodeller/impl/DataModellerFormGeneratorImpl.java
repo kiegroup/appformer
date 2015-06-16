@@ -13,6 +13,7 @@ import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
+import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
@@ -37,7 +38,6 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     protected FormSourcesGenerator formSourcesGenerator;
 
     @Override
-    @SuppressWarnings("rawtypes")
     public void generateFormForDataObject( DataObject dataObject, Path path ) {
 
         if (dataObject.getProperties().isEmpty()) return;
@@ -59,9 +59,9 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
             FieldDefinition field = fieldManager.getDefinitionByValueType( property.getClassName() );
 
             if (field == null) continue;
-
+            field.setAnnotatedId( property.getAnnotation( SourceGenerationUtil.JAVAX_PERSISTENCE_ID ) != null );
             fields.add( field );
-
+            
             field.setName( propertyName );
             String label = getPropertyLabel( property );
             field.setLabel( label );

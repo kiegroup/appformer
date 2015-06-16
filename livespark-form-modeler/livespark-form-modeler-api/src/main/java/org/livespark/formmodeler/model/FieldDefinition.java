@@ -2,6 +2,8 @@ package org.livespark.formmodeler.model;
 
 public abstract class FieldDefinition {
 
+    protected boolean annotatedId;
+
     protected String name;
 
     protected String label;
@@ -56,5 +58,13 @@ public abstract class FieldDefinition {
 
     public void setBindingExpression( String bindingExpression ) {
         this.bindingExpression = bindingExpression;
+    }
+    
+    public boolean isAnnotatedId() {
+        return annotatedId;
+    }
+    
+    public void setAnnotatedId( boolean annotatedId ) {
+        this.annotatedId = annotatedId;
     }
 }

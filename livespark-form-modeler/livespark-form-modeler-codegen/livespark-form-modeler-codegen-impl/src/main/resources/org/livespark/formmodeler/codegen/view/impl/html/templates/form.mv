@@ -3,8 +3,10 @@
         <fieldset>
             @code{tabIndex = 1}
             @foreach{field : formDefinition.fields}
-@includeNamed{field.code}
-            @code{tabIndex = tabIndex + 1}
+              @if{!field.isAnnotatedId()}
+			    @includeNamed{field.code}
+                @code{tabIndex = tabIndex + 1}
+              @end{}
             @end{}
         </fieldset>
     </form>

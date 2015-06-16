@@ -77,4 +77,9 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
         if (helper.isInputInjectable()) field.addAnnotation( INJECT_INJECT );
         else field.setLiteralInitializer( helper.getInputInitLiteral() );
     }
+
+    @Override
+    protected boolean displaysId() {
+        return false;
+    }
 }
