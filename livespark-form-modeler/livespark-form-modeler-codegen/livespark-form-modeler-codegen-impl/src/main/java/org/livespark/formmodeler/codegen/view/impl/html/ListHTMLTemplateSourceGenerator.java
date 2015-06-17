@@ -27,6 +27,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
                .append( LIST_WIDGET_BUTTON_NAME )
                .append( "\">Create</button>" )
                .append("<br>")
+               .append("<br>")
                .append("</div>");
 
         builder.append("<div>")

@@ -84,7 +84,9 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             property.removeMutator();
 
             inputNames.append( "inputNames.add(\"" ).append( fieldDefinition.getName() ).append( "\");" );
-            readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            if (fieldDefinition.getReadonly()) {
+                readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            }
         }
 
         viewClass.addMethod()

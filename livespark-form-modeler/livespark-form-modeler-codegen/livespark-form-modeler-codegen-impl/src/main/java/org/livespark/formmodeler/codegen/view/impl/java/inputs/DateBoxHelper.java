@@ -19,11 +19,11 @@ public class DateBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.datepicker.client.ui.DateBox";
+        return "com.google.gwt.user.datepicker.client.DatePicker";
     }
 
     @Override
     public String getInputInitLiteral() {
-        return "new DateBox()";
+        return "new DatePicker()";
     }
 }
