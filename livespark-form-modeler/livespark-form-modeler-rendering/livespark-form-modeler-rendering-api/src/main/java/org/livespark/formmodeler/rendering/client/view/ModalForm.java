@@ -20,6 +20,7 @@ public class ModalForm {
 
     public void show() {
         m.show();
+        m.getElement().setAttribute( "style", "top: 40%; opacity: 0.9;" );
     }
 
     public void hide() {
