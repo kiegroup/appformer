@@ -20,6 +20,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +39,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 
 import org.apache.commons.io.FileUtils;
@@ -130,7 +133,7 @@ public class GwtWarBuildService implements BuildService {
                 final Collection<File> wars = FileUtils.listFiles( targetDir, new String[]{"war"}, false );
                 for ( final File war : wars ) {
                     sendOutputToClient("Deploying " + war.getName() + "...", sessionId);
-                    String home = System.getProperty( "errai.jboss.home" );
+                    String home = getWildflyHome();
                     File deployDir = new File( home, "/standalone/deployments" );
                     FileUtils.deleteQuietly( new File( deployDir, war.getName() ) );
                     FileUtils.copyFileToDirectory( war, deployDir );
@@ -158,6 +161,32 @@ public class GwtWarBuildService implements BuildService {
             }
 
             return retVal;
+        }
+
+        private String getWildflyHome() throws MalformedURLException, URISyntaxException {
+            String wildflyHome = System.getProperty( "errai.jboss.home" );
+
+            if ( wildflyHome == null ) {
+                wildflyHome = findWildflyHome();
+            }
+
+            return wildflyHome;
+        }
+
+        private String findWildflyHome() throws MalformedURLException, URISyntaxException {
+            final ServletContext context = sreq.getServletContext();
+            final String webXmlPath = context.getRealPath( "/WEB-INF/web.xml" );
+            File cur = new File( webXmlPath );
+
+            do {
+                cur = cur.getParentFile();
+            } while ( cur != null && !cur.getName().contains( "wildfly" ) );
+
+            if ( cur == null ) {
+                throw new RuntimeException( "Could not locate Wildfly/JBoss root directory. Please set the errai.jboss.home system property." );
+            }
+
+            return cur.getAbsolutePath();
         }
     }
 
