@@ -144,10 +144,10 @@ public class GwtWarBuildService implements BuildService {
                         public void onFileCreate( final File file ) {
                            fireAppReadyEvent(war, sreq);
                         }
-                        
+
                         @Override
                         public void onFileChange(final File file) {
-                            fireAppReadyEvent(war, sreq); 
+                            fireAppReadyEvent(war, sreq);
                         }
                     } );
                     monitor.addObserver( observer );
@@ -162,14 +162,14 @@ public class GwtWarBuildService implements BuildService {
     }
 
     private void fireAppReadyEvent(File war, ServletRequest sreq) {
-        final String url = "http://" + 
-                sreq.getServerName() + ":" + 
-                sreq.getServerPort() + "/" + 
+        final String url = "http://" +
+                sreq.getServerName() + ":" +
+                sreq.getServerPort() + "/" +
                 war.getName().replace( ".war", "" );
-         
+
         appReadyEvent.fire( new AppReady( url ) );
     }
-    
+
     private void sendOutputToClient(String output, String sessionId) {
         MessageBuilder.createMessage()
             .toSubject( "MavenBuilderOutput" )
@@ -177,27 +177,6 @@ public class GwtWarBuildService implements BuildService {
             .with( MessageParts.SessionID, sessionId )
             .with( "output", output + "\n" )
             .noErrorHandling().sendNowWith( bus );
-    }
-    
-    private class OnlyBuildCallable extends BaseBuildCallable {
-
-        private OnlyBuildCallable( Project project,
-                                   InvocationRequest req,
-                                   String sessionId,
-                                   ServletRequest sreq) {
-            super( project,
-                   req,
-                   sessionId,
-                   sreq );
-        }
-
-        @Override
-        protected List<BuildMessage> postBuildTasks( InvocationResult res ) {
-            final List<BuildMessage> messages = new ArrayList<BuildMessage>();
-            messages.addAll( processBuildResults( res ) );
-
-            return messages;
-        }
     }
 
     private class BuildAndDeployCallable extends BaseBuildCallable {
@@ -254,7 +233,7 @@ public class GwtWarBuildService implements BuildService {
     private org.uberfire.java.nio.file.Path visitPaths( DirectoryStream<org.uberfire.java.nio.file.Path> directoryStream,
                                                         String projectPrefix,
                                                         org.uberfire.java.nio.file.Path tmp ) {
-        
+
         for ( final org.uberfire.java.nio.file.Path path : directoryStream ) {
             final String destinationPath = filterPrefix( projectPrefix,
                                                          path );
@@ -294,13 +273,6 @@ public class GwtWarBuildService implements BuildService {
 
     @Override
     public BuildResults build( final Project project ) {
-        //      final String sessionId = RpcContext.getQueueSession().getSessionId();
-        //        return buildHelper( project, new CallableProducer() {
-        //            @Override
-        //            public Callable<List<BuildMessage>> get( Project project,  InvocationRequest req ) {
-        //                return new OnlyBuildCallable( project, req, sessionId );
-        //            }
-        //        });
         return new BuildResults();
     }
 
