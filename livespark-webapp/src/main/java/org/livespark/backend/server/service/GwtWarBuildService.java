@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 
 import javax.annotation.Priority;
 import javax.annotation.Resource;
@@ -53,6 +53,7 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationOutputHandler;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildMessage.Level;
@@ -92,75 +93,104 @@ public class GwtWarBuildService implements BuildService {
     private abstract class BaseBuildCallable implements Callable<List<BuildMessage>> {
 
         private final Project project;
-        private final InvocationRequest req;
-        private final String sessionId;
+        protected final InvocationRequest packageRequest;
+        protected final String sessionId;
         private final ServletRequest sreq;
 
         private BaseBuildCallable( Project project,
-                                   InvocationRequest req,
+                                   InvocationRequest packageRequest,
                                    String sessionId,
                                    ServletRequest sreq) {
             this.project = project;
-            this.req = req;
+            this.packageRequest = packageRequest;
             this.sessionId = sessionId;
             this.sreq = sreq;
         }
 
-        protected abstract List<BuildMessage> postBuildTasks( InvocationResult res );
+        protected abstract List<BuildMessage> postBuildTasks( InvocationResult res ) throws Exception;
 
         @Override
         public List<BuildMessage> call() throws Exception {
             final List<BuildMessage> retVal = new ArrayList<BuildMessage>();
 
             try {
-                MessageBuilder.createMessage()
-                              .toSubject( "MavenBuilderOutput" )
-                              .signalling()
-                              .with( MessageParts.SessionID, sessionId )
-                              .with( "clean", Boolean.TRUE )
-                              .noErrorHandling().sendNowWith( bus );
-
-                req.setOutputHandler( new InvocationOutputHandler() {
-                    @Override
-                    public void consumeLine( String line ) {
-                        sendOutputToClient(line, sessionId);
-                    }
-                } );
-                final InvocationResult res = new DefaultInvoker().execute( req );
+                cleanClientConsole();
+                final InvocationResult res = executeRequest();
                 retVal.addAll( postBuildTasks( res ) );
-
-                final File targetDir = new File( req.getPomFile().getParent(), "/target" );
-                final Collection<File> wars = FileUtils.listFiles( targetDir, new String[]{"war"}, false );
-                for ( final File war : wars ) {
-                    sendOutputToClient("Deploying " + war.getName() + "...", sessionId);
-                    String home = getWildflyHome();
-                    File deployDir = new File( home, "/standalone/deployments" );
-                    FileUtils.deleteQuietly( new File( deployDir, war.getName() ) );
-                    FileUtils.copyFileToDirectory( war, deployDir );
-
-                    FileAlterationMonitor monitor = new FileAlterationMonitor( 500 );
-                    IOFileFilter filter = FileFilterUtils.nameFileFilter( war.getName() + ".deployed" );
-                    FileAlterationObserver observer = new FileAlterationObserver( deployDir, filter );
-                    observer.addListener( new FileAlterationListenerAdaptor() {
-
-                        @Override
-                        public void onFileCreate( final File file ) {
-                           fireAppReadyEvent(war, sreq);
-                        }
-
-                        @Override
-                        public void onFileChange(final File file) {
-                            fireAppReadyEvent(war, sreq);
-                        }
-                    } );
-                    monitor.addObserver( observer );
-                    monitor.start();
-                }
             } catch ( Throwable t ) {
                 logBuildException( project, t );
             }
 
             return retVal;
+        }
+
+        private void deploy() throws MalformedURLException, URISyntaxException, IOException, Exception {
+            final File targetDir = new File( packageRequest.getPomFile().getParent(), "/target" );
+            final Collection<File> wars = FileUtils.listFiles( targetDir, new String[]{"war"}, false );
+            for ( final File war : wars ) {
+                sendOutputToClient("Deploying " + war.getName() + "...", sessionId);
+                String home = getWildflyHome();
+                File deployDir = new File( home, "/standalone/deployments" );
+                FileUtils.deleteQuietly( new File( deployDir, war.getName() ) );
+                FileUtils.copyFileToDirectory( war, deployDir );
+
+                FileAlterationMonitor monitor = new FileAlterationMonitor( 500 );
+                IOFileFilter filter = FileFilterUtils.nameFileFilter( war.getName() + ".deployed" );
+                FileAlterationObserver observer = new FileAlterationObserver( deployDir, filter );
+                observer.addListener( new FileAlterationListenerAdaptor() {
+
+                    @Override
+                    public void onFileCreate( final File file ) {
+                       fireAppReadyEvent(war, sreq);
+                    }
+
+                    @Override
+                    public void onFileChange(final File file) {
+                        fireAppReadyEvent(war, sreq);
+                    }
+                } );
+                monitor.addObserver( observer );
+                monitor.start();
+            }
+        }
+
+        protected List<BuildMessage> processBuildResults( InvocationResult res ) {
+            final List<BuildMessage> messages = new ArrayList<BuildMessage>();
+
+            if ( res.getExitCode() == 0 ) {
+                messages.add( createSuccessMessage() );
+            } else {
+                messages.add( createFailureMessage() );
+            }
+
+            return messages;
+        }
+
+        protected List<BuildMessage> deployIfSuccessful( InvocationResult res ) throws MalformedURLException, URISyntaxException, IOException, Exception {
+            if ( res.getExitCode() == 0 )
+                deploy();
+
+            return Collections.emptyList();
+        }
+
+        protected InvocationResult executeRequest() throws Throwable {
+            packageRequest.setOutputHandler( new InvocationOutputHandler() {
+                @Override
+                public void consumeLine( String line ) {
+                    sendOutputToClient(line, sessionId);
+                }
+            } );
+
+            return new DefaultInvoker().execute( packageRequest );
+        }
+
+        private void cleanClientConsole() {
+            MessageBuilder.createMessage()
+                          .toSubject( "MavenBuilderOutput" )
+                          .signalling()
+                          .with( MessageParts.SessionID, sessionId )
+                          .with( "clean", Boolean.TRUE )
+                          .noErrorHandling().sendNowWith( bus );
         }
 
         private String getWildflyHome() throws MalformedURLException, URISyntaxException {
@@ -211,17 +241,17 @@ public class GwtWarBuildService implements BuildService {
     private class BuildAndDeployCallable extends BaseBuildCallable {
 
         private BuildAndDeployCallable( Project project,
-                                        InvocationRequest req,
+                                        InvocationRequest packageRequest,
                                         String sessionId,
                                         ServletRequest sreq) {
             super( project,
-                   req,
+                   packageRequest,
                    sessionId,
                    sreq );
         }
 
         @Override
-        protected List<BuildMessage> postBuildTasks( InvocationResult res ) {
+        protected List<BuildMessage> postBuildTasks( InvocationResult res ) throws Exception {
             final List<BuildMessage> messages = new ArrayList<BuildMessage>();
             messages.addAll( processBuildResults( res ) );
             messages.addAll( deployIfSuccessful( res ) );
@@ -230,10 +260,77 @@ public class GwtWarBuildService implements BuildService {
         }
     }
 
+    private class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable {
+
+        private final InvocationRequest codeServerRequest;
+        private volatile boolean isCodeServerReady = false;
+        private volatile Throwable error = null;
+
+        private BuildAndDeployWithCodeServerCallable( Project project,
+                                                      InvocationRequest packageRequest,
+                                                      InvocationRequest codeServerRequest,
+                                                      String sessionId,
+                                                      ServletRequest sreq ) {
+            super( project,
+                   packageRequest,
+                   sessionId,
+                   sreq );
+            this.codeServerRequest = codeServerRequest;
+        }
+
+        @Override
+        protected InvocationResult executeRequest() throws Throwable {
+            setOutputHandlers();
+
+            execService.submit( new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        new DefaultInvoker().execute( codeServerRequest );
+                    } catch ( MavenInvocationException e ) {
+                        error = e;
+                    }
+                }
+            } );
+            blockUntilCodeServerIsReadyOrError();
+            if ( error != null ) {
+                throw error;
+            }
+
+            return new DefaultInvoker().execute( packageRequest );
+        }
+
+        private void blockUntilCodeServerIsReadyOrError() throws InterruptedException {
+            while ( !( isCodeServerReady || error != null ) ) {
+                Thread.sleep( 500 );
+            }
+        }
+
+        private void setOutputHandlers() {
+            codeServerRequest.setOutputHandler( new InvocationOutputHandler() {
+
+                @Override
+                public void consumeLine( String line ) {
+                    if ( !isCodeServerReady && line.contains( "The code server is ready at" ) ) {
+                        isCodeServerReady = true;
+                    }
+                    sendOutputToClient(line, sessionId);
+                }
+            } );
+            packageRequest.setOutputHandler( new InvocationOutputHandler() {
+                @Override
+                public void consumeLine( String line ) {
+                    sendOutputToClient(line, sessionId);
+                }
+            } );
+        }
+    }
+
     private interface CallableProducer {
 
         Callable<List<BuildMessage>> get( Project project,
-                                          InvocationRequest req );
+                                          InvocationRequest packageRequest,
+                                          InvocationRequest... otherRequests );
     }
 
     private static final Logger logger = LoggerFactory.getLogger( BuildServiceImpl.class );
@@ -306,7 +403,7 @@ public class GwtWarBuildService implements BuildService {
     }
 
     private BuildResults buildHelper( final Project project,
-                                      CallableProducer producer ) {
+                                      final CallableProducer producer ) {
         final BuildResults buildResults = new BuildResults();
         final File tmpRoot;
         try {
@@ -322,13 +419,19 @@ public class GwtWarBuildService implements BuildService {
 
         final File pomXml = assertExists( new File( tmpRoot,
                                                     "pom.xml" ) );
-        final InvocationRequest req = new DefaultInvocationRequest();
+        runMaven( project, producer, buildResults, pomXml );
 
-        req.setPomFile( pomXml );
-        req.setGoals( Collections.singletonList( "package" ) );
+        return buildResults;
+    }
 
-        final Future<List<BuildMessage>> buildFuture = execService.submit( producer.get( project,
-                                                                                         req ) );
+    private void runMaven( final Project project,
+                           final CallableProducer producer,
+                           final BuildResults buildResults,
+                           final File pomXml ) {
+        final InvocationRequest packageRequest = createPackageRequest( pomXml );
+        final InvocationRequest codeServerRequest = createCodeServerRequest( pomXml );
+
+        startBuild( project, producer, packageRequest, codeServerRequest );
 
         try {
 
@@ -345,8 +448,40 @@ public class GwtWarBuildService implements BuildService {
             logger.error( errorMsg.getText(),
                           e );
         }
+    }
 
-        return buildResults;
+    private void startBuild( final Project project,
+                             final CallableProducer producer,
+                             final InvocationRequest packageRequest,
+                             final InvocationRequest codeServerRequest ) {
+        execService.submit( producer.get( project, packageRequest, codeServerRequest ) );
+    }
+
+    private InvocationRequest createCodeServerRequest( final File pomXml ) {
+        final DefaultInvocationRequest codeServerRequest = new DefaultInvocationRequest();
+        final Properties codeServerProperties = new Properties();
+        final File webappFolder = new File( pomXml.getParentFile(), "src/main/webapp" );
+
+        codeServerProperties.setProperty( "gwt.codeServer.launcherDir", webappFolder.getAbsolutePath() );
+
+        codeServerRequest.setPomFile( pomXml );
+        codeServerRequest.setGoals( Collections.singletonList( "gwt:run-codeserver" ) );
+        codeServerRequest.setProperties( codeServerProperties );
+
+        return codeServerRequest;
+    }
+
+    private DefaultInvocationRequest createPackageRequest( final File pomXml ) {
+        final DefaultInvocationRequest packageRequest = new DefaultInvocationRequest();
+        final Properties props = new Properties();
+
+        props.setProperty( "gwt.compiler.skip", "true" );
+
+        packageRequest.setPomFile( pomXml );
+        packageRequest.setGoals( Collections.singletonList( "package" ) );
+        packageRequest.setProperties( props );
+
+        return packageRequest;
     }
 
     private File copyProjectSourceToTmpDir( Project project ) throws IOException {
@@ -378,23 +513,6 @@ public class GwtWarBuildService implements BuildService {
         // TODO add error messages to build results
         logger.error( "Unable to build LiveSpark project, " + project.getProjectName(),
                       t );
-    }
-
-    private List<BuildMessage> deployIfSuccessful( InvocationResult res ) {
-        // TODO implement
-        return Collections.emptyList();
-    }
-
-    private List<BuildMessage> processBuildResults( InvocationResult res ) {
-        final List<BuildMessage> messages = new ArrayList<BuildMessage>();
-
-        if ( res.getExitCode() == 0 ) {
-            messages.add( createSuccessMessage() );
-        } else {
-            messages.add( createFailureMessage() );
-        }
-
-        return messages;
     }
 
     private BuildMessage createFailureMessage() {
@@ -467,9 +585,11 @@ public class GwtWarBuildService implements BuildService {
 
                                 @Override
                                 public Callable<List<BuildMessage>> get( Project project,
-                                                                         InvocationRequest req ) {
-                                    return new BuildAndDeployCallable( project,
-                                                                       req,
+                                                                         InvocationRequest packageRequest,
+                                                                         InvocationRequest... otherRequests ) {
+                                    return new BuildAndDeployWithCodeServerCallable( project,
+                                                                       packageRequest,
+                                                                       otherRequests[0],
                                                                        sessionId,
                                                                        RpcContext.getServletRequest());
                                 }
