@@ -1,4 +1,4 @@
-package org.livespark.backend.server.service;
+package org.livespark.backend.server.service.build;
 
 import java.io.File;
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
     private volatile Throwable error = null;
     private ExecutorService execService;
 
-    public BuildAndDeployWithCodeServerCallable( Project project,
+    BuildAndDeployWithCodeServerCallable( Project project,
                                                   File pomXml,
                                                   String sessionId,
                                                   ServletRequest sreq,

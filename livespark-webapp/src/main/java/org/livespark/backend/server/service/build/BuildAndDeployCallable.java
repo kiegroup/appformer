@@ -1,4 +1,4 @@
-package org.livespark.backend.server.service;
+package org.livespark.backend.server.service.build;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class BuildAndDeployCallable extends BaseBuildCallable {
 
     private final Event<AppReady> appReadyEvent;
 
-    public BuildAndDeployCallable( Project project,
+    BuildAndDeployCallable( Project project,
                                    File pomXml,
                                    String sessionId,
                                    ServletRequest sreq,

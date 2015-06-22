@@ -1,4 +1,4 @@
-package org.livespark.backend.server.service;
+package org.livespark.backend.server.service.build;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -24,7 +23,7 @@ import org.jboss.errai.common.client.protocols.MessageParts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class BaseBuildCallable implements Callable<List<BuildMessage>> {
+public abstract class BaseBuildCallable implements BuildCallable {
 
     private static final Logger logger = LoggerFactory.getLogger( BaseBuildCallable.class );
 
@@ -34,7 +33,7 @@ public abstract class BaseBuildCallable implements Callable<List<BuildMessage>> 
     protected final ServletRequest sreq;
     protected final ServerMessageBus bus;
 
-    public BaseBuildCallable( Project project,
+    BaseBuildCallable( Project project,
                               File pomXml,
                               String sessionId,
                               ServletRequest sreq,

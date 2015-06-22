@@ -21,19 +21,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.ServletRequest;
 
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
@@ -44,9 +42,9 @@ import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.bus.server.api.RpcContext;
-import org.jboss.errai.bus.server.api.ServerMessageBus;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
-import org.livespark.client.AppReady;
+import org.livespark.backend.server.service.build.BuildCallable;
+import org.livespark.backend.server.service.build.BuildCallableFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
@@ -57,7 +55,6 @@ import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardDeleteOption;
 import org.uberfire.workbench.events.ResourceChange;
 
-// TODO make this service support multiple users
 @ApplicationScoped
 @Service
 @Alternative
@@ -65,15 +62,11 @@ import org.uberfire.workbench.events.ResourceChange;
 public class GwtWarBuildService implements BuildService {
 
     private interface CallableProducer {
-
-        Callable<List<BuildMessage>> get( Project project, File pomXml );
+        BuildCallable get( Project project, File pomXml );
     }
 
     @Inject
-    private ServerMessageBus bus;
-
-    @Inject
-    private Event<AppReady> appReadyEvent;
+    private BuildCallableFactory callableFactory;
 
     private static final Logger logger = LoggerFactory.getLogger( BuildServiceImpl.class );
 
@@ -289,18 +282,13 @@ public class GwtWarBuildService implements BuildService {
     public BuildResults buildAndDeploy( Project project,
                                         boolean suppressHandlers ) {
         final String sessionId = RpcContext.getQueueSession().getSessionId();
+        final ServletRequest sreq = RpcContext.getServletRequest();
         return buildHelper( project,
                             new CallableProducer() {
 
                                 @Override
-                                public Callable<List<BuildMessage>> get( Project project, File pomXml ) {
-                                    return new BuildAndDeployWithCodeServerCallable( project,
-                                                                                     pomXml,
-                                                                                     sessionId,
-                                                                                     RpcContext.getServletRequest(),
-                                                                                     bus,
-                                                                                     appReadyEvent,
-                                                                                     execService );
+                                public BuildCallable get( Project project, File pomXml ) {
+                                    return callableFactory.createDevModeDeploymentCallable( project, pomXml, sessionId, sreq );
                                 }
                             } );
     }
