@@ -21,17 +21,16 @@ import org.livespark.client.AppReady;
 public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable {
 
     private volatile boolean isCodeServerReady = false;
-    private boolean isCodeServerLaunched = false;
     private volatile Throwable error = null;
     private ExecutorService execService;
 
     BuildAndDeployWithCodeServerCallable( Project project,
-                                                  File pomXml,
-                                                  String sessionId,
-                                                  ServletRequest sreq,
-                                                  ServerMessageBus bus,
-                                                  Event<AppReady> appReadyEvent,
-                                                  ExecutorService execService ) {
+                                          File pomXml,
+                                          String sessionId,
+                                          ServletRequest sreq,
+                                          ServerMessageBus bus,
+                                          Event<AppReady> appReadyEvent,
+                                          ExecutorService execService ) {
         super( project, pomXml, sessionId, sreq, bus, appReadyEvent );
         this.execService = execService;
     }
@@ -50,7 +49,7 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
             throw error;
         }
 
-        return new DefaultInvoker().execute( createDevModePackageRequest( pomXml ) );
+        return new DefaultInvoker().execute( packageRequest );
     }
 
     protected InvocationRequest createCodeServerRequest( final File pomXml ) {
@@ -81,9 +80,7 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
     }
 
     private void maybeLaunchCodeServer(final InvocationRequest codeServerRequest ) {
-        if ( isCodeServerLaunched ) {
-            isCodeServerReady = true;
-        } else {
+        if ( !isCodeServerReady ) {
             execService.submit( new Runnable() {
                 @Override
                 public void run() {
@@ -110,7 +107,6 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
             public void consumeLine( String line ) {
                 if ( !isCodeServerReady && line.contains( "The code server is ready at" ) ) {
                     isCodeServerReady = true;
-                    isCodeServerLaunched = true;
                 }
                 sendOutputToClient(line, sessionId);
             }

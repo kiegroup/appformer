@@ -1,6 +1,8 @@
 package org.livespark.backend.server.service.build;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -25,6 +27,8 @@ public class BuildCallableFactory {
     @Resource
     private ManagedExecutorService execService;
 
+    private Map<String, BuildCallable> codeServerCallablesBySession = new ConcurrentHashMap<String, BuildCallable>();
+
     public BuildCallable createProductionDeploymentCallable( final Project project,
                                                              final File pomXml,
                                                              final String sessionId,
@@ -41,13 +45,20 @@ public class BuildCallableFactory {
                                                           final File pomXml,
                                                           final String sessionId,
                                                           final ServletRequest sreq ) {
-        return new BuildAndDeployWithCodeServerCallable( project,
-                                                         pomXml,
-                                                         sessionId,
-                                                         sreq,
-                                                         bus,
-                                                         appReadyEvent,
-                                                         execService );
+        // TODO Fix memory leak
+        BuildCallable callable = codeServerCallablesBySession.get( sessionId );
+        if ( callable == null ) {
+            callable = new BuildAndDeployWithCodeServerCallable( project,
+                                                                 pomXml,
+                                                                 sessionId,
+                                                                 sreq,
+                                                                 bus,
+                                                                 appReadyEvent,
+                                                                 execService );
+            codeServerCallablesBySession.put( sessionId, callable );
+        }
+
+        return callable;
     }
 
 }
