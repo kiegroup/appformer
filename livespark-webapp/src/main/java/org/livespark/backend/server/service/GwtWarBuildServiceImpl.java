@@ -38,13 +38,13 @@ import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildMessage.Level;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
-import org.guvnor.common.services.project.builder.service.BuildService;
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.bus.server.api.RpcContext;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
 import org.livespark.backend.server.service.build.BuildCallable;
 import org.livespark.backend.server.service.build.BuildCallableFactory;
+import org.livespark.client.shared.GwtWarBuildService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
@@ -59,7 +59,7 @@ import org.uberfire.workbench.events.ResourceChange;
 @Service
 @Alternative
 @Priority(value = 100)
-public class GwtWarBuildService implements BuildService {
+public class GwtWarBuildServiceImpl implements GwtWarBuildService {
 
     private interface CallableProducer {
         BuildCallable get( Project project, File pomXml );
@@ -281,6 +281,20 @@ public class GwtWarBuildService implements BuildService {
     @Override
     public BuildResults buildAndDeploy( Project project,
                                         boolean suppressHandlers ) {
+        final String sessionId = RpcContext.getQueueSession().getSessionId();
+        final ServletRequest sreq = RpcContext.getServletRequest();
+        return buildHelper( project,
+                            new CallableProducer() {
+
+                                @Override
+                                public BuildCallable get( Project project, File pomXml ) {
+                                    return callableFactory.createProductionDeploymentCallable( project, pomXml, sessionId, sreq );
+                                }
+                            } );
+    }
+
+    @Override
+    public BuildResults buildAndDeployDevMode( Project project ) {
         final String sessionId = RpcContext.getQueueSession().getSessionId();
         final ServletRequest sreq = RpcContext.getServletRequest();
         return buildHelper( project,
