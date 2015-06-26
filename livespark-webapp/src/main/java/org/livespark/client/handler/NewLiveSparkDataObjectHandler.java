@@ -17,9 +17,6 @@
 package org.livespark.client.handler;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,30 +27,22 @@ import javax.inject.Inject;
 
 import org.guvnor.common.services.project.model.Package;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainOptionsHandler;
+import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainHandler;
+import org.kie.workbench.common.screens.datamodeller.client.handlers.DomainHandlerRegistry;
+import org.kie.workbench.common.screens.datamodeller.client.handlers.NewJavaFileTextHandler;
+import org.kie.workbench.common.screens.datamodeller.client.widgets.common.domain.ResourceOptions;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
-import org.kie.workbench.common.screens.javaeditor.client.resources.JavaEditorResources;
-import org.kie.workbench.common.screens.javaeditor.client.type.JavaResourceType;
-import org.kie.workbench.common.widgets.client.handlers.DefaultNewResourceHandler;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
-import org.uberfire.workbench.type.ResourceTypeDefinition;
 
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 @ApplicationScoped
-public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
-
-    @Inject
-    private JavaResourceType resourceType;
+public class NewLiveSparkDataObjectHandler extends NewJavaFileTextHandler {
 
     @Inject
     private BusyIndicatorView busyIndicatorView;
@@ -62,62 +51,45 @@ public class NewLiveSparkDataObjectHandler extends DefaultNewResourceHandler {
     private Caller<DataModelerService> dataModelerService;
 
     @Inject
-    private SyncBeanManager iocBeanManager;
+    private DomainHandlerRegistry domainHandlerRegistry;
     
-    private List<DomainOptionsHandler> optionsHandler = new ArrayList<DomainOptionsHandler>(  );
-
-    @PostConstruct
-    private void setupExtensions() {
-    	 final Collection<IOCBeanDef<DomainOptionsHandler>> optionsHandlerBeans = iocBeanManager.lookupBeans( DomainOptionsHandler.class );
-         if ( optionsHandlerBeans != null && optionsHandlerBeans.size() > 0 ) {
-             for ( IOCBeanDef<DomainOptionsHandler> beanDef : optionsHandlerBeans ) {
-                 optionsHandler.add( beanDef.getInstance() );
-             }
-         }
-         Collections.sort( optionsHandler, new Comparator<DomainOptionsHandler>() {
-             @Override public int compare( DomainOptionsHandler handler1, DomainOptionsHandler handler2 ) {
-                 Integer key1 = handler1.getPriority();
-                 Integer key2 = handler2.getPriority();
-                 return key1.compareTo( key2 );
-             }
-         } );
-
-         for ( DomainOptionsHandler handler : optionsHandler ) {
-             extensions.add( new Pair<String, Widget>( handler.getName(), handler.getWidget() ) );
-         }
-    }
+    private List<ResourceOptions> resourceOptions = new ArrayList<ResourceOptions>();
 
     @Override
     public String getDescription() {
         // TODO make constant
         return "LiveSpark DataObject";
     }
+    
+    @PostConstruct
+    private void setupExtensions() {
 
-    @Override
-    public IsWidget getIcon() {
-        return new Image( JavaEditorResources.INSTANCE.images().typeJava() );
-    }
-
-    @Override
-    public ResourceTypeDefinition getResourceType() {
-        return resourceType;
+        ResourceOptions options;
+        for ( DomainHandler handler : domainHandlerRegistry.getDomainHandlers() ) {
+            options = handler.getResourceOptions( false );
+            if ( options != null ) {
+                resourceOptions.add( options );
+                extensions.add( new Pair<String, Widget>( handler.getName(), options.getWidget() ) );
+            }
+        }
     }
 
     @Override
     public void create( Package pkg,
                         String baseFileName,
                         NewResourcePresenter presenter ) {
-    	  Map<String, Object> params = new HashMap<String, Object>( );
-          for ( DomainOptionsHandler handler : optionsHandler ) {
-              params.putAll( handler.getOptions() );
-          }
+        Map<String, Object> params = new HashMap<String, Object>();
+        for ( ResourceOptions options : resourceOptions ) {
+            params.putAll( options.getOptions() );
+        }
+    	        
           
         busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Saving() );
         dataModelerService.call( getSuccessCallback( presenter ),
                                  new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) )
                           .createJavaFile( idempotentAppend(pkg.getPackageMainSrcPath(), "/client/shared"),
                                            buildFileName( baseFileName,
-                                                          resourceType ),
+                                                          getResourceType() ),
                                            "",
                                            params);
 

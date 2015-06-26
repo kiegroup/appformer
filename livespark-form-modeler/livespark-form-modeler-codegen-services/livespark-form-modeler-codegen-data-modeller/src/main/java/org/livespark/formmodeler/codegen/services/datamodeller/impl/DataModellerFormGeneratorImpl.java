@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import org.kie.workbench.common.screens.datamodeller.model.AnnotationDefinitionTO;
+import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.services.datamodeller.core.Annotation;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
@@ -95,8 +95,8 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     }
 
     private String getPropertyLabel( ObjectProperty property ) {
-        Annotation labelAnnotation = property.getAnnotation( AnnotationDefinitionTO.LABEL_ANNOTATION );
-        if ( labelAnnotation != null ) return labelAnnotation.getValue( AnnotationDefinitionTO.VALUE_PARAM ).toString();
+        Annotation labelAnnotation = property.getAnnotation( MainDomainAnnotations.LABEL_ANNOTATION );
+        if ( labelAnnotation != null ) return labelAnnotation.getValue( MainDomainAnnotations.VALUE_PARAM ).toString();
 
         return property.getName();
     }
