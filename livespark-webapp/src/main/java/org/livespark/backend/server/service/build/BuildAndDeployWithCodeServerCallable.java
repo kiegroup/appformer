@@ -23,10 +23,13 @@ import org.livespark.client.AppReady;
 
 public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable {
 
+    private static final String GWT_CODE_SERVER_PORT = "gwt.codeServerPort";
+    private static final String GWT_CODE_SERVER_LAUNCHER_DIR = "gwt.codeServer.launcherDir";
     private volatile boolean isCodeServerReady = false;
     private volatile Throwable error = null;
     private ExecutorService execService;
     private Future< ? > runningCodeServer;
+    private final CodeServerPortHandle codeServerPort;
 
     BuildAndDeployWithCodeServerCallable( Project project,
                                           File pomXml,
@@ -35,8 +38,10 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
                                           ServletRequest sreq,
                                           ServerMessageBus bus,
                                           Event<AppReady> appReadyEvent,
+                                          CodeServerPortHandle codeServerPort,
                                           ExecutorService execService ) {
         super( project, pomXml, session, queueSessionId, sreq, bus, appReadyEvent );
+        this.codeServerPort = codeServerPort;
         this.execService = execService;
     }
 
@@ -63,7 +68,8 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
         final Properties codeServerProperties = new Properties();
         final File webappFolder = new File( pomXml.getParentFile(), "src/main/webapp" );
 
-        codeServerProperties.setProperty( "gwt.codeServer.launcherDir", webappFolder.getAbsolutePath() );
+        codeServerProperties.setProperty( GWT_CODE_SERVER_LAUNCHER_DIR, webappFolder.getAbsolutePath() );
+        codeServerProperties.setProperty( GWT_CODE_SERVER_PORT, String.valueOf( codeServerPort.getPortNumber() ) );
 
         codeServerRequest.setPomFile( pomXml );
         codeServerRequest.setGoals( Collections.singletonList( "gwt:run-codeserver" ) );
@@ -140,6 +146,7 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
     @Override
     public void valueUnbound( HttpSessionBindingEvent event ) {
         maybeShutdownCodeServer();
+        codeServerPort.relinquishPort();
         super.valueUnbound( event );
     }
 }
