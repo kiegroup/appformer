@@ -29,18 +29,19 @@ public abstract class BaseBuildCallable implements BuildCallable {
 
     protected final Project project;
     protected final File pomXml;
-    protected final String sessionId;
     protected final ServletRequest sreq;
     protected final ServerMessageBus bus;
+    private final String queueSessionId;
+
 
     BaseBuildCallable( Project project,
-                              File pomXml,
-                              String sessionId,
-                              ServletRequest sreq,
-                              ServerMessageBus bus ) {
+                       File pomXml,
+                       String queueSessionId,
+                       ServletRequest sreq,
+                       ServerMessageBus bus ) {
         this.project = project;
         this.pomXml = pomXml;
-        this.sessionId = sessionId;
+        this.queueSessionId = queueSessionId;
         this.sreq = sreq;
         this.bus = bus;
     }
@@ -103,7 +104,7 @@ public abstract class BaseBuildCallable implements BuildCallable {
         packageRequest.setOutputHandler( new InvocationOutputHandler() {
             @Override
             public void consumeLine( String line ) {
-                sendOutputToClient(line, sessionId);
+                sendOutputToClient( line );
             }
         } );
 
@@ -123,7 +124,7 @@ public abstract class BaseBuildCallable implements BuildCallable {
         MessageBuilder.createMessage()
                       .toSubject( "MavenBuilderOutput" )
                       .signalling()
-                      .with( MessageParts.SessionID, sessionId )
+                      .with( MessageParts.SessionID, queueSessionId )
                       .with( "clean", Boolean.TRUE )
                       .noErrorHandling().sendNowWith( bus );
     }
@@ -154,11 +155,11 @@ public abstract class BaseBuildCallable implements BuildCallable {
         return cur.getAbsolutePath();
     }
 
-    protected void sendOutputToClient(String output, String sessionId) {
+    protected void sendOutputToClient( String output ) {
         MessageBuilder.createMessage()
             .toSubject( "MavenBuilderOutput" )
             .signalling()
-            .with( MessageParts.SessionID, sessionId )
+            .with( MessageParts.SessionID, queueSessionId )
             .with( "output", output + "\n" )
             .noErrorHandling().sendNowWith( bus );
     }

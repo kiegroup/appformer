@@ -32,6 +32,7 @@ import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
@@ -279,28 +280,30 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
     @Override
     public BuildResults buildAndDeploy( Project project,
                                         boolean suppressHandlers ) {
-        final String sessionId = RpcContext.getQueueSession().getSessionId();
+        final String queueSessionId = RpcContext.getQueueSession().getSessionId();
+        final HttpSession session = RpcContext.getHttpSession();
         final ServletRequest sreq = RpcContext.getServletRequest();
         return buildHelper( project,
                             new CallableProducer() {
 
                                 @Override
                                 public BuildCallable get( Project project, File pomXml ) {
-                                    return callableFactory.createProductionDeploymentCallable( project, pomXml, sessionId, sreq );
+                                    return callableFactory.createProductionDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
                                 }
                             } );
     }
 
     @Override
     public BuildResults buildAndDeployDevMode( Project project ) {
-        final String sessionId = RpcContext.getQueueSession().getSessionId();
+        final String queueSessionId = RpcContext.getQueueSession().getSessionId();
+        final HttpSession session = RpcContext.getHttpSession();
         final ServletRequest sreq = RpcContext.getServletRequest();
         return buildHelper( project,
                             new CallableProducer() {
 
                                 @Override
                                 public BuildCallable get( Project project, File pomXml ) {
-                                    return callableFactory.createDevModeDeploymentCallable( project, pomXml, sessionId, sreq );
+                                    return callableFactory.createDevModeDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
                                 }
                             } );
     }
