@@ -183,6 +183,11 @@
         <artifactId>livespark-form-modeler-rendering-api</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

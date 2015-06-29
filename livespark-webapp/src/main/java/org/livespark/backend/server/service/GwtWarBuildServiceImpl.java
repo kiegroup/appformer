@@ -16,14 +16,13 @@
 
 package org.livespark.backend.server.service;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -46,11 +45,11 @@ import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
 import org.livespark.backend.server.service.build.BuildCallable;
 import org.livespark.backend.server.service.build.BuildCallableFactory;
 import org.livespark.client.shared.GwtWarBuildService;
+import org.livespark.project.ProjectUnpacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardDeleteOption;
@@ -71,7 +70,7 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
 
     private static final Logger logger = LoggerFactory.getLogger( BuildServiceImpl.class );
 
-    private final DirectoryStream.Filter<org.uberfire.java.nio.file.Path> dotFileFilter = new DotFileFilter();
+    private ProjectUnpacker unpacker;
 
     @Inject
     @Named("ioStrategy")
@@ -82,55 +81,9 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
 
     private Map<Project, File> tmpDirs = new ConcurrentHashMap<Project, File>();
 
-    private void writeSourceFileSystemToDisk( Project project,
-                                              org.uberfire.java.nio.file.Path tmpRoot ) {
-        Path root = project.getRootPath();
-        DirectoryStream<org.uberfire.java.nio.file.Path> directoryStream = Files.newDirectoryStream( org.uberfire.backend.server.util.Paths.convert( root ) );
-
-        visitPaths( directoryStream,
-                    root.toURI(),
-                    tmpRoot );
-    }
-
-    private org.uberfire.java.nio.file.Path visitPaths( DirectoryStream<org.uberfire.java.nio.file.Path> directoryStream,
-                                                        String projectPrefix,
-                                                        org.uberfire.java.nio.file.Path tmp ) {
-
-        for ( final org.uberfire.java.nio.file.Path path : directoryStream ) {
-            final String destinationPath = filterPrefix( projectPrefix,
-                                                         path );
-            if ( Files.isDirectory( path ) ) {
-                new File( tmp.toFile(), destinationPath ).mkdir();
-                visitPaths( Files.newDirectoryStream( path ),
-                            projectPrefix,
-                            tmp );
-            } else {
-                //Don't process dotFiles
-                if ( !dotFileFilter.accept( path ) ) {
-                    //Add new resource
-                    final InputStream is = ioService.newInputStream( path );
-                    final BufferedInputStream bis = new BufferedInputStream( is );
-                    writePath( destinationPath,
-                               bis,
-                               tmp.toUri().toString() );
-                }
-            }
-        }
-
-        return tmp;
-    }
-
-    private String filterPrefix( String pathPrefix,
-                                 org.uberfire.java.nio.file.Path path ) {
-        return path.toUri().toString().substring( pathPrefix.length() + 1 );
-    }
-
-    private void writePath( String destinationPath,
-                            BufferedInputStream bis,
-                            String outputRoot ) {
-        org.uberfire.java.nio.file.Path fullPath = Paths.get( outputRoot + "/" + destinationPath );
-        ioService.copy( bis,
-                        fullPath );
+    @PostConstruct
+    private void setup() {
+        unpacker = new ProjectUnpacker( ioService, new DotFileFilter() );
     }
 
     @Override
@@ -193,8 +146,8 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         final File tmpDir = getOrCreateTmpProjectDir( project );
 
         deleteChangeableContents( tmpDir );
-        writeSourceFileSystemToDisk( project,
-                                     Paths.get( tmpDir.toURI().toString() ) );
+        unpacker.writeSourceFileSystemToDisk( project,
+                                              Paths.get( tmpDir.toURI().toString() ) );
 
         return tmpDir;
     }
