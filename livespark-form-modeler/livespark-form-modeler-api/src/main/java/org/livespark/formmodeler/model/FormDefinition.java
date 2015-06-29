@@ -41,7 +41,6 @@ public class FormDefinition {
         return dataHolders;
     }
 
-    @SuppressWarnings("rawtypes")
     public List<FieldDefinition> getFields() {
         int numFields = getNumberOfFields();
         if ( numFields == 0 ) return Collections.<FieldDefinition>emptyList();

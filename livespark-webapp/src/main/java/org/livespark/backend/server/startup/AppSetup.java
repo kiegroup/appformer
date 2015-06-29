@@ -16,7 +16,6 @@
 
 package org.livespark.backend.server.startup;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,16 +26,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.guvnor.common.services.project.model.GAV;
-import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.server.config.ConfigGroup;
-import org.guvnor.structure.server.config.ConfigType;
-import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -65,8 +59,6 @@ public class AppSetup {
     private static final String LIVE_SPARK_PLAYGROUND_UID = "";
     private static final String LIVE_SPARK_PLAYGROUND_PWD = "";
 
-    private static final String GLOBAL_SETTINGS = "settings";
-
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
@@ -82,9 +74,6 @@ public class AppSetup {
 
     @Inject
     private ConfigurationService configurationService;
-
-    @Inject
-    private ConfigurationFactory configurationFactory;
 
     @Inject
 	private DataModelerService dataModelerService;
@@ -130,40 +119,6 @@ public class AppSetup {
         }
     }
 
-    private void defineGlobalProperties() {
-        List<ConfigGroup> globalConfigGroups = configurationService.getConfiguration( ConfigType.GLOBAL );
-        boolean globalSettingsDefined = false;
-        for ( ConfigGroup globalConfigGroup : globalConfigGroups ) {
-            if ( GLOBAL_SETTINGS.equals( globalConfigGroup.getName() ) ) {
-                globalSettingsDefined = true;
-                break;
-            }
-        }
-        if ( !globalSettingsDefined ) {
-            configurationService.addConfiguration( getGlobalConfiguration() );
-        }
-    }
-
-    private ConfigGroup getGlobalConfiguration() {
-        //Global Configurations used by many of Drools Workbench editors
-        final ConfigGroup group = configurationFactory.newConfigGroup( ConfigType.GLOBAL,
-                                                                       GLOBAL_SETTINGS,
-                                                                       "" );
-        group.addConfigItem( configurationFactory.newConfigItem( "drools.dateformat",
-                                                                 "dd-MMM-yyyy" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( "drools.datetimeformat",
-                                                                 "dd-MMM-yyyy hh:mm:ss" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( "drools.defaultlanguage",
-                                                                 "en" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( "drools.defaultcountry",
-                                                                 "US" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( "build.enable-incremental",
-                                                                 "true" ) );
-        group.addConfigItem( configurationFactory.newConfigItem( "rule-modeller-onlyShowDSLStatements",
-                                                                 "false" ) );
-        return group;
-    }
-
     private Repository createRepository( final String alias,
                                          final String scheme,
                                          final String origin,
@@ -197,33 +152,6 @@ public class AppSetup {
                                                                 repositories );
         }
         return ou;
-    }
-
-    private void createProject( final Repository repository,
-                                final String group,
-                                final String artifact,
-                                final String version ) {
-        final GAV gav = new GAV( group,
-                                 artifact,
-                                 version );
-        try {
-            if ( repository != null ) {
-                final String projectLocation = repository.getUri() + ioService.getFileSystem( URI.create( repository.getUri() ) ).getSeparator() + artifact;
-                if ( !ioService.exists( ioService.get( URI.create( projectLocation ) ) ) ) {
-                    projectService.newProject( repository,
-                                               artifact,
-                                               new POM( gav ),
-                                               "/" );
-                }
-            } else {
-                logger.error( "Repository was not found (is null), cannot add project" );
-            }
-        } catch ( Exception e ) {
-            logger.error( "Unable to bootstrap project {} in repository {}",
-                          gav,
-                          repository.getAlias(),
-                          e );
-        }
     }
 
 }
