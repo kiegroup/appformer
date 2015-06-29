@@ -64,32 +64,50 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
         final Collection<File> wars = getWarFiles();
         File deployDir = getDeployDir();
         for ( final File war : wars ) {
-            sendOutputToClient("Deploying " + war.getName() + "...");
-            deleteWarFile( deployDir, war );
-            FileUtils.copyFileToDirectory( war, deployDir );
+            final File destination = getDeployWarFile( deployDir, war.getName() );
 
-            FileAlterationMonitor monitor = new FileAlterationMonitor( 500 );
-            IOFileFilter filter = FileFilterUtils.nameFileFilter( war.getName() + ".deployed" );
-            FileAlterationObserver observer = new FileAlterationObserver( deployDir, filter );
-            observer.addListener( new FileAlterationListenerAdaptor() {
-
-                @Override
-                public void onFileCreate( final File file ) {
-                   fireAppReadyEvent(war, sreq);
-                }
-
-                @Override
-                public void onFileChange(final File file) {
-                    fireAppReadyEvent(war, sreq);
-                }
-            } );
-            monitor.addObserver( observer );
-            monitor.start();
+            sendOutputToClient( "Deploying " + war.getName() + " as " + destination.getName() + " ..." );
+            replaceDeployedWarFile( war, destination );
+            startDeployedFileObserver( deployDir, destination );
         }
     }
 
-    private void deleteWarFile( final File parent, final File war ) {
-        FileUtils.deleteQuietly( new File( parent, war.getName() ) );
+    private void startDeployedFileObserver( File deployDir,
+                            final File destination ) throws Exception {
+        // FIXME Cleanup old observers
+        FileAlterationMonitor monitor = new FileAlterationMonitor( 500 );
+        IOFileFilter filter = FileFilterUtils.nameFileFilter( destination.getName() + ".deployed" );
+        FileAlterationObserver observer = new FileAlterationObserver( deployDir, filter );
+        observer.addListener( new FileAlterationListenerAdaptor() {
+
+            @Override
+            public void onFileCreate( final File file ) {
+                fireAppReadyEvent( destination, sreq );
+            }
+
+            @Override
+            public void onFileChange(final File file) {
+                fireAppReadyEvent( destination, sreq );
+            }
+        } );
+        monitor.addObserver( observer );
+        monitor.start();
+    }
+
+    private void replaceDeployedWarFile( final File war,
+                            final File destination ) throws IOException {
+        FileUtils.deleteQuietly( destination );
+        FileUtils.copyFile( war, destination );
+    }
+
+    private File getDeployWarFile( File deployDir, String packagedWarName ) {
+        final String deployedWarName = getDeploymentWarName( packagedWarName );
+        final File destination = new File( deployDir, deployedWarName );
+        return destination;
+    }
+
+    private String getDeploymentWarName( String packagedWarName ) {
+        return packagedWarName.replaceAll( "\\.war$", queueSessionId + ".war" );
     }
 
     private File getTargetDir() {
@@ -127,7 +145,7 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
         try {
             final File deploymentDir = getDeployDir();
             for ( final File war : getWarFiles() ) {
-                deleteWarFile( deploymentDir, war );
+                FileUtils.deleteQuietly( getDeployWarFile( deploymentDir, war.getName() ) );
             }
         } catch ( Throwable t ) {
             throw new RuntimeException( t );

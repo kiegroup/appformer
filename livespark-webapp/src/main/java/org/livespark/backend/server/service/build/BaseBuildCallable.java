@@ -31,7 +31,7 @@ public abstract class BaseBuildCallable implements BuildCallable {
     protected final File pomXml;
     protected final ServletRequest sreq;
     protected final ServerMessageBus bus;
-    private final String queueSessionId;
+    protected final String queueSessionId;
 
 
     BaseBuildCallable( Project project,
