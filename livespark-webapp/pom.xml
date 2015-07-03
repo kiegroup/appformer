@@ -25,6 +25,7 @@
   </properties>
 
   <dependencies>
+
     <dependency>
       <groupId>org.jboss.spec</groupId>
       <artifactId>jboss-javaee-7.0</artifactId>
@@ -611,12 +612,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <!--JUnit for Test scenarios -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-
     <!-- hack to disable sisu annotation processing (that scans client side types) -->
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
@@ -703,7 +698,6 @@
     </dependency>
 
     <!-- End Form Modeler Modules -->
-
   </dependencies>
 
   <build>
