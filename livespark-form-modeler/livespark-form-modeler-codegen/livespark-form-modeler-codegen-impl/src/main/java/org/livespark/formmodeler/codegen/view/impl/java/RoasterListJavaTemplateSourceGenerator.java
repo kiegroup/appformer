@@ -16,8 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 import static org.livespark.formmodeler.codegen.view.impl.java.RestCodegenUtil.generateRestCall;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,7 +29,6 @@ import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
 
-
 @ListView
 @ApplicationScoped
 public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
@@ -41,7 +39,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         String packageName = getPackageName( context );
 
         addTypeSignature( context, viewClass, packageName );
-        addTemplatedAnnotation( viewClass );
+        addAnnotations( context, viewClass );
         addImports( context, viewClass );
 
         addMethods( viewClass, context );
@@ -50,42 +48,64 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     }
 
     private void addMethods( JavaClassSource viewClass,
-                             SourceGenerationContext context ) {
+            SourceGenerationContext context ) {
         addLoadDataImpl( viewClass, context );
         addRemoteDeleteImpl( viewClass, context );
         addGetFormTypeImpl( viewClass, context );
         addGetFormTitleImpl( viewClass, context );
         addGetFormIdImpl( viewClass, context );
+        addGetCreationFormModelImpl( viewClass, context );
+        addGetRemoteServiceClassImpl( viewClass, context );
     }
 
     private void addGetFormTypeImpl( JavaClassSource viewClass,
-                                     SourceGenerationContext context ) {
+            SourceGenerationContext context ) {
         viewClass.addMethod()
-                 .setProtected()
-                 .setName( "getFormType" )
-                 .setReturnType( "Class<" + context.getFormViewName() + ">" )
-                 .setBody( "return " + context.getFormViewName() + ".class;" )
-                 .addAnnotation( Override.class );
+                .setProtected()
+                .setName( "getFormType" )
+                .setReturnType( "Class<" + context.getFormViewName() + ">" )
+                .setBody( "return " + context.getFormViewName() + ".class;" )
+                .addAnnotation( Override.class );
     }
 
     private void addGetFormIdImpl( JavaClassSource viewClass,
-                                   SourceGenerationContext context ) {
+            SourceGenerationContext context ) {
         viewClass.addMethod()
-                 .setName( "getFormId" )
-                 .setProtected()
-                 .setReturnType( String.class )
-                 .setBody( "return \"" + context.getFormDefinition().getName() + " Form\";" )
-                 .addAnnotation( Override.class );
+                .setName( "getFormId" )
+                .setProtected()
+                .setReturnType( String.class )
+                .setBody( "return \"" + context.getFormDefinition().getName() + " Form\";" )
+                .addAnnotation( Override.class );
     }
 
     private void addGetFormTitleImpl( JavaClassSource viewClass,
-                                      SourceGenerationContext context ) {
+            SourceGenerationContext context ) {
         viewClass.addMethod()
-                 .setName( "getFormTitle" )
-                 .setProtected()
-                 .setReturnType( String.class )
-                 .setBody( "return \"" + context.getFormDefinition().getName() + "Form\";" )
-                 .addAnnotation( Override.class );
+                .setName( "getFormTitle" )
+                .setProtected()
+                .setReturnType( String.class )
+                .setBody( "return \"" + context.getFormDefinition().getName() + " Form\";" )
+                .addAnnotation( Override.class );
+    }
+
+    private void addGetCreationFormModelImpl( JavaClassSource viewClass,
+            SourceGenerationContext context ) {
+        viewClass.addMethod()
+                .setName( "getCreationFormModel" )
+                .setProtected()
+                .setReturnType( context.getModelName() )
+                .setBody( "return new " + context.getModelName() + "();" )
+                .addAnnotation( Override.class );
+    }
+
+    private void addGetRemoteServiceClassImpl( JavaClassSource viewClass,
+            SourceGenerationContext context ) {
+        viewClass.addMethod()
+                .setName( "getRemoteServiceClass" )
+                .setProtected()
+                .setReturnType( "Class<" + context.getRestServiceName() + ">" )
+                .setBody( "return " + context.getRestServiceName() + ".class;" )
+                .addAnnotation( Override.class );
     }
 
     private String getPackageName( SourceGenerationContext context ) {
@@ -93,20 +113,21 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     }
 
     private void addTypeSignature( SourceGenerationContext context,
-                            JavaClassSource viewClass,
-                            String packageName ) {
+            JavaClassSource viewClass,
+            String packageName ) {
         viewClass.setPackage( packageName )
-                 .setPublic()
-                 .setName( context.getListViewName() )
-                 .setSuperType( LIST_VIEW_CLASS + "<" + context.getModelName() + ", " + context.getListItemViewName() + ">" );
+                .setPublic()
+                .setName( context.getListViewName() )
+                .setSuperType( LIST_VIEW_CLASS + "<" + context.getModelName() + ", " + context.getListItemViewName() + ">" );
     }
 
-    private void addTemplatedAnnotation( JavaClassSource viewClass ) {
+    private void addAnnotations( SourceGenerationContext context, JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
+        viewClass.addAnnotation( FORM_MODEL_ANNOTATION ).setStringValue( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
     }
 
     private void addImports( SourceGenerationContext context,
-                            JavaClassSource viewClass ) {
+            JavaClassSource viewClass ) {
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getFormViewName() );
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getListItemViewName() );
@@ -116,17 +137,17 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
     private void addRemoteDeleteImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {
         MethodSource<JavaClassSource> remoteDelete = viewClass.addMethod();
         remoteDelete.setProtected()
-                    .setName( "remoteDelete" )
-                    .setReturnType( void.class )
-                    .addParameter( context.getModelName(), "model" );
+                .setName( "remoteDelete" )
+                .setReturnType( void.class )
+                .addParameter( context.getModelName(), "model" );
         remoteDelete.addParameter( RemoteCallback.class,
-                                   "callback" );
+                "callback" );
         remoteDelete.addAnnotation( Override.class );
 
         remoteDelete.setBody( generateRestCall( "delete",
-                                                "callback",
-                                                context,
-                                                "model") );
+                "callback",
+                context,
+                "model") );
     }
 
     private void addLoadDataImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {
@@ -135,12 +156,12 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
                 .setName( "loadData" )
                 .setReturnType( void.class )
                 .addParameter( RemoteCallback.class,
-                               "callback" );
+                        "callback" );
         loadData.addAnnotation( Override.class );
 
         loadData.setBody( generateRestCall( "load",
-                                            "callback",
-                                            context ) );
+                "callback",
+                context ) );
     }
 
 }

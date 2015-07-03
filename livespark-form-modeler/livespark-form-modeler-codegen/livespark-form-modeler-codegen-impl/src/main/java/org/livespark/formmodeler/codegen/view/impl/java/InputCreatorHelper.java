@@ -16,6 +16,9 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.model.FieldDefinition;
+
 /**
  * Created by pefernan on 4/28/15.
  */
@@ -26,7 +29,7 @@ public interface InputCreatorHelper {
     String getDisplayInitLiteral();
     String getInputWidget();
     String getDisplayWidget();
-    String getInputInitLiteral();
+    String getInputInitLiteral( SourceGenerationContext context, FieldDefinition fieldDefinition );
 
     String getReadonlyMethod( String fieldName, String readonlyParam );
 }

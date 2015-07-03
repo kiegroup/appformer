@@ -50,7 +50,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
     protected void init() {
         for ( InputCreatorHelper helper : creatorInstances ) {
             creatorHelpers.put( helper.getSupportedFieldType(),
-                                helper );
+                    helper );
         }
     }
 
@@ -71,18 +71,18 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
     }
 
     protected abstract void addAdditional( SourceGenerationContext context,
-                                          JavaClassSource viewClass );
+            JavaClassSource viewClass );
 
     protected void addBaseViewFieldsAndMethodImpls( SourceGenerationContext context,
-                            JavaClassSource viewClass ) {
+            JavaClassSource viewClass ) {
         StringBuffer inputNames = new StringBuffer(  );
         StringBuffer readOnlyMethodSrc = new StringBuffer(  );
 
         for ( FieldDefinition fieldDefinition : context.getFormDefinition().getFields() ) {
-            
-            if (fieldDefinition.isAnnotatedId() && !displaysId()) 
+
+            if ((fieldDefinition.isAnnotatedId() && !displaysId()) || isBanned( fieldDefinition ))
                 continue;
-            
+
             InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
             if (helper == null) continue;
 
@@ -91,7 +91,9 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             FieldSource<JavaClassSource> field = property.getField();
             field.setPrivate();
 
-            initializeProperty( helper, field );
+            initializeProperty( helper, context,fieldDefinition, field );
+
+            if (helper instanceof RequiresCustomCode ) ((RequiresCustomCode )helper).addCustomCode( fieldDefinition, context, viewClass );
 
             field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
             field.addAnnotation( ERRAI_DATAFIELD );
@@ -100,9 +102,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             property.removeMutator();
 
             inputNames.append( "inputNames.add(\"" ).append( fieldDefinition.getName() ).append( "\");" );
-            if (fieldDefinition.getReadonly()) {
-                readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
-            }
+            readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
         }
 
         viewClass.addMethod()
@@ -124,23 +124,25 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         }
     }
 
-    protected abstract void initializeProperty( InputCreatorHelper helper, FieldSource<JavaClassSource> field );
+    protected abstract void initializeProperty( InputCreatorHelper helper, SourceGenerationContext context, FieldDefinition fieldDefinition, FieldSource<JavaClassSource> field );
 
     protected abstract boolean isEditable();
 
     protected abstract String getWidgetFromHelper( InputCreatorHelper helper );
 
     protected abstract void addAnnotations( SourceGenerationContext context,
-                            JavaClassSource viewClass );
+            JavaClassSource viewClass );
 
     protected abstract void addImports( SourceGenerationContext context,
-                            JavaClassSource viewClass );
+            JavaClassSource viewClass );
 
     protected abstract void addTypeSignature( SourceGenerationContext context,
-                                              JavaClassSource viewClass,
-                                              String packageName );
-    
+            JavaClassSource viewClass,
+            String packageName );
+
     protected abstract boolean displaysId();
+
+    protected abstract boolean isBanned( FieldDefinition definition );
 
     private String getPackageName( SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName();

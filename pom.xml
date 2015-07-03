@@ -74,6 +74,7 @@
   </issueManagement>
 
   <modules>
+    <module>livespark-commons</module>
     <module>livespark-form-modeler</module>
     <module>livespark-webapp</module>
   </modules>

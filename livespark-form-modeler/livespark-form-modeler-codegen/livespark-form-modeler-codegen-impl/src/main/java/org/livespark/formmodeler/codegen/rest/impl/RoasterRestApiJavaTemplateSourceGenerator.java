@@ -16,6 +16,8 @@
 
 package org.livespark.formmodeler.codegen.rest.impl;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.BASE_REST_SERVICE;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -50,7 +52,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addCrudMethods( SourceGenerationContext context,
-                                 JavaInterfaceSource restIface ) {
+            JavaInterfaceSource restIface ) {
         addCreateMethod( context, restIface );
         addLoadMethod( context, restIface );
         addUpdateMethod( context, restIface );
@@ -58,7 +60,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addUpdateMethod( SourceGenerationContext context,
-                                  JavaInterfaceSource restIface ) {
+            JavaInterfaceSource restIface ) {
         MethodSource<JavaInterfaceSource> update = restIface.addMethod();
         setUpdateMethodSignature( context, update );
         addUpdateAnnotations( update );
@@ -72,7 +74,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addCreateMethod( SourceGenerationContext context,
-                                  JavaInterfaceSource restIface ) {
+            JavaInterfaceSource restIface ) {
         MethodSource<JavaInterfaceSource> create = restIface.addMethod(  );
 
         setCreateMethodSignature( context, create );
@@ -86,7 +88,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addLoadMethod( SourceGenerationContext context,
-                                JavaInterfaceSource restIface ) {
+            JavaInterfaceSource restIface ) {
         MethodSource<JavaInterfaceSource> load = restIface.addMethod(  );
         setLoadMethodSignature( context, load );
         addLoadAnnotations( load );
@@ -99,7 +101,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addDeleteMethod( SourceGenerationContext context,
-                                  JavaInterfaceSource restIface ) {
+            JavaInterfaceSource restIface ) {
         MethodSource<JavaInterfaceSource> delete = restIface.addMethod(  );
         setDeleteMethodSignature( context, delete );
         addDeleteAnnotations( delete );
@@ -113,11 +115,12 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
     }
 
     private void addTypeSignature( SourceGenerationContext context,
-                                   JavaInterfaceSource restIface,
-                                   String packageName ) {
+            JavaInterfaceSource restIface,
+            String packageName ) {
         restIface.setPackage( packageName )
-                 .setPublic()
-                 .setName( context.getRestServiceName() );
+                .setPublic()
+                .setName( context.getRestServiceName() )
+                .addInterface( BASE_REST_SERVICE + "<" + context.getModelName() + ">" );
     }
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {
@@ -129,4 +132,9 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
         return context.getSharedPackage().getPackageName();
     }
 
+    @Override
+    protected void addImports( SourceGenerationContext context, JavaInterfaceSource restIface ) {
+        super.addImports( context, restIface );
+        restIface.addImport( BASE_REST_SERVICE );
+    }
 }

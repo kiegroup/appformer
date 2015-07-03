@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.model.impl;
-
-import org.jboss.errai.common.client.api.annotations.Portable;
+package org.livespark.formmodeler.model.impl.relations;
 
 /**
- * Created by pefernan on 3/19/15.
+ * Created by pefernan on 7/1/15.
  */
-@Portable
-public class FloatBoxFieldDefinition extends AbstractIntputFieldDefinition {
+public interface EntityRelationField {
+    public String getStandaloneType();
 
-    @Override
-    public String getStandaloneClassName() {
-        return Float.class.getName();
-    }
+    public void setStandaloneType( String standaloneType );
 }

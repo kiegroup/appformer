@@ -29,18 +29,22 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.BigDecimalBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.BigIntegerBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.ByteBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.CharacterBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.DateBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.DoubleBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.FloatBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.IntegerBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.LongBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.ShortBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
+import org.livespark.formmodeler.model.MultipleField;
+import org.livespark.formmodeler.model.impl.basic.BigDecimalBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.BigIntegerBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.ByteBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.CharacterBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DoubleBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.FloatBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.IntegerBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.LongBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.ShortBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,78 +57,100 @@ public class FieldManagerImpl implements FieldManager {
     private static transient Logger log = LoggerFactory.getLogger( FieldManagerImpl.class );
 
     @Inject
-    private Instance<FieldDefinition> instances;
+    private Instance<FieldDefinition> definitions;
 
-    protected Map<String, String> defaultFields = new HashMap<String, String>(  );
+    protected Map<String, FieldDefinition> basicFieldDefinitions = new HashMap<String, FieldDefinition>(  );
+
+    protected Map<String, List<String>> basicSingleCompatibleDefinitions = new HashMap<String, List<String>>(  );
+
+    protected Map<String, FieldDefinition> basicMultipleDefinitions = new HashMap<String, FieldDefinition>(  );
+
+    protected String defaultSingleEntity = SubFormFieldDefinition.class.getName();
+    protected Map<String, FieldDefinition> singleEntityDefinitions = new HashMap<String, FieldDefinition>(  );
+
+    protected String defaultMultipleEntity = MultipleSubFormFieldDefinition.class.getName();
+    protected Map<String, FieldDefinition> multipleEntityDefinitions = new HashMap<String, FieldDefinition>(  );
+
+
+    protected Map<String, String> defaultBasicTypes = new HashMap<String, String>(  );
 
     {
-        defaultFields.put( BigDecimal.class.getName(), BigDecimalBoxFieldDefinition.class.getName() );
-        defaultFields.put( BigInteger.class.getName(), BigIntegerBoxFieldDefinition.class.getName() );
-        defaultFields.put( Byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
-        defaultFields.put( byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
-        defaultFields.put( Boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
-        defaultFields.put( boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
-        defaultFields.put( Character.class.getName(), CharacterBoxFieldDefinition.class.getName() );
-        defaultFields.put( char.class.getName(), CharacterBoxFieldDefinition.class.getName() );
-        defaultFields.put( Date.class.getName(), DateBoxFieldDefinition.class.getName() );
-        defaultFields.put( Double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
-        defaultFields.put( double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
-        defaultFields.put( Float.class.getName(), FloatBoxFieldDefinition.class.getName() );
-        defaultFields.put( float.class.getName(), FloatBoxFieldDefinition.class.getName() );
-        defaultFields.put( Integer.class.getName(), IntegerBoxFieldDefinition.class.getName() );
-        defaultFields.put( int.class.getName(), IntegerBoxFieldDefinition.class.getName() );
-        defaultFields.put( Long.class.getName(), LongBoxFieldDefinition.class.getName() );
-        defaultFields.put( long.class.getName(), LongBoxFieldDefinition.class.getName() );
-        defaultFields.put( Short.class.getName(), ShortBoxFieldDefinition.class.getName() );
-        defaultFields.put( short.class.getName(), ShortBoxFieldDefinition.class.getName() );
-        defaultFields.put( String.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( BigDecimal.class.getName(), BigDecimalBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( BigInteger.class.getName(), BigIntegerBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Character.class.getName(), CharacterBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( char.class.getName(), CharacterBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Date.class.getName(), DateBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Float.class.getName(), FloatBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( float.class.getName(), FloatBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Integer.class.getName(), IntegerBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( int.class.getName(), IntegerBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Long.class.getName(), LongBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( long.class.getName(), LongBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Short.class.getName(), ShortBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( short.class.getName(), ShortBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( String.class.getName(), TextBoxFieldDefinition.class.getName() );
     }
 
-    protected Map<String, FieldDefinition> fieldDefinitions = new HashMap<String, FieldDefinition>(  );
-
-    protected Map<String, List<String>> compatibleFields = new HashMap<String, List<String>>(  );
-
+    protected Map<String, String> defaultMultiplesTypes = new HashMap<String, String>(  );
 
     @PostConstruct
     protected void init() {
 
-        for (FieldDefinition definition : instances) {
-            fieldDefinitions.put( definition.getCode(), definition );
-            List<String> compatibles = compatibleFields.get( definition.getStandaloneClassName() );
-            if (compatibles == null) {
-                compatibles = new ArrayList<String>(  );
-                compatibleFields.put( definition.getStandaloneClassName(), compatibles );
-                if (definition.getStandaloneClassName().equals( Boolean.class.getName() )) {
-                    compatibleFields.put( boolean.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Byte.class.getName() ) ) {
-                    compatibleFields.put( byte.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Character.class.getName() )) {
-                    compatibleFields.put( char.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Double.class.getName() ) ) {
-                    compatibleFields.put( double.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Float.class.getName() ) ) {
-                    compatibleFields.put( float.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Integer.class.getName() ) ) {
-                    compatibleFields.put( int.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Long.class.getName() ) ) {
-                    compatibleFields.put( long.class.getName(), compatibles );
-                } else if (definition.getStandaloneClassName().equals( Short.class.getName() ) ) {
-                    compatibleFields.put( short.class.getName(), compatibles );
+        for (FieldDefinition definition : definitions ) {
+            if (definition instanceof EntityRelationField) {
+                if (definition instanceof MultipleField) multipleEntityDefinitions.put( definition.getCode(), definition );
+                else singleEntityDefinitions.put( definition.getCode(), definition );
+            } else {
+                if (definition instanceof MultipleField) {
+                    basicMultipleDefinitions.put( definition.getCode(), definition );
+                } else {
+                    basicFieldDefinitions.put( definition.getCode(), definition );
+                    List<String> compatibles = basicSingleCompatibleDefinitions.get( definition.getStandaloneClassName() );
+                    if (compatibles == null) {
+                        compatibles = new ArrayList<String>(  );
+                        basicSingleCompatibleDefinitions.put( definition.getStandaloneClassName(), compatibles );
+                        if (definition.getStandaloneClassName().equals( Boolean.class.getName() )) {
+                            basicSingleCompatibleDefinitions.put( boolean.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Byte.class.getName() ) ) {
+                            basicSingleCompatibleDefinitions.put( byte.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Character.class.getName() )) {
+                            basicSingleCompatibleDefinitions.put( char.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Double.class.getName() ) ) {
+                            basicSingleCompatibleDefinitions.put( double.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Float.class.getName() ) ) {
+                            basicSingleCompatibleDefinitions.put( float.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Integer.class.getName() ) ) {
+                            basicSingleCompatibleDefinitions.put( int.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Long.class.getName() ) ) {
+                            basicSingleCompatibleDefinitions.put( long.class.getName(), compatibles );
+                        } else if (definition.getStandaloneClassName().equals( Short.class.getName() ) ) {
+                            basicSingleCompatibleDefinitions.put( short.class.getName(), compatibles );
+                        }
+                    }
+                    compatibles.add( definition.getCode() );
                 }
             }
-            compatibles.add( definition.getCode() );
         }
     }
 
     @Override
     public FieldDefinition getDefinitionByType( String typeCode ) {
-        FieldDefinition definition = fieldDefinitions.get( typeCode );
-        if (definition != null) {
-            try {
+        try {
+            FieldDefinition definition = basicFieldDefinitions.get( typeCode );
+            if (definition != null) {
                 return definition.getClass().newInstance();
-            } catch ( Exception e ) {
-                log.warn( "Error creating FieldDefinition: ", e );
             }
+
+            definition = singleEntityDefinitions.get( typeCode );
+            if (definition != null) return definition.getClass().newInstance();
+        } catch ( Exception e ) {
+            log.warn( "Error creating FieldDefinition: ", e );
         }
         return null;
     }
@@ -136,14 +162,38 @@ public class FieldManagerImpl implements FieldManager {
 
     @Override
     public FieldDefinition getDefinitionByValueType( String className ) {
-        FieldDefinition definition = fieldDefinitions.get( defaultFields.get( className ) );
-        if (definition != null) {
-            try {
-                return definition.getClass().newInstance();
-            } catch ( Exception e ) {
-                log.warn( "Error creating FieldDefinition: ", e );
+        return getDefinitionByValueType( className, null );
+    }
+
+    @Override
+    public  FieldDefinition getDefinitionByValueType( String className, String type ) {
+        try {
+            if (isListType( className )) {
+                FieldDefinition definition = basicMultipleDefinitions.get( defaultMultiplesTypes.get( type ) );
+                if (definition != null)
+                    return definition.getClass().newInstance();
+                else {
+                    definition = multipleEntityDefinitions.get( defaultMultipleEntity ).getClass().newInstance();
+                    ((EntityRelationField)definition).setStandaloneType( type );
+                    return definition;
+                }
+            } else {
+                FieldDefinition definition = basicFieldDefinitions.get( defaultBasicTypes.get( className ) );
+                if (definition != null) {
+                    return definition.getClass().newInstance();
+                } else {
+                    definition = singleEntityDefinitions.get( defaultSingleEntity ).getClass().newInstance();
+                    ((EntityRelationField)definition).setStandaloneType( className );
+                    return definition;
+                }
             }
+        } catch ( Exception e ) {
+            log.warn( "Error creating FieldDefinition: ", e );
         }
         return null;
+    }
+
+    public boolean isListType(String className) {
+        return List.class.getName().equals( className );
     }
 }

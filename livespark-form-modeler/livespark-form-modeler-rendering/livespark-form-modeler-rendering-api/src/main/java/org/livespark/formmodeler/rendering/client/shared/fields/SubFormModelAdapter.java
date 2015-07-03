@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.livespark.formmodeler.rendering.client.shared.fields;
 
-package org.livespark.formmodeler.model.impl;
-
-import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.FormView;
 
 /**
- * Created by pefernan on 3/19/15.
+ * Created by pefernan on 7/2/15.
  */
-@Portable
-public class IntegerBoxFieldDefinition extends AbstractIntputFieldDefinition {
-
-    @Override
-    public String getStandaloneClassName() {
-        return Integer.class.getName();
-    }
+public interface SubFormModelAdapter<M, F extends FormModel> {
+    public F getFormModelForModel( M model );
+    public Class<? extends FormView<F>> getFormViewType();
 }

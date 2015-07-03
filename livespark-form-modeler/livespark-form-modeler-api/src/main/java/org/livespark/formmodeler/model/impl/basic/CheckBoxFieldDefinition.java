@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.model.impl;
+package org.livespark.formmodeler.model.impl.basic;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.model.FieldDefinition;
 
 /**
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class DoubleBoxFieldDefinition extends AbstractIntputFieldDefinition {
+public class CheckBoxFieldDefinition extends FieldDefinition {
 
     @Override
     public String getStandaloneClassName() {
-        return Double.class.getName();
+        return Boolean.class.getName();
     }
 }

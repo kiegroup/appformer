@@ -21,6 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListView;
+import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.model.FieldDefinition;
 
 @ListView
@@ -39,62 +40,68 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
         builder.append( "<div>" );
 
         builder.append("<div class=\"create-container\">")
-               .append( "<button class=\"btn btn-primary\" data-field=\"")
-               .append( LIST_WIDGET_BUTTON_NAME )
-               .append( "\">Create</button>" )
-               .append("<br>")
-               .append("<br>")
-               .append("</div>");
+                .append( "<button class=\"btn btn-primary\" data-field=\"")
+                .append( LIST_WIDGET_BUTTON_NAME )
+                .append( "\">Create</button>" )
+                .append("<br>")
+                .append("<br>")
+                .append("</div>");
 
         builder.append("<div>")
-               .append( "<table class=\"table blackened\">" )
-               .append( "<thead>" );
+                .append( "<table class=\"table blackened\">" )
+                .append( "<thead>" );
 
         builder.append( "<tr>" );
         for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
+            if ( !isSupported( field ) ) continue;
             String label = field.getLabel();
             if ( label == null || "".equals( label ) ) {
                 label = field.getName();
             }
 
             builder.append( "<th>" )
-                   .append( label )
-                   .append( "</th>" );
+                    .append( label )
+                    .append( "</th>" );
         }
         builder.append( "</tr>" );
 
         final String bodyId = context.getListTBodyId();
         builder.append( "</thead>" )
-               .append( "<tbody id=\"" )
-               .append( bodyId )
-               .append( "\" data-field=\"" )
-               .append( LIST_WIDGET_FIELD_NAME )
-               .append( "\">" );
+                .append( "<tbody id=\"" )
+                .append( bodyId )
+                .append( "\" data-field=\"" )
+                .append( LIST_WIDGET_FIELD_NAME )
+                .append( "\">" );
 
         final String rowId = context.getListItemRowId();
         builder.append( "<tr valign=\"top\" class=\"item\" id=\"")
-               .append( rowId )
-               .append( "\">" );
+                .append( rowId )
+                .append( "\">" );
         for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
+            if ( !isSupported( field ) ) continue;
             builder.append( "<td data-field=\"" )
-                   .append( field.getName() )
-                   .append( "\"></td>" );
+                    .append( field.getName() )
+                    .append( "\"></td>" );
         }
 
         builder.append( "<td><button class=\"btn btn-primary\" data-field=\"" )
-               .append( EDIT_BUTTON_NAME )
-               .append( "\">Edit</button></td>" );
+                .append( EDIT_BUTTON_NAME )
+                .append( "\">Edit</button></td>" );
         builder.append( "<td><button class=\"btn btn-primary\" data-field=\"" )
-               .append( DELETE_BUTTON_NAME )
-               .append( "\">Delete</button></td>" );
+                .append( DELETE_BUTTON_NAME )
+                .append( "\">Delete</button></td>" );
 
         builder.append( "</tr>" );
 
         builder.append( "</tbody>")
-               .append( "</table>" )
-               .append( "</div>")
-               .append("</div>");
+                .append( "</table>" )
+                .append( "</div>")
+                .append("</div>");
 
         return builder.toString();
+    }
+
+    protected boolean isSupported(FieldDefinition definition) {
+        return !(definition instanceof EntityRelationField );
     }
 }

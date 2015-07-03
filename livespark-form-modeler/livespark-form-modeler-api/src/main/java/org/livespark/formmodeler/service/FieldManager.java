@@ -54,4 +54,6 @@ public interface FieldManager {
     FieldDefinition getDefinitionByValueType( Class clazz );
 
     FieldDefinition getDefinitionByValueType( String className );
+
+    FieldDefinition getDefinitionByValueType( String className, String type );
 }

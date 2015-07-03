@@ -1,14 +1,11 @@
 <div>
     <form onsubmit="false">
         <fieldset>
-            @code{tabIndex = 1}
             @foreach{field : formDefinition.fields}
               @if{!field.isAnnotatedId()}
 			    @includeNamed{field.code}
-                @code{tabIndex = tabIndex + 1}
               @end{}
             @end{}
         </fieldset>
     </form>
-    <button data-field="submit">Submit</button>
 </div>

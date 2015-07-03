@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.model.impl;
+package org.livespark.formmodeler.model.impl.basic;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -22,10 +22,10 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class LongBoxFieldDefinition extends AbstractIntputFieldDefinition {
+public class TextBoxFieldDefinition extends AbstractIntputFieldDefinition {
 
     @Override
     public String getStandaloneClassName() {
-        return Long.class.getName();
+        return String.class.getName();
     }
 }

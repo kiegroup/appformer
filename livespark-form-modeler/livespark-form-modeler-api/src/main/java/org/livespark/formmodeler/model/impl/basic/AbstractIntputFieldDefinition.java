@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.model.impl;
+package org.livespark.formmodeler.model.impl.basic;
 
 import org.livespark.formmodeler.model.FieldDefinition;
 

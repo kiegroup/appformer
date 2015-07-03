@@ -37,69 +37,14 @@ import com.google.gwt.event.dom.client.ClickEvent;
  */
 public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
-    private class NoOpCallback implements RemoteCallback<M> {
-
-        @Override
-        public void callback( M response ) {
-        }
-    }
-
-    private RemoteCallback<M> createCallback = new NoOpCallback();
-    private RemoteCallback<Boolean> updateCallback;
-
-    @Inject
-    @DataField
-    private Button submit;
-
     @Inject
     protected Validator validator;
-
-    private boolean edit;
-    
-    public void setCreateCallback( RemoteCallback<M> callback ) {
-        if ( callback == null ) {
-            this.createCallback = new NoOpCallback();
-        } else {
-            this.createCallback = callback;
-        }
-    }
-    
-    public void setUpdateCallback( RemoteCallback<Boolean> callback ) {
-        if ( callback == null ) {
-            this.updateCallback = new RemoteCallback<Boolean>() {
-                @Override
-                public void callback( Boolean response ) {
-                }
-            };
-        } else {
-            this.updateCallback = callback;
-        }
-    }
 
     @Override
     public void setModel( M model ) {
         super.setModel( model );
         clearFieldErrors();
     }
-    
-    public void setEdit(boolean edit) {
-        this.edit = edit;
-    }
-
-    @EventHandler( "submit" )
-    private void onSubmit( ClickEvent event ) {
-        M model = binder.getModel();
-        if (edit) {
-            updateModel( model, updateCallback );
-        }
-        else {
-            createModel( model, createCallback );
-        }
-    }
-
-    protected abstract void createModel( M model, RemoteCallback<M> callback );
-    
-    protected abstract void updateModel( M model, RemoteCallback<Boolean> callback );
 
     protected void clearFieldErrors() {
         for ( String field : getInputNames() ) {
@@ -123,7 +68,7 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         Set<ConstraintViolation<M>> result = validator.validate( binder.getModel() );
         for ( ConstraintViolation<M> validation : result ) {
             String property = validation.getPropertyPath().toString().replace( ".",
-                                                                               "_" );
+                    "_" );
             if ( !getInputNames().contains( property ) )
                 continue;
             isValid = false;

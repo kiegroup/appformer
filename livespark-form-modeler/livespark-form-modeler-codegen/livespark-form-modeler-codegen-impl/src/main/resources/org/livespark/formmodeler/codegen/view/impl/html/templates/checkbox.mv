@@ -1,7 +1,7 @@
             <div id="@{field.name}_form_group" class="control-group">
                 <div class="controls">
                     <label class="checkbox">
-                      <input type="checkbox" id="@{field.name}" tabindex="@{tabIndex}">
+                      <input type="checkbox" id="@{field.name}">
                       @{field.label}
                     </label>
                     <p id="@{field.name}_help_block" class="help-block"></p>

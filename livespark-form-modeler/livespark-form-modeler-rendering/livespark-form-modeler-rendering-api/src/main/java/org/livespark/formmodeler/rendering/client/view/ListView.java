@@ -18,9 +18,9 @@ package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.List;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -33,6 +33,8 @@ import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
+import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
+import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 
 public abstract class ListView<M extends FormModel, W extends ListItemView<M>> extends Composite {
 
@@ -48,20 +50,71 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     @Inject
     protected SyncBeanManager beanManager;
 
+    protected FormViewModal modal;
+
+    protected ListViewActionsHelper<M> helper = new ListViewActionsHelper<M>() {
+        @Override
+        public void create( M model ) {
+            org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create(
+                    getRemoteServiceClass(), new RemoteCallback<M>() {
+                        @Override
+                        public void callback( M response ) {
+                            items.getValue().add( response );
+                            items.getWidget( response ).setParentView( ListView.this );
+                        }
+                    } ).create( model );
+        }
+
+        @Override
+        public void update( M model ) {
+            org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create(
+                    getRemoteServiceClass(), new RemoteCallback<Boolean>() {
+                        @Override
+                        public void callback( Boolean response ) {
+                        }
+                    } ).update( model );
+        }
+
+        @Override
+        public void delete( M model ) {
+            ListView.this.delete( model );
+        }
+    };
+
     public void init() {
         loadData( new RemoteCallback<List<M>>() {
 
             @Override
             public void callback( List<M> response ) {
-                items.setItems( response );
+                loadItems( response );
             }
         } );
+    }
+
+    public void setActionsHelper( ListViewActionsHelper<M> helper ) {
+        this.helper = helper;
     }
 
     protected abstract void loadData( RemoteCallback<List<M>> callback );
 
     protected abstract void remoteDelete( M model, RemoteCallback<Boolean> callback );
-    
+
+    public void loadItems(List<M> itemsToLoad) {
+        items.setItems( itemsToLoad );
+        syncListWidgets();
+    }
+
+    public void syncListWidgets() {
+        for (M model : items.getValue()) {
+            syncListWidget( model );
+        }
+    }
+
+    public  void syncListWidget (M model) {
+        ListItemView<M> widget = items.getWidget( model );
+        widget.setParentView( this );
+    }
+
     protected FormView<M> getForm() {
         IOCBeanDef<? extends FormView<M>> beanDef = beanManager.lookupBean( getFormType() );
         return beanDef.getInstance();
@@ -73,55 +126,83 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract String getFormId();
 
+    protected abstract M getCreationFormModel();
+
+    protected abstract Class<? extends LiveSparkRestService> getRemoteServiceClass();
+
     public void delete( final M model ) {
         remoteDelete( model,
-                      new RemoteCallback<Boolean>() {
+                new RemoteCallback<Boolean>() {
 
-                          @Override
-                          public void callback( Boolean response ) {
-                              if ( response ) {
-                                  items.getValue().remove( model );
-                              }
-                          }
-                      } );
+                    @Override
+                    public void callback( Boolean response ) {
+                        if ( response ) {
+                            items.getValue().remove( model );
+                        }
+                    }
+                } );
     }
-    
+
     @EventHandler( "create" )
     public void onCreateClick( ClickEvent event ) {
-        FormView<M> form = getForm();
-        final ModalForm modalForm = new ModalForm( form, getFormTitle(), getFormId() );
-        
-        form.setCreateCallback( new RemoteCallback<M>() {
-            @Override
-            public void callback( M response ) {
-                items.getValue().add( response );
-                modalForm.hide();
-            }
-        } );
+        final FormView<M> form = getForm();
+        form.setModel( getCreationFormModel() );
 
-        modalForm.show();
-    }
-
-    public void onDelete( @Observes DeleteEvent<M> deleteEvent ) {
-        delete( deleteEvent.getModel() );
-    }
-    
-    public void onEdit( @Observes EditEvent<M> editEvent ) {
-        FormView<M> form = getForm();
-        form.setModel( editEvent.getModel() );
-        form.setEdit( true );
-        final ModalForm modalForm = new ModalForm( form, getFormTitle(), getFormId() );
-        
-        form.setUpdateCallback( new RemoteCallback<Boolean>() {
+        modal = new FormViewModal( form, getFormTitle(), getFormId() );
+        modal.addSubmitClickHandler( new ClickHandler() {
             @Override
-            public void callback( Boolean response ) {
-                if (response) {
-                    modalForm.hide();
+            public void onClick( ClickEvent clickEvent ) {
+                if (form.validate()) {
+                    doCreate( form.getModel() );
                 }
             }
         } );
-
-        modalForm.show();
+        modal.addCancelClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent clickEvent ) {
+                modal.hide();
+            }
+        } );
+        modal.show();
     }
 
+    protected void doCreate(M model) {
+        if (modal != null) modal.hide();
+        helper.create( model );
+    }
+
+    protected void doUpdate(M model) {
+        if (modal != null) modal.hide();
+        helper.update( model );
+    }
+
+    protected void doDelete(M model) {
+        helper.delete( model );
+    }
+
+    public void onDelete( M model ) {
+        doDelete( model );
+    }
+
+    public void onEdit( M model ) {
+        final FormView<M> form = getForm();
+        form.setModel( model );
+
+        modal = new FormViewModal( form, getFormTitle(), getFormId() );
+        modal.addSubmitClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent clickEvent ) {
+                if (form.validate()) {
+                    doUpdate( form.getModel() );
+                }
+            }
+        } );
+        modal.addCancelClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( ClickEvent clickEvent ) {
+                modal.hide();
+            }
+        } );
+        modal.show();
+    }
 }

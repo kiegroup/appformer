@@ -26,6 +26,10 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListItemView;
+import org.livespark.formmodeler.codegen.view.impl.java.inputs.MultipleSubFormHelper;
+import org.livespark.formmodeler.codegen.view.impl.java.inputs.SubFormHelper;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
 
 @ListItemView
 @ApplicationScoped
@@ -33,29 +37,29 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
 
     @Override
     protected void addAdditional( SourceGenerationContext context,
-                                  JavaClassSource viewClass ) {
+            JavaClassSource viewClass ) {
     }
 
     @Override
     protected void addAnnotations( SourceGenerationContext context,
-                                   JavaClassSource viewClass ) {
+            JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED ).setStringValue( context.getListViewName() + ".html#" + context.getListItemRowId() );
     }
 
     @Override
     protected void addImports( SourceGenerationContext context,
-                               JavaClassSource viewClass ) {
+            JavaClassSource viewClass ) {
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
     }
 
     @Override
     protected void addTypeSignature( SourceGenerationContext context,
-                                     JavaClassSource viewClass,
-                                     String packageName ) {
+            JavaClassSource viewClass,
+            String packageName ) {
         viewClass.setPackage( packageName )
-                 .setPublic()
-                 .setName( context.getListItemViewName() )
-                 .setSuperType( LIST_ITEM_VIEW_CLASS + "<" + context.getModelName() + ">" );
+                .setPublic()
+                .setName( context.getListItemViewName() )
+                .setSuperType( LIST_ITEM_VIEW_CLASS + "<" + context.getModelName() + ">" );
     }
 
     @Override
@@ -69,7 +73,7 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
     }
 
     @Override
-    protected void initializeProperty( InputCreatorHelper helper, FieldSource<JavaClassSource> field ) {
+    protected void initializeProperty( InputCreatorHelper helper, SourceGenerationContext context, FieldDefinition fieldDefinition, FieldSource<JavaClassSource> field ) {
         if (helper.isDisplayInjectable()) field.addAnnotation( INJECT_INJECT );
         else field.setLiteralInitializer( helper.getDisplayInitLiteral() );
     }
@@ -77,5 +81,10 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
     @Override
     protected boolean displaysId() {
         return true;
+    }
+
+    @Override
+    protected boolean isBanned( FieldDefinition definition ) {
+        return definition instanceof EmbeddedFormField;
     }
 }

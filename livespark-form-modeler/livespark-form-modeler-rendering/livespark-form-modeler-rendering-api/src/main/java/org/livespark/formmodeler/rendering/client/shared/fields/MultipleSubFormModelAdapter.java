@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.livespark.formmodeler.rendering.client.shared.fields;
 
-package org.livespark.formmodeler.model.impl;
+import java.util.List;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.ListItemView;
+import org.livespark.formmodeler.rendering.client.view.ListView;
 
 /**
- * Created by pefernan on 3/19/15.
+ * Created by pefernan on 7/2/15.
  */
-@Portable
-public class ByteBoxFieldDefinition extends AbstractIntputFieldDefinition {
-
-    @Override
-    public String getStandaloneClassName() {
-        return Byte.class.getName();
-    }
+public interface MultipleSubFormModelAdapter <L extends List<?>, F extends FormModel> {
+    public List<F> getListModelsForModel( L model );
+    public Class<? extends ListView<F, ? extends ListItemView<F>>> getListViewType();
 }

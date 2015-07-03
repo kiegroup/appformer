@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.Button;
 
 public abstract class ListItemView<M extends FormModel> extends BaseView<M> {
 
+    private ListView<M, ? extends ListItemView<M>> parentView;
+
     @Inject
     @DataField
     protected Button delete;
@@ -44,11 +46,15 @@ public abstract class ListItemView<M extends FormModel> extends BaseView<M> {
 
     @EventHandler("edit")
     protected void onEdit( ClickEvent e ) {
-        editEvent.fire( new EditEvent<M>( getModel() ) );
+        parentView.onEdit( getModel() );
     }
 
     @EventHandler("delete")
     protected void onDelete( ClickEvent e ) {
-        deleteEvent.fire( new DeleteEvent<M>( getModel() ) );
+        parentView.onDelete( getModel() );
+    }
+
+    public void setParentView(ListView<M, ? extends ListItemView<M>> parentView) {
+        this.parentView = parentView;
     }
 }

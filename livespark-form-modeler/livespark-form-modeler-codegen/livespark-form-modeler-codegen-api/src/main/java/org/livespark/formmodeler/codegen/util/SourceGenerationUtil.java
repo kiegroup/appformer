@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.livespark.formmodeler.codegen.util;
 
 /**
@@ -47,6 +46,7 @@ public interface SourceGenerationUtil {
     public static final String EJB_TRANSACTION_ATTR = "javax.ejb.TransactionAttribute";
     public static final String EJB_REQUIRES_NEW = "javax.ejb.TransactionAttributeType.REQUIRES_NEW";
 
+    public static final String FORM_MODEL_ANNOTATION = "org.livespark.formmodeler.rendering.client.shared.meta.FormModel";
     public static final String FORM_MODEL_CLASS = "org.livespark.formmodeler.rendering.client.shared.FormModel";
     public static final String FORM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.FormView";
     public static final String LIST_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListView";
@@ -56,8 +56,16 @@ public interface SourceGenerationUtil {
 
     public static final String ENTITY_SERVICE_CLASS = "org.livespark.formmodeler.rendering.server.rest.BaseEntityService";
 
+    public static final String BASE_REST_SERVICE = "org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService";
+
     public static final String READONLY_PARAM = "readOnly";
-    
+
     public static final String JAVAX_PERSISTENCE_ID = "javax.persistence.Id";
+
+    public static final String SUBFORM_ADAPTER_SUFFIX = "SubFormModelAdapter";
+    public static final String SUBFORM_ClASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.SubFormModelAdapter";
+
+    public static final String MULTIPLE_SUBFORM_ADAPTER_SUFFIX = "MultipleSubFormModelAdapter";
+    public static final String MULTIPLE_SUBFORM_ClASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.MultipleSubFormModelAdapter";
 
 }

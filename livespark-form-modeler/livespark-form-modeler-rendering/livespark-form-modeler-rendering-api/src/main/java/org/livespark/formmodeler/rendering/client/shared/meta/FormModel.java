@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.livespark.formmodeler.rendering.client.shared.meta;
 
-package org.livespark.formmodeler.model.impl;
+import java.lang.annotation.Retention;
 
-import java.math.BigDecimal;
-
-import org.jboss.errai.common.client.api.annotations.Portable;
+import static java.lang.annotation.RetentionPolicy.*;
 
 /**
- * Created by pefernan on 3/19/15.
+ * Created by pefernan on 7/1/15.
  */
-@Portable
-public class BigDecimalBoxFieldDefinition extends AbstractIntputFieldDefinition {
-
-    @Override
-    public String getStandaloneClassName() {
-        return BigDecimal.class.getName();
-    }
+@javax.inject.Qualifier
+@Retention(RUNTIME)
+public @interface FormModel {
+    /** The name. */
+    String value() default "";
 }

@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
-import org.livespark.formmodeler.model.impl.DoubleBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DoubleBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/29/15.
