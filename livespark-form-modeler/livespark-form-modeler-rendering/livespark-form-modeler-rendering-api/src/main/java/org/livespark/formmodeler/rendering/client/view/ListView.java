@@ -122,6 +122,8 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract Class<? extends FormView<M>> getFormType();
 
+    public abstract String getListTitle();
+
     protected abstract String getFormTitle();
 
     protected abstract String getFormId();
