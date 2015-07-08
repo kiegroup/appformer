@@ -105,6 +105,9 @@ public class DataModelGenerationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
+        /*
+         * FIXME This file only exists if livespark-webapp has been built prior to this test.
+         */
         return ShrinkWrap.createFromZipFile( WebArchive.class, new File( "../livespark-webapp/target/livespark-webapp.war" ) );
     }
 
@@ -171,6 +174,10 @@ public class DataModelGenerationTest {
         final String localPackageURI = getLocalPackageURI( project );
         final String serverPackageURI = getServerPackageURI( project );
 
+        /*
+         * If these assertions are run immediately, they may fail before the java files have been written.
+         * Therefore, we will attempt the assertions multiple times, calling Thread.sleep between attempts.
+         */
         runAssertions( new Runnable() {
             @Override
             public void run() {
