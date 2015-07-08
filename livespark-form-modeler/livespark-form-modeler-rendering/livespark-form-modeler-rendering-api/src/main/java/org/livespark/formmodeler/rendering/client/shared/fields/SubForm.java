@@ -15,20 +15,18 @@
  */
 package org.livespark.formmodeler.rendering.client.shared.fields;
 
-import com.github.gwtbootstrap.client.ui.Well;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.HasValue;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
+
+import com.github.gwtbootstrap.client.ui.Well;
 
 /**
  * Created by pefernan on 6/18/15.
  */
-public class SubForm<M, F extends FormModel> extends Well implements HasValue<M> {
+public class SubForm<M, F extends FormModel> extends Well implements HasModel<M> {
 
     private SubFormModelAdapter<M, F> subFormModelAdapter;
     private FormView<F> formView;
@@ -41,29 +39,17 @@ public class SubForm<M, F extends FormModel> extends Well implements HasValue<M>
         initFormView();
     }
 
-    public M getValue() {
+    public M getModel() {
         return model;
-    }
-
-    public void setValue( M model ) {
-        doSetValue( model );
-    }
-
-    public void setValue( M model, boolean b ) {
-        doSetValue( model );
     }
 
     public void setModel( M model ) {
         this.model = model;
+        formView.setModel( subFormModelAdapter.getFormModelForModel( model ) );
     }
 
     public void setReadOnly(boolean readonly) {
         if (formView != null) formView.setReadOnly( readonly );
-    }
-
-    protected void doSetValue(M model) {
-        this.model = model;
-        formView.setModel( subFormModelAdapter.getFormModelForModel( model ) );
     }
 
     protected void initFormView() {
@@ -72,7 +58,4 @@ public class SubForm<M, F extends FormModel> extends Well implements HasValue<M>
         this.add( formView );
     }
 
-    public HandlerRegistration addValueChangeHandler( ValueChangeHandler<M> valueChangeHandler ) {
-        return this.addHandler(valueChangeHandler, ValueChangeEvent.getType());
-    }
 }

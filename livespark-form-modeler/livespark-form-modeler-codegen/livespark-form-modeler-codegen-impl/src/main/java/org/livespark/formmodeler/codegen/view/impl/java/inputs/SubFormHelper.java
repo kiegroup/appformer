@@ -107,7 +107,7 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
             body += "  " + pName + " = new " + pType + "();\n";
             body += "  getModel().get" + context.getEntityName() + "().set" + pType + "(" + pName + ");\n";
             body += "}\n";
-            body += fieldDefinition.getName() + ".setValue(" + pName + ");\n";
+            body += fieldDefinition.getName() + ".setModel(" + pName + ");\n";
             updateNestedModelsMethod.setBody( body );
         }
     }
