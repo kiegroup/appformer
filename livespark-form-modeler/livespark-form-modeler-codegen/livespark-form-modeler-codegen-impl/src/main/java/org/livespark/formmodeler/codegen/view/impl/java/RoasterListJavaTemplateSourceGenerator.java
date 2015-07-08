@@ -55,7 +55,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         addGetListTitleImpl( viewClass, context );
         addGetFormTitleImpl( viewClass, context );
         addGetFormIdImpl( viewClass, context );
-        addGetCreationFormModelImpl( viewClass, context );
         addGetRemoteServiceClassImpl( viewClass, context );
     }
 
@@ -96,16 +95,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
                 .setProtected()
                 .setReturnType( String.class )
                 .setBody( "return \"" + context.getFormDefinition().getName() + " Form\";" )
-                .addAnnotation( Override.class );
-    }
-
-    private void addGetCreationFormModelImpl( JavaClassSource viewClass,
-            SourceGenerationContext context ) {
-        viewClass.addMethod()
-                .setName( "getCreationFormModel" )
-                .setProtected()
-                .setReturnType( context.getModelName() )
-                .setBody( "return new " + context.getModelName() + "();" )
                 .addAnnotation( Override.class );
     }
 

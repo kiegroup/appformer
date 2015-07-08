@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.google.gwt.event.dom.client.ClickHandler;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -29,12 +28,13 @@ import org.jboss.errai.ui.client.widget.Table;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
+import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
-import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
-import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 
 public abstract class ListView<M extends FormModel, W extends ListItemView<M>> extends Composite {
 
@@ -128,8 +128,6 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract String getFormId();
 
-    protected abstract M getCreationFormModel();
-
     protected abstract Class<? extends LiveSparkRestService> getRemoteServiceClass();
 
     public void delete( final M model ) {
@@ -148,7 +146,6 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     @EventHandler( "create" )
     public void onCreateClick( ClickEvent event ) {
         final FormView<M> form = getForm();
-        form.setModel( getCreationFormModel() );
 
         modal = new FormViewModal( form, getFormTitle(), getFormId() );
         modal.addSubmitClickHandler( new ClickHandler() {

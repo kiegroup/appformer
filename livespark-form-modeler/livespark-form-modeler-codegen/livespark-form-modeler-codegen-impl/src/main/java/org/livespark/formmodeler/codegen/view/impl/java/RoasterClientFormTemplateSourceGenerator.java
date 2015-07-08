@@ -37,6 +37,7 @@ import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 
 
 public abstract class RoasterClientFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
@@ -62,11 +63,9 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         addTypeSignature( context, viewClass, packageName );
         addImports( context, viewClass );
         addAnnotations( context, viewClass );
-
-        addBaseViewFieldsAndMethodImpls( context, viewClass );
-
         addAdditional( context, viewClass );
-
+        
+        addBaseViewFieldsAndMethodImpls( context, viewClass );
         return viewClass.toString();
     }
 
@@ -95,7 +94,10 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
 
             if (helper instanceof RequiresCustomCode ) ((RequiresCustomCode )helper).addCustomCode( fieldDefinition, context, viewClass );
 
-            field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
+            if (!(fieldDefinition instanceof SubFormFieldDefinition)) {
+                field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
+            }
+            
             field.addAnnotation( ERRAI_DATAFIELD );
 
             property.removeAccessor();

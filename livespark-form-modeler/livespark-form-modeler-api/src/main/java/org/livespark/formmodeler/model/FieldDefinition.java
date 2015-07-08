@@ -29,6 +29,8 @@ public abstract class FieldDefinition {
     protected Boolean readonly = Boolean.FALSE;
 
     protected String bindingExpression;
+    
+    protected String boundPropertyName;
 
     public abstract String getStandaloneClassName();
 
@@ -82,5 +84,13 @@ public abstract class FieldDefinition {
     
     public void setAnnotatedId( boolean annotatedId ) {
         this.annotatedId = annotatedId;
+    }
+    
+    public String getBoundPropertyName() {
+        return boundPropertyName;
+    }
+    
+    public void setBoundPropertyName( String boundPropertyName ) {
+        this.boundPropertyName = boundPropertyName;
     }
 }

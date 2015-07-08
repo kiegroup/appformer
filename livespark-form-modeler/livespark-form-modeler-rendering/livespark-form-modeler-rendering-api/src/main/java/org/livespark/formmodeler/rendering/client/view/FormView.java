@@ -18,19 +18,15 @@ package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
 
 /**
  * Created by pefernan on 4/17/15.
@@ -44,6 +40,16 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     public void setModel( M model ) {
         super.setModel( model );
         clearFieldErrors();
+        updateNestedModels(false);
+    }
+    
+    @PostConstruct
+    private void init() {
+        Object entity = getEntity();
+        if (entity == null) {
+            setNewEntity();
+        }
+        updateNestedModels(true);
     }
 
     protected void clearFieldErrors() {
@@ -58,6 +64,12 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     }
 
     public abstract void setReadOnly( boolean readOnly );
+    
+    protected abstract void updateNestedModels(boolean init);
+    
+    protected abstract Object getEntity();
+    
+    protected abstract void setNewEntity();
 
     public boolean validate() {
 

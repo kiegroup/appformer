@@ -16,14 +16,19 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.FORM_MODEL_ANNOTATION;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.FORM_VIEW_CLASS;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_INJECT;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_NAMED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.model.FieldDefinition;
-
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -34,9 +39,31 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
     @Override
     protected void addAdditional( SourceGenerationContext context,
             JavaClassSource viewClass ) {
+        
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getEntityName() );
+        
+        viewClass.addMethod()
+                 .setName( "getEntity" )
+                 .setBody( "return getModel().get" + context.getEntityName() + "();" )
+                 .setReturnType( Object.class )
+                 .setProtected()
+                 .addAnnotation( JAVA_LANG_OVERRIDE );
+        
+        viewClass.addMethod()
+                 .setName( "setNewEntity" )
+                 .setBody( "getModel().set" + context.getEntityName() + "(new " + context.getEntityName() + "());" )
+                 .setReturnTypeVoid()
+                 .setProtected()
+                 .addAnnotation( JAVA_LANG_OVERRIDE );
+        
+        viewClass.addMethod()
+                 .setName( "updateNestedModels" )
+                 .setBody( "" )
+                 .setParameters( "boolean init" )
+                 .setReturnTypeVoid()
+                 .setProtected()
+                 .addAnnotation( JAVA_LANG_OVERRIDE );
     }
-
-
 
     @Override
     protected void addTypeSignature( SourceGenerationContext context,

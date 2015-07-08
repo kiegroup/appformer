@@ -38,8 +38,8 @@ public class SubForm<M, F extends FormModel> extends Well implements HasValue<M>
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
         subFormModelAdapter = adapter;
+        initFormView();
     }
-
 
     public M getValue() {
         return model;
@@ -63,9 +63,6 @@ public class SubForm<M, F extends FormModel> extends Well implements HasValue<M>
 
     protected void doSetValue(M model) {
         this.model = model;
-        if (formView == null) {
-            initFormView();
-        }
         formView.setModel( subFormModelAdapter.getFormModelForModel( model ) );
     }
 
@@ -74,8 +71,6 @@ public class SubForm<M, F extends FormModel> extends Well implements HasValue<M>
         this.formView = beanDef.getInstance();
         this.add( formView );
     }
-
-
 
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler<M> valueChangeHandler ) {
         return this.addHandler(valueChangeHandler, ValueChangeEvent.getType());

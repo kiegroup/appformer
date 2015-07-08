@@ -57,5 +57,4 @@ public abstract class BaseView<M extends FormModel> extends Composite implements
     }
 
     protected abstract void initInputNames();
-
 }
