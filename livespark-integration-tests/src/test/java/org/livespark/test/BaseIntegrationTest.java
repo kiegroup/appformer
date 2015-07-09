@@ -67,11 +67,11 @@ public class BaseIntegrationTest {
 
     private static WebArchive resolveAndCopyLiveSparkWar( final String suffix ) {
         final File warFile = Maven.configureResolver()
-                                  .workOffline()
-                                  .loadPomFromFile( "pom.xml" )
-                                  .resolve( "org.livespark:livespark-webapp:war:?" )
-                                  .withoutTransitivity()
-                                  .asSingleFile();
+                .workOffline()
+                .loadPomFromFile( "pom.xml" )
+                .resolve( "org.livespark:livespark-webapp:war:?" )
+                .withoutTransitivity()
+                .asSingleFile();
 
         final File targetWarFile = new File( "target/livespark-webapp-" + suffix + ".war" );
 
@@ -85,11 +85,11 @@ public class BaseIntegrationTest {
         }
 
         final WebArchive archive = ShrinkWrap.createFromZipFile( WebArchive.class, targetWarFile )
-                         .addClasses( BaseIntegrationTest.class,
-                                      MockQueueSession.class,
-                                      MockHttpSession.class,
-                                      MockServletRequest.class,
-                                      MockServletContext.class );
+                .addClasses( BaseIntegrationTest.class,
+                        MockQueueSession.class,
+                        MockHttpSession.class,
+                        MockServletRequest.class,
+                        MockServletContext.class );
         // Wildfly doesn't show console logging for per-deployment configured logging.
         archive.delete( "WEB-INF/classes/log4j.xml" );
         archive.delete( "WEB-INF/classes/logback.xml" );
@@ -99,8 +99,8 @@ public class BaseIntegrationTest {
 
     public static void clearDotFiles() {
         final String[] dirs = new String[] {
-                                            ".niogit",
-                                            ".index"
+                ".niogit",
+                ".index"
         };
 
         for ( final String dir : dirs ) {
@@ -146,9 +146,9 @@ public class BaseIntegrationTest {
         final File webXml = new File( "target/wildfly-8.1.0.Final/fakeDir/WEB-INF/web.xml" );
 
         mockRequest.setServletContext( mockContext.addRealPath( "/WEB-INF/web.xml", webXml.getAbsolutePath() ) )
-        // As long as we don't load the app, these values don't matter
-                   .setServerName( "hostname" )
-                   .setServerPort( 8080 );
+                // As long as we don't load the app, these values don't matter
+                .setServerName( "hostname" )
+                .setServerPort( 8080 );
 
         message.setResource( "Session", new MockQueueSession( "test-queuesession-id", new MockHttpSession( "test-httpsession-id" ) ) );
         message.setResource( HttpServletRequest.class.getName(), mockRequest );
@@ -222,14 +222,14 @@ public class BaseIntegrationTest {
     }
 
     protected void updateDataObject( final DataObject dataObject,
-                                        final org.uberfire.java.nio.file.Path dataObjectPath ) {
-                                            final String updatedSource = ioService.readAllString( dataObjectPath );
-                                            dataModelerService.saveSource( updatedSource,
-                                                                           Paths.convert( dataObjectPath ),
-                                                                           dataObject,
-                                                                           metadataService.getMetadata( Paths.convert( dataObjectPath ) ),
-                                                                           "add properties to test entity" );
-                                        }
+                                     final org.uberfire.java.nio.file.Path dataObjectPath ) {
+        final String updatedSource = ioService.readAllString( dataObjectPath );
+        dataModelerService.saveSource( updatedSource,
+                Paths.convert( dataObjectPath ),
+                dataObject,
+                metadataService.getMetadata( Paths.convert( dataObjectPath ) ),
+                "add properties to test entity" );
+    }
 
     public static Map<String, Object> defaultOptions( final String name ) {
         final Map<String, Object> options = new HashMap<String, Object>();
