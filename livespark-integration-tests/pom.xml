@@ -80,6 +80,13 @@
         <artifactId>wildfly-arquillian-container-managed</artifactId>
         <version>8.1.0.Final</version>
       </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-webapp</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+        <type>war</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -134,7 +141,6 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-webapp</artifactId>
       <scope>test</scope>
-      <version>${project.version}</version>
       <type>war</type>
     </dependency>
   </dependencies>
