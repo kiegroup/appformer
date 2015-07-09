@@ -68,7 +68,7 @@ public class BaseIntegrationTest {
         RpcContext.set( message );
     }
 
-    protected void runAssertions( final Runnable assertions, int attempts ) throws Exception {
+    protected void runAssertions( final Runnable assertions, int attempts, final long delayInMs ) throws Exception {
         do {
             try {
                 assertions.run();
@@ -77,7 +77,7 @@ public class BaseIntegrationTest {
                 if ( --attempts <= 0 ) {
                     throw e;
                 } else {
-                    Thread.sleep( 500 );
+                    Thread.sleep( delayInMs );
                 }
             }
         } while ( true );
