@@ -26,11 +26,10 @@ import com.google.common.io.Files;
 public class BaseIntegrationTest {
 
     public static WebArchive createLiveSparkDeployment() {
-        /*
-         * FIXME Don't use hard-coded version.
-         */
-        final File warFile = Maven.resolver()
-                                  .resolve( "org.livespark:livespark-webapp:war:0.0.1-SNAPSHOT" )
+        final File warFile = Maven.configureResolver()
+                                  .workOffline()
+                                  .loadPomFromFile( "pom.xml" )
+                                  .resolve( "org.livespark:livespark-webapp:war:?" )
                                   .withoutTransitivity()
                                   .asSingleFile();
 
