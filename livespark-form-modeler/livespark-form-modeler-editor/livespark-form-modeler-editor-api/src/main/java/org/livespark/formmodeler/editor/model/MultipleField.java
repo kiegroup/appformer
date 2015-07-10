@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package org.livespark.formmodeler.editor.model;
-
 /**
  * Created by pefernan on 7/2/15.
  */
