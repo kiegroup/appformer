@@ -10,7 +10,8 @@
   
   <configuration>  
       <property name="jbossHome">target/wildfly-8.1.0.Final</property>  
-      <property name="javaVmArguments">-Xmx1g -XX:MaxPermSize=512m -Xrunjdwp:transport=dt_socket,address=8086,server=y,suspend=n</property>  
+      <!-- Uberfire daemons must be turned off or else repeated deployments will fail to bind to addresses. -->
+      <property name="javaVmArguments">-Xmx1g -XX:MaxPermSize=512m -Xrunjdwp:transport=dt_socket,address=8086,server=y,suspend=n -Dorg.uberfire.nio.git.daemon.enabled=false -Dorg.uberfire.nio.git.ssh.enabled=false</property>
       <property name="allowConnectingToRunningServer">true</property>  
     </configuration>  
   </container>  
