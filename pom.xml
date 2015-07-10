@@ -163,7 +163,17 @@
 
       <dependency>
         <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-api</artifactId>
+        <artifactId>livespark-form-modeler-editor-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-editor-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-editor-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

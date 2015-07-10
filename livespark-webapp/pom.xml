@@ -668,10 +668,20 @@
 
 
     <!-- Start Form Modeler Modules -->
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
+      <artifactId>livespark-form-modeler-editor-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-backend</artifactId>
     </dependency>
 
     <dependency>
@@ -696,7 +706,6 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-common</artifactId>
     </dependency>
-
     <!-- End Form Modeler Modules -->
   </dependencies>
 
@@ -804,6 +813,8 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-bs2</compileSourcesArtifact>
 
             <!-- Form Modeler -->
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>

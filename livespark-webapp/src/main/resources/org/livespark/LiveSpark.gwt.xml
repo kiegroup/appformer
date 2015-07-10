@@ -79,6 +79,7 @@
   <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
 
   <!-- Form Modeler -->
+  <inherits name="org.livespark.formmodeler.editor.FormModelerClient"/>
   <inherits name="org.livespark.formmodeler.rendering.FormModelerRenderingAPI"/>
 
   <!-- Specify the application specific style sheet. -->

@@ -35,13 +35,13 @@ import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
-import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.MultipleField;
-import org.livespark.formmodeler.model.impl.basic.AbstractIntputFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
-import org.livespark.formmodeler.service.FieldManager;
+import org.livespark.formmodeler.editor.model.DataHolder;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.MultipleField;
+import org.livespark.formmodeler.editor.model.impl.basic.AbstractIntputFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.editor.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
@@ -80,8 +80,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         String holderName = WordUtils.uncapitalize( dataObject.getName() );
 
-        List<FieldDefinition> fields = new ArrayList<FieldDefinition>( dataObject.getProperties().size() );
-        DataHolder holder = new DataHolder( holderName, dataObject.getClassName(), fields );
+        DataHolder holder = new DataHolder( holderName, dataObject.getClassName() );
 
         form.addDataHolder( holder );
 
@@ -116,7 +115,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
                 if ( !loadEmbeddedFormConfig( embeddedForm, viewType, model ) ) continue;
             }
-            fields.add( field );
+            form.getFields().add( field );
         }
 
         if (form.getFields().isEmpty()) return;

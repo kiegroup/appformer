@@ -23,8 +23,8 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 

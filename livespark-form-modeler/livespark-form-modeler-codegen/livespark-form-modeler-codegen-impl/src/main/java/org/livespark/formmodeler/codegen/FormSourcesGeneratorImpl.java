@@ -39,7 +39,7 @@ import org.livespark.formmodeler.codegen.rest.RestImpl;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
