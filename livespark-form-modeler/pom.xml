@@ -19,6 +19,7 @@
     <module>livespark-form-modeler-codegen</module>
     <module>livespark-form-modeler-codegen-services</module>
     <module>livespark-form-modeler-rendering</module>
+    <module>test</module>
   </modules>
 
 </project>
