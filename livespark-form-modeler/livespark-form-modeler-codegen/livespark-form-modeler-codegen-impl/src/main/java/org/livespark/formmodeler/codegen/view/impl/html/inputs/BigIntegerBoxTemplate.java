@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.BigIntegerBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.BigIntegerBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/29/15.

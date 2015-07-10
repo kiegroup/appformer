@@ -26,10 +26,8 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListItemView;
-import org.livespark.formmodeler.codegen.view.impl.java.inputs.MultipleSubFormHelper;
-import org.livespark.formmodeler.codegen.view.impl.java.inputs.SubFormHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
 
 @ListItemView
 @ApplicationScoped
