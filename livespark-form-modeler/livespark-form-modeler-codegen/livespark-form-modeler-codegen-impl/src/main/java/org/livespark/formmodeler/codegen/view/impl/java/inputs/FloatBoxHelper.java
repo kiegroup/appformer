@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.FloatBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.FloatBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.

@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.BigDecimalBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.BigDecimalBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/29/15.

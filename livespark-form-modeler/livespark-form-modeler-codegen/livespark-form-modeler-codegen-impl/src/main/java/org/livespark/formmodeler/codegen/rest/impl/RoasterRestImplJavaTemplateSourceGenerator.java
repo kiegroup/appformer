@@ -29,7 +29,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
-import org.livespark.formmodeler.model.DataHolder;
+import org.livespark.formmodeler.editor.model.DataHolder;
 
 
 @ApplicationScoped

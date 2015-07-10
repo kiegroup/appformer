@@ -685,10 +685,20 @@
     </dependency>
 
     <!-- Start LiveSpark Modules -->
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
+      <artifactId>livespark-form-modeler-editor-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-backend</artifactId>
     </dependency>
 
     <dependency>
@@ -718,7 +728,6 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-deployment</artifactId>
     </dependency>
-
     <!-- End LiveSpark Modules -->
   </dependencies>
 
@@ -827,6 +836,8 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
             <!-- Form Modeler -->
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
           </compileSourcesArtifacts>

@@ -21,8 +21,8 @@ import javax.enterprise.context.ApplicationScoped;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
-import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.EntityRelationField;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 
 @ListView
 @ApplicationScoped
