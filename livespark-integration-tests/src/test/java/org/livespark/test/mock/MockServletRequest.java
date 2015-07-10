@@ -571,7 +571,7 @@ public class MockServletRequest implements HttpServletRequest {
      */
     @Override
     public boolean authenticate( HttpServletResponse response ) throws IOException,
-                                                                ServletException {
+            ServletException {
         throw new RuntimeException( "Not yet implemented." );
     }
 
@@ -597,7 +597,7 @@ public class MockServletRequest implements HttpServletRequest {
      */
     @Override
     public Collection<Part> getParts() throws IOException,
-                                       ServletException {
+            ServletException {
         throw new RuntimeException( "Not yet implemented." );
     }
 
@@ -606,7 +606,7 @@ public class MockServletRequest implements HttpServletRequest {
      */
     @Override
     public Part getPart( String name ) throws IOException,
-                                       ServletException {
+            ServletException {
         throw new RuntimeException( "Not yet implemented." );
     }
 
@@ -615,7 +615,7 @@ public class MockServletRequest implements HttpServletRequest {
      */
     @Override
     public <T extends HttpUpgradeHandler> T upgrade( Class<T> handlerClass ) throws IOException,
-                                                                             ServletException {
+            ServletException {
         throw new RuntimeException( "Not yet implemented." );
     }
 
