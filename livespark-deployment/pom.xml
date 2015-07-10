@@ -7,7 +7,7 @@
   </parent>
   <artifactId>livespark-deployment</artifactId>
   <name>LiveSpark :: Deployment</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.jboss.spec</groupId>
@@ -26,7 +26,7 @@
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
     </dependency>
-  
+
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-marshalling</artifactId>
@@ -59,7 +59,7 @@
       <artifactId>uberfire-widgets-commons</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-common</artifactId>
