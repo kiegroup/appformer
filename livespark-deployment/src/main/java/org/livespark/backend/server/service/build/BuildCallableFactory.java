@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.mina.util.ConcurrentHashSet;
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.bus.server.api.ServerMessageBus;
-import org.livespark.client.AppReady;
+import org.livespark.client.shared.AppReady;
 
 @ApplicationScoped
 public class BuildCallableFactory {

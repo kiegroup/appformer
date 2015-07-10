@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.client;
+package org.livespark.client.shared;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;

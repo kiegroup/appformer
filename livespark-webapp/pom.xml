@@ -32,10 +32,6 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-invoker</artifactId>
-    </dependency>
 
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
@@ -666,8 +662,7 @@
       <scope>provided</scope>
     </dependency>
 
-
-    <!-- Start Form Modeler Modules -->
+    <!-- Start LiveSpark Modules -->
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-editor-api</artifactId>
@@ -706,7 +701,12 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-common</artifactId>
     </dependency>
-    <!-- End Form Modeler Modules -->
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-deployment</artifactId>
+    </dependency>
+
+    <!-- End LiveSpark Modules -->
   </dependencies>
 
   <build>
@@ -816,6 +816,7 @@
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>
         <executions>

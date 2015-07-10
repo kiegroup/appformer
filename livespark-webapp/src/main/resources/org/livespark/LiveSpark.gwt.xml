@@ -82,6 +82,8 @@
   <inherits name="org.livespark.formmodeler.editor.FormModelerClient"/>
   <inherits name="org.livespark.formmodeler.rendering.FormModelerRenderingAPI"/>
 
+  <inherits name="org.livespark.LiveSparkDeployment"/>
+
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/livespark.css'/>
 

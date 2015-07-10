@@ -32,8 +32,6 @@ import com.google.gwt.user.client.ui.Composite;
 public class GeneralTextEditorScreenView extends Composite /*implements GeneralTextEditorScreenPresenter.View*/ {
 
     private AceEditor editor = new AceEditor();
-    private boolean isDirty = false;
-    //private GeneralTextEditorScreenPresenter presenter;
 
     @PostConstruct
     public void setup() {
@@ -50,11 +48,6 @@ public class GeneralTextEditorScreenView extends Composite /*implements GeneralT
         editor.startEditor();
         editor.setTheme( AceEditorTheme.CLOUD9_NIGHT );
     }
-
-//    @Override
-//    public void init( GeneralTextEditorScreenPresenter presenter ) {
-//        this.presenter = presenter;
-//    }
 
     @Override
     public void onAttach() {
@@ -75,19 +68,6 @@ public class GeneralTextEditorScreenView extends Composite /*implements GeneralT
         }
 
         editor.setText( content );
-
-        isDirty = false;
-//        editor.addOnChangeHandler( new AceEditorCallback() {
-//            @Override
-//            public void invokeAceCallback( JavaScriptObject obj ) {
-//                if ( !isDirty ) {
-//                    isDirty = true;
-//                    if ( presenter != null ) {
-//                        presenter.fireChangeEvent();
-//                    }
-//                }
-//            }
-//        } );
     }
 
     public void appendContent( final AceEditorMode mode,
@@ -97,42 +77,11 @@ public class GeneralTextEditorScreenView extends Composite /*implements GeneralT
         }
 
         editor.setText( editor.getText() + content );
-
-        isDirty = false;
-//        editor.addOnChangeHandler( new AceEditorCallback() {
-//            @Override
-//            public void invokeAceCallback( JavaScriptObject obj ) {
-//                if ( !isDirty ) {
-//                    isDirty = true;
-//                    presenter.fireChangeEvent();
-//                }
-//            }
-//        } );
     }
 
     public String getContent() {
         return editor.getText();
     }
-
-//    @Override
-//    public void setFocus() {
-//        editor.setFocus();
-//    }
-//
-//    @Override
-//    public boolean isDirty() {
-//        return isDirty;
-//    }
-//
-//    @Override
-//    public void makeReadOnly() {
-//        editor.setReadOnly( true );
-//    }
-//
-//    @Override
-//    public void setDirty( boolean dirty ) {
-//        isDirty = dirty;
-//    }
 
     public void setContentAndScroll( final String content ) {
         editor.setText( content );
