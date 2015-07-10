@@ -1,5 +1,7 @@
 package org.livespark.codegen;
 
+import static org.apache.commons.lang.StringUtils.uncapitalize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.ENTITY_SERVICE_SUFFIX;
@@ -9,6 +11,11 @@ import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_ITE
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_VIEW_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_BINDABLE;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_BOUND;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_DATAFIELD;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_PORTABLE;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.VALIDATION_VALID;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -31,8 +38,6 @@ import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.test.BaseIntegrationTest;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
@@ -80,8 +85,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
 
         final Path sharedPath = PathFactory.newPath( "/", sharedPackageURI );
 
-        // Test
-        dataModelerService.createJavaFile( sharedPath, dataObjectName + ".java", "", defaultOptions( dataObjectName ) );
+        maybeCreateDataObject( sharedPath, dataObjectName );
 
         /*
          * If these assertions are run immediately, they may fail before the java files have been written.
@@ -109,53 +113,157 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
 
         final String dataObjectName = "RockStar";
 
-        dataModelerService.createJavaFile( sharedPath, dataObjectName + ".java", "", defaultOptions( dataObjectName ) );
+        maybeCreateDataObject( sharedPath, dataObjectName );
 
-        DataModel dataModel = dataModelerService.loadModel( (KieProject) project );
-        DataObject dataObject = dataModel.getDataObject( DATA_OBJECT_PACKAGE + ".client.shared." + dataObjectName );
+        final DataModel dataModel = dataModelerService.loadModel( (KieProject) project );
+        final DataObject dataObject = dataModel.getDataObject( DATA_OBJECT_PACKAGE + ".client.shared." + dataObjectName );
 
+        // Simulate adding fields
         dataObject.addProperty( "name", "java.lang.String" );
         dataObject.addProperty( "numberOfAlbums", "java.lang.Integer" );
         dataObject.addProperty( "dob", "java.util.Date" );
+        final org.uberfire.java.nio.file.Path dataObjectPath = org.uberfire.java.nio.file.Paths.get( URI.create( sharedPackageURI + "/" + dataObjectName + ".java" ) );
+        updateDataObject( dataObject, dataObjectPath );
+
+        final String localPackageURI = getLocalPackageURI( project );
+        final String bindNamePrefix = dataObjectName.substring( 0, 1 ).toLowerCase() + dataObjectName.substring( 1 );
+        /*
+         * If these assertions are run immediately, they may fail before the java files have been written.
+         * Therefore, we will attempt the assertions multiple times, calling Thread.sleep between attempts.
+         */
+        runAssertions( new Runnable() {
+            @Override
+            public void run() {
+                final org.uberfire.java.nio.file.Path formViewPath =
+                        org.uberfire.java.nio.file.Paths.get( URI.create( localPackageURI + "/" + dataObjectName + FORM_VIEW_SUFFIX + ".java" ) );
+                assertTrue( "Precondition failed: expected form view to be generated at " + formViewPath.toUri(), ioService.exists( formViewPath ) );
+
+                final String source = ioService.readAllString( formViewPath );
+                @SuppressWarnings( "unchecked" )
+                final JavaClass<JavaClassSource> clazz = Roaster.parse( JavaClass.class, source );
+
+                assertViewProperty( bindNamePrefix + "_name", clazz );
+                assertViewProperty( bindNamePrefix + "_numberOfAlbums", clazz );
+                assertViewProperty( bindNamePrefix + "_dob", clazz );
+            }
+        }, 30, 1000 );
+    }
+
+    @Test
+    public void listItemViewHasAllBindingsIncludingId() throws Exception {
+        prepareServiceTest();
+
+        final Project project = getProject();
+
+        final String sharedPackageURI = getSharedPackageURI( project );
+        final Path sharedPath = PathFactory.newPath( "/", sharedPackageURI );
+
+        final String dataObjectName = "RockStar";
+
+        maybeCreateDataObject( sharedPath, dataObjectName );
+
+        final DataModel dataModel = dataModelerService.loadModel( (KieProject) project );
+        final DataObject dataObject = dataModel.getDataObject( DATA_OBJECT_PACKAGE + ".client.shared." + dataObjectName );
 
         // Simulate adding fields
-        dataModelerService.saveModel( dataModel, (KieProject) project, true, "add properties" );
-        dataModel = dataModelerService.loadModel( (KieProject) project );
-        dataObject = dataModel.getDataObject( DATA_OBJECT_PACKAGE + ".client.shared." + dataObjectName );
+        dataObject.addProperty( "name", "java.lang.String" );
+        dataObject.addProperty( "numberOfAlbums", "java.lang.Integer" );
+        dataObject.addProperty( "dob", "java.util.Date" );
         final org.uberfire.java.nio.file.Path dataObjectPath = org.uberfire.java.nio.file.Paths.get( URI.create( sharedPackageURI + "/" + dataObjectName + ".java" ) );
+        updateDataObject( dataObject, dataObjectPath );
+
+        final String localPackageURI = getLocalPackageURI( project );
+        final String bindNamePrefix = dataObjectName.substring( 0, 1 ).toLowerCase() + dataObjectName.substring( 1 );
+        /*
+         * If these assertions are run immediately, they may fail before the java files have been written.
+         * Therefore, we will attempt the assertions multiple times, calling Thread.sleep between attempts.
+         */
+        runAssertions( new Runnable() {
+            @Override
+            public void run() {
+                final org.uberfire.java.nio.file.Path listItemViewPath =
+                        org.uberfire.java.nio.file.Paths.get( URI.create( localPackageURI + "/" + dataObjectName + LIST_ITEM_VIEW_SUFFIX + ".java" ) );
+                assertTrue( "Precondition failed: expected form view to be generated at " + listItemViewPath.toUri(), ioService.exists( listItemViewPath ) );
+
+                final String source = ioService.readAllString( listItemViewPath );
+                @SuppressWarnings( "unchecked" )
+                final JavaClass<JavaClassSource> clazz = Roaster.parse( JavaClass.class, source );
+
+                assertViewProperty( bindNamePrefix + "_id", clazz );
+                assertViewProperty( bindNamePrefix + "_name", clazz );
+                assertViewProperty( bindNamePrefix + "_numberOfAlbums", clazz );
+                assertViewProperty( bindNamePrefix + "_dob", clazz );
+            }
+        }, 30, 1000 );
+    }
+
+    @Test
+    public void formModelIsPortableBindableAndHasValidEntityField() throws Exception {
+        prepareServiceTest();
+
+        final Project project = getProject();
+
+        final String sharedPackageURI = getSharedPackageURI( project );
+        final Path sharedPath = PathFactory.newPath( "/", sharedPackageURI );
+
+        final String dataObjectName = "RockStar";
+
+        maybeCreateDataObject( sharedPath, dataObjectName );
+
+        /*
+         * If these assertions are run immediately, they may fail before the java files have been written.
+         * Therefore, we will attempt the assertions multiple times, calling Thread.sleep between attempts.
+         */
+        runAssertions( new Runnable() {
+            @Override
+            public void run() {
+                final org.uberfire.java.nio.file.Path formModelPath =
+                        org.uberfire.java.nio.file.Paths.get( URI.create( sharedPackageURI + "/" + dataObjectName + FORM_MODEL_SUFFIX + ".java" ) );
+                assertTrue( "Precondition failed: expected form view to be generated at " + formModelPath.toUri(), ioService.exists( formModelPath ) );
+
+                final String source = ioService.readAllString( formModelPath );
+                @SuppressWarnings( "unchecked" )
+                final JavaClass<JavaClassSource> clazz = Roaster.parse( JavaClass.class, source );
+                final Property<JavaClassSource> entityProp = clazz.getProperty( uncapitalize( dataObjectName ) );
+
+                assertNotNull( "Form model must be @Bindable.", clazz.getAnnotation( ERRAI_BINDABLE ) );
+                assertNotNull( "Form model must be @Portable.", clazz.getAnnotation( ERRAI_PORTABLE ) );
+                assertNotNull( "Form model must have entity field.", entityProp );
+                assertNotNull( "Form model entity field must be @Valid.", entityProp.getAnnotation( VALIDATION_VALID ) );
+                assertNotNull( "Form model entity field must have getter method.", entityProp.getAccessor() );
+                assertNotNull( "Form model entity field must have setter method.", entityProp.getMutator() );
+            }
+        }, 30, 1000 );
+    }
+
+    private void maybeCreateDataObject( final Path sharedPath, final String dataObjectName ) {
+        final String fileName = dataObjectName + ".java";
+        final URI fileURI = URI.create( sharedPath.toURI() + "/" + fileName );
+
+        if ( ioService.notExists( org.uberfire.java.nio.file.Paths.get( fileURI ) ) ) {
+            dataModelerService.createJavaFile( sharedPath, fileName, "", defaultOptions( dataObjectName ) );
+        }
+    }
+
+    private void updateDataObject( final DataObject dataObject, final org.uberfire.java.nio.file.Path dataObjectPath ) {
         final String updatedSource = ioService.readAllString( dataObjectPath );
         dataModelerService.saveSource( updatedSource,
                                        Paths.convert( dataObjectPath ),
                                        dataObject,
                                        metadataService.getMetadata( Paths.convert( dataObjectPath ) ),
                                        "add properties to test entity" );
-
-        final String localPackageURI = getLocalPackageURI( project );
-        final String bindNamePrefix = dataObjectName.substring( 0, 1 ).toLowerCase() + dataObjectName.substring( 1 );
-        runAssertions( new Runnable() {
-            @Override
-            public void run() {
-                final org.uberfire.java.nio.file.Path formViewPath =
-                        org.uberfire.java.nio.file.Paths.get( URI.create( localPackageURI + "/" + dataObjectName + SourceGenerationContext.FORM_VIEW_SUFFIX + ".java" ) );
-                assertTrue( "Precondition failed: expected form view to be generated at " + formViewPath.toUri(), ioService.exists( formViewPath ) );
-
-                final String formViewSource = ioService.readAllString( formViewPath );
-                @SuppressWarnings( "unchecked" )
-                final JavaClass<JavaClassSource> formViewClass = Roaster.parse( JavaClass.class, formViewSource );
-
-                assertFormViewProperty( bindNamePrefix + "_name", formViewClass );
-                assertFormViewProperty( bindNamePrefix + "_numberOfAlbums", formViewClass );
-                assertFormViewProperty( bindNamePrefix + "_dob", formViewClass );
-            }
-        }, 30, 1000 );
     }
 
-    protected void assertFormViewProperty( final String name, final JavaClass<JavaClassSource> formViewClass ) {
+    private void assertViewProperty( final String name, final JavaClass<JavaClassSource> formViewClass ) {
         final Property<JavaClassSource> prop = formViewClass.getProperty( name );
 
         assertNotNull( "Binding " + name + " was not generated.", prop );
-        assertNotNull( "", prop.getAnnotation( SourceGenerationUtil.ERRAI_BOUND ) );
-        assertNotNull( "", prop.getAnnotation( SourceGenerationUtil.ERRAI_DATAFIELD ) );
+        assertNotNull( "Property " + name + " was generated without @DataField.", prop.getAnnotation( ERRAI_DATAFIELD ) );
+        assertNotNull( "Property " + name + " was generated without @Bound.", prop.getAnnotation( ERRAI_BOUND ) );
+        assertEquals( "Property " + name + " was generated with incorrect binding expression.",
+                      name.replace( '_',
+                                    '.' ),
+                      prop.getAnnotation( ERRAI_BOUND ).getStringValue( "property" ) );
     }
 
     private String[] getServerTypes( final String dataObjectName ) {

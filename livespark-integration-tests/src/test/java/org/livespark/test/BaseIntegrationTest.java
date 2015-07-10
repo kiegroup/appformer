@@ -62,10 +62,18 @@ public class BaseIntegrationTest {
     protected IOService ioService;
 
     protected void prepareServiceTest() {
-        authService.login( "admin", "admin" );
+        loginAsAdmin();
+        setQueueSessionId();
+    }
+
+    private void setQueueSessionId() {
         final Message message = MessageBuilder.createMessage("for testing").signalling().done().getMessage();
         message.setResource( "Session", new MockQueueSession( "test-id" ) );
         RpcContext.set( message );
+    }
+
+    protected void loginAsAdmin() {
+        authService.login( "admin", "admin" );
     }
 
     protected void runAssertions( final Runnable assertions, int attempts, final long delayInMs ) throws Exception {
