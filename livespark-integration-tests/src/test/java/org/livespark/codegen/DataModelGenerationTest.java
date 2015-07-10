@@ -34,13 +34,8 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.VALIDATION_VALID;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import org.guvnor.common.services.project.model.Project;
-import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.roaster.Roaster;
@@ -50,7 +45,6 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -66,22 +60,8 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
 
     @Deployment
     public static WebArchive createDeployment() {
-        return BaseIntegrationTest.createLiveSparkDeployment();
+        return BaseIntegrationTest.createLiveSparkDeployment( DataModelGenerationTest.class.getSimpleName().toLowerCase() );
     }
-
-    private static Map<String, Object> defaultOptions( final String name ) {
-        final Map<String, Object> options = new HashMap<String, Object>();
-        options.put( "persistable", true );
-        options.put( "tableName", name );
-
-        return options;
-    }
-
-    @Inject
-    private DataModelerService dataModelerService;
-
-    @Inject
-    private MetadataService metadataService;
 
     @Test
     public void javaSourceGeneratedForNewModel() throws Exception {
@@ -138,7 +118,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         dataObject.addProperty( "name", "java.lang.String" );
         dataObject.addProperty( "numberOfAlbums", "java.lang.Integer" );
         dataObject.addProperty( "dob", "java.util.Date" );
-        final org.uberfire.java.nio.file.Path dataObjectPath = org.uberfire.java.nio.file.Paths.get( URI.create( sharedPackageURI + "/" + dataObjectName + ".java" ) );
+        final org.uberfire.java.nio.file.Path dataObjectPath = makePath( sharedPackageURI, dataObjectName + ".java" );
         updateDataObject( dataObject, dataObjectPath );
 
         final String localPackageURI = getLocalPackageURI( project );
@@ -185,7 +165,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         dataObject.addProperty( "name", "java.lang.String" );
         dataObject.addProperty( "numberOfAlbums", "java.lang.Integer" );
         dataObject.addProperty( "dob", "java.util.Date" );
-        final org.uberfire.java.nio.file.Path dataObjectPath = org.uberfire.java.nio.file.Paths.get( URI.create( sharedPackageURI + "/" + dataObjectName + ".java" ) );
+        final org.uberfire.java.nio.file.Path dataObjectPath = makePath( sharedPackageURI, dataObjectName + ".java" );
         updateDataObject( dataObject, dataObjectPath );
 
         final String localPackageURI = getLocalPackageURI( project );
@@ -250,24 +230,6 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
                 assertNotNull( "Form model entity field must have setter method.", entityProp.getMutator() );
             }
         }, 30, 1000 );
-    }
-
-    private void maybeCreateDataObject( final Path sharedPath, final String dataObjectName ) {
-        final String fileName = dataObjectName + ".java";
-        final URI fileURI = URI.create( sharedPath.toURI() + "/" + fileName );
-
-        if ( ioService.notExists( org.uberfire.java.nio.file.Paths.get( fileURI ) ) ) {
-            dataModelerService.createJavaFile( sharedPath, fileName, "", defaultOptions( dataObjectName ) );
-        }
-    }
-
-    private void updateDataObject( final DataObject dataObject, final org.uberfire.java.nio.file.Path dataObjectPath ) {
-        final String updatedSource = ioService.readAllString( dataObjectPath );
-        dataModelerService.saveSource( updatedSource,
-                                       Paths.convert( dataObjectPath ),
-                                       dataObject,
-                                       metadataService.getMetadata( Paths.convert( dataObjectPath ) ),
-                                       "add properties to test entity" );
     }
 
     private void assertViewProperty( final String name, final JavaClass<JavaClassSource> formViewClass ) {

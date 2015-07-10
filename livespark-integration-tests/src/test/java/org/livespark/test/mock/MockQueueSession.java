@@ -17,6 +17,10 @@
 package org.livespark.test.mock;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpSession;
 
 import org.jboss.errai.bus.client.api.QueueSession;
 import org.jboss.errai.bus.client.api.SessionEndListener;
@@ -25,19 +29,22 @@ public class MockQueueSession implements QueueSession {
 
     private final String queueSessionId;
 
-    public MockQueueSession( final String queueSessionId ) {
+    private Map<String, Object> attrs = new ConcurrentHashMap<String, Object>();
+
+    public MockQueueSession( final String queueSessionId, final HttpSession httpSession ) {
         this.queueSessionId = queueSessionId;
+        attrs.put( HttpSession.class.getName(), httpSession );
     }
 
     @Override
     public void setAttribute( String attribute,
                               Object value ) {
-        throw new UnsupportedOperationException();
+        attrs.put( attribute, value );
     }
 
     @Override
     public Object removeAttribute( String attribute ) {
-        throw new UnsupportedOperationException();
+        return attrs.remove( attribute );
     }
 
     @Override
@@ -47,7 +54,7 @@ public class MockQueueSession implements QueueSession {
 
     @Override
     public boolean hasAttribute( String attribute ) {
-        throw new UnsupportedOperationException();
+        return attrs.containsKey( attribute );
     }
 
     @Override
@@ -62,13 +69,13 @@ public class MockQueueSession implements QueueSession {
 
     @Override
     public Collection<String> getAttributeNames() {
-        throw new UnsupportedOperationException();
+        return attrs.keySet();
     }
 
     @Override
     public <T> T getAttribute( Class<T> type,
                                String attribute ) {
-        throw new UnsupportedOperationException();
+        return type.cast( attrs.get( attribute ) );
     }
 
     @Override

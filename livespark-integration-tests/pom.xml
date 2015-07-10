@@ -139,6 +139,12 @@
     
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-deployment</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-webapp</artifactId>
       <scope>test</scope>
       <type>war</type>
