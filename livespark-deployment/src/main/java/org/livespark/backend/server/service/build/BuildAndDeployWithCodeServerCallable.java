@@ -19,7 +19,7 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.errai.bus.server.api.ServerMessageBus;
-import org.livespark.client.AppReady;
+import org.livespark.client.shared.AppReady;
 
 public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable {
 

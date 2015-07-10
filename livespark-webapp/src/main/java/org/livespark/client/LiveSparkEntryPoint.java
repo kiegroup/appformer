@@ -44,6 +44,7 @@ import org.kie.workbench.common.services.shared.preferences.ApplicationPreferenc
 import org.kie.workbench.common.widgets.client.menu.AboutMenuBuilder;
 import org.kie.workbench.common.widgets.client.menu.ResetPerspectivesMenuBuilder;
 import org.livespark.client.resources.i18n.AppConstants;
+import org.livespark.client.shared.AppReady;
 import org.uberfire.client.menu.CustomSplashHelp;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;

@@ -77,30 +77,13 @@
   <modules>
     <module>livespark-commons</module>
     <module>livespark-form-modeler</module>
+    <module>livespark-deployment</module>
     <module>livespark-webapp</module>
     <module>livespark-integration-tests</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
-      <!--
-      <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-bom</artifactId>
-        <type>pom</type>
-        <version>${uberfire.version}</version>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.errai.bom</groupId>
-        <artifactId>errai-bom</artifactId>
-        <type>pom</type>
-        <version>${errai.version}</version>
-        <scope>import</scope>
-      </dependency>    
-      -->
-
       <!--
       Added Form Modeler deps here to make livespark module self-contained.
       They should be moved to droolsjbpm-build-bootstrap module as soon as possible.
@@ -189,6 +172,11 @@
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
