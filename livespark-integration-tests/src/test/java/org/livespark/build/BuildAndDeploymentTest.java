@@ -16,9 +16,10 @@
 
 package org.livespark.build;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -50,6 +51,13 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
     private static final Queue<AppReady> observedEvents = new ConcurrentLinkedQueue<AppReady>();
 
+    private static final FilenameFilter deployMarkerFilter = new FilenameFilter() {
+        @Override
+        public boolean accept( File dir, String name ) {
+            return name.endsWith( ".deployed" );
+        }
+    };
+
     /*
      * If this method is non-static, it is invoked on a different instance than the one running the tests, regardless of scopes.
      */
@@ -71,9 +79,21 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     @Before
     public void prepareForTest() {
         prepareServiceTest();
-        observedEvents.clear();
-        project = getProject();
+        prepareFields();
+        removeDoDeployedMarkerFiles();
+        prepareDataObject();
+    }
 
+    private void removeDoDeployedMarkerFiles() {
+        final File deployDir = new File( "target/wildfly-8.1.0.Final/standalone/deployments/" );
+
+
+        for ( final File deployMarker : deployDir.listFiles( deployMarkerFilter ) ) {
+            deployMarker.delete();
+        }
+    }
+
+    private void prepareDataObject() {
         final org.uberfire.java.nio.file.Path sharedPath = makePath( getSrcMainPackageHelper( project, "/" + PACKAGE + "/client/shared" ), "" );
         final Path dataObjectPath = makePath( sharedPath.toUri().toString(), DATA_OBJECT_NAME + ".java" );
         maybeCreateDataObject( Paths.convert( sharedPath ), DATA_OBJECT_NAME );
@@ -97,11 +117,30 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         }, 20, 1000 );
     }
 
+    private void prepareFields() {
+        observedEvents.clear();
+        project = getProject();
+    }
+
     @Test
     public void testProductionCompileAndDeploymentFiresAppReadyEvent() throws Exception {
         assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
 
         buildService.buildAndDeploy( project );
+
+        runAssertions( new Runnable() {
+            @Override
+            public void run() {
+                assertEquals( "There should be exactly one AppReady event observed.", 1, observedEvents.size() );
+            }
+        }, 60, 2000, 5000 );
+    }
+
+    @Test
+    public void testDevModeDeploymentFiresAppReadyEvent() throws Exception {
+        assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
+
+        buildService.buildAndDeployDevMode( project );
 
         runAssertions( new Runnable() {
             @Override
