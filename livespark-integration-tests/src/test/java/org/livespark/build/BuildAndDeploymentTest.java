@@ -245,7 +245,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         try {
             assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
         } catch ( AssertionError e ) {
-            throw new AssertionError( "Precondition failed.", e );
+            throw new AssertionError("Precondition failed.", e);
         }
 
         simulateSessionExpiration();
