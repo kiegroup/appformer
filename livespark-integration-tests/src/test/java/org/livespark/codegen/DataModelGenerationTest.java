@@ -33,7 +33,10 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_PORTABLE;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.VALIDATION_VALID;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URI;
+import java.util.Date;
 
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -115,9 +118,8 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         final DataObject dataObject = dataModel.getDataObject( DATA_OBJECT_PACKAGE + ".client.shared." + dataObjectName );
 
         // Simulate adding fields
-        dataObject.addProperty( "name", "java.lang.String" );
-        dataObject.addProperty( "numberOfAlbums", "java.lang.Integer" );
-        dataObject.addProperty( "dob", "java.util.Date" );
+        addTestProperties( dataObject );
+
         final org.uberfire.java.nio.file.Path dataObjectPath = makePath( sharedPackageURI, dataObjectName + ".java" );
         updateDataObject( dataObject, dataObjectPath );
 
@@ -138,11 +140,41 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
                 @SuppressWarnings( "unchecked" )
                 final JavaClass<JavaClassSource> clazz = Roaster.parse( JavaClass.class, source );
 
-                assertViewProperty( bindNamePrefix + "_name", clazz );
-                assertViewProperty( bindNamePrefix + "_numberOfAlbums", clazz );
-                assertViewProperty( bindNamePrefix + "_dob", clazz );
+                assertTestPropertiesWithoutId( bindNamePrefix,
+                           clazz );
             }
         }, 30, 1000 );
+    }
+
+    private void assertTestPropertiesWithoutId( final String bindNamePrefix, final JavaClass<JavaClassSource> clazz ) {
+        assertViewProperty( bindNamePrefix + "_name", clazz );
+        assertViewProperty( bindNamePrefix + "_numberOfAlbums", clazz );
+        assertViewProperty( bindNamePrefix + "_dob", clazz );
+        assertViewProperty( bindNamePrefix + "_numOfFans", clazz );
+        assertViewProperty( bindNamePrefix + "_iq", clazz );
+        assertViewProperty( bindNamePrefix + "_favLetter", clazz );
+        assertViewProperty( bindNamePrefix + "_isPopular", clazz );
+        assertViewProperty( bindNamePrefix + "_height", clazz );
+        assertViewProperty( bindNamePrefix + "_weight", clazz );
+        assertViewProperty( bindNamePrefix + "_numOfGuitars", clazz );
+        assertViewProperty( bindNamePrefix + "_shortVal", clazz );
+        // FIXME this assertion fails.
+//        assertViewProperty( bindNamePrefix + "_bac", clazz );
+    }
+
+    private void addTestProperties( final DataObject dataObject ) {
+        dataObject.addProperty( "name", String.class.getCanonicalName() );
+        dataObject.addProperty( "numberOfAlbums", int.class.getCanonicalName() );
+        dataObject.addProperty( "dob", Date.class.getCanonicalName() );
+        dataObject.addProperty( "bac", BigDecimal.class.getCanonicalName() );
+        dataObject.addProperty( "numOfFans", BigInteger.class.getCanonicalName() );
+        dataObject.addProperty( "iq", Byte.class.getCanonicalName() );
+        dataObject.addProperty( "favLetter", char.class.getCanonicalName() );
+        dataObject.addProperty( "isPopular", boolean.class.getCanonicalName() );
+        dataObject.addProperty( "height", double.class.getCanonicalName() );
+        dataObject.addProperty( "weight", float.class.getCanonicalName() );
+        dataObject.addProperty( "numOfGuitars", long.class.getCanonicalName() );
+        dataObject.addProperty( "shortVal", short.class.getCanonicalName() );
     }
 
     @Test
@@ -162,9 +194,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         final DataObject dataObject = dataModel.getDataObject( DATA_OBJECT_PACKAGE + ".client.shared." + dataObjectName );
 
         // Simulate adding fields
-        dataObject.addProperty( "name", "java.lang.String" );
-        dataObject.addProperty( "numberOfAlbums", "java.lang.Integer" );
-        dataObject.addProperty( "dob", "java.util.Date" );
+        addTestProperties( dataObject );
         final org.uberfire.java.nio.file.Path dataObjectPath = makePath( sharedPackageURI, dataObjectName + ".java" );
         updateDataObject( dataObject, dataObjectPath );
 
@@ -185,12 +215,15 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
                 @SuppressWarnings( "unchecked" )
                 final JavaClass<JavaClassSource> clazz = Roaster.parse( JavaClass.class, source );
 
-                assertViewProperty( bindNamePrefix + "_id", clazz );
-                assertViewProperty( bindNamePrefix + "_name", clazz );
-                assertViewProperty( bindNamePrefix + "_numberOfAlbums", clazz );
-                assertViewProperty( bindNamePrefix + "_dob", clazz );
+                assertTestPropertiesWithId( bindNamePrefix, clazz );
             }
+
         }, 30, 1000 );
+    }
+
+    private void assertTestPropertiesWithId( final String bindNamePrefix, final JavaClass<JavaClassSource> clazz ) {
+        assertViewProperty( bindNamePrefix + "_id", clazz );
+        assertTestPropertiesWithoutId( bindNamePrefix, clazz );
     }
 
     @Test
