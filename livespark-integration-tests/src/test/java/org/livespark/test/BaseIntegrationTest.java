@@ -39,7 +39,6 @@ import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.junit.AfterClass;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -50,6 +49,7 @@ import org.livespark.test.mock.MockServletRequest;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.FileAlreadyExistsException;
 
 import com.google.common.io.Files;
 
@@ -61,6 +61,7 @@ public class BaseIntegrationTest {
      * @param suffix Used in name of deployed war file.
      */
     public static WebArchive createLiveSparkDeployment( final String suffix ) {
+        clearDotFiles();
         return resolveAndCopyLiveSparkWar( suffix );
     }
 
@@ -91,7 +92,6 @@ public class BaseIntegrationTest {
                                       MockServletContext.class );
     }
 
-    @AfterClass
     public static void clearDotFiles() {
         final String[] dirs = new String[] {
                                             ".niogit",
@@ -206,10 +206,10 @@ public class BaseIntegrationTest {
 
     protected void maybeCreateDataObject( final Path sharedPath, final String dataObjectName ) {
         final String fileName = dataObjectName + ".java";
-        final URI fileURI = URI.create( sharedPath.toURI() + "/" + fileName );
 
-        if ( ioService.notExists( org.uberfire.java.nio.file.Paths.get( fileURI ) ) ) {
+        try {
             dataModelerService.createJavaFile( sharedPath, fileName, "", defaultOptions( dataObjectName ) );
+        } catch ( FileAlreadyExistsException ignore ) {
         }
     }
 
