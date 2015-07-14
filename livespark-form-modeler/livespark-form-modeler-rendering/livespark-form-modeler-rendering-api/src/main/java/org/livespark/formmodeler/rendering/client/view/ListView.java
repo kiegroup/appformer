@@ -55,8 +55,8 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     protected ListViewActionsHelper<M> helper = new ListViewActionsHelper<M>() {
         @Override
         public void create( M model ) {
-            org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create(
-                    getRemoteServiceClass(), new RemoteCallback<M>() {
+            createRestCaller(
+                    new RemoteCallback<M>() {
                         @Override
                         public void callback( M response ) {
                             items.getValue().add( response );
@@ -67,8 +67,8 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
         @Override
         public void update( M model ) {
-            org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create(
-                    getRemoteServiceClass(), new RemoteCallback<Boolean>() {
+            createRestCaller(
+                    new RemoteCallback<Boolean>() {
                         @Override
                         public void callback( Boolean response ) {
                         }
@@ -76,8 +76,16 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         }
 
         @Override
-        public void delete( M model ) {
-            ListView.this.delete( model );
+        public void delete( final M model ) {
+            createRestCaller(
+                    new RemoteCallback<Boolean>() {
+                        @Override
+                        public void callback( Boolean response ) {
+                            if ( response ) {
+                                items.getValue().remove( model );
+                            }
+                        }
+                    } ).delete( model );
         }
     };
 
@@ -95,9 +103,16 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         this.helper = helper;
     }
 
-    protected abstract void loadData( RemoteCallback<List<M>> callback );
+    /*
+     * Is overridable for testing.
+     */
+    protected <S extends LiveSparkRestService<M>, R> S createRestCaller( RemoteCallback<R> callback ) {
+        return org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create( this.<S>getRemoteServiceClass(), callback );
+    }
 
-    protected abstract void remoteDelete( M model, RemoteCallback<Boolean> callback );
+    protected void loadData( RemoteCallback<List<M>> callback ) {
+        createRestCaller( callback ).load();
+    }
 
     public void loadItems(List<M> itemsToLoad) {
         items.setItems( itemsToLoad );
@@ -128,26 +143,13 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract String getFormId();
 
-    protected abstract Class<? extends LiveSparkRestService<M>> getRemoteServiceClass();
-
-    public void delete( final M model ) {
-        remoteDelete( model,
-                new RemoteCallback<Boolean>() {
-
-                    @Override
-                    public void callback( Boolean response ) {
-                        if ( response ) {
-                            items.getValue().remove( model );
-                        }
-                    }
-                } );
-    }
+    protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
 
     @EventHandler( "create" )
     public void onCreateClick( ClickEvent event ) {
         final FormView<M> form = getForm();
 
-        modal = new FormViewModal( form, getFormTitle(), getFormId() );
+        modal = createNewFormViewModal( form );
         modal.addSubmitClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
@@ -165,6 +167,13 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         modal.show();
     }
 
+    /*
+     * Leave protected for testing purposes.
+     */
+    protected FormViewModal createNewFormViewModal( final FormView<M> form ) {
+        return new FormViewModal( form, getFormTitle(), getFormId() );
+    }
+
     protected void doCreate(M model) {
         if (modal != null) modal.hide();
         helper.create( model );
@@ -175,19 +184,15 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         helper.update( model );
     }
 
-    protected void doDelete(M model) {
-        helper.delete( model );
-    }
-
     public void onDelete( M model ) {
-        doDelete( model );
+        helper.delete( model );
     }
 
     public void onEdit( M model ) {
         final FormView<M> form = getForm();
         form.setModel( model );
 
-        modal = new FormViewModal( form, getFormTitle(), getFormId() );
+        modal = createNewFormViewModal( form );
         modal.addSubmitClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {

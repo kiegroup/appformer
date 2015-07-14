@@ -16,15 +16,14 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
-import static org.livespark.formmodeler.codegen.view.impl.java.RestCodegenUtil.generateRestCall;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.FORM_MODEL_ANNOTATION;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
@@ -49,8 +48,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
 
     private void addMethods( JavaClassSource viewClass,
             SourceGenerationContext context ) {
-        addLoadDataImpl( viewClass, context );
-        addRemoteDeleteImpl( viewClass, context );
         addGetFormTypeImpl( viewClass, context );
         addGetListTitleImpl( viewClass, context );
         addGetFormTitleImpl( viewClass, context );
@@ -132,36 +129,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getFormViewName() );
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getListItemViewName() );
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
-    }
-
-    private void addRemoteDeleteImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {
-        MethodSource<JavaClassSource> remoteDelete = viewClass.addMethod();
-        remoteDelete.setProtected()
-                .setName( "remoteDelete" )
-                .setReturnType( void.class )
-                .addParameter( context.getModelName(), "model" );
-        remoteDelete.addParameter( RemoteCallback.class,
-                "callback" );
-        remoteDelete.addAnnotation( Override.class );
-
-        remoteDelete.setBody( generateRestCall( "delete",
-                "callback",
-                context,
-                "model") );
-    }
-
-    private void addLoadDataImpl( JavaClassSource viewClass , SourceGenerationContext context  ) {
-        MethodSource<JavaClassSource> loadData = viewClass.addMethod();
-        loadData.setProtected()
-                .setName( "loadData" )
-                .setReturnType( void.class )
-                .addParameter( RemoteCallback.class,
-                        "callback" );
-        loadData.addAnnotation( Override.class );
-
-        loadData.setBody( generateRestCall( "load",
-                "callback",
-                context ) );
     }
 
 }
