@@ -25,11 +25,8 @@ import org.uberfire.ext.widgets.common.client.ace.AceEditorTheme;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
 
-/**
- * A Text editor
- */
 @Dependent
-public class GeneralTextEditorScreenView extends Composite /*implements GeneralTextEditorScreenPresenter.View*/ {
+public class TerminalOutputScreen extends Composite {
 
     private AceEditor editor = new AceEditor();
 

@@ -128,7 +128,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract String getFormId();
 
-    protected abstract Class<? extends LiveSparkRestService> getRemoteServiceClass();
+    protected abstract Class<? extends LiveSparkRestService<M>> getRemoteServiceClass();
 
     public void delete( final M model ) {
         remoteDelete( model,

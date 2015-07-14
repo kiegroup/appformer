@@ -29,22 +29,22 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import com.google.gwt.user.client.ui.Composite;
 
 @ApplicationScoped
-@WorkbenchScreen(identifier = "MavenBuildOutput")
+@WorkbenchScreen( identifier = "MavenBuildOutput" )
 public class MavenBuildOutput extends Composite {
 
     @Inject
     private MessageBus bus;
 
     @Inject
-    private GeneralTextEditorScreenView textEditorScreen;
+    private TerminalOutputScreen outputScreen;
 
     @PostConstruct
     public void init() {
-        initWidget( textEditorScreen );
+        initWidget( outputScreen );
 
-        textEditorScreen.setWrapMode( true );
-        textEditorScreen.setContent( null, "" );
-        textEditorScreen.setReadOnly( true );
+        outputScreen.setWrapMode( true );
+        outputScreen.setContent( null, "" );
+        outputScreen.setReadOnly( true );
 
         bus.subscribe( "MavenBuilderOutput", new MessageCallback() {
 
@@ -53,9 +53,9 @@ public class MavenBuildOutput extends Composite {
                 final Boolean clean = message.get( Boolean.class, "clean" );
                 final String content = message.get( String.class, "output" );
                 if ( clean != null && clean ) {
-                    textEditorScreen.setContentAndScroll( content );
+                    outputScreen.setContentAndScroll( content );
                 } else {
-                    textEditorScreen.appendContentAndScroll( content );
+                    outputScreen.appendContentAndScroll( content );
                 }
             }
         } );

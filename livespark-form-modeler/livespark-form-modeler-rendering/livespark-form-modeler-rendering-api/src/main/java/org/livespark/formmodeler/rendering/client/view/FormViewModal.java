@@ -30,9 +30,9 @@ public class FormViewModal extends Modal {
     private Button submit = new Button( "Submit" );
     private Button cancel = new Button( "Cancel" );
 
-    FormView formView;
+    FormView<?> formView;
 
-    public FormViewModal( final FormView formView, final String title, String id ) {
+    public FormViewModal( final FormView<?> formView, final String title, String id ) {
         setHideOthers( false );
         setCloseVisible( true );
         setTitle( title );
