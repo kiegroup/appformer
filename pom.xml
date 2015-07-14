@@ -204,7 +204,7 @@
         <scope>test</scope>
       </dependency>
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement>  
 
   <distributionManagement>
     <repository>
@@ -219,5 +219,20 @@
       <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.7</source>
+            <target>1.7</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>
