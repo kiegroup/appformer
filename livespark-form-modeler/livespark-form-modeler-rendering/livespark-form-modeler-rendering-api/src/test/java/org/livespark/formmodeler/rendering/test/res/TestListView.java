@@ -79,8 +79,8 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    protected Class<TestFormModel> getRemoteServiceClass() {
-        return TestFormModel.class;
+    protected Class<TestRestService> getRemoteServiceClass() {
+        return TestRestService.class;
     }
 
     /* (non-Javadoc)
