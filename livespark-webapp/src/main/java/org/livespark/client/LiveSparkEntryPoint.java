@@ -25,12 +25,14 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
 import org.guvnor.common.services.shared.security.KieWorkbenchSecurityService;
+import org.guvnor.structure.client.editors.repository.RepositoryPreferences;
 import org.jboss.errai.bus.client.api.BusErrorCallback;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
@@ -95,6 +97,8 @@ public class LiveSparkEntryPoint {
 
     @Inject
     private Caller<AuthenticationService> authService;
+
+    private RepositoryPreferences repositoryPreferences;
     
     @AfterInitialization
     public void startApp() {
@@ -107,6 +111,15 @@ public class LiveSparkEntryPoint {
                 hideLoadingPopup();
             }
         } ).loadPolicy();
+    }
+
+    @Produces
+    public RepositoryPreferences getRepositoryPreferences() {
+        if(repositoryPreferences == null) {
+            repositoryPreferences = new RepositoryPreferences(true);
+        }
+
+        return repositoryPreferences;
     }
 
 	private void onAppReady(@Observes AppReady appReady) {
