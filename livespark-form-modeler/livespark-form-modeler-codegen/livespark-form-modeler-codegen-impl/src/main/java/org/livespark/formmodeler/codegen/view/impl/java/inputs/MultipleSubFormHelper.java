@@ -19,6 +19,7 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -62,18 +63,18 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
     }
 
     @Override
-    public void addCustomCode( FieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource parentClass ) {
+    public void addCustomCode( FieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
         MultipleSubFormFieldDefinition subformField = ( MultipleSubFormFieldDefinition ) fieldDefinition;
 
         JavaClassSource multipleSubformAdapter = Roaster.create( JavaClassSource.class );
         multipleSubformAdapter.addImport( List.class );
 
-        parentClass.addImport( subformField.getStandaloneType() );
-        parentClass.addImport( subformField.getEmbeddedModel() );
-        parentClass.addImport( subformField.getEmbeddedFormView() );
-        parentClass.addImport( List.class );
-        parentClass.addImport( ArrayList.class );
-        parentClass.addImport( MULTIPLE_SUBFORM_ClASSNAME );
+        viewClass.addImport( subformField.getStandaloneType() );
+        viewClass.addImport( subformField.getEmbeddedModel() );
+        viewClass.addImport( subformField.getEmbeddedFormView() );
+        viewClass.addImport( List.class );
+        viewClass.addImport( ArrayList.class );
+        viewClass.addImport( MULTIPLE_SUBFORM_ClASSNAME );
 
         String standaloneName = cleanClassName( subformField.getStandaloneType() );
         String modelName = cleanClassName( subformField.getEmbeddedModel() );
@@ -112,6 +113,29 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
                 .setBody( modelMethodBody.toString() )
                 .addAnnotation( Override.class );
 
-        parentClass.addNestedType( multipleSubformAdapter );
+        viewClass.addNestedType( multipleSubformAdapter );
+        amendUpdateNestedModels(subformField, context, viewClass);
+    }
+
+    private void amendUpdateNestedModels(MultipleSubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
+        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "updateNestedModels", boolean.class );
+        if ( updateNestedModelsMethod != null ) {
+
+            viewClass.addImport( JAVA_UTIL_LIST );
+            viewClass.addImport( JAVA_UTIL_ARRAYLIST );
+
+            String body = updateNestedModelsMethod.getBody();
+
+            String pName = fieldDefinition.getBoundPropertyName();
+            String pType = fieldDefinition.getStandaloneType();
+
+            body += "List " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
+            body += "if (" + pName + " == null && init) {\n";
+            body += "  " + pName + " = new ArrayList<" + pType + ">();\n";
+            body += "  getModel().get" + context.getEntityName() + "().set" + StringUtils.capitalize( pName ) + "(" + pName + ");\n";
+            body += "}\n";
+            body += fieldDefinition.getName() + ".setModel(" + pName + ");\n";
+            updateNestedModelsMethod.setBody( body );
+        }
     }
 }

@@ -16,6 +16,8 @@
 
 package org.livespark.formmodeler.editor.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public abstract class FieldDefinition {
 
     protected final String code = this.getClass().getName();
@@ -30,8 +32,8 @@ public abstract class FieldDefinition {
 
     protected Boolean readonly = Boolean.FALSE;
 
-    protected String bindingExpression;
-    
+    protected String modelName;
+
     protected String boundPropertyName;
 
     public abstract String getStandaloneClassName();
@@ -73,11 +75,11 @@ public abstract class FieldDefinition {
     }
 
     public String getBindingExpression() {
-        return bindingExpression;
-    }
+        String bindingExpression = modelName;
 
-    public void setBindingExpression( String bindingExpression ) {
-        this.bindingExpression = bindingExpression;
+        if ( !StringUtils.isEmpty( boundPropertyName ) ) bindingExpression += "." + boundPropertyName;
+
+        return bindingExpression;
     }
     
     public boolean isAnnotatedId() {
@@ -87,7 +89,15 @@ public abstract class FieldDefinition {
     public void setAnnotatedId( boolean annotatedId ) {
         this.annotatedId = annotatedId;
     }
-    
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName( String modelName ) {
+        this.modelName = modelName;
+    }
+
     public String getBoundPropertyName() {
         return boundPropertyName;
     }
