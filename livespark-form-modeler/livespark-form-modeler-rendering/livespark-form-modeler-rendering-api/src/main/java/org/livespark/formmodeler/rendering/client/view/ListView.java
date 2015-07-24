@@ -115,7 +115,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     }
 
     public void loadItems(List<M> itemsToLoad) {
-        items.setItems( itemsToLoad );
+        items.setValue( itemsToLoad );
         syncListWidgets();
     }
 

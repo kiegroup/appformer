@@ -100,12 +100,12 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
             String body = updateNestedModelsMethod.getBody();
 
             String pName = fieldDefinition.getBoundPropertyName();
-            String pType = StringUtils.capitalize( pName );
+            String pType = fieldDefinition.getStandaloneType();
 
-            body += pType + " " + pName + " = getModel().get" + context.getEntityName() + "().get" + pType + "();\n";
+            body += pType + " " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";
             body += "  " + pName + " = new " + pType + "();\n";
-            body += "  getModel().get" + context.getEntityName() + "().set" + pType + "(" + pName + ");\n";
+            body += "  getModel().get" + context.getEntityName() + "().set" + StringUtils.capitalize( pName ) + "(" + pName + ");\n";
             body += "}\n";
             body += fieldDefinition.getName() + ".setModel(" + pName + ");\n";
             updateNestedModelsMethod.setBody( body );

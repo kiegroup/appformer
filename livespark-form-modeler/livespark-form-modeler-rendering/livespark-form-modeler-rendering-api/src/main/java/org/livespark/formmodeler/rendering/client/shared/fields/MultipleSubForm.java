@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.ListItemView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
@@ -33,7 +34,7 @@ import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelpe
  * Created by pefernan on 6/18/15.
  */
 
-public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends SimplePanel implements HasValue<L> {
+public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends SimplePanel implements HasModel<L> {
 
     private MultipleSubFormModelAdapter<L, F> multipleSubFormModelAdapter;
     private ListView<F, ? extends ListItemView<F>> listView;
@@ -45,24 +46,13 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
         multipleSubFormModelAdapter = adapter;
     }
 
-
-    public L getValue() {
-        return model;
+    @Override
+    public L getModel() {
+        return null;
     }
 
-    public void setValue( L model ) {
-        doSetValue( model );
-    }
-
-    public void setValue( L model, boolean b ) {
-        doSetValue( model );
-    }
-
+    @Override
     public void setModel( L model ) {
-        this.model = model;
-    }
-
-    protected void doSetValue(L model) {
         this.model = model;
         if (listView == null) {
             initView();
@@ -80,7 +70,7 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
             @Override
             public void create( F formModel ) {
                 model.add( ( M ) formModel.getDataModels().get( 0 ) );
-                listView.syncListWidget( formModel );
+                listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
             }
 
             @Override

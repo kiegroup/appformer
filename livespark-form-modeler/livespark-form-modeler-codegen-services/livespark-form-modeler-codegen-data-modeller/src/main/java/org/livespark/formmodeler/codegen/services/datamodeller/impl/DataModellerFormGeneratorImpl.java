@@ -101,7 +101,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
             field.setName( propertyName );
             String label = getPropertyLabel( property );
             field.setLabel( label );
-            field.setBindingExpression( holderName + "." + property.getName() );
+            field.setModelName( holderName );
             field.setBoundPropertyName( property.getName() );
 
             if (field instanceof AbstractIntputFieldDefinition) {
