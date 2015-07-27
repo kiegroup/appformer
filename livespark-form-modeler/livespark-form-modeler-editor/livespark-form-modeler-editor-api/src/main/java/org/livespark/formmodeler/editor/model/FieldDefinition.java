@@ -16,8 +16,6 @@
 
 package org.livespark.formmodeler.editor.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 public abstract class FieldDefinition {
 
     protected final String code = this.getClass().getName();
