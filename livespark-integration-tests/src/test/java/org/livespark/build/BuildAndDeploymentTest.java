@@ -16,22 +16,28 @@
 
 package org.livespark.build;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
 
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.errai.bus.server.api.RpcContext;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +48,7 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 import org.livespark.client.shared.AppReady;
 import org.livespark.client.shared.GwtWarBuildService;
 import org.livespark.test.BaseIntegrationTest;
+import org.livespark.test.mock.MockHttpSession;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.attribute.FileTime;
@@ -51,15 +58,9 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
     private static final String DATA_OBJECT_NAME = "Foobar";
     private static final String PACKAGE = "buildtest";
+    private static final File DEPLOY_DIR = new File( "target/wildfly-8.1.0.Final/standalone/deployments/" );
 
     private static final Queue<AppReady> observedEvents = new ConcurrentLinkedQueue<AppReady>();
-
-    private static final FilenameFilter deployMarkerFilter = new FilenameFilter() {
-        @Override
-        public boolean accept( File dir, String name ) {
-            return name.endsWith( ".deployed" );
-        }
-    };
 
     /*
      * If this method is non-static, it is invoked on a different instance than the one running the tests, regardless of scopes.
@@ -88,10 +89,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     }
 
     private void removeDoDeployedMarkerFiles() {
-        final File deployDir = new File( "target/wildfly-8.1.0.Final/standalone/deployments/" );
-
-
-        for ( final File deployMarker : deployDir.listFiles( deployMarkerFilter ) ) {
+        for ( final File deployMarker : getWithSuffix( DEPLOY_DIR, ".deployed" ) ) {
             deployMarker.delete();
         }
     }
@@ -133,8 +131,32 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         project = getProject();
     }
 
+    private File[] getWithSuffix( final File parent, final String suffix ) {
+        assertTrue( parent.isDirectory() );
+        return parent.listFiles( new FilenameFilter() {
+            @Override
+            public boolean accept( File dir, String name ) {
+                return name.endsWith( suffix );
+            }
+        } );
+    }
+
+    /**
+     * This method calls unbound on all {@link HttpSessionBindingListener HttpSessionBindingListeners} in the session returned by {@link RpcContext#getHttpSession()}.
+     */
+    private void simulateSessionExpiration() {
+        final MockHttpSession httpSession = (MockHttpSession) RpcContext.getHttpSession();
+        for ( final Entry<String, Object> entry : httpSession.getAllAttributes() ) {
+            if ( entry.getValue() instanceof HttpSessionBindingListener ) {
+                final HttpSessionBindingListener listener = (HttpSessionBindingListener) entry.getValue();
+                final HttpSessionBindingEvent event = new HttpSessionBindingEvent( httpSession, entry.getKey(), entry.getValue() );
+                listener.valueUnbound( event );
+            }
+        }
+    }
+
     @Test
-    public void testProductionCompileAndDeploymentFiresAppReadyEvent() throws Exception {
+    public void productionCompileAndDeploymentFiresAppReadyEvent() throws Exception {
         assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
 
         buildService.buildAndDeploy( project );
@@ -151,7 +173,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void testDevModeDeploymentFiresAppReadyEvent() throws Exception {
+    public void devModeDeploymentFiresAppReadyEvent() throws Exception {
         assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
 
         buildService.buildAndDeployDevMode( project );
@@ -165,6 +187,32 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
                 assertNotEquals( "There should be exactly one AppReady event observed.", 0, observedEvents.size() );
             }
         }, 60, 2000, 5000 );
+    }
+
+    @Test
+    public void sessionExpirationRemovesWarFileFromProductionCompile() throws Exception {
+        try {
+            productionCompileAndDeploymentFiresAppReadyEvent();
+            assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+        } catch ( AssertionError e ) {
+            throw new AssertionError( "Precondition failed.", e );
+        }
+
+        simulateSessionExpiration();
+        assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+    }
+
+    @Test
+    public void sessionExpirationRemovesWarFileFromDevModeCompile() throws Exception {
+        try {
+            devModeDeploymentFiresAppReadyEvent();
+            assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+        } catch ( AssertionError e ) {
+            throw new AssertionError( "Precondition failed.", e );
+        }
+
+        simulateSessionExpiration();
+        assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
     }
 
 }

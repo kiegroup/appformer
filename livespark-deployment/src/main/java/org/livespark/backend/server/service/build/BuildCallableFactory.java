@@ -36,6 +36,7 @@ import org.livespark.client.shared.AppReady;
 public class BuildCallableFactory {
 
     private static final String CODE_SERVER_CALLABLE_ATTR_KEY = BuildAndDeployWithCodeServerCallable.class.getCanonicalName();
+    private static final String BUILD_AND_DEPLOY_CALLABLE_ATTR_KEY = BuildAndDeployCallable.class.getCanonicalName();
 
     // TODO make configurable
     private static final int CODE_SERVER_LOWEST_PORT = 50000;
@@ -57,13 +58,19 @@ public class BuildCallableFactory {
                                                              final HttpSession session,
                                                              final String queueSessionId,
                                                              final ServletRequest sreq ) {
-        return new BuildAndDeployCallable( project,
-                                           pomXml,
-                                           session,
-                                           queueSessionId,
-                                           sreq,
-                                           bus,
-                                           appReadyEvent );
+        BuildCallable callable = (BuildCallable) session.getAttribute( BUILD_AND_DEPLOY_CALLABLE_ATTR_KEY );
+        if ( callable == null ) {
+            callable = new BuildAndDeployCallable( project,
+                                                   pomXml,
+                                                   session,
+                                                   queueSessionId,
+                                                   sreq,
+                                                   bus,
+                                                   appReadyEvent );
+            session.setAttribute( BUILD_AND_DEPLOY_CALLABLE_ATTR_KEY, callable );
+        }
+
+        return callable;
     }
 
     public BuildCallable createDevModeDeploymentCallable( final Project project,

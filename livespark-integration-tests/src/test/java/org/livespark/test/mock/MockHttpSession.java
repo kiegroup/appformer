@@ -17,6 +17,7 @@ package org.livespark.test.mock;
 
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
@@ -95,6 +96,10 @@ public class MockHttpSession implements HttpSession {
     @Override
     public Object getAttribute( String name ) {
         return attrs.get( name );
+    }
+
+    public Iterable<Entry<String, Object>> getAllAttributes() {
+        return attrs.entrySet();
     }
 
     /* (non-Javadoc)
