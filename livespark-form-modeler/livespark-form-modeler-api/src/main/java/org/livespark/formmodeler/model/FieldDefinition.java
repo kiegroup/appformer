@@ -16,8 +16,6 @@
 
 package org.livespark.formmodeler.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 public abstract class FieldDefinition {
 
     protected boolean annotatedId;
@@ -75,7 +73,7 @@ public abstract class FieldDefinition {
     public String getBindingExpression() {
         String bindingExpression = modelName;
 
-        if ( !StringUtils.isEmpty( boundPropertyName ) ) bindingExpression += "." + boundPropertyName;
+        if ( boundPropertyName!= null && !boundPropertyName.isEmpty() ) bindingExpression += "." + boundPropertyName;
 
         return bindingExpression;
     }
