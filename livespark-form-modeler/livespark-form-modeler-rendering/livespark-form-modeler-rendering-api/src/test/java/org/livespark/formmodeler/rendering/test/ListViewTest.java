@@ -93,7 +93,7 @@ public class ListViewTest {
 
         final List<TestFormModel> models = Arrays.asList( formModel );
         listView.lastLoadDataCallback.callback( models );
-        verify( listWidget ).setItems( models );
+        verify( listWidget ).setValue( models );
     }
 
     @Test
