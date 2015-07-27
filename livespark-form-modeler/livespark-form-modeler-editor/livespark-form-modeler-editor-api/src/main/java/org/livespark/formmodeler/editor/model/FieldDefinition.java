@@ -16,8 +16,6 @@
 
 package org.livespark.formmodeler.editor.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 public abstract class FieldDefinition {
 
     protected final String code = this.getClass().getName();
@@ -77,7 +75,7 @@ public abstract class FieldDefinition {
     public String getBindingExpression() {
         String bindingExpression = modelName;
 
-        if ( !StringUtils.isEmpty( boundPropertyName ) ) bindingExpression += "." + boundPropertyName;
+        if ( boundPropertyName!= null && !boundPropertyName.isEmpty() ) bindingExpression += "." + boundPropertyName;
 
         return bindingExpression;
     }
