@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
@@ -44,6 +43,7 @@ import org.jboss.errai.bus.server.api.RpcContext;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
 import org.livespark.backend.server.service.build.BuildCallable;
 import org.livespark.backend.server.service.build.BuildCallableFactory;
+import org.livespark.backend.server.service.dir.TmpDirFactory;
 import org.livespark.client.shared.GwtWarBuildService;
 import org.livespark.project.ProjectUnpacker;
 import org.slf4j.Logger;
@@ -65,10 +65,13 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         BuildCallable get( Project project, File pomXml );
     }
 
+    private static final Logger logger = LoggerFactory.getLogger( BuildServiceImpl.class );
+
     @Inject
     private BuildCallableFactory callableFactory;
 
-    private static final Logger logger = LoggerFactory.getLogger( BuildServiceImpl.class );
+    @Inject
+    private TmpDirFactory tmpDirFactory;
 
     private ProjectUnpacker unpacker;
 
@@ -78,8 +81,6 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
 
     @Resource
     private ManagedExecutorService execService;
-
-    private Map<Project, File> tmpDirs = new ConcurrentHashMap<Project, File>();
 
     @PostConstruct
     private void setup() {
@@ -92,11 +93,13 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
     }
 
     private BuildResults buildHelper( final Project project,
+                                      final HttpSession session,
                                       final CallableProducer producer ) {
         final BuildResults buildResults = new BuildResults();
         final File tmpRoot;
         try {
-            tmpRoot = copyProjectSourceToTmpDir( project );
+            tmpRoot = tmpDirFactory.getTmpDir( project, session );
+            copyProjectSourceToTmpDir( project, tmpRoot );
         } catch ( IOException e ) {
             final BuildMessage errorMsg = generateErrorBuildMessage( e );
             buildResults.addBuildMessage( errorMsg );
@@ -142,12 +145,9 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         execService.submit( producer.get( project, pomXml ) );
     }
 
-    private File copyProjectSourceToTmpDir( Project project ) throws IOException {
-        final File tmpDir = getOrCreateTmpProjectDir( project );
-
+    private File copyProjectSourceToTmpDir( final Project project, final File tmpDir ) throws IOException {
         deleteChangeableContents( tmpDir );
-        unpacker.writeSourceFileSystemToDisk( project,
-                                              Paths.get( tmpDir.toURI().toString() ) );
+        unpacker.writeSourceFileSystemToDisk( project, Paths.get( tmpDir.toURI().toString() ) );
 
         return tmpDir;
     }
@@ -191,39 +191,6 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         return file;
     }
 
-    private File getOrCreateTmpProjectDir( Project project ) throws IOException {
-        File tmp = tmpDirs.get( project );
-        if ( tmp == null || !tmp.exists() ) {
-            tmp = createTmpProjectDir( project );
-            tmpDirs.put( project,
-                         tmp );
-        }
-
-        return tmp;
-    }
-
-    private File createTmpProjectDir( Project project ) throws IOException {
-        final File tmpDir = File.createTempFile( padName( project.getProjectName() ),
-                                                 "" );
-        tmpDir.delete();
-        tmpDir.mkdir();
-
-        return tmpDir;
-    }
-
-    private String padName( String projectName ) {
-        if ( projectName.length() >= 3 ) {
-            return projectName;
-        } else {
-            final StringBuilder builder = new StringBuilder( projectName );
-            do {
-                builder.append( '0' );
-            } while ( builder.length() < 3 );
-
-            return builder.toString();
-        }
-    }
-
     @Override
     public BuildResults buildAndDeploy( Project project ) {
         return buildAndDeploy( project,
@@ -237,6 +204,7 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         final HttpSession session = RpcContext.getHttpSession();
         final ServletRequest sreq = RpcContext.getServletRequest();
         return buildHelper( project,
+                            session,
                             new CallableProducer() {
 
                                 @Override
@@ -252,6 +220,7 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         final HttpSession session = RpcContext.getHttpSession();
         final ServletRequest sreq = RpcContext.getServletRequest();
         return buildHelper( project,
+                            session,
                             new CallableProducer() {
 
                                 @Override
