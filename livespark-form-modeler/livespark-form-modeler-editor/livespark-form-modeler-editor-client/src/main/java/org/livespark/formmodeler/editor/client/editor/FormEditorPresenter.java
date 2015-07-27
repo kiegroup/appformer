@@ -19,7 +19,16 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.github.gwtbootstrap.client.ui.ControlGroup;
+import com.github.gwtbootstrap.client.ui.Controls;
+import com.github.gwtbootstrap.client.ui.FormLabel;
+import com.github.gwtbootstrap.client.ui.HelpBlock;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.Modal;
+import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DatePicker;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -27,8 +36,11 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
+import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -37,6 +49,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.ext.editor.commons.client.history.VersionRecordManager;
 import org.uberfire.ext.layout.editor.client.LayoutEditorPluginAPI;
+import org.uberfire.ext.layout.editor.client.structure.EditorWidget;
+import org.uberfire.ext.layout.editor.client.util.LayoutDragComponent;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
 import org.uberfire.ext.plugin.model.LayoutEditorModel;
 import org.uberfire.ext.plugin.model.PluginType;
@@ -114,7 +128,7 @@ public class FormEditorPresenter extends KieEditor {
         busyIndicatorView.hideBusyIndicator();
 
         this.content = content;
-        this.layoutEditorPluginAPI.init( PluginType.PERSPECTIVE_LAYOUT, content.getDefinition().getName(), htmlLayoutDragComponent );
+        this.layoutEditorPluginAPI.init( PluginType.PERSPECTIVE_LAYOUT, content.getDefinition().getName(), getLayoutComponents() );
         layoutEditorPluginAPI.load( PluginType.EDITOR, versionRecordManager.getCurrentPath(), new ParameterizedCommand<LayoutEditorModel>() {
             @Override
             public void execute( LayoutEditorModel layoutEditorModel ) {
@@ -125,6 +139,96 @@ public class FormEditorPresenter extends KieEditor {
 
         view.setupLayoutEditor( layoutEditorPluginAPI );
         view.loadContent( content.getDefinition() );
+    }
+
+    protected LayoutDragComponent[] getLayoutComponents() {
+        final TextBoxFieldDefinition textBox = new TextBoxFieldDefinition();
+        textBox.setName( "person_name" );
+        textBox.setLabel( "Name" );
+        textBox.setModelName( "person" );
+        textBox.setBoundPropertyName( "name" );
+        final DateBoxFieldDefinition birthDay = new DateBoxFieldDefinition();
+        birthDay.setName( "person_birthday" );
+        birthDay.setLabel( "Birthday" );
+        birthDay.setModelName( "person" );
+        birthDay.setBoundPropertyName( "birthday" );
+        LayoutDragComponent[] list = new LayoutDragComponent[] {
+                htmlLayoutDragComponent,
+                new LayoutDragComponent() {
+                    private FieldDefinition field = textBox;
+                    @Override
+                    public String label() {
+                        return textBox.getBindingExpression();
+                    }
+
+                    @Override
+                    public Widget getDragWidget() {
+                        return new Label(field.getBindingExpression());
+                    }
+
+                    @Override
+                    public IsWidget getComponentPreview() {
+                        ControlGroup group = new ControlGroup(  );
+                        Controls controls = new Controls();
+                        FormLabel label = new FormLabel( field.getLabel() );
+                        TextBox box = new TextBox();
+                        label.setFor( box.getId() );
+                        controls.add( label );
+                        controls.add( box );
+                        group.add( controls );
+                        group.add( new HelpBlock(  ) );
+                        return group;
+                    }
+
+                    @Override
+                    public boolean hasConfigureModal() {
+                        return false;
+                    }
+
+                    @Override
+                    public Modal getConfigureModal( EditorWidget editorWidget ) {
+                        return new Modal(  );
+                    }
+                },
+                new LayoutDragComponent() {
+                    private FieldDefinition field = birthDay;
+                    @Override
+                    public String label() {
+                        return textBox.getBindingExpression();
+                    }
+
+                    @Override
+                    public Widget getDragWidget() {
+                        return new Label(field.getBindingExpression());
+                    }
+
+                    @Override
+                    public IsWidget getComponentPreview() {
+                        ControlGroup group = new ControlGroup(  );
+                        Controls controls = new Controls();
+                        FormLabel label = new FormLabel( field.getLabel() );
+                        DatePicker box = new DatePicker();
+                        label.setFor( box.getElement().getId() );
+                        controls.add( label );
+                        controls.add( box );
+                        group.add( controls );
+                        group.add( new HelpBlock(  ) );
+                        return group;
+                    }
+
+                    @Override
+                    public boolean hasConfigureModal() {
+                        return false;
+                    }
+
+                    @Override
+                    public Modal getConfigureModal( EditorWidget editorWidget ) {
+                        return new Modal();
+                    }
+                }
+        };
+
+        return list;
     }
 
     @WorkbenchPartTitle
