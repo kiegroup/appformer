@@ -61,6 +61,10 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
         this.execService = execService;
     }
 
+    public Integer getCodeServerPort() {
+        return codeServerPort.getPortNumber();
+    }
+
     @Override
     protected InvocationResult executeRequest() throws Throwable {
         final InvocationRequest codeServerRequest = createCodeServerRequest( pomXml );

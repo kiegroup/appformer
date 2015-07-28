@@ -22,8 +22,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -45,6 +48,8 @@ import org.junit.runner.RunWith;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
+import org.livespark.backend.server.service.build.BuildAndDeployWithCodeServerCallable;
+import org.livespark.backend.server.service.build.BuildCallableFactory;
 import org.livespark.client.shared.AppReady;
 import org.livespark.client.shared.GwtWarBuildService;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
@@ -215,6 +220,56 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
         simulateSessionExpiration();
         assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+    }
+
+    @Test
+    public void sessionExpirationShutsDownCodeServerFromDevModeCompile() throws Exception {
+        final MockHttpSession httpSession = (MockHttpSession) RpcContext.getHttpSession();
+        BuildAndDeployWithCodeServerCallable callable;
+        Integer port;
+        final URL codeServerUrl;
+        try {
+            devModeDeploymentFiresAppReadyEvent();
+            callable = (BuildAndDeployWithCodeServerCallable) httpSession.getAttribute( BuildCallableFactory.CODE_SERVER_CALLABLE_ATTR_KEY );
+            port = callable.getCodeServerPort();
+            codeServerUrl = new URL( "http", "localhost", port, "" );
+
+            try {
+                final HttpURLConnection connection = (HttpURLConnection) codeServerUrl.openConnection();
+                connection.connect();
+                connection.disconnect();
+            } catch ( IOException e ) {
+                throw new AssertionError( "Code server was not properly launched.", e );
+            }
+        } catch ( AssertionError e ) {
+            throw new AssertionError( "Precondition failed.", e );
+        }
+
+        simulateSessionExpiration();
+
+        runAssertions( new Runnable() {
+            @Override
+            public void run() {
+                final HttpURLConnection connection;
+                try {
+                    connection = (HttpURLConnection) codeServerUrl.openConnection();
+                } catch ( IOException e ) {
+                    throw new AssertionError( "Opening connection failed.", e );
+                }
+
+                try {
+                    connection.connect();
+                    throw new AssertionError( "The codeserver is still running after session expiration." );
+                } catch ( IOException ignore ) {
+                } finally {
+                    try {
+                        connection.disconnect();
+                    } catch ( Exception ignore ) {
+                    }
+                }
+            }
+        }, 10, 500 );
+
     }
 
 }

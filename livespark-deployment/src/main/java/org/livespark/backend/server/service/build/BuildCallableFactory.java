@@ -35,8 +35,8 @@ import org.livespark.client.shared.AppReady;
 @ApplicationScoped
 public class BuildCallableFactory {
 
-    private static final String CODE_SERVER_CALLABLE_ATTR_KEY = BuildAndDeployWithCodeServerCallable.class.getCanonicalName();
-    private static final String BUILD_AND_DEPLOY_CALLABLE_ATTR_KEY = BuildAndDeployCallable.class.getCanonicalName();
+    public static final String CODE_SERVER_CALLABLE_ATTR_KEY = BuildAndDeployWithCodeServerCallable.class.getCanonicalName();
+    public static final String BUILD_AND_DEPLOY_CALLABLE_ATTR_KEY = BuildAndDeployCallable.class.getCanonicalName();
 
     // TODO make configurable
     private static final int CODE_SERVER_LOWEST_PORT = 50000;
