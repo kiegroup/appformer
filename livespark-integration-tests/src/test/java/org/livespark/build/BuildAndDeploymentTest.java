@@ -47,11 +47,11 @@ import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.livespark.client.shared.AppReady;
 import org.livespark.client.shared.GwtWarBuildService;
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.test.BaseIntegrationTest;
 import org.livespark.test.mock.MockHttpSession;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.Path;
-import org.uberfire.java.nio.file.attribute.FileTime;
 
 @RunWith( Arquillian.class )
 public class BuildAndDeploymentTest extends BaseIntegrationTest {
@@ -97,6 +97,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     private void prepareDataObject() {
         final org.uberfire.java.nio.file.Path sharedPath = makePath( getSrcMainPackageHelper( project, "/" + PACKAGE + "/client/shared" ), "" );
         final Path dataObjectPath = makePath( sharedPath.toUri().toString(), DATA_OBJECT_NAME + ".java" );
+        final Path dataModelPath = makePath( sharedPath.toUri().toString(), DATA_OBJECT_NAME + SourceGenerationContext.FORM_MODEL_SUFFIX + ".java" );
         maybeCreateDataObject( Paths.convert( sharedPath ), DATA_OBJECT_NAME );
 
         final DataModel dataModel = dataModelerService.loadModel( (KieProject) project );
@@ -114,14 +115,13 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         dataObject.addProperty( "shortVal", short.class.getCanonicalName() );
         dataObject.addProperty( "bigDecVal", BigDecimal.class.getCanonicalName() );
 
-        final FileTime lastModified = ioService.getLastModifiedTime( dataObjectPath );
         updateDataObject( dataObject, dataObjectPath );
 
         // Want to make sure the model has been written before we start a test
         runAssertions( new Runnable() {
             @Override
             public void run() {
-                assertNotEquals( "Precondition failed: tests require the updated data object to be saved.", lastModified, ioService.getLastModifiedTime( dataObjectPath ) );
+                assertTrue( "Precondition failed: tests require generated source from updated data object.", ioService.exists( dataModelPath ) );
             }
         }, 20, 1000 );
     }
