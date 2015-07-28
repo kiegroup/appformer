@@ -42,12 +42,15 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseBuildCallable implements BuildCallable {
 
     private static final Logger logger = LoggerFactory.getLogger( BaseBuildCallable.class );
+    private static final String LOG_BUILD_OUTPUT_PROPERTY = "livespark.log_build_output";
+    private static final boolean logBuildOutput = Boolean.valueOf( System.getProperty( LOG_BUILD_OUTPUT_PROPERTY, "false" ) );
 
     protected final Project project;
     protected final File pomXml;
     protected final ServletRequest sreq;
     protected final ServerMessageBus bus;
     protected final String queueSessionId;
+    protected final OutputHandler outputHandler;
 
 
     BaseBuildCallable( Project project,
@@ -60,6 +63,13 @@ public abstract class BaseBuildCallable implements BuildCallable {
         this.queueSessionId = queueSessionId;
         this.sreq = sreq;
         this.bus = bus;
+
+        OutputHandler outputHandler = new ClientOutputHandler( bus, queueSessionId );
+        if ( logBuildOutput ) {
+            outputHandler = new LoggingWrapper( outputHandler, logger );
+        }
+
+        this.outputHandler = outputHandler;
     }
 
     protected abstract List<BuildMessage> postBuildTasks( InvocationResult res ) throws Exception;
@@ -172,11 +182,6 @@ public abstract class BaseBuildCallable implements BuildCallable {
     }
 
     protected void sendOutputToClient( String output ) {
-        MessageBuilder.createMessage()
-            .toSubject( "MavenBuilderOutput" )
-            .signalling()
-            .with( MessageParts.SessionID, queueSessionId )
-            .with( "output", output + "\n" )
-            .noErrorHandling().sendNowWith( bus );
+        outputHandler.handleOutput( output );
     }
 }
