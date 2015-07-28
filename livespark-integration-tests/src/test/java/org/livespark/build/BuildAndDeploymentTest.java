@@ -57,7 +57,9 @@ import org.uberfire.java.nio.file.Path;
 public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
     private static final String DATA_OBJECT_NAME = "Foobar";
-    private static final String PACKAGE = "buildtest";
+    // Currently this is the only package where building will work because it is where the App.gwt.xml lives.
+    private static final String PACKAGE = "demo";
+    private static final String PACKAGE_PATH = PACKAGE.replace( '.', '/' );
     private static final File DEPLOY_DIR = new File( "target/wildfly-8.1.0.Final/standalone/deployments/" );
 
     private static final Queue<AppReady> observedEvents = new ConcurrentLinkedQueue<AppReady>();
@@ -95,7 +97,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     }
 
     private void prepareDataObject() {
-        final org.uberfire.java.nio.file.Path sharedPath = makePath( getSrcMainPackageHelper( project, "/" + PACKAGE + "/client/shared" ), "" );
+        final org.uberfire.java.nio.file.Path sharedPath = makePath( getSrcMainPackageHelper( project, "/" + PACKAGE_PATH + "/client/shared" ), "" );
         final Path dataObjectPath = makePath( sharedPath.toUri().toString(), DATA_OBJECT_NAME + ".java" );
         final Path dataModelPath = makePath( sharedPath.toUri().toString(), DATA_OBJECT_NAME + SourceGenerationContext.FORM_MODEL_SUFFIX + ".java" );
         maybeCreateDataObject( Paths.convert( sharedPath ), DATA_OBJECT_NAME );
