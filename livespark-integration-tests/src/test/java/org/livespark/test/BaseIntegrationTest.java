@@ -84,12 +84,17 @@ public class BaseIntegrationTest {
             throw new RuntimeException( e );
         }
 
-        return ShrinkWrap.createFromZipFile( WebArchive.class, targetWarFile )
+        final WebArchive archive = ShrinkWrap.createFromZipFile( WebArchive.class, targetWarFile )
                          .addClasses( BaseIntegrationTest.class,
                                       MockQueueSession.class,
                                       MockHttpSession.class,
                                       MockServletRequest.class,
                                       MockServletContext.class );
+        // Wildfly doesn't show console logging for per-deployment configured logging.
+        archive.delete( "WEB-INF/classes/log4j.xml" );
+        archive.delete( "WEB-INF/classes/logback.xml" );
+
+        return archive;
     }
 
     public static void clearDotFiles() {
