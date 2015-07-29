@@ -88,7 +88,6 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
      */
     @Override
     protected Class< ? extends FormView<TestFormModel>> getFormType() {
-        // TODO Auto-generated method stub
         throw new RuntimeException( "Not yet implemented." );
     }
 
@@ -97,7 +96,6 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
      */
     @Override
     public String getListTitle() {
-        // TODO Auto-generated method stub
         throw new RuntimeException( "Not yet implemented." );
     }
 }
