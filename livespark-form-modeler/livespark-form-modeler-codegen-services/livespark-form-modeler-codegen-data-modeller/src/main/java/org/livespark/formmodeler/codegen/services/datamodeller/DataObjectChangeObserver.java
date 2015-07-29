@@ -15,6 +15,14 @@
  */
 package org.livespark.formmodeler.codegen.services.datamodeller;
 
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.ENTITY_SERVICE_SUFFIX;
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_MODEL_SUFFIX;
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_VIEW_SUFFIX;
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_ITEM_VIEW_SUFFIX;
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_VIEW_SUFFIX;
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
+import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -111,9 +119,13 @@ public class DataObjectChangeObserver {
                 //TODO review this filtering.
                 path.toURI().startsWith( "default://master@ls-playground" ) &&
                 path.getFileName().endsWith( ".java" ) &&
-                !path.getFileName().endsWith( "FormModel.java" ) &&
-                !path.getFileName().endsWith( "FormView.java" );
-
+                !path.getFileName().endsWith( ENTITY_SERVICE_SUFFIX ) &&
+                !path.getFileName().endsWith( FORM_MODEL_SUFFIX ) &&
+                !path.getFileName().endsWith( FORM_VIEW_SUFFIX ) &&
+                !path.getFileName().endsWith( LIST_ITEM_VIEW_SUFFIX ) &&
+                !path.getFileName().endsWith( LIST_VIEW_SUFFIX ) &&
+                !path.getFileName().endsWith( REST_IMPL_SUFFIX ) &&
+                !path.getFileName().endsWith( REST_SERVICE_SUFFIX );
     }
 
     private String calculateClassName(Project project,
