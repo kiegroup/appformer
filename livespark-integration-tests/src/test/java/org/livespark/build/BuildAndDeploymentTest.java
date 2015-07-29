@@ -18,6 +18,7 @@ package org.livespark.build;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map.Entry;
@@ -189,6 +191,15 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         }
     }
 
+    private URL getCodeServerUrlFromSession() throws MalformedURLException {
+        final MockHttpSession httpSession = (MockHttpSession) RpcContext.getHttpSession();
+        final BuildAndDeployWithCodeServerCallable callable =
+                (BuildAndDeployWithCodeServerCallable) httpSession.getAttribute( BuildCallableFactory.CODE_SERVER_CALLABLE_ATTR_KEY );
+        assertNotNull( "No code server callable was found in the http session.", callable );
+
+        return new URL( "http", "localhost", callable.getCodeServerPort(), "" );
+    }
+
     /**
      * This should only be run before the first test in the sequence.
      */
@@ -263,13 +274,29 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
     @Test
     @InSequence(4)
+    public void devModeDeploymentReusesCodeServer() throws Exception {
+        final URL initialCodeServerUrl;
+        try {
+            initialCodeServerUrl = getCodeServerUrlFromSession();
+
+            assertCodeServerIsActive( initialCodeServerUrl );
+            devModeDeploymentFiresAppReadyEvent();
+        } catch ( AssertionError e ) {
+            throw new AssertionError( "Precondition failed.", e );
+        }
+
+        final URL secondCodeServerUrl = getCodeServerUrlFromSession();
+
+        assertEquals( "Code server was not reused.", initialCodeServerUrl, secondCodeServerUrl );
+        assertCodeServerIsActive( initialCodeServerUrl );
+    }
+
+    @Test
+    @InSequence(5)
     public void sessionExpirationAfterDevModeCompileRemovesWarAndShutsDownCodeServer() throws Exception {
         final URL codeServerUrl;
         try {
-            final MockHttpSession httpSession = (MockHttpSession) RpcContext.getHttpSession();
-            final BuildAndDeployWithCodeServerCallable callable =
-                    (BuildAndDeployWithCodeServerCallable) httpSession.getAttribute( BuildCallableFactory.CODE_SERVER_CALLABLE_ATTR_KEY );
-            codeServerUrl = new URL( "http", "localhost", callable.getCodeServerPort(), "" );
+            codeServerUrl = getCodeServerUrlFromSession();
 
             assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
             assertCodeServerIsActive( codeServerUrl );
