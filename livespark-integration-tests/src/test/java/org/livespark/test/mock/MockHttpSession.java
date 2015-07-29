@@ -102,6 +102,10 @@ public class MockHttpSession implements HttpSession {
         return attrs.entrySet();
     }
 
+    public void clearAllAttributes() {
+        attrs.clear();
+    }
+
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpSession#getValue(java.lang.String)
      */

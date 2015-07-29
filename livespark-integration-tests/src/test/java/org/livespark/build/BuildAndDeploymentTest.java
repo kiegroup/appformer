@@ -40,6 +40,8 @@ import javax.servlet.http.HttpSessionBindingListener;
 import org.guvnor.common.services.project.model.Project;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.bus.server.api.RpcContext;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -68,6 +70,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     private static final File DEPLOY_DIR = new File( "target/wildfly-8.1.0.Final/standalone/deployments/" );
 
     private static final Queue<AppReady> observedEvents = new ConcurrentLinkedQueue<AppReady>();
+    private static Message message;
 
     /*
      * If this method is non-static, it is invoked on a different instance than the one running the tests, regardless of scopes.
@@ -87,13 +90,6 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     @Inject
     private GwtWarBuildService buildService;
 
-    @Before
-    public void prepareForTest() {
-        prepareServiceTest();
-        prepareFields();
-        removeDoDeployedMarkerFiles();
-        prepareDataObject();
-    }
 
     private void removeDoDeployedMarkerFiles() {
         for ( final File deployMarker : getWithSuffix( DEPLOY_DIR, ".deployed" ) ) {
@@ -160,10 +156,65 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
                 listener.valueUnbound( event );
             }
         }
+        httpSession.clearAllAttributes();
+    }
+
+    private void assertCodeServerIsDown( final URL codeServerUrl ) throws AssertionError {
+        final HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) codeServerUrl.openConnection();
+        } catch ( IOException e ) {
+            throw new AssertionError( "Opening connection failed (this should succeed even if the codeserver is down).", e );
+        }
+
+        try {
+            connection.connect();
+            throw new AssertionError( "The codeserver is still running after session expiration." );
+        } catch ( IOException ignore ) {
+        } finally {
+            try {
+                connection.disconnect();
+            } catch ( Exception ignore ) {
+            }
+        }
+    }
+
+    private void assertCodeServerIsActive( final URL codeServerUrl ) throws AssertionError {
+        try {
+            final HttpURLConnection connection = (HttpURLConnection) codeServerUrl.openConnection();
+            connection.connect();
+            connection.disconnect();
+        } catch ( IOException e ) {
+            throw new AssertionError( "Code server was not properly launched.", e );
+        }
+    }
+
+    /**
+     * This should only be run before the first test in the sequence.
+     */
+    private void prepareInitialTest() {
+        prepareServiceTest();
+        message = RpcContext.getMessage();
+        prepareFields();
+        removeDoDeployedMarkerFiles();
+        prepareDataObject();
+    }
+
+    @Before
+    public void setup() {
+        prepareFields();
+        /*
+         * The message stored in the RpcContext is stored in a thread-local, and tests are not guaranteed to run on the same thread.
+         */
+        if ( message != null ) {
+            RpcContext.set( message );
+        }
     }
 
     @Test
+    @InSequence(1)
     public void productionCompileAndDeploymentFiresAppReadyEvent() throws Exception {
+        prepareInitialTest();
         assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
 
         buildService.buildAndDeploy( project );
@@ -180,6 +231,20 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     }
 
     @Test
+    @InSequence(2)
+    public void sessionExpirationRemovesWarFileFromProductionCompile() throws Exception {
+        try {
+            assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+        } catch ( AssertionError e ) {
+            throw new AssertionError( "Precondition failed.", e );
+        }
+
+        simulateSessionExpiration();
+        assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+    }
+
+    @Test
+    @InSequence(3)
     public void devModeDeploymentFiresAppReadyEvent() throws Exception {
         assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
 
@@ -197,50 +262,17 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void sessionExpirationRemovesWarFileFromProductionCompile() throws Exception {
-        try {
-            productionCompileAndDeploymentFiresAppReadyEvent();
-            assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
-        } catch ( AssertionError e ) {
-            throw new AssertionError( "Precondition failed.", e );
-        }
-
-        simulateSessionExpiration();
-        assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
-    }
-
-    @Test
-    public void sessionExpirationRemovesWarFileFromDevModeCompile() throws Exception {
-        try {
-            devModeDeploymentFiresAppReadyEvent();
-            assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
-        } catch ( AssertionError e ) {
-            throw new AssertionError( "Precondition failed.", e );
-        }
-
-        simulateSessionExpiration();
-        assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
-    }
-
-    @Test
-    public void sessionExpirationShutsDownCodeServerFromDevModeCompile() throws Exception {
-        final MockHttpSession httpSession = (MockHttpSession) RpcContext.getHttpSession();
-        BuildAndDeployWithCodeServerCallable callable;
-        Integer port;
+    @InSequence(4)
+    public void sessionExpirationAfterDevModeCompileRemovesWarAndShutsDownCodeServer() throws Exception {
         final URL codeServerUrl;
         try {
-            devModeDeploymentFiresAppReadyEvent();
-            callable = (BuildAndDeployWithCodeServerCallable) httpSession.getAttribute( BuildCallableFactory.CODE_SERVER_CALLABLE_ATTR_KEY );
-            port = callable.getCodeServerPort();
-            codeServerUrl = new URL( "http", "localhost", port, "" );
+            final MockHttpSession httpSession = (MockHttpSession) RpcContext.getHttpSession();
+            final BuildAndDeployWithCodeServerCallable callable =
+                    (BuildAndDeployWithCodeServerCallable) httpSession.getAttribute( BuildCallableFactory.CODE_SERVER_CALLABLE_ATTR_KEY );
+            codeServerUrl = new URL( "http", "localhost", callable.getCodeServerPort(), "" );
 
-            try {
-                final HttpURLConnection connection = (HttpURLConnection) codeServerUrl.openConnection();
-                connection.connect();
-                connection.disconnect();
-            } catch ( IOException e ) {
-                throw new AssertionError( "Code server was not properly launched.", e );
-            }
+            assertEquals( 1, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+            assertCodeServerIsActive( codeServerUrl );
         } catch ( AssertionError e ) {
             throw new AssertionError( "Precondition failed.", e );
         }
@@ -250,23 +282,8 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         runAssertions( new Runnable() {
             @Override
             public void run() {
-                final HttpURLConnection connection;
-                try {
-                    connection = (HttpURLConnection) codeServerUrl.openConnection();
-                } catch ( IOException e ) {
-                    throw new AssertionError( "Opening connection failed.", e );
-                }
-
-                try {
-                    connection.connect();
-                    throw new AssertionError( "The codeserver is still running after session expiration." );
-                } catch ( IOException ignore ) {
-                } finally {
-                    try {
-                        connection.disconnect();
-                    } catch ( Exception ignore ) {
-                    }
-                }
+                assertEquals( 0, getWithSuffix( DEPLOY_DIR, ".war" ).length );
+                assertCodeServerIsDown( codeServerUrl );
             }
         }, 10, 500 );
 
