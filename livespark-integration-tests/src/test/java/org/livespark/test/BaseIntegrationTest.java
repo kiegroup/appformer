@@ -132,7 +132,11 @@ public class BaseIntegrationTest {
         setupRpcContext();
     }
 
-    private void setupRpcContext() {
+    protected void setupRpcContext() {
+        RpcContext.set( createMockRpcContextMessage() );
+    }
+
+    protected Message createMockRpcContextMessage() {
         final Message message = MessageBuilder.createMessage("for testing").signalling().done().getMessage();
         final MockServletRequest mockRequest = new MockServletRequest();
         final MockServletContext mockContext = new MockServletContext();
@@ -148,8 +152,7 @@ public class BaseIntegrationTest {
 
         message.setResource( "Session", new MockQueueSession( "test-queuesession-id", new MockHttpSession( "test-httpsession-id" ) ) );
         message.setResource( HttpServletRequest.class.getName(), mockRequest );
-
-        RpcContext.set( message );
+        return message;
     }
 
     protected void loginAsAdmin() {

@@ -16,10 +16,7 @@
 
 package org.livespark.build;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -200,6 +197,10 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         return new URL( "http", "localhost", callable.getCodeServerPort(), "" );
     }
 
+    private void replaceCurrentSession() {
+        setupRpcContext();
+    }
+
     /**
      * This should only be run before the first test in the sequence.
      */
@@ -293,6 +294,28 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
     @Test
     @InSequence(5)
+    public void devModeDeploymentUsesDifferentCodeServerForDifferentSession() throws Exception {
+        final URL firstSessionCodeServerUrl;
+        final URL secondSessionCodeServerUrl;
+        try {
+            firstSessionCodeServerUrl = getCodeServerUrlFromSession();
+            assertCodeServerIsActive( firstSessionCodeServerUrl );
+
+            replaceCurrentSession();
+            devModeDeploymentFiresAppReadyEvent();
+
+            secondSessionCodeServerUrl = getCodeServerUrlFromSession();
+        } catch ( AssertionError e ) {
+            throw new AssertionError( "Precondition failed.", e );
+        }
+
+        assertNotEquals( "Code server from first session should not have been reused.", firstSessionCodeServerUrl, secondSessionCodeServerUrl );
+        assertCodeServerIsActive( firstSessionCodeServerUrl );
+        assertCodeServerIsActive( secondSessionCodeServerUrl );
+    }
+
+    @Test
+    @InSequence(6)
     public void sessionExpirationAfterDevModeCompileRemovesWarAndShutsDownCodeServer() throws Exception {
         final URL codeServerUrl;
         try {
