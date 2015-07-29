@@ -84,8 +84,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         assertViewProperty( bindNamePrefix + "_weight", clazz );
         assertViewProperty( bindNamePrefix + "_numOfGuitars", clazz );
         assertViewProperty( bindNamePrefix + "_shortVal", clazz );
-        // FIXME this assertion fails.
-//        assertViewProperty( bindNamePrefix + "_bac", clazz );
+        assertViewProperty( bindNamePrefix + "_bac", clazz );
     }
 
     private void addTestProperties( final DataObject dataObject ) {

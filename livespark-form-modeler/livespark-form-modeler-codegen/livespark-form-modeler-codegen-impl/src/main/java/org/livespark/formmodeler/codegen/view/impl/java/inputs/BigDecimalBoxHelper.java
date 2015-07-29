@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.DoubleBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.BigDecimalBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -25,7 +25,7 @@ public class BigDecimalBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getSupportedFieldType() {
-        return DoubleBoxFieldDefinition.class.getName();
+        return BigDecimalBoxFieldDefinition.class.getName();
     }
 
     @Override
