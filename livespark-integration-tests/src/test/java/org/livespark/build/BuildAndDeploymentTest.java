@@ -234,10 +234,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         runAssertions( new Runnable() {
             @Override
             public void run() {
-                /*
-                 * FIXME Should check that exactly one event is fired. Currently file change observers are not cleaned up so multiple events may be fired.
-                 */
-                assertNotEquals( "There should be exactly one AppReady event observed.", 0, observedEvents.size() );
+                assertEquals( "There should be exactly one AppReady event observed.", 1, observedEvents.size() );
             }
         }, 60, 2000, 5000 );
     }
@@ -265,10 +262,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
         runAssertions( new Runnable() {
             @Override
             public void run() {
-                /*
-                 * FIXME Should check that exactly one event is fired. Currently file change observers are not cleaned up so multiple events may be fired.
-                 */
-                assertNotEquals( "There should be exactly one AppReady event observed.", 0, observedEvents.size() );
+                assertEquals( "There should be exactly one AppReady event observed.", 1, observedEvents.size() );
             }
         }, 60, 2000, 5000 );
     }
@@ -302,7 +296,15 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
             assertCodeServerIsActive( firstSessionCodeServerUrl );
 
             replaceCurrentSession();
-            devModeDeploymentFiresAppReadyEvent();
+
+            assertEquals( "Precondition failed: There should be no observed AppReady events before building.", 0, observedEvents.size() );
+            buildService.buildAndDeployDevMode( project );
+            runAssertions( new Runnable() {
+                @Override
+                public void run() {
+                    assertEquals( "There should be exactly two AppReady events observed, one for each session.", 2, observedEvents.size() );
+                }
+            }, 60, 2000, 5000 );
 
             secondSessionCodeServerUrl = getCodeServerUrlFromSession();
         } catch ( AssertionError e ) {

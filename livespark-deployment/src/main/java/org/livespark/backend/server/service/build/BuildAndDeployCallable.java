@@ -84,16 +84,28 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
 
             sendOutputToClient( "Deploying " + war.getName() + " as " + destination.getName() + " ..." );
             replaceDeployedWarFile( war, destination );
-            startDeployedFileObserver( deployDir, destination );
+            maybeStartDeployedFileMonitor( deployDir, destination );
         }
     }
 
-    private void startDeployedFileObserver( File deployDir,
-                            final File destination ) throws Exception {
-        // FIXME Cleanup old observers
-        FileAlterationMonitor monitor = new FileAlterationMonitor( 500 );
-        IOFileFilter filter = FileFilterUtils.nameFileFilter( destination.getName() + ".deployed" );
-        FileAlterationObserver observer = new FileAlterationObserver( deployDir, filter );
+    private void maybeStartDeployedFileMonitor( File deployDir, final File destination ) throws Exception {
+        final String monitorHandleAttr = getFileMonitorHandleAttributeName( destination );
+        FileMonitorHandle monitorHandle = (FileMonitorHandle) session.getAttribute( monitorHandleAttr );
+
+        if ( monitorHandle == null ) {
+            monitorHandle = startDeployedFileObserver( deployDir, destination );
+            session.setAttribute( monitorHandleAttr, monitorHandle );
+        }
+    }
+
+    private String getFileMonitorHandleAttributeName( final File destination ) {
+        return FileMonitorHandle.class.getSimpleName() + "-" + destination.getName();
+    }
+
+    private FileMonitorHandle startDeployedFileObserver( File deployDir, final File destination ) throws Exception {
+        final FileAlterationMonitor monitor = new FileAlterationMonitor( 500 );
+        final IOFileFilter filter = FileFilterUtils.nameFileFilter( destination.getName() + ".deployed" );
+        final FileAlterationObserver observer = new FileAlterationObserver( deployDir, filter );
         observer.addListener( new FileAlterationListenerAdaptor() {
 
             @Override
@@ -108,6 +120,8 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
         } );
         monitor.addObserver( observer );
         monitor.start();
+
+        return new FileMonitorHandle( monitor, destination.getName() );
     }
 
     private void replaceDeployedWarFile( final File war,
