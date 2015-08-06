@@ -59,4 +59,13 @@ public class FormDefinition {
             }
         }
     }
+
+    public FieldDefinition getFieldByName( String name ) {
+        for (FieldDefinition definition : fields ) {
+            if (definition.getName().equals( name )) {
+                return definition;
+            }
+        }
+        return null;
+    }
 }
