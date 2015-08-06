@@ -52,7 +52,11 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     @Override
+<<<<<<< HEAD
     public void setupLayoutEditor( LayoutEditorPlugin layoutEditorPluginAPI ) {
+=======
+    public void setupLayoutEditor( LayoutEditorPluginAPI layoutEditorPluginAPI ) {
+>>>>>>> origin/graphic-editor
         content.clear();
         content.add( layoutEditorPluginAPI.asWidget() );
     }
