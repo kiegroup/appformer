@@ -17,7 +17,7 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.livespark.formmodeler.editor.client.editor.dataHolder.DataHolderModal;
 import org.livespark.formmodeler.editor.client.editor.dataHolder.DataHolderPanel;
 import org.livespark.formmodeler.editor.model.FormDefinition;
-import org.uberfire.ext.layout.editor.client.LayoutEditorPluginAPI;
+import org.uberfire.ext.layout.editor.client.LayoutEditorPlugin;
 
 /**
  * Created by pefernan on 7/7/15.
@@ -52,7 +52,7 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     @Override
-    public void setupLayoutEditor( LayoutEditorPluginAPI layoutEditorPluginAPI ) {
+    public void setupLayoutEditor( LayoutEditorPlugin layoutEditorPluginAPI ) {
         content.clear();
         content.add( layoutEditorPluginAPI.asWidget() );
     }
