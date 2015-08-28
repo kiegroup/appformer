@@ -17,6 +17,7 @@ package org.livespark.formmodeler.editor.client.editor;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -25,7 +26,9 @@ import javax.inject.Inject;
 
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
+import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 
 /**
@@ -49,6 +52,16 @@ public class FormEditorHelper {
         this.content = content;
     }
 
+    public FormDefinition getFormDefinition () {
+        return content.getDefinition();
+    }
+
+    public void addAvailableFields ( List<FieldDefinition> fields ) {
+        for ( FieldDefinition field : fields ) {
+            addAvailableField( field );
+        }
+    }
+
     public void addAvailableField( FieldDefinition field ) {
         availableFields.put( field.getName(), field );
     }
@@ -69,23 +82,34 @@ public class FormEditorHelper {
         return result;
     }
 
-    public void removeField( String fieldName ) {
+    public FieldDefinition removeField( String fieldName ) {
         Iterator<FieldDefinition> it = content.getDefinition().getFields().iterator();
 
         while (it.hasNext()) {
             FieldDefinition field = it.next();
             if (field.getName().equals( fieldName )) {
                 it.remove();
-                return;
+                if (field.getBindingExpression() != null) {
+                    addAvailableField( field );
+                }
+                return field;
             }
         }
-
+        return null;
     }
 
     public void onFieldRequest( @Observes FormFieldRequest request ) {
-        if (request.getPath().equals( content.getPath().toURI() )) {
+        if (request.getFormId().equals( content.getDefinition().getId() )) {
             FieldDefinition field = getFormField( request.getFieldName() );
-            responseEvent.fire( new FormFieldResponse( request.getPath(), request.getFieldName(), field ) );
+            responseEvent.fire( new FormFieldResponse( request.getFormId(), request.getFieldName(), field ) );
         }
+    }
+
+    public boolean addDataHolder( String name, String type ) {
+        for ( DataHolder holder : content.getDefinition().getDataHolders() ) {
+            if (holder.getName().equals( name )) return false;
+        }
+        content.getDefinition().getDataHolders().add( new DataHolder( name, type ) );
+        return true;
     }
 }

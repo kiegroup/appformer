@@ -15,8 +15,6 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.event.Event;
@@ -30,11 +28,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.livespark.formmodeler.editor.client.editor.FieldDefinitionPropertiesModal;
+import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
+import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.uberfire.ext.layout.editor.client.components.HasDefaultSettings;
+import org.uberfire.ext.layout.editor.client.components.HasDragAndDropSettings;
 import org.uberfire.ext.layout.editor.client.components.HasModalConfiguration;
+import org.uberfire.ext.layout.editor.client.components.HasOnDropNotification;
+import org.uberfire.ext.layout.editor.client.components.HasOnRemoveNotification;
 import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.components.ModalConfigurationContext;
 import org.uberfire.ext.layout.editor.client.components.RenderingContext;
@@ -42,12 +44,12 @@ import org.uberfire.ext.layout.editor.client.components.RenderingContext;
 /**
  * Created by pefernan on 7/27/15.
  */
-public abstract class FieldLayoutComponent<D extends FieldDefinition> implements LayoutDragComponent, HasDefaultSettings, HasModalConfiguration {
-    public static String FORM_URI = "form_uri";
+public abstract class FieldLayoutComponent<D extends FieldDefinition> implements LayoutDragComponent, HasDragAndDropSettings, HasModalConfiguration, HasOnDropNotification, HasOnRemoveNotification {
+    public static String FORM_ID = "form_id";
     public static String FIELD_NAME = "form_field_name";
-    public static String FIELD_LABEL_TEXT = "form_field_label_text";
+    public static String FIELD_DRAG_LABEL = "form_field_label";
 
-    public final String[] SETTINGS_KEYS = new String[] {FORM_URI, FIELD_NAME, FIELD_LABEL_TEXT};
+    public final String[] SETTINGS_KEYS = new String[] { FORM_ID, FIELD_NAME, FIELD_DRAG_LABEL };
 
     protected FlowPanel content = new FlowPanel(  );
 
@@ -56,13 +58,17 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     @Inject
     protected Event<FormFieldRequest> fieldRequest;
 
-    private String formPath;
+    @Inject
+    protected Event<FieldDroppedEvent> fieldDroppedEvent;
+
+    @Inject
+    protected Event<FieldRemovedEvent> fieldRemovedEvent;
+
+    private String formId;
+    private String fieldDragLabel;
     private String fieldName;
 
     protected D fieldDefinition;
-
-    protected Map<String, String> settings = new HashMap<String, String>(  );
-
 
     public abstract IsWidget generateWidget();
 
@@ -87,15 +93,15 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
         return content;
     }
 
-    protected void init( String formUri, D fieldDefinition ) {
+    protected void init( String formId, D fieldDefinition ) {
         if (fieldDefinition != null) {
-            settings.put( FORM_URI, formUri );
-            settings.put( FIELD_NAME, fieldDefinition.getName() );
+            this.formId = formId;
+            this.fieldName = fieldDefinition.getName();
+
             String property = fieldDefinition.getBoundPropertyName();
 
             if (property == null) property = fieldDefinition.getModelName();
-
-            settings.put( FIELD_LABEL_TEXT, property );
+            fieldDragLabel = property;
         }
     }
 
@@ -104,53 +110,50 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
 
         if (fieldName == null) {
             fieldName = properties.get( FIELD_NAME );
-            if ( fieldName == null ) fieldName = settings.get( FIELD_NAME );
         }
 
-        if (formPath == null) {
-            formPath = properties.get( FORM_URI );
-            if ( formPath == null ) formPath = settings.get( FORM_URI );
+        if (formId == null) {
+            formId = properties.get( FORM_ID );
         }
 
-        fieldRequest.fire( new FormFieldRequest( formPath, fieldName ) );
+        fieldRequest.fire( new FormFieldRequest( formId, fieldName ) );
     }
 
     @Override
     public IsWidget getDragWidget() {
         TextBox textBox = GWT.create( TextBox.class );
-        textBox.setPlaceholder( settings.get( FIELD_LABEL_TEXT ) );
+        textBox.setPlaceholder( fieldDragLabel );
         textBox.setReadOnly( true );
         textBox.setAlternateSize( AlternateSize.MEDIUM );
         return textBox;
     }
 
     @Override
-    public void setDefaultSettingValue( String key, String value ) {
-
-        if (Arrays.asList( SETTINGS_KEYS ).contains( key )) {
-            settings.put( key, value );
-        }
+    public void setSettingValue( String key, String value ) {
+        if ( FORM_ID.equals( key )) formId = value;
+        else if (FIELD_NAME.equals( key )) fieldName = value;
+        else if ( FIELD_DRAG_LABEL.equals( key )) fieldDragLabel = value;
     }
 
     @Override
-    public String getDefaultSettingValue( String key ) {
-        return settings.get( key );
+    public String getSettingValue( String key ) {
+        if ( FORM_ID.equals( key )) return formId;
+        else if (FIELD_NAME.equals( key )) return fieldName;
+        else if ( FIELD_DRAG_LABEL.equals( key )) return fieldDragLabel;
+        return null;
     }
 
     @Override
-    public String[] getDefaultSettingsKeys() {
+    public String[] getSettingsKeys() {
         return SETTINGS_KEYS;
     }
 
     @Override
     public Modal getConfigurationModal( final ModalConfigurationContext ctx ) {
 
-        if (!settings.isEmpty()) {
-            fieldName = settings.get( FIELD_NAME );
-            ctx.getComponentProperties().put( FIELD_NAME, fieldName );
-            formPath = settings.get( FORM_URI );
-            ctx.getComponentProperties().put( FORM_URI, formPath );
-        }
+        ctx.getComponentProperties().put( FORM_ID, formId );
+        ctx.getComponentProperties().put( FIELD_NAME, fieldName );
+        ctx.getComponentProperties().put( FIELD_DRAG_LABEL, fieldDragLabel );
 
         if (fieldDefinition == null) getCurrentField( ctx.getComponentProperties() );
 
@@ -159,7 +162,21 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     }
 
     public void onFieldResponse(@Observes FormFieldResponse<D> response) {
-        if ( !response.getPath().equals( formPath ) || !response.getFieldName().equals( fieldName ) ) return;
+        if ( !response.getFormId().equals( formId ) || !response.getFieldName().equals( fieldName ) ) return;
         fieldDefinition = response.getField();
+    }
+
+    public abstract FieldLayoutComponent<D> newInstance(String formId, D fieldDefinition);
+
+    public abstract String getSupportedFieldDefinition();
+
+    @Override
+    public void onDropComponent() {
+        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, fieldName ) );
+    }
+
+    @Override
+    public void onRemoveComponent() {
+        fieldRemovedEvent.fire( new FieldRemovedEvent( formId, fieldName ) );
     }
 }

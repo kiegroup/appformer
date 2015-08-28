@@ -8,7 +8,6 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -43,7 +42,6 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
 
     @PostConstruct
     protected void init() {
-        createHolder.setType( ButtonType.DEFAULT );
     }
 
     @Override
@@ -59,21 +57,19 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
 
     @EventHandler( "createHolder" )
     public void onCreateClick( ClickEvent event ) {
-
         presenter.getAvailableDataObjectsList();
-
-
     }
 
     @Override
     public void initDataHoldersPopup( List<String> availableDataHolders ) {
         dataHolderPanel.init( availableDataHolders );
-        DataHolderModal modal = new DataHolderModal( dataHolderPanel );
+        final DataHolderModal modal = new DataHolderModal( dataHolderPanel );
         modal.addSubmitClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent clickEvent ) {
                 if (dataHolderPanel.validate()) {
-                    Window.alert( dataHolderPanel.getDataHolderName() + ": " + dataHolderPanel.getDataHolderclass() );
+                    modal.hide();
+                    presenter.addDataHolder( dataHolderPanel.getDataHolderName(), dataHolderPanel.getDataHolderclass() );
                 }
             }
         } );

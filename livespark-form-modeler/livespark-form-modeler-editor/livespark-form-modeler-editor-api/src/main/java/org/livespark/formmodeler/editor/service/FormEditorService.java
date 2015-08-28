@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.guvnor.common.services.shared.file.SupportsUpdate;
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.uberfire.backend.vfs.Path;
@@ -35,4 +36,6 @@ public interface FormEditorService extends SupportsUpdate<FormDefinition>, Suppo
     public FormModelerContent loadContent( Path path );
 
     public List<String> getAvailableDataObjects( Path path );
+
+    public List<FieldDefinition> getAvailableFieldsForType( Path path, String holderName, String type );
 }

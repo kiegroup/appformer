@@ -36,8 +36,8 @@ public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDef
     public DateBoxLayoutComponent() {
     }
 
-    public DateBoxLayoutComponent( String formUri, DateBoxFieldDefinition fieldDefinition ) {
-        init( formUri, fieldDefinition );
+    public DateBoxLayoutComponent( String formId, DateBoxFieldDefinition fieldDefinition ) {
+        init( formId, fieldDefinition );
     }
 
     @Override
@@ -54,5 +54,15 @@ public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDef
         group.add( controls );
         group.add( new HelpBlock(  ) );
         return group;
+    }
+
+    @Override
+    public DateBoxLayoutComponent newInstance( String formId, DateBoxFieldDefinition fieldDefinition ) {
+        return new DateBoxLayoutComponent( formId, fieldDefinition );
+    }
+
+    @Override
+    public String getSupportedFieldDefinition() {
+        return DateBoxFieldDefinition.class.getName();
     }
 }

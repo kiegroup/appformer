@@ -16,8 +16,8 @@ public class FormFieldResponse<F extends  FieldDefinition> extends FormEditorEve
         this.field = field;
     }
 
-    public FormFieldResponse( String path, String fieldName, F field ) {
-        super( path, fieldName );
+    public FormFieldResponse( String formId, String fieldName, F field ) {
+        super( formId, fieldName );
         this.field = field;
 
     }

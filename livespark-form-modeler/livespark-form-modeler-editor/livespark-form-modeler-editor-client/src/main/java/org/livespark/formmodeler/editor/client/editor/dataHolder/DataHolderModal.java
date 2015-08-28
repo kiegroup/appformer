@@ -3,6 +3,7 @@ package org.livespark.formmodeler.editor.client.editor.dataHolder;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.ModalFooter;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -23,6 +24,7 @@ public class DataHolderModal extends Modal {
         add( formView );
 
         ModalFooter footer = new ModalFooter(  );
+        submit.setType( ButtonType.PRIMARY );
         footer.add( submit );
         footer.add( cancel );
         add( footer );
