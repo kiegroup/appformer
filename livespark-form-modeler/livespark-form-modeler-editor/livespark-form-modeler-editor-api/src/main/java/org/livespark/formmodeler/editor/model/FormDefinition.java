@@ -25,10 +25,19 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class FormDefinition {
+    private String id;
     private String name;
 
     private List<FieldDefinition> fields = new ArrayList<FieldDefinition>(  );
     private List<DataHolder> dataHolders = new ArrayList<DataHolder>(  );
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId( String id ) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

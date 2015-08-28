@@ -19,20 +19,20 @@ package org.livespark.formmodeler.editor.client.editor.events;
  * Created by pefernan on 8/6/15.
  */
 public abstract class FormEditorEvent {
-    protected String path;
+    protected String formId;
     protected String fieldName;
 
-    public FormEditorEvent( String path, String fieldName ) {
-        this.path = path;
+    public FormEditorEvent( String formId, String fieldName ) {
+        this.formId = formId;
         this.fieldName = fieldName;
     }
 
-    public String getPath() {
-        return path;
+    public String getFormId() {
+        return formId;
     }
 
-    public void setPath( String path ) {
-        this.path = path;
+    public void setFormId( String formId ) {
+        this.formId = formId;
     }
 
     public String getFieldName() {

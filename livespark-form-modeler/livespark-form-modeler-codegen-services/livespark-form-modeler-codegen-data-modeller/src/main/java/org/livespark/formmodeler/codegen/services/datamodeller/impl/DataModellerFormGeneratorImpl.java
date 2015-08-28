@@ -16,14 +16,11 @@
 
 package org.livespark.formmodeler.codegen.services.datamodeller.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
@@ -34,12 +31,11 @@ import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
-import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
+import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
 import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.MultipleField;
-import org.livespark.formmodeler.editor.model.impl.basic.AbstractIntputFieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
 import org.livespark.formmodeler.editor.service.FieldManager;
 import org.slf4j.Logger;
@@ -68,6 +64,9 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     @Inject
     protected FormSourcesGenerator formSourcesGenerator;
 
+    @Inject
+    protected DataModellerFieldGenerator fieldGenerator;
+
     @Override
     public void generateFormForDataObject( DataObject dataObject, Path path ) {
 
@@ -84,28 +83,10 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         form.addDataHolder( holder );
 
-        for (ObjectProperty property : dataObject.getProperties()) {
-            if ( ArrayUtils.contains(RESTRICTED_PROPERTY_NAMES, property.getName()) ) continue;
+        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject( holderName, dataObject );
 
-            String propertyName = holderName + "_" + property.getName();
-            FieldDefinition field = null;
-
-            if (property.getBag() == null) field = fieldManager.getDefinitionByValueType( property.getClassName() );
-            else field = fieldManager.getDefinitionByValueType( property.getBag(), property.getClassName() );
-
-            if (field == null) continue;
-            field.setAnnotatedId( property.getAnnotation( SourceGenerationUtil.JAVAX_PERSISTENCE_ID ) != null );
-
-
-            field.setName( propertyName );
-            String label = getPropertyLabel( property );
-            field.setLabel( label );
-            field.setModelName( holderName );
-            field.setBoundPropertyName( property.getName() );
-
-            if (field instanceof AbstractIntputFieldDefinition) {
-                ((AbstractIntputFieldDefinition) field).setPlaceHolder( label );
-            } else if (field instanceof EmbeddedFormField) {
+        for (FieldDefinition field : availabeFields ) {
+            if (field instanceof EmbeddedFormField) {
                 EmbeddedFormField embeddedForm = ( EmbeddedFormField ) field;
 
                 String viewType;

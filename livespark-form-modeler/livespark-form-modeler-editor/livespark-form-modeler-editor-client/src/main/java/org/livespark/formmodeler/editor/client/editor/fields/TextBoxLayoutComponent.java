@@ -34,8 +34,8 @@ public class TextBoxLayoutComponent extends FieldLayoutComponent<TextBoxFieldDef
     public TextBoxLayoutComponent() {
     }
 
-    public TextBoxLayoutComponent( String formUri, TextBoxFieldDefinition fieldDefinition ) {
-        init( formUri, fieldDefinition );
+    public TextBoxLayoutComponent( String formId, TextBoxFieldDefinition fieldDefinition ) {
+        init( formId, fieldDefinition );
     }
 
     @Override
@@ -52,5 +52,15 @@ public class TextBoxLayoutComponent extends FieldLayoutComponent<TextBoxFieldDef
         group.add( controls );
         group.add( new HelpBlock(  ) );
         return group;
+    }
+
+    @Override
+    public TextBoxLayoutComponent newInstance( String formId, TextBoxFieldDefinition fieldDefinition ) {
+        return new  TextBoxLayoutComponent( formId, fieldDefinition );
+    }
+
+    @Override
+    public String getSupportedFieldDefinition() {
+        return TextBoxFieldDefinition.class.getName();
     }
 }

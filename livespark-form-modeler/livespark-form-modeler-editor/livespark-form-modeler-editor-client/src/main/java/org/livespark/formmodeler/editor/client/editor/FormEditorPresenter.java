@@ -18,6 +18,7 @@ package org.livespark.formmodeler.editor.client.editor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -26,14 +27,13 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
-import org.livespark.formmodeler.editor.client.editor.fields.DateBoxLayoutComponent;
-import org.livespark.formmodeler.editor.client.editor.fields.TextBoxLayoutComponent;
+import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
+import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -42,6 +42,7 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.ext.layout.editor.client.LayoutEditorPlugin;
 import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
+import org.uberfire.ext.layout.editor.client.components.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
 import org.uberfire.ext.plugin.model.LayoutEditorModel;
 import org.uberfire.ext.plugin.model.PluginType;
@@ -90,6 +91,9 @@ public class FormEditorPresenter extends KieEditor {
     @Inject
     private FormEditorHelper editorContext;
 
+    @Inject
+    protected LayoutFieldManager layoutFieldManager;
+
     private FormEditorView view;
 
 
@@ -137,24 +141,8 @@ public class FormEditorPresenter extends KieEditor {
 
     protected List<LayoutDragComponent> getLayoutComponents() {
 
-        final DateBoxFieldDefinition birthDay = new DateBoxFieldDefinition();
-        birthDay.setName( "person_birthday" );
-        birthDay.setLabel( "Birthday" );
-        birthDay.setModelName( "person" );
-        birthDay.setBoundPropertyName( "birthday" );
-        final TextBoxFieldDefinition textBox = new TextBoxFieldDefinition();
-        textBox.setName( "person_name" );
-        textBox.setLabel( "Name" );
-        textBox.setModelName( "person" );
-        textBox.setBoundPropertyName( "name" );
         List<LayoutDragComponent>  list = new ArrayList<LayoutDragComponent>();
         list.add( htmlLayoutDragComponent );
-
-        list.add( new TextBoxLayoutComponent( editorContext.getContent().getPath().toURI(), textBox ));
-        list.add( new DateBoxLayoutComponent( editorContext.getContent().getPath().toURI(), birthDay ));
-
-        editorContext.addAvailableField( textBox );
-        editorContext.addAvailableField( birthDay );
 
         return list;
     }
@@ -202,5 +190,48 @@ public class FormEditorPresenter extends KieEditor {
                 view.initDataHoldersPopup( availableDataObjects );
             }
         } ).getAvailableDataObjects( versionRecordManager.getCurrentPath() );
+    }
+
+    public void addDataHolder( final String name, final String type ) {
+        if ( editorContext.addDataHolder(name, type) ) {
+            editorService.call( new RemoteCallback<List<FieldDefinition>>() {
+                @Override
+                public void callback( List<FieldDefinition> fields ) {
+                    editorContext.addAvailableFields( fields );
+
+                    LayoutDragComponentGroup group = new LayoutDragComponentGroup( name );
+
+                    for ( FieldDefinition field : fields ) {
+                        LayoutDragComponent dragComponent = layoutFieldManager.getComponentForFieldDefinition( editorContext.getFormDefinition().getId(), field );
+                        if (dragComponent != null) {
+                            group.addLayoutDragComponent( field.getName(), dragComponent );
+                        }
+                    }
+
+                    layoutEditor.addDraggableComponentGroup( group );
+                }
+            } ).getAvailableFieldsForType( editorContext.getContent().getPath(), name, type );
+        }
+    }
+
+    protected void onFieldDropped(@Observes FieldDroppedEvent event) {
+        if (event.getFormId().equals( editorContext.getFormDefinition().getId() )) {
+            FieldDefinition field = editorContext.getFormField( event.getFieldName() );
+            if (field != null) {
+                layoutEditor.removeDraggableGroupComponent( field.getModelName(), field.getName() );
+            }
+        }
+    }
+
+    protected void onFieldRemoved(@Observes FieldRemovedEvent event) {
+        if (event.getFormId().equals( editorContext.getFormDefinition().getId() )) {
+            FieldDefinition field = editorContext.removeField( event.getFieldName() );
+            if (field != null) {
+                LayoutDragComponent dragComponent = layoutFieldManager.getComponentForFieldDefinition( editorContext.getFormDefinition().getId(), field );
+                if (dragComponent != null) {
+                    layoutEditor.addDraggableComponentToGroup( field.getModelName(), field.getName(), dragComponent );
+                }
+            }
+        }
     }
 }

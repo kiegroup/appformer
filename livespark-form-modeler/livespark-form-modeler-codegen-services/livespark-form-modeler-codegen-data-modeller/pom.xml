@@ -51,6 +51,10 @@
     </dependency>
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
     </dependency>
   </dependencies>

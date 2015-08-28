@@ -17,6 +17,7 @@ package org.livespark.formmodeler.editor.backend.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -31,10 +32,14 @@ import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.backend.service.KieService;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
+import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
+import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
+import org.livespark.formmodeler.editor.service.FieldManager;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +75,12 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     protected DataModelerService dataModelerService;
 
     @Inject
+    protected FieldManager fieldManager;
+
+    @Inject
+    protected DataModellerFieldGenerator fieldGenerator;
+
+    @Inject
     protected KieProjectService projectService;
 
     @Override
@@ -85,6 +96,8 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
                 throw new FileAlreadyExistsException(kiePath.toString());
             }
             FormDefinition form = new FormDefinition();
+
+            form.setId( UUID.randomUUID().toString() );
 
             form.setName( formName.substring( 0, formName.lastIndexOf( "." ) ) );
 
@@ -136,7 +149,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
         String json = ioService.readAllString( path ).trim();
 
         // TODO fix this to return the right value
-        return new FormDefinition();
+        FormDefinition form = new FormDefinition();
+        form.setId( UUID.randomUUID().toString() );
+        return form;
     }
 
     @Override
@@ -160,5 +175,19 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
         }
 
         return result;
+    }
+
+    @Override
+    public List<FieldDefinition> getAvailableFieldsForType( Path path, String holderName, String type ) {
+        DataModel model = dataModelerService.loadModel( projectService.resolveProject( path ) );
+
+        if (model != null) {
+            DataObject dataObject = model.getDataObject( type );
+            if (dataObject != null) {
+                return fieldGenerator.getFieldsFromDataObject( holderName, dataObject );
+            }
+        }
+
+        return null;
     }
 }
