@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.editor.client.editor;
 
-import com.google.gwt.user.client.Command;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
+package org.livespark.formmodeler.codegen.template;
+
+import org.livespark.formmodeler.editor.model.FormDefinition;
 
 /**
- * Created by pefernan on 8/6/15.
+ * Created by pefernan on 9/1/15.
  */
-public class FieldDefinitionPropertiesModal extends BaseModal {
+public interface FormTemplateGenerator {
 
-    private ModalFooterOKButton footer;
+    String generateFormTemplate( FormDefinition form );
 
-    public FieldDefinitionPropertiesModal( Command command ) {
-        setTitle( "Field Properties" );
-        footer = new ModalFooterOKButton( command );
-        add( footer );
-    }
+    FormDefinition parseFormTemplate( String template );
 }

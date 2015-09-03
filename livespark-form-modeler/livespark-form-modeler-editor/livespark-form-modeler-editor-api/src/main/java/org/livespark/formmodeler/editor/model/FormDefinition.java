@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
 @Portable
 public class FormDefinition {
@@ -30,6 +31,8 @@ public class FormDefinition {
 
     private List<FieldDefinition> fields = new ArrayList<FieldDefinition>(  );
     private List<DataHolder> dataHolders = new ArrayList<DataHolder>(  );
+
+    private LayoutTemplate layoutTemplate;
 
     public String getId() {
         return id;
@@ -55,6 +58,14 @@ public class FormDefinition {
         return fields;
     }
 
+    public LayoutTemplate getLayoutTemplate() {
+        return layoutTemplate;
+    }
+
+    public void setLayoutTemplate( LayoutTemplate layoutTemplate ) {
+        this.layoutTemplate = layoutTemplate;
+    }
+
     public void addDataHolder (DataHolder dataH) {
         dataHolders.add( dataH );
     }
@@ -76,5 +87,12 @@ public class FormDefinition {
             }
         }
         return null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = ~~result;
+        return result;
     }
 }

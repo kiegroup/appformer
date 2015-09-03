@@ -30,7 +30,7 @@ import org.uberfire.ext.editor.commons.service.support.SupportsRename;
  * Created by pefernan on 7/7/15.
  */
 @Remote
-public interface FormEditorService extends SupportsUpdate<FormDefinition>, SupportsRename, SupportsDelete {
+public interface FormEditorService extends SupportsUpdate<FormModelerContent>, SupportsRename, SupportsDelete {
     Path createForm(Path path, String formName);
 
     public FormModelerContent loadContent( Path path );

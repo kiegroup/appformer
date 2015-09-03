@@ -23,7 +23,7 @@ import com.github.gwtbootstrap.client.ui.FormLabel;
 import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.BigDecimalBoxFieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
@@ -33,22 +33,22 @@ import org.uberfire.ext.properties.editor.model.PropertyEditorType;
  * Created by pefernan on 7/27/15.
  */
 @Dependent
-public class TextBoxLayoutComponent extends AbstractInputLayoutComponent<TextBoxFieldDefinition> {
+public class BigDecimalBoxLayoutComponent extends AbstractInputLayoutComponent<BigDecimalBoxFieldDefinition> {
 
-    public TextBoxLayoutComponent() {
+    public BigDecimalBoxLayoutComponent() {
     }
 
-    public TextBoxLayoutComponent( String formId, TextBoxFieldDefinition fieldDefinition ) {
+    public BigDecimalBoxLayoutComponent( String formId, BigDecimalBoxFieldDefinition fieldDefinition ) {
         init( formId, fieldDefinition );
     }
 
     @Override
-    public TextBoxLayoutComponent newInstance( String formId, TextBoxFieldDefinition fieldDefinition ) {
-        return new  TextBoxLayoutComponent( formId, fieldDefinition );
+    public BigDecimalBoxLayoutComponent newInstance( String formId, BigDecimalBoxFieldDefinition fieldDefinition ) {
+        return new BigDecimalBoxLayoutComponent( formId, fieldDefinition );
     }
 
     @Override
     public String getSupportedFieldDefinition() {
-        return TextBoxFieldDefinition.class.getName();
+        return BigDecimalBoxFieldDefinition.class.getName();
     }
 }

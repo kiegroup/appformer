@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -16,7 +15,7 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.livespark.formmodeler.editor.client.editor.dataHolder.DataHolderModal;
 import org.livespark.formmodeler.editor.client.editor.dataHolder.DataHolderPanel;
 import org.livespark.formmodeler.editor.model.FormDefinition;
-import org.uberfire.ext.layout.editor.client.LayoutEditorPlugin;
+import org.uberfire.ext.layout.editor.client.LayoutEditor;
 
 /**
  * Created by pefernan on 7/7/15.
@@ -50,9 +49,9 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     @Override
-    public void setupLayoutEditor( LayoutEditorPlugin layoutEditorPluginAPI ) {
+    public void setupLayoutEditor( LayoutEditor layoutEditor ) {
         content.clear();
-        content.add( layoutEditorPluginAPI.asWidget() );
+        content.add( layoutEditor.asWidget() );
     }
 
     @EventHandler( "createHolder" )

@@ -30,6 +30,10 @@
       <artifactId>uberfire-runtime-plugins-client</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-widgets-properties-editor-client</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.kie.workbench.widgets</groupId>
       <artifactId>kie-wb-common-ui</artifactId>
     </dependency>
