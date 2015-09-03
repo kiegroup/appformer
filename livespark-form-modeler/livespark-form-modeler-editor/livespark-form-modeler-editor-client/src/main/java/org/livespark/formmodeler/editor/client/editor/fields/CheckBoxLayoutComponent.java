@@ -17,29 +17,26 @@ package org.livespark.formmodeler.editor.client.editor.fields;
 
 import javax.enterprise.context.Dependent;
 
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.Controls;
-import com.github.gwtbootstrap.client.ui.FormLabel;
 import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.datepicker.client.DatePicker;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.uberfire.ext.layout.editor.client.components.RenderingContext;
+import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
+import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 /**
- * Created by pefernan on 7/27/15.
+ * Created by pefernan on 9/2/15.
  */
 @Dependent
-public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDefinition>  {
+public class CheckBoxLayoutComponent extends FieldLayoutComponent<CheckBoxFieldDefinition> {
 
-    public DateBoxLayoutComponent() {
+    public CheckBoxLayoutComponent() {
     }
 
-    public DateBoxLayoutComponent( String formId, DateBoxFieldDefinition fieldDefinition ) {
+    public CheckBoxLayoutComponent( String formId, CheckBoxFieldDefinition fieldDefinition ) {
         init( formId, fieldDefinition );
     }
 
@@ -48,53 +45,47 @@ public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDef
         if (fieldDefinition == null) return null;
 
         ControlGroup group = new ControlGroup(  );
-        Controls controls = new Controls();
-        FormLabel label = new FormLabel( fieldDefinition.getLabel() );
-        DatePicker box = new DatePicker();
-        label.setFor( box.getElement().getId() );
-        controls.add( label );
-        controls.add( box );
-        group.add( controls );
-        group.add( new HelpBlock() );
+        CheckBox checkBox = new CheckBox(fieldDefinition.getLabel());
+        checkBox.setEnabled( !fieldDefinition.getReadonly() );
+        group.add( checkBox );
+        group.add( new HelpBlock(  ) );
         return group;
     }
+
     @Override
     public PropertyEditorCategory generatePropertyEditorCategory() {
         PropertyEditorCategory fieldProperties = new PropertyEditorCategory( "General Properties" );
-
-        fieldProperties.withField( new PropertyEditorFieldInfo( "Label", String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
+        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.label(), String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
             @Override
             public void setCurrentStringValue( final String currentStringValue ) {
                 super.setCurrentStringValue( currentStringValue );
                 fieldDefinition.setLabel( currentStringValue );
             }
-        });
-        fieldProperties.withField( new PropertyEditorFieldInfo( "Required", String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
+        } );
+        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.required(), String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
             @Override
             public void setCurrentStringValue( final String currentStringValue ) {
                 super.setCurrentStringValue( currentStringValue );
                 fieldDefinition.setRequired( Boolean.valueOf( currentStringValue ) );
             }
-        });
-        fieldProperties.withField( new PropertyEditorFieldInfo( "Readonly", String.valueOf( fieldDefinition.getReadonly() ), PropertyEditorType.BOOLEAN ) {
+        } );
+        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.readonly(), String.valueOf( fieldDefinition.getReadonly() ), PropertyEditorType.BOOLEAN ) {
             @Override
             public void setCurrentStringValue( final String currentStringValue ) {
                 super.setCurrentStringValue( currentStringValue );
                 fieldDefinition.setReadonly( Boolean.valueOf( currentStringValue ) );
             }
-        });
-
+        } );
         return fieldProperties;
     }
 
-
     @Override
-    public DateBoxLayoutComponent newInstance( String formId, DateBoxFieldDefinition fieldDefinition ) {
-        return new DateBoxLayoutComponent( formId, fieldDefinition );
+    public CheckBoxLayoutComponent newInstance( String formId, CheckBoxFieldDefinition fieldDefinition ) {
+        return new CheckBoxLayoutComponent( formId, fieldDefinition );
     }
 
     @Override
     public String getSupportedFieldDefinition() {
-        return DateBoxFieldDefinition.class.getName();
+        return CheckBoxFieldDefinition.class.getName();
     }
 }

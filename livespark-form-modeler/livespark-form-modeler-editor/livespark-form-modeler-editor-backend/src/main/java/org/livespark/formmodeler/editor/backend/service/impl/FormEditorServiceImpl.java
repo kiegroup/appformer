@@ -16,7 +16,11 @@
 package org.livespark.formmodeler.editor.backend.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -34,8 +38,10 @@ import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.formmodeler.codegen.template.FormTemplateGenerator;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
+import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
@@ -83,6 +89,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     @Inject
     protected KieProjectService projectService;
 
+    @Inject
+    protected FormTemplateGenerator formTemplateGenerator;
+
     @Override
     public FormModelerContent loadContent( Path path ) {
         return super.loadContent( path );
@@ -101,7 +110,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
             form.setName( formName.substring( 0, formName.lastIndexOf( "." ) ) );
 
-            ioService.write(kiePath, "", makeCommentedOption(""));
+            ioService.write( kiePath, formTemplateGenerator.generateFormTemplate( form ), makeCommentedOption( "" ) );
 
             return Paths.convert(kiePath);
         } catch ( Exception e ) {
@@ -120,8 +129,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     }
 
     @Override
-    public Path save( Path path, FormDefinition content, Metadata metadata, String comment ) {
-        return null;
+    public Path save( Path path, FormModelerContent content, Metadata metadata, String comment ) {
+        ioService.write(Paths.convert(path), formTemplateGenerator.generateFormTemplate( content.getDefinition() ), metadataService.setUpAttributes(path, metadata), makeCommentedOption(comment));
+        return path;
     }
 
     @Override
@@ -136,6 +146,33 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
             result.setPath( path );
             result.setOverview( overview );
 
+            if (!form.getDataHolders().isEmpty()) {
+                DataModel model = dataModelerService.loadModel( projectService.resolveProject( path ) );
+
+                Map<String, List<FieldDefinition>> availableFields = new HashMap<String, List<FieldDefinition>>();
+
+                for ( DataHolder holder : form.getDataHolders() ) {
+
+                    List<FieldDefinition> availableHolderFields = new ArrayList<FieldDefinition>(  );
+                    availableFields.put( holder.getName(), availableHolderFields );
+
+                    if ( model != null ) {
+                        DataObject dataObject = model.getDataObject( holder.getType() );
+                        if ( dataObject != null ) {
+                            List<FieldDefinition> holderFields = fieldGenerator.getFieldsFromDataObject( holder.getName(), dataObject );
+                            for ( FieldDefinition field : holderFields ) {
+                                if ( form.getFieldByName( field.getName() ) == null ) {
+                                    availableHolderFields.add( field );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                result.setAvailableFields(availableFields);
+
+            }
+
             resourceOpenedEvent.fire(new ResourceOpenedEvent( path, sessionInfo ));
 
             return result;
@@ -146,11 +183,14 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     }
 
     protected FormDefinition findForm( org.uberfire.java.nio.file.Path path ) throws Exception {
-        String json = ioService.readAllString( path ).trim();
+        String template = ioService.readAllString( path ).trim();
 
-        // TODO fix this to return the right value
-        FormDefinition form = new FormDefinition();
-        form.setId( UUID.randomUUID().toString() );
+        FormDefinition form = formTemplateGenerator.parseFormTemplate( template );
+        if ( form == null ) {
+            form = new FormDefinition();
+            form.setId( UUID.randomUUID().toString() );
+        }
+
         return form;
     }
 

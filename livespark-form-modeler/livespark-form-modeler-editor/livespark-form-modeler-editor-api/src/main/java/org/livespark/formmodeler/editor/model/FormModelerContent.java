@@ -15,6 +15,9 @@
  */
 package org.livespark.formmodeler.editor.model;
 
+import java.util.List;
+import java.util.Map;
+
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
@@ -24,6 +27,7 @@ public class FormModelerContent {
     private Path path;
     private Overview overview;
     private FormDefinition definition;
+    private Map<String, List<FieldDefinition>> availableFields;
 
     public Path getPath() {
         return path;
@@ -47,5 +51,22 @@ public class FormModelerContent {
 
     public void setDefinition( FormDefinition definition ) {
         this.definition = definition;
+    }
+
+    public void setAvailableFields( Map<String, List<FieldDefinition>> availableFields ) {
+        this.availableFields = availableFields;
+    }
+
+    public Map<String, List<FieldDefinition>> getAvailableFields() {
+        return availableFields;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = definition != null ? definition.hashCode() : 0;
+        result = ~~result;
+        result = 31 * result + ( overview != null ? overview.hashCode() : 0 );
+        result = ~~result;
+        return result;
     }
 }

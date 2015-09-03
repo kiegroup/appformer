@@ -40,16 +40,14 @@ import org.uberfire.client.annotations.WorkbenchEditor;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.ext.layout.editor.client.LayoutEditorPlugin;
+import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
+import org.uberfire.ext.layout.editor.client.LayoutEditor;
 import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.components.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
-import org.uberfire.ext.plugin.model.LayoutEditorModel;
-import org.uberfire.ext.plugin.model.PluginType;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.type.FileNameUtil;
@@ -67,11 +65,11 @@ public class FormEditorPresenter extends KieEditor {
 
         public void setPresenter(FormEditorPresenter presenter);
         public void loadContent(FormDefinition definition);
-        public void setupLayoutEditor(LayoutEditorPlugin layoutEditorPluginAPI);
+        public void setupLayoutEditor(LayoutEditor layoutEditor);
     }
 
     @Inject
-    private LayoutEditorPlugin layoutEditor;
+    private LayoutEditor layoutEditor;
 
     @Inject
     private HTMLLayoutDragComponent htmlLayoutDragComponent;
@@ -121,17 +119,30 @@ public class FormEditorPresenter extends KieEditor {
         }, getNoSuchFileExceptionErrorCallback() ).loadContent( versionRecordManager.getCurrentPath() );
     }
 
+    @Override
+    protected void save( String commitMessage ) {
+        editorContext.getFormDefinition().setLayoutTemplate( layoutEditor.getLayout() );
+        editorService.call( getSaveSuccessCallback( editorContext.getContent().hashCode() )  ).save( versionRecordManager.getCurrentPath(),
+                editorContext.getContent(),
+                metadata,
+                commitMessage );
+    }
+
     public void doLoadContent( FormModelerContent content ) {
         busyIndicatorView.hideBusyIndicator();
 
+        // TODO: fix this, this return avoids to reload the layout editor again
+        if (editorContext.getContent() != null) return;
+
         editorContext.setContent( content );
-        this.layoutEditor.init( content.getDefinition().getName(), getLayoutComponents() );
-        layoutEditor.load( PluginType.EDITOR, versionRecordManager.getCurrentPath(), new ParameterizedCommand<LayoutEditorModel>() {
-            @Override
-            public void execute( LayoutEditorModel layoutEditorModel ) {
-                //setOriginalHash( layoutEditor.get() );
-            }
-        } );
+
+        layoutEditor.init( content.getDefinition().getName(), getLayoutComponents() );
+
+        if (content.getDefinition().getLayoutTemplate() == null) content.getDefinition().setLayoutTemplate( new LayoutTemplate(  ) );
+
+        loadAvailableFields(content);
+
+        layoutEditor.loadLayout( content.getDefinition().getLayoutTemplate() );
 
         resetEditorPages( content.getOverview() );
 
@@ -197,21 +208,34 @@ public class FormEditorPresenter extends KieEditor {
             editorService.call( new RemoteCallback<List<FieldDefinition>>() {
                 @Override
                 public void callback( List<FieldDefinition> fields ) {
-                    editorContext.addAvailableFields( fields );
-
-                    LayoutDragComponentGroup group = new LayoutDragComponentGroup( name );
-
-                    for ( FieldDefinition field : fields ) {
-                        LayoutDragComponent dragComponent = layoutFieldManager.getComponentForFieldDefinition( editorContext.getFormDefinition().getId(), field );
-                        if (dragComponent != null) {
-                            group.addLayoutDragComponent( field.getName(), dragComponent );
-                        }
-                    }
-
-                    layoutEditor.addDraggableComponentGroup( group );
+                    addAvailableFields( name, fields );
                 }
             } ).getAvailableFieldsForType( editorContext.getContent().getPath(), name, type );
         }
+    }
+
+    private void loadAvailableFields( FormModelerContent content ) {
+        if ( content.getAvailableFields() == null ) return;
+
+        for ( String holderName : content.getAvailableFields().keySet() ) {
+            List<FieldDefinition> availableFields = content.getAvailableFields().get( holderName );
+            addAvailableFields( holderName, availableFields );
+        }
+    }
+
+    protected void addAvailableFields(String holderName, List<FieldDefinition> fields) {
+        editorContext.addAvailableFields( fields );
+
+        LayoutDragComponentGroup group = new LayoutDragComponentGroup( holderName );
+
+        for ( FieldDefinition field : fields ) {
+            LayoutDragComponent dragComponent = layoutFieldManager.getComponentForFieldDefinition( editorContext.getFormDefinition().getId(), field );
+            if (dragComponent != null) {
+                group.addLayoutDragComponent( field.getName(), dragComponent );
+            }
+        }
+
+        layoutEditor.addDraggableComponentGroup( group );
     }
 
     protected void onFieldDropped(@Observes FieldDroppedEvent event) {

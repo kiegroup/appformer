@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.editor.client.editor;
+package org.livespark.formmodeler.editor.client.resources.i18n;
 
-import com.google.gwt.user.client.Command;
-import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
-import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.Messages;
 
-/**
- * Created by pefernan on 8/6/15.
- */
-public class FieldDefinitionPropertiesModal extends BaseModal {
+public interface FieldProperties extends Messages {
 
-    private ModalFooterOKButton footer;
+    public static final FieldProperties INSTANCE = GWT.create(FieldProperties.class);
 
-    public FieldDefinitionPropertiesModal( Command command ) {
-        setTitle( "Field Properties" );
-        footer = new ModalFooterOKButton( command );
-        add( footer );
-    }
+    public String label();
+    public String placeholder();
+    public String size();
+    public String maxLength();
+    public String required();
+    public String readonly();
+    public String rows();
+    public String columns();
 }

@@ -24,7 +24,10 @@ import javax.inject.Inject;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.AlternateSize;
+import com.github.gwtbootstrap.client.ui.event.HideEvent;
+import com.github.gwtbootstrap.client.ui.event.HideHandler;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.livespark.formmodeler.editor.client.editor.FieldDefinitionPropertiesModal;
@@ -40,6 +43,9 @@ import org.uberfire.ext.layout.editor.client.components.HasOnRemoveNotification;
 import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.components.ModalConfigurationContext;
 import org.uberfire.ext.layout.editor.client.components.RenderingContext;
+import org.uberfire.ext.properties.editor.client.PropertyEditorWidget;
+import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
+import org.uberfire.ext.properties.editor.model.PropertyEditorEvent;
 
 /**
  * Created by pefernan on 7/27/15.
@@ -53,7 +59,10 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
 
     protected FlowPanel content = new FlowPanel(  );
 
-    protected FieldDefinitionPropertiesModal modal = new FieldDefinitionPropertiesModal();
+    protected FieldDefinitionPropertiesModal modal;
+
+    @Inject
+    protected PropertyEditorWidget editorWidget;
 
     @Inject
     protected Event<FormFieldRequest> fieldRequest;
@@ -71,6 +80,7 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     protected D fieldDefinition;
 
     public abstract IsWidget generateWidget();
+    public abstract PropertyEditorCategory generatePropertyEditorCategory();
 
     @Override
     public IsWidget getPreviewWidget( RenderingContext ctx ) {
@@ -83,14 +93,18 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     }
 
     protected FlowPanel generateContent( RenderingContext ctx ) {
-        content.clear();
         if (fieldDefinition != null) {
-            content.add( generateWidget() );
+            renderContent();
         } else {
             getCurrentField( ctx.getComponent().getProperties() );
         }
 
         return content;
+    }
+
+    protected void renderContent() {
+        content.clear();
+        content.add( generateWidget() );
     }
 
     protected void init( String formId, D fieldDefinition ) {
@@ -157,13 +171,38 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
 
         if (fieldDefinition == null) getCurrentField( ctx.getComponentProperties() );
 
-        modal.init( ctx );
+        modal = new FieldDefinitionPropertiesModal( new Command() {
+            @Override
+            public void execute() {
+                modal.hide();
+
+            }
+        } );
+
+        modal.addHideHandler( new HideHandler() {
+            @Override public void onHide( HideEvent hideEvent ) {
+                ctx.configurationFinished();
+                renderContent();
+                modal = null;
+            }
+        } );
+        if ( fieldDefinition != null ) initEditorWidget();
+
         return modal;
     }
 
     public void onFieldResponse(@Observes FormFieldResponse<D> response) {
         if ( !response.getFormId().equals( formId ) || !response.getFieldName().equals( fieldName ) ) return;
         fieldDefinition = response.getField();
+        renderContent();
+        if (modal != null) {
+            initEditorWidget();
+        }
+    }
+
+    protected void initEditorWidget() {
+        editorWidget.handle( new PropertyEditorEvent( formId + " -" + fieldName, generatePropertyEditorCategory() ) );
+        modal.add( editorWidget );
     }
 
     public abstract FieldLayoutComponent<D> newInstance(String formId, D fieldDefinition);
