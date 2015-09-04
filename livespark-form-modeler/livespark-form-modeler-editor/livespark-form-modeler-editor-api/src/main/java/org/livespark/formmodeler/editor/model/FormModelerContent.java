@@ -15,12 +15,12 @@
  */
 package org.livespark.formmodeler.editor.model;
 
-import java.util.List;
-import java.util.Map;
-
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
+
+import java.util.List;
+import java.util.Map;
 
 @Portable
 public class FormModelerContent {

@@ -15,14 +15,14 @@
  */
 package org.livespark.formmodeler.editor.client.type;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.livespark.formmodeler.editor.client.resources.FormModelerEditorResources;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.type.FormResourceTypeDefinition;
 import org.uberfire.client.workbench.type.ClientResourceType;
+
+import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FormDefinitionResourceType extends FormResourceTypeDefinition implements ClientResourceType {

@@ -16,13 +16,12 @@
 
 package org.livespark.formmodeler.editor.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Portable
 public class FormDefinition {

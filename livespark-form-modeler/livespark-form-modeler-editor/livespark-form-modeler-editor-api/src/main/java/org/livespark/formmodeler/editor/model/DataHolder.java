@@ -16,10 +16,10 @@
 
 package org.livespark.formmodeler.editor.model;
 
-import java.util.List;
-
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
+
+import java.util.List;
 
 /**
  * Created by pefernan on 4/21/15.

@@ -15,10 +15,9 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import javax.enterprise.context.Dependent;
-
-import org.livespark.formmodeler.editor.model.impl.basic.BigIntegerBoxFieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.basic.ByteBoxFieldDefinition;
+
+import javax.enterprise.context.Dependent;
 
 /**
  * Created by pefernan on 7/27/15.

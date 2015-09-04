@@ -15,12 +15,6 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import java.util.Map;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.constants.AlternateSize;
@@ -36,24 +30,23 @@ import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.uberfire.ext.layout.editor.client.components.HasDragAndDropSettings;
-import org.uberfire.ext.layout.editor.client.components.HasModalConfiguration;
-import org.uberfire.ext.layout.editor.client.components.HasOnDropNotification;
-import org.uberfire.ext.layout.editor.client.components.HasOnRemoveNotification;
-import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
-import org.uberfire.ext.layout.editor.client.components.ModalConfigurationContext;
-import org.uberfire.ext.layout.editor.client.components.RenderingContext;
+import org.livespark.formmodeler.editor.model.FormLayoutComponent;
+import org.uberfire.ext.layout.editor.client.components.*;
 import org.uberfire.ext.properties.editor.client.PropertyEditorWidget;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorEvent;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.Map;
+
 /**
  * Created by pefernan on 7/27/15.
  */
-public abstract class FieldLayoutComponent<D extends FieldDefinition> implements LayoutDragComponent, HasDragAndDropSettings, HasModalConfiguration, HasOnDropNotification, HasOnRemoveNotification {
-    public static String FORM_ID = "form_id";
-    public static String FIELD_NAME = "form_field_name";
-    public static String FIELD_DRAG_LABEL = "form_field_label";
+public abstract class FieldLayoutComponent<D extends FieldDefinition> implements FormLayoutComponent,
+        LayoutDragComponent, HasDragAndDropSettings, HasModalConfiguration, HasOnDropNotification, HasOnRemoveNotification {
+
 
     public final String[] SETTINGS_KEYS = new String[] { FORM_ID, FIELD_NAME, FIELD_DRAG_LABEL };
 

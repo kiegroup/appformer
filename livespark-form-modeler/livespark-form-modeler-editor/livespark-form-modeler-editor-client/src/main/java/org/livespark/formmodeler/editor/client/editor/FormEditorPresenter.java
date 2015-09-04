@@ -15,12 +15,6 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.errai.common.client.api.Caller;
@@ -51,6 +45,12 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.type.FileNameUtil;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pefernan on 7/7/15.
@@ -105,7 +105,7 @@ public class FormEditorPresenter extends KieEditor {
     public void onStartup( final ObservablePath path,
             final PlaceRequest place ) {
 
-        init( path, place, resourceType );
+        init(path, place, resourceType);
         view.setPresenter( this );
     }
 
@@ -116,16 +116,16 @@ public class FormEditorPresenter extends KieEditor {
             public void callback( FormModelerContent content ) {
                 doLoadContent( content );
             }
-        }, getNoSuchFileExceptionErrorCallback() ).loadContent( versionRecordManager.getCurrentPath() );
+        }, getNoSuchFileExceptionErrorCallback() ).loadContent(versionRecordManager.getCurrentPath());
     }
 
     @Override
     protected void save( String commitMessage ) {
         editorContext.getFormDefinition().setLayoutTemplate( layoutEditor.getLayout() );
-        editorService.call( getSaveSuccessCallback( editorContext.getContent().hashCode() )  ).save( versionRecordManager.getCurrentPath(),
+        editorService.call( getSaveSuccessCallback(editorContext.getContent().hashCode())  ).save(versionRecordManager.getCurrentPath(),
                 editorContext.getContent(),
                 metadata,
-                commitMessage );
+                commitMessage);
     }
 
     public void doLoadContent( FormModelerContent content ) {
@@ -146,14 +146,14 @@ public class FormEditorPresenter extends KieEditor {
 
         resetEditorPages( content.getOverview() );
 
-        view.setupLayoutEditor( layoutEditor );
-        view.loadContent( content.getDefinition() );
+        view.setupLayoutEditor(layoutEditor);
+        view.loadContent(content.getDefinition());
     }
 
     protected List<LayoutDragComponent> getLayoutComponents() {
 
         List<LayoutDragComponent>  list = new ArrayList<LayoutDragComponent>();
-        list.add( htmlLayoutDragComponent );
+        list.add(htmlLayoutDragComponent);
 
         return list;
     }
@@ -192,6 +192,10 @@ public class FormEditorPresenter extends KieEditor {
                 .addDelete(versionRecordManager.getPathToLatest())
                 .addNewTopLevelMenu(versionRecordManager.buildMenu())
                 .build();
+    }
+
+    public LayoutTemplate getFormTemplate() {
+        return layoutEditor.getLayout();
     }
 
     public void getAvailableDataObjectsList() {

@@ -15,11 +15,6 @@
  */
 package org.livespark.formmodeler.editor.backend.service.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.services.datamodeller.core.Annotation;
@@ -29,6 +24,10 @@ import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.basic.AbstractIntputFieldDefinition;
 import org.livespark.formmodeler.editor.service.FieldManager;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pefernan on 8/28/15.

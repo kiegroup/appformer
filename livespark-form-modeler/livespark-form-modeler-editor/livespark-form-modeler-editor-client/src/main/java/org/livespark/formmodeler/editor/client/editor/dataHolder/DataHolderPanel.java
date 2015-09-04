@@ -1,15 +1,13 @@
 package org.livespark.formmodeler.editor.client.editor.dataHolder;
 
-import java.util.List;
-import javax.inject.Inject;
-
-import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.ListBox;
-import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by pefernan on 7/9/15.

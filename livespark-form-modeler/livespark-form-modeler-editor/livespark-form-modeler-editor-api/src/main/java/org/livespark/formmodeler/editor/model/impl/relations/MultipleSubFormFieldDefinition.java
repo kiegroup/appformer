@@ -15,9 +15,9 @@
  */
 package org.livespark.formmodeler.editor.model.impl.relations;
 
-import java.util.List;
-
 import org.livespark.formmodeler.editor.model.MultipleField;
+
+import java.util.List;
 
 /**
  * Created by pefernan on 7/1/15.

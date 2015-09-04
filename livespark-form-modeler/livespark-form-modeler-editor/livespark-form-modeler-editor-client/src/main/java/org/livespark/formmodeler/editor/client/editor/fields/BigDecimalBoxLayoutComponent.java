@@ -15,19 +15,9 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import javax.enterprise.context.Dependent;
-
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.Controls;
-import com.github.gwtbootstrap.client.ui.FormLabel;
-import com.github.gwtbootstrap.client.ui.HelpBlock;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.google.gwt.user.client.ui.IsWidget;
 import org.livespark.formmodeler.editor.model.impl.basic.BigDecimalBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
-import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
-import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
-import org.uberfire.ext.properties.editor.model.PropertyEditorType;
+
+import javax.enterprise.context.Dependent;
 
 /**
  * Created by pefernan on 7/27/15.
