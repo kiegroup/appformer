@@ -23,6 +23,8 @@ import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
+import java.util.HashMap;
+
 /**
  * Created by pefernan on 9/2/15.
  */
@@ -31,10 +33,17 @@ public abstract class AbstractInputLayoutComponent<D extends AbstractIntputField
     public IsWidget generateWidget( ) {
         if (fieldDefinition == null) return null;
 
+        if (!fieldDefinition.getName().equals(fieldName)) {
+            fieldDefinition = null;
+            getCurrentField(new HashMap<String, String>());
+            return null;
+        }
+
         ControlGroup group = new ControlGroup(  );
         Controls controls = new Controls();
         FormLabel label = new FormLabel( fieldDefinition.getLabel() );
         TextBox box = new TextBox();
+        box.setId( fieldDefinition.getName() );
         box.setPlaceholder( fieldDefinition.getPlaceHolder() );
         box.setWidth( fieldDefinition.getSize().intValue() + "em");
         box.setMaxLength( fieldDefinition.getMaxLength() );

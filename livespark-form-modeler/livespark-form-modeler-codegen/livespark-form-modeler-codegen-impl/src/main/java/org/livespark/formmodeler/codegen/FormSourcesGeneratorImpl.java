@@ -32,6 +32,7 @@ import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
@@ -76,6 +77,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
     @Inject
     private FormHTMLTemplateSourceGenerator htmlTemplateSourceGenerator;
+
+    @Inject
+    private FormLayoutTemplateGenerator formLayoutTemplateGenerator;
 
     @Inject
     @ListView
@@ -164,6 +168,10 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
             writeHTMLSource( resourcePath, context.getListViewName(), listHtmlTemplate, local );
 
             writeErraiAppProperties( serializableTypesDeclaration, project );
+
+            if ( form.getLayoutTemplate() == null ) {
+                writeFormTemplate( resourcePath, form.getName(), formLayoutTemplateGenerator.generateLayoutTemplate(form), shared);
+            }
         } catch ( Exception e ) {
             log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
         } finally {
@@ -251,6 +259,18 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         }
 
         return true;
+    }
+
+    private void writeFormTemplate( Path dataObjectPath,
+                                  String name,
+                                  String formTemplate,
+                                  Package sourcePackage ) {
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainResourcesPath() );
+        org.uberfire.java.nio.file.Path htmlPath = parentPath.resolve( name + ".frm" );
+
+        ioService.write( htmlPath,
+                formTemplate,
+                makeCommentedOption( "Added HTML Source for Form Template '" + dataObjectPath + "'" ) );
     }
 
     private void writeHTMLSource( Path dataObjectPath,
