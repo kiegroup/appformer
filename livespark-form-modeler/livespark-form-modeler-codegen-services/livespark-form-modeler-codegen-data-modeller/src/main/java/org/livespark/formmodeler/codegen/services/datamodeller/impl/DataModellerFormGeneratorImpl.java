@@ -19,6 +19,7 @@ package org.livespark.formmodeler.codegen.services.datamodeller.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -75,6 +76,9 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
         DataModel model = dataModelerService.loadModel( projectService.resolveProject( path ) );
 
         FormDefinition form = new FormDefinition();
+
+        form.setId( UUID.randomUUID().toString() );
+
         form.setName( dataObject.getName() );
 
         String holderName = WordUtils.uncapitalize( dataObject.getName() );

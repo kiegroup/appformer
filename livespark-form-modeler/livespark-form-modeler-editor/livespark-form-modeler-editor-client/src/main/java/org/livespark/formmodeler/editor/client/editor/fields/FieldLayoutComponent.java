@@ -66,9 +66,9 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     @Inject
     protected Event<FieldRemovedEvent> fieldRemovedEvent;
 
-    private String formId;
-    private String fieldDragLabel;
-    private String fieldName;
+    protected String formId;
+    protected String fieldDragLabel;
+    protected String fieldName;
 
     protected D fieldDefinition;
 
