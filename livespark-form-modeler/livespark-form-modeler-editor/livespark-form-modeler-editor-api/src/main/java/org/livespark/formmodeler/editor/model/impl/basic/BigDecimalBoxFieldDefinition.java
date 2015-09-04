@@ -16,9 +16,9 @@
 
 package org.livespark.formmodeler.editor.model.impl.basic;
 
-import java.math.BigDecimal;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
+
+import java.math.BigDecimal;
 
 /**
  * Created by pefernan on 3/19/15.

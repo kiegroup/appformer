@@ -16,12 +16,12 @@
 
 package org.livespark.formmodeler.editor.service;
 
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
-
-import org.jboss.errai.bus.server.annotations.Remote;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
 
 /**
  * Created by pefernan on 4/29/15.

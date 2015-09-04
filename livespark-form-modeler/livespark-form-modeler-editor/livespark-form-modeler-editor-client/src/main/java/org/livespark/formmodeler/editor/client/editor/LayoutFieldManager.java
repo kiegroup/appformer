@@ -15,16 +15,16 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.livespark.formmodeler.editor.client.editor.fields.FieldLayoutComponent;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by pefernan on 8/28/15.

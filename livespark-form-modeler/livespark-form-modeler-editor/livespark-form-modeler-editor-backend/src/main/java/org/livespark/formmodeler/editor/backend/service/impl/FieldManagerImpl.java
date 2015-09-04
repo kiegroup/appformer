@@ -16,38 +16,23 @@
 
 package org.livespark.formmodeler.editor.backend.service.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
 import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.editor.model.MultipleField;
-import org.livespark.formmodeler.editor.model.impl.basic.BigDecimalBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.BigIntegerBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.ByteBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.CharacterBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.DoubleBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.FloatBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.IntegerBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.LongBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.ShortBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.*;
+import org.livespark.formmodeler.editor.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.editor.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.editor.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * Created by pefernan on 4/29/15.

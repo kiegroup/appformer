@@ -15,21 +15,21 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
 import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pefernan on 8/6/15.

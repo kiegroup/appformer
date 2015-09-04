@@ -15,8 +15,6 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import javax.enterprise.context.Dependent;
-
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.HelpBlock;
@@ -26,6 +24,8 @@ import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
+
+import javax.enterprise.context.Dependent;
 
 /**
  * Created by pefernan on 9/2/15.

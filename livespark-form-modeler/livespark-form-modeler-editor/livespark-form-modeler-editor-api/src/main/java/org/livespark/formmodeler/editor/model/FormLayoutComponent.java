@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.livespark.formmodeler.editor.model.impl.basic;
-
-import org.jboss.errai.common.client.api.annotations.Portable;
-
-import java.math.BigInteger;
+package org.livespark.formmodeler.editor.model;
 
 /**
- * Created by pefernan on 3/19/15.
+ * Created by pefernan on 9/4/15.
  */
-@Portable
-public class BigIntegerBoxFieldDefinition extends AbstractIntputFieldDefinition {
-
-    @Override
-    public String getStandaloneClassName() {
-        return BigInteger.class.getName();
-    }
+public interface FormLayoutComponent {
+    public static String FORM_ID = "form_id";
+    public static String FIELD_NAME = "form_field_name";
+    public static String FIELD_DRAG_LABEL = "form_field_label";
 }

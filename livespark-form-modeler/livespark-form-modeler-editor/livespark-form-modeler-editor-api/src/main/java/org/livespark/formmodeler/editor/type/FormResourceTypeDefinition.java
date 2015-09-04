@@ -15,10 +15,10 @@
  */
 package org.livespark.formmodeler.editor.type;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.workbench.type.ResourceTypeDefinition;
+
+import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FormResourceTypeDefinition implements ResourceTypeDefinition {
