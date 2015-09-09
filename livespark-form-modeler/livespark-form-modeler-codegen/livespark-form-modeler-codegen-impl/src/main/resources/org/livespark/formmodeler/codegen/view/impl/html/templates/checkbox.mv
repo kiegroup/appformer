@@ -1,9 +1,7 @@
             <div id="@{field.name}_form_group" class="control-group">
-                <div class="controls">
-                    <label class="checkbox">
-                      <input type="checkbox" id="@{field.name}">
-                      @{field.label}
-                    </label>
-                    <p id="@{field.name}_help_block" class="help-block"></p>
-                 </div>
+                <label class="checkbox" for="gwt-uid-1210">
+                    <input type="checkbox" id="@{field.name}">
+                    <span>@{field.label}</span>
+                </label>
+                <p id="@{field.name}_help_block" class="help-block"></p>
             </div>

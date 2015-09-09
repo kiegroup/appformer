@@ -63,7 +63,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         addImports( context, viewClass );
         addAnnotations( context, viewClass );
         addAdditional( context, viewClass );
-        
+
         addBaseViewFieldsAndMethodImpls( context, viewClass );
         return viewClass.toString();
     }
@@ -96,14 +96,14 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             if (!(fieldDefinition instanceof SubFormFieldDefinition )) {
                 field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
             }
-            
+
             field.addAnnotation( ERRAI_DATAFIELD );
 
             property.removeAccessor();
             property.removeMutator();
 
             inputNames.append( "inputNames.add(\"" ).append( fieldDefinition.getName() ).append( "\");" );
-            readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            if ( !fieldDefinition.isAnnotatedId() ) readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
         }
 
         viewClass.addMethod()
@@ -141,11 +141,13 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             JavaClassSource viewClass,
             String packageName );
 
-    protected abstract boolean displaysId();
-
     protected abstract boolean isBanned( FieldDefinition definition );
 
     private String getPackageName( SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName();
+    }
+
+    protected boolean displaysId() {
+        return true;
     }
 }

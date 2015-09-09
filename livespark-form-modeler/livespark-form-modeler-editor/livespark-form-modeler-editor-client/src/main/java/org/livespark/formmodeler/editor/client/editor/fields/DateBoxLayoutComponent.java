@@ -22,11 +22,10 @@ import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
-import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 import javax.enterprise.context.Dependent;
+import java.util.List;
 
 /**
  * Created by pefernan on 7/27/15.
@@ -38,7 +37,7 @@ public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDef
     }
 
     public DateBoxLayoutComponent( String formId, DateBoxFieldDefinition fieldDefinition ) {
-        init( formId, fieldDefinition );
+        init(formId, fieldDefinition);
     }
 
     @Override
@@ -51,40 +50,16 @@ public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDef
         DatePicker box = new DatePicker();
         label.setFor( box.getElement().getId() );
         controls.add( label );
-        controls.add( box );
-        group.add( controls );
-        group.add( new HelpBlock() );
+        controls.add(box);
+        group.add(controls);
+        group.add(new HelpBlock());
         return group;
     }
+
     @Override
-    public PropertyEditorCategory generatePropertyEditorCategory() {
-        PropertyEditorCategory fieldProperties = new PropertyEditorCategory( "General Properties" );
-
-        fieldProperties.withField( new PropertyEditorFieldInfo( "Label", String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setLabel( currentStringValue );
-            }
-        });
-        fieldProperties.withField( new PropertyEditorFieldInfo( "Required", String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setRequired( Boolean.valueOf( currentStringValue ) );
-            }
-        });
-        fieldProperties.withField( new PropertyEditorFieldInfo( "Readonly", String.valueOf( fieldDefinition.getReadonly() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setReadonly( Boolean.valueOf( currentStringValue ) );
-            }
-        });
-
-        return fieldProperties;
+    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+        return null;
     }
-
 
     @Override
     public DateBoxLayoutComponent newInstance( String formId, DateBoxFieldDefinition fieldDefinition ) {

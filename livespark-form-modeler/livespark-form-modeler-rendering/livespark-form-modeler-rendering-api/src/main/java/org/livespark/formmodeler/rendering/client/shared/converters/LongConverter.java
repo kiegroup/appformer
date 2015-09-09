@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs;
+package org.livespark.formmodeler.rendering.client.shared.converters;
 
-import org.livespark.formmodeler.editor.model.impl.basic.LongBoxFieldDefinition;
+import org.jboss.errai.databinding.client.api.Converter;
+import org.jboss.errai.databinding.client.api.DefaultConverter;
+
+import java.math.BigDecimal;
 
 /**
- * Created by pefernan on 4/28/15.
+ * Created by pefernan on 9/8/15.
  */
-public class LongBoxHelper extends AbstractInputCreatorHelper {
+
+@DefaultConverter
+public class LongConverter implements Converter<Long, String> {
 
     @Override
-    public String getSupportedFieldType() {
-        return LongBoxFieldDefinition.class.getName();
+    public Long toModelValue( String s ) {
+        if (s == null) return null;
+        return Long.decode( s );
     }
 
     @Override
-    public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.TextBox";
+    public String toWidgetValue( Long aLong ) {
+        if (aLong == null) return null;
+        return aLong.toString();
     }
 }

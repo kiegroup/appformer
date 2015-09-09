@@ -16,6 +16,7 @@
 
 package org.livespark.formmodeler.rendering.client.view;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -42,12 +43,12 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         clearFieldErrors();
         updateNestedModels(false);
     }
-    
+
     @PostConstruct
     private void init() {
-        Object entity = getEntity();
-        if (entity == null) {
-            setNewEntity();
+        List entites = getEntities();
+        if (entites == null || entites.isEmpty() || entites.size() < getEntitiesCount()) {
+            initEntities();
         }
         updateNestedModels(true);
     }
@@ -64,12 +65,14 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     }
 
     public abstract void setReadOnly( boolean readOnly );
-    
+
     protected abstract void updateNestedModels(boolean init);
-    
-    protected abstract Object getEntity();
-    
-    protected abstract void setNewEntity();
+
+    protected abstract int getEntitiesCount();
+
+    protected abstract List getEntities();
+
+    protected abstract void initEntities();
 
     public boolean validate() {
 

@@ -52,7 +52,7 @@ public class DataModellerFieldGenerator {
 
                 if (field == null) continue;
                 field.setAnnotatedId( property.getAnnotation( SourceGenerationUtil.JAVAX_PERSISTENCE_ID ) != null );
-
+                field.setReadonly( field.isAnnotatedId() );
 
                 field.setName( propertyName );
                 String label = getPropertyLabel( property );

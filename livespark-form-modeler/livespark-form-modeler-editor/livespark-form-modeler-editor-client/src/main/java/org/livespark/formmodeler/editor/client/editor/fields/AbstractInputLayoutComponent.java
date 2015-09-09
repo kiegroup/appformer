@@ -19,11 +19,12 @@ import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.AbstractIntputFieldDefinition;
-import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by pefernan on 9/2/15.
@@ -56,52 +57,30 @@ public abstract class AbstractInputLayoutComponent<D extends AbstractIntputField
         return group;
     }
 
-    public PropertyEditorCategory generatePropertyEditorCategory( ) {
-        PropertyEditorCategory fieldProperties = new PropertyEditorCategory( "General Properties" );
-
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.label(), String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
+    @Override
+    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+        List<PropertyEditorFieldInfo> result = new ArrayList<PropertyEditorFieldInfo>();
+        result.add(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.placeholder(), fieldDefinition.getPlaceHolder(), PropertyEditorType.TEXT) {
             @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setLabel( currentStringValue );
+            public void setCurrentStringValue(final String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
+                fieldDefinition.setPlaceHolder(currentStringValue);
             }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.placeholder(), fieldDefinition.getPlaceHolder(), PropertyEditorType.TEXT ) {
+        });
+        result.add(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.size(), String.valueOf(fieldDefinition.getSize()), PropertyEditorType.NATURAL_NUMBER) {
             @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setPlaceHolder( currentStringValue );
+            public void setCurrentStringValue(final String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
+                fieldDefinition.setSize(Integer.decode(currentStringValue));
             }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.size(), String.valueOf( fieldDefinition.getSize() ), PropertyEditorType.NATURAL_NUMBER ) {
+        });
+        result.add(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.maxLength(), String.valueOf(fieldDefinition.getMaxLength()), PropertyEditorType.NATURAL_NUMBER) {
             @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setSize( Integer.decode( currentStringValue ) );
+            public void setCurrentStringValue(final String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
+                fieldDefinition.setMaxLength(Integer.decode(currentStringValue));
             }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.maxLength(), String.valueOf( fieldDefinition.getMaxLength() ), PropertyEditorType.NATURAL_NUMBER ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setMaxLength( Integer.decode( currentStringValue ) );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.required(), String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setRequired( Boolean.valueOf( currentStringValue ) );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.readonly(), String.valueOf( fieldDefinition.getReadonly() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setReadonly( Boolean.valueOf( currentStringValue ) );
-            }
-        } );
-
-        return fieldProperties;
+        });
+        return result;
     }
 }

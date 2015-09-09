@@ -25,6 +25,7 @@ import org.kie.workbench.common.services.backend.service.KieService;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.template.FormTemplateGenerator;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
@@ -85,6 +86,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     @Inject
     protected FormTemplateGenerator formTemplateGenerator;
 
+    @Inject
+    protected FormSourcesGenerator formSourcesGenerator;
+
     @Override
     public FormModelerContent loadContent( Path path ) {
         return super.loadContent( path );
@@ -124,6 +128,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     @Override
     public Path save( Path path, FormModelerContent content, Metadata metadata, String comment ) {
         ioService.write(Paths.convert(path), formTemplateGenerator.generateFormTemplate( content.getDefinition() ), metadataService.setUpAttributes(path, metadata), makeCommentedOption(comment));
+
+        formSourcesGenerator.generateFormSources(content.getDefinition(), path);
+
         return path;
     }
 
