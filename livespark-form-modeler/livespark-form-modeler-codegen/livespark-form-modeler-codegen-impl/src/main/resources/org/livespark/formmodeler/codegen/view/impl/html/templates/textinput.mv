@@ -1,7 +1,12 @@
             <div id="@{field.name}_form_group" class="form-group">
                 <label class="control-label" for="@{field.name}">@{field.label}</label>
-                <input class="form-control" id="@{field.name}" type="text"
-                    size="@{field.size}" maxlength="@{field.maxLength}"
-                    placeholder="@{field.placeHolder}" style="min-height:30px"/>
-                <p id="@{field.name}_help_block" class="help-block"></p>
+                <div class="controls">
+                    <input class="form-control" id="@{field.name}" type="text"
+                        size="@{field.size}" maxlength="@{field.maxLength}"
+                        placeholder="@{field.placeHolder}" style="min-height:30px"
+                        @if{field.readonly}
+                            readonly
+                        @end{}/>
+                    <p id="@{field.name}_help_block" class="help-block"></p>
+                </div>
             </div>

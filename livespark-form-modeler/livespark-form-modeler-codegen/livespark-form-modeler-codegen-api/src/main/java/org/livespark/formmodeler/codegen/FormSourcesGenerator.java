@@ -24,5 +24,7 @@ import org.uberfire.backend.vfs.Path;
  */
 public interface FormSourcesGenerator {
 
+    void generateEntityFormSources(FormDefinition form, Path resourcePath);
+
     void generateFormSources( FormDefinition form, Path resourcePath );
 }

@@ -105,7 +105,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         if (form.getFields().isEmpty()) return;
 
-        formSourcesGenerator.generateFormSources( form, path );
+        formSourcesGenerator.generateEntityFormSources( form, path );
 
     }
 

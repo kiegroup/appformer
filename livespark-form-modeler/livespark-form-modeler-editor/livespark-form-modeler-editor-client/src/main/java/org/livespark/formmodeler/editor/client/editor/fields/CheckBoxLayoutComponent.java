@@ -19,13 +19,11 @@ import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.google.gwt.user.client.ui.IsWidget;
-import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
-import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
-import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 import javax.enterprise.context.Dependent;
+import java.util.List;
 
 /**
  * Created by pefernan on 9/2/15.
@@ -37,7 +35,7 @@ public class CheckBoxLayoutComponent extends FieldLayoutComponent<CheckBoxFieldD
     }
 
     public CheckBoxLayoutComponent( String formId, CheckBoxFieldDefinition fieldDefinition ) {
-        init( formId, fieldDefinition );
+        init(formId, fieldDefinition);
     }
 
     @Override
@@ -46,37 +44,15 @@ public class CheckBoxLayoutComponent extends FieldLayoutComponent<CheckBoxFieldD
 
         ControlGroup group = new ControlGroup(  );
         CheckBox checkBox = new CheckBox(fieldDefinition.getLabel());
-        checkBox.setEnabled( !fieldDefinition.getReadonly() );
-        group.add( checkBox );
-        group.add( new HelpBlock(  ) );
+        checkBox.setEnabled(!fieldDefinition.getReadonly());
+        group.add(checkBox);
+        group.add(new HelpBlock());
         return group;
     }
 
     @Override
-    public PropertyEditorCategory generatePropertyEditorCategory() {
-        PropertyEditorCategory fieldProperties = new PropertyEditorCategory( "General Properties" );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.label(), String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setLabel( currentStringValue );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.required(), String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setRequired( Boolean.valueOf( currentStringValue ) );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.readonly(), String.valueOf( fieldDefinition.getReadonly() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setReadonly( Boolean.valueOf( currentStringValue ) );
-            }
-        } );
-        return fieldProperties;
+    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+        return null;
     }
 
     @Override

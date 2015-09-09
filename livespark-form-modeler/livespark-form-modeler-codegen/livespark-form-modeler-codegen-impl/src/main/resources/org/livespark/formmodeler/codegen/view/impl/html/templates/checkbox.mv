@@ -1,7 +1,6 @@
             <div id="@{field.name}_form_group" class="checkbox">
-                <label class="checkbox">
-                  <input type="checkbox" id="@{field.name}">
-                  @{field.label}
+                <label>
+                  <input type="checkbox" id="@{field.name}"> @{field.label}
                 </label>
                 <p id="@{field.name}_help_block" class="help-block"></p>
             </div>

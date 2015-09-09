@@ -77,11 +77,6 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
     }
 
     @Override
-    protected boolean displaysId() {
-        return true;
-    }
-
-    @Override
     protected boolean isBanned( FieldDefinition definition ) {
         return definition instanceof EmbeddedFormField;
     }

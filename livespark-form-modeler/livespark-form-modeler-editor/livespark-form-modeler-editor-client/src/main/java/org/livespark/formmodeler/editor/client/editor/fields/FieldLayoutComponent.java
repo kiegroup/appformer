@@ -29,16 +29,20 @@ import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
+import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormLayoutComponent;
 import org.uberfire.ext.layout.editor.client.components.*;
 import org.uberfire.ext.properties.editor.client.PropertyEditorWidget;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorEvent;
+import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
+import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,7 +77,12 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     protected D fieldDefinition;
 
     public abstract IsWidget generateWidget();
-    public abstract PropertyEditorCategory generatePropertyEditorCategory();
+
+    public abstract FieldLayoutComponent<D> newInstance(String formId, D fieldDefinition);
+
+    public abstract String getSupportedFieldDefinition();
+
+    protected abstract List<PropertyEditorFieldInfo> getCustomFieldProperties();
 
     @Override
     public IsWidget getPreviewWidget( RenderingContext ctx ) {
@@ -97,7 +106,7 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
 
     protected void renderContent() {
         content.clear();
-        content.add( generateWidget() );
+        content.add(generateWidget());
     }
 
     protected void init( String formId, D fieldDefinition ) {
@@ -131,7 +140,7 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
         TextBox textBox = GWT.create( TextBox.class );
         textBox.setPlaceholder( fieldDragLabel );
         textBox.setReadOnly( true );
-        textBox.setAlternateSize( AlternateSize.MEDIUM );
+        textBox.setAlternateSize(AlternateSize.MEDIUM);
         return textBox;
     }
 
@@ -158,8 +167,8 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
     @Override
     public Modal getConfigurationModal( final ModalConfigurationContext ctx ) {
 
-        ctx.getComponentProperties().put( FORM_ID, formId );
-        ctx.getComponentProperties().put( FIELD_NAME, fieldName );
+        ctx.getComponentProperties().put(FORM_ID, formId);
+        ctx.getComponentProperties().put(FIELD_NAME, fieldName);
         ctx.getComponentProperties().put( FIELD_DRAG_LABEL, fieldDragLabel );
 
         if (fieldDefinition == null) getCurrentField( ctx.getComponentProperties() );
@@ -195,12 +204,50 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
 
     protected void initEditorWidget() {
         editorWidget.handle( new PropertyEditorEvent( formId + " -" + fieldName, generatePropertyEditorCategory() ) );
-        modal.add( editorWidget );
+        modal.add(editorWidget);
     }
 
-    public abstract FieldLayoutComponent<D> newInstance(String formId, D fieldDefinition);
+    protected PropertyEditorCategory generatePropertyEditorCategory() {
+        PropertyEditorCategory fieldProperties = new PropertyEditorCategory( FieldProperties.INSTANCE.generalSettings() );
 
-    public abstract String getSupportedFieldDefinition();
+        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.label(), String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
+            @Override
+            public void setCurrentStringValue( final String currentStringValue ) {
+                super.setCurrentStringValue( currentStringValue );
+                fieldDefinition.setLabel(currentStringValue);
+            }
+        } );
+
+        List<PropertyEditorFieldInfo> customProperties = getCustomFieldProperties();
+        if (customProperties != null ){
+            for ( PropertyEditorFieldInfo field : customProperties ) {
+                fieldProperties.withField( field );
+            }
+        }
+
+        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.required(), String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
+            @Override
+            public void setCurrentStringValue( final String currentStringValue ) {
+                super.setCurrentStringValue( currentStringValue );
+                fieldDefinition.setRequired(Boolean.valueOf(currentStringValue));
+            }
+        } );
+
+        // If the field has the ID annotation it has to be always readonly
+        if (!fieldDefinition.isAnnotatedId()) {
+            fieldProperties.withField(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.readonly(), String.valueOf(fieldDefinition.getReadonly()), PropertyEditorType.BOOLEAN) {
+                @Override
+                public void setCurrentStringValue(final String currentStringValue) {
+                    super.setCurrentStringValue(currentStringValue);
+                    fieldDefinition.setReadonly(Boolean.valueOf(currentStringValue));
+                }
+            });
+        } else {
+            fieldDefinition.setReadonly(true);
+        }
+
+        return fieldProperties;
+    }
 
     @Override
     public void onDropComponent() {

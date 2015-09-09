@@ -19,11 +19,12 @@ import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition;
-import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 import javax.enterprise.context.Dependent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pefernan on 9/2/15.
@@ -49,63 +50,40 @@ public class TextAreaLayoutComponent extends FieldLayoutComponent<TextAreaFieldD
         textArea.setPlaceholder( fieldDefinition.getPlaceHolder() );
         textArea.setVisibleLines( fieldDefinition.getRows() );
         textArea.setCharacterWidth( fieldDefinition.getCols() );
-        textArea.setReadOnly( fieldDefinition.getReadonly() );
-        label.setFor( textArea.getId() );
-        controls.add( label );
-        controls.add( textArea );
-        group.add( controls );
-        group.add( new HelpBlock(  ) );
+        textArea.setReadOnly(fieldDefinition.getReadonly());
+        label.setFor(textArea.getId());
+        controls.add(label);
+        controls.add(textArea);
+        group.add(controls);
+        group.add(new HelpBlock());
         return group;
     }
 
     @Override
-    public PropertyEditorCategory generatePropertyEditorCategory() {
-        PropertyEditorCategory fieldProperties = new PropertyEditorCategory( "General Properties" );
-
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.label(), String.valueOf( fieldDefinition.getLabel() ), PropertyEditorType.TEXT ) {
+    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+        List<PropertyEditorFieldInfo> result = new ArrayList<PropertyEditorFieldInfo>();
+        result.add(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.placeholder(), fieldDefinition.getPlaceHolder(), PropertyEditorType.TEXT) {
+            @Override
+            public void setCurrentStringValue(final String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
+                fieldDefinition.setPlaceHolder(currentStringValue);
+            }
+        });
+        result.add(new PropertyEditorFieldInfo( FieldProperties.INSTANCE.rows(), String.valueOf( fieldDefinition.getRows() ), PropertyEditorType.TEXT ) {
             @Override
             public void setCurrentStringValue( final String currentStringValue ) {
                 super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setLabel( currentStringValue );
+                fieldDefinition.setRows(Integer.decode(currentStringValue));
             }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.placeholder(), fieldDefinition.getPlaceHolder(), PropertyEditorType.TEXT ) {
+        });
+        result.add(new PropertyEditorFieldInfo( FieldProperties.INSTANCE.columns(), String.valueOf( fieldDefinition.getCols() ), PropertyEditorType.TEXT ) {
             @Override
             public void setCurrentStringValue( final String currentStringValue ) {
                 super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setPlaceHolder( currentStringValue );
+                fieldDefinition.setCols(Integer.decode(currentStringValue));
             }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.rows(), String.valueOf( fieldDefinition.getRows() ), PropertyEditorType.TEXT ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setRows( Integer.decode( currentStringValue ) );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.columns(), String.valueOf( fieldDefinition.getCols() ), PropertyEditorType.TEXT ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setCols( Integer.decode( currentStringValue ) );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.required(), String.valueOf( fieldDefinition.getRequired() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setRequired( Boolean.valueOf( currentStringValue ) );
-            }
-        } );
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.readonly(), String.valueOf( fieldDefinition.getReadonly() ), PropertyEditorType.BOOLEAN ) {
-            @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
-                fieldDefinition.setReadonly( Boolean.valueOf( currentStringValue ) );
-            }
-        } );
-
-        return fieldProperties;
+        });
+        return result;
     }
 
     @Override
