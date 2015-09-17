@@ -1,9 +1,7 @@
-            <div id="@{field.name}_form_group" class="control-group">
+            <div id="@{field.name}_form_group" class="form-group">
                 <label class="control-label" for="@{field.name}">@{field.label}</label>
-                <div class="controls">
-                    <textarea  class="form-control"
-                        id="@{field.name}" rows="@{field.rows}" cols="@{field.cols}"
-                        placeholder="@{field.placeHolder}"></textarea>
-                    <p id="@{field.name}_help_block" class="help-block"></p>
-                </div>
+                <textarea  class="form-control"
+                    id="@{field.name}" rows="@{field.rows}" cols="@{field.cols}"
+                    placeholder="@{field.placeHolder}"></textarea>
+                <p id="@{field.name}_help_block" class="help-block"></p>
             </div>

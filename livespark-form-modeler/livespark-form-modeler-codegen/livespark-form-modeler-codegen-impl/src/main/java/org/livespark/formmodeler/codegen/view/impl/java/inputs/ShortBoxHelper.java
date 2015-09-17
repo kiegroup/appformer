@@ -30,6 +30,6 @@ public class ShortBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.TextBox";
+        return "org.gwtbootstrap3.client.ui.TextBox";
     }
 }

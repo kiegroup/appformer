@@ -79,4 +79,6 @@ public interface AppConstants
     String Find();
     String Upload();
     String Refresh();
+
+    String logoBannerError();
 }

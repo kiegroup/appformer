@@ -18,9 +18,12 @@
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN"
     "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
 <module>
-  <!-- Uberfire dependencies -->
+  <!-- Loads jQuery first -->
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
+
+  <!-- UberFire -->
   <inherits name="org.uberfire.UberfireClientAll"/>
-  <inherits name="org.uberfire.client.views.Bootstrap2"/>
+  <inherits name="org.uberfire.client.views.PatternFly"/>
 
   <inherits name="org.hibernate.validator.HibernateValidator" />
   <inherits name="org.jboss.errai.validation.Validation" />
@@ -31,6 +34,7 @@
   <!-- Uberfire Extensions - Core Widgets -->
   <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
   <inherits name="org.uberfire.ext.widgets.common.UberfireWidgetsCommons"/>
+  <inherits name="org.uberfire.UberfireDocksClient"/>
 
   <!-- Guvnor dependencies -->
   <inherits name='org.guvnor.asset.management.GuvnorAssetMgmtClient'/>
@@ -42,6 +46,7 @@
   <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetAPI"/>
   <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetClient"/>
   <inherits name="org.guvnor.messageconsole.GuvnorMessageConsoleAPI"/>
+  <inherits name="org.guvnor.messageconsole.GuvnorMessageConsoleClient"/>
   <inherits name='org.guvnor.organizationalunit.manager.GuvnorOrganizationalUnitManager'/>
 
   <!--Common Screens -->
@@ -95,7 +100,7 @@
   <extend-property name="locale" values="ja_JP"/>
   <extend-property name="locale" values="pt_BR"/>
   <extend-property name="locale" values="zh_CN"/>
-  
+
   <collapse-all-properties />
 
 </module>

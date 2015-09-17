@@ -30,6 +30,6 @@ public class IntegerBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.IntegerBox";
+        return "org.gwtbootstrap3.client.ui.IntegerBox";
     }
 }

@@ -30,6 +30,6 @@ public class LongBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.LongBox";
+        return "org.gwtbootstrap3.client.ui.LongBox";
     }
 }

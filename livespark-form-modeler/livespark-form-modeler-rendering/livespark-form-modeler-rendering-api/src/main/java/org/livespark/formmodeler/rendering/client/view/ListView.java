@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -31,7 +32,6 @@ import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 
-import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;

@@ -15,13 +15,13 @@
  */
 package org.livespark.formmodeler.rendering.client.shared.fields;
 
+import org.gwtbootstrap3.client.ui.Well;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
 
-import com.github.gwtbootstrap.client.ui.Well;
 
 /**
  * Created by pefernan on 6/18/15.

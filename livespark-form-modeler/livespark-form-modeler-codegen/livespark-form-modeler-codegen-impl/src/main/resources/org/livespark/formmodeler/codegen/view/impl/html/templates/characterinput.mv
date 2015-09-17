@@ -1,8 +1,6 @@
-            <div id="@{field.name}_form_group" class="control-group">
+            <div id="@{field.name}_form_group" class="form-group">
                 <label class="control-label" for="@{field.name}">@{field.label}</label>
-                <div class="controls">
-                    <input class="form-control" id="@{field.name}" type="text"
-                        size="1" maxlength="1" style="min-height:30px"/>
-                    <p id="@{field.name}_help_block" class="help-block"></p>
-                </div>
+                <input class="form-control" id="@{field.name}" type="text"
+                    size="1" maxlength="1" style="min-height:30px"/>
+                <p id="@{field.name}_help_block" class="help-block"></p>
             </div>

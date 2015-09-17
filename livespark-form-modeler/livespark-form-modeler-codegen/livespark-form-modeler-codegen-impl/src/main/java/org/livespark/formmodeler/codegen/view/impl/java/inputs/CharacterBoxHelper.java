@@ -29,6 +29,6 @@ public class CharacterBoxHelper extends AbstractInputCreatorHelper {
     }
 
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.TextBox";
+        return "org.gwtbootstrap3.client.ui.TextBox";
     }
 }

@@ -30,6 +30,6 @@ public class DoubleBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.DoubleBox";
+        return "org.gwtbootstrap3.client.ui.DoubleBox";
     }
 }

@@ -16,11 +16,12 @@
 
 package org.livespark.formmodeler.rendering.client.view;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.ModalFooter;
-import com.github.gwtbootstrap.client.ui.constants.BackdropType;
 import com.google.gwt.event.dom.client.ClickHandler;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
 
 /**
  * Created by pefernan on 6/25/15.
@@ -33,19 +34,24 @@ public class FormViewModal extends Modal {
     FormView<?> formView;
 
     public FormViewModal( final FormView<?> formView, final String title, String id ) {
-        setHideOthers( false );
-        setCloseVisible( true );
-        setTitle( title );
-        setBackdrop( BackdropType.NONE );
-        getElement().setId( id );
+        setHideOtherModals( false );
+        setClosable(true);
+        setFade(true);
+        setDataKeyboard(true);
+        setDataBackdrop( ModalBackdrop.FALSE );
+        setRemoveOnHide(true);
+        setTitle(title);
+        getElement().setId(id);
 
         this.formView = formView;
-        add( formView );
+        add( new ModalBody() {{
+            add( formView );
+        }} );
 
         ModalFooter footer = new ModalFooter(  );
-        footer.add( submit );
-        footer.add( cancel );
-        add( footer );
+        footer.add(submit);
+        footer.add(cancel);
+        add(footer);
     }
 
     public void addSubmitClickHandler( ClickHandler handler ) {

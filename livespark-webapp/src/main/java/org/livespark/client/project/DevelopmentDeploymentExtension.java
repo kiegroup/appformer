@@ -16,21 +16,19 @@
 
 package org.livespark.client.project;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.project.model.Project;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.jboss.errai.common.client.api.Caller;
 import org.kie.workbench.common.screens.projecteditor.client.editor.extension.BuildOptionExtension;
 import org.livespark.client.shared.GwtWarBuildService;
 
-import com.github.gwtbootstrap.client.ui.NavLink;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Widget;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import java.util.Collection;
+import java.util.Collections;
 
 @ApplicationScoped
 public class DevelopmentDeploymentExtension implements BuildOptionExtension {
@@ -45,12 +43,15 @@ public class DevelopmentDeploymentExtension implements BuildOptionExtension {
         return Collections.singleton( createNavLink( project ) );
     }
 
-    private Widget createNavLink( Project project ) {
-        final NavLink link = new NavLink( LINK_NAME );
-
-        link.addClickHandler( createClickHandler( project ) );
-
-        return link;
+    private Widget createNavLink( final Project project ) {
+        return new AnchorListItem( LINK_NAME ) {{
+            addClickHandler( new ClickHandler() {
+                @Override
+                public void onClick( ClickEvent event ) {
+                    createClickHandler( project );
+                }
+            } );
+        }};
     }
 
     private ClickHandler createClickHandler( final Project project ) {

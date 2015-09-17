@@ -95,6 +95,11 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-workbench-client-views-patternfly</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-commons</artifactId>
     </dependency>
     <dependency>
@@ -273,6 +278,11 @@
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-message-console-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-message-console-client</artifactId>
     </dependency>
 
     <dependency>
@@ -554,7 +564,7 @@
       <artifactId>errai-cdi-jboss</artifactId>
       <scope>provided</scope>
     </dependency>
-    
+
     <!-- CDI Integration Modules -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -577,12 +587,17 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>compile</scope>
-    </dependency>    
+    </dependency>
 
     <dependency>
-      <groupId>com.github.gwtbootstrap</groupId>
-      <artifactId>gwt-bootstrap</artifactId>
-      <scope>compile</scope>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3-extras</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -662,6 +677,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Uberfire Docks extension -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-simple-docks-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Start LiveSpark Modules -->
 
@@ -687,7 +708,7 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-rendering-api</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-common</artifactId>
@@ -740,6 +761,7 @@
             <compileSourcesArtifact>org.guvnor:guvnor-project-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-project-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-message-console-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.guvnor:guvnor-message-console-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.guvnor:guvnor-organizationalunit-manager</compileSourcesArtifact>
 
             <!-- Common dependencies -->
@@ -789,6 +811,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-simple-docks-client</compileSourcesArtifact>
 
             <!-- UberFire -->
             <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
@@ -801,7 +824,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-bs2</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
             <!-- Form Modeler -->
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
@@ -898,7 +921,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>      
+      </plugin>
     </plugins>
 
     <pluginManagement>

@@ -30,6 +30,6 @@ public class TextAreaHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.TextArea";
+        return "org.gwtbootstrap3.client.ui.TextArea";
     }
 }

@@ -24,8 +24,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.uberfire.client.workbench.Header;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBarPresenter;
 
-import static java.lang.Integer.*;
-
 @ApplicationScoped
 public class AppNavBar
         extends Composite implements Header {
@@ -45,6 +43,6 @@ public class AppNavBar
 
     @Override
     public int getOrder() {
-        return MAX_VALUE;
+        return 2;
     }
 }

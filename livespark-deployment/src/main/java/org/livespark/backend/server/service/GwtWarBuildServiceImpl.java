@@ -34,10 +34,10 @@ import javax.servlet.http.HttpSession;
 
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
-import org.guvnor.common.services.project.builder.model.BuildMessage.Level;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.shared.message.Level;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.bus.server.api.RpcContext;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;

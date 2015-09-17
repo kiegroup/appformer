@@ -19,13 +19,12 @@ package org.livespark.formmodeler.rendering.client.view;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
-
 public abstract class ListItemView<M extends FormModel> extends BaseView<M> {
 
     private ListView<M, ? extends ListItemView<M>> parentView;

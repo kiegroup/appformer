@@ -1,4 +1,4 @@
-            <div id="@{field.name}_form_group" class="control-group">
+            <div id="@{field.name}_form_group" class="form-group">
                     <label class="control-label">@{field.label}</label>
                     <div id="@{field.name}"></div>
                     <p id="@{field.name}_help_block" class="help-block"></p>

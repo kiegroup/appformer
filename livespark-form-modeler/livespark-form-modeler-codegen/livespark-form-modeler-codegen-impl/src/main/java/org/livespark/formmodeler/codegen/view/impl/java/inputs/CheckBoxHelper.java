@@ -30,7 +30,7 @@ public class CheckBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.github.gwtbootstrap.client.ui.CheckBox";
+        return "org.gwtbootstrap3.client.ui.CheckBox";
     }
 
     @Override

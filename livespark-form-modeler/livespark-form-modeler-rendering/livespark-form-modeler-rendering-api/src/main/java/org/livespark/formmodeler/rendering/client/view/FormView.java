@@ -42,7 +42,7 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         clearFieldErrors();
         updateNestedModels(false);
     }
-    
+
     @PostConstruct
     private void init() {
         Object entity = getEntity();
@@ -64,11 +64,11 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     }
 
     public abstract void setReadOnly( boolean readOnly );
-    
+
     protected abstract void updateNestedModels(boolean init);
-    
+
     protected abstract Object getEntity();
-    
+
     protected abstract void setNewEntity();
 
     public boolean validate() {
@@ -87,7 +87,7 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
             Element group = Document.get().getElementById( property + "_form_group" );
             Element helpBlock = Document.get().getElementById( property + "_help_block" );
             if ( group != null )
-                group.addClassName( "error" );
+                group.addClassName( "has-error" );
             if ( helpBlock != null )
                 helpBlock.setInnerHTML( validation.getMessage() );
         }
