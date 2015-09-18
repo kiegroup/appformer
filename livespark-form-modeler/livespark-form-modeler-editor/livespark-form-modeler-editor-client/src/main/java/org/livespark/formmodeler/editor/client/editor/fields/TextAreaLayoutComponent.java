@@ -15,8 +15,11 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.TextArea;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
@@ -43,18 +46,17 @@ public class TextAreaLayoutComponent extends FieldLayoutComponent<TextAreaFieldD
     public IsWidget generateWidget() {
         if (fieldDefinition == null) return null;
 
-        ControlGroup group = new ControlGroup(  );
-        Controls controls = new Controls();
-        FormLabel label = new FormLabel( fieldDefinition.getLabel() );
+        FormGroup group = new FormGroup(  );
+        FormLabel label = new FormLabel(  );
         TextArea textArea = new TextArea();
         textArea.setPlaceholder( fieldDefinition.getPlaceHolder() );
-        textArea.setVisibleLines( fieldDefinition.getRows() );
-        textArea.setCharacterWidth( fieldDefinition.getCols() );
+        textArea.setVisibleLines(fieldDefinition.getRows());
+        textArea.setCharacterWidth(fieldDefinition.getCols());
         textArea.setReadOnly(fieldDefinition.getReadonly());
+        label.setText( fieldDefinition.getLabel());
         label.setFor(textArea.getId());
-        controls.add(label);
-        controls.add(textArea);
-        group.add(controls);
+        group.add(label);
+        group.add(textArea);
         group.add(new HelpBlock());
         return group;
     }

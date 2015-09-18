@@ -94,4 +94,12 @@ public class FormDefinition {
         result = ~~result;
         return result;
     }
+
+    public DataHolder getDataHolderByName(String name) {
+        for (DataHolder holder : dataHolders) {
+            if (holder.getName().equals(name)) return holder;
+        }
+
+        return null;
+    }
 }

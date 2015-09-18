@@ -1,6 +1,6 @@
 @declare{"processRows"}
     @foreach{row : rows}
-            <div class="row-fluid">
+            <div class="row">
         @foreach{col : row.layoutColumns}
             @includeNamed{"processColumn"; form=form; col=col}
         @end{}
@@ -9,7 +9,7 @@
 @end{}
 
 @declare{"processColumn"}
-                <div class="span@{col.span}">
+                <div class="col-md-@{col.span}">
     @if{col.layoutComponents != null}
         @foreach{component : col.layoutComponents}
             @if{component.dragTypeName != "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent"}

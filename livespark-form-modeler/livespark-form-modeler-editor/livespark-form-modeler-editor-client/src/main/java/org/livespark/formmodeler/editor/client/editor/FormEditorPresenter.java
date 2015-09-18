@@ -63,8 +63,7 @@ public class FormEditorPresenter extends KieEditor {
 
         void initDataHoldersPopup( List<String> availableDataHolders );
 
-        public void setPresenter(FormEditorPresenter presenter);
-        public void loadContent(FormDefinition definition);
+        public void init(FormEditorPresenter presenter);
         public void setupLayoutEditor(LayoutEditor layoutEditor);
     }
 
@@ -106,7 +105,6 @@ public class FormEditorPresenter extends KieEditor {
             final PlaceRequest place ) {
 
         init(path, place, resourceType);
-        view.setPresenter( this );
     }
 
     @Override
@@ -136,18 +134,19 @@ public class FormEditorPresenter extends KieEditor {
 
         editorContext.setContent( content );
 
-        layoutEditor.init( content.getDefinition().getName(), getLayoutComponents() );
+        layoutEditor.init(content.getDefinition().getName(), getLayoutComponents());
 
         if (content.getDefinition().getLayoutTemplate() == null) content.getDefinition().setLayoutTemplate( new LayoutTemplate(  ) );
 
         loadAvailableFields(content);
 
-        layoutEditor.loadLayout( content.getDefinition().getLayoutTemplate() );
+        layoutEditor.loadLayout(content.getDefinition().getLayoutTemplate());
 
-        resetEditorPages( content.getOverview() );
+        resetEditorPages(content.getOverview());
+
+        view.init( this );
 
         view.setupLayoutEditor(layoutEditor);
-        view.loadContent(content.getDefinition());
     }
 
     protected List<LayoutDragComponent> getLayoutComponents() {
@@ -196,6 +195,10 @@ public class FormEditorPresenter extends KieEditor {
 
     public LayoutTemplate getFormTemplate() {
         return layoutEditor.getLayout();
+    }
+
+    public FormDefinition getFormDefinition() {
+        return editorContext.getFormDefinition();
     }
 
     public void getAvailableDataObjectsList() {

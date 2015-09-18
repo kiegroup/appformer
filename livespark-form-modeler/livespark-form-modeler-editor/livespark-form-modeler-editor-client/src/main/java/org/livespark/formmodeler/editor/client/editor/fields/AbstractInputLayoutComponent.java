@@ -15,8 +15,11 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.AbstractIntputFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
@@ -40,19 +43,18 @@ public abstract class AbstractInputLayoutComponent<D extends AbstractIntputField
             return null;
         }
 
-        ControlGroup group = new ControlGroup(  );
-        Controls controls = new Controls();
-        FormLabel label = new FormLabel( fieldDefinition.getLabel() );
+        FormGroup group = new FormGroup(  );
+        FormLabel label = new FormLabel(  );
         TextBox box = new TextBox();
         box.setId( fieldDefinition.getName() );
-        box.setPlaceholder( fieldDefinition.getPlaceHolder() );
-        box.setWidth( fieldDefinition.getSize().intValue() + "em");
-        box.setMaxLength( fieldDefinition.getMaxLength() );
-        box.setReadOnly( fieldDefinition.getReadonly() );
-        label.setFor( box.getId() );
-        controls.add( label );
-        controls.add( box );
-        group.add( controls );
+        box.setPlaceholder(fieldDefinition.getPlaceHolder());
+        box.setWidth(fieldDefinition.getSize().intValue() + "em");
+        box.setMaxLength(fieldDefinition.getMaxLength());
+        box.setReadOnly(fieldDefinition.getReadonly());
+        label.setText( fieldDefinition.getLabel() );
+        label.setFor(box.getId());
+        group.add( label );
+        group.add( box );
         group.add( new HelpBlock(  ) );
         return group;
     }

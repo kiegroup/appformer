@@ -15,11 +15,13 @@
  */
 package org.livespark.formmodeler.editor.model.impl.relations;
 
+import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
 /**
  * Created by pefernan on 7/1/15.
  */
+@Portable
 public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField {
     protected String embeddedFormView;
     protected String embeddedModel;

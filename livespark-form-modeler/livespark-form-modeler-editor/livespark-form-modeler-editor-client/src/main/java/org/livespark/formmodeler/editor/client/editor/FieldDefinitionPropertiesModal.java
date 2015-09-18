@@ -16,6 +16,9 @@
 package org.livespark.formmodeler.editor.client.editor;
 
 import com.google.gwt.user.client.Command;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
+import org.uberfire.ext.properties.editor.client.PropertyEditorWidget;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
 
@@ -25,10 +28,16 @@ import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterO
 public class FieldDefinitionPropertiesModal extends BaseModal {
 
     private ModalFooterOKButton footer;
+    private ModalBody body = new ModalBody();
 
     public FieldDefinitionPropertiesModal( Command command ) {
-        setTitle( "Field Properties" );
+        setTitle( FieldProperties.INSTANCE.title() );
+        add( body );
         footer = new ModalFooterOKButton( command );
         add( footer );
+    }
+
+    public void addPropertiesEditor( PropertyEditorWidget widget ) {
+        body.add( widget );
     }
 }

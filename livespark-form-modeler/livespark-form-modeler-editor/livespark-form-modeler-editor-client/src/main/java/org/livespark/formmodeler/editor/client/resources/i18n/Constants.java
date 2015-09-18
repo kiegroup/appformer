@@ -35,5 +35,13 @@ public interface Constants extends Messages {
     public String formResourceTypeDescription();
     public String editor();
     public String preview();
-    public String addType();
+
+    // DATA OBJECT FORM
+    public String addDataObject();
+    public String dataObjectID();
+    public String dataObjectType();
+
+    public String idCannotBeEmpty();
+    public String idAreadyExists();
+    public String typeCannotBeEmpty();
 }

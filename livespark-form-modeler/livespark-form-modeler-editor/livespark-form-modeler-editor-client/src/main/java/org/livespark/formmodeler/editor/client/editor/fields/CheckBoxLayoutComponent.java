@@ -15,10 +15,10 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import com.github.gwtbootstrap.client.ui.CheckBox;
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 
@@ -42,7 +42,7 @@ public class CheckBoxLayoutComponent extends FieldLayoutComponent<CheckBoxFieldD
     public IsWidget generateWidget() {
         if (fieldDefinition == null) return null;
 
-        ControlGroup group = new ControlGroup(  );
+        FormGroup group = new FormGroup();
         CheckBox checkBox = new CheckBox(fieldDefinition.getLabel());
         checkBox.setEnabled(!fieldDefinition.getReadonly());
         group.add(checkBox);

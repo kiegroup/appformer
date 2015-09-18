@@ -15,31 +15,29 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Tab;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Container;
+import org.gwtbootstrap3.client.ui.TabListItem;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-import org.livespark.formmodeler.editor.client.editor.dataHolder.DataHolderModal;
-import org.livespark.formmodeler.editor.client.editor.dataHolder.DataHolderPanel;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.editor.client.editor.dataHolder.DataObjectModal;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
 import org.uberfire.ext.layout.editor.client.generator.LayoutGenerator;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
 
 /**
  * Created by pefernan on 7/7/15.
  */
-public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorPresenter.FormEditorView {
+public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorPresenter.FormEditorView, RequiresResize {
 
     interface FormEditorViewBinder
             extends
@@ -48,6 +46,9 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     private static FormEditorViewBinder uiBinder = GWT.create(FormEditorViewBinder.class);
+
+    @UiField
+    Container container;
 
     @UiField
     Button createHolder;
@@ -59,10 +60,10 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     FlowPanel previewContent;
 
     @UiField
-    Tab previewTab;
+    TabListItem previewTab;
 
     @Inject
-    private DataHolderPanel dataHolderPanel;
+    private DataObjectModal dataObjectModal;
 
     @Inject
     private LayoutGenerator layoutGenerator;
@@ -73,13 +74,10 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    @PostConstruct
-    protected void init() {
-    }
-
     @Override
-    public void loadContent( FormDefinition definition ) {
-
+    public void init(FormEditorPresenter presenter) {
+        this.presenter = presenter;
+        dataObjectModal.setPresenter( presenter );
     }
 
     @Override
@@ -96,26 +94,22 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     @UiHandler("previewTab")
     public void onPreview( ClickEvent event ) {
         previewContent.clear();
-        previewContent.add( layoutGenerator.build( presenter.getFormTemplate() ) );
+        previewContent.add(layoutGenerator.build(presenter.getFormTemplate()));
     }
 
     @Override
-    public void initDataHoldersPopup( List<String> availableDataHolders ) {
-        dataHolderPanel.init( availableDataHolders );
-        final DataHolderModal modal = new DataHolderModal( dataHolderPanel );
-        modal.addSubmitClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent clickEvent ) {
-                if (dataHolderPanel.validate()) {
-                    modal.hide();
-                    presenter.addDataHolder( dataHolderPanel.getDataHolderName(), dataHolderPanel.getDataHolderclass() );
-                }
-            }
-        } );
+    public void initDataHoldersPopup( List<String> availableDataObjects ) {
+        dataObjectModal.init( availableDataObjects );
+        dataObjectModal.show();
     }
 
     @Override
-    public void setPresenter( FormEditorPresenter presenter ) {
-        this.presenter = presenter;
+    public void onResize() {
+        if ( getParent() == null ) {
+            return;
+        }
+        int height = getParent().getOffsetHeight();
+        int width = getParent().getOffsetWidth();
+        container.setPixelSize( width, height );
     }
 }

@@ -15,15 +15,14 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import com.github.gwtbootstrap.client.ui.Modal;
-import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.constants.AlternateSize;
-import com.github.gwtbootstrap.client.ui.event.HideEvent;
-import com.github.gwtbootstrap.client.ui.event.HideHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
+import org.gwtbootstrap3.client.shared.event.ModalHideHandler;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.livespark.formmodeler.editor.client.editor.FieldDefinitionPropertiesModal;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
@@ -140,7 +139,6 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
         TextBox textBox = GWT.create( TextBox.class );
         textBox.setPlaceholder( fieldDragLabel );
         textBox.setReadOnly( true );
-        textBox.setAlternateSize(AlternateSize.MEDIUM);
         return textBox;
     }
 
@@ -181,8 +179,9 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
             }
         } );
 
-        modal.addHideHandler( new HideHandler() {
-            @Override public void onHide( HideEvent hideEvent ) {
+        modal.addHideHandler( new ModalHideHandler() {
+            @Override
+            public void onHide(ModalHideEvent evt) {
                 ctx.configurationFinished();
                 renderContent();
                 modal = null;
@@ -204,7 +203,7 @@ public abstract class FieldLayoutComponent<D extends FieldDefinition> implements
 
     protected void initEditorWidget() {
         editorWidget.handle( new PropertyEditorEvent( formId + " -" + fieldName, generatePropertyEditorCategory() ) );
-        modal.add(editorWidget);
+        modal.addPropertiesEditor( editorWidget );
     }
 
     protected PropertyEditorCategory generatePropertyEditorCategory() {

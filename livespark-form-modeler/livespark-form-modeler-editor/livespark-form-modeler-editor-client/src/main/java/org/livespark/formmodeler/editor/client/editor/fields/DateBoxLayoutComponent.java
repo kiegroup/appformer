@@ -15,12 +15,11 @@
  */
 package org.livespark.formmodeler.editor.client.editor.fields;
 
-import com.github.gwtbootstrap.client.ui.ControlGroup;
-import com.github.gwtbootstrap.client.ui.Controls;
-import com.github.gwtbootstrap.client.ui.FormLabel;
-import com.github.gwtbootstrap.client.ui.HelpBlock;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.datepicker.client.DatePicker;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 
@@ -44,15 +43,14 @@ public class DateBoxLayoutComponent extends FieldLayoutComponent<DateBoxFieldDef
     public IsWidget generateWidget() {
         if (fieldDefinition == null) return null;
 
-        ControlGroup group = new ControlGroup(  );
-        Controls controls = new Controls();
-        FormLabel label = new FormLabel( fieldDefinition.getLabel() );
+        FormGroup group = new FormGroup(  );
+        FormLabel label = new FormLabel(  );
         DatePicker box = new DatePicker();
+        label.setText( fieldDefinition.getLabel() );
         label.setFor( box.getElement().getId() );
-        controls.add( label );
-        controls.add(box);
-        group.add(controls);
-        group.add(new HelpBlock());
+        group.add( label );
+        group.add( box );
+        group.add( new HelpBlock() );
         return group;
     }
 

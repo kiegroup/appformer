@@ -844,6 +844,7 @@
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>
         <executions>

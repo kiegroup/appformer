@@ -1,0 +1,7 @@
+            <div id="@{field.name}_form_group" class="form-group">
+                <label class="control-label" for="@{field.name}">@{field.label}</label>
+                <div class="controls">
+                    <div id="@{field.name}"/>
+                    <p id="@{field.name}_help_block" class="help-block"></p>
+                </div>
+            </div>

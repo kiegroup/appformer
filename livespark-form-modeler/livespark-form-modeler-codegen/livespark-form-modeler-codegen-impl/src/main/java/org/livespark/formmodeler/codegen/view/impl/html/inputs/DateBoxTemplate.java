@@ -16,15 +16,23 @@
 
 package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
+import org.livespark.formmodeler.codegen.view.impl.html.InputTemplateProvider;
 import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
+
+import java.io.InputStream;
 
 /**
  * Created by pefernan on 4/29/15.
  */
-public class DateBoxTemplate extends AbstractInputTemplateProvider {
+public class DateBoxTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldType() {
         return DateBoxFieldDefinition.class.getName();
+    }
+
+    @Override
+    public InputStream getTemplateInputStream() {
+        return getClass().getResourceAsStream( "/org/livespark/formmodeler/codegen/view/impl/html/templates/datebox.mv" );
     }
 }

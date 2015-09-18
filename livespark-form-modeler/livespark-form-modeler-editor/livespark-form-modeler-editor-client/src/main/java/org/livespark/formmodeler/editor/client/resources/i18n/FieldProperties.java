@@ -22,6 +22,7 @@ public interface FieldProperties extends Messages {
 
     public static final FieldProperties INSTANCE = GWT.create(FieldProperties.class);
 
+    public String title();
     public String generalSettings();
 
     public String label();
