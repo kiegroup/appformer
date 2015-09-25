@@ -29,6 +29,6 @@ public class TextAreaTemplateLayoutComponent implements FormLayoutTemplateCompon
 
     @Override
     public String getDraggableType() {
-        return "org.livespark.formmodeler.editor.client.editor.fields.TextAreaLayoutComponent";
+        return "org.livespark.formmodeler.editor.client.editor.rendering.renderers.TextAreaFieldRenderer";
     }
 }

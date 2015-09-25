@@ -95,13 +95,13 @@ public class FormEditorHelper {
                 return field;
             }
         }
-        return null;
+         return null;
     }
 
     public void onFieldRequest( @Observes FormFieldRequest request ) {
         if (request.getFormId().equals( content.getDefinition().getId() )) {
             FieldDefinition field = getFormField( request.getFieldName() );
-            responseEvent.fire( new FormFieldResponse( request.getFormId(), request.getFieldName(), field ) );
+            responseEvent.fire( new FormFieldResponse( request.getFormId(), request.getFieldName(), field, content.getPath() ) );
         }
     }
 

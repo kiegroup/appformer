@@ -18,15 +18,20 @@ package org.livespark.formmodeler.editor.model.impl.basic;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.HasPlaceHolder;
+import org.livespark.formmodeler.editor.model.impl.HasSize;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class TextAreaFieldDefinition extends FieldDefinition {
+public class TextAreaFieldDefinition extends FieldDefinition implements HasSize, HasPlaceHolder {
 
     protected Integer rows = 4;
-    protected Integer cols = 15;
+    protected Integer size = 15;
     protected String placeHolder;
 
     public Integer getRows() {
@@ -37,24 +42,39 @@ public class TextAreaFieldDefinition extends FieldDefinition {
         this.rows = rows;
     }
 
-    public Integer getCols() {
-        return cols;
+    @Override
+    public Integer getSize() {
+        return size;
     }
 
-    public void setCols( Integer cols ) {
-        this.cols = cols;
+    @Override
+    public void setSize(Integer size) {
+        this.size = size;
     }
 
+    @Override
     public String getPlaceHolder() {
         return placeHolder;
     }
 
+    @Override
     public void setPlaceHolder( String placeHolder ) {
         this.placeHolder = placeHolder;
     }
 
     @Override
-    public String getStandaloneClassName() {
-        return String.class.getName();
+    public String[] getSupportedTypes() {
+        return new String[] {
+                String.class.getName(),
+                Integer.class.getName(),
+                BigInteger.class.getName(),
+                Long.class.getName(),
+                BigDecimal.class.getName(),
+                Short.class.getName(),
+                Byte.class.getName(),
+                Character.class.getName(),
+                Double.class.getName(),
+                Float.class.getName()
+        };
     }
 }

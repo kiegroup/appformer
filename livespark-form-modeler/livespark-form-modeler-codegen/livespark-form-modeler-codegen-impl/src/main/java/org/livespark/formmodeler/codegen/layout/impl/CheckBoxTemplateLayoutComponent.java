@@ -29,6 +29,6 @@ public class CheckBoxTemplateLayoutComponent implements FormLayoutTemplateCompon
 
     @Override
     public String getDraggableType() {
-        return "org.livespark.formmodeler.editor.client.editor.fields.CheckBoxLayoutComponent";
+        return "org.livespark.formmodeler.editor.client.editor.rendering.renderers.CheckBoxFieldRenderer";
     }
 }

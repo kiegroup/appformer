@@ -90,7 +90,7 @@ public class SourceGenerationContext {
     public String getEntityServiceName() {
         return formDefinition.getName() + ENTITY_SERVICE_SUFFIX;
     }
-    
+
     public String getEntityName() {
         return formDefinition.getName();
     }

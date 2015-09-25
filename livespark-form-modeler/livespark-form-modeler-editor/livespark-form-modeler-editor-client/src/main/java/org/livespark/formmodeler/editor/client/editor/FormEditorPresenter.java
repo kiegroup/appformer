@@ -19,10 +19,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
+import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
@@ -87,9 +89,6 @@ public class FormEditorPresenter extends KieEditor {
 
     @Inject
     private FormEditorHelper editorContext;
-
-    @Inject
-    protected LayoutFieldManager layoutFieldManager;
 
     private FormEditorView view;
 
@@ -236,8 +235,9 @@ public class FormEditorPresenter extends KieEditor {
         LayoutDragComponentGroup group = new LayoutDragComponentGroup( holderName );
 
         for ( FieldDefinition field : fields ) {
-            LayoutDragComponent dragComponent = layoutFieldManager.getComponentForFieldDefinition( editorContext.getFormDefinition().getId(), field );
+            DraggableFieldComponent dragComponent = IOC.getBeanManager().lookupBean( DraggableFieldComponent.class ).getInstance();
             if (dragComponent != null) {
+                dragComponent.init( getFormDefinition().getId(), field, editorContext.getContent().getPath() );
                 group.addLayoutDragComponent( field.getName(), dragComponent );
             }
         }
@@ -258,8 +258,9 @@ public class FormEditorPresenter extends KieEditor {
         if (event.getFormId().equals( editorContext.getFormDefinition().getId() )) {
             FieldDefinition field = editorContext.removeField( event.getFieldName() );
             if (field != null) {
-                LayoutDragComponent dragComponent = layoutFieldManager.getComponentForFieldDefinition( editorContext.getFormDefinition().getId(), field );
+                DraggableFieldComponent dragComponent = IOC.getBeanManager().lookupBean( DraggableFieldComponent.class ).getInstance();
                 if (dragComponent != null) {
+                    dragComponent.init( getFormDefinition().getId(), field, editorContext.getContent().getPath() );
                     layoutEditor.addDraggableComponentToGroup( field.getModelName(), field.getName(), dragComponent );
                 }
             }

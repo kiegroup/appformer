@@ -16,19 +16,19 @@
 package org.livespark.formmodeler.codegen.layout.impl;
 
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateComponent;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
 
 /**
  * Created by pefernan on 9/4/15.
  */
-public class TextBoxTemplateLayoutComponent implements FormLayoutTemplateComponent {
+public class DatePickerTemplateLayoutComponent implements FormLayoutTemplateComponent {
     @Override
     public String getSupportedFieldType() {
-        return TextBoxFieldDefinition.class.getName();
+        return DateBoxFieldDefinition.class.getName();
     }
 
     @Override
     public String getDraggableType() {
-        return "org.livespark.formmodeler.editor.client.editor.rendering.renderers.TextBoxFieldRenderer";
+        return "org.livespark.formmodeler.editor.client.editor.rendering.renderers.DatePickerFieldRenderer";
     }
 }

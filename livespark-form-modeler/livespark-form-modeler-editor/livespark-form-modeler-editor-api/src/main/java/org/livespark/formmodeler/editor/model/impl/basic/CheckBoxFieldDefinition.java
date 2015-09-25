@@ -26,7 +26,9 @@ import org.livespark.formmodeler.editor.model.FieldDefinition;
 public class CheckBoxFieldDefinition extends FieldDefinition {
 
     @Override
-    public String getStandaloneClassName() {
-        return Boolean.class.getName();
+    public String[] getSupportedTypes() {
+        return new String[] {
+                Boolean.class.getName()
+        };
     }
 }

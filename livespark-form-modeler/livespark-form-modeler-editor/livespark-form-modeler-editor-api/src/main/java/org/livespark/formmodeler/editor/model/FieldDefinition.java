@@ -34,7 +34,9 @@ public abstract class FieldDefinition {
 
     protected String boundPropertyName;
 
-    public abstract String getStandaloneClassName();
+    protected String standaloneClassName;
+
+    public abstract String[] getSupportedTypes();
 
     public String getCode() {
         return code;
@@ -102,5 +104,13 @@ public abstract class FieldDefinition {
 
     public void setBoundPropertyName( String boundPropertyName ) {
         this.boundPropertyName = boundPropertyName;
+    }
+
+    public String getStandaloneClassName() {
+        return standaloneClassName;
+    }
+
+    public void setStandaloneClassName(String standaloneClassName) {
+        this.standaloneClassName = standaloneClassName;
     }
 }

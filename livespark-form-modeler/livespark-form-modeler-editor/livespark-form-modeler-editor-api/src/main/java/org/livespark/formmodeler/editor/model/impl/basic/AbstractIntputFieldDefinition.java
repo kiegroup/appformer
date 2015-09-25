@@ -17,35 +17,44 @@
 package org.livespark.formmodeler.editor.model.impl.basic;
 
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.HasMaxLength;
+import org.livespark.formmodeler.editor.model.impl.HasPlaceHolder;
+import org.livespark.formmodeler.editor.model.impl.HasSize;
 
 /**
  * Created by pefernan on 4/29/15.
  */
-public abstract class AbstractIntputFieldDefinition extends FieldDefinition {
+public abstract class AbstractIntputFieldDefinition extends FieldDefinition implements HasMaxLength, HasSize, HasPlaceHolder {
     protected Integer size = 15;
     protected Integer maxLength = 100;
     protected String placeHolder;
 
+    @Override
     public Integer getSize() {
         return size;
     }
 
+    @Override
     public void setSize( Integer size ) {
         this.size = size;
     }
 
+    @Override
     public Integer getMaxLength() {
         return maxLength;
     }
 
+    @Override
     public void setMaxLength( Integer maxLength ) {
         this.maxLength = maxLength;
     }
 
+    @Override
     public String getPlaceHolder() {
         return placeHolder;
     }
 
+    @Override
     public void setPlaceHolder( String placeHolder ) {
         this.placeHolder = placeHolder;
     }

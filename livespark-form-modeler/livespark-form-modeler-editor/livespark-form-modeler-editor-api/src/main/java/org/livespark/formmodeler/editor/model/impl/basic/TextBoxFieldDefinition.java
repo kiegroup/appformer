@@ -18,6 +18,9 @@ package org.livespark.formmodeler.editor.model.impl.basic;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 /**
  * Created by pefernan on 3/19/15.
  */
@@ -25,7 +28,18 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class TextBoxFieldDefinition extends AbstractIntputFieldDefinition {
 
     @Override
-    public String getStandaloneClassName() {
-        return String.class.getName();
+    public String[] getSupportedTypes() {
+        return new String[] {
+                String.class.getName(),
+                Integer.class.getName(),
+                BigInteger.class.getName(),
+                Long.class.getName(),
+                BigDecimal.class.getName(),
+                Short.class.getName(),
+                Byte.class.getName(),
+                Character.class.getName(),
+                Double.class.getName(),
+                Float.class.getName()
+        };
     }
 }

@@ -17,6 +17,7 @@
 package org.livespark.formmodeler.editor.model.impl.basic;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 
 import java.util.Date;
 
@@ -24,10 +25,12 @@ import java.util.Date;
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class DateBoxFieldDefinition extends AbstractIntputFieldDefinition {
+public class DateBoxFieldDefinition extends FieldDefinition {
 
     @Override
-    public String getStandaloneClassName() {
-        return Date.class.getCanonicalName();
+    public String[] getSupportedTypes() {
+        return new String[] {
+                Date.class.getName()
+        };
     }
 }

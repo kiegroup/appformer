@@ -20,7 +20,4 @@ package org.livespark.formmodeler.editor.model.impl.relations;
  * Created by pefernan on 7/1/15.
  */
 public interface EntityRelationField {
-    public String getStandaloneType();
-
-    public void setStandaloneType( String standaloneType );
 }

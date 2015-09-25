@@ -23,5 +23,4 @@ public interface EmbeddedFormField extends EntityRelationField {
     public void setEmbeddedFormView( String embeddedFormView );
     public String getEmbeddedModel();
     public void setEmbeddedModel( String embeddedModel );
-
 }

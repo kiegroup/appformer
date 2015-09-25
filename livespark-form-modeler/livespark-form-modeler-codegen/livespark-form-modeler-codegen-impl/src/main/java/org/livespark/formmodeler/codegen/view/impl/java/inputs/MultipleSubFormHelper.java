@@ -69,14 +69,14 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
         JavaClassSource multipleSubformAdapter = Roaster.create( JavaClassSource.class );
         multipleSubformAdapter.addImport( List.class );
 
-        viewClass.addImport( subformField.getStandaloneType() );
+        viewClass.addImport( subformField.getStandaloneClassName() );
         viewClass.addImport( subformField.getEmbeddedModel() );
         viewClass.addImport( subformField.getEmbeddedFormView() );
         viewClass.addImport( List.class );
         viewClass.addImport( ArrayList.class );
         viewClass.addImport( MULTIPLE_SUBFORM_ClASSNAME );
 
-        String standaloneName = cleanClassName( subformField.getStandaloneType() );
+        String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
         String modelName = cleanClassName( subformField.getEmbeddedModel() );
         String viewName = cleanClassName( subformField.getEmbeddedFormView() );
 
@@ -108,7 +108,7 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
         MethodSource<JavaClassSource> modelMethod = multipleSubformAdapter.addMethod();
         modelMethod.setPublic()
                 .setName( "getListModelsForModel" )
-                .addParameter( "List<" + subformField.getStandaloneType() + ">", "models" );
+                .addParameter( "List<" + subformField.getStandaloneClassName() + ">", "models" );
         modelMethod.setReturnType( "List<" + subformField.getEmbeddedModel() + ">")
                 .setBody( modelMethodBody.toString() )
                 .addAnnotation( Override.class );
@@ -127,7 +127,7 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
             String body = updateNestedModelsMethod.getBody();
 
             String pName = fieldDefinition.getBoundPropertyName();
-            String pType = fieldDefinition.getStandaloneType();
+            String pType = fieldDefinition.getStandaloneClassName();
 
             body += "List " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";

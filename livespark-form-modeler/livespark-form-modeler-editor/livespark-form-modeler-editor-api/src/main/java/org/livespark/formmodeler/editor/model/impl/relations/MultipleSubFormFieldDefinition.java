@@ -27,12 +27,9 @@ import java.util.List;
 public class MultipleSubFormFieldDefinition extends SubFormFieldDefinition implements MultipleField {
 
     @Override
-    public String getStandaloneClassName() {
-        return List.class.getName();
-    }
-
-    @Override
-    public String getType() {
-        return getStandaloneType();
+    public String[] getSupportedTypes() {
+        return new String[] {
+                List.class.getName()
+        };
     }
 }

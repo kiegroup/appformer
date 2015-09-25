@@ -15,7 +15,6 @@
  */
 package org.livespark.formmodeler.codegen.layout;
 
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.template.FormTemplateGenerator;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
@@ -37,6 +36,7 @@ import java.util.Map;
  */
 @ApplicationScoped
 public class FormLayoutTemplateGeneratorImpl implements FormLayoutTemplateGenerator {
+    public static final String DRAGGABLE_TYPE = "org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent";
     @Inject
     protected Instance<FormLayoutTemplateComponent> installedComponents;
 
@@ -66,10 +66,9 @@ public class FormLayoutTemplateGeneratorImpl implements FormLayoutTemplateGenera
         for ( FieldDefinition field : formDefinition.getFields() ) {
             FormLayoutTemplateComponent component = layoutComponents.get( field.getCode() );
             if ( component != null ) {
-                LayoutComponent layoutComponent = new LayoutComponent( component.getDraggableType() );
+                LayoutComponent layoutComponent = new LayoutComponent( DRAGGABLE_TYPE );
                 layoutComponent.addProperty( FormLayoutComponent.FORM_ID, formDefinition.getId() );
                 layoutComponent.addProperty( FormLayoutComponent.FIELD_NAME, field.getName() );
-                layoutComponent.addProperty( FormLayoutComponent.FIELD_DRAG_LABEL, field.getBoundPropertyName() == null ? field.getModelName() : field.getBoundPropertyName() );
 
                 LayoutColumn column = new LayoutColumn("12");
                 column.addLayoutComponent( layoutComponent );

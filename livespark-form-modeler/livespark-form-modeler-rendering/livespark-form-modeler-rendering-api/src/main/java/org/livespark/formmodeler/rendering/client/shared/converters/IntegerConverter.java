@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.codegen.layout.impl;
 
-import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateComponent;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
+package org.livespark.formmodeler.rendering.client.shared.converters;
+
+import org.jboss.errai.databinding.client.api.Converter;
+import org.jboss.errai.databinding.client.api.DefaultConverter;
 
 /**
- * Created by pefernan on 9/4/15.
+ * Created by pefernan on 6/12/15.
  */
-public class TextBoxTemplateLayoutComponent implements FormLayoutTemplateComponent {
+
+@DefaultConverter
+public class IntegerConverter implements Converter<Integer, String> {
+
     @Override
-    public String getSupportedFieldType() {
-        return TextBoxFieldDefinition.class.getName();
+    public Integer toModelValue( String s ) {
+        if (s == null) return null;
+        return Integer.decode( s );
     }
 
     @Override
-    public String getDraggableType() {
-        return "org.livespark.formmodeler.editor.client.editor.rendering.renderers.TextBoxFieldRenderer";
+    public String toWidgetValue( Integer aFloat ) {
+        if (aFloat == null) return null;
+        return aFloat.toString();
     }
 }

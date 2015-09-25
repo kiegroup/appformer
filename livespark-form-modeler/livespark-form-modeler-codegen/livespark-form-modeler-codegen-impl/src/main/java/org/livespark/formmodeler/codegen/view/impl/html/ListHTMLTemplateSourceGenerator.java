@@ -37,7 +37,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
     @Override
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
         final StringBuilder builder = new StringBuilder();
-        builder.append( "<div>" );
+        builder.append("<div>");
 
         builder.append("<div class=\"create-container\">")
                 .append( "<button class=\"btn btn-primary\" data-field=\"")
@@ -49,7 +49,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
 
         builder.append("<div>")
                 .append( "<table class=\"table blackened\">" )
-                .append( "<thead>" );
+                .append("<thead>");
 
         builder.append( "<tr>" );
         for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
@@ -63,6 +63,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
                     .append( label )
                     .append( "</th>" );
         }
+        builder.append( "<th></th>" );
         builder.append( "</tr>" );
 
         final String bodyId = context.getListTBodyId();
@@ -71,12 +72,12 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
                 .append( bodyId )
                 .append( "\" data-field=\"" )
                 .append( LIST_WIDGET_FIELD_NAME )
-                .append( "\">" );
+                .append("\">");
 
         final String rowId = context.getListItemRowId();
         builder.append( "<tr valign=\"top\" class=\"item\" id=\"")
                 .append( rowId )
-                .append( "\">" );
+                .append("\">");
         for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
             if ( !isSupported( field ) ) continue;
             builder.append( "<td data-field=\"" )
@@ -84,12 +85,16 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
                     .append( "\"></td>" );
         }
 
-        builder.append( "<td><button class=\"btn btn-primary\" data-field=\"" )
+        builder.append("<td style=\"width:1px; white-space:nowrap;\">");
+
+        builder.append( "<button class=\"btn btn-primary\" data-field=\"" )
                 .append( EDIT_BUTTON_NAME )
-                .append( "\">Edit</button></td>" );
-        builder.append( "<td><button class=\"btn btn-primary\" data-field=\"" )
+                .append( "\">Edit</button>" );
+        builder.append( "<button class=\"btn btn-primary\" data-field=\"" )
                 .append( DELETE_BUTTON_NAME )
-                .append( "\">Delete</button></td>" );
+                .append( "\">Delete</button>" );
+
+        builder.append("</td>");
 
         builder.append( "</tr>" );
 

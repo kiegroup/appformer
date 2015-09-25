@@ -60,25 +60,25 @@ public class FieldManagerImpl implements FieldManager {
     protected Map<String, String> defaultBasicTypes = new HashMap<String, String>(  );
 
     {
-        defaultBasicTypes.put( BigDecimal.class.getName(), BigDecimalBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( BigInteger.class.getName(), BigIntegerBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( byte.class.getName(), ByteBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( BigDecimal.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( BigInteger.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Byte.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( byte.class.getName(), TextBoxFieldDefinition.class.getName() );
         defaultBasicTypes.put( Boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
         defaultBasicTypes.put( boolean.class.getName(), CheckBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Character.class.getName(), CharacterBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( char.class.getName(), CharacterBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Character.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( char.class.getName(), TextBoxFieldDefinition.class.getName() );
         defaultBasicTypes.put( Date.class.getName(), DateBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( double.class.getName(), DoubleBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Float.class.getName(), FloatBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( float.class.getName(), FloatBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Integer.class.getName(), IntegerBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( int.class.getName(), IntegerBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Long.class.getName(), LongBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( long.class.getName(), LongBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( Short.class.getName(), ShortBoxFieldDefinition.class.getName() );
-        defaultBasicTypes.put( short.class.getName(), ShortBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Double.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( double.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Float.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( float.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Integer.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( int.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Long.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( long.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( Short.class.getName(), TextBoxFieldDefinition.class.getName() );
+        defaultBasicTypes.put( short.class.getName(), TextBoxFieldDefinition.class.getName() );
         defaultBasicTypes.put( String.class.getName(), TextBoxFieldDefinition.class.getName() );
     }
 
@@ -88,33 +88,40 @@ public class FieldManagerImpl implements FieldManager {
     protected void init() {
 
         for (FieldDefinition definition : definitions ) {
-            if (definition instanceof EntityRelationField) {
-                if (definition instanceof MultipleField) multipleEntityDefinitions.put( definition.getCode(), definition );
-                else singleEntityDefinitions.put( definition.getCode(), definition );
+            registerFieldDefinition( definition );
+        }
+    }
+
+    protected void registerFieldDefinition( FieldDefinition definition ) {
+        if (definition instanceof EntityRelationField) {
+            if (definition instanceof MultipleField) multipleEntityDefinitions.put( definition.getCode(), definition );
+            else singleEntityDefinitions.put( definition.getCode(), definition );
+        } else {
+            if (definition instanceof MultipleField) {
+                basicMultipleDefinitions.put( definition.getCode(), definition );
             } else {
-                if (definition instanceof MultipleField) {
-                    basicMultipleDefinitions.put( definition.getCode(), definition );
-                } else {
-                    basicFieldDefinitions.put( definition.getCode(), definition );
-                    List<String> compatibles = basicSingleCompatibleDefinitions.get( definition.getStandaloneClassName() );
+                basicFieldDefinitions.put(definition.getCode(), definition);
+
+                for (String type : definition.getSupportedTypes()) {
+                    List<String> compatibles = basicSingleCompatibleDefinitions.get( type );
                     if (compatibles == null) {
                         compatibles = new ArrayList<String>(  );
-                        basicSingleCompatibleDefinitions.put( definition.getStandaloneClassName(), compatibles );
-                        if (definition.getStandaloneClassName().equals( Boolean.class.getName() )) {
+                        basicSingleCompatibleDefinitions.put( type, compatibles );
+                        if (type.equals( Boolean.class.getName() )) {
                             basicSingleCompatibleDefinitions.put( boolean.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Byte.class.getName() ) ) {
+                        } else if (type.equals( Byte.class.getName() ) ) {
                             basicSingleCompatibleDefinitions.put( byte.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Character.class.getName() )) {
+                        } else if (type.equals( Character.class.getName() )) {
                             basicSingleCompatibleDefinitions.put( char.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Double.class.getName() ) ) {
+                        } else if (type.equals( Double.class.getName() ) ) {
                             basicSingleCompatibleDefinitions.put( double.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Float.class.getName() ) ) {
+                        } else if (type.equals( Float.class.getName() ) ) {
                             basicSingleCompatibleDefinitions.put( float.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Integer.class.getName() ) ) {
+                        } else if (type.equals( Integer.class.getName() ) ) {
                             basicSingleCompatibleDefinitions.put( int.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Long.class.getName() ) ) {
+                        } else if (type.equals( Long.class.getName() ) ) {
                             basicSingleCompatibleDefinitions.put( long.class.getName(), compatibles );
-                        } else if (definition.getStandaloneClassName().equals( Short.class.getName() ) ) {
+                        } else if (type.equals( Short.class.getName() ) ) {
                             basicSingleCompatibleDefinitions.put( short.class.getName(), compatibles );
                         }
                     }
@@ -150,22 +157,24 @@ public class FieldManagerImpl implements FieldManager {
         try {
             if (isListType( className )) {
                 FieldDefinition definition = basicMultipleDefinitions.get( defaultMultiplesTypes.get( type ) );
-                if (definition != null)
-                    return definition.getClass().newInstance();
-                else {
-                    definition = multipleEntityDefinitions.get( defaultMultipleEntity ).getClass().newInstance();
-                    ((EntityRelationField)definition).setStandaloneType( type );
-                    return definition;
+                FieldDefinition instance;
+                if (definition != null) {
+                    instance = definition.getClass().newInstance();
+                } else {
+                    instance = multipleEntityDefinitions.get( defaultMultipleEntity ).getClass().newInstance();
                 }
+                instance.setStandaloneClassName( type );
+                return instance;
             } else {
                 FieldDefinition definition = basicFieldDefinitions.get( defaultBasicTypes.get( className ) );
+                FieldDefinition instance;
                 if (definition != null) {
-                    return definition.getClass().newInstance();
+                    instance =  definition.getClass().newInstance();
                 } else {
-                    definition = singleEntityDefinitions.get( defaultSingleEntity ).getClass().newInstance();
-                    ((EntityRelationField)definition).setStandaloneType( className );
-                    return definition;
+                    instance = singleEntityDefinitions.get( defaultSingleEntity ).getClass().newInstance();
                 }
+                instance.setStandaloneClassName( className );
+                return instance;
             }
         } catch ( Exception e ) {
             log.warn( "Error creating FieldDefinition: ", e );

@@ -59,12 +59,12 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
 
         JavaClassSource subformAdapter = Roaster.create( JavaClassSource.class );
 
-        viewClass.addImport( subformField.getStandaloneType() );
+        viewClass.addImport( subformField.getStandaloneClassName() );
         viewClass.addImport( subformField.getEmbeddedModel() );
         viewClass.addImport( subformField.getEmbeddedFormView() );
         viewClass.addImport( SUBFORM_ClASSNAME );
 
-        String standaloneName = cleanClassName( subformField.getStandaloneType() );
+        String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
         String modelName = cleanClassName( subformField.getEmbeddedModel() );
         String viewName = cleanClassName( subformField.getEmbeddedFormView() );
 
@@ -83,16 +83,16 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
         MethodSource<JavaClassSource> modelMethod = subformAdapter.addMethod();
         modelMethod.setPublic()
                 .setName( "getFormModelForModel" )
-                .addParameter( subformField.getStandaloneType(), "model" );
+                .addParameter( subformField.getStandaloneClassName(), "model" );
         modelMethod.setReturnType( subformField.getEmbeddedModel() )
                 .setBody( " return new " + modelName + "( model );")
                 .addAnnotation( Override.class );
 
         viewClass.addNestedType( subformAdapter );
-        
+
         amendUpdateNestedModels(subformField, context, viewClass);
     }
-    
+
     private void amendUpdateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
         MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "updateNestedModels",
                                                                                       boolean.class );
@@ -100,7 +100,7 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
             String body = updateNestedModelsMethod.getBody();
 
             String pName = fieldDefinition.getBoundPropertyName();
-            String pType = fieldDefinition.getStandaloneType();
+            String pType = fieldDefinition.getStandaloneClassName();
 
             body += pType + " " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";
@@ -111,5 +111,5 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
             updateNestedModelsMethod.setBody( body );
         }
     }
-   
+
 }

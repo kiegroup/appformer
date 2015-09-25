@@ -35,6 +35,7 @@ import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.livespark.formmodeler.editor.service.FieldManager;
 import org.livespark.formmodeler.editor.service.FormEditorService;
+import org.livespark.formmodeler.editor.service.FormFinderSerivce;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -48,7 +49,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pefernan on 7/7/15.
@@ -89,6 +93,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     @Inject
     protected FormSourcesGenerator formSourcesGenerator;
 
+    @Inject
+    protected FormFinderSerivce formFinderSerivce;
+
     @Override
     public FormModelerContent loadContent( Path path ) {
         return super.loadContent( path );
@@ -101,9 +108,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
             if (ioService.exists(kiePath)) {
                 throw new FileAlreadyExistsException(kiePath.toString());
             }
-            FormDefinition form = new FormDefinition();
-
-            form.setId( UUID.randomUUID().toString() );
+            FormDefinition form = formFinderSerivce.getNewFormInstance();
 
             form.setName( formName.substring( 0, formName.lastIndexOf( "." ) ) );
 
@@ -187,8 +192,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
         FormDefinition form = formTemplateGenerator.parseFormTemplate( template );
         if ( form == null ) {
-            form = new FormDefinition();
-            form.setId( UUID.randomUUID().toString() );
+            form = formFinderSerivce.getNewFormInstance();
         }
 
         return form;

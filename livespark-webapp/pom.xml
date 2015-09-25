@@ -142,7 +142,6 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-commons</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -585,18 +584,18 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <scope>compile</scope>
+      <!--<scope>compile</scope> disabled to avoid errors on first build after startup-->
     </dependency>
 
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>
       <artifactId>gwtbootstrap3</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope> disabled to avoid errors on first build after startup-->
     </dependency>
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>
       <artifactId>gwtbootstrap3-extras</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope> disabled to avoid errors on first build after startup-->
     </dependency>
 
     <dependency>
@@ -692,7 +691,6 @@
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-editor-client</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

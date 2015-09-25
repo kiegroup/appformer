@@ -23,17 +23,9 @@ import org.livespark.formmodeler.editor.model.FieldDefinition;
  */
 @Portable
 public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField {
-    protected String embeddedFormView;
-    protected String embeddedModel;
-    protected String standaloneType;
-
-    public String getStandaloneType() {
-        return standaloneType;
-    }
-
-    public void setStandaloneType( String standaloneType ) {
-        this.standaloneType = standaloneType;
-    }
+    protected String embeddedFormView = "";
+    protected String embeddedModel = "";
+    protected String standaloneType = "";
 
     public String getEmbeddedFormView() {
         return embeddedFormView;
@@ -52,7 +44,9 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
     }
 
     @Override
-    public String getStandaloneClassName() {
-        return Object.class.getName();
+    public String[] getSupportedTypes() {
+        return new String[] {
+                Object.class.getName()
+        };
     }
 }

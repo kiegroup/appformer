@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.editor.client.resources.i18n;
+package org.livespark.formmodeler.editor.model.impl;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.Messages;
-
-public interface FieldProperties extends Messages {
-
-    public static final FieldProperties INSTANCE = GWT.create(FieldProperties.class);
-
-    public String title();
-    public String generalSettings();
-
-    public String label();
-    public String placeholder();
-    public String size();
-    public String maxLength();
-    public String required();
-    public String readonly();
-    public String rows();
-
-    public String embeddedForm();
+/**
+ * Created by pefernan on 9/22/15.
+ */
+public interface HasPlaceHolder {
+    String getPlaceHolder();
+    void setPlaceHolder( String placeHolder );
 }
