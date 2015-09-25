@@ -24,6 +24,7 @@ public interface FieldProperties extends Messages {
 
     public String title();
     public String generalSettings();
+    public String bindingSettings();
 
     public String label();
     public String placeholder();
@@ -34,4 +35,6 @@ public interface FieldProperties extends Messages {
     public String rows();
 
     public String embeddedForm();
+
+    public String availableFields();
 }

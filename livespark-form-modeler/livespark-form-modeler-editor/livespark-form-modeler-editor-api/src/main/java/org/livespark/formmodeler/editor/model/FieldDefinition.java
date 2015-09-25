@@ -113,4 +113,14 @@ public abstract class FieldDefinition {
     public void setStandaloneClassName(String standaloneClassName) {
         this.standaloneClassName = standaloneClassName;
     }
+
+    public void copyFrom( FieldDefinition other ) {
+        if ( other == null ) return;
+        setLabel(other.getLabel());
+        if ( !other.isAnnotatedId() ) setReadonly( other.getReadonly() );
+        setRequired( other.getRequired() );
+        doCopyFrom( other );
+    }
+
+    protected abstract void doCopyFrom(FieldDefinition other);
 }

@@ -55,7 +55,7 @@ public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinitio
     }
 
     @Override
-    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+    protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
         return null;
     }
 }

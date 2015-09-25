@@ -152,7 +152,7 @@ public class MultipleSubFormFieldRenderer extends FieldRenderer<MultipleSubFormF
     }
 
     @Override
-    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+    protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
         return customProperties;
     }
 }

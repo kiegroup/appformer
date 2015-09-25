@@ -15,21 +15,22 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
-import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
+import org.livespark.formmodeler.editor.client.editor.events.FormContextRequest;
+import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse;
+import org.livespark.formmodeler.editor.client.editor.service.ClientFieldManagerImpl;
 import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
+import org.livespark.formmodeler.editor.service.FormEditorService;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by pefernan on 8/6/15.
@@ -38,7 +39,13 @@ import java.util.Map;
 public class FormEditorHelper {
 
     @Inject
-    private Event<FormFieldResponse> responseEvent;
+    private ClientFieldManagerImpl fieldManager;
+
+    @Inject
+    private Event<FormContextResponse> responseEvent;
+
+    @Inject
+    private Caller<FormEditorService> editorService;
 
     private FormModelerContent content;
 
@@ -71,7 +78,7 @@ public class FormEditorHelper {
     }
 
     public FieldDefinition getFormField( String fieldName ) {
-        FieldDefinition result = content.getDefinition().getFieldByName( fieldName );
+        FieldDefinition result = content.getDefinition().getFieldByName(fieldName);
         if ( result == null) {
             result = availableFields.get( fieldName );
             if (result != null) {
@@ -98,10 +105,9 @@ public class FormEditorHelper {
          return null;
     }
 
-    public void onFieldRequest( @Observes FormFieldRequest request ) {
+    public void onFieldRequest( @Observes FormContextRequest request ) {
         if (request.getFormId().equals( content.getDefinition().getId() )) {
-            FieldDefinition field = getFormField( request.getFieldName() );
-            responseEvent.fire( new FormFieldResponse( request.getFormId(), request.getFieldName(), field, content.getPath() ) );
+            responseEvent.fire( new FormContextResponse( request.getFormId(), request.getFieldName(), this ) );
         }
     }
 
@@ -111,5 +117,52 @@ public class FormEditorHelper {
         }
         content.getDefinition().getDataHolders().add( new DataHolder( name, type ) );
         return true;
+    }
+
+    public List<String> getCompatibleFieldTypes(FieldDefinition field) {
+        List<String> compatibles = fieldManager.getCompatibleFieldTypes(field);
+
+        Set result = new TreeSet();
+        result.add(field.getBindingExpression());
+        for ( String compatibleType : compatibles ) {
+            for ( FieldDefinition definition : availableFields.values()) {
+                if ( definition.getCode().equals( compatibleType )) result.add( definition.getBindingExpression() );
+            }
+        }
+        return new ArrayList<String>(result);
+    }
+
+    public FieldDefinition switchToField(FieldDefinition field, String bindingExpression) {
+        FieldDefinition resultDefinition = fieldManager.getDefinitionByType( field.getCode() );
+
+        // TODO: make settings copy optional
+        resultDefinition.copyFrom(field);
+
+        for (Iterator<FieldDefinition> it = availableFields.values().iterator(); it.hasNext(); ) {
+            FieldDefinition destField = it.next();
+            if (destField.getBindingExpression().equals( bindingExpression )) {
+
+                resultDefinition.setName(destField.getName());
+                resultDefinition.setStandaloneClassName(destField.getStandaloneClassName());
+                resultDefinition.setAnnotatedId(destField.isAnnotatedId());
+                resultDefinition.setModelName(destField.getModelName());
+                resultDefinition.setBoundPropertyName(destField.getBoundPropertyName());
+
+                content.getDefinition().getFields().add(resultDefinition);
+
+                it.remove();
+
+                editorService.call(new RemoteCallback<FieldDefinition>() {
+                    @Override
+                    public void callback(FieldDefinition field) {
+                        availableFields.put( field.getName(), field);
+                    }
+                }).resetField(content.getDefinition(), field, content.getPath() );
+
+                return resultDefinition;
+            }
+        }
+
+        return null;
     }
 }

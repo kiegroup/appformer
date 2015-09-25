@@ -3,9 +3,9 @@ package org.livespark.formmodeler.editor.client.editor.events;
 /**
  * Created by pefernan on 8/6/15.
  */
-public class FormFieldRequest extends FormEditorEvent {
+public class FormContextRequest extends FormEditorEvent {
 
-    public FormFieldRequest(String formId, String fieldName) {
+    public FormContextRequest(String formId, String fieldName) {
         super( formId, fieldName );
     }
 }

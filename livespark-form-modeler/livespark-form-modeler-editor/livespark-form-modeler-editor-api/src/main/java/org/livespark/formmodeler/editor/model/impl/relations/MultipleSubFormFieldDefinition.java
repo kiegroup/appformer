@@ -18,12 +18,14 @@ package org.livespark.formmodeler.editor.model.impl.relations;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.MultipleField;
 
+import javax.enterprise.context.Dependent;
 import java.util.List;
 
 /**
  * Created by pefernan on 7/1/15.
  */
 @Portable
+@Dependent
 public class MultipleSubFormFieldDefinition extends SubFormFieldDefinition implements MultipleField {
 
     @Override

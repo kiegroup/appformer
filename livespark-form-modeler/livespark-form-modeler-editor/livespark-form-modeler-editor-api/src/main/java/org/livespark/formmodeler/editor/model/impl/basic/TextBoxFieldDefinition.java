@@ -18,6 +18,7 @@ package org.livespark.formmodeler.editor.model.impl.basic;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
+import javax.enterprise.context.Dependent;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -25,6 +26,7 @@ import java.math.BigInteger;
  * Created by pefernan on 3/19/15.
  */
 @Portable
+@Dependent
 public class TextBoxFieldDefinition extends AbstractIntputFieldDefinition {
 
     @Override

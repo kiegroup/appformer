@@ -19,12 +19,14 @@ package org.livespark.formmodeler.editor.model.impl.basic;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
+import javax.enterprise.context.Dependent;
 import java.util.Date;
 
 /**
  * Created by pefernan on 3/19/15.
  */
 @Portable
+@Dependent
 public class DateBoxFieldDefinition extends FieldDefinition {
 
     @Override
@@ -32,5 +34,10 @@ public class DateBoxFieldDefinition extends FieldDefinition {
         return new String[] {
                 Date.class.getName()
         };
+    }
+
+    @Override
+    protected void doCopyFrom(FieldDefinition other) {
+
     }
 }

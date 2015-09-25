@@ -44,29 +44,46 @@ public class DataModellerFieldGenerator {
             for (ObjectProperty property : dataObject.getProperties()) {
                 if ( ArrayUtils.contains( RESTRICTED_PROPERTY_NAMES, property.getName() ) ) continue;
 
-                String propertyName = holderName + "_" + property.getName();
-                FieldDefinition field = null;
-
-                if (property.getBag() == null) field = fieldManager.getDefinitionByValueType( property.getClassName() );
-                else field = fieldManager.getDefinitionByValueType( property.getBag(), property.getClassName() );
-
-                if (field == null) continue;
-                field.setAnnotatedId( property.getAnnotation( SourceGenerationUtil.JAVAX_PERSISTENCE_ID ) != null );
-                field.setReadonly( field.isAnnotatedId() );
-
-                field.setName( propertyName );
-                String label = getPropertyLabel( property );
-                field.setLabel( label );
-                field.setModelName( holderName );
-                field.setBoundPropertyName( property.getName() );
-
-                if (field instanceof AbstractIntputFieldDefinition ) {
-                    ((AbstractIntputFieldDefinition) field).setPlaceHolder( label );
-                }
+                FieldDefinition field = createFieldDefinition( holderName, property );
                 result.add( field );
             }
         }
         return result;
+    }
+
+    public FieldDefinition resetFieldDefinition( FieldDefinition field, DataObject dataObject ) {
+        if (dataObject != null) {
+            for (ObjectProperty property : dataObject.getProperties()) {
+                if ( property.getName().equals( field.getBoundPropertyName() ) ) {
+                    return createFieldDefinition( field.getModelName(), property );
+                }
+            }
+        }
+        return null;
+    }
+
+    protected FieldDefinition createFieldDefinition( String holderName, ObjectProperty property ) {
+        String propertyName = holderName + "_" + property.getName();
+
+        FieldDefinition field = null;
+        if (property.getBag() == null) field = fieldManager.getDefinitionByValueType( property.getClassName() );
+        else field = fieldManager.getDefinitionByValueType( property.getBag(), property.getClassName() );
+
+        if (field == null) return null;
+
+        field.setAnnotatedId( property.getAnnotation( SourceGenerationUtil.JAVAX_PERSISTENCE_ID ) != null );
+        field.setReadonly( field.isAnnotatedId() );
+
+        field.setName( propertyName );
+        String label = getPropertyLabel( property );
+        field.setLabel( label );
+        field.setModelName( holderName );
+        field.setBoundPropertyName( property.getName() );
+
+        if (field instanceof AbstractIntputFieldDefinition ) {
+            ((AbstractIntputFieldDefinition) field).setPlaceHolder( label );
+        }
+        return  field;
     }
 
     private String getPropertyLabel( ObjectProperty property ) {

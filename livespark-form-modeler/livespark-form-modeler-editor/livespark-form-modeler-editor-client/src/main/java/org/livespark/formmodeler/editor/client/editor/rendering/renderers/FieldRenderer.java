@@ -18,9 +18,11 @@ package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
 import org.livespark.formmodeler.editor.client.editor.rendering.FieldDefinitionPropertiesModal;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.service.FieldManager;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.properties.editor.client.PropertyEditorWidget;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
@@ -29,6 +31,7 @@ import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,11 +40,16 @@ import java.util.List;
 public abstract class FieldRenderer<F extends FieldDefinition> {
 
     @Inject
+    protected FieldManager fieldManager;
+
+    @Inject
     protected PropertyEditorWidget editorWidget;
 
     protected F field;
 
     protected Path path;
+
+    protected DraggableFieldComponent draggableFieldComponent;
 
     public abstract String getName();
 
@@ -49,7 +57,12 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
 
     public abstract String getSupportedFieldDefinition();
 
-    protected abstract List<PropertyEditorFieldInfo> getCustomFieldProperties();
+    protected abstract List<PropertyEditorFieldInfo> getCustomFieldSettings();
+
+    public void init(DraggableFieldComponent draggableFieldComponent, Path formPath) {
+        this.draggableFieldComponent = draggableFieldComponent;
+        this.path = formPath;
+    }
 
     public F getField() {
         return field;
@@ -70,7 +83,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
     public IsWidget getDragWidget() {
         TextBox textBox = GWT.create(TextBox.class);
 
-        textBox.setReadOnly( true );
+        textBox.setReadOnly(true);
         if ( field != null ) {
             textBox.setPlaceholder( field.getBoundPropertyName() );
         } else {
@@ -81,39 +94,48 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
     }
 
     public void loadFieldProperties( final FieldDefinitionPropertiesModal modal ) {
-        editorWidget.handle( new PropertyEditorEvent( field.getName(), generatePropertyEditorCategory() ) );
-        modal.addPropertiesEditor( editorWidget );
+        editorWidget.handle(new PropertyEditorEvent(field.getName(), generatePropertyEditorCategory()));
+        modal.addPropertiesEditor(editorWidget);
     }
 
-    protected PropertyEditorCategory generatePropertyEditorCategory() {
-        PropertyEditorCategory fieldProperties = new PropertyEditorCategory( FieldProperties.INSTANCE.generalSettings() );
+    protected List<PropertyEditorCategory> generatePropertyEditorCategory() {
+        List<PropertyEditorCategory> fieldProperties = new ArrayList<PropertyEditorCategory>();
 
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.label(), String.valueOf( field.getLabel() ), PropertyEditorType.TEXT ) {
+        fieldProperties.add(generateGenericSettings());
+        fieldProperties.add(generateBindingSettings());
+
+        return fieldProperties;
+    }
+
+    protected PropertyEditorCategory generateGenericSettings() {
+        PropertyEditorCategory genericSettings = new PropertyEditorCategory( FieldProperties.INSTANCE.generalSettings() );
+
+        genericSettings.withField(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.label(), String.valueOf(field.getLabel()), PropertyEditorType.TEXT) {
             @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
+            public void setCurrentStringValue(final String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
                 field.setLabel(currentStringValue);
             }
-        } );
+        });
 
-        List<PropertyEditorFieldInfo> customProperties = getCustomFieldProperties();
+        List<PropertyEditorFieldInfo> customProperties = getCustomFieldSettings();
         if (customProperties != null ){
             for ( PropertyEditorFieldInfo field : customProperties ) {
-                fieldProperties.withField( field );
+                genericSettings.withField(field);
             }
         }
 
-        fieldProperties.withField( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.required(), String.valueOf( field.getRequired() ), PropertyEditorType.BOOLEAN ) {
+        genericSettings.withField(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.required(), String.valueOf(field.getRequired()), PropertyEditorType.BOOLEAN) {
             @Override
-            public void setCurrentStringValue( final String currentStringValue ) {
-                super.setCurrentStringValue( currentStringValue );
+            public void setCurrentStringValue(final String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
                 field.setRequired(Boolean.valueOf(currentStringValue));
             }
-        } );
+        });
 
         // If the field has the ID annotation it has to be always readonly
         if (!field.isAnnotatedId()) {
-            fieldProperties.withField(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.readonly(), String.valueOf(field.getReadonly()), PropertyEditorType.BOOLEAN) {
+            genericSettings.withField(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.readonly(), String.valueOf(field.getReadonly()), PropertyEditorType.BOOLEAN) {
                 @Override
                 public void setCurrentStringValue(final String currentStringValue) {
                     super.setCurrentStringValue(currentStringValue);
@@ -123,8 +145,28 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
         } else {
             field.setReadonly(true);
         }
-
-        return fieldProperties;
+        return genericSettings;
     }
 
+    protected PropertyEditorCategory generateBindingSettings() {
+        PropertyEditorCategory bindingSettings = new PropertyEditorCategory( FieldProperties.INSTANCE.bindingSettings() );
+
+        PropertyEditorFieldInfo bindingSetting = new PropertyEditorFieldInfo(
+                FieldProperties.INSTANCE.availableFields(),
+                field.getBindingExpression(), PropertyEditorType.COMBO) {
+            @Override
+            public void setCurrentStringValue(String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
+
+                draggableFieldComponent.switchToField( currentStringValue );
+            }
+        };
+
+        List<String> comboValues = draggableFieldComponent.getCompatibleFields();
+        bindingSetting.withComboValues(comboValues);
+
+        bindingSettings.withField(bindingSetting);
+
+        return bindingSettings;
+    }
 }

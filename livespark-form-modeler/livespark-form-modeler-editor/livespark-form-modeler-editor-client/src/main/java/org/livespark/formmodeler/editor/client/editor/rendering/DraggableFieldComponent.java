@@ -21,10 +21,11 @@ import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHideHandler;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.Modal;
+import org.livespark.formmodeler.editor.client.editor.FormEditorHelper;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
-import org.livespark.formmodeler.editor.client.editor.events.FormFieldRequest;
-import org.livespark.formmodeler.editor.client.editor.events.FormFieldResponse;
+import org.livespark.formmodeler.editor.client.editor.events.FormContextRequest;
+import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldRenderer;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormLayoutComponent;
@@ -35,6 +36,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,13 +56,15 @@ public class DraggableFieldComponent implements FormLayoutComponent,
     protected FieldRendererManager fieldRendererManager;
 
     @Inject
-    protected Event<FormFieldRequest> fieldRequest;
+    protected Event<FormContextRequest> fieldRequest;
 
     @Inject
     protected Event<FieldDroppedEvent> fieldDroppedEvent;
 
     @Inject
     protected Event<FieldRemovedEvent> fieldRemovedEvent;
+
+    protected FormEditorHelper editorHelper;
 
     protected String formId;
 
@@ -79,7 +83,9 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
         this.fieldName = field.getName();
         renderer = fieldRendererManager.getRendererForField( field );
-        if ( renderer != null ) renderer.setPath( formPath );
+        if ( renderer != null ) {
+            renderer.init(this, formPath);
+        }
     }
 
     @Override
@@ -119,6 +125,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
         modal.addHideHandler( new ModalHideHandler() {
             @Override
             public void onHide(ModalHideEvent evt) {
+                ctx.setComponentProperty(FIELD_NAME, fieldName);
                 ctx.configurationFinished();
                 if ( renderer != null ) renderContent();
                 modal = null;
@@ -131,7 +138,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
     @Override
     public void onDropComponent() {
-        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, fieldName ) );
+        fieldDroppedEvent.fire(new FieldDroppedEvent(formId, fieldName));
     }
 
     @Override
@@ -180,17 +187,43 @@ public class DraggableFieldComponent implements FormLayoutComponent,
             formId = properties.get( FORM_ID );
         }
 
-        fieldRequest.fire(new FormFieldRequest(formId, fieldName));
+        fieldRequest.fire(new FormContextRequest(formId, fieldName));
     }
 
-    public void onFieldResponse(@Observes FormFieldResponse response) {
+    public void onFieldResponse(@Observes FormContextResponse response) {
         if ( !response.getFormId().equals( formId ) || !response.getFieldName().equals( fieldName ) ) return;
-        init( formId, response.getField(), response.getPath() );
+        editorHelper = response.getEditorHelper();
+        init(formId, editorHelper.getFormField(fieldName), editorHelper.getContent().getPath());
         if ( renderer != null ) {
             renderContent();
             if ( modal != null ) {
                 renderer.loadFieldProperties( modal );
             }
         }
+    }
+
+    public List<String> getCompatibleFields() {
+        return editorHelper.getCompatibleFieldTypes(field);
+    }
+
+    public void switchToField(String bindingExpression) {
+        if (field.getBindingExpression().equals( bindingExpression )) return;
+
+        FieldDefinition destField = editorHelper.switchToField( field, bindingExpression );
+
+        if ( destField == null ) return;
+
+        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, destField.getName() ) );
+        fieldRemovedEvent.fire( new FieldRemovedEvent( formId, field.getName() ) );
+
+        fieldName = destField.getName();
+        field = destField;
+
+        renderer.setField( destField );
+
+        renderContent();
+
+        renderer.loadFieldProperties( modal );
+
     }
 }

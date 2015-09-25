@@ -63,7 +63,7 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
     }
 
     @Override
-    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+    protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
         List<PropertyEditorFieldInfo> result = new ArrayList<PropertyEditorFieldInfo>();
         result.add(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.placeholder(), field.getPlaceHolder(), PropertyEditorType.TEXT) {
             @Override

@@ -152,7 +152,7 @@ public class SubFormFieldRenderer extends FieldRenderer<SubFormFieldDefinition> 
     }
 
     @Override
-    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+    protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
         return customProperties;
     }
 }

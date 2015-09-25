@@ -58,4 +58,24 @@ public abstract class AbstractIntputFieldDefinition extends FieldDefinition impl
     public void setPlaceHolder( String placeHolder ) {
         this.placeHolder = placeHolder;
     }
+
+    @Override
+    protected void doCopyFrom( FieldDefinition other ) {
+        if ( other instanceof AbstractIntputFieldDefinition ) {
+            AbstractIntputFieldDefinition otherInput = (AbstractIntputFieldDefinition) other;
+            setSize( otherInput.getSize() );
+            setMaxLength( otherInput.getMaxLength() );
+            setPlaceHolder( otherInput.getPlaceHolder() );
+        } else {
+            if (other instanceof  HasSize) {
+                setSize(((HasSize) other).getSize());
+            }
+            if (other instanceof  HasMaxLength) {
+                setMaxLength(((HasMaxLength) other).getMaxLength());
+            }
+            if (other instanceof  HasPlaceHolder) {
+                setPlaceHolder(((HasPlaceHolder) other).getPlaceHolder());
+            }
+        }
+    }
 }

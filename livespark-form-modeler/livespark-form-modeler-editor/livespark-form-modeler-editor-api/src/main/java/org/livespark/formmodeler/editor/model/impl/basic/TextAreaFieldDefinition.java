@@ -19,8 +19,10 @@ package org.livespark.formmodeler.editor.model.impl.basic;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.HasPlaceHolder;
+import org.livespark.formmodeler.editor.model.impl.HasRows;
 import org.livespark.formmodeler.editor.model.impl.HasSize;
 
+import javax.enterprise.context.Dependent;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -28,16 +30,19 @@ import java.math.BigInteger;
  * Created by pefernan on 3/19/15.
  */
 @Portable
-public class TextAreaFieldDefinition extends FieldDefinition implements HasSize, HasPlaceHolder {
+@Dependent
+public class TextAreaFieldDefinition extends FieldDefinition implements HasRows, HasSize, HasPlaceHolder {
 
     protected Integer rows = 4;
     protected Integer size = 15;
     protected String placeHolder;
 
+    @Override
     public Integer getRows() {
         return rows;
     }
 
+    @Override
     public void setRows( Integer rows ) {
         this.rows = rows;
     }
@@ -76,5 +81,25 @@ public class TextAreaFieldDefinition extends FieldDefinition implements HasSize,
                 Double.class.getName(),
                 Float.class.getName()
         };
+    }
+
+    @Override
+    protected void doCopyFrom(FieldDefinition other) {
+        if (other instanceof  TextAreaFieldDefinition ) {
+            TextAreaFieldDefinition otherTextArea = (TextAreaFieldDefinition) other;
+            this.setSize( otherTextArea.getSize() );
+            this.setRows(otherTextArea.getRows());
+            this.setPlaceHolder( otherTextArea .getPlaceHolder() );
+        } else {
+            if (other instanceof HasRows) {
+                setRows(((HasRows) other).getRows());
+            }
+            if (other instanceof HasSize) {
+                setSize(((HasSize) other).getSize());
+            }
+            if (other instanceof HasPlaceHolder) {
+                setPlaceHolder(((HasPlaceHolder) other).getPlaceHolder());
+            }
+        }
     }
 }

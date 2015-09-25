@@ -51,7 +51,7 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
     }
 
     @Override
-    protected List<PropertyEditorFieldInfo> getCustomFieldProperties() {
+    protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
         return null;
     }
 }

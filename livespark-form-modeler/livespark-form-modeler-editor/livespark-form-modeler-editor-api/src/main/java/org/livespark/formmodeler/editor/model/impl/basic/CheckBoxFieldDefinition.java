@@ -19,10 +19,13 @@ package org.livespark.formmodeler.editor.model.impl.basic;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
+import javax.enterprise.context.Dependent;
+
 /**
  * Created by pefernan on 3/19/15.
  */
 @Portable
+@Dependent
 public class CheckBoxFieldDefinition extends FieldDefinition {
 
     @Override
@@ -30,5 +33,10 @@ public class CheckBoxFieldDefinition extends FieldDefinition {
         return new String[] {
                 Boolean.class.getName()
         };
+    }
+
+    @Override
+    protected void doCopyFrom(FieldDefinition other) {
+
     }
 }

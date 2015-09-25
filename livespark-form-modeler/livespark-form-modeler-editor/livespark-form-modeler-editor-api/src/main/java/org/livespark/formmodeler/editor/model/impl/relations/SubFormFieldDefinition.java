@@ -18,14 +18,16 @@ package org.livespark.formmodeler.editor.model.impl.relations;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
+import javax.enterprise.context.Dependent;
+
 /**
  * Created by pefernan on 7/1/15.
  */
 @Portable
+@Dependent
 public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField {
     protected String embeddedFormView = "";
     protected String embeddedModel = "";
-    protected String standaloneType = "";
 
     public String getEmbeddedFormView() {
         return embeddedFormView;
@@ -48,5 +50,15 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
         return new String[] {
                 Object.class.getName()
         };
+    }
+
+    @Override
+    protected void doCopyFrom(FieldDefinition other) {
+        if ( other instanceof EmbeddedFormField ) {
+            EmbeddedFormField otherForm = (EmbeddedFormField) other;
+            setEmbeddedModel( otherForm.getEmbeddedModel() );
+            setEmbeddedFormView( otherForm.getEmbeddedFormView() );
+        }
+        setStandaloneClassName( other.getStandaloneClassName() );
     }
 }

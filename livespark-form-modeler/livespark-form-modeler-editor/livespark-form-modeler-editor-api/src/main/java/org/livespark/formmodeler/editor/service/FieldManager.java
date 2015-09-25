@@ -16,17 +16,16 @@
 
 package org.livespark.formmodeler.editor.service;
 
-import org.jboss.errai.bus.server.annotations.Remote;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by pefernan on 4/29/15.
  */
-@Remote
 public interface FieldManager {
     public static final String[] BASIC_TYPES = new String[]{
             BigDecimal.class.getName(),
@@ -56,4 +55,6 @@ public interface FieldManager {
     FieldDefinition getDefinitionByValueType( String className );
 
     FieldDefinition getDefinitionByValueType( String className, String type );
+
+    List<String> getCompatibleFieldTypes( FieldDefinition fieldDefinition);
 }

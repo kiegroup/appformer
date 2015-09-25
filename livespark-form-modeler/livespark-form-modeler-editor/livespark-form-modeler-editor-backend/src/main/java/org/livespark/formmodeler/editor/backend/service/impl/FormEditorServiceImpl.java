@@ -234,4 +234,15 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
         return null;
     }
+
+    @Override
+    public FieldDefinition resetField(FormDefinition definition, FieldDefinition field, Path path) {
+        DataHolder holder = definition.getDataHolderByName(field.getModelName());
+        DataModel model = dataModelerService.loadModel(projectService.resolveProject(path));
+
+        if ( model != null ) {
+            return fieldGenerator.resetFieldDefinition(field, model.getDataObject(holder.getType()));
+        }
+        return null;
+    }
 }
