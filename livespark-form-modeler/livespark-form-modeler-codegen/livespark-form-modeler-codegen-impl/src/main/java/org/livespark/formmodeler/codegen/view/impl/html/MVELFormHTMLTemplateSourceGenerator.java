@@ -51,7 +51,7 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
         formTemplate = TemplateCompiler.compileTemplate( getClass().getResourceAsStream( formTemplatePath ) );
 
         for ( InputTemplateProvider provider : providers ) {
-            registry.addNamedTemplate( provider.getSupportedFieldType(), TemplateCompiler.compileTemplate( provider.getTemplateInputStream() ) );
+            registry.addNamedTemplate( provider.getSupportedFieldTypeCode(), TemplateCompiler.compileTemplate( provider.getTemplateInputStream() ) );
         }
 
     }

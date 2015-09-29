@@ -27,6 +27,10 @@ import java.util.List;
  * Created by pefernan on 4/29/15.
  */
 public interface FieldManager {
+
+    public static final String UNBINDED_FIELD_NAME_PREFFIX = "__unbinded_field_";
+    public static final String FIELD_NAME_SEPARATOR = "_";
+
     public static final String[] BASIC_TYPES = new String[]{
             BigDecimal.class.getName(),
             BigInteger.class.getName(),
@@ -50,7 +54,9 @@ public interface FieldManager {
             String.class.getName()
     };
 
-    FieldDefinition getDefinitionByType( String typeCode );
+    List<FieldDefinition> getBaseTypes();
+
+    FieldDefinition getDefinitionByTypeCode(String typeCode);
 
     FieldDefinition getDefinitionByValueType( String className );
 

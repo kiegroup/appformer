@@ -32,10 +32,16 @@ import java.math.BigInteger;
 @Portable
 @Dependent
 public class TextAreaFieldDefinition extends FieldDefinition implements HasRows, HasSize, HasPlaceHolder {
+    public static final String _CODE = "TextArea";
 
     protected Integer rows = 4;
     protected Integer size = 15;
-    protected String placeHolder;
+    protected String placeHolder = "";
+
+    @Override
+    public String getCode() {
+        return _CODE;
+    }
 
     @Override
     public Integer getRows() {

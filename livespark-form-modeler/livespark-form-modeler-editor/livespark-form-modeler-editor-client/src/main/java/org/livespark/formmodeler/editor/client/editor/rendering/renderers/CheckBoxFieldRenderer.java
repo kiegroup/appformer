@@ -46,8 +46,8 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
     }
 
     @Override
-    public String getSupportedFieldDefinition() {
-        return CheckBoxFieldDefinition.class.getName();
+    public String getSupportedFieldDefinitionCode() {
+        return CheckBoxFieldDefinition._CODE;
     }
 
     @Override

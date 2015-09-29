@@ -25,6 +25,7 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
+import org.livespark.formmodeler.editor.client.editor.rendering.FieldRendererManager;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
@@ -152,6 +153,14 @@ public class FormEditorPresenter extends KieEditor {
 
         List<LayoutDragComponent>  list = new ArrayList<LayoutDragComponent>();
         list.add(htmlLayoutDragComponent);
+
+        for ( FieldDefinition field : editorContext.getBaseFields() ) {
+            DraggableFieldComponent dragComponent = IOC.getBeanManager().lookupBean( DraggableFieldComponent.class ).getInstance();
+            if (dragComponent != null) {
+                dragComponent.init( getFormDefinition().getId(), field, editorContext.getContent().getPath() );
+                list.add( dragComponent );
+            }
+        }
 
         return list;
     }

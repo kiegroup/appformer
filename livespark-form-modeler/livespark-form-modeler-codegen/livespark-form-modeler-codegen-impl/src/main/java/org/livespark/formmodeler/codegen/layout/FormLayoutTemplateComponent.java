@@ -19,6 +19,6 @@ package org.livespark.formmodeler.codegen.layout;
  * Created by pefernan on 9/4/15.
  */
 public interface FormLayoutTemplateComponent {
-    String getSupportedFieldType();
+    String getSupportedFieldTypeCode();
     String getDraggableType();
 }

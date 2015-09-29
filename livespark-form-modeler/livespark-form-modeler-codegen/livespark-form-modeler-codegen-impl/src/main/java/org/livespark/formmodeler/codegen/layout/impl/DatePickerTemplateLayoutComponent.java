@@ -23,8 +23,8 @@ import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
  */
 public class DatePickerTemplateLayoutComponent implements FormLayoutTemplateComponent {
     @Override
-    public String getSupportedFieldType() {
-        return DateBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return DateBoxFieldDefinition._CODE;
     }
 
     @Override

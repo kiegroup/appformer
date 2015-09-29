@@ -24,7 +24,7 @@ import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
 public class TextBoxTemplate extends AbstractInputTemplateProvider {
 
     @Override
-    public String getSupportedFieldType() {
-        return TextBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return TextBoxFieldDefinition._CODE;
     }
 }

@@ -91,8 +91,8 @@ public class MultipleSubFormFieldRenderer extends FieldRenderer<MultipleSubFormF
     }
 
     @Override
-    public String getSupportedFieldDefinition() {
-        return MultipleSubFormFieldDefinition.class.getName();
+    public String getSupportedFieldDefinitionCode() {
+        return MultipleSubFormFieldDefinition._CODE;
     }
 
     @Override

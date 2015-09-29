@@ -25,11 +25,19 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.service.FieldManager;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 /**
  * Created by pefernan on 7/9/15.
  */
+@Dependent
 public class FieldDeserializer implements JsonDeserializer<FieldDefinition> {
+
+    @Inject
+    private FieldManager fieldManager;
 
     @Override
     public FieldDefinition deserialize( JsonElement json, Type typeOfT, JsonDeserializationContext context ) throws JsonParseException {
@@ -37,14 +45,11 @@ public class FieldDeserializer implements JsonDeserializer<FieldDefinition> {
 
         for (JsonElement je : ja) {
 
-            String type = je.getAsJsonObject().get("code").getAsString();
-            Class c = null;
-            try {
-                c = Class.forName( type );
-                return context.deserialize( je, c );
-            } catch ( ClassNotFoundException e ) {
-                e.printStackTrace();
-            }
+            String typeCode = je.getAsJsonObject().get("code").getAsString();
+
+            FieldDefinition definition = fieldManager.getDefinitionByTypeCode(typeCode);
+
+            return context.deserialize( je, definition.getClass() );
         }
 
         return null;

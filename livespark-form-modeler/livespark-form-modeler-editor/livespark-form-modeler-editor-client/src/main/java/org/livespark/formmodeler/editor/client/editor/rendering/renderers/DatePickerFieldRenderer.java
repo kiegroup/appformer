@@ -50,8 +50,8 @@ public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinitio
     }
 
     @Override
-    public String getSupportedFieldDefinition() {
-        return DateBoxFieldDefinition.class.getName();
+    public String getSupportedFieldDefinitionCode() {
+        return DateBoxFieldDefinition._CODE;
     }
 
     @Override

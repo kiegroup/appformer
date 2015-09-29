@@ -37,6 +37,7 @@ import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
 import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 
 public abstract class RoasterClientFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
@@ -49,7 +50,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
     @PostConstruct
     protected void init() {
         for ( InputCreatorHelper helper : creatorInstances ) {
-            creatorHelpers.put( helper.getSupportedFieldType(),
+            creatorHelpers.put( helper.getSupportedFieldTypeCode(),
                     helper );
         }
     }
@@ -93,7 +94,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
 
             if (helper instanceof RequiresCustomCode ) ((RequiresCustomCode )helper).addCustomCode( fieldDefinition, context, viewClass );
 
-            if (!(fieldDefinition instanceof SubFormFieldDefinition )) {
+            if (fieldDefinition.getBindingExpression() != null && !(fieldDefinition instanceof EmbeddedFormField)) {
                 field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
             }
 

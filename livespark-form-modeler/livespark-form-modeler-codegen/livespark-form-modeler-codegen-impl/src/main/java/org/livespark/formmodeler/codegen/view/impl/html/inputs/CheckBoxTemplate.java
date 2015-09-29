@@ -27,8 +27,8 @@ import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition
 public class CheckBoxTemplate implements InputTemplateProvider {
 
     @Override
-    public String getSupportedFieldType() {
-        return CheckBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return CheckBoxFieldDefinition._CODE;
     }
 
     @Override

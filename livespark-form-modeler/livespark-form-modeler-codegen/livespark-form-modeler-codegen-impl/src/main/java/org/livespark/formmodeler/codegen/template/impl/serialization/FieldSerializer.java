@@ -24,9 +24,12 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
+import javax.enterprise.context.Dependent;
+
 /**
  * Created by pefernan on 7/9/15.
  */
+@Dependent
 public class FieldSerializer implements JsonSerializer<FieldDefinition> {
 
     @Override

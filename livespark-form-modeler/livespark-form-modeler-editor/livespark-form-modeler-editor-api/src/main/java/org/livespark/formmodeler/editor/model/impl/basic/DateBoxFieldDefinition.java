@@ -28,6 +28,12 @@ import java.util.Date;
 @Portable
 @Dependent
 public class DateBoxFieldDefinition extends FieldDefinition {
+    public static final String _CODE = "DatePicker";
+
+    @Override
+    public String getCode() {
+        return _CODE;
+    }
 
     @Override
     public String[] getSupportedTypes() {

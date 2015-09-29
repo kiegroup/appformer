@@ -44,7 +44,7 @@ public class FieldRendererManager {
         for (IOCBeanDef<FieldRenderer> rendererDef : renderers) {
             FieldRenderer renderer = rendererDef.getInstance();
             if ( renderer != null ) {
-                availableRenderers.put(renderer.getSupportedFieldDefinition(), renderer);
+                availableRenderers.put(renderer.getSupportedFieldDefinitionCode(), renderer);
             }
         }
     }

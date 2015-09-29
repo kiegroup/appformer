@@ -27,8 +27,8 @@ import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition
 public class TextAreaTemplate implements InputTemplateProvider {
 
     @Override
-    public String getSupportedFieldType() {
-        return TextAreaFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return TextAreaFieldDefinition._CODE;
     }
 
     @Override

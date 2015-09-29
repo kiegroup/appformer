@@ -28,6 +28,12 @@ import java.math.BigInteger;
 @Portable
 @Dependent
 public class TextBoxFieldDefinition extends AbstractIntputFieldDefinition {
+    public static final String _CODE = "TextBox";
+
+    @Override
+    public String getCode() {
+        return _CODE;
+    }
 
     @Override
     public String[] getSupportedTypes() {

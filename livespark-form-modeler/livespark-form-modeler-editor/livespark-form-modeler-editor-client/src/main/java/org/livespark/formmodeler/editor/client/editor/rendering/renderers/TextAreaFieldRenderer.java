@@ -47,7 +47,7 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
         TextArea textArea = new TextArea();
         textArea.setPlaceholder( field.getPlaceHolder() );
         textArea.setVisibleLines(field.getRows());
-        textArea.setCharacterWidth(field.getSize());
+        textArea.setWidth( field.getSize() + "em" );
         textArea.setReadOnly(field.getReadonly());
         label.setText( field.getLabel());
         label.setFor(textArea.getId());
@@ -58,8 +58,8 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
     }
 
     @Override
-    public String getSupportedFieldDefinition() {
-        return TextAreaFieldDefinition.class.getName();
+    public String getSupportedFieldDefinitionCode() {
+        return TextAreaFieldDefinition._CODE;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
                 field.setPlaceHolder(currentStringValue);
             }
         });
-        result.add(new PropertyEditorFieldInfo( FieldProperties.INSTANCE.rows(), String.valueOf( field.getRows() ), PropertyEditorType.COMBO ) {
+        result.add(new PropertyEditorFieldInfo( FieldProperties.INSTANCE.rows(), String.valueOf( field.getRows() ), PropertyEditorType.TEXT ) {
             @Override
             public void setCurrentStringValue( final String currentStringValue ) {
                 super.setCurrentStringValue( currentStringValue );

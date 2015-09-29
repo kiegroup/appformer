@@ -16,6 +16,7 @@
 package org.livespark.formmodeler.editor.model.impl.relations;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.MultipleField;
 
 import javax.enterprise.context.Dependent;
@@ -26,12 +27,47 @@ import java.util.List;
  */
 @Portable
 @Dependent
-public class MultipleSubFormFieldDefinition extends SubFormFieldDefinition implements MultipleField {
+public class MultipleSubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField, MultipleField {
+    public static final String _CODE = "MultipleSubForm";
+
+    protected String embeddedFormView = "";
+    protected String embeddedModel = "";
+
+    @Override
+    public String getCode() {
+        return _CODE;
+    }
 
     @Override
     public String[] getSupportedTypes() {
         return new String[] {
                 List.class.getName()
         };
+    }
+
+    public String getEmbeddedFormView() {
+        return embeddedFormView;
+    }
+
+    public void setEmbeddedFormView( String embeddedFormView ) {
+        this.embeddedFormView = embeddedFormView;
+    }
+
+    public String getEmbeddedModel() {
+        return embeddedModel;
+    }
+
+    public void setEmbeddedModel( String embeddedModel ) {
+        this.embeddedModel = embeddedModel;
+    }
+
+    @Override
+    protected void doCopyFrom(FieldDefinition other) {
+        if ( other instanceof EmbeddedFormField ) {
+            EmbeddedFormField otherForm = (EmbeddedFormField) other;
+            setEmbeddedModel( otherForm.getEmbeddedModel() );
+            setEmbeddedFormView( otherForm.getEmbeddedFormView() );
+        }
+        setStandaloneClassName( other.getStandaloneClassName() );
     }
 }

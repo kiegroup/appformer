@@ -34,8 +34,8 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 public class SubFormHelper extends AbstractInputCreatorHelper implements RequiresCustomCode {
 
     @Override
-    public String getSupportedFieldType() {
-        return SubFormFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return SubFormFieldDefinition._CODE;
     }
 
     @Override

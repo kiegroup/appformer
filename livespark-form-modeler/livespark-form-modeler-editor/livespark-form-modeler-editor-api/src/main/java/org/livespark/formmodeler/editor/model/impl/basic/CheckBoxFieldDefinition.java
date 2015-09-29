@@ -27,6 +27,12 @@ import javax.enterprise.context.Dependent;
 @Portable
 @Dependent
 public class CheckBoxFieldDefinition extends FieldDefinition {
+    public static final String _CODE = "CheckBox";
+
+    @Override
+    public String getCode() {
+        return _CODE;
+    }
 
     @Override
     public String[] getSupportedTypes() {

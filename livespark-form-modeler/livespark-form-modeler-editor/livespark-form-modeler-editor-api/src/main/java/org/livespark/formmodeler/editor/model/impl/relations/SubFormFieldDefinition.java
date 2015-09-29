@@ -26,8 +26,15 @@ import javax.enterprise.context.Dependent;
 @Portable
 @Dependent
 public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField {
+    public static final String _CODE = "SubForm";
+
     protected String embeddedFormView = "";
     protected String embeddedModel = "";
+
+    @Override
+    public String getCode() {
+        return _CODE;
+    }
 
     public String getEmbeddedFormView() {
         return embeddedFormView;

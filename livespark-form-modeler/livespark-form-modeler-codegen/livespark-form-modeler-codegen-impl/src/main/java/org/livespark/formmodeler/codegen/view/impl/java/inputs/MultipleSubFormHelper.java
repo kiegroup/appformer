@@ -37,8 +37,8 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements RequiresCustomCode {
 
     @Override
-    public String getSupportedFieldType() {
-        return MultipleSubFormFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return MultipleSubFormFieldDefinition._CODE;
     }
 
     @Override

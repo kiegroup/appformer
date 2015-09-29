@@ -29,6 +29,7 @@ import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldRenderer;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormLayoutComponent;
+import org.livespark.formmodeler.editor.service.FieldManager;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.layout.editor.client.components.*;
 
@@ -36,6 +37,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +84,11 @@ public class DraggableFieldComponent implements FormLayoutComponent,
         this.formPath = formPath;
 
         this.fieldName = field.getName();
+
+        findRenderer();
+    }
+
+    protected void findRenderer() {
         renderer = fieldRendererManager.getRendererForField( field );
         if ( renderer != null ) {
             renderer.init(this, formPath);
@@ -96,7 +103,12 @@ public class DraggableFieldComponent implements FormLayoutComponent,
     @Override
     public void setSettingValue( String key, String value ) {
         if ( FORM_ID.equals( key )) formId = value;
-        else if (FIELD_NAME.equals( key )) fieldName = value;
+        else if (FIELD_NAME.equals( key )) {
+            if ( value.startsWith( FieldManager.UNBINDED_FIELD_NAME_PREFFIX ) && value.endsWith( FieldManager.FIELD_NAME_SEPARATOR )) {
+                value = value + (new Date()).getTime();
+            }
+            fieldName = value;
+        }
     }
 
     @Override
@@ -203,6 +215,10 @@ public class DraggableFieldComponent implements FormLayoutComponent,
     }
 
     public List<String> getCompatibleFields() {
+        return editorHelper.getCompatibleFields(field);
+    }
+
+    public List<String> getCompatibleFieldTypes() {
         return editorHelper.getCompatibleFieldTypes(field);
     }
 
@@ -224,6 +240,17 @@ public class DraggableFieldComponent implements FormLayoutComponent,
         renderContent();
 
         renderer.loadFieldProperties( modal );
+
+    }
+
+    public void switchToFieldType( String typeCode ) {
+        if ( field.getCode().equals(typeCode) ) return;
+
+        field = editorHelper.switchToFieldType( field, typeCode);
+
+        findRenderer();
+
+        if ( renderer != null ) renderContent();
 
     }
 }

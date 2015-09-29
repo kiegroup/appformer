@@ -23,8 +23,8 @@ import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition
  */
 public class TextAreaTemplateLayoutComponent implements FormLayoutTemplateComponent {
     @Override
-    public String getSupportedFieldType() {
-        return TextAreaFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return TextAreaFieldDefinition._CODE;
     }
 
     @Override

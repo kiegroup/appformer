@@ -18,9 +18,9 @@ package org.livespark.formmodeler.editor.model;
 
 public abstract class FieldDefinition {
 
-    protected final String code = this.getClass().getName();
-
     protected boolean annotatedId;
+
+    protected String code = getCode();
 
     protected String name;
 
@@ -35,12 +35,6 @@ public abstract class FieldDefinition {
     protected String boundPropertyName;
 
     protected String standaloneClassName;
-
-    public abstract String[] getSupportedTypes();
-
-    public String getCode() {
-        return code;
-    }
 
     public String getName() {
         return name;
@@ -121,6 +115,10 @@ public abstract class FieldDefinition {
         setRequired( other.getRequired() );
         doCopyFrom( other );
     }
+
+    public abstract String getCode();
+
+    public abstract String[] getSupportedTypes();
 
     protected abstract void doCopyFrom(FieldDefinition other);
 }

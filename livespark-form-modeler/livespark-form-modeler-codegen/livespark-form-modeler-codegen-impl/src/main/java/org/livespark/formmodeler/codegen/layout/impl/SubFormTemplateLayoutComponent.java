@@ -23,8 +23,8 @@ import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinit
  */
 public class SubFormTemplateLayoutComponent implements FormLayoutTemplateComponent {
     @Override
-    public String getSupportedFieldType() {
-        return SubFormFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return SubFormFieldDefinition._CODE;
     }
 
     @Override

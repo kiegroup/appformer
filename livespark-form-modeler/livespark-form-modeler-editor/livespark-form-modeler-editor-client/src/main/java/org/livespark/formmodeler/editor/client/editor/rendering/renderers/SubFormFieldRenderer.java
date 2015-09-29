@@ -91,8 +91,8 @@ public class SubFormFieldRenderer extends FieldRenderer<SubFormFieldDefinition> 
     }
 
     @Override
-    public String getSupportedFieldDefinition() {
-        return SubFormFieldDefinition.class.getName();
+    public String getSupportedFieldDefinitionCode() {
+        return SubFormFieldDefinition._CODE;
     }
 
     @Override

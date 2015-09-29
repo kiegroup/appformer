@@ -27,7 +27,7 @@ import org.livespark.formmodeler.editor.model.impl.HasSize;
 public abstract class AbstractIntputFieldDefinition extends FieldDefinition implements HasMaxLength, HasSize, HasPlaceHolder {
     protected Integer size = 15;
     protected Integer maxLength = 100;
-    protected String placeHolder;
+    protected String placeHolder = "";
 
     @Override
     public Integer getSize() {

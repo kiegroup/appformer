@@ -23,7 +23,7 @@ import org.livespark.formmodeler.editor.model.FieldDefinition;
  * Created by pefernan on 4/28/15.
  */
 public interface InputCreatorHelper {
-    String getSupportedFieldType();
+    String getSupportedFieldTypeCode();
     boolean isInputInjectable();
     boolean isDisplayInjectable();
     String getDisplayInitLiteral();

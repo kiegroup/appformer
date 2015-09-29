@@ -55,7 +55,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
 
     public abstract IsWidget renderWidget();
 
-    public abstract String getSupportedFieldDefinition();
+    public abstract String getSupportedFieldDefinitionCode();
 
     protected abstract List<PropertyEditorFieldInfo> getCustomFieldSettings();
 
@@ -84,7 +84,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
         TextBox textBox = GWT.create(TextBox.class);
 
         textBox.setReadOnly(true);
-        if ( field != null ) {
+        if ( !field.getName().startsWith( FieldManager.UNBINDED_FIELD_NAME_PREFFIX ) ) {
             textBox.setPlaceholder( field.getBoundPropertyName() );
         } else {
             textBox.setPlaceholder( getName() );
@@ -109,6 +109,22 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
 
     protected PropertyEditorCategory generateGenericSettings() {
         PropertyEditorCategory genericSettings = new PropertyEditorCategory( FieldProperties.INSTANCE.generalSettings() );
+
+        PropertyEditorFieldInfo fieldTypes = new PropertyEditorFieldInfo(
+                FieldProperties.INSTANCE.fieldType(),
+                field.getCode(), PropertyEditorType.COMBO) {
+            @Override
+            public void setCurrentStringValue(String currentStringValue) {
+                super.setCurrentStringValue(currentStringValue);
+
+                draggableFieldComponent.switchToFieldType( currentStringValue );
+            }
+        };
+
+        List<String> comboValues = draggableFieldComponent.getCompatibleFieldTypes();
+        fieldTypes.withComboValues(comboValues);
+
+        genericSettings.withField(fieldTypes);
 
         genericSettings.withField(new PropertyEditorFieldInfo(FieldProperties.INSTANCE.label(), String.valueOf(field.getLabel()), PropertyEditorType.TEXT) {
             @Override
@@ -153,7 +169,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
 
         PropertyEditorFieldInfo bindingSetting = new PropertyEditorFieldInfo(
                 FieldProperties.INSTANCE.availableFields(),
-                field.getBindingExpression(), PropertyEditorType.COMBO) {
+                field.getBindingExpression() != null ? field.getBindingExpression() : "", PropertyEditorType.COMBO) {
             @Override
             public void setCurrentStringValue(String currentStringValue) {
                 super.setCurrentStringValue(currentStringValue);
@@ -163,6 +179,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
         };
 
         List<String> comboValues = draggableFieldComponent.getCompatibleFields();
+        comboValues.add(0, "");
         bindingSetting.withComboValues(comboValues);
 
         bindingSettings.withField(bindingSetting);

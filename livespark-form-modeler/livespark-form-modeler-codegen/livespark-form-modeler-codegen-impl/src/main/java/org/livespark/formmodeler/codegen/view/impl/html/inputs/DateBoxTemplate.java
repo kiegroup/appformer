@@ -27,8 +27,8 @@ import java.io.InputStream;
 public class DateBoxTemplate implements InputTemplateProvider {
 
     @Override
-    public String getSupportedFieldType() {
-        return DateBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return DateBoxFieldDefinition._CODE;
     }
 
     @Override

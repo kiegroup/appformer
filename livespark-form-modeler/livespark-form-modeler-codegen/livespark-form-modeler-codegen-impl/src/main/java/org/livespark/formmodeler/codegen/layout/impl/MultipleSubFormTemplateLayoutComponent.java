@@ -23,8 +23,8 @@ import org.livespark.formmodeler.editor.model.impl.relations.MultipleSubFormFiel
  */
 public class MultipleSubFormTemplateLayoutComponent implements FormLayoutTemplateComponent {
     @Override
-    public String getSupportedFieldType() {
-        return MultipleSubFormFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return MultipleSubFormFieldDefinition._CODE;
     }
 
     @Override

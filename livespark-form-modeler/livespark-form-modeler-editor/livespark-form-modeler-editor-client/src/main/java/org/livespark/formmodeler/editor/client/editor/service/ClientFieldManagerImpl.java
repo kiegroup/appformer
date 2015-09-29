@@ -21,13 +21,13 @@ import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.service.AbstractFieldManager;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
 import java.util.Collection;
 
 /**
  * Created by pefernan on 9/25/15.
  */
-@Dependent
+@ApplicationScoped
 public class ClientFieldManagerImpl extends AbstractFieldManager {
 
     @PostConstruct

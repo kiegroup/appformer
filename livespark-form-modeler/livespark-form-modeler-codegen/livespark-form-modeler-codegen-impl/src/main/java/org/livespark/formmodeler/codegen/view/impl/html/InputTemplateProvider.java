@@ -22,6 +22,6 @@ import java.io.InputStream;
  * Created by pefernan on 4/29/15.
  */
 public interface InputTemplateProvider {
-    String getSupportedFieldType();
+    String getSupportedFieldTypeCode();
     InputStream getTemplateInputStream();
 }

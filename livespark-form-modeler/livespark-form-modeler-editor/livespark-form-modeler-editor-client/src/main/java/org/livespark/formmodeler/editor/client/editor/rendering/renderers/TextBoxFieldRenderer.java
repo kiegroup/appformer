@@ -59,8 +59,8 @@ public class TextBoxFieldRenderer extends FieldRenderer<TextBoxFieldDefinition> 
     }
 
     @Override
-    public String getSupportedFieldDefinition() {
-        return TextBoxFieldDefinition.class.getName();
+    public String getSupportedFieldDefinitionCode() {
+        return TextBoxFieldDefinition._CODE;
     }
 
     @Override

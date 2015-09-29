@@ -48,7 +48,7 @@ public class FormLayoutTemplateGeneratorImpl implements FormLayoutTemplateGenera
     @PostConstruct
     protected void init() {
         for ( FormLayoutTemplateComponent component : installedComponents ) {
-            layoutComponents.put( component.getSupportedFieldType(), component );
+            layoutComponents.put( component.getSupportedFieldTypeCode(), component );
         }
     }
 
