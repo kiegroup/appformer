@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.editor.client.editor.events;
+package org.livespark.formmodeler.editor.model.util;
+
+import java.util.Date;
 
 /**
- * Created by pefernan on 8/28/15.
+ * Created by pefernan on 9/30/15.
  */
-public class FieldDroppedEvent extends FormEditorEvent {
+public class IDGenerator {
 
-    public FieldDroppedEvent( String formId, String fieldId ) {
-        super( formId, fieldId );
+    public static String generateRandomId() {
+        Date date = new Date();
+        String value = String.valueOf( Math.random() * date.getTime() );
+
+        if ( value.indexOf(".") != -1 ) {
+            value = value.substring(value.indexOf(".") + 1);
+        }
+        return value;
     }
 }

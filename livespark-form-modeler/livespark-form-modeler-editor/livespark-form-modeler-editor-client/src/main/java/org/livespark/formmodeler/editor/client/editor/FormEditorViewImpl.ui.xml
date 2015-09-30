@@ -23,7 +23,7 @@
 
     <b:Container fluid="true" width="90%" ui:field="container">
         <b:Navbar>
-            <b:Button ui:field="createHolder" type="DANGER"><ui:text from="{i18n.addDataObject}"/></b:Button>
+            <b:Button ui:field="createHolder" type="DANGER"><ui:text from="{i18n.dataObjects}"/></b:Button>
         </b:Navbar>
         <b:TabPanel>
             <b:NavTabs>

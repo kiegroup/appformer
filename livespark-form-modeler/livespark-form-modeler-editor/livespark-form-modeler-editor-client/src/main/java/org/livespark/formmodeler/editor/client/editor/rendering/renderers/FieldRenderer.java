@@ -84,7 +84,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
         TextBox textBox = GWT.create(TextBox.class);
 
         textBox.setReadOnly(true);
-        if ( !field.getName().startsWith( FieldManager.UNBINDED_FIELD_NAME_PREFFIX ) ) {
+        if ( field.getModelName() != null ) {
             textBox.setPlaceholder( field.getBoundPropertyName() );
         } else {
             textBox.setPlaceholder( getName() );
@@ -94,7 +94,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
     }
 
     public void loadFieldProperties( final FieldDefinitionPropertiesModal modal ) {
-        editorWidget.handle(new PropertyEditorEvent(field.getName(), generatePropertyEditorCategory()));
+        editorWidget.handle(new PropertyEditorEvent(field.getId(), generatePropertyEditorCategory()));
         modal.addPropertiesEditor(editorWidget);
     }
 

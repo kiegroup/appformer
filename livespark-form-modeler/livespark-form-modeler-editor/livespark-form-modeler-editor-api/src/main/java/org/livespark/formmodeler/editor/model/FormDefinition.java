@@ -88,6 +88,15 @@ public class FormDefinition {
         return null;
     }
 
+    public FieldDefinition getFieldById(String fieldId) {
+        for (FieldDefinition definition : fields ) {
+            if (definition.getId().equals( fieldId )) {
+                return definition;
+            }
+        }
+        return null;
+    }
+
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;

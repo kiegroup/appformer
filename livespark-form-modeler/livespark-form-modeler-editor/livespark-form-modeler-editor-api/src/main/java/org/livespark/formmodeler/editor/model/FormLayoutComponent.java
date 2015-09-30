@@ -20,6 +20,5 @@ package org.livespark.formmodeler.editor.model;
  */
 public interface FormLayoutComponent {
     public static String FORM_ID = "form_id";
-    public static String FIELD_NAME = "form_field_name";
-    public static String FIELD_DRAG_LABEL = "form_field_label";
+    public static String FIELD_ID = "field_id";
 }

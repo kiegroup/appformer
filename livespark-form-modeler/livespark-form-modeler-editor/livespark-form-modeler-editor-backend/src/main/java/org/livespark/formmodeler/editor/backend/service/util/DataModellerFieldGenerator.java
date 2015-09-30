@@ -55,7 +55,9 @@ public class DataModellerFieldGenerator {
         if (dataObject != null) {
             for (ObjectProperty property : dataObject.getProperties()) {
                 if ( property.getName().equals( field.getBoundPropertyName() ) ) {
-                    return createFieldDefinition( field.getModelName(), property );
+                    FieldDefinition definition = createFieldDefinition( field.getModelName(), property );
+                    definition.setId( field.getId() );
+                    return definition;
                 }
             }
         }

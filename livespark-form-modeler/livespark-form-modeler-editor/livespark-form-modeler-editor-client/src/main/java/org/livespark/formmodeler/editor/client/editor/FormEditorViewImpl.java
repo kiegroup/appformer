@@ -27,10 +27,11 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-import org.livespark.formmodeler.editor.client.editor.dataHolder.DataObjectModal;
+import org.livespark.formmodeler.editor.client.editor.dataHolder.DataObjectsAdminView;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
 import org.uberfire.ext.layout.editor.client.generator.LayoutGenerator;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     TabListItem previewTab;
 
     @Inject
-    private DataObjectModal dataObjectModal;
+    private DataObjectsAdminView dataObjectsView;
 
     @Inject
     private LayoutGenerator layoutGenerator;
@@ -74,10 +75,14 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
         initWidget(uiBinder.createAndBindUi(this));
     }
 
+    @PostConstruct
+    protected void initView() {
+    }
+
     @Override
     public void init(FormEditorPresenter presenter) {
         this.presenter = presenter;
-        dataObjectModal.setPresenter( presenter );
+        dataObjectsView.init( presenter );
     }
 
     @Override
@@ -88,7 +93,7 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
 
     @UiHandler("createHolder")
     void handleClick(ClickEvent event) {
-        presenter.getAvailableDataObjectsList();
+        presenter.initDataObjectsTab();
     }
 
     @UiHandler("previewTab")
@@ -98,9 +103,8 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     @Override
-    public void initDataHoldersPopup( List<String> availableDataObjects ) {
-        dataObjectModal.init( availableDataObjects );
-        dataObjectModal.show();
+    public DataObjectsAdminView getDataObjectsView() {
+        return dataObjectsView;
     }
 
     @Override

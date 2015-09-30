@@ -44,4 +44,12 @@ public interface Constants extends Messages {
     public String idCannotBeEmpty();
     public String idAreadyExists();
     public String typeCannotBeEmpty();
+
+    public String dataObjects();
+    public String emptyDataObjectsTable();
+
+    public String remove();
+
+    public String dataObjectIsBindedMessage();
+    public String areYouSureRemoveDataObject();
 }

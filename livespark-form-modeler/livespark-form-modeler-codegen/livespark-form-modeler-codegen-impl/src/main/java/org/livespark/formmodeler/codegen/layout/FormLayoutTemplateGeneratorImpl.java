@@ -68,7 +68,7 @@ public class FormLayoutTemplateGeneratorImpl implements FormLayoutTemplateGenera
             if ( component != null ) {
                 LayoutComponent layoutComponent = new LayoutComponent( DRAGGABLE_TYPE );
                 layoutComponent.addProperty( FormLayoutComponent.FORM_ID, formDefinition.getId() );
-                layoutComponent.addProperty( FormLayoutComponent.FIELD_NAME, field.getName() );
+                layoutComponent.addProperty( FormLayoutComponent.FIELD_ID, field.getId() );
 
                 LayoutColumn column = new LayoutColumn("12");
                 column.addLayoutComponent( layoutComponent );

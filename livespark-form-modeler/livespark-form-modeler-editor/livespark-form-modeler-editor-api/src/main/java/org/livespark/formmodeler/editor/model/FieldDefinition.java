@@ -16,11 +16,16 @@
 
 package org.livespark.formmodeler.editor.model;
 
+import org.livespark.formmodeler.editor.model.util.IDGenerator;
+import org.livespark.formmodeler.editor.service.FieldManager;
+
 public abstract class FieldDefinition {
 
     protected boolean annotatedId;
 
-    protected String code = getCode();
+    private String id;
+
+    private String code = getCode();
 
     protected String name;
 
@@ -35,6 +40,18 @@ public abstract class FieldDefinition {
     protected String boundPropertyName;
 
     protected String standaloneClassName;
+
+    public FieldDefinition() {
+        id = "field" + FieldManager.FIELD_NAME_SEPARATOR + IDGenerator.generateRandomId();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

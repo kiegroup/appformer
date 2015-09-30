@@ -29,7 +29,6 @@ import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldRenderer;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormLayoutComponent;
-import org.livespark.formmodeler.editor.service.FieldManager;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.layout.editor.client.components.*;
 
@@ -37,7 +36,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +46,7 @@ import java.util.Map;
 public class DraggableFieldComponent implements FormLayoutComponent,
         LayoutDragComponent, HasDragAndDropSettings, HasModalConfiguration, HasOnDropNotification, HasOnRemoveNotification {
 
-    public final String[] SETTINGS_KEYS = new String[] { FORM_ID, FIELD_NAME };
+    public final String[] SETTINGS_KEYS = new String[] { FORM_ID, FIELD_ID};
 
     protected Container content = new Container(  );
 
@@ -70,7 +68,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
     protected String formId;
 
-    protected String fieldName;
+    protected String fieldId;
 
     protected Path formPath;
 
@@ -83,7 +81,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
         this.field = field;
         this.formPath = formPath;
 
-        this.fieldName = field.getName();
+        this.fieldId = field.getId();
 
         findRenderer();
     }
@@ -102,19 +100,17 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
     @Override
     public void setSettingValue( String key, String value ) {
-        if ( FORM_ID.equals( key )) formId = value;
-        else if (FIELD_NAME.equals( key )) {
-            if ( value.startsWith( FieldManager.UNBINDED_FIELD_NAME_PREFFIX ) && value.endsWith( FieldManager.FIELD_NAME_SEPARATOR )) {
-                value = value + (new Date()).getTime();
-            }
-            fieldName = value;
+        if ( FORM_ID.equals( key )) {
+            formId = value;
+        } else if (FIELD_ID.equals( key )) {
+            fieldId = value;
         }
     }
 
     @Override
     public String getSettingValue( String key ) {
         if ( FORM_ID.equals( key )) return formId;
-        else if (FIELD_NAME.equals( key )) return fieldName;
+        else if (FIELD_ID.equals( key )) return fieldId;
         return null;
     }
 
@@ -122,7 +118,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
     public Modal getConfigurationModal( final ModalConfigurationContext ctx ) {
 
         ctx.getComponentProperties().put(FORM_ID, formId);
-        ctx.getComponentProperties().put(FIELD_NAME, fieldName);
+        ctx.getComponentProperties().put(FIELD_ID, fieldId);
 
         if (field == null) getCurrentField( ctx.getComponentProperties() );
 
@@ -137,7 +133,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
         modal.addHideHandler( new ModalHideHandler() {
             @Override
             public void onHide(ModalHideEvent evt) {
-                ctx.setComponentProperty(FIELD_NAME, fieldName);
+                ctx.setComponentProperty(FIELD_ID, fieldId);
                 ctx.configurationFinished();
                 if ( renderer != null ) renderContent();
                 modal = null;
@@ -150,12 +146,12 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
     @Override
     public void onDropComponent() {
-        fieldDroppedEvent.fire(new FieldDroppedEvent(formId, fieldName));
+        fieldDroppedEvent.fire(new FieldDroppedEvent(formId, fieldId));
     }
 
     @Override
     public void onRemoveComponent() {
-        fieldRemovedEvent.fire(new FieldRemovedEvent(formId, fieldName));
+        fieldRemovedEvent.fire(new FieldRemovedEvent(formId, fieldId));
     }
 
     @Override
@@ -185,27 +181,27 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
     protected void renderContent() {
         content.clear();
-        content.add( renderer.renderWidget() );
+        content.add(renderer.renderWidget());
     }
 
     protected void getCurrentField( Map<String, String> properties ) {
         if (field != null) return;
 
-        if (fieldName == null) {
-            fieldName = properties.get( FIELD_NAME );
+        if (fieldId == null) {
+            fieldId = properties.get(FIELD_ID);
         }
 
         if (formId == null) {
             formId = properties.get( FORM_ID );
         }
 
-        fieldRequest.fire(new FormContextRequest(formId, fieldName));
+        fieldRequest.fire(new FormContextRequest(formId, fieldId));
     }
 
     public void onFieldResponse(@Observes FormContextResponse response) {
-        if ( !response.getFormId().equals( formId ) || !response.getFieldName().equals( fieldName ) ) return;
+        if ( !response.getFormId().equals( formId ) || !response.getFieldId().equals(fieldId) ) return;
         editorHelper = response.getEditorHelper();
-        init(formId, editorHelper.getFormField(fieldName), editorHelper.getContent().getPath());
+        init(formId, editorHelper.getFormField(fieldId), editorHelper.getContent().getPath());
         if ( renderer != null ) {
             renderContent();
             if ( modal != null ) {
@@ -229,17 +225,17 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
         if ( destField == null ) return;
 
-        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, destField.getName() ) );
-        fieldRemovedEvent.fire( new FieldRemovedEvent( formId, field.getName() ) );
+        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, destField.getId() ) );
+        fieldRemovedEvent.fire( new FieldRemovedEvent( formId, field.getId() ) );
 
-        fieldName = destField.getName();
+        fieldId = destField.getId();
         field = destField;
 
         renderer.setField( destField );
 
         renderContent();
 
-        renderer.loadFieldProperties( modal );
+        renderer.loadFieldProperties(modal);
 
     }
 
@@ -250,7 +246,13 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
         findRenderer();
 
-        if ( renderer != null ) renderContent();
+        if ( renderer != null ) {
+            if ( modal != null ) renderer.loadFieldProperties( modal );
+            renderContent();
+        }
+    }
 
+    public String getFieldId() {
+        return fieldId;
     }
 }

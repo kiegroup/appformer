@@ -45,7 +45,7 @@ public class TextBoxFieldRenderer extends FieldRenderer<TextBoxFieldDefinition> 
         FormGroup group = new FormGroup(  );
         FormLabel label = new FormLabel(  );
         TextBox box = new TextBox();
-        box.setId( field.getName() );
+        box.setId( field.getId() );
         box.setPlaceholder(field.getPlaceHolder());
         box.setWidth(field.getSize().intValue() + "em");
         box.setMaxLength(field.getMaxLength());

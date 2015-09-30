@@ -38,6 +38,7 @@ public class FieldDefinitionPropertiesModal extends BaseModal {
     }
 
     public void addPropertiesEditor( PropertyEditorWidget widget ) {
+        body.clear();
         body.add( widget );
     }
 }

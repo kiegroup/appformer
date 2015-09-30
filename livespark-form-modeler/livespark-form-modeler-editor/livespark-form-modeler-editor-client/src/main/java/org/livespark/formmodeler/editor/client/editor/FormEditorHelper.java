@@ -17,8 +17,10 @@ package org.livespark.formmodeler.editor.client.editor;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.livespark.formmodeler.editor.client.editor.events.FormContextRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse;
+import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
 import org.livespark.formmodeler.editor.client.editor.service.ClientFieldManagerImpl;
 import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
@@ -26,6 +28,8 @@ import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.livespark.formmodeler.editor.service.FieldManager;
 import org.livespark.formmodeler.editor.service.FormEditorService;
+import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
+import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -55,6 +59,8 @@ public class FormEditorHelper {
 
     private List<FieldDefinition> baseTypes;
 
+    private List<DraggableFieldComponent> draggableFieldComponents;
+
     @PostConstruct
     protected void doInit() {
         baseTypes = fieldManager.getBaseTypes();
@@ -64,8 +70,19 @@ public class FormEditorHelper {
         return content;
     }
 
-    public void setContent( FormModelerContent content ) {
+    public void initHelper(FormModelerContent content) {
         this.content = content;
+
+        if (draggableFieldComponents != null && !draggableFieldComponents.isEmpty()) return;
+        draggableFieldComponents = new ArrayList<DraggableFieldComponent>();
+
+        for ( FieldDefinition field : baseTypes ) {
+            DraggableFieldComponent dragComponent = IOC.getBeanManager().lookupBean( DraggableFieldComponent.class ).getInstance();
+            if (dragComponent != null) {
+                dragComponent.init( getFormDefinition().getId(), field, content.getPath() );
+                draggableFieldComponents.add( dragComponent );
+            }
+        }
     }
 
     public FormDefinition getFormDefinition () {
@@ -79,41 +96,60 @@ public class FormEditorHelper {
     }
 
     public void addAvailableField( FieldDefinition field ) {
-        availableFields.put( field.getName(), field );
+        availableFields.put( field.getId(), field );
     }
 
-    public FieldDefinition getAvailableField( String fieldName ) {
-        return availableFields.get( fieldName );
-    }
-
-    public FieldDefinition getFormField( String fieldName ) {
-        FieldDefinition result = content.getDefinition().getFieldByName(fieldName);
+    public FieldDefinition getFormField( String fieldId ) {
+        FieldDefinition result = content.getDefinition().getFieldById(fieldId);
         if ( result == null) {
-            if ( fieldName.startsWith(FieldManager.UNBINDED_FIELD_NAME_PREFFIX ) ) {
-                String typeCode = fieldName.substring( FieldManager.UNBINDED_FIELD_NAME_PREFFIX.length(),
-                        fieldName.lastIndexOf( FieldManager.FIELD_NAME_SEPARATOR ) );
-                result = fieldManager.getDefinitionByTypeCode( typeCode );
-                if ( result == null ) return null;
-                result.setName( fieldName );
-                result.setLabel( typeCode );
-                content.getDefinition().getFields().add( result );
+            result = availableFields.get(fieldId);
+            if (result != null) {
+                content.getDefinition().getFields().add(result);
+                availableFields.remove(fieldId);
             } else {
-                result = availableFields.get(fieldName);
-                if (result != null) {
+                for (int i = 0; i < baseTypes.size() && result == null; i++) {
+                    FieldDefinition base = baseTypes.get( i );
+
+                    if ( base.getId().equals( fieldId ) ) {
+                        result = base;
+                    }
+                }
+
+                if ( result != null ) {
+                    resetBaseType(result);
+                    result.setName( generateUnbindedFieldName( result ) );
+                    result.setLabel( result.getCode() );
                     content.getDefinition().getFields().add(result);
-                    availableFields.remove(fieldName);
                 }
             }
         }
         return result;
     }
 
-    public FieldDefinition removeField( String fieldName ) {
+    protected void resetBaseType( FieldDefinition baseFieldType ) {
+        FieldDefinition newType = fieldManager.getDefinitionByTypeCode(baseFieldType.getCode());
+
+        newType.setName( generateUnbindedFieldName( newType ));
+
+        newType.setLabel( newType.getCode() );
+
+        baseTypes.remove(baseFieldType);
+
+        baseTypes.add( newType );
+
+        for (DraggableFieldComponent component : draggableFieldComponents ) {
+            if ( component.getFieldId().equals( baseFieldType.getId()) ) {
+                component.init( getFormDefinition().getId(), newType, content.getPath() );
+            }
+        }
+    }
+
+    public FieldDefinition removeField( String fieldId ) {
         Iterator<FieldDefinition> it = content.getDefinition().getFields().iterator();
 
         while (it.hasNext()) {
             FieldDefinition field = it.next();
-            if (field.getName().equals( fieldName )) {
+            if (field.getId().equals( fieldId )) {
                 it.remove();
                 resetField( field );
                 return field;
@@ -128,7 +164,7 @@ public class FormEditorHelper {
 
     public void onFieldRequest( @Observes FormContextRequest request ) {
         if (request.getFormId().equals( content.getDefinition().getId() )) {
-            responseEvent.fire( new FormContextResponse( request.getFormId(), request.getFieldName(), this ) );
+            responseEvent.fire( new FormContextResponse( request.getFormId(), request.getFieldId(), this ) );
         }
     }
 
@@ -165,9 +201,7 @@ public class FormEditorHelper {
 
         // Handling the change when the field binding is going to be removed
         if ( bindingExpression == null || bindingExpression.equals("") ) {
-            resultDefinition.setName( FieldManager.UNBINDED_FIELD_NAME_PREFFIX + resultDefinition.getCode()
-                    + FieldManager.FIELD_NAME_SEPARATOR
-                    + (new Date()).getTime());
+            resultDefinition.setName( generateUnbindedFieldName(resultDefinition) );
             content.getDefinition().getFields().add(resultDefinition);
             return resultDefinition;
         }
@@ -177,6 +211,7 @@ public class FormEditorHelper {
             FieldDefinition destField = it.next();
             if (destField.getBindingExpression().equals( bindingExpression )) {
 
+                resultDefinition.setId( destField.getId() );
                 resultDefinition.setName(destField.getName());
                 resultDefinition.setStandaloneClassName(destField.getStandaloneClassName());
                 resultDefinition.setAnnotatedId(destField.isAnnotatedId());
@@ -202,25 +237,60 @@ public class FormEditorHelper {
         editorService.call(new RemoteCallback<FieldDefinition>() {
             @Override
             public void callback(FieldDefinition field) {
-                availableFields.put( field.getName(), field);
+                availableFields.put(field.getId(), field);
             }
-        }).resetField(content.getDefinition(), field, content.getPath() );
+        }).resetField(content.getDefinition(), field, content.getPath());
     }
 
     public FieldDefinition switchToFieldType(FieldDefinition field, String typeCode) {
         FieldDefinition resultDefinition = fieldManager.getDefinitionByTypeCode( typeCode );
 
         resultDefinition.copyFrom(field);
-        resultDefinition.setName(field.getName());
-        resultDefinition.setStandaloneClassName(field.getStandaloneClassName());
-        resultDefinition.setAnnotatedId(field.isAnnotatedId());
-        resultDefinition.setModelName(field.getModelName());
-        resultDefinition.setBoundPropertyName(field.getBoundPropertyName());
+        resultDefinition.setId( field.getId() );
+        resultDefinition.setName( field.getName() );
+        resultDefinition.setStandaloneClassName( field.getStandaloneClassName() );
+        resultDefinition.setAnnotatedId( field.isAnnotatedId() );
+        resultDefinition.setModelName( field.getModelName() );
+        resultDefinition.setBoundPropertyName( field.getBoundPropertyName() );
 
-        removeField(field.getName());
+        removeField(field.getId());
 
         content.getDefinition().getFields().add(resultDefinition);
 
         return resultDefinition;
+    }
+
+    public void removeDataHolder(String holderName, LayoutTemplate layout) {
+        getFormDefinition().removeDataHolder(holderName);
+        for (FieldDefinition field : getFormDefinition().getFields()) {
+            if (holderName.equals(field.getModelName())) {
+                field.setName( generateUnbindedFieldName( field ) );
+                field.setModelName("");
+                field.setBoundPropertyName("");
+            }
+        }
+        for (Iterator<FieldDefinition> it = availableFields.values().iterator(); it.hasNext();) {
+            FieldDefinition field = it.next();
+            if ( field.getModelName().equals( holderName ) ) {
+                it.remove();
+            }
+        }
+    }
+
+    public String generateUnbindedFieldName( FieldDefinition field ) {
+        return FieldManager.UNBINDED_FIELD_NAME_PREFFIX + field.getId();
+    }
+
+    public List<DraggableFieldComponent> getBaseFieldsDraggables() {
+        return draggableFieldComponents;
+    }
+
+    public boolean hasBindedFields(DataHolder dataHolder) {
+        for (FieldDefinition field : getFormDefinition().getFields()) {
+            if (dataHolder.getName().equals(field.getModelName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

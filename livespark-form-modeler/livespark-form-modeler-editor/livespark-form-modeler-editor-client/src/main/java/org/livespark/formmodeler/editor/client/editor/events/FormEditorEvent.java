@@ -20,11 +20,11 @@ package org.livespark.formmodeler.editor.client.editor.events;
  */
 public abstract class FormEditorEvent {
     protected String formId;
-    protected String fieldName;
+    protected String fieldId;
 
-    public FormEditorEvent( String formId, String fieldName ) {
+    public FormEditorEvent( String formId, String fieldId) {
         this.formId = formId;
-        this.fieldName = fieldName;
+        this.fieldId = fieldId;
     }
 
     public String getFormId() {
@@ -35,11 +35,11 @@ public abstract class FormEditorEvent {
         this.formId = formId;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getFieldId() {
+        return fieldId;
     }
 
-    public void setFieldName( String fieldName ) {
-        this.fieldName = fieldName;
+    public void setFieldId(String fieldId) {
+        this.fieldId = fieldId;
     }
 }

@@ -145,7 +145,7 @@ public abstract class AbstractFieldManager implements FieldManager {
             try {
                 FieldDefinition instance = createNewInstance( definition );
 
-                instance.setName( UNBINDED_FIELD_NAME_PREFFIX + definition.getCode() + FIELD_NAME_SEPARATOR );
+                instance.setName( UNBINDED_FIELD_NAME_PREFFIX + instance.getId() );
 
                 instance.setLabel( definition.getCode() );
 

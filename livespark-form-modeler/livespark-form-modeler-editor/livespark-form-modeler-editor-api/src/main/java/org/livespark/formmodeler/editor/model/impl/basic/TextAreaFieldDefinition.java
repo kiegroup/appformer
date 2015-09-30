@@ -35,7 +35,7 @@ public class TextAreaFieldDefinition extends FieldDefinition implements HasRows,
     public static final String _CODE = "TextArea";
 
     protected Integer rows = 4;
-    protected Integer size = 15;
+    protected Integer size = 12;
     protected String placeHolder = "";
 
     @Override

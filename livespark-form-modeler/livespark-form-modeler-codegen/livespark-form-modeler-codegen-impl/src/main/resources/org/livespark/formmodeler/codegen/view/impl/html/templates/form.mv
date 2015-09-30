@@ -13,7 +13,7 @@
     @if{col.layoutComponents != null}
         @foreach{component : col.layoutComponents}
             @if{component.dragTypeName != "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent"}
-                @code{field = form.getFieldByName(component.properties["form_field_name"])}
+                @code{field = form.getFieldById(component.properties["field_id"])}
                 @if{field != null}
                     @includeNamed{field.code}
                 @end{}
