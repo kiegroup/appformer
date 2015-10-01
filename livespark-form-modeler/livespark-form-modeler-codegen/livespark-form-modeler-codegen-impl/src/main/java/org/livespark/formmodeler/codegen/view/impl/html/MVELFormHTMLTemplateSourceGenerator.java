@@ -60,6 +60,6 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
         Map<String, FormDefinition> params = new HashMap<String, FormDefinition>(  );
         params.put( "formDefinition", context.getFormDefinition() );
-        return ( String ) TemplateRuntime.execute(formTemplate, null, params, registry);
+        return (( String ) TemplateRuntime.execute(formTemplate, null, params, registry)).trim();
     }
 }

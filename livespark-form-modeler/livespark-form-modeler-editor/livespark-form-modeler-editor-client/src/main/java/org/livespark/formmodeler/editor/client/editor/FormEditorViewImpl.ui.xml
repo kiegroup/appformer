@@ -23,7 +23,9 @@
 
     <b:Container fluid="true" width="90%" ui:field="container">
         <b:Navbar>
-            <b:Button ui:field="createHolder" type="DANGER"><ui:text from="{i18n.dataObjects}"/></b:Button>
+            <b:NavbarForm pull="LEFT">
+                <b:Button ui:field="createHolder" type="DANGER"><ui:text from="{i18n.dataObjects}"/></b:Button>
+            </b:NavbarForm>
         </b:Navbar>
         <b:TabPanel>
             <b:NavTabs>

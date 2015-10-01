@@ -58,7 +58,7 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
             Element group = Document.get().getElementById( field + "_form_group" );
             Element helpBlock = Document.get().getElementById( field + "_help_block" );
             if ( group != null )
-                group.removeClassName( "error" );
+                group.removeClassName( "has-error" );
             if ( helpBlock != null )
                 helpBlock.setInnerHTML( "" );
         }
@@ -94,6 +94,13 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
             if ( helpBlock != null )
                 helpBlock.setInnerHTML( validation.getMessage() );
         }
-        return isValid;
+
+        boolean isValidChildren = validateChildren();
+
+        return isValid && isValidChildren;
+    }
+
+    public boolean validateChildren() {
+        return true;
     }
 }

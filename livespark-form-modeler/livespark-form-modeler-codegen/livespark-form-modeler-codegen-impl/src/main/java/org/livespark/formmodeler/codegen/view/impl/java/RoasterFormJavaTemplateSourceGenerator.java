@@ -25,7 +25,9 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
@@ -91,7 +93,7 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
                  .setBody( getModelSrc.toString() )
                  .setReturnType( List.class )
                  .setProtected()
-                 .addAnnotation( JAVA_LANG_OVERRIDE );
+                 .addAnnotation(JAVA_LANG_OVERRIDE);
 
         viewClass.addMethod()
                  .setName( "initEntities" )
@@ -101,12 +103,34 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
                  .addAnnotation( JAVA_LANG_OVERRIDE );
 
         viewClass.addMethod()
-                 .setName( "updateNestedModels" )
-                 .setBody( "" )
-                 .setParameters( "boolean init" )
+                 .setName("updateNestedModels")
+                 .setBody("")
+                 .setParameters("boolean init")
                  .setReturnTypeVoid()
                  .setProtected()
                  .addAnnotation( JAVA_LANG_OVERRIDE );
+
+        StringBuffer childValidSrc = new StringBuffer();
+
+        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
+            if ( field instanceof SubFormFieldDefinition ) {
+                childValidSrc.append("valid = ")
+                        .append(field.getName())
+                        .append(".validate();");
+            }
+        }
+
+        if ( childValidSrc.length() > 0 ) {
+            childValidSrc.insert(0, "boolean valid = true;");
+            childValidSrc.append("return valid;");
+
+            viewClass.addMethod()
+                    .setName("validateChildren")
+                    .setBody(childValidSrc.toString())
+                    .setReturnType(boolean.class)
+                    .setPublic()
+                    .addAnnotation(JAVA_LANG_OVERRIDE);
+        }
     }
 
     @Override
