@@ -195,15 +195,18 @@ public abstract class AbstractFieldManager implements FieldManager {
                 if (definition == null) {
                     definition = multipleEntityDefinitions.get(defaultMultipleEntity);
                 }
+                FieldDefinition instance = createNewInstance( definition );
+                instance.setStandaloneClassName( type );
+                return instance;
             } else {
                 definition = basicFieldDefinitions.get( defaultBasicTypes.get( className ) );
                 if (definition == null) {
                     definition = singleEntityDefinitions.get(defaultSingleEntity);
                 }
+                FieldDefinition instance = createNewInstance( definition );
+                instance.setStandaloneClassName( className );
+                return instance;
             }
-            FieldDefinition instance = createNewInstance( definition );
-            instance.setStandaloneClassName( className );
-            return instance;
         } catch ( Exception e ) {
             log.warn( "Error creating FieldDefinition: ", e );
         }
