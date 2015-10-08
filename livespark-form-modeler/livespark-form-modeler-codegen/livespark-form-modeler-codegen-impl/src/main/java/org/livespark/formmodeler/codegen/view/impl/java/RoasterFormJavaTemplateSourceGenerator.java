@@ -16,8 +16,6 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.codehaus.plexus.util.StringUtils;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -25,13 +23,11 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.editor.model.DataHolder;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.FormDefinition;
-import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 
-import java.util.ArrayList;
+import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_ARRAYLIST;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -110,27 +106,12 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
                  .setProtected()
                  .addAnnotation( JAVA_LANG_OVERRIDE );
 
-        StringBuffer childValidSrc = new StringBuffer();
-
-        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
-            if ( field instanceof SubFormFieldDefinition ) {
-                childValidSrc.append("valid = ")
-                        .append(field.getName())
-                        .append(".validate();");
-            }
-        }
-
-        if ( childValidSrc.length() > 0 ) {
-            childValidSrc.insert(0, "boolean valid = true;");
-            childValidSrc.append("return valid;");
-
-            viewClass.addMethod()
-                    .setName("validateChildren")
-                    .setBody(childValidSrc.toString())
-                    .setReturnType(boolean.class)
-                    .setPublic()
-                    .addAnnotation(JAVA_LANG_OVERRIDE);
-        }
+        viewClass.addMethod()
+                .setName("doExtraValidations")
+                .setBody("boolean valid = true; return valid;")
+                .setReturnType(boolean.class)
+                .setPublic()
+                .addAnnotation(JAVA_LANG_OVERRIDE);
     }
 
     @Override

@@ -74,6 +74,8 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
     protected abstract void initEntities();
 
+    public abstract boolean doExtraValidations();
+
     public boolean validate() {
 
         boolean isValid = true;
@@ -95,12 +97,8 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
                 helpBlock.setInnerHTML( validation.getMessage() );
         }
 
-        boolean isValidChildren = validateChildren();
+        boolean extraValidations = doExtraValidations();
 
-        return isValid && isValidChildren;
-    }
-
-    public boolean validateChildren() {
-        return true;
+        return isValid && extraValidations;
     }
 }

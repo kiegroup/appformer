@@ -76,21 +76,41 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
         subformAdapter.addMethod()
                 .setPublic()
                 .setReturnType( "Class<" + viewName + ">" )
-                .setName( "getFormViewType" )
-                .setBody( "return " + viewName + ".class;" )
-                .addAnnotation( Override.class );
+                .setName("getFormViewType")
+                .setBody("return " + viewName + ".class;")
+                .addAnnotation(Override.class);
 
         MethodSource<JavaClassSource> modelMethod = subformAdapter.addMethod();
         modelMethod.setPublic()
-                .setName( "getFormModelForModel" )
-                .addParameter( subformField.getStandaloneClassName(), "model" );
+                .setName("getFormModelForModel")
+                .addParameter(subformField.getStandaloneClassName(), "model");
         modelMethod.setReturnType( subformField.getEmbeddedModel() )
                 .setBody( " return new " + modelName + "( model );")
-                .addAnnotation( Override.class );
+                .addAnnotation(Override.class);
 
-        viewClass.addNestedType( subformAdapter );
+        viewClass.addNestedType(subformAdapter);
 
         amendUpdateNestedModels(subformField, context, viewClass);
+
+        amendValidateNestedModels( subformField, context, viewClass );
+    }
+
+    private void amendValidateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
+
+        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "doExtraValidations",
+                boolean.class );
+        if ( updateNestedModelsMethod != null ) {
+            String body = updateNestedModelsMethod.getBody();
+
+            StringBuffer validText = new StringBuffer();
+            validText.append(";")
+                    .append("valid = ")
+                    .append( fieldDefinition.getName())
+                    .append(".validate();");
+
+            body = body.replaceFirst(";", validText.toString());
+            updateNestedModelsMethod.setBody( body );
+        }
     }
 
     private void amendUpdateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
