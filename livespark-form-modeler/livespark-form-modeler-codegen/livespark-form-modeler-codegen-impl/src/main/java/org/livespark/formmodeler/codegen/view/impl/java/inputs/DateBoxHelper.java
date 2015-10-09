@@ -37,7 +37,7 @@ public class DateBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.google.gwt.user.datepicker.client.DatePicker";
+        return "org.livespark.formmodeler.rendering.client.shared.fields.DatePicker";
     }
 
     @Override

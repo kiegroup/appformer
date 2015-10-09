@@ -16,46 +16,57 @@
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.rendering.client.shared.fields.DatePicker;
+import org.gwtbootstrap3.client.ui.*;
+import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
+import org.livespark.formmodeler.editor.model.impl.basic.selectors.ListBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
+import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 
 import javax.enterprise.context.Dependent;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by pefernan on 9/21/15.
  */
 @Dependent
-public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinition> {
+public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> {
+
     @Override
     public String getName() {
-        return "DatePicker";
+        return "ListBox";
     }
 
     @Override
     public IsWidget renderWidget() {
         FormGroup group = new FormGroup(  );
         FormLabel label = new FormLabel(  );
-        DatePicker box = new DatePicker();
-        label.setText( field.getLabel() );
-        label.setFor( box.getElement().getId() );
+        ListBox listBox = new ListBox();
+        listBox.setWidth( field.getSize() + "em");
+        listBox.setEnabled(!field.getReadonly());
+        label.setText( field.getLabel());
+        label.setFor(listBox.getId());
         group.add(label);
-        group.add( box );
-        group.add( new HelpBlock() );
+        group.add(listBox);
+        group.add(new HelpBlock());
         return group;
     }
 
     @Override
     public String getSupportedFieldDefinitionCode() {
-        return DateBoxFieldDefinition._CODE;
+        return ListBoxFieldDefinition._CODE;
     }
 
     @Override
     protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
-        return null;
+        List<PropertyEditorFieldInfo> result = new ArrayList<PropertyEditorFieldInfo>();
+        result.add(new PropertyEditorFieldInfo( FieldProperties.INSTANCE.size(), String.valueOf( field.getSize() ), PropertyEditorType.TEXT ) {
+            @Override
+            public void setCurrentStringValue( final String currentStringValue ) {
+                super.setCurrentStringValue( currentStringValue );
+                field.setSize(Integer.decode(currentStringValue));
+            }
+        });
+        return result;
     }
 }
