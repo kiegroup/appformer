@@ -17,8 +17,8 @@
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -26,8 +26,8 @@ import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
 public class DateBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
-    public String getSupportedFieldType() {
-        return DateBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return DateBoxFieldDefinition._CODE;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class DateBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
     public String getInputWidget() {
-        return "com.google.gwt.user.datepicker.client.DatePicker";
+        return "org.livespark.formmodeler.rendering.client.shared.fields.DatePicker";
     }
 
     @Override

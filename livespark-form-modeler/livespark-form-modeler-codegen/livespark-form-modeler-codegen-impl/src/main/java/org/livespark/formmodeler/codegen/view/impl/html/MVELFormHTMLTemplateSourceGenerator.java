@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
@@ -51,7 +51,7 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
         formTemplate = TemplateCompiler.compileTemplate( getClass().getResourceAsStream( formTemplatePath ) );
 
         for ( InputTemplateProvider provider : providers ) {
-            registry.addNamedTemplate( provider.getSupportedFieldType(), TemplateCompiler.compileTemplate( provider.getTemplateInputStream() ) );
+            registry.addNamedTemplate( provider.getSupportedFieldTypeCode(), TemplateCompiler.compileTemplate( provider.getTemplateInputStream() ) );
         }
 
     }
@@ -60,6 +60,6 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
         Map<String, FormDefinition> params = new HashMap<String, FormDefinition>(  );
         params.put( "formDefinition", context.getFormDefinition() );
-        return ( String ) TemplateRuntime.execute(formTemplate, null, params, registry);
+        return (( String ) TemplateRuntime.execute(formTemplate, null, params, registry)).trim();
     }
 }

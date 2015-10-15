@@ -52,6 +52,10 @@ public class SubForm<M, F extends FormModel> extends Well implements HasModel<M>
         if (formView != null) formView.setReadOnly( readonly );
     }
 
+    public boolean validate() {
+        return formView.validate();
+    }
+
     protected void initFormView() {
         IOCBeanDef<? extends FormView<F>> beanDef = IOC.getBeanManager().lookupBean( subFormModelAdapter.getFormViewType() );
         this.formView = beanDef.getInstance();

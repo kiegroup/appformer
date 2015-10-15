@@ -1,11 +1,38 @@
+@declare{"processRows"}
+    @foreach{row : rows}
+            <div class="row">
+        @foreach{col : row.layoutColumns}
+            @includeNamed{"processColumn"; form=form; col=col}
+        @end{}
+            </div>
+    @end{}
+@end{}
+
+@declare{"processColumn"}
+                <div class="col-md-@{col.span}">
+    @if{col.layoutComponents != null}
+        @foreach{component : col.layoutComponents}
+            @if{component.dragTypeName != "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent"}
+                @code{field = form.getFieldById(component.properties["field_id"])}
+                @if{field != null}
+                    @includeNamed{field.code}
+                @end{}
+            @else{}
+                @{component.properties["HTML_CODE"]}
+            @end{}
+        @end{}
+    @end{}
+    @if{col.rows != null}
+        @includeNamed{"processRows"; form=form; rows=col.rows}
+    @end{}
+                </div>
+@end{}
+
+
 <div>
     <form onsubmit="false">
         <fieldset>
-            @foreach{field : formDefinition.fields}
-              @if{!field.isAnnotatedId()}
-			    @includeNamed{field.code}
-              @end{}
-            @end{}
+            @includeNamed{"processRows"; form=formDefinition; rows=formDefinition.layoutTemplate.rows}
         </fieldset>
     </form>
 </div>

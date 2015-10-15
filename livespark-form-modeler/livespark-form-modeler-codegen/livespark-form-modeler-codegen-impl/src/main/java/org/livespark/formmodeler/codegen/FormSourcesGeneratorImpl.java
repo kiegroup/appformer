@@ -32,6 +32,7 @@ import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
@@ -39,7 +40,7 @@ import org.livespark.formmodeler.codegen.rest.RestImpl;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -78,6 +79,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormHTMLTemplateSourceGenerator htmlTemplateSourceGenerator;
 
     @Inject
+    private FormLayoutTemplateGenerator formLayoutTemplateGenerator;
+
+    @Inject
     @ListView
     private FormJavaTemplateSourceGenerator javaListTemplateSourceGenerator;
 
@@ -105,20 +109,21 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private ErraiAppPropertiesGenerator serializableTypesGenerator;
 
     @Override
-    public void generateFormSources( FormDefinition form, Path resourcePath ) {
-        Package resPackage = projectService.resolvePackage( resourcePath );
-        KieProject project = projectService.resolveProject( resourcePath );
+    public void generateEntityFormSources(FormDefinition form, Path resourcePath) {
+        Package resPackage = projectService.resolvePackage(resourcePath);
+        KieProject project = projectService.resolveProject(resourcePath);
 
-        Package root = getRootPackage( resPackage );
+        Package root = getRootPackage(resPackage);
 
-        Package client = getOrCreateClientPackage( root );
-        Package local = getOrCreateLocalPackage( client );
-        Package shared = getOrCreateSharedPackage( client );
-        Package server = getOrCreateServerPackage( root );
+        Package client = getOrCreateClientPackage(root);
+        Package local = getOrCreateLocalPackage(client);
+        Package shared = getOrCreateSharedPackage(client);
+        Package server = getOrCreateServerPackage(root);
 
         SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, server );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
+        String formTemplateLayout = formLayoutTemplateGenerator.generateLayoutTemplate( form );
 
         String javaTemplate = javaTemplateSourceGenerator.generateJavaTemplateSource( context );
         String htmlTemplate = htmlTemplateSourceGenerator.generateHTMLTemplateSource( context );
@@ -134,16 +139,17 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         String serializableTypesDeclaration = serializableTypesGenerator.generate( getSerializableTypeClassNames( project ) );
 
         if ( !allNonEmpty( resourcePath,
-                             modelSource,
-                             javaTemplate,
-                             htmlTemplate,
-                             listJavaTemplate,
-                             listHtmlTemplate,
-                             listItemJavaTemplate,
-                             restServiceTemplate,
-                             restImplTemplate,
-                             entityServiceTemplate,
-                             serializableTypesDeclaration ) ) {
+                modelSource,
+                formTemplateLayout,
+                javaTemplate,
+                htmlTemplate,
+                listJavaTemplate,
+                listHtmlTemplate,
+                listItemJavaTemplate,
+                restServiceTemplate,
+                restImplTemplate,
+                entityServiceTemplate,
+                serializableTypesDeclaration ) ) {
             log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
             return;
         }
@@ -153,6 +159,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         ioService.startBatch( parent.getFileSystem() );
         try {
             writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeFormTemplate( resourcePath, form.getName(), formTemplateLayout, shared );
+
             writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
             writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, local );
             writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, local );
@@ -164,6 +172,45 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
             writeHTMLSource( resourcePath, context.getListViewName(), listHtmlTemplate, local );
 
             writeErraiAppProperties( serializableTypesDeclaration, project );
+        } catch ( Exception e ) {
+            log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
+        } finally {
+            ioService.endBatch();
+        }
+    }
+
+    @Override
+    public void generateFormSources( FormDefinition form, Path resourcePath ) {
+        Package resPackage = projectService.resolvePackage( resourcePath );
+
+        Package root = getRootPackage( resPackage );
+
+        Package client = getOrCreateClientPackage( root );
+        Package local = getOrCreateLocalPackage( client );
+        Package shared = getOrCreateSharedPackage( client );
+
+        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, null );
+
+        String modelSource = modelSourceGenerator.generateFormModelSource( context );
+
+        String javaTemplate = javaTemplateSourceGenerator.generateJavaTemplateSource( context );
+        String htmlTemplate = htmlTemplateSourceGenerator.generateHTMLTemplateSource( context );
+
+        if ( !allNonEmpty( resourcePath,
+                             modelSource,
+                             javaTemplate,
+                             htmlTemplate ) ) {
+            log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
+            return;
+        }
+
+        org.uberfire.java.nio.file.Path parent = Paths.convert( resourcePath ).getParent();
+
+        ioService.startBatch( parent.getFileSystem() );
+        try {
+            writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
+            writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
         } catch ( Exception e ) {
             log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
         } finally {
@@ -251,6 +298,18 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         }
 
         return true;
+    }
+
+    private void writeFormTemplate( Path dataObjectPath,
+                                  String name,
+                                  String formTemplate,
+                                  Package sourcePackage ) {
+        org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getPackageMainResourcesPath() );
+        org.uberfire.java.nio.file.Path htmlPath = parentPath.resolve( name + ".frm" );
+
+        ioService.write( htmlPath,
+                formTemplate,
+                makeCommentedOption( "Added HTML Source for Form Template '" + dataObjectPath + "'" ) );
     }
 
     private void writeHTMLSource( Path dataObjectPath,

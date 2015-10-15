@@ -36,9 +36,9 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
-
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 
 public abstract class RoasterClientFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
 
@@ -50,7 +50,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
     @PostConstruct
     protected void init() {
         for ( InputCreatorHelper helper : creatorInstances ) {
-            creatorHelpers.put( helper.getSupportedFieldType(),
+            creatorHelpers.put( helper.getSupportedFieldTypeCode(),
                     helper );
         }
     }
@@ -64,7 +64,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         addImports( context, viewClass );
         addAnnotations( context, viewClass );
         addAdditional( context, viewClass );
-        
+
         addBaseViewFieldsAndMethodImpls( context, viewClass );
         return viewClass.toString();
     }
@@ -94,17 +94,17 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
 
             if (helper instanceof RequiresCustomCode ) ((RequiresCustomCode )helper).addCustomCode( fieldDefinition, context, viewClass );
 
-            if (!(fieldDefinition instanceof SubFormFieldDefinition)) {
+            if (fieldDefinition.getBindingExpression() != null && !(fieldDefinition instanceof EmbeddedFormField)) {
                 field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
             }
-            
+
             field.addAnnotation( ERRAI_DATAFIELD );
 
             property.removeAccessor();
             property.removeMutator();
 
             inputNames.append( "inputNames.add(\"" ).append( fieldDefinition.getName() ).append( "\");" );
-            readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            if ( !fieldDefinition.isAnnotatedId() ) readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
         }
 
         viewClass.addMethod()
@@ -142,11 +142,13 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             JavaClassSource viewClass,
             String packageName );
 
-    protected abstract boolean displaysId();
-
     protected abstract boolean isBanned( FieldDefinition definition );
 
     private String getPackageName( SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName();
+    }
+
+    protected boolean displaysId() {
+        return true;
     }
 }

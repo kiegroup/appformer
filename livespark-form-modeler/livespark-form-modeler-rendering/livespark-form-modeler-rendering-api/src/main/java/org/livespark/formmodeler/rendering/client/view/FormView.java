@@ -16,6 +16,7 @@
 
 package org.livespark.formmodeler.rendering.client.view;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -45,9 +46,9 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
     @PostConstruct
     private void init() {
-        Object entity = getEntity();
-        if (entity == null) {
-            setNewEntity();
+        List entites = getEntities();
+        if (entites == null || entites.isEmpty() || entites.size() < getEntitiesCount()) {
+            initEntities();
         }
         updateNestedModels(true);
     }
@@ -57,7 +58,7 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
             Element group = Document.get().getElementById( field + "_form_group" );
             Element helpBlock = Document.get().getElementById( field + "_help_block" );
             if ( group != null )
-                group.removeClassName( "error" );
+                group.removeClassName( "has-error" );
             if ( helpBlock != null )
                 helpBlock.setInnerHTML( "" );
         }
@@ -67,9 +68,13 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
     protected abstract void updateNestedModels(boolean init);
 
-    protected abstract Object getEntity();
+    protected abstract int getEntitiesCount();
 
-    protected abstract void setNewEntity();
+    protected abstract List getEntities();
+
+    protected abstract void initEntities();
+
+    public abstract boolean doExtraValidations();
 
     public boolean validate() {
 
@@ -91,6 +96,9 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
             if ( helpBlock != null )
                 helpBlock.setInnerHTML( validation.getMessage() );
         }
-        return isValid;
+
+        boolean extraValidations = doExtraValidations();
+
+        return isValid && extraValidations;
     }
 }

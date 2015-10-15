@@ -23,8 +23,8 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.SubFormFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
@@ -34,8 +34,8 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 public class SubFormHelper extends AbstractInputCreatorHelper implements RequiresCustomCode {
 
     @Override
-    public String getSupportedFieldType() {
-        return SubFormFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return SubFormFieldDefinition._CODE;
     }
 
     @Override
@@ -59,12 +59,12 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
 
         JavaClassSource subformAdapter = Roaster.create( JavaClassSource.class );
 
-        viewClass.addImport( subformField.getStandaloneType() );
+        viewClass.addImport( subformField.getStandaloneClassName() );
         viewClass.addImport( subformField.getEmbeddedModel() );
         viewClass.addImport( subformField.getEmbeddedFormView() );
         viewClass.addImport( SUBFORM_ClASSNAME );
 
-        String standaloneName = cleanClassName( subformField.getStandaloneType() );
+        String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
         String modelName = cleanClassName( subformField.getEmbeddedModel() );
         String viewName = cleanClassName( subformField.getEmbeddedFormView() );
 
@@ -76,23 +76,43 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
         subformAdapter.addMethod()
                 .setPublic()
                 .setReturnType( "Class<" + viewName + ">" )
-                .setName( "getFormViewType" )
-                .setBody( "return " + viewName + ".class;" )
-                .addAnnotation( Override.class );
+                .setName("getFormViewType")
+                .setBody("return " + viewName + ".class;")
+                .addAnnotation(Override.class);
 
         MethodSource<JavaClassSource> modelMethod = subformAdapter.addMethod();
         modelMethod.setPublic()
-                .setName( "getFormModelForModel" )
-                .addParameter( subformField.getStandaloneType(), "model" );
+                .setName("getFormModelForModel")
+                .addParameter(subformField.getStandaloneClassName(), "model");
         modelMethod.setReturnType( subformField.getEmbeddedModel() )
                 .setBody( " return new " + modelName + "( model );")
-                .addAnnotation( Override.class );
+                .addAnnotation(Override.class);
 
-        viewClass.addNestedType( subformAdapter );
-        
+        viewClass.addNestedType(subformAdapter);
+
         amendUpdateNestedModels(subformField, context, viewClass);
+
+        amendValidateNestedModels( subformField, context, viewClass );
     }
-    
+
+    private void amendValidateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
+
+        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "doExtraValidations",
+                boolean.class );
+        if ( updateNestedModelsMethod != null ) {
+            String body = updateNestedModelsMethod.getBody();
+
+            StringBuffer validText = new StringBuffer();
+            validText.append(";")
+                    .append("valid = ")
+                    .append( fieldDefinition.getName())
+                    .append(".validate();");
+
+            body = body.replaceFirst(";", validText.toString());
+            updateNestedModelsMethod.setBody( body );
+        }
+    }
+
     private void amendUpdateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
         MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "updateNestedModels",
                                                                                       boolean.class );
@@ -100,7 +120,7 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
             String body = updateNestedModelsMethod.getBody();
 
             String pName = fieldDefinition.getBoundPropertyName();
-            String pType = fieldDefinition.getStandaloneType();
+            String pType = fieldDefinition.getStandaloneClassName();
 
             body += pType + " " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";
@@ -111,5 +131,5 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
             updateNestedModelsMethod.setBody( body );
         }
     }
-   
+
 }

@@ -32,6 +32,10 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+    </dependency>
 
     <!-- dependencies added because of new illegal transitive dependency check -->
     <dependency>
@@ -138,7 +142,6 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-widgets-commons</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -278,11 +281,6 @@
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-message-console-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-message-console-client</artifactId>
     </dependency>
 
     <dependency>
@@ -586,18 +584,18 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <scope>compile</scope>
+      <!--<scope>compile</scope> disabled to avoid errors on first build after startup-->
     </dependency>
 
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>
       <artifactId>gwtbootstrap3</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope> disabled to avoid errors on first build after startup-->
     </dependency>
     <dependency>
       <groupId>org.gwtbootstrap3</groupId>
       <artifactId>gwtbootstrap3-extras</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope> disabled to avoid errors on first build after startup-->
     </dependency>
 
     <dependency>
@@ -685,10 +683,19 @@
     </dependency>
 
     <!-- Start LiveSpark Modules -->
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
+      <artifactId>livespark-form-modeler-editor-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-backend</artifactId>
     </dependency>
 
     <dependency>
@@ -718,7 +725,6 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-deployment</artifactId>
     </dependency>
-
     <!-- End LiveSpark Modules -->
   </dependencies>
 
@@ -780,6 +786,7 @@
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-home-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-home-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-common-ui</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-decorated-grid-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-metadata-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.widgets:kie-wb-config-resource-widget</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.services:kie-wb-common-services-api</compileSourcesArtifact>
@@ -827,6 +834,8 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
             <!-- Form Modeler -->
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
           </compileSourcesArtifacts>

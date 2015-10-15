@@ -114,30 +114,30 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         assertNotNull( "Property " + name + " was generated without @DataField.", prop.getAnnotation( ERRAI_DATAFIELD ) );
         assertNotNull( "Property " + name + " was generated without @Bound.", prop.getAnnotation( ERRAI_BOUND ) );
         assertEquals( "Property " + name + " was generated with incorrect binding expression.",
-                      name.replace( '_',
-                                    '.' ),
-                      prop.getAnnotation( ERRAI_BOUND ).getStringValue( "property" ) );
+                name.replace( '_',
+                        '.' ),
+                prop.getAnnotation( ERRAI_BOUND ).getStringValue( "property" ) );
     }
 
     private String[] getServerTypes( final String dataObjectName ) {
         return new String[]{
-                                                   dataObjectName + REST_IMPL_SUFFIX,
-                                                   dataObjectName + ENTITY_SERVICE_SUFFIX
+                dataObjectName + REST_IMPL_SUFFIX,
+                dataObjectName + ENTITY_SERVICE_SUFFIX
         };
     }
 
     private String[] getSharedTypes( final String dataObjectName ) {
         return new String[]{
-                                                   dataObjectName + FORM_MODEL_SUFFIX,
-                                                   dataObjectName + REST_SERVICE_SUFFIX
+                dataObjectName + FORM_MODEL_SUFFIX,
+                dataObjectName + REST_SERVICE_SUFFIX
         };
     }
 
     private String[] getLocalTypes( final String dataObjectName ) {
         return new String[]{
-                                                  dataObjectName + FORM_VIEW_SUFFIX,
-                                                  dataObjectName + LIST_ITEM_VIEW_SUFFIX,
-                                                  dataObjectName + LIST_VIEW_SUFFIX
+                dataObjectName + FORM_VIEW_SUFFIX,
+                dataObjectName + LIST_ITEM_VIEW_SUFFIX,
+                dataObjectName + LIST_VIEW_SUFFIX
         };
     }
 

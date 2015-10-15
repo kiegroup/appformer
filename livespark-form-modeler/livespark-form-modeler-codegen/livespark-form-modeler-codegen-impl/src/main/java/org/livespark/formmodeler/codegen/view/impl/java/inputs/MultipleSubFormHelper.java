@@ -26,8 +26,8 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.relations.MultipleSubFormFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
@@ -37,8 +37,8 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements RequiresCustomCode {
 
     @Override
-    public String getSupportedFieldType() {
-        return MultipleSubFormFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return MultipleSubFormFieldDefinition._CODE;
     }
 
     @Override
@@ -69,14 +69,14 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
         JavaClassSource multipleSubformAdapter = Roaster.create( JavaClassSource.class );
         multipleSubformAdapter.addImport( List.class );
 
-        viewClass.addImport( subformField.getStandaloneType() );
+        viewClass.addImport( subformField.getStandaloneClassName() );
         viewClass.addImport( subformField.getEmbeddedModel() );
         viewClass.addImport( subformField.getEmbeddedFormView() );
         viewClass.addImport( List.class );
         viewClass.addImport( ArrayList.class );
         viewClass.addImport( MULTIPLE_SUBFORM_ClASSNAME );
 
-        String standaloneName = cleanClassName( subformField.getStandaloneType() );
+        String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
         String modelName = cleanClassName( subformField.getEmbeddedModel() );
         String viewName = cleanClassName( subformField.getEmbeddedFormView() );
 
@@ -108,7 +108,7 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
         MethodSource<JavaClassSource> modelMethod = multipleSubformAdapter.addMethod();
         modelMethod.setPublic()
                 .setName( "getListModelsForModel" )
-                .addParameter( "List<" + subformField.getStandaloneType() + ">", "models" );
+                .addParameter( "List<" + subformField.getStandaloneClassName() + ">", "models" );
         modelMethod.setReturnType( "List<" + subformField.getEmbeddedModel() + ">")
                 .setBody( modelMethodBody.toString() )
                 .addAnnotation( Override.class );
@@ -127,7 +127,7 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
             String body = updateNestedModelsMethod.getBody();
 
             String pName = fieldDefinition.getBoundPropertyName();
-            String pType = fieldDefinition.getStandaloneType();
+            String pType = fieldDefinition.getStandaloneClassName();
 
             body += "List " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";
