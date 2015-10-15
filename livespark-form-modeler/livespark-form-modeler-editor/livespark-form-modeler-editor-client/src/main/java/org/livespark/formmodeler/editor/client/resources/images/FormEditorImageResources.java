@@ -18,7 +18,7 @@ package org.livespark.formmodeler.editor.client.resources.images;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
-public interface Images extends ClientBundle {
+public interface FormEditorImageResources extends ClientBundle {
 
     @Source("Form.png")
     ImageResource typeForm();

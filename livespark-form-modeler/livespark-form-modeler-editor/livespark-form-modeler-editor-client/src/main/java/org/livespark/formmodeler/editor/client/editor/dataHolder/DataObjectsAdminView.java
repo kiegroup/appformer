@@ -45,7 +45,7 @@ import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 /**
  * Created by pefernan on 9/29/15.
  */
-public class DataObjectsAdminView extends BaseModal implements FormEditorPresenter.DataHolderAdminView{
+public class DataObjectsAdminView extends BaseModal implements FormEditorPresenter.DataHolderAdminView {
 
     interface DataObjectsAdminBinder
             extends UiBinder<Widget, DataObjectsAdminView> {

@@ -166,7 +166,7 @@ public class DraggableFieldComponent implements FormLayoutComponent,
 
     @Override
     public IsWidget getShowWidget( RenderingContext ctx ) {
-        return generateContent( ctx );
+        return generateContent(ctx);
     }
 
     protected Container generateContent( RenderingContext ctx ) {
@@ -199,9 +199,16 @@ public class DraggableFieldComponent implements FormLayoutComponent,
     }
 
     public void onFieldResponse(@Observes FormContextResponse response) {
-        if ( !response.getFormId().equals( formId ) || !response.getFieldId().equals(fieldId) ) return;
+        if ( !response.getFormId().equals( formId ) ) {
+            return;
+        } else if ( fieldId.startsWith( FormEditorHelper.UNBINDED ) && field != null) {
+            return;
+        } else  if ( !response.getFieldId().equals( fieldId ) ) {
+            return;
+        }
+
         editorHelper = response.getEditorHelper();
-        init(formId, editorHelper.getFormField(fieldId), editorHelper.getContent().getPath());
+        init(formId, editorHelper.getFormField(response.getFieldId()), editorHelper.getContent().getPath());
         if ( renderer != null ) {
             renderContent();
             if ( modal != null ) {
@@ -231,12 +238,9 @@ public class DraggableFieldComponent implements FormLayoutComponent,
         fieldId = destField.getId();
         field = destField;
 
-        renderer.setField( destField );
+        renderer.setField(destField );
 
         renderContent();
-
-        renderer.loadFieldProperties(modal);
-
     }
 
     public void switchToFieldType( String typeCode ) {

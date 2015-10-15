@@ -27,13 +27,11 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-import org.livespark.formmodeler.editor.client.editor.dataHolder.DataObjectsAdminView;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
 import org.uberfire.ext.layout.editor.client.generator.LayoutGenerator;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by pefernan on 7/7/15.
@@ -64,9 +62,6 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     TabListItem previewTab;
 
     @Inject
-    private DataObjectsAdminView dataObjectsView;
-
-    @Inject
     private LayoutGenerator layoutGenerator;
 
     private FormEditorPresenter presenter;
@@ -82,7 +77,6 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     @Override
     public void init(FormEditorPresenter presenter) {
         this.presenter = presenter;
-        dataObjectsView.init( presenter );
     }
 
     @Override
@@ -100,11 +94,6 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     public void onPreview( ClickEvent event ) {
         previewContent.clear();
         previewContent.add(layoutGenerator.build(presenter.getFormTemplate()));
-    }
-
-    @Override
-    public DataObjectsAdminView getDataObjectsView() {
-        return dataObjectsView;
     }
 
     @Override

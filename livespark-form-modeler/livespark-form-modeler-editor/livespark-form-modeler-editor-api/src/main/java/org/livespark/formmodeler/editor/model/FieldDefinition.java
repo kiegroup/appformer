@@ -21,6 +21,8 @@ import org.livespark.formmodeler.editor.service.FieldManager;
 
 public abstract class FieldDefinition {
 
+    public static final String ID_PREFFIX = "field" + FieldManager.FIELD_NAME_SEPARATOR;
+
     protected boolean annotatedId;
 
     private String id;
@@ -42,7 +44,7 @@ public abstract class FieldDefinition {
     protected String standaloneClassName;
 
     public FieldDefinition() {
-        id = "field" + FieldManager.FIELD_NAME_SEPARATOR + IDGenerator.generateRandomId();
+        id = ID_PREFFIX + IDGenerator.generateRandomId();
     }
 
     public String getId() {

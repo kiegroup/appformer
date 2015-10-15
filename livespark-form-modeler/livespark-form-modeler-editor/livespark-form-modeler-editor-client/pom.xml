@@ -49,5 +49,12 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-rendering-api</artifactId>
     </dependency>
+
+    <!-- Test -->
+    <dependency>
+      <groupId>com.google.gwt.gwtmockito</groupId>
+      <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

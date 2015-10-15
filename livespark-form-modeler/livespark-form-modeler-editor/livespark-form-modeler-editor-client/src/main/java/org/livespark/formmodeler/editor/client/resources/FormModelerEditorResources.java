@@ -17,11 +17,11 @@ package org.livespark.formmodeler.editor.client.resources;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
-import org.livespark.formmodeler.editor.client.resources.images.Images;
+import org.livespark.formmodeler.editor.client.resources.images.FormEditorImageResources;
 
 public interface FormModelerEditorResources extends ClientBundle {
 
     public static final FormModelerEditorResources INSTANCE = GWT.create(FormModelerEditorResources.class );
 
-    Images images();
+    FormEditorImageResources images();
 }
