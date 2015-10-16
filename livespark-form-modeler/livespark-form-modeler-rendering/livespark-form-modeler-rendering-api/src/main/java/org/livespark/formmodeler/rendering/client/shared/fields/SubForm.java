@@ -15,7 +15,7 @@
  */
 package org.livespark.formmodeler.rendering.client.shared.fields;
 
-import org.gwtbootstrap3.client.ui.Well;
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
@@ -26,7 +26,7 @@ import org.livespark.formmodeler.rendering.client.view.FormView;
 /**
  * Created by pefernan on 6/18/15.
  */
-public class SubForm<M, F extends FormModel> extends Well implements HasModel<M> {
+public class SubForm<M, F extends FormModel> extends SimplePanel implements HasModel<M> {
 
     private SubFormModelAdapter<M, F> subFormModelAdapter;
     private FormView<F> formView;
@@ -50,6 +50,10 @@ public class SubForm<M, F extends FormModel> extends Well implements HasModel<M>
 
     public void setReadOnly(boolean readonly) {
         if (formView != null) formView.setReadOnly( readonly );
+    }
+
+    public boolean validate() {
+        return formView.validate();
     }
 
     protected void initFormView() {

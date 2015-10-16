@@ -16,21 +16,20 @@
 package org.livespark.formmodeler.rendering.test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.notNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.client.widget.ListWidget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.FormViewModal;
 import org.livespark.formmodeler.rendering.client.view.ListItemView;
+import org.livespark.formmodeler.rendering.client.view.display.modal.ModalFormDisplayer;
+import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
 import org.mockito.ArgumentCaptor;
@@ -41,6 +40,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 @RunWith( GwtMockitoTestRunner.class )
 public class ListViewTest {
@@ -58,10 +59,16 @@ public class ListViewTest {
     private FormView<TestFormModel> formView;
 
     @GwtMock
-    private FormViewModal modalForm;
+    private ClickEvent clickEvent;
+
+    @Mock
+    private ListViewActionsHelper listViewActionsHelper;
 
     @GwtMock
-    private ClickEvent clickEvent;
+    private ModalFormDisplayer modalFormDisplayer;
+
+    @Mock
+    private RemoteCallback callback;
 
     @Mock
     private TestFormModel formModel;
@@ -118,41 +125,29 @@ public class ListViewTest {
     public void modalIsShownOnCreateButtonClick() throws Exception {
         listView.onCreateClick( clickEvent );
 
-        verify( modalForm ).show();
     }
 
     @Test
     public void modalHasSubmitAndCancelCallbacksSetOnCreateButtonClick() throws Exception {
         listView.onCreateClick( clickEvent );
 
-        verify( modalForm ).addSubmitClickHandler( notNull( ClickHandler.class ) );
-        verify( modalForm ).addCancelClickHandler( notNull( ClickHandler.class ) );
-    }
-
-    @Test
-    public void createModalCancelHandlerCallsHide() throws Exception {
-        final ArgumentCaptor<ClickHandler> handlerCaptor = ArgumentCaptor.forClass( ClickHandler.class );
-
-        try {
-            listView.onCreateClick( clickEvent );
-            verify( modalForm ).addCancelClickHandler( handlerCaptor.capture() );
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        handlerCaptor.getValue().onClick( clickEvent );
-
-        verify( modalForm ).hide();
-        verifyNoMoreInteractions( restService, listWidget );
     }
 
     @Test
     public void createModalSubmitHandlerCallsRestCreateAndModalHide() throws Exception {
-        final ArgumentCaptor<ClickHandler> handlerCaptor = ArgumentCaptor.forClass( ClickHandler.class );
         try {
+            listView.setActionsHelper( listViewActionsHelper );
+            when( listViewActionsHelper.getFormDisplayer() ).thenReturn( modalFormDisplayer );
+            doAnswer( new Answer() {
+                @Override
+                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                    listView.createRestCaller( callback ).create( formModel );
+                    return null;
+                }
+            } ).when( modalFormDisplayer ).onSubmit();
+
             listView.onCreateClick( clickEvent );
 
-            verify( modalForm ).addSubmitClickHandler( handlerCaptor.capture() );
             when( formView.validate() ).thenReturn( true );
             when( formView.getModel() ).thenReturn( formModel );
 
@@ -160,27 +155,35 @@ public class ListViewTest {
             failedPrecondition( e );
         }
 
-        handlerCaptor.getValue().onClick( clickEvent );
+        verify( listViewActionsHelper ).startCreate( listView );
+
+        modalFormDisplayer.onSubmit();
 
         verify( restService ).create( formModel );
         verifyNoMoreInteractions( restService );
-        verify( modalForm ).hide();
     }
 
     @Test
     public void createCallbackAddsModelToListAndSetsParentView() throws Exception {
         try {
-            listView.onCreateClick( clickEvent );
-            final ArgumentCaptor<ClickHandler> captor = ArgumentCaptor.forClass( ClickHandler.class );
-            verify( modalForm ).addSubmitClickHandler( captor.capture() );
-            final ClickHandler submitHandler = captor.getValue();
-            assertNotNull( submitHandler );
+            listView.setActionsHelper( listViewActionsHelper );
+
+            when( listViewActionsHelper.getFormDisplayer() ).thenReturn( modalFormDisplayer );
+            doAnswer( new Answer() {
+                @Override
+                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                    listView.createRestCaller( callback ).create( formModel );
+                    models.add( differentModel );
+                    listItemView.setParentView( listView );
+                    return null;
+                }
+            } ).when( modalFormDisplayer ).onSubmit();
 
             when( formView.validate() ).thenReturn( true );
             when( formView.getModel() ).thenReturn( formModel );
 
             listView.lastLoadDataCallback = null;
-            submitHandler.onClick( clickEvent );
+            modalFormDisplayer.onSubmit();
 
             verify( restService ).create( formModel );
             verifyNoMoreInteractions( restService );
@@ -202,6 +205,14 @@ public class ListViewTest {
 
     @Test
     public void onDeleteCallsRestDelete() throws Exception {
+        doAnswer( new Answer() {
+            @Override
+            public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                listView.createRestCaller( callback ).delete( differentModel );
+                return null;
+            }
+        } ).when( listViewActionsHelper ).delete(differentModel );
+
         listView.onDelete( differentModel );
 
         verify( restService ).delete( differentModel );
@@ -211,9 +222,17 @@ public class ListViewTest {
     @Test
     public void onDeleteCallbackRemovesModelFromList() throws Exception {
         try {
+            doAnswer( new Answer() {
+                @Override
+                public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                    models.remove( differentModel );
+                    return null;
+                }
+            } ).when( listViewActionsHelper ).delete( differentModel );
             listView.onDelete( differentModel );
             assertNotNull( listView.lastLoadDataCallback );
             when( listWidget.getValue() ).thenReturn( models );
+
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }
@@ -226,28 +245,31 @@ public class ListViewTest {
 
     @Test
     public void onEditDisplaysModalWithCorrectModel() throws Exception {
-        final TestFormModel differentFormModel = new TestFormModel();
-        listView.onEdit( differentFormModel );
+        doAnswer( new Answer() {
+            @Override
+            public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                formView.setModel( formModel );
+                return null;
+            }
+        } ).when( listViewActionsHelper ).startEdit( listView, formModel );
 
-        verify( formView ).setModel( differentFormModel );
-        verify( modalForm ).show();
-    }
-
-    @Test
-    public void onEditAttachesSubmitAndCancelHandlers() throws Exception {
         listView.onEdit( formModel );
 
-        verify( modalForm ).addSubmitClickHandler( notNull( ClickHandler.class ) );
-        verify( modalForm ).addCancelClickHandler( notNull( ClickHandler.class ) );
+        verify( formView ).setModel( formModel );
     }
 
     @Test
     public void editModalSubmitCallbackCallsRestUpdateAndHidesModal() throws Exception {
-        final ArgumentCaptor<ClickHandler> captor = ArgumentCaptor.forClass( ClickHandler.class );
         try {
+            doAnswer( new Answer() {
+                @Override
+                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                    listView.createRestCaller( callback ).update( formModel );
+                    return null;
+                }
+            } ).when( listViewActionsHelper ).startEdit( listView, formModel );
+
             listView.onEdit( formModel );
-            verify( modalForm ).addSubmitClickHandler( captor.capture() );
-            assertNotNull( captor.getValue() );
 
             when( formView.validate() ).thenReturn( true );
             when( formView.getModel() ).thenReturn( formModel );
@@ -255,39 +277,30 @@ public class ListViewTest {
             failedPrecondition( e );
         }
 
-        captor.getValue().onClick( clickEvent );
-
         verify( restService ).update( formModel );
-        verify( modalForm ).hide();
     }
-
-    @Test
-    public void editModalCancelCallbackHidesModal() throws Exception {
-        final ArgumentCaptor<ClickHandler> captor = ArgumentCaptor.forClass( ClickHandler.class );
-        try {
-            listView.onEdit( formModel );
-            verify( modalForm ).addCancelClickHandler( captor.capture() );
-            assertNotNull( captor.getValue() );
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        captor.getValue().onClick( clickEvent );
-        verify( modalForm ).hide();
-        verifyNoMoreInteractions( restService, listWidget );
-    }
-
 
     @Test
     public void updateCallbackDoesNotModifyList() throws Exception {
         try {
+            listView.setActionsHelper( listViewActionsHelper );
+            when( listViewActionsHelper.getFormDisplayer() ).thenReturn( modalFormDisplayer );
+            doAnswer( new Answer() {
+                @Override
+                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                    listView.createRestCaller( callback ).update( formModel );
+                    return null;
+                }
+            } ).when( modalFormDisplayer ).onSubmit();
+
             listView.onEdit( formModel );
-            final ArgumentCaptor<ClickHandler> captor = ArgumentCaptor.forClass( ClickHandler.class );
-            verify( modalForm ).addSubmitClickHandler( captor.capture() );
+
+            verify( listViewActionsHelper ).startEdit( listView, formModel );
 
             when( formView.validate() ).thenReturn( true );
             when( formView.getModel() ).thenReturn( formModel );
-            captor.getValue().onClick( clickEvent );
+
+            modalFormDisplayer.onSubmit();
 
             verify( restService ).update( formModel );
             verifyNoMoreInteractions( restService );

@@ -1,0 +1,10 @@
+            <div id="@{field.name}_form_group" class="form-group">
+                <label class="control-label" for="@{field.name}">@{field.label}</label>
+                <select class="form-control" id="@{field.name}"
+                    @if{field.readonly}
+                        disabled="disabled"
+                    @end{}>
+                    <option></option>
+                </select>
+                <p id="@{field.name}_help_block" class="help-block"></p>
+            </div>

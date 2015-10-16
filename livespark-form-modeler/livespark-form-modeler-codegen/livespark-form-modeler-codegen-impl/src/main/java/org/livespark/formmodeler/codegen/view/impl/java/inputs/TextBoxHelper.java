@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -24,8 +24,8 @@ import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
 public class TextBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
-    public String getSupportedFieldType() {
-        return TextBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return TextBoxFieldDefinition._CODE;
     }
 
     @Override

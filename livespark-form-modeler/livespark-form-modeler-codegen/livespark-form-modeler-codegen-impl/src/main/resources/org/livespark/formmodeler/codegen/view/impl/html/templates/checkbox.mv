@@ -1,7 +1,13 @@
-            <div id="@{field.name}_form_group" class="checkbox">
-                <label class="checkbox">
-                  <input type="checkbox" id="@{field.name}">
-                  @{field.label}
+@if{field.readonly}
+    @code{styleDisabled = 'disabled'}
+    @code{disabled = 'disabled="disabled"'}
+@else{}
+    @code{styleDisabled = ''}
+    @code{disabled = ''}
+@end{}
+            <div id="@{field.name}_form_group" class="checkbox @{styleDisabled}">
+                <label>
+                    <input type="checkbox" id="@{field.name}" @{disabled}/>@{field.label}
                 </label>
                 <p id="@{field.name}_help_block" class="help-block"></p>
             </div>

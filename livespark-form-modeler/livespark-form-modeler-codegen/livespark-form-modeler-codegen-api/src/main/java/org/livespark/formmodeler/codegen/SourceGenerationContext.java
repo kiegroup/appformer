@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen;
 
-import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
 import org.guvnor.common.services.project.model.Package;
 
@@ -90,7 +90,7 @@ public class SourceGenerationContext {
     public String getEntityServiceName() {
         return formDefinition.getName() + ENTITY_SERVICE_SUFFIX;
     }
-    
+
     public String getEntityName() {
         return formDefinition.getName();
     }

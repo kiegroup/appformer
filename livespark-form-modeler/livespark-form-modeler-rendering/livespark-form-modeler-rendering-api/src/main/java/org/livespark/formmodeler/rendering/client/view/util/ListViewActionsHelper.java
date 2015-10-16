@@ -17,12 +17,19 @@
 package org.livespark.formmodeler.rendering.client.view.util;
 
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.ListView;
+import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
 
 /**
  * Created by pefernan on 6/25/15.
  */
 public interface ListViewActionsHelper<M extends FormModel> {
-    public void create( M model );
-    public void update( M model );
-    public void delete( M model );
+    public void startCreate( ListView<M, ?> listView );
+    public void startEdit( ListView listView, M model );
+
+    public void create(M model);
+    public void update(M model);
+    public void delete(M model);
+
+    public FormDisplayer getFormDisplayer();
 }

@@ -16,9 +16,9 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_REST_CLIENT;
-
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 
 public class RestCodegenUtil {

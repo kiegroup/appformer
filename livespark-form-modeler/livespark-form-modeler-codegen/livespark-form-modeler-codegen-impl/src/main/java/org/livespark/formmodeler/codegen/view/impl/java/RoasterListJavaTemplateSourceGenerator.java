@@ -16,10 +16,6 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.FORM_MODEL_ANNOTATION;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
-
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jboss.forge.roaster.Roaster;
@@ -27,6 +23,8 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
+
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 @ListView
 @ApplicationScoped
@@ -89,7 +87,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
             SourceGenerationContext context ) {
         viewClass.addMethod()
                 .setName( "getFormTitle" )
-                .setProtected()
+                .setPublic()
                 .setReturnType( String.class )
                 .setBody( "return \"" + context.getFormDefinition().getName() + " Form\";" )
                 .addAnnotation( Override.class );

@@ -36,7 +36,7 @@
   <properties>
     <arquillian.version>1.1.8.Final</arquillian.version>
     <gwtmockito.version>1.1.5</gwtmockito.version>
-    <uberfire.version>0.7.0-SNAPSHOT</uberfire.version>
+    <uberfire.version>0.8.0-SNAPSHOT</uberfire.version>
     <errai.version>3.2.0-SNAPSHOT</errai.version>
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
@@ -147,7 +147,17 @@
 
       <dependency>
         <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-api</artifactId>
+        <artifactId>livespark-form-modeler-editor-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-editor-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-editor-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

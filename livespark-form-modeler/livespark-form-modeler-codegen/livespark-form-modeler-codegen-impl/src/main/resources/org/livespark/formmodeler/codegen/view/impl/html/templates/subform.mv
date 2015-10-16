@@ -1,5 +1,10 @@
             <div id="@{field.name}_form_group" class="form-group">
                     <label class="control-label">@{field.label}</label>
-                    <div id="@{field.name}"></div>
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <div id="@{field.name}">
+                        </div>
+                      </div>
+                    </div>
                     <p id="@{field.name}_help_block" class="help-block"></p>
             </div>

@@ -68,7 +68,10 @@ public interface SourceGenerationUtil {
     public static final String MULTIPLE_SUBFORM_ADAPTER_SUFFIX = "MultipleSubFormModelAdapter";
     public static final String MULTIPLE_SUBFORM_ClASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.MultipleSubFormModelAdapter";
 
-    public static final String JAVA_UTIL_LIST = "java.util.List";
-    public static final String JAVA_UTIL_ARRAYLIST = "java.util.ArrayList";
+    public static final String LISTBOX_STRING_RENDERER_NAME = "StringListBoxRenderer";
+    public static final String LISTBOX_STRING_RENDERER_CLASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.util.StringListBoxRenderer";
+
+    public static final String JAVA_UTIL_LIST_CLASSNAME = "java.util.List";
+    public static final String JAVA_UTIL_ARRAYLIST_CLASSNAME = "java.util.ArrayList";
 
 }
