@@ -23,5 +23,5 @@ import org.uberfire.backend.vfs.Path;
  * Created by pefernan on 4/29/15.
  */
 public interface DataModellerFormGenerator {
-    public void generateFormForDataObject( DataObject dataObject, Path path );
+    public void generateFormForDataObject(DataObject dataObject, Path path);
 }

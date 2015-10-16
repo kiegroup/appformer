@@ -17,11 +17,13 @@
 package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.List;
-
 import javax.inject.Inject;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ui.client.widget.ListWidget;
@@ -30,11 +32,10 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
+import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
+import org.livespark.formmodeler.rendering.client.view.display.FormDisplayerConfig;
+import org.livespark.formmodeler.rendering.client.view.display.modal.ModalFormDisplayer;
 import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Composite;
 
 public abstract class ListView<M extends FormModel, W extends ListItemView<M>> extends Composite {
 
@@ -50,9 +51,42 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     @Inject
     protected SyncBeanManager beanManager;
 
-    protected FormViewModal modal;
-
     protected ListViewActionsHelper<M> helper = new ListViewActionsHelper<M>() {
+        @Override
+        public void startCreate( ListView listView ) {
+            final FormView<M> form = getForm();
+            FormDisplayer displayer = getFormDisplayer();
+            displayer.display( new FormDisplayerConfig( form, getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
+                @Override
+                public void onSubmit() {
+                    create( form.getModel() );
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            } ) );
+        }
+
+        @Override
+        public void startEdit( ListView listView, M model ) {
+            final FormView<M> form = getForm();
+            form.setModel( model );
+            FormDisplayer displayer = getFormDisplayer();
+            displayer.display( new FormDisplayerConfig( form, getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
+                @Override
+                public void onSubmit() {
+                    update( form.getModel() );
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            } ) );
+        }
+
         @Override
         public void create( M model ) {
             createRestCaller(
@@ -86,6 +120,13 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                             }
                         }
                     } ).delete( model );
+        }
+
+        @Override
+        public FormDisplayer getFormDisplayer() {
+            IOCBeanDef<ModalFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( ModalFormDisplayer.class );
+            if ( displayerDef != null ) return displayerDef.getInstance();
+            return null;
         }
     };
 
@@ -130,7 +171,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         widget.setParentView( this );
     }
 
-    protected FormView<M> getForm() {
+    public FormView<M> getForm() {
         IOCBeanDef<? extends FormView<M>> beanDef = beanManager.lookupBean( getFormType() );
         return beanDef.getInstance();
     }
@@ -139,7 +180,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     public abstract String getListTitle();
 
-    protected abstract String getFormTitle();
+    public abstract String getFormTitle();
 
     protected abstract String getFormId();
 
@@ -147,66 +188,18 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     @EventHandler( "create" )
     public void onCreateClick( ClickEvent event ) {
-        final FormView<M> form = getForm();
-
-        modal = createNewFormViewModal( form );
-        modal.addSubmitClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent clickEvent ) {
-                if (form.validate()) {
-                    doCreate( form.getModel() );
-                }
-            }
-        } );
-        modal.addCancelClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent clickEvent ) {
-                modal.hide();
-            }
-        } );
-        modal.show();
+        onCreate();
     }
 
-    /*
-     * Leave protected for testing purposes.
-     */
-    protected FormViewModal createNewFormViewModal( final FormView<M> form ) {
-        return new FormViewModal( form, getFormTitle(), getFormId() );
+    public void onCreate() {
+        helper.startCreate( this );
     }
 
-    protected void doCreate(M model) {
-        if (modal != null) modal.hide();
-        helper.create( model );
-    }
-
-    protected void doUpdate(M model) {
-        if (modal != null) modal.hide();
-        helper.update( model );
+    public void onEdit( M model ) {
+        helper.startEdit( this, model );
     }
 
     public void onDelete( M model ) {
         helper.delete( model );
-    }
-
-    public void onEdit( M model ) {
-        final FormView<M> form = getForm();
-        form.setModel( model );
-
-        modal = createNewFormViewModal( form );
-        modal.addSubmitClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent clickEvent ) {
-                if (form.validate()) {
-                    doUpdate( form.getModel() );
-                }
-            }
-        } );
-        modal.addCancelClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent clickEvent ) {
-                modal.hide();
-            }
-        } );
-        modal.show();
     }
 }

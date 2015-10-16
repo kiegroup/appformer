@@ -13,6 +13,12 @@
   <name>LiveSpark :: Form Modeler :: Code Generation Impl</name>
 
   <dependencies>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -96,7 +102,7 @@
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
+      <artifactId>livespark-form-modeler-editor-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.livespark</groupId>

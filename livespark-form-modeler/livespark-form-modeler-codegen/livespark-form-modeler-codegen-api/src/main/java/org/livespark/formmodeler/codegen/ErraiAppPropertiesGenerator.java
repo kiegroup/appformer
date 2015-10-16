@@ -21,6 +21,6 @@ import java.util.Collection;
 
 public interface ErraiAppPropertiesGenerator {
 
-    public String generate( Collection<String> fullyQualifiedClassNames );
+    public String generate(Collection<String> fullyQualifiedClassNames);
 
 }

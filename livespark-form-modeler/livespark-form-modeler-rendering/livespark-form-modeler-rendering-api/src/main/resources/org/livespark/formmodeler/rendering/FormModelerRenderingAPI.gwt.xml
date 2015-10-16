@@ -24,6 +24,8 @@
 
   <inherits name="org.hibernate.validator.HibernateValidator" />
   <inherits name="org.jboss.errai.validation.Validation" />
+  <inherits name="org.gwtbootstrap3.extras.datepicker.DatePicker"/>
+  <inherits name="org.gwtbootstrap3.extras.datetimepicker.DateTimePicker"/>
 
   <source path="client"/>
 </module>
