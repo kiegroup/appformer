@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.
@@ -24,13 +24,13 @@ import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
 public class CheckBoxHelper extends AbstractInputCreatorHelper {
 
     @Override
-    public String getSupportedFieldType() {
-        return CheckBoxFieldDefinition.class.getName();
+    public String getSupportedFieldTypeCode() {
+        return CheckBoxFieldDefinition._CODE;
     }
 
     @Override
     public String getInputWidget() {
-        return "org.gwtbootstrap3.client.ui.CheckBox";
+        return "org.gwtbootstrap3.client.ui.SimpleCheckBox";
     }
 
     @Override

@@ -32,7 +32,7 @@ public interface LiveSparkRestService<M extends FormModel> {
 
    @POST
    @Consumes("application/json")
-   @Produces("application/json") M create( M model );
+   @Produces("application/json") M create(M model);
 
    @Path("load")
    @GET
@@ -41,10 +41,10 @@ public interface LiveSparkRestService<M extends FormModel> {
    @Path("update")
    @PUT
    @Consumes("application/json")
-   @Produces("application/json") Boolean update( M model );
+   @Produces("application/json") Boolean update(M model);
 
    @Path("delete")
    @DELETE
    @Consumes("application/json")
-   @Produces("application/json") Boolean delete( M model );
+   @Produces("application/json") Boolean delete(M model);
 }

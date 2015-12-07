@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2012 JBoss Inc
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:gwt="urn:import:com.google.gwt.user.client.ui"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:bgwt="urn:import:org.gwtbootstrap3.client.ui.gwt">
+
+    <ui:with field="i18n" type="org.livespark.formmodeler.editor.client.resources.i18n.Constants"/>
+
+    <gwt:FlowPanel>
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:Form type="HORIZONTAL">
+                    <b:FormGroup ui:field="dataObjectIDGroup">
+                        <b:Column size="MD_4">
+                            <b:FormLabel for="dataObjectID"><ui:text from="{i18n.dataObjectID}"/></b:FormLabel>
+                        </b:Column>
+                        <b:Column size="MD_8">
+                            <b:TextBox b:id="dataObjectID" ui:field="dataObjectID" placeholder="{i18n.dataObjectID}"/>
+                            <b:HelpBlock ui:field="dataObjectIDHelp"/>
+                        </b:Column>
+                    </b:FormGroup>
+                    <b:FormGroup ui:field="dataObjectTypeGroup">
+                        <b:Column size="MD_4">
+                            <b:FormLabel for="dataObjectType"><ui:text from="{i18n.dataObjectType}"/></b:FormLabel>
+                        </b:Column>
+                        <b:Column size="MD_8">
+                            <b:ListBox b:id="dataObjectType" ui:field="dataObjectType"/>
+                            <b:HelpBlock ui:field="dataObjectTypeHelp"/>
+                        </b:Column>
+                    </b:FormGroup>
+                </b:Form>
+            </b:Column>
+        </b:Row>
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:Button ui:field="newDataObject" text="{i18n.addDataObject}" pull="RIGHT" icon="PLUS" type="PRIMARY"/>
+            </b:Column>
+        </b:Row>
+        <b:Row>
+            <b:Column size="MD_12">
+                <bgwt:CellTable ui:field="dataObjectTable" bordered="true" striped="true" hover="true" />
+            </b:Column>
+        </b:Row>
+    </gwt:FlowPanel>
+</ui:UiBinder>

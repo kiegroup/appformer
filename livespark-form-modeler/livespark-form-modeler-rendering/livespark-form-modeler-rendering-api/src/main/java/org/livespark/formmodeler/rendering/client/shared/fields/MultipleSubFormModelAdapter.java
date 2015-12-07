@@ -25,6 +25,6 @@ import org.livespark.formmodeler.rendering.client.view.ListView;
  * Created by pefernan on 7/2/15.
  */
 public interface MultipleSubFormModelAdapter <L extends List<?>, F extends FormModel> {
-    public List<F> getListModelsForModel( L model );
+    public List<F> getListModelsForModel(L model);
     public Class<? extends ListView<F, ? extends ListItemView<F>>> getListViewType();
 }

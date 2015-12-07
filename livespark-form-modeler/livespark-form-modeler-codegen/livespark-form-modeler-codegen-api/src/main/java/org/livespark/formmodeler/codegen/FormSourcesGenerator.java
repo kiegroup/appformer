@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen;
 
-import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
 
 /**
@@ -24,5 +24,7 @@ import org.uberfire.backend.vfs.Path;
  */
 public interface FormSourcesGenerator {
 
-    void generateFormSources( FormDefinition form, Path resourcePath );
+    void generateEntityFormSources(FormDefinition form, Path resourcePath);
+
+    void generateFormSources(FormDefinition form, Path resourcePath);
 }

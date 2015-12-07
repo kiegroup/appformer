@@ -16,45 +16,36 @@
 
 package org.livespark.formmodeler.codegen.services.datamodeller.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.Annotation;
-import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
-import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
-import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.MultipleField;
-import org.livespark.formmodeler.model.impl.basic.AbstractIntputFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
-import org.livespark.formmodeler.service.FieldManager;
+import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
+import org.livespark.formmodeler.editor.model.DataHolder;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.editor.model.MultipleField;
+import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.editor.service.FieldManager;
+import org.livespark.formmodeler.editor.service.FormFinderSerivce;
+import org.livespark.formmodeler.editor.service.SubFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by pefernan on 4/29/15.
  */
 public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator {
     private static transient Logger log = LoggerFactory.getLogger( DataModellerFormGeneratorImpl.class );
-
-    public static final String[] RESTRICTED_PROPERTY_NAMES = new String[]{"serialVersionUID"};
 
     @Inject
     protected DataModelerService dataModelerService;
@@ -68,82 +59,61 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     @Inject
     protected FormSourcesGenerator formSourcesGenerator;
 
+    @Inject
+    protected DataModellerFieldGenerator fieldGenerator;
+
+    @Inject
+    protected FormFinderSerivce formFinderSerivce;
+
     @Override
     public void generateFormForDataObject( DataObject dataObject, Path path ) {
 
         if (dataObject.getProperties().isEmpty()) return;
 
-        DataModel model = dataModelerService.loadModel( projectService.resolveProject( path ) );
+        FormDefinition form = formFinderSerivce.getNewFormInstance();
 
-        FormDefinition form = new FormDefinition();
         form.setName( dataObject.getName() );
 
         String holderName = WordUtils.uncapitalize( dataObject.getName() );
 
-        List<FieldDefinition> fields = new ArrayList<FieldDefinition>( dataObject.getProperties().size() );
-        DataHolder holder = new DataHolder( holderName, dataObject.getClassName(), fields );
+        DataHolder holder = new DataHolder( holderName, dataObject.getClassName() );
 
         form.addDataHolder( holder );
 
-        for (ObjectProperty property : dataObject.getProperties()) {
-            if ( ArrayUtils.contains(RESTRICTED_PROPERTY_NAMES, property.getName()) ) continue;
+        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(holderName, dataObject);
 
-            String propertyName = holderName + "_" + property.getName();
-            FieldDefinition field = null;
-
-            if (property.getBag() == null) field = fieldManager.getDefinitionByValueType( property.getClassName() );
-            else field = fieldManager.getDefinitionByValueType( property.getBag(), property.getClassName() );
-
-            if (field == null) continue;
-            field.setAnnotatedId( property.getAnnotation( SourceGenerationUtil.JAVAX_PERSISTENCE_ID ) != null );
-
-
-            field.setName( propertyName );
-            String label = getPropertyLabel( property );
-            field.setLabel( label );
-            field.setModelName( holderName );
-            field.setBoundPropertyName( property.getName() );
-
-            if (field instanceof AbstractIntputFieldDefinition) {
-                ((AbstractIntputFieldDefinition) field).setPlaceHolder( label );
-            } else if (field instanceof EmbeddedFormField) {
-                EmbeddedFormField embeddedForm = ( EmbeddedFormField ) field;
-
-                String viewType;
-
-                if (embeddedForm instanceof MultipleField) viewType = LIST_VIEW_CLASS;
-                else viewType = FORM_VIEW_CLASS;
-
-                if ( !loadEmbeddedFormConfig( embeddedForm, viewType, model ) ) continue;
+        for (FieldDefinition field : availabeFields ) {
+            if (field instanceof EmbeddedFormField) {
+                if ( !loadEmbeddedFormConfig( field, path ) ) continue;
             }
-            fields.add( field );
+            form.getFields().add( field );
         }
 
         if (form.getFields().isEmpty()) return;
 
-        formSourcesGenerator.generateFormSources( form, path );
+        formSourcesGenerator.generateEntityFormSources(form, path);
 
     }
 
-    protected boolean loadEmbeddedFormConfig( EmbeddedFormField embeddedForm, String viewType, DataModel dataModel ) {
-        DataObject subFormModel = null;
-        Map<String, String> formViews = new HashMap<String, String>(  );
-        for ( DataObject object : dataModel.getDataObjects() ) {
-            if ( object.getSuperClassName().equals( FORM_MODEL_CLASS ) &&
-                    object.getProperties().size() == 1 &&
-                    object.getProperties().get( 0 ).getClassName().equals( embeddedForm.getStandaloneType() )) {
-                subFormModel = object;
-            } else if (object.getSuperClassName().equals( viewType )) {
-                Annotation formModelAnnotation = object.getAnnotation( FORM_MODEL_ANNOTATION );
-                if (formModelAnnotation != null) {
-                    formViews.put( formModelAnnotation.getValue( MainDomainAnnotations.VALUE_PARAM ).toString(), object.getClassName() );
-                }
-            }
+    protected boolean loadEmbeddedFormConfig ( FieldDefinition field, Path path ) {
+        if ( !(field instanceof EmbeddedFormField) ) return false;
+
+        List<SubFormData> subForms;
+
+        if ( field instanceof  MultipleField ) {
+            subForms = formFinderSerivce.getAvailableMultipleSubFormsByType( field.getStandaloneClassName(), path );
+        } else {
+            subForms = formFinderSerivce.getAvailableFormsByType( field.getStandaloneClassName(), path);
         }
 
-        if (subFormModel == null || formViews.get( subFormModel.getClassName() ) == null) return false;
-        embeddedForm.setEmbeddedModel( subFormModel.getClassName() );
-        embeddedForm.setEmbeddedFormView( formViews.get( subFormModel.getClassName() ) );
+        if ( subForms == null || subForms.isEmpty() ) return false;
+
+        SubFormData data = subForms.get( 0 );
+
+        EmbeddedFormField embeddedFormField = (EmbeddedFormField)field;
+        embeddedFormField.setEmbeddedModel( data.getFormModelClass() );
+        embeddedFormField.setEmbeddedFormView( data.getViewClass() );
+
         return true;
     }
 
@@ -153,6 +123,4 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         return property.getName();
     }
-
-
 }

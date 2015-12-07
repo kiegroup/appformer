@@ -81,4 +81,22 @@ public interface AppConstants
     String Refresh();
 
     String logoBannerError();
+
+    String authoring();
+
+    String project_authoring();
+
+    String administration();
+
+    String artifactRepository();
+
+    String Apps();
+
+    String plugins();
+
+    String extensions();
+
+    String find();
+
+    String Role();
 }

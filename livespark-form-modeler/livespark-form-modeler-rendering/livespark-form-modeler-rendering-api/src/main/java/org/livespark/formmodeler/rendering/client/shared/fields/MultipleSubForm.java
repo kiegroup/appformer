@@ -20,14 +20,17 @@ import java.util.List;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.IOCBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.client.view.ListItemView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
+import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
+import org.livespark.formmodeler.rendering.client.view.display.FormDisplayerConfig;
+import org.livespark.formmodeler.rendering.client.view.display.embedded.EmbeddedFormDisplayer;
 import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 
 /**
@@ -48,7 +51,7 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
 
     @Override
     public L getModel() {
-        return null;
+        return model;
     }
 
     @Override
@@ -68,8 +71,50 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
         add( listView );
         listView.setActionsHelper( new ListViewActionsHelper<F>() {
             @Override
+            public void startCreate( ListView<F, ?> listView ) {
+
+                final FormView<F> form = listView.getForm();
+                FormDisplayer displayer = getFormDisplayer();
+                displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
+                    @Override
+                    public void onSubmit() {
+                        create( form.getModel() );
+                        reset();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        reset();
+                    }
+                } ) );
+                remove( listView );
+                add( displayer );
+            }
+
+            @Override
+            public void startEdit( ListView listView, final F model ) {
+                final FormView<F> form = listView.getForm();
+                form.setModel( model );
+                FormDisplayer displayer = getFormDisplayer();
+                displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
+                    @Override
+                    public void onSubmit() {
+                        update( model );
+                        reset();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        reset();
+                    }
+                } ) );
+                remove( listView );
+                add( displayer );
+            }
+
+            @Override
             public void create( F formModel ) {
-                model.add( ( M ) formModel.getDataModels().get( 0 ) );
+                model.add( (M) formModel.getDataModels().get( 0 ) );
                 listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
             }
 
@@ -80,6 +125,19 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
             @Override
             public void delete( FormModel formModel ) {
                 model.remove( formModel.getDataModels().get( 0 ) );
+                listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
+            }
+
+            protected void reset() {
+                clear();
+                add( listView );
+            }
+
+            @Override
+            public FormDisplayer getFormDisplayer() {
+                IOCBeanDef<EmbeddedFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( EmbeddedFormDisplayer.class );
+                if ( displayerDef != null ) return displayerDef.getInstance();
+                return null;
             }
         } );
     }

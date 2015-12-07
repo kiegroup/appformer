@@ -22,6 +22,6 @@ import org.livespark.formmodeler.rendering.client.view.FormView;
  * Created by pefernan on 7/2/15.
  */
 public interface SubFormModelAdapter<M, F extends FormModel> {
-    public F getFormModelForModel( M model );
+    public F getFormModelForModel(M model);
     public Class<? extends FormView<F>> getFormViewType();
 }

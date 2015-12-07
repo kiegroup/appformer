@@ -16,17 +16,17 @@
 
 package org.livespark.formmodeler.rendering.client.view;
 
+import java.util.List;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import org.livespark.formmodeler.rendering.client.shared.FormModel;
-
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
 /**
  * Created by pefernan on 4/17/15.
@@ -34,63 +34,45 @@ import com.google.gwt.dom.client.Element;
 public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
     @Inject
-    protected Validator validator;
+    protected FormViewValidator validator;
 
     @Override
     public void setModel( M model ) {
         super.setModel( model );
-        clearFieldErrors();
+        validator.clearFieldErrors();
         updateNestedModels(false);
     }
 
     @PostConstruct
     private void init() {
-        Object entity = getEntity();
-        if (entity == null) {
-            setNewEntity();
+        List entites = getEntities();
+        if (entites == null || entites.isEmpty() || entites.size() < getEntitiesCount()) {
+            initEntities();
         }
-        updateNestedModels(true);
+        updateNestedModels( true );
+        doInit();
     }
 
-    protected void clearFieldErrors() {
-        for ( String field : getInputNames() ) {
-            Element group = Document.get().getElementById( field + "_form_group" );
-            Element helpBlock = Document.get().getElementById( field + "_help_block" );
-            if ( group != null )
-                group.removeClassName( "error" );
-            if ( helpBlock != null )
-                helpBlock.setInnerHTML( "" );
-        }
-    }
+    protected abstract void doInit();
 
     public abstract void setReadOnly( boolean readOnly );
 
-    protected abstract void updateNestedModels(boolean init);
+    protected abstract void updateNestedModels( boolean init );
 
-    protected abstract Object getEntity();
+    protected abstract int getEntitiesCount();
 
-    protected abstract void setNewEntity();
+    protected abstract List getEntities();
+
+    protected abstract void initEntities();
+
+    public abstract boolean doExtraValidations();
 
     public boolean validate() {
 
-        boolean isValid = true;
+        boolean isValid = validator.validate( binder.getModel() );
 
-        clearFieldErrors();
+        boolean extraValidations = doExtraValidations();
 
-        Set<ConstraintViolation<M>> result = validator.validate( binder.getModel() );
-        for ( ConstraintViolation<M> validation : result ) {
-            String property = validation.getPropertyPath().toString().replace( ".",
-                    "_" );
-            if ( !getInputNames().contains( property ) )
-                continue;
-            isValid = false;
-            Element group = Document.get().getElementById( property + "_form_group" );
-            Element helpBlock = Document.get().getElementById( property + "_help_block" );
-            if ( group != null )
-                group.addClassName( "has-error" );
-            if ( helpBlock != null )
-                helpBlock.setInnerHTML( validation.getMessage() );
-        }
-        return isValid;
+        return isValid && extraValidations;
     }
 }

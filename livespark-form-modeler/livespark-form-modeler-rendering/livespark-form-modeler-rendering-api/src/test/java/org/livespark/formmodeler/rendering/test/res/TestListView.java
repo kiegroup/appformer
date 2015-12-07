@@ -18,7 +18,6 @@ package org.livespark.formmodeler.rendering.test.res;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.FormViewModal;
 import org.livespark.formmodeler.rendering.client.view.ListItemView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
 
@@ -26,26 +25,16 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
 
     private FormView<TestFormModel> formView;
 
-    private FormViewModal formViewModal;
-
     private LiveSparkRestService<TestFormModel> service;
 
     public RemoteCallback<Object> lastLoadDataCallback;
-
-    /* (non-Javadoc)
-     * @see org.livespark.formmodeler.rendering.client.view.ListView#createNewFormViewModal(org.livespark.formmodeler.rendering.client.view.FormView)
-     */
-    @Override
-    protected FormViewModal createNewFormViewModal( FormView<TestFormModel> form ) {
-        return formViewModal;
-    }
 
     /* (non-Javadoc)
      * @see org.livespark.formmodeler.rendering.client.view.ListView#createRestCaller(org.jboss.errai.common.client.api.RemoteCallback)
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    protected <S extends LiveSparkRestService<TestFormModel>, R> S createRestCaller( RemoteCallback<R> callback ) {
+    public <S extends LiveSparkRestService<TestFormModel>, R> S createRestCaller( RemoteCallback<R> callback ) {
         lastLoadDataCallback = (RemoteCallback<Object>) callback;
         return (S) service;
     }
@@ -54,7 +43,7 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
      * @see org.livespark.formmodeler.rendering.client.view.ListView#getFormTitle()
      */
     @Override
-    protected String getFormTitle() {
+    public String getFormTitle() {
         return "Test Form";
     }
 
@@ -70,7 +59,7 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
      * @see org.livespark.formmodeler.rendering.client.view.ListView#getForm()
      */
     @Override
-    protected FormView<TestFormModel> getForm() {
+    public FormView<TestFormModel> getForm() {
         return formView;
     }
 
