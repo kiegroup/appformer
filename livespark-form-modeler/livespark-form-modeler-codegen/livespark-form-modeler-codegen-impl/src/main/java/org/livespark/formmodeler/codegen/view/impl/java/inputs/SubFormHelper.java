@@ -31,7 +31,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 /**
  * Created by pefernan on 4/28/15.
  */
-public class SubFormHelper extends AbstractInputCreatorHelper implements RequiresCustomCode {
+public class SubFormHelper extends AbstractNestedModelHelper implements RequiresCustomCode {
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -97,16 +97,16 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
 
     private void amendValidateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
 
-        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "doExtraValidations",
+        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( DO_EXTRA_VALIDATIONS_METHOD,
                 boolean.class );
         if ( updateNestedModelsMethod != null ) {
             String body = updateNestedModelsMethod.getBody();
 
             StringBuffer validText = new StringBuffer();
             validText.append(";")
-                    .append("valid = ")
+                    .append( "if ( !" )
                     .append( fieldDefinition.getName())
-                    .append(".validate();");
+                    .append(".validate() && valid) {valid=false;}");
 
             body = body.replaceFirst(";", validText.toString());
             updateNestedModelsMethod.setBody( body );
@@ -114,8 +114,7 @@ public class SubFormHelper extends AbstractInputCreatorHelper implements Require
     }
 
     private void amendUpdateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
-        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "updateNestedModels",
-                                                                                      boolean.class );
+        MethodSource<JavaClassSource> updateNestedModelsMethod = getUpdateNestedModelsMethod( context, viewClass );
         if ( updateNestedModelsMethod != null ) {
             String body = updateNestedModelsMethod.getBody();
 

@@ -18,6 +18,7 @@ package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.text.shared.AbstractRenderer;
+import com.google.gwt.text.shared.Renderer;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.*;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
@@ -28,6 +29,7 @@ import org.livespark.formmodeler.editor.client.editor.rendering.renderers.select
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.selectors.ListBoxFieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer;
 import org.uberfire.ext.properties.editor.model.CustomPropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 
@@ -35,8 +37,11 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Dependent
 public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> {
@@ -44,13 +49,9 @@ public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> 
     @Inject
     protected Event<FieldSelectorOptionResponse> responseEvent;
 
-    protected ValueListBox<SelectorOption> widgetList = new ValueListBox<SelectorOption>(new AbstractRenderer<SelectorOption>() {
-        @Override
-        public String render( SelectorOption value ) {
-            if ( value == null ) return "";
-            return value.getValue();
-        }
-    });
+    protected StringListBoxRenderer optionsRenderer = new StringListBoxRenderer();
+
+    protected ValueListBox<String> widgetList = new ValueListBox<String>(optionsRenderer);
 
     @Override
     public String getName() {
@@ -110,14 +111,25 @@ public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> 
     }
 
     protected void refreshListBoxOptions() {
-        if ( field.getOptions() != null ) widgetList.setAcceptableValues( field.getOptions() );
+        Map<String, String> optionsValues = new HashMap<String, String>( );
+        widgetList.reset();
+        if ( field.getOptions() != null ) {
 
-        widgetList.setValue( null );
+            String defaultValue = null;
+            for ( SelectorOption option : field.getOptions() ) {
+                optionsValues.put( option.getValue(), option.getText() );
+                if ( option.getDefaultValue() ) {
+                    defaultValue = option.getValue();
+                }
+            }
 
-        for ( SelectorOption option : field.getOptions() ) {
-            if (option.getDefaultValue()) {
-                widgetList.setValue( option );
+            if ( defaultValue != null ) {
+                widgetList.setValue( defaultValue );
+            } else {
+                widgetList.setValue( "" );
             }
         }
+        optionsRenderer.setValues( optionsValues );
+        widgetList.setAcceptableValues( optionsValues.keySet() );
     }
 }

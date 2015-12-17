@@ -70,6 +70,15 @@ public class SelectorOptionFormViewImpl extends AbstractPropertyEditorWidget imp
     HelpBlock optionHelp;
 
     @UiField
+    FormGroup optionTextGroup;
+
+    @UiField
+    TextBox optionText;
+
+    @UiField
+    HelpBlock optionTextHelp;
+
+    @UiField
     Button newOption;
 
     @UiField
@@ -138,6 +147,38 @@ public class SelectorOptionFormViewImpl extends AbstractPropertyEditorWidget imp
 
         optionsTable.addColumn( valueColumn, FieldProperties.INSTANCE.option() );
 
+        final TextColumn<SelectorOption> textColumn = new TextColumn<SelectorOption>() {
+
+            @Override
+            public void render( Cell.Context context,
+                                SelectorOption object,
+                                SafeHtmlBuilder sb ) {
+                SafeHtml startDiv = new SafeHtml() {
+                    @Override
+                    public String asString() {
+                        return "<div style=\"cursor: pointer;\">";
+                    }
+                };
+                SafeHtml endDiv = new SafeHtml() {
+                    @Override
+                    public String asString() {
+                        return "</div>";
+                    }
+                };
+
+                sb.append( startDiv );
+                super.render( context, object, sb );
+                sb.append( endDiv );
+            }
+
+            @Override
+            public String getValue( final SelectorOption option ) {
+                return option.getText();
+            }
+        };
+
+        optionsTable.addColumn( textColumn, FieldProperties.INSTANCE.optionText() );
+
         final ButtonCell deleteCell = new ButtonCell( ButtonType.DANGER, IconType.TRASH );
         final Column<SelectorOption, String> deleteOptionColumn = new Column<SelectorOption, String>( deleteCell ) {
             @Override
@@ -172,29 +213,46 @@ public class SelectorOptionFormViewImpl extends AbstractPropertyEditorWidget imp
     @UiHandler("newOption")
     public void addNewOption( ClickEvent event ) {
         if ( validate() ) {
-            presenter.addOption( option.getText() );
+            presenter.addOption( option.getText(), optionText.getText() );
             option.clear();
-            optionHelp.setIconType( null );
-            optionHelp.setText( "" );
-            optionGroup.setValidationState( ValidationState.NONE );
+            optionText.clear();
+            resetFormValidations();
         }
     }
 
     protected boolean validate() {
+        resetFormValidations();
         if ( option.getText().isEmpty() ) {
-            setError( FieldProperties.INSTANCE.optionCannotBeEmpty() );
+            seOptiontError( FieldProperties.INSTANCE.optionCannotBeEmpty() );
             return false;
         }
         if ( presenter.existOption( option.getText() ) ) {
-            setError( FieldProperties.INSTANCE.optionAlreadyExist() );
+            seOptiontError( FieldProperties.INSTANCE.optionAlreadyExist() );
             return false;
         }
+        if ( presenter.existOptionText( optionText.getText() ) ) {
+            optionTextGroup.setValidationState( ValidationState.ERROR );
+            optionTextHelp.setIconType( IconType.WARNING );
+            optionTextHelp.setText( FieldProperties.INSTANCE.optionAlreadyExist() );
+            return false;
+        }
+
         return true;
     }
 
-    protected void setError( String message ) {
+    protected void seOptiontError( String message ) {
         optionGroup.setValidationState( ValidationState.ERROR );
         optionHelp.setIconType( IconType.WARNING );
         optionHelp.setText( message );
+    }
+
+    protected void resetFormValidations() {
+        optionHelp.setIconType( null );
+        optionHelp.setText( "" );
+        optionGroup.setValidationState( ValidationState.NONE );
+
+        optionTextHelp.setIconType( null );
+        optionTextHelp.setText( "" );
+        optionTextGroup.setValidationState( ValidationState.NONE );
     }
 }

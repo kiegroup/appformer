@@ -34,7 +34,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 /**
  * Created by pefernan on 4/28/15.
  */
-public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements RequiresCustomCode {
+public class MultipleSubFormHelper extends AbstractNestedModelHelper implements RequiresCustomCode {
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -118,7 +118,7 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
     }
 
     private void amendUpdateNestedModels(MultipleSubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
-        MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( "updateNestedModels", boolean.class );
+        MethodSource<JavaClassSource> updateNestedModelsMethod = getUpdateNestedModelsMethod( context, viewClass );
         if ( updateNestedModelsMethod != null ) {
 
             viewClass.addImport( JAVA_UTIL_LIST_CLASSNAME );
@@ -129,10 +129,12 @@ public class MultipleSubFormHelper extends AbstractInputCreatorHelper implements
             String pName = fieldDefinition.getBoundPropertyName();
             String pType = fieldDefinition.getStandaloneClassName();
 
-            body += "List " + pName + " = getModel().get" + StringUtils.capitalize( fieldDefinition.getModelName() ) + "().get" + StringUtils.capitalize( pName ) + "();\n";
+            String modelName = StringUtils.capitalize( fieldDefinition.getModelName() );
+
+            body += "List " + pName + " = getModel().get" + modelName + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";
             body += "  " + pName + " = new ArrayList<" + pType + ">();\n";
-            body += "  getModel().get" + context.getEntityName() + "().set" + StringUtils.capitalize( pName ) + "(" + pName + ");\n";
+            body += "  getModel().get" + modelName + "().set" + StringUtils.capitalize( pName ) + "(" + pName + ");\n";
             body += "}\n";
             body += fieldDefinition.getName() + ".setModel(" + pName + ");\n";
             updateNestedModelsMethod.setBody( body );

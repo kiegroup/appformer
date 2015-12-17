@@ -24,10 +24,12 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class SelectorOption {
     private String value;
+    private String text;
     private Boolean defaultValue = Boolean.FALSE;
 
-    public SelectorOption( @MapsTo("value")String value ) {
+    public SelectorOption( @MapsTo( "value" ) String value, @MapsTo( "text" ) String text ) {
         this.value = value;
+        this.text = text;
     }
 
     public String getValue() {
@@ -36,6 +38,14 @@ public class SelectorOption {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText( String text ) {
+        this.text = text;
     }
 
     public Boolean getDefaultValue() {
