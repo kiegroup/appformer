@@ -41,6 +41,7 @@ public interface FieldProperties extends Messages {
     public String options();
     public String addOption();
     public String option();
+    public String optionText();
     public String defaultOption();
     public String noOptionsDefined();
     public String optionCannotBeEmpty();

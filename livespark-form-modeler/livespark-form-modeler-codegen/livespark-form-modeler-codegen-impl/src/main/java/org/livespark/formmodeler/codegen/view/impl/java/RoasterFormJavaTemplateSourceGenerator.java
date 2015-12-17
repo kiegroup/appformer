@@ -100,22 +100,22 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
                  .addAnnotation( JAVA_LANG_OVERRIDE );
 
         viewClass.addMethod()
-                .setName( "doInit" )
+                .setName( INIT_FORM_METHOD )
                 .setBody( "" )
                 .setReturnTypeVoid()
                 .setProtected()
+                .setBody( "" )
                 .addAnnotation( JAVA_LANG_OVERRIDE );
 
         viewClass.addMethod()
-                 .setName("updateNestedModels")
-                 .setBody("")
-                 .setParameters("boolean init")
-                 .setReturnTypeVoid()
-                 .setProtected()
-                 .addAnnotation( JAVA_LANG_OVERRIDE );
+                .setName( BEFORE_DISPLAY_METHOD )
+                .setReturnTypeVoid()
+                .setPublic()
+                .setBody( "" )
+                .addAnnotation( JAVA_LANG_OVERRIDE );
 
         viewClass.addMethod()
-                .setName("doExtraValidations")
+                .setName( DO_EXTRA_VALIDATIONS_METHOD )
                 .setBody("boolean valid = true; return valid;")
                 .setReturnType(boolean.class)
                 .setPublic()
@@ -157,6 +157,13 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
     }
 
     @Override
+    protected void addExtraFields( InputCreatorHelper helper, SourceGenerationContext context, JavaClassSource viewClass, FieldDefinition fieldDefinition ) {
+        if ( helper instanceof RequiresExtraFields ) {
+            ((RequiresExtraFields)helper).addExtraFields( viewClass, fieldDefinition );
+        }
+    }
+
+    @Override
     protected void initializeProperty( InputCreatorHelper helper,
                                        SourceGenerationContext context,
                                        JavaClassSource viewClass,
@@ -165,7 +172,7 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
         if (helper.isInputInjectable()) field.addAnnotation( INJECT_INJECT );
         else field.setLiteralInitializer( helper.getInputInitLiteral( context, fieldDefinition) );
 
-        MethodSource<JavaClassSource> initMethod = viewClass.getMethod( "doInit" );
+        MethodSource<JavaClassSource> initMethod = viewClass.getMethod( INIT_FORM_METHOD );
 
         StringBuffer body = new StringBuffer( initMethod.getBody() );
 
@@ -181,5 +188,9 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
     @Override
     protected boolean isBanned( FieldDefinition definition ) {
         return false;
+    }
+
+    protected boolean extraFieldsEnabled() {
+        return true;
     }
 }

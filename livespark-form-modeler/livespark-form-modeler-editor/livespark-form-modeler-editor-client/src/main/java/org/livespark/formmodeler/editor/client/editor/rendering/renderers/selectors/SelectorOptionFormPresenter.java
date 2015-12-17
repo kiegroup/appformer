@@ -74,8 +74,9 @@ public class SelectorOptionFormPresenter extends AbstractField {
         this.view.setPresenter( this );
     }
 
-    public void addOption( String value ) {
-        options.add( new SelectorOption( value ) );
+    public void addOption( String value, String text ) {
+        if ( text == null ) text = "";
+        options.add( new SelectorOption( value, text ) );
         view.setOptions( options );
         updateEvent.fire( new FieldSelectorOptionUpdate( formId, fieldId, options ) );
     }
@@ -98,6 +99,14 @@ public class SelectorOptionFormPresenter extends AbstractField {
     public boolean existOption( String text ) {
         for ( SelectorOption option : options ) {
             if ( option.getValue().equals( text ) ) return true;
+        }
+        return false;
+    }
+
+    public boolean existOptionText( String text ) {
+        if ( text == null ) text = "";
+        for ( SelectorOption option : options ) {
+            if ( option.getText().equals( text ) ) return true;
         }
         return false;
     }

@@ -23,6 +23,7 @@ public abstract class DefaultFormDisplayer implements FormDisplayer {
     @Override
     public void display( FormDisplayerConfig config ) {
         this.config = config;
+        config.getFormView().beforeDisplay();
         doDisplay();
     }
 

@@ -79,6 +79,10 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
             if (helper == null) continue;
 
+            if ( extraFieldsEnabled() ) {
+                addExtraFields( helper, context, viewClass, fieldDefinition );
+            }
+
             PropertySource<JavaClassSource> property = viewClass.addProperty( getWidgetFromHelper( helper ), fieldDefinition.getName() );
 
             FieldSource<JavaClassSource> field = property.getField();
@@ -111,6 +115,13 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
         }
     }
 
+    protected void addExtraFields( InputCreatorHelper helper,
+                                            SourceGenerationContext context,
+                                            JavaClassSource viewClass,
+                                            FieldDefinition fieldDefinition ){
+
+    }
+
     protected abstract void initializeProperty( InputCreatorHelper helper,
                                                 SourceGenerationContext context,
                                                 JavaClassSource viewClass,
@@ -132,6 +143,10 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             String packageName );
 
     protected abstract boolean isBanned( FieldDefinition definition );
+
+    protected boolean extraFieldsEnabled() {
+        return false;
+    }
 
     private String getPackageName( SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName();

@@ -106,7 +106,7 @@ public class SelectorOptionFormPresenterTest extends TestCase {
 
         ArgumentCaptor<FieldSelectorOptionUpdate> updateCaptor = ArgumentCaptor.forClass( FieldSelectorOptionUpdate.class );
 
-        presenter.addOption( "option1" );
+        presenter.addOption( "option1", "option1" );
 
         verify( view, times( 2 ) ).setOptions( anyList() );
 
@@ -116,11 +116,11 @@ public class SelectorOptionFormPresenterTest extends TestCase {
 
         assertTrue( "There should exist 'option1' option.", presenter.existOption( "option1" ) );
 
-        presenter.addOption( "option2" );
+        presenter.addOption( "option2", "option2" );
 
         verify( view, times( 3 ) ).setOptions( anyList() );
 
-        presenter.addOption( "option3" );
+        presenter.addOption( "option3", "option3" );
 
         verify( view, times( 4 ) ).setOptions( anyList() );
 

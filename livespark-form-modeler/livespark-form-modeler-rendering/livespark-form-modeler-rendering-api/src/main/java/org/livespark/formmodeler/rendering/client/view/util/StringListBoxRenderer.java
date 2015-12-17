@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.rendering.client.shared.fields.util;
+package org.livespark.formmodeler.rendering.client.view.util;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.google.gwt.text.shared.Renderer;
 
 public class StringListBoxRenderer implements Renderer<String> {
+    private Map<String, String> values;
+
+    public void setValues( Map<String, String> values ) {
+        this.values = values;
+    }
+
     @Override
-    public String render( String s ) {
-        if (s == null) s = "";
-        return s;
+    public String render( String value ) {
+        if ( value == null ) return "";
+        if ( values == null || !values.containsKey( value )) return "";
+
+        return values.get( value );
     }
 
     @Override

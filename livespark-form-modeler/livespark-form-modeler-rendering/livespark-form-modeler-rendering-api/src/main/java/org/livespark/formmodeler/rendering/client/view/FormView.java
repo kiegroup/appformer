@@ -17,14 +17,9 @@
 package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.List;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
@@ -40,7 +35,6 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     public void setModel( M model ) {
         super.setModel( model );
         validator.clearFieldErrors();
-        updateNestedModels(false);
     }
 
     @PostConstruct
@@ -49,15 +43,12 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
         if (entites == null || entites.isEmpty() || entites.size() < getEntitiesCount()) {
             initEntities();
         }
-        updateNestedModels( true );
-        doInit();
+        initForm();
     }
 
-    protected abstract void doInit();
+    protected abstract void initForm();
 
     public abstract void setReadOnly( boolean readOnly );
-
-    protected abstract void updateNestedModels( boolean init );
 
     protected abstract int getEntitiesCount();
 
@@ -75,4 +66,6 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
         return isValid && extraValidations;
     }
+
+    public abstract void beforeDisplay();
 }

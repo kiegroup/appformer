@@ -68,10 +68,22 @@ public interface SourceGenerationUtil {
     public static final String MULTIPLE_SUBFORM_ADAPTER_SUFFIX = "MultipleSubFormModelAdapter";
     public static final String MULTIPLE_SUBFORM_ClASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.MultipleSubFormModelAdapter";
 
+    public static final String LISTBOX_RENDERER_SUFFIX = "_ListValueRenderer";
     public static final String LISTBOX_STRING_RENDERER_NAME = "StringListBoxRenderer";
-    public static final String LISTBOX_STRING_RENDERER_CLASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.util.StringListBoxRenderer";
+    public static final String LISTBOX_STRING_RENDERER_CLASSNAME = "org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer";
 
     public static final String JAVA_UTIL_LIST_CLASSNAME = "java.util.List";
     public static final String JAVA_UTIL_ARRAYLIST_CLASSNAME = "java.util.ArrayList";
 
+    public static final String JAVA_UTIL_MAP_CLASSNAME = "java.util.Map";
+    public static final String JAVA_UTIL_MAP_NAME = "Map";
+    public static final String JAVA_UTIL_HASHMAP_CLASSNAME = "java.util.HashMap";
+    public static final String JAVA_UTIL_HASHMAP_NAME = "HashMap";
+
+    public static final String LOAD_LIST_VALUES_METHOD_NAME = "loadListValues_";
+
+    public static final String INIT_FORM_METHOD = "initForm";
+    public static final String BEFORE_DISPLAY_METHOD = "beforeDisplay";
+    public static final String DO_EXTRA_VALIDATIONS_METHOD = "doExtraValidations";
+    public static final String SET_MODEL_METHOD = "setModel";
 }
