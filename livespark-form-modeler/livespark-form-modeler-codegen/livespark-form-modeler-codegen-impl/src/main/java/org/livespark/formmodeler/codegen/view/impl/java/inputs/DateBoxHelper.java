@@ -21,7 +21,12 @@ import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
 /**
  * Created by pefernan on 4/28/15.
  */
-public class DateBoxHelper extends AbstractInputCreatorHelper {
+public class DateBoxHelper extends AbstractInputCreatorHelper<DateBoxFieldDefinition> {
+    public static String DATE_TIME_PICKER_NAME = "DateTimePicker";
+    public static String DATE_TIME_PICKER_CLASS_NAME = "org.gwtbootstrap3.extras.datetimepicker.client.ui." + DATE_TIME_PICKER_NAME;
+
+    public static String DATE_PICKER_NAME = "DatePicker";
+    public static String DATE_PICKER_CLASS_NAME = "org.gwtbootstrap3.extras.datepicker.client.ui." + DATE_PICKER_NAME;
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -29,7 +34,8 @@ public class DateBoxHelper extends AbstractInputCreatorHelper {
     }
 
     @Override
-    public String getInputWidget() {
-        return "org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker";
+    public String getInputWidget( DateBoxFieldDefinition fieldDefinition ) {
+        if ( fieldDefinition.getShowTime() ) return DATE_TIME_PICKER_CLASS_NAME;
+        else return DATE_PICKER_CLASS_NAME;
     }
 }

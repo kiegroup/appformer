@@ -46,4 +46,8 @@ public interface FieldProperties extends Messages {
     public String noOptionsDefined();
     public String optionCannotBeEmpty();
     public String optionAlreadyExist();
+
+    public String inline();
+
+    public String showTime();
 }

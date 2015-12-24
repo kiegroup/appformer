@@ -28,13 +28,21 @@ import org.livespark.formmodeler.rendering.client.view.validation.FormViewValida
  */
 public abstract class FormView<M extends FormModel> extends BaseView<M> {
 
+    private boolean newModel = true;
+
     @Inject
     protected FormViewValidator validator;
 
     @Override
     public void setModel( M model ) {
         super.setModel( model );
+        newModel = false;
+        beforeDisplay();
         validator.clearFieldErrors();
+    }
+
+    public boolean isNewModel() {
+        return newModel;
     }
 
     @PostConstruct

@@ -72,7 +72,6 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
         listView.setActionsHelper( new ListViewActionsHelper<F>() {
             @Override
             public void startCreate( ListView<F, ?> listView ) {
-
                 final FormView<F> form = listView.getForm();
                 FormDisplayer displayer = getFormDisplayer();
                 displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
@@ -94,7 +93,6 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
             @Override
             public void startEdit( ListView listView, final F model ) {
                 final FormView<F> form = listView.getForm();
-                form.setModel( model );
                 FormDisplayer displayer = getFormDisplayer();
                 displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
                     @Override
@@ -108,6 +106,7 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
                         reset();
                     }
                 } ) );
+                form.setModel( model );
                 remove( listView );
                 add( displayer );
             }

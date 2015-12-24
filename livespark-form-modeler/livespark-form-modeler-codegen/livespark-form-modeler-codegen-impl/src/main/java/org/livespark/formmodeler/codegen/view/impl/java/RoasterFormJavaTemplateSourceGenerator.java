@@ -147,8 +147,8 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
     }
 
     @Override
-    protected String getWidgetFromHelper( InputCreatorHelper helper ) {
-        return helper.getInputWidget();
+    protected String getWidgetFromHelper( InputCreatorHelper helper, FieldDefinition fieldDefinition ) {
+        return helper.getInputWidget( fieldDefinition );
     }
 
     @Override

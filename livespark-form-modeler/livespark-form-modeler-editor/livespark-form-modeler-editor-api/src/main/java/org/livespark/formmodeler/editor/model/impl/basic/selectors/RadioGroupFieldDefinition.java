@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.livespark.formmodeler.editor.model.impl.basic.selectors;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-
-import javax.enterprise.context.Dependent;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import javax.enterprise.context.Dependent;
 
-/**
- * Created by pefernan on 10/2/15.
- */
+import org.jboss.errai.common.client.api.annotations.Portable;
+
 @Portable
 @Dependent
-public class ListBoxFieldDefinition extends SelectorField {
+public class RadioGroupFieldDefinition extends SelectorField {
+    public static final String _CODE = "RadioGroup";
 
-    public static final String _CODE = "ListBox";
+    protected Boolean inline = Boolean.FALSE;
 
     @Override
     public String getCode() {
         return _CODE;
+    }
+
+    public Boolean getInline() {
+        return inline;
+    }
+
+    public void setInline( Boolean inline ) {
+        this.inline = inline;
     }
 
     @Override

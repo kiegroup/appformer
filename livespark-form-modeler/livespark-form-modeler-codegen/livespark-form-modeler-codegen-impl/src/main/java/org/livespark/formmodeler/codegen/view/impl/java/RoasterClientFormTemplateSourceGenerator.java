@@ -38,7 +38,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 public abstract class RoasterClientFormTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
 
     @Inject
-    private Instance<InputCreatorHelper> creatorInstances;
+    private Instance<InputCreatorHelper<? extends FieldDefinition>> creatorInstances;
 
     private Map<String, InputCreatorHelper> creatorHelpers = new HashMap<String, InputCreatorHelper>(  );
 
@@ -83,7 +83,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
                 addExtraFields( helper, context, viewClass, fieldDefinition );
             }
 
-            PropertySource<JavaClassSource> property = viewClass.addProperty( getWidgetFromHelper( helper ), fieldDefinition.getName() );
+            PropertySource<JavaClassSource> property = viewClass.addProperty( getWidgetFromHelper( helper, fieldDefinition), fieldDefinition.getName() );
 
             FieldSource<JavaClassSource> field = property.getField();
             field.setPrivate();
@@ -101,7 +101,12 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
             property.removeAccessor();
             property.removeMutator();
 
-            if ( !fieldDefinition.isAnnotatedId() ) readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            if ( !fieldDefinition.isAnnotatedId() ) {
+                readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+            }
+            if ( helper instanceof RequiresExtraFields ) {
+                readOnlyMethodSrc.append( ( (RequiresExtraFields) helper ).getExtraReadOnlyCode( fieldDefinition, READONLY_PARAM) );
+            }
         }
 
         if ( isEditable() ) {
@@ -130,7 +135,7 @@ public abstract class RoasterClientFormTemplateSourceGenerator implements FormJa
 
     protected abstract boolean isEditable();
 
-    protected abstract String getWidgetFromHelper( InputCreatorHelper helper );
+    protected abstract String getWidgetFromHelper( InputCreatorHelper helper, FieldDefinition fieldDefinition );
 
     protected abstract void addAnnotations( SourceGenerationContext context,
             JavaClassSource viewClass );
