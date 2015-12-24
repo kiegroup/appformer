@@ -34,7 +34,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 /**
  * Created by pefernan on 4/28/15.
  */
-public class MultipleSubFormHelper extends AbstractNestedModelHelper implements RequiresCustomCode {
+public class MultipleSubFormHelper extends AbstractNestedModelHelper implements RequiresCustomCode<MultipleSubFormFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -47,7 +47,7 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper implements 
     }
 
     @Override
-    public String getInputWidget() {
+    public String getInputWidget( FieldDefinition fieldDefinition ) {
         return "org.livespark.formmodeler.rendering.client.shared.fields.MultipleSubForm";
     }
 
@@ -63,22 +63,21 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper implements 
     }
 
     @Override
-    public void addCustomCode( FieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
-        MultipleSubFormFieldDefinition subformField = ( MultipleSubFormFieldDefinition ) fieldDefinition;
+    public void addCustomCode( MultipleSubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
 
         JavaClassSource multipleSubformAdapter = Roaster.create( JavaClassSource.class );
         multipleSubformAdapter.addImport( List.class );
 
-        viewClass.addImport( subformField.getStandaloneClassName() );
-        viewClass.addImport( subformField.getEmbeddedModel() );
-        viewClass.addImport( subformField.getEmbeddedFormView() );
+        viewClass.addImport( fieldDefinition.getStandaloneClassName() );
+        viewClass.addImport( fieldDefinition.getEmbeddedModel() );
+        viewClass.addImport( fieldDefinition.getEmbeddedFormView() );
         viewClass.addImport( List.class );
         viewClass.addImport( ArrayList.class );
         viewClass.addImport( MULTIPLE_SUBFORM_ClASSNAME );
 
-        String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
-        String modelName = cleanClassName( subformField.getEmbeddedModel() );
-        String viewName = cleanClassName( subformField.getEmbeddedFormView() );
+        String standaloneName = cleanClassName( fieldDefinition.getStandaloneClassName() );
+        String modelName = cleanClassName( fieldDefinition.getEmbeddedModel() );
+        String viewName = cleanClassName( fieldDefinition.getEmbeddedFormView() );
 
 
         multipleSubformAdapter.addImport( List.class );
@@ -108,13 +107,13 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper implements 
         MethodSource<JavaClassSource> modelMethod = multipleSubformAdapter.addMethod();
         modelMethod.setPublic()
                 .setName( "getListModelsForModel" )
-                .addParameter( "List<" + subformField.getStandaloneClassName() + ">", "models" );
-        modelMethod.setReturnType( "List<" + subformField.getEmbeddedModel() + ">")
+                .addParameter( "List<" + fieldDefinition.getStandaloneClassName() + ">", "models" );
+        modelMethod.setReturnType( "List<" + fieldDefinition.getEmbeddedModel() + ">")
                 .setBody( modelMethodBody.toString() )
                 .addAnnotation( Override.class );
 
         viewClass.addNestedType( multipleSubformAdapter );
-        amendUpdateNestedModels(subformField, context, viewClass);
+        amendUpdateNestedModels(fieldDefinition, context, viewClass);
     }
 
     private void amendUpdateNestedModels(MultipleSubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {

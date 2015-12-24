@@ -23,8 +23,8 @@ import org.livespark.formmodeler.editor.model.FieldDefinition;
 /**
  * Created by pefernan on 7/2/15.
  */
-public interface RequiresCustomCode {
+public interface RequiresCustomCode<F extends FieldDefinition> {
 
-    public void addCustomCode(FieldDefinition definition, SourceGenerationContext context, JavaClassSource parentClass);
+    public void addCustomCode(F definition, SourceGenerationContext context, JavaClassSource parentClass);
 
 }

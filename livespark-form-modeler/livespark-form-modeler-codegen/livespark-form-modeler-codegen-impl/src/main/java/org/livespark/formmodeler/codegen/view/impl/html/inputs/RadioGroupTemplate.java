@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs;
+package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition;
+import java.io.InputStream;
 
-/**
- * Created by pefernan on 4/28/15.
- */
-public class TextAreaHelper extends AbstractInputCreatorHelper {
+import org.livespark.formmodeler.codegen.view.impl.html.InputTemplateProvider;
+import org.livespark.formmodeler.editor.model.impl.basic.selectors.RadioGroupFieldDefinition;
+
+public class RadioGroupTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextAreaFieldDefinition._CODE;
+        return RadioGroupFieldDefinition._CODE;
     }
 
     @Override
-    public String getInputWidget( FieldDefinition fieldDefinition ) {
-        return "org.gwtbootstrap3.client.ui.TextArea";
+    public InputStream getTemplateInputStream() {
+        return getClass().getResourceAsStream( "/org/livespark/formmodeler/codegen/view/impl/html/templates/radiogroup.mv" );
     }
 }

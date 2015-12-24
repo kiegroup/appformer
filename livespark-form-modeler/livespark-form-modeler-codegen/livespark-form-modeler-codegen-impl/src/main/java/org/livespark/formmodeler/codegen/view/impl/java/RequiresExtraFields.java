@@ -17,9 +17,12 @@
 package org.livespark.formmodeler.codegen.view.impl.java;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.editor.model.FieldDefinition;
 
-public interface RequiresExtraFields {
+public interface RequiresExtraFields<F extends FieldDefinition> {
 
-    void addExtraFields( JavaClassSource viewClass, FieldDefinition fieldDefinition );
+    void addExtraFields( JavaClassSource viewClass, F fieldDefinition );
+
+    String getExtraReadOnlyCode( F fieldDefinition, String readonlyParam );
 }

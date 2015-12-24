@@ -59,8 +59,8 @@ public class RoasterListItemJavaSourceGenerator extends RoasterClientFormTemplat
     }
 
     @Override
-    protected String getWidgetFromHelper( InputCreatorHelper helper ) {
-        return helper.getDisplayWidget();
+    protected String getWidgetFromHelper( InputCreatorHelper helper, FieldDefinition fieldDefinition ) {
+        return helper.getDisplayWidget( fieldDefinition );
     }
 
     @Override

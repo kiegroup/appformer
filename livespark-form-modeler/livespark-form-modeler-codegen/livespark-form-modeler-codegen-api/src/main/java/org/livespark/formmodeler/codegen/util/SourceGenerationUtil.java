@@ -20,6 +20,12 @@ package org.livespark.formmodeler.codegen.util;
  */
 public interface SourceGenerationUtil {
 
+    public static final String GWT_DOM_CLASSNAME = "com.google.gwt.user.client.DOM";
+
+    public static final String GWT_SAFE_HTML_UTILS_NAME = "SafeHtmlUtils";
+    public static final String GWT_SAFE_HTML_UTILS_CLASSNAME = "com.google.gwt.safehtml.shared." + GWT_SAFE_HTML_UTILS_NAME;
+    public static final String GWT_SAFE_HTML_UTILS_FROM_TRUSTED_SOURCE = GWT_SAFE_HTML_UTILS_NAME + ".fromTrustedString( \"&nbsp;\" )";
+
     public static final String JAVA_LANG_OVERRIDE = "java.lang.Override";
 
     public static final String ERRAI_PORTABLE = "org.jboss.errai.common.client.api.annotations.Portable";
@@ -68,10 +74,6 @@ public interface SourceGenerationUtil {
     public static final String MULTIPLE_SUBFORM_ADAPTER_SUFFIX = "MultipleSubFormModelAdapter";
     public static final String MULTIPLE_SUBFORM_ClASSNAME = "org.livespark.formmodeler.rendering.client.shared.fields.MultipleSubFormModelAdapter";
 
-    public static final String LISTBOX_RENDERER_SUFFIX = "_ListValueRenderer";
-    public static final String LISTBOX_STRING_RENDERER_NAME = "StringListBoxRenderer";
-    public static final String LISTBOX_STRING_RENDERER_CLASSNAME = "org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer";
-
     public static final String JAVA_UTIL_LIST_CLASSNAME = "java.util.List";
     public static final String JAVA_UTIL_ARRAYLIST_CLASSNAME = "java.util.ArrayList";
 
@@ -80,8 +82,7 @@ public interface SourceGenerationUtil {
     public static final String JAVA_UTIL_HASHMAP_CLASSNAME = "java.util.HashMap";
     public static final String JAVA_UTIL_HASHMAP_NAME = "HashMap";
 
-    public static final String LOAD_LIST_VALUES_METHOD_NAME = "loadListValues_";
-
+    public static final String IS_NEW_MODEL_METHOD_CALL = "isNewModel()";
     public static final String INIT_FORM_METHOD = "initForm";
     public static final String BEFORE_DISPLAY_METHOD = "beforeDisplay";
     public static final String DO_EXTRA_VALIDATIONS_METHOD = "doExtraValidations";

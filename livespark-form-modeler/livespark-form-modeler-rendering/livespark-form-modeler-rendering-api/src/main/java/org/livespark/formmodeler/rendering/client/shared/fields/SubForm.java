@@ -46,7 +46,6 @@ public class SubForm<M, F extends FormModel> extends SimplePanel implements HasM
     public void setModel( M model ) {
         this.model = model;
         formView.setModel( subFormModelAdapter.getFormModelForModel( model ) );
-        formView.beforeDisplay();
     }
 
     public void setReadOnly(boolean readonly) {

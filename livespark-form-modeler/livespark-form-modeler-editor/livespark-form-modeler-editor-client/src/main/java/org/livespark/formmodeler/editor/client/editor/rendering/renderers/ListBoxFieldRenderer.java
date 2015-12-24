@@ -15,39 +15,21 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.text.shared.AbstractRenderer;
-import com.google.gwt.text.shared.Renderer;
+import java.util.HashMap;
+import java.util.Map;
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.*;
-import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
-import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.SelectorOptionFormPresenter;
-import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionRequest;
-import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionResponse;
-import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionUpdate;
-import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
+import org.gwtbootstrap3.client.ui.FormGroup;
+import org.gwtbootstrap3.client.ui.FormLabel;
+import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.ValueListBox;
 import org.livespark.formmodeler.editor.model.impl.basic.selectors.ListBoxFieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
 import org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer;
-import org.uberfire.ext.properties.editor.model.CustomPropertyEditorFieldInfo;
-import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Dependent
-public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> {
-
-    @Inject
-    protected Event<FieldSelectorOptionResponse> responseEvent;
+public class ListBoxFieldRenderer extends SelectorFieldRenderer<ListBoxFieldDefinition> {
 
     protected StringListBoxRenderer optionsRenderer = new StringListBoxRenderer();
 
@@ -60,7 +42,7 @@ public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> 
 
     @Override
     public IsWidget renderWidget() {
-        refreshListBoxOptions();
+        refreshSelectorOptions();
         FormGroup group = new FormGroup(  );
         FormLabel label = new FormLabel(  );
         widgetList.setEnabled( !field.getReadonly() );
@@ -78,39 +60,7 @@ public class ListBoxFieldRenderer extends FieldRenderer<ListBoxFieldDefinition> 
     }
 
     @Override
-    protected List<PropertyEditorFieldInfo> getCustomFieldSettings() {
-        List<PropertyEditorFieldInfo> result = new ArrayList<PropertyEditorFieldInfo>();
-
-        JSONObject obj = new JSONObject();
-        obj.put( DraggableFieldComponent.FORM_ID, new JSONString( draggableFieldComponent.getFormId() ) );
-        obj.put( DraggableFieldComponent.FIELD_ID, new JSONString( draggableFieldComponent.getFieldId() ) );
-
-        result.add( new CustomPropertyEditorFieldInfo( FieldProperties.INSTANCE.options(), obj.toString(), SelectorOptionFormPresenter.class ) );
-        return result;
-    }
-
-    protected void onRequest( @Observes FieldSelectorOptionRequest requestEvent ) {
-        if ( draggableFieldComponent == null ) return;
-        if ( draggableFieldComponent.getFormId().equals( requestEvent.getFormId() ) &&
-                draggableFieldComponent.getFieldId().equals( requestEvent.getFieldId() ) ) {
-
-            responseEvent.fire( new FieldSelectorOptionResponse( requestEvent.getFormId(),
-                    requestEvent.getFieldId(),
-                    field.getOptions()) );
-        }
-    }
-
-    protected void onUpdate( @Observes FieldSelectorOptionUpdate updateEvent ) {
-        if ( draggableFieldComponent == null ) return;
-        if ( draggableFieldComponent.getFormId().equals( updateEvent.getFormId() ) &&
-                draggableFieldComponent.getFieldId().equals( updateEvent.getFieldId() )) {
-            field.setOptions( updateEvent.getOptions() );
-
-            refreshListBoxOptions();
-        }
-    }
-
-    protected void refreshListBoxOptions() {
+    protected void refreshSelectorOptions() {
         Map<String, String> optionsValues = new HashMap<String, String>( );
         widgetList.reset();
         if ( field.getOptions() != null ) {

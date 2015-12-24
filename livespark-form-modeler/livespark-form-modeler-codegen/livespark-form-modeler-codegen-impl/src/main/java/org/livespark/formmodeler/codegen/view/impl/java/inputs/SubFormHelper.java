@@ -44,7 +44,7 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
     }
 
     @Override
-    public String getInputWidget() {
+    public String getInputWidget( FieldDefinition fieldDefinition ) {
         return "org.livespark.formmodeler.rendering.client.shared.fields.SubForm";
     }
 
