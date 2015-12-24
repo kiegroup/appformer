@@ -16,6 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
 
 /**
@@ -29,7 +30,7 @@ public class CheckBoxHelper extends AbstractInputCreatorHelper {
     }
 
     @Override
-    public String getInputWidget() {
+    public String getInputWidget( FieldDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.SimpleCheckBox";
     }
 

@@ -72,7 +72,6 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
         @Override
         public void startEdit( ListView listView, M model ) {
             final FormView<M> form = getForm();
-            form.setModel( model );
             FormDisplayer displayer = getFormDisplayer();
             displayer.display( new FormDisplayerConfig( form, getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
                 @Override
@@ -85,6 +84,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
                 }
             } ) );
+            form.setModel( model );
         }
 
         @Override

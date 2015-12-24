@@ -16,10 +16,12 @@
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
+import org.gwtbootstrap3.extras.datetimepicker.client.ui.DateTimePicker;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
@@ -43,15 +45,26 @@ public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinitio
     public IsWidget renderWidget() {
         FormGroup group = new FormGroup(  );
         FormLabel label = new FormLabel(  );
-        DatePicker box = new DatePicker();
-        box.setPlaceholder( field.getPlaceHolder() );
-        box.setEnabled( !field.getReadonly() );
+        Widget box = getDateWidget();
         label.setText( field.getLabel() );
         label.setFor( box.getElement().getId() );
         group.add(label);
         group.add( box );
         group.add( new HelpBlock() );
         return group;
+    }
+
+    protected Widget getDateWidget() {
+        if ( field.getShowTime() ) {
+            DateTimePicker box = new DateTimePicker();
+            box.setPlaceholder( field.getPlaceHolder() );
+            box.setEnabled( !field.getReadonly() );
+            return box;
+        }
+        DatePicker box = new DatePicker();
+        box.setPlaceholder( field.getPlaceHolder() );
+        box.setEnabled( !field.getReadonly() );
+        return box;
     }
 
     @Override
@@ -69,6 +82,13 @@ public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinitio
                 field.setPlaceHolder(currentStringValue);
             }
         });
+        result.add( new PropertyEditorFieldInfo( FieldProperties.INSTANCE.showTime(), String.valueOf( field.getShowTime() ), PropertyEditorType.BOOLEAN ) {
+            @Override
+            public void setCurrentStringValue( final String currentStringValue ) {
+                super.setCurrentStringValue( currentStringValue );
+                field.setShowTime( Boolean.valueOf( currentStringValue ) );
+            }
+        } );
         return result;
     }
 }

@@ -29,7 +29,12 @@ import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOptio
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public class ListBoxHelper extends AbstractInputCreatorHelper implements RequiresCustomCode, RequiresExtraFields {
+public class ListBoxHelper extends AbstractInputCreatorHelper implements RequiresCustomCode<ListBoxFieldDefinition>, RequiresExtraFields<ListBoxFieldDefinition> {
+
+    public static final String LOAD_LIST_VALUES_METHOD_NAME = "loadListValues_";
+    public static final String LISTBOX_RENDERER_SUFFIX = "_ListValueRenderer";
+    public static final String LISTBOX_STRING_RENDERER_NAME = "StringListBoxRenderer";
+    public static final String LISTBOX_STRING_RENDERER_CLASSNAME = "org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer";
 
     @Override
     public boolean isInputInjectable() {
@@ -42,7 +47,7 @@ public class ListBoxHelper extends AbstractInputCreatorHelper implements Require
     }
 
     @Override
-    public String getInputWidget() {
+    public String getInputWidget( FieldDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.ValueListBox";
     }
 
@@ -52,7 +57,7 @@ public class ListBoxHelper extends AbstractInputCreatorHelper implements Require
     }
 
     @Override
-    public void addCustomCode( FieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
+    public void addCustomCode( ListBoxFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
 
         viewClass.addImport( JAVA_UTIL_MAP_CLASSNAME );
         viewClass.addImport( JAVA_UTIL_HASHMAP_CLASSNAME );
@@ -65,7 +70,7 @@ public class ListBoxHelper extends AbstractInputCreatorHelper implements Require
                 .append( "<String, String>();" );
 
         String defaultValue = null;
-        for ( SelectorOption option : ((ListBoxFieldDefinition)fieldDefinition).getOptions() ) {
+        for ( SelectorOption option : fieldDefinition.getOptions() ) {
             body.append( "values.put( \"" )
                     .append( option.getValue() )
                     .append( "\", \"" )
@@ -75,10 +80,12 @@ public class ListBoxHelper extends AbstractInputCreatorHelper implements Require
         }
 
         if ( defaultValue != null ) {
+            body.append( "if (" ).append( IS_NEW_MODEL_METHOD_CALL).append( ") {" );
             body.append( fieldDefinition.getName() )
                     .append( ".setValue( \"" )
                     .append( defaultValue )
                     .append( "\", true );" );
+            body.append( "}" );
         }
         body.append( fieldDefinition.getName() )
                 .append( LISTBOX_RENDERER_SUFFIX )
@@ -106,7 +113,12 @@ public class ListBoxHelper extends AbstractInputCreatorHelper implements Require
     }
 
     @Override
-    public void addExtraFields( JavaClassSource viewClass, FieldDefinition fieldDefinition ) {
+    public String getExtraReadOnlyCode( ListBoxFieldDefinition fieldDefinition, String readonlyParam ) {
+        return "";
+    }
+
+    @Override
+    public void addExtraFields( JavaClassSource viewClass, ListBoxFieldDefinition fieldDefinition ) {
         viewClass.addImport( LISTBOX_STRING_RENDERER_CLASSNAME );
         PropertySource<JavaClassSource> property = viewClass.addProperty( LISTBOX_STRING_RENDERER_NAME, fieldDefinition.getName() + LISTBOX_RENDERER_SUFFIX );
 

@@ -36,4 +36,11 @@ public abstract class SelectorField extends FieldDefinition {
     public void setOptions(List<SelectorOption> options) {
         this.options = options;
     }
+
+    @Override
+    protected void doCopyFrom( FieldDefinition other ) {
+        if ( other instanceof  SelectorField ) {
+            this.setOptions( ((SelectorField) other).getOptions() );
+        }
+    }
 }

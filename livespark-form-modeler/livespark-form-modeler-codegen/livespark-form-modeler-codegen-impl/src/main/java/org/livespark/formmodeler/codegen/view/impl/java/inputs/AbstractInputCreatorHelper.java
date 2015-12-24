@@ -23,7 +23,7 @@ import org.livespark.formmodeler.editor.model.FieldDefinition;
 /**
  * Created by pefernan on 4/28/15.
  */
-public abstract class AbstractInputCreatorHelper implements InputCreatorHelper {
+public abstract class AbstractInputCreatorHelper<F extends FieldDefinition> implements InputCreatorHelper<F> {
 
     @Override
     public boolean isInputInjectable() {
@@ -31,7 +31,7 @@ public abstract class AbstractInputCreatorHelper implements InputCreatorHelper {
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, FieldDefinition fieldDefinition ) {
+    public String getInputInitLiteral( SourceGenerationContext context, F fieldDefinition ) {
         return null;
     }
 
@@ -46,7 +46,7 @@ public abstract class AbstractInputCreatorHelper implements InputCreatorHelper {
     }
 
     @Override
-    public String getDisplayWidget() {
+    public String getDisplayWidget( F fieldDefinition ) {
         return "com.google.gwt.user.client.Element";
     }
 

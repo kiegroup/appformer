@@ -32,6 +32,7 @@ public class DateBoxFieldDefinition extends FieldDefinition implements HasPlaceH
     public static final String _CODE = "DatePicker";
 
     protected String placeHolder = "";
+    protected Boolean showTime = Boolean.TRUE;
 
     @Override
     public String getCode() {
@@ -55,9 +56,21 @@ public class DateBoxFieldDefinition extends FieldDefinition implements HasPlaceH
         this.placeHolder = placeHolder;
     }
 
+    public Boolean getShowTime() {
+        return showTime;
+    }
+
+    public void setShowTime( Boolean showTime ) {
+        this.showTime = showTime;
+    }
+
     @Override
     protected void doCopyFrom( FieldDefinition other ) {
-        if ( other instanceof  HasPlaceHolder ) {
+        if ( other instanceof DateBoxFieldDefinition ) {
+            DateBoxFieldDefinition otherDate = (DateBoxFieldDefinition) other;
+            setPlaceHolder( otherDate.getPlaceHolder() );
+            setShowTime( otherDate.getShowTime() );
+        } else if ( other instanceof  HasPlaceHolder ) {
             setPlaceHolder( ((HasPlaceHolder) other).getPlaceHolder() );
         }
     }
