@@ -17,7 +17,7 @@ package org.livespark.formmodeler.rendering.client.shared.fields;
 
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
@@ -57,7 +57,7 @@ public class SubForm<M, F extends FormModel> extends SimplePanel implements HasM
     }
 
     protected void initFormView() {
-        IOCBeanDef<? extends FormView<F>> beanDef = IOC.getBeanManager().lookupBean( subFormModelAdapter.getFormViewType() );
+        SyncBeanDef<? extends FormView<F>> beanDef = IOC.getBeanManager().lookupBean( subFormModelAdapter.getFormViewType() );
         this.formView = beanDef.getInstance();
         this.add( formView );
     }

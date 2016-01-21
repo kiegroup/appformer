@@ -27,6 +27,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 public class DoubleConverter implements Converter<Double, String> {
 
     @Override
+    public Class<Double> getModelType() {
+        return Double.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
+
+    @Override
     public Double toModelValue( String s ) {
         if (s == null) return null;
         return Double.valueOf(s);

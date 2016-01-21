@@ -52,4 +52,6 @@ public interface Constants extends Messages {
 
     public String dataObjectIsBindedMessage();
     public String areYouSureRemoveDataObject();
+
+    public String accept();
 }

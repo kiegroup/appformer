@@ -16,13 +16,12 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.
  */
-public class TextAreaHelper extends AbstractInputCreatorHelper {
+public class TextAreaHelper extends AbstractInputCreatorHelper<TextAreaFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -30,7 +29,7 @@ public class TextAreaHelper extends AbstractInputCreatorHelper {
     }
 
     @Override
-    public String getInputWidget( FieldDefinition fieldDefinition ) {
+    public String getInputWidget( TextAreaFieldDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.TextArea";
     }
 }

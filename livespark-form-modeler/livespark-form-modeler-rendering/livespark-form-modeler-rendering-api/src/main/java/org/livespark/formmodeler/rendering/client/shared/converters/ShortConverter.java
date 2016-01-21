@@ -27,6 +27,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 public class ShortConverter implements Converter<Short, String> {
 
     @Override
+    public Class<Short> getModelType() {
+        return Short.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
+
+    @Override
     public Short toModelValue( String s ) {
         if (s == null) return null;
         return Short.parseShort( s );

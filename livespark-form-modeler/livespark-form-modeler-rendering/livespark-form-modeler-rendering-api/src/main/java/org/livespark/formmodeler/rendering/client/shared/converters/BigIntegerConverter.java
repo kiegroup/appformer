@@ -29,6 +29,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 public class BigIntegerConverter implements Converter<BigInteger, String> {
 
     @Override
+    public Class<BigInteger> getModelType() {
+        return BigInteger.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
+
+    @Override
     public BigInteger toModelValue( String s ) {
         if (s == null) return null;
         return new BigInteger( s );

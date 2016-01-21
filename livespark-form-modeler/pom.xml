@@ -15,10 +15,11 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>livespark-form-modeler-editor</module>
+    <module>livespark-form-modeler-api</module>
     <module>livespark-form-modeler-codegen</module>
-    <module>livespark-form-modeler-codegen-services</module>
     <module>livespark-form-modeler-rendering</module>
+    <module>livespark-form-modeler-dynamic-renderer</module>
+    <module>livespark-form-modeler-editor</module>
   </modules>
 
 </project>

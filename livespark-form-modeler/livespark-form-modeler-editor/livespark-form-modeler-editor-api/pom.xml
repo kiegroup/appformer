@@ -45,5 +45,13 @@
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-services-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

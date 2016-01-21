@@ -46,7 +46,7 @@ import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 import org.uberfire.ext.properties.editor.client.widgets.AbstractPropertyEditorWidget;
 import org.uberfire.ext.widgets.common.client.common.CheckboxCellImpl;
 

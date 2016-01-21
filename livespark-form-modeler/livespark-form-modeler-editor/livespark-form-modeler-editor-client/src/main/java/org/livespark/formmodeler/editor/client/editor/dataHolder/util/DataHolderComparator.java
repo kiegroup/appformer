@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.editor.client.editor.dataHolder.util;
 
-import org.livespark.formmodeler.editor.model.DataHolder;
+import org.livespark.formmodeler.model.DataHolder;
 
 import java.util.Comparator;
 

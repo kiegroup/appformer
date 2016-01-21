@@ -102,11 +102,15 @@
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-editor-api</artifactId>
+      <artifactId>livespark-form-modeler-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-codegen-layout-generator</artifactId>
     </dependency>
 
     <!-- test -->

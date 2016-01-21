@@ -84,8 +84,9 @@
   <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
 
   <!-- Form Modeler -->
-  <inherits name="org.livespark.formmodeler.editor.FormModelerClient"/>
-  <inherits name="org.livespark.formmodeler.rendering.FormModelerRenderingAPI"/>
+  <inherits name="org.livespark.formmodeler.renderer.FormModelerDynamicRendererClient"/>
+  <inherits name="org.livespark.formmodeler.editor.FormModelerEditorClient"/>
+
 
   <inherits name="org.livespark.LiveSparkDeployment"/>
 

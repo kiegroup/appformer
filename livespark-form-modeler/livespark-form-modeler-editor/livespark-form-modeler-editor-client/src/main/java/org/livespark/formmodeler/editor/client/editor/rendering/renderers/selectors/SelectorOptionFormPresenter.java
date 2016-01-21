@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionRequest;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionResponse;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionUpdate;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 import org.uberfire.ext.properties.editor.client.fields.AbstractField;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 

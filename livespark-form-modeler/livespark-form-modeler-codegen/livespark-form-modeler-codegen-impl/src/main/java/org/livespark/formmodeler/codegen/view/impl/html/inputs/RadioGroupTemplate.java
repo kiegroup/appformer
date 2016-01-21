@@ -19,7 +19,7 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 import java.io.InputStream;
 
 import org.livespark.formmodeler.codegen.view.impl.html.InputTemplateProvider;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.RadioGroupFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
 
 public class RadioGroupTemplate implements InputTemplateProvider {
 

@@ -15,7 +15,9 @@
  */
 package org.livespark.formmodeler.editor.backend.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
+import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -24,16 +26,19 @@ import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.backend.service.KieService;
 import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
+import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
-import org.livespark.formmodeler.codegen.template.FormTemplateGenerator;
+import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
-import org.livespark.formmodeler.editor.model.DataHolder;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.model.DataHolder;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.editor.service.FieldManager;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.service.FieldManager;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.livespark.formmodeler.editor.service.FormFinderSerivce;
 import org.slf4j.Logger;
@@ -60,6 +65,8 @@ import java.util.Map;
 @Service
 @ApplicationScoped
 public class FormEditorServiceImpl extends KieService<FormModelerContent> implements FormEditorService {
+    public final static String RESOURCE_PATH = "src/main/resources/";
+
     private Logger log = LoggerFactory.getLogger( FormEditorServiceImpl.class );
 
     @Inject
@@ -88,7 +95,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     protected KieProjectService projectService;
 
     @Inject
-    protected FormTemplateGenerator formTemplateGenerator;
+    protected FormDefinitionSerializer formDefinitionSerializer;
 
     @Inject
     protected FormSourcesGenerator formSourcesGenerator;
@@ -101,6 +108,9 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
         return super.loadContent( path );
     }
 
+    @Inject
+    private CommentedOptionFactory commentedOptionFactory;
+
     @Override
     public Path createForm( Path path, String formName ) {
         org.uberfire.java.nio.file.Path kiePath = Paths.convert( path ).resolve(formName);
@@ -112,7 +122,8 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
             form.setName( formName.substring( 0, formName.lastIndexOf( "." ) ) );
 
-            ioService.write( kiePath, formTemplateGenerator.generateFormTemplate( form ), makeCommentedOption( "" ) );
+            ioService.write( kiePath, formDefinitionSerializer.serialize( form ),
+                    commentedOptionFactory.makeCommentedOption( "" ) );
 
             return Paths.convert(kiePath);
         } catch ( Exception e ) {
@@ -132,7 +143,8 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
     @Override
     public Path save( Path path, FormModelerContent content, Metadata metadata, String comment ) {
-        ioService.write(Paths.convert(path), formTemplateGenerator.generateFormTemplate( content.getDefinition() ), metadataService.setUpAttributes(path, metadata), makeCommentedOption(comment));
+        ioService.write(Paths.convert(path), formDefinitionSerializer.serialize( content.getDefinition() ),
+                metadataService.setUpAttributes(path, metadata), commentedOptionFactory.makeCommentedOption(comment));
 
         formSourcesGenerator.generateFormSources(content.getDefinition(), path);
 
@@ -150,6 +162,10 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
             result.setDefinition( form );
             result.setPath( path );
             result.setOverview( overview );
+
+            FormEditorFormRenderingContext context = createRenderingContext( form, path );
+
+            result.setRenderingContext( context );
 
             if (!form.getDataHolders().isEmpty()) {
                 DataModel model = dataModelerService.loadModel( projectService.resolveProject( path ) );
@@ -175,7 +191,6 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
                 }
 
                 result.setAvailableFields(availableFields);
-
             }
 
             resourceOpenedEvent.fire(new ResourceOpenedEvent( path, sessionInfo ));
@@ -187,10 +202,47 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
         return null;
     }
 
+    protected FormEditorFormRenderingContext createRenderingContext( FormDefinition form, Path formPath ) {
+        FormEditorFormRenderingContext context = new FormEditorFormRenderingContext( form, null, formPath );
+
+        for ( FieldDefinition field : form.getFields() ) {
+            if ( field instanceof SubFormFieldDefinition ) {
+                SubFormFieldDefinition subForm = (SubFormFieldDefinition) field;
+                String nestedPath = subForm.getNestedForm();
+                if ( !StringUtils.isEmpty( nestedPath ) ) {
+                    FormDefinition nestedForm = resolveForm( nestedPath, formPath );
+                    context.getAvailableForms().put( nestedPath, nestedForm );
+                }
+            }
+        }
+
+        context.getAvailableForms().put( getFormShortPath( formPath ), form );
+        return context;
+    }
+
+    public FormDefinition resolveForm( String formPath, Path rootPath ) {
+        return resolveForm( formPath, projectService.resolveProject( rootPath ) );
+    }
+
+    protected FormDefinition resolveForm( String formPath, KieProject project ) {
+        org.uberfire.java.nio.file.Path ufPath = Paths.convert( project.getRootPath() ).resolve( RESOURCE_PATH + formPath );
+        try {
+            return findForm( ufPath );
+        } catch ( Exception e ) {
+            log.warn( "Error getting form '{}'", formPath, e );
+        }
+        return null;
+    }
+
+    public String getFormShortPath( Path formPath ) {
+        String fullPath = formPath.toURI();
+        return fullPath.substring( fullPath.indexOf( RESOURCE_PATH ) + RESOURCE_PATH.length() + 1 );
+    }
+
     protected FormDefinition findForm( org.uberfire.java.nio.file.Path path ) throws Exception {
         String template = ioService.readAllString( path ).trim();
 
-        FormDefinition form = formTemplateGenerator.parseFormTemplate( template );
+        FormDefinition form = formDefinitionSerializer.deserialize( template );
         if ( form == null ) {
             form = formFinderSerivce.getNewFormInstance();
         }

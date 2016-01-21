@@ -16,8 +16,6 @@
 
 package org.livespark.formmodeler.rendering.client.shared.converters;
 
-import java.math.BigDecimal;
-
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jboss.errai.databinding.client.api.DefaultConverter;
 
@@ -27,6 +25,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 
 @DefaultConverter
 public class CharacterConverter implements Converter<Character, String> {
+
+    @Override
+    public Class<Character> getModelType() {
+        return Character.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 
     @Override
     public Character toModelValue( String s ) {

@@ -27,6 +27,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 public class IntegerConverter implements Converter<Integer, String> {
 
     @Override
+    public Class<Integer> getModelType() {
+        return Integer.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
+
+    @Override
     public Integer toModelValue( String s ) {
         if (s == null) return null;
         return Integer.decode( s );

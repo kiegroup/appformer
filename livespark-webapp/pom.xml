@@ -577,7 +577,7 @@
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-weld-integration</artifactId>
+      <artifactId>errai-cdi-server</artifactId>
     </dependency>
 
     <!-- GWT and GWT Extensions -->
@@ -646,6 +646,7 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-validation</artifactId>
+      <version>${version.org.jboss.errai}</version>
       <classifier>sources</classifier>
     </dependency>
 
@@ -685,6 +686,26 @@
     <!-- Start LiveSpark Modules -->
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-dynamic-renderer-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-editor-api</artifactId>
     </dependency>
 
@@ -701,6 +722,10 @@
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-codegen-layout-generator</artifactId>
     </dependency>
     <dependency>
       <groupId>org.livespark</groupId>
@@ -740,7 +765,7 @@
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
           <localWorkers>1</localWorkers>
-          <extraJvmArgs>-Xmx2048m -XX:MaxPermSize=256m -Xms1024m -XX:PermSize=128m -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.util.prefs.syncInterval=2000000 -Dorg.uberfire.nio.git.dir=/tmp/niogit</extraJvmArgs>
+          <extraJvmArgs>-Xmx4g -Xms1g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.util.prefs.syncInterval=2000000 -Dorg.uberfire.nio.git.dir=/tmp/niogit</extraJvmArgs>
           <module>org.livespark.LiveSpark</module>
 
           <logLevel>INFO</logLevel>
@@ -834,9 +859,12 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
             <!-- Form Modeler -->
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-dynamic-renderer-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.livespark:livespark-form-modeler-dynamic-renderer-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
-            <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
           </compileSourcesArtifacts>
         </configuration>

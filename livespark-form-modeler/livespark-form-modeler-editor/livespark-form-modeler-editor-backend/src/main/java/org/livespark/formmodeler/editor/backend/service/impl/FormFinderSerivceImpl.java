@@ -1,7 +1,5 @@
 package org.livespark.formmodeler.editor.backend.service.impl;
 
-import org.guvnor.common.services.project.model.*;
-import org.guvnor.common.services.project.model.Package;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
@@ -10,8 +8,8 @@ import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.livespark.formmodeler.editor.model.FormDefinition;
-import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
 import org.livespark.formmodeler.editor.service.SubFormData;
 import org.livespark.formmodeler.editor.service.FormFinderSerivce;
 import org.uberfire.backend.server.util.Paths;

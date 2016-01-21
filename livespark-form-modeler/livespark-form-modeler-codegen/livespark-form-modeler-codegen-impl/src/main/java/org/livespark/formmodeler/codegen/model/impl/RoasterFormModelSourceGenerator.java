@@ -37,8 +37,8 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
-import org.livespark.formmodeler.editor.model.DataHolder;
-import org.livespark.formmodeler.editor.service.FieldManager;
+import org.livespark.formmodeler.model.DataHolder;
+import org.livespark.formmodeler.service.FieldManager;
 
 /**
  * Created by pefernan on 4/27/15.
