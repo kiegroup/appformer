@@ -15,12 +15,12 @@
  */
 package org.livespark.formmodeler.editor.client.editor.mock;
 
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
-import org.livespark.formmodeler.editor.service.AbstractFieldManager;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.service.AbstractFieldManager;
 
 public class MockFieldManager extends AbstractFieldManager {
 

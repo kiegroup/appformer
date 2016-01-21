@@ -17,8 +17,8 @@ package org.livespark.formmodeler.editor.service;
 
 import org.guvnor.common.services.shared.file.SupportsUpdate;
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.service.support.SupportsDelete;

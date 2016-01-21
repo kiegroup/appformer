@@ -1,0 +1,6 @@
+<beans>
+  <alternatives>
+    <class>org.livespark.formmodeler.renderer.backend.service.impl.TestAppSetup</class>
+    <class>org.livespark.formmodeler.renderer.backend.service.impl.TestIdentityFactory</class>
+  </alternatives>
+</beans>

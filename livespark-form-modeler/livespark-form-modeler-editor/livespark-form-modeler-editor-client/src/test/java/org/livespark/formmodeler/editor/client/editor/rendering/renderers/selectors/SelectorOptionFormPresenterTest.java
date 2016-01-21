@@ -28,7 +28,7 @@ import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldCo
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionRequest;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionResponse;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event.FieldSelectorOptionUpdate;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;

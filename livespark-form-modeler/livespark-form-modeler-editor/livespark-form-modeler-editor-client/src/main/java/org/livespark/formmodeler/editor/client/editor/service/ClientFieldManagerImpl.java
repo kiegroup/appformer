@@ -15,31 +15,48 @@
  */
 package org.livespark.formmodeler.editor.client.editor.service;
 
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.service.AbstractFieldManager;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import java.util.Collection;
 
-/**
- * Created by pefernan on 9/25/15.
- */
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.service.AbstractFieldManager;
+
 @ApplicationScoped
 public class ClientFieldManagerImpl extends AbstractFieldManager {
 
     @PostConstruct
     protected void init() {
-        Collection<IOCBeanDef<FieldDefinition>> fields = IOC.getBeanManager().lookupBeans(FieldDefinition.class);
-        for (IOCBeanDef<FieldDefinition> field : fields) {
-            registerFieldDefinition( field.getInstance() );
-        }
+        registerFieldDefinition( new TextBoxFieldDefinition() );
+        registerFieldDefinition( new TextAreaFieldDefinition() );
+        registerFieldDefinition( new CheckBoxFieldDefinition() );
+        registerFieldDefinition( new DateBoxFieldDefinition() );
+        registerFieldDefinition( new ListBoxFieldDefinition() );
+        registerFieldDefinition( new RadioGroupFieldDefinition() );
+        registerFieldDefinition( new SubFormFieldDefinition() );
+        registerFieldDefinition( new MultipleSubFormFieldDefinition() );
     }
 
     @Override
     protected FieldDefinition createNewInstance(FieldDefinition definition) throws Exception {
-        return  IOC.getBeanManager().lookupBean(definition.getClass()).newInstance();
+        if ( definition == null ) return null;
+
+        if ( definition.getCode().equals( TextBoxFieldDefinition._CODE )) return new TextBoxFieldDefinition();
+        if ( definition.getCode().equals( TextAreaFieldDefinition._CODE )) return new TextAreaFieldDefinition();
+        if ( definition.getCode().equals( CheckBoxFieldDefinition._CODE )) return new CheckBoxFieldDefinition();
+        if ( definition.getCode().equals( DateBoxFieldDefinition._CODE )) return new DateBoxFieldDefinition();
+        if ( definition.getCode().equals( ListBoxFieldDefinition._CODE )) return new ListBoxFieldDefinition();
+        if ( definition.getCode().equals( RadioGroupFieldDefinition._CODE )) return new RadioGroupFieldDefinition();
+        if ( definition.getCode().equals( SubFormFieldDefinition._CODE )) return new SubFormFieldDefinition();
+        if ( definition.getCode().equals( MultipleSubFormFieldDefinition._CODE )) return new MultipleSubFormFieldDefinition();
+
+        return null;
     }
 }

@@ -16,6 +16,7 @@
   <modules>
     <module>livespark-form-modeler-codegen-api</module>
     <module>livespark-form-modeler-codegen-impl</module>
+    <module>livespark-form-modeler-codegen-services</module>
   </modules>
 
 </project>

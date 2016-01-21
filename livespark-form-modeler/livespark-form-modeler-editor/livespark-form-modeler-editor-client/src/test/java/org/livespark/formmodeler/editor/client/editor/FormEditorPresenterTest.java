@@ -32,18 +32,18 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditorWrapperView;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
-import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse;
+import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
 import org.livespark.formmodeler.editor.client.editor.mock.MockFieldManager;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
 import org.livespark.formmodeler.editor.client.resources.images.FormEditorImageResources;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.editor.model.impl.basic.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextAreaFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -116,7 +116,7 @@ public class FormEditorPresenterTest extends TestCase {
     private IOCBeanDef<DraggableFieldComponent> draggableFieldDef;
 
     @Mock
-    protected EventSourceMock<FormContextResponse> eventMock;
+    protected EventSourceMock<FormEditorContextResponse> eventMock;
 
     private FormEditorPresenter presenter;
     private FormModelerContent content;

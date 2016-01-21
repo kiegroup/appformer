@@ -16,7 +16,7 @@
 package org.livespark.formmodeler.codegen.layout.impl;
 
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateComponent;
-import org.livespark.formmodeler.editor.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 
 /**
  * Created by pefernan on 9/4/15.

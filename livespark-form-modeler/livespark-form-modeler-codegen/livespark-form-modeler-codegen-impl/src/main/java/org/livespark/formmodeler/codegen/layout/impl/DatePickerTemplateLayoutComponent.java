@@ -16,7 +16,7 @@
 package org.livespark.formmodeler.codegen.layout.impl;
 
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateComponent;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
 
 /**
  * Created by pefernan on 9/4/15.

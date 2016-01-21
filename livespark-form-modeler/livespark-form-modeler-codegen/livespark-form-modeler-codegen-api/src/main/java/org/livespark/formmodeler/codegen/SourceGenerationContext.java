@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen;
 
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
 import org.guvnor.common.services.project.model.Package;
 

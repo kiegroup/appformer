@@ -23,13 +23,12 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresExtraFields;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.ListBoxFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public class ListBoxHelper extends AbstractInputCreatorHelper implements RequiresCustomCode<ListBoxFieldDefinition>, RequiresExtraFields<ListBoxFieldDefinition> {
+public class ListBoxHelper extends AbstractInputCreatorHelper<ListBoxFieldDefinition> implements RequiresCustomCode<ListBoxFieldDefinition>, RequiresExtraFields<ListBoxFieldDefinition> {
 
     public static final String LOAD_LIST_VALUES_METHOD_NAME = "loadListValues_";
     public static final String LISTBOX_RENDERER_SUFFIX = "_ListValueRenderer";
@@ -47,12 +46,12 @@ public class ListBoxHelper extends AbstractInputCreatorHelper implements Require
     }
 
     @Override
-    public String getInputWidget( FieldDefinition fieldDefinition ) {
+    public String getInputWidget( ListBoxFieldDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.ValueListBox";
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, FieldDefinition fieldDefinition ) {
+    public String getInputInitLiteral( SourceGenerationContext context, ListBoxFieldDefinition fieldDefinition ) {
         return "new ValueListBox<String>( " + fieldDefinition.getName() + LISTBOX_RENDERER_SUFFIX + " );";
     }
 

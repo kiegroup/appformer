@@ -36,8 +36,8 @@
   <properties>
     <arquillian.version>1.1.8.Final</arquillian.version>
     <gwtmockito.version>1.1.5</gwtmockito.version>
-    <uberfire.version>0.8.0-SNAPSHOT</uberfire.version>
-    <errai.version>3.2.0-SNAPSHOT</errai.version>
+    <uberfire.version>0.9.0-SNAPSHOT</uberfire.version>
+    <errai.version>3.2.2-SNAPSHOT</errai.version>
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <javaee.version>1.0.2.Final</javaee.version>
@@ -144,7 +144,26 @@
         <artifactId>maven-invoker</artifactId>
         <version>${maven.invoker.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-form-modeler-editor-api</artifactId>

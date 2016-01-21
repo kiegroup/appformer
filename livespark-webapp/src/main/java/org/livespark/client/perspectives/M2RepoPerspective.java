@@ -109,7 +109,7 @@ public class M2RepoPerspective extends FlowPanel {
 
     @OnStartup
     public void onStartup() {
-        contextualSearch.setSearchBehavior( new SearchBehavior() {
+        contextualSearch.setDefaultSearchBehavior( new SearchBehavior() {
             @Override
             public void execute( String searchFilter ) {
                 searchEvents.fire( new M2RepoSearchEvent( searchFilter ) );

@@ -21,9 +21,9 @@ import org.kie.workbench.common.services.datamodeller.core.Annotation;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.HasPlaceHolder;
-import org.livespark.formmodeler.editor.service.FieldManager;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.HasPlaceHolder;
+import org.livespark.formmodeler.service.FieldManager;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

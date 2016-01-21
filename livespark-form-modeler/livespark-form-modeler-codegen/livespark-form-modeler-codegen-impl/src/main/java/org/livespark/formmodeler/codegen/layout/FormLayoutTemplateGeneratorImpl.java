@@ -16,9 +16,9 @@
 package org.livespark.formmodeler.codegen.layout;
 
 import org.livespark.formmodeler.codegen.template.FormTemplateGenerator;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.FormDefinition;
-import org.livespark.formmodeler.editor.model.FormLayoutComponent;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.model.FormLayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutColumn;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutRow;
@@ -60,7 +60,8 @@ public class FormLayoutTemplateGeneratorImpl implements FormLayoutTemplateGenera
         return formTemplateGenerator.generateFormTemplate( form );
     }
 
-    protected LayoutTemplate generateTemplate ( FormDefinition formDefinition ) {
+    @Override
+    public LayoutTemplate generateTemplate( FormDefinition formDefinition ) {
         LayoutTemplate template = new LayoutTemplate();
 
         for ( FieldDefinition field : formDefinition.getFields() ) {

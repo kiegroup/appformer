@@ -23,8 +23,8 @@ import com.google.gson.GsonBuilder;
 import org.livespark.formmodeler.codegen.template.FormTemplateGenerator;
 import org.livespark.formmodeler.codegen.template.impl.serialization.FieldDeserializer;
 import org.livespark.formmodeler.codegen.template.impl.serialization.FieldSerializer;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 
 /**
  * Created by pefernan on 8/31/15.

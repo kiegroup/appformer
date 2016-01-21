@@ -23,13 +23,12 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresExtraFields;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.RadioGroupFieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public class RadioGroupHelper extends AbstractInputCreatorHelper implements RequiresCustomCode<RadioGroupFieldDefinition>, RequiresExtraFields<RadioGroupFieldDefinition> {
+public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupFieldDefinition> implements RequiresCustomCode<RadioGroupFieldDefinition>, RequiresExtraFields<RadioGroupFieldDefinition> {
 
     public static final String SET_RADIO_DEFAULT_VALUE_METHOD_NAME = "setRadioDefaultValue_";
 
@@ -53,18 +52,17 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper implements Requ
     }
 
     @Override
-    public String getInputWidget( FieldDefinition fieldDefinition ) {
+    public String getInputWidget( RadioGroupFieldDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.StringRadioGroup";
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, FieldDefinition fieldDefinition ) {
+    public String getInputInitLiteral( SourceGenerationContext context, RadioGroupFieldDefinition fieldDefinition ) {
         return "new StringRadioGroup( " + fieldDefinition.getName() + RADIO_GROUP_NAME_SUFFIX + " );";
     }
 
     @Override
     public void addCustomCode( RadioGroupFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
-
 
         MethodSource<JavaClassSource> initFormMethod = viewClass.getMethod( INIT_FORM_METHOD );
         StringBuffer body = new StringBuffer( initFormMethod.getBody() );

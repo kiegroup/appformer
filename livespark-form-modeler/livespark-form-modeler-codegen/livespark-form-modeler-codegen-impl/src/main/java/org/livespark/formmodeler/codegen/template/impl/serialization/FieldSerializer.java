@@ -16,13 +16,12 @@
 package org.livespark.formmodeler.codegen.template.impl.serialization;
 
 import java.lang.reflect.Type;
-import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.model.FieldDefinition;
 
 import javax.enterprise.context.Dependent;
 

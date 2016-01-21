@@ -15,12 +15,14 @@
  */
 package org.livespark.formmodeler.codegen.layout;
 
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
+import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
 /**
  * Created by pefernan on 9/4/15.
  */
 public interface FormLayoutTemplateGenerator {
     String generateLayoutTemplate(FormDefinition form);
+
+    LayoutTemplate generateTemplate( FormDefinition formDefinition );
 }

@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.codegen.template;
 
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 
 /**
  * Created by pefernan on 9/1/15.

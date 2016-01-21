@@ -17,12 +17,9 @@ package org.livespark.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -54,8 +51,6 @@ import org.livespark.client.resources.i18n.AppConstants;
 import org.livespark.client.shared.AppReady;
 import org.uberfire.client.menu.CustomSplashHelp;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
-import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.views.pfly.menu.UserMenu;
 import org.uberfire.client.workbench.widgets.menu.UtilityMenuBar;
@@ -86,9 +81,6 @@ public class LiveSparkEntryPoint {
 
     @Inject
     private SyncBeanManager iocManager;
-
-    @Inject
-    private ActivityManager activityManager;
 
     @Inject
     private User identity;
@@ -251,27 +243,6 @@ public class LiveSparkEntryPoint {
             }
         }
         return defaultPerspective;
-    }
-
-    private List<PerspectiveActivity> getPerspectiveActivities() {
-
-        //Get Perspective Providers
-        final Set<PerspectiveActivity> activities = activityManager.getActivities( PerspectiveActivity.class );
-
-        //Sort Perspective Providers so they're always in the same sequence!
-        List<PerspectiveActivity> sortedActivities = new ArrayList<PerspectiveActivity>( activities );
-        Collections.sort( sortedActivities,
-                          new Comparator<PerspectiveActivity>() {
-
-                              @Override
-                              public int compare( PerspectiveActivity o1,
-                                                  PerspectiveActivity o2 ) {
-                                  return o1.getDefaultPerspectiveLayout().getName().compareTo( o2.getDefaultPerspectiveLayout().getName() );
-                              }
-
-                          } );
-
-        return sortedActivities;
     }
 
     private void logout() {
