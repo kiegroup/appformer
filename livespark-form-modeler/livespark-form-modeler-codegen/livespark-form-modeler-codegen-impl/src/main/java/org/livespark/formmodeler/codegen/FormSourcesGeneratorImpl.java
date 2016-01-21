@@ -37,10 +37,11 @@ import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
+import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -77,6 +78,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
     @Inject
     private FormHTMLTemplateSourceGenerator htmlTemplateSourceGenerator;
+
+    @Inject
+    private FormDefinitionSerializer formDefinitionSerializer;
 
     @Inject
     private FormLayoutTemplateGenerator formLayoutTemplateGenerator;
@@ -123,7 +127,12 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, server );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
-        String formTemplateLayout = formLayoutTemplateGenerator.generateLayoutTemplate( form );
+
+        if ( form.getLayoutTemplate() == null ) {
+            form.setLayoutTemplate( formLayoutTemplateGenerator.generateLayoutTemplate( form ) );
+        }
+
+        String formTemplateLayout = formDefinitionSerializer.serialize( form );
 
         String javaTemplate = javaTemplateSourceGenerator.generateJavaTemplateSource( context );
         String htmlTemplate = htmlTemplateSourceGenerator.generateHTMLTemplateSource( context );

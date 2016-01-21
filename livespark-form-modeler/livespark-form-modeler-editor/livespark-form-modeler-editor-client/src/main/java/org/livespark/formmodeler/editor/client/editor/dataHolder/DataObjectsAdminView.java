@@ -15,6 +15,8 @@
  */
 package org.livespark.formmodeler.editor.client.editor.dataHolder;
 
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -37,14 +39,14 @@ import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.livespark.formmodeler.editor.client.editor.FormEditorPresenter;
-import org.livespark.formmodeler.editor.client.editor.dataHolder.util.DataHolderComparator;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
-import org.livespark.formmodeler.editor.model.DataHolder;
+import org.livespark.formmodeler.model.DataHolder;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 
 /**
  * Created by pefernan on 9/29/15.
  */
+@Dependent
 public class DataObjectsAdminView extends BaseModal implements FormEditorPresenter.DataHolderAdminView {
 
     interface DataObjectsAdminBinder

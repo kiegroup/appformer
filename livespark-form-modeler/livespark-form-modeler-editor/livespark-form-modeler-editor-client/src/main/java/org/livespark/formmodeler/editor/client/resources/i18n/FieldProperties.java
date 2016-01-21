@@ -27,6 +27,7 @@ public interface FieldProperties extends Messages {
     public String bindingSettings();
 
     public String fieldType();
+    public String changeBinding();
 
     public String label();
     public String placeholder();

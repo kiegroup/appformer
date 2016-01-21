@@ -30,8 +30,8 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 

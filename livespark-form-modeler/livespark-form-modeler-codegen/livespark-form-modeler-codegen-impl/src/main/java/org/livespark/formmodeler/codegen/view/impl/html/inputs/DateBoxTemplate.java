@@ -19,7 +19,7 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 import java.io.InputStream;
 
 import org.livespark.formmodeler.codegen.view.impl.html.InputTemplateProvider;
-import org.livespark.formmodeler.editor.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/29/15.

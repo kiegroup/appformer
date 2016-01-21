@@ -17,7 +17,6 @@
 package org.livespark.formmodeler.rendering.client.shared.converters;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jboss.errai.databinding.client.api.DefaultConverter;
@@ -28,6 +27,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 
 @DefaultConverter
 public class BigDecimalConverter implements Converter<BigDecimal, String> {
+
+    @Override
+    public Class<BigDecimal> getModelType() {
+        return BigDecimal.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 
     @Override
     public BigDecimal toModelValue( String s ) {

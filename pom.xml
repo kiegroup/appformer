@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-parent-with-dependencies</artifactId>
-    <version>6.4.0-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.livespark</groupId>
@@ -36,8 +36,6 @@
   <properties>
     <arquillian.version>1.1.8.Final</arquillian.version>
     <gwtmockito.version>1.1.5</gwtmockito.version>
-    <uberfire.version>0.8.0-SNAPSHOT</uberfire.version>
-    <errai.version>3.2.0-SNAPSHOT</errai.version>
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <javaee.version>1.0.2.Final</javaee.version>
@@ -120,19 +118,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-validation</artifactId>
-        <version>${errai.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.errai</groupId>
-        <artifactId>errai-validation</artifactId>
-        <version>${errai.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <dependency>
         <groupId>org.jboss.spec</groupId>
         <artifactId>jboss-javaee-7.0</artifactId>
         <version>${javaee.version}</version>
@@ -144,7 +129,26 @@
         <artifactId>maven-invoker</artifactId>
         <version>${maven.invoker.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-form-modeler-editor-api</artifactId>
@@ -163,6 +167,11 @@
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-form-modeler-codegen-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-codegen-layout-generator</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

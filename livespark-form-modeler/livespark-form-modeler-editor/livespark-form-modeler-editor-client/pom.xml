@@ -51,11 +51,19 @@
     </dependency>
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-editor-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-rendering-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
     </dependency>
 
     <!-- Test -->

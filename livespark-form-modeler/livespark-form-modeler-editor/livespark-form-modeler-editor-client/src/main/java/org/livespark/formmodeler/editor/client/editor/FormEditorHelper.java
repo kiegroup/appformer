@@ -17,17 +17,18 @@ package org.livespark.formmodeler.editor.client.editor;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.livespark.formmodeler.editor.client.editor.events.FormContextRequest;
-import org.livespark.formmodeler.editor.client.editor.events.FormContextResponse;
+import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextRequest;
+import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
-import org.livespark.formmodeler.editor.model.DataHolder;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.model.FormDefinition;
+import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.model.DataHolder;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.editor.service.FieldManager;
+import org.livespark.formmodeler.renderer.service.FormRenderingContext;
+import org.livespark.formmodeler.service.FieldManager;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
@@ -47,7 +48,7 @@ public class FormEditorHelper {
 
     private FieldManager fieldManager;
 
-    private Event<FormContextResponse> responseEvent;
+    private Event<FormEditorContextResponse> responseEvent;
 
     private Caller<FormEditorService> editorService;
 
@@ -63,7 +64,7 @@ public class FormEditorHelper {
 
     @Inject
     public FormEditorHelper(FieldManager fieldManager,
-                            Event<FormContextResponse> responseEvent,
+                            Event<FormEditorContextResponse> responseEvent,
                             Caller<FormEditorService> editorService,
                             SyncBeanManager beanManager ) {
         this.fieldManager = fieldManager;
@@ -84,10 +85,11 @@ public class FormEditorHelper {
         draggableFieldComponents = new ArrayList<DraggableFieldComponent>();
 
         for ( FieldDefinition field : baseTypes ) {
-            DraggableFieldComponent dragComponent = beanManager.lookupBean(DraggableFieldComponent.class).newInstance();
+            SyncBeanDef<DraggableFieldComponent> beanDef = beanManager.lookupBean( DraggableFieldComponent.class );
+            DraggableFieldComponent dragComponent = beanDef.newInstance();
             if (dragComponent != null) {
                 field.setId( UNBINDED + field.getCode() );
-                dragComponent.init( getFormDefinition().getId(), field, content.getPath() );
+                dragComponent.init( content.getRenderingContext(), field );
                 draggableFieldComponents.add( dragComponent );
             }
         }
@@ -111,13 +113,13 @@ public class FormEditorHelper {
         FieldDefinition result = getFormField( fieldId );
 
         if ( result != null) {
-            responseEvent.fire( new FormContextResponse( getFormDefinition().getId(), result.getId(), this ) );
+            responseEvent.fire( new FormEditorContextResponse( getFormDefinition().getId(), result.getId(), this ) );
         }
         return result;
     }
 
     public FieldDefinition getFormField( String fieldId ) {
-        FieldDefinition result = content.getDefinition().getFieldById(fieldId);
+        FieldDefinition result = content.getDefinition().getFieldById( fieldId );
         if ( result == null) {
             if ( fieldId.startsWith( UNBINDED )) {
                 String typeCode = fieldId.substring( UNBINDED.length() );
@@ -159,9 +161,9 @@ public class FormEditorHelper {
         return baseTypes;
     }
 
-    public void onFieldRequest( @Observes FormContextRequest request ) {
+    public void onFieldRequest( @Observes FormEditorContextRequest request ) {
         if (request.getFormId().equals( content.getDefinition().getId() )) {
-            responseEvent.fire( new FormContextResponse( request.getFormId(), request.getFieldId(), this ) );
+            responseEvent.fire( new FormEditorContextResponse( request.getFormId(), request.getFieldId(), this ) );
         }
     }
 
@@ -252,13 +254,13 @@ public class FormEditorHelper {
 
         removeField(field.getId());
 
-        content.getDefinition().getFields().add(resultDefinition);
+        content.getDefinition().getFields().add( resultDefinition );
 
         return resultDefinition;
     }
 
     public void removeDataHolder(String holderName, LayoutTemplate layout) {
-        getFormDefinition().removeDataHolder(holderName);
+        getFormDefinition().removeDataHolder( holderName );
         for (FieldDefinition field : getFormDefinition().getFields()) {
             if (holderName.equals(field.getModelName())) {
                 field.setName( generateUnbindedFieldName( field ) );
@@ -293,5 +295,9 @@ public class FormEditorHelper {
             }
         }
         return false;
+    }
+
+    public FormEditorFormRenderingContext getRenderingContext() {
+        return content.getRenderingContext();
     }
 }

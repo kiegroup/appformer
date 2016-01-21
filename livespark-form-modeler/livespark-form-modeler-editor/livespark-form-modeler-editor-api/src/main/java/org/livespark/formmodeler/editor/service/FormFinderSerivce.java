@@ -16,8 +16,8 @@
 package org.livespark.formmodeler.editor.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
-import org.livespark.formmodeler.editor.model.FormDefinition;
-import org.livespark.formmodeler.editor.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
 import org.uberfire.backend.vfs.Path;
 
 import java.util.List;

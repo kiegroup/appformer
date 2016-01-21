@@ -22,7 +22,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
@@ -66,7 +66,7 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
     }
 
     protected void initView() {
-        IOCBeanDef<? extends ListView<F, ? extends ListItemView<F>>> beanDef = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getListViewType() );
+        SyncBeanDef<? extends ListView<F, ? extends ListItemView<F>>> beanDef = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getListViewType() );
         listView = beanDef.getInstance();
         add( listView );
         listView.setActionsHelper( new ListViewActionsHelper<F>() {
@@ -134,7 +134,7 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
 
             @Override
             public FormDisplayer getFormDisplayer() {
-                IOCBeanDef<EmbeddedFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( EmbeddedFormDisplayer.class );
+                SyncBeanDef<EmbeddedFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( EmbeddedFormDisplayer.class );
                 if ( displayerDef != null ) return displayerDef.getInstance();
                 return null;
             }

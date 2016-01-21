@@ -27,6 +27,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 public class FloatConverter implements Converter<Float, String> {
 
     @Override
+    public Class<Float> getModelType() {
+        return Float.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
+
+    @Override
     public Float toModelValue( String s ) {
         if (s == null) return null;
         return Float.parseFloat( s );

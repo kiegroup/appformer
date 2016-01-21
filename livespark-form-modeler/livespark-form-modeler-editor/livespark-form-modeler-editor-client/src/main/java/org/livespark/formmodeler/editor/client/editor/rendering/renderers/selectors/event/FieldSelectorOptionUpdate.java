@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event;
 
-import org.livespark.formmodeler.editor.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 
 import java.util.List;
 

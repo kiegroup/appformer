@@ -16,8 +16,6 @@
 
 package org.livespark.formmodeler.rendering.client.shared.converters;
 
-import java.math.BigDecimal;
-
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jboss.errai.databinding.client.api.DefaultConverter;
 
@@ -27,6 +25,16 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
 
 @DefaultConverter
 public class ByteConverter implements Converter<Byte, String> {
+
+    @Override
+    public Class<Byte> getModelType() {
+        return Byte.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 
     @Override
     public Byte toModelValue( String s ) {

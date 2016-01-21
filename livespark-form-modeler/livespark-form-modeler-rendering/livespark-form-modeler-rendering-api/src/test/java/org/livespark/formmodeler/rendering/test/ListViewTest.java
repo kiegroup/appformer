@@ -112,7 +112,7 @@ public class ListViewTest {
             assertNotNull( listView.lastLoadDataCallback );
 
             when( listWidget.getValue() ).thenReturn( response );
-            when( listWidget.getWidget( formModel ) ).thenReturn( listItemView );
+            when( listWidget.getComponent( formModel ) ).thenReturn( listItemView );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }
@@ -191,7 +191,7 @@ public class ListViewTest {
 
 
             when( listWidget.getValue() ).thenReturn( models );
-            when( listWidget.getWidget( differentModel ) ).thenReturn( listItemView );
+            when( listWidget.getComponent( differentModel ) ).thenReturn( listItemView );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }

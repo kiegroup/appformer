@@ -27,15 +27,16 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
+import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
+import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
-import org.uberfire.ext.layout.editor.client.generator.LayoutGenerator;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-/**
- * Created by pefernan on 7/7/15.
- */
+@Dependent
 public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorPresenter.FormEditorView, RequiresResize {
 
     interface FormEditorViewBinder
@@ -62,7 +63,7 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     TabListItem previewTab;
 
     @Inject
-    private LayoutGenerator layoutGenerator;
+    private DynamicFormRenderer formRenderer;
 
     private FormEditorPresenter presenter;
 
@@ -72,6 +73,8 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
 
     @PostConstruct
     protected void initView() {
+        previewContent.clear();
+        previewContent.add( formRenderer );
     }
 
     @Override
@@ -92,8 +95,7 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
 
     @UiHandler("previewTab")
     public void onPreview( ClickEvent event ) {
-        previewContent.clear();
-        previewContent.add(layoutGenerator.build(presenter.getFormTemplate()));
+        formRenderer.render( presenter.getRenderingContext() );
     }
 
     @Override

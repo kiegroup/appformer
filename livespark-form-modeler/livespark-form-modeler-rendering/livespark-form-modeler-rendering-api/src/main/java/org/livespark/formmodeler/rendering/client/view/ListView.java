@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import org.gwtbootstrap3.client.ui.Button;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ui.client.widget.ListWidget;
 import org.jboss.errai.ui.client.widget.Table;
@@ -94,7 +94,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                         @Override
                         public void callback( M response ) {
                             items.getValue().add( response );
-                            items.getWidget( response ).setParentView( ListView.this );
+                            items.getComponent( response ).setParentView( ListView.this );
                         }
                     } ).create( model );
         }
@@ -124,7 +124,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
         @Override
         public FormDisplayer getFormDisplayer() {
-            IOCBeanDef<ModalFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( ModalFormDisplayer.class );
+            SyncBeanDef<ModalFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( ModalFormDisplayer.class );
             if ( displayerDef != null ) return displayerDef.getInstance();
             return null;
         }
@@ -167,12 +167,12 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     }
 
     public  void syncListWidget (M model) {
-        ListItemView<M> widget = items.getWidget( model );
+        ListItemView<M> widget = items.getComponent( model );
         widget.setParentView( this );
     }
 
     public FormView<M> getForm() {
-        IOCBeanDef<? extends FormView<M>> beanDef = beanManager.lookupBean( getFormType() );
+        SyncBeanDef<? extends FormView<M>> beanDef = beanManager.lookupBean( getFormType() );
         return beanDef.getInstance();
     }
 
