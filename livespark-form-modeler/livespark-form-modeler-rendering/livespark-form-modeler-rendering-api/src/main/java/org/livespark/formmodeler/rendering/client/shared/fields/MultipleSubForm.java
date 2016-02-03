@@ -15,37 +15,46 @@
  */
 package org.livespark.formmodeler.rendering.client.shared.fields;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.ListItemView;
-import org.livespark.formmodeler.rendering.client.view.ListView;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayerConfig;
-import org.livespark.formmodeler.rendering.client.view.display.embedded.EmbeddedFormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudComponent;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 /**
  * Created by pefernan on 6/18/15.
  */
 
-public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends SimplePanel implements HasModel<L> {
+public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extends FormModel> extends SimplePanel implements HasModel<L> {
 
-    private MultipleSubFormModelAdapter<L, F> multipleSubFormModelAdapter;
-    private ListView<F, ? extends ListItemView<F>> listView;
+    private CrudComponent crudComponent;
+
+    private MultipleSubFormModelAdapter<L, M, C, E> multipleSubFormModelAdapter;
+
     private L model;
 
-    public MultipleSubForm( MultipleSubFormModelAdapter<L, F> adapter ) {
+    private AsyncDataProvider<M> dataProvider;
+
+    public MultipleSubForm( MultipleSubFormModelAdapter<L, M, C, E> adapter ) {
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
+
+        crudComponent = IOC.getBeanManager().lookupBean( CrudComponent.class ).newInstance();
+
+        add( crudComponent );
+
         multipleSubFormModelAdapter = adapter;
     }
 
@@ -57,86 +66,100 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
     @Override
     public void setModel( L model ) {
         this.model = model;
-        if (listView == null) {
-            initView();
-        }
-        if (model != null) {
-            listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
-        }
+        initView();
     }
 
     protected void initView() {
-        SyncBeanDef<? extends ListView<F, ? extends ListItemView<F>>> beanDef = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getListViewType() );
-        listView = beanDef.getInstance();
-        add( listView );
-        listView.setActionsHelper( new ListViewActionsHelper<F>() {
+        dataProvider = new AsyncDataProvider<M>() {
             @Override
-            public void startCreate( ListView<F, ?> listView ) {
-                final FormView<F> form = listView.getForm();
-                FormDisplayer displayer = getFormDisplayer();
-                displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
-                    @Override
-                    public void onSubmit() {
-                        create( form.getModel() );
-                        reset();
-                    }
+            protected void onRangeChanged( HasData<M> hasData ) {
+                if ( model != null ) {
+                    updateRowCount( model.size(), true );
+                    updateRowData( 0, model );
+                } else {
+                    updateRowCount( 0, true );
+                    updateRowData( 0, new ArrayList<M>() );
+                }
+            }
+        };
 
-                    @Override
-                    public void onCancel() {
-                        reset();
-                    }
-                } ) );
-                remove( listView );
-                add( displayer );
+        crudComponent.init( new CrudActionsHelper() {
+
+            private FormView<C> creationForm;
+            private FormView<E> editionForm;
+
+            private int editionIndex;
+
+            @Override
+            public boolean showEmbeddedForms() {
+                return true;
             }
 
             @Override
-            public void startEdit( ListView listView, final F model ) {
-                final FormView<F> form = listView.getForm();
-                FormDisplayer displayer = getFormDisplayer();
-                displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
-                    @Override
-                    public void onSubmit() {
-                        update( model );
-                        reset();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        reset();
-                    }
-                } ) );
-                form.setModel( model );
-                remove( listView );
-                add( displayer );
+            public int getPageSize() {
+                return 5;
             }
 
             @Override
-            public void create( F formModel ) {
-                model.add( (M) formModel.getDataModels().get( 0 ) );
-                listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
+            public boolean isAllowCreate() {
+                return true;
             }
 
             @Override
-            public void update( FormModel formModel ) {
+            public boolean isAllowEdit() {
+                return true;
             }
 
             @Override
-            public void delete( FormModel formModel ) {
-                model.remove( formModel.getDataModels().get( 0 ) );
-                listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
-            }
-
-            protected void reset() {
-                clear();
-                add( listView );
+            public boolean isAllowDelete() {
+                return true;
             }
 
             @Override
-            public FormDisplayer getFormDisplayer() {
-                SyncBeanDef<EmbeddedFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( EmbeddedFormDisplayer.class );
-                if ( displayerDef != null ) return displayerDef.getInstance();
-                return null;
+            public List<ColumnMeta> getGridColumns() {
+                return multipleSubFormModelAdapter.getCrudColumns();
+            }
+
+            @Override
+            public AsyncDataProvider<?> getDataProvider() {
+                return dataProvider;
+            }
+
+            @Override
+            public IsFormView getCreateInstanceForm() {
+                creationForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
+                return creationForm;
+            }
+
+            @Override
+            public void createInstance() {
+                model.add( (M) creationForm.getModel().getDataModels().get( 0 ) );
+                editionForm = null;
+                crudComponent.refresh();
+            }
+
+            @Override
+            public IsFormView getEditInstanceForm( Integer index ) {
+                editionIndex = index;
+                editionForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
+
+                M model = MultipleSubForm.this.model.get( index );
+
+                editionForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
+
+                return editionForm;
+            }
+
+            @Override
+            public void editInstance() {
+                crudComponent.refresh();
+                editionForm = null;
+            }
+
+            @Override
+            public void deleteInstance( int index ) {
+                model.remove( index );
+                crudComponent.refresh();
             }
         } );
     }

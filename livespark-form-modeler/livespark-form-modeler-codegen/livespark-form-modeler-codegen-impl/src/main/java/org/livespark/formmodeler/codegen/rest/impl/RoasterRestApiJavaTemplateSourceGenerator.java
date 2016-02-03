@@ -49,7 +49,7 @@ public class RoasterRestApiJavaTemplateSourceGenerator extends RoasterRestJavaTe
         restIface.setPackage( packageName )
                 .setPublic()
                 .setName( context.getRestServiceName() )
-                .addInterface( BASE_REST_SERVICE + "<" + context.getModelName() + ">" );
+                .addInterface( BASE_REST_SERVICE + "<" + context.getEntityName() + ">" );
     }
 
     private void addTypeLevelPath( JavaInterfaceSource restIface , SourceGenerationContext context  ) {

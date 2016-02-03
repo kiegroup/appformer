@@ -16,7 +16,7 @@
 
 package org.livespark.formmodeler.model;
 
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import org.livespark.formmodeler.metaModel.FieldDef;
 import org.livespark.formmodeler.model.util.IDGenerator;
 import org.livespark.formmodeler.service.FieldManager;
 

@@ -15,12 +15,19 @@
  */
 package org.livespark.formmodeler.model.impl.relations;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.livespark.formmodeler.metaModel.ListBox;
+import org.livespark.formmodeler.metaModel.SelectorDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.MultipleField;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 7/1/15.
@@ -32,8 +39,24 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
 
     private String code = _CODE;
 
-    protected String embeddedFormView = "";
-    protected String embeddedModel = "";
+    @FieldDef( label = "Create Form" )
+    @ListBox( provider = @SelectorDataProvider(
+            type = SelectorDataProvider.ProviderType.REMOTE,
+            className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
+    @NotEmpty
+    protected String creationForm = "";
+
+    @FieldDef( label = "Edit Form")
+    @ListBox( provider = @SelectorDataProvider(
+            type = SelectorDataProvider.ProviderType.REMOTE,
+            className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
+    @NotEmpty
+    protected String editionForm = "";
+
+    @FieldDef( label = "Table Columns")
+    @NotNull
+    @NotEmpty
+    private List<TableColumnMeta> columnMetas = new ArrayList<TableColumnMeta>();
 
     @Override
     public String getCode() {
@@ -47,28 +70,37 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
         };
     }
 
-    public String getEmbeddedFormView() {
-        return embeddedFormView;
+    public List<TableColumnMeta> getColumnMetas() {
+        return columnMetas;
     }
 
-    public void setEmbeddedFormView( String embeddedFormView ) {
-        this.embeddedFormView = embeddedFormView;
+    public void setColumnMetas( List<TableColumnMeta> columnMetas ) {
+        this.columnMetas = columnMetas;
     }
 
-    public String getEmbeddedModel() {
-        return embeddedModel;
+    public String getCreationForm() {
+        return creationForm;
     }
 
-    public void setEmbeddedModel( String embeddedModel ) {
-        this.embeddedModel = embeddedModel;
+    public void setCreationForm( String creationForm ) {
+        this.creationForm = creationForm;
+    }
+
+    public String getEditionForm() {
+        return editionForm;
+    }
+
+    public void setEditionForm( String editionForm ) {
+        this.editionForm = editionForm;
     }
 
     @Override
     protected void doCopyFrom(FieldDefinition other) {
-        if ( other instanceof EmbeddedFormField ) {
-            EmbeddedFormField otherForm = (EmbeddedFormField) other;
-            setEmbeddedModel( otherForm.getEmbeddedModel() );
-            setEmbeddedFormView( otherForm.getEmbeddedFormView() );
+        if ( other instanceof MultipleSubFormFieldDefinition ) {
+            MultipleSubFormFieldDefinition otherForm = (MultipleSubFormFieldDefinition) other;
+            otherForm.setCreationForm( creationForm );
+            otherForm.setEditionForm( editionForm );
+            otherForm.setColumnMetas( columnMetas );
         }
         setStandaloneClassName( other.getStandaloneClassName() );
     }

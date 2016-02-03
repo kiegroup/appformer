@@ -32,7 +32,7 @@ public class IntegerConverter implements Converter<Integer, String> {
     }
 
     @Override
-    public Class<String> getWidgetType() {
+    public Class<String> getComponentType() {
         return String.class;
     }
 

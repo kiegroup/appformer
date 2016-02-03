@@ -16,14 +16,17 @@
 
 package org.livespark.formmodeler.model.impl.basic;
 
+import javax.validation.constraints.Min;
+
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 4/29/15.
  */
 public abstract class AbstractIntputFieldDefinition extends FieldDefinition implements HasMaxLength, HasPlaceHolder {
     @FieldDef( label = "MaxLength", position = 2)
+    @Min(1)
     protected Integer maxLength = 100;
     @FieldDef( label = "Placeholder", position = 1)
     protected String placeHolder = "";

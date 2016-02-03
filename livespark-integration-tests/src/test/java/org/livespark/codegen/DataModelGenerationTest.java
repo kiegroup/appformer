@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.ENTITY_SERVICE_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_MODEL_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_VIEW_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_ITEM_VIEW_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_VIEW_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
@@ -136,7 +135,6 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
     private String[] getLocalTypes( final String dataObjectName ) {
         return new String[]{
                                                   dataObjectName + FORM_VIEW_SUFFIX,
-                                                  dataObjectName + LIST_ITEM_VIEW_SUFFIX,
                                                   dataObjectName + LIST_VIEW_SUFFIX
         };
     }
@@ -158,7 +156,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
     }
 
     private void assertAllFilesWithPropertiesAreUpdated( final String dataObjectName, final FileTime previousModTime ) {
-        final String[] localTypes = new String[] { dataObjectName + FORM_VIEW_SUFFIX, dataObjectName + LIST_ITEM_VIEW_SUFFIX };
+        final String[] localTypes = new String[] { dataObjectName + FORM_VIEW_SUFFIX };
 
         assertTypesInPackageAreRecent( localTypes, getLocalPackageURI( project ), previousModTime );
     }
@@ -270,34 +268,6 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
 
     @Test
     @InSequence(4)
-    public void listItemViewHasAllBindingsIncludingId() throws Exception {
-        assertAllFilesGeneratedAsPrecondition();
-
-        final String localPackageURI = getLocalPackageURI( project );
-        final String bindNamePrefix = dataObjectName.substring( 0, 1 ).toLowerCase() + dataObjectName.substring( 1 );
-        /*
-         * If these assertions are run immediately, they may fail before the java files have been written.
-         * Therefore, we will attempt the assertions multiple times, calling Thread.sleep between attempts.
-         */
-        runAssertions( new Runnable() {
-            @Override
-            public void run() {
-                final org.uberfire.java.nio.file.Path listItemViewPath =
-                        org.uberfire.java.nio.file.Paths.get( URI.create( localPackageURI + "/" + dataObjectName + LIST_ITEM_VIEW_SUFFIX + ".java" ) );
-                assertTrue( "Precondition failed: expected form view to be generated at " + listItemViewPath.toUri(), ioService.exists( listItemViewPath ) );
-
-                final String source = ioService.readAllString( listItemViewPath );
-                @SuppressWarnings( "unchecked" )
-                final JavaClass<JavaClassSource> clazz = Roaster.parse( JavaClass.class, source );
-
-                assertTestPropertiesWithId( bindNamePrefix, clazz );
-            }
-
-        }, 30, 1000 );
-    }
-
-    @Test
-    @InSequence(5)
     public void formModelIsPortableBindableAndHasValidEntityField() throws Exception {
         assertAllFilesGeneratedAsPrecondition();
 

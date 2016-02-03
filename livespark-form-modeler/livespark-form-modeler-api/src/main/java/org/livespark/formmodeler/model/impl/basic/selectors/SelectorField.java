@@ -18,14 +18,23 @@ package org.livespark.formmodeler.model.impl.basic.selectors;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 10/2/15.
  */
 public abstract class SelectorField extends FieldDefinition {
 
+    @FieldDef( label = "Options")
+    @NotNull
+    @NotEmpty
     protected List<SelectorOption> options = new ArrayList<SelectorOption>();
+
+    protected String dataProvider = "";
 
     public List<SelectorOption> getOptions() {
         return options;
@@ -35,10 +44,19 @@ public abstract class SelectorField extends FieldDefinition {
         this.options = options;
     }
 
+    public String getDataProvider() {
+        return dataProvider;
+    }
+
+    public void setDataProvider( String dataProvider ) {
+        this.dataProvider = dataProvider;
+    }
+
     @Override
     protected void doCopyFrom( FieldDefinition other ) {
         if ( other instanceof  SelectorField ) {
             this.setOptions( ((SelectorField) other).getOptions() );
+            this.setDataProvider( ((SelectorField) other).getDataProvider() );
         }
     }
 }

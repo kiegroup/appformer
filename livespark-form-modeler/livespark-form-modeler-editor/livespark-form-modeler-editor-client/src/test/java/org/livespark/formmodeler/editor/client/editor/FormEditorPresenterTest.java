@@ -164,8 +164,8 @@ public class FormEditorPresenterTest extends TestCase {
         presenter.onStartup(path,
                 mock(PlaceRequest.class));
 
-        assertTrue("There should be at least 4 base field types", editorContext.getBaseFields().size() == 4);
-        assertTrue("There should be at least 4 base field draggables", editorContext.getBaseFieldsDraggables().size() == 4);
+        assertTrue("There should be at least 4 base field types", editorContext.getBaseFields().size() == 8);
+        assertTrue("There should be at least 4 base field draggables", editorContext.getBaseFieldsDraggables().size() == 8);
     }
 
     @Test
@@ -281,7 +281,7 @@ public class FormEditorPresenterTest extends TestCase {
         List<String> compatibleTypes = editorContext.getCompatibleFieldTypes(field);
 
         assertNotNull("No compatibles types found!", compatibleTypes);
-        assertEquals("There should exist 2 compatible types for TextBoxFieldDefinition!", compatibleTypes.size(), 2);
+        assertEquals("There should exist 4 compatible types for TextBoxFieldDefinition!", 4 , compatibleTypes.size());
         assertTrue("Missing TextAreaFieldDefinition as a compatible type for TextBoxFieldDefinition", compatibleTypes.contains(TextAreaFieldDefinition._CODE));
 
         field = editorContext.switchToFieldType( field, TextAreaFieldDefinition._CODE);

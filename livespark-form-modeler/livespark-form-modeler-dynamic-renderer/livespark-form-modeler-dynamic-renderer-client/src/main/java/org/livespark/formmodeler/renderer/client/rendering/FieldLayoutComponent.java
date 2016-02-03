@@ -15,7 +15,6 @@
  */
 package org.livespark.formmodeler.renderer.client.rendering;
 
-import java.util.Map;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 

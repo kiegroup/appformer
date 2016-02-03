@@ -47,18 +47,11 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
         return checkbox;
     }
 
-    @Override
-    public IsWidget renderWidget() {
-        FormGroup group = new FormGroup();
-        group.getElement().setId( getFormGroupId( field ) );
-
+    protected void addFormGroupContents( FormGroup group ) {
         group.add(checkbox);
-
         HelpBlock helpBlock = new HelpBlock();
         helpBlock.setId( getHelpBlokId( field ) );
         group.add(helpBlock);
-
-        return group;
     }
 
     @Override

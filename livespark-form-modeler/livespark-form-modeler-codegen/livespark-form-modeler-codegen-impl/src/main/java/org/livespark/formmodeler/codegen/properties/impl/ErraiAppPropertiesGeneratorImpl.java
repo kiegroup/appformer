@@ -23,13 +23,26 @@ import org.livespark.formmodeler.codegen.ErraiAppPropertiesGenerator;
 
 public class ErraiAppPropertiesGeneratorImpl implements ErraiAppPropertiesGenerator {
 
+    private static final String SECURITY_COOKIE_ENABLED = "errai.security.user_cookie_enabled=true";
+    private static final String CDI_ALTERNATIVES = "errai.ioc.enabled.alternatives=" +
+            "org.uberfire.security.impl.authz.RuntimeAuthorizationManager \\" +
+            "\norg.uberfire.client.workbench.WorkbenchServicesProxyClientImpl";
+
     private static final String MARHSALLING_DECLARATION_LHS = "errai.marshalling.serializableTypes=";
     private static final String BINDING_DECLARATION_LHS = "errai.ui.bindableTypes=";
+
+
 
     @Override
     public String generate( Collection<String> fullyQualifiedClassNames ) {
         final StringBuilder builder = new StringBuilder();
 
+        builder.append( SECURITY_COOKIE_ENABLED );
+
+        builder.append( "\n" );
+        builder.append( CDI_ALTERNATIVES );
+
+        builder.append( "\n\n" );
         generateDeclaration( fullyQualifiedClassNames, builder, MARHSALLING_DECLARATION_LHS );
         generateDeclaration( fullyQualifiedClassNames, builder, BINDING_DECLARATION_LHS );
 

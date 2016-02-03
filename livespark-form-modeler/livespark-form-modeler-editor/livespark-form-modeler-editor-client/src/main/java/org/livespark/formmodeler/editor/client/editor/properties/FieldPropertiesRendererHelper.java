@@ -19,9 +19,11 @@ package org.livespark.formmodeler.editor.client.editor.properties;
 import java.util.List;
 
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.Path;
 
 public interface FieldPropertiesRendererHelper {
+    FormRenderingContext getCurrentRenderingContext();
     FieldDefinition getCurrentField();
     List<String> getAvailableFields();
     List<String> getCompatibleFieldTypes();

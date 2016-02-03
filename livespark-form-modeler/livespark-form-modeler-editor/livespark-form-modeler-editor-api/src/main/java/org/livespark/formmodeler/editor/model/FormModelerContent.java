@@ -17,7 +17,7 @@ package org.livespark.formmodeler.editor.model;
 
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
@@ -31,7 +31,7 @@ public class FormModelerContent {
     private Overview overview;
     private FormDefinition definition;
     private Map<String, List<FieldDefinition>> availableFields;
-    private FormEditorFormRenderingContext renderingContext;
+    private FormEditorRenderingContext renderingContext;
 
     public Path getPath() {
         return path;
@@ -61,11 +61,11 @@ public class FormModelerContent {
         this.availableFields = availableFields;
     }
 
-    public FormEditorFormRenderingContext getRenderingContext() {
+    public FormEditorRenderingContext getRenderingContext() {
         return renderingContext;
     }
 
-    public void setRenderingContext( FormEditorFormRenderingContext renderingContext ) {
+    public void setRenderingContext( FormEditorRenderingContext renderingContext ) {
         this.renderingContext = renderingContext;
     }
 

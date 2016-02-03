@@ -17,6 +17,9 @@
 package org.livespark.formmodeler.renderer.client.rendering.renderers;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -24,6 +27,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.InlineRadio;
 import org.gwtbootstrap3.client.ui.Radio;
+import org.livespark.formmodeler.model.config.SelectorData;
 import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.StringRadioGroup;
@@ -54,28 +58,29 @@ public class RadioGroupFieldRenderer extends SelectorFieldRenderer<RadioGroupFie
         return RadioGroupFieldDefinition._CODE;
     }
 
-    @Override
-    public void refreshSelectorOptions() {
-        if ( field != null ) {
-            input.clear();
-            for ( SelectorOption option : field.getOptions() ) {
-                Radio radio;
-                if ( field.getInline() ) {
-                    radio = new InlineRadio( field.getId(), getOptionLabel( option ) );
-                } else {
-                    radio = new Radio( field.getId(), getOptionLabel( option ) );
-                }
-                radio.setValue( option.getDefaultValue() );
-                radio.setFormValue( option.getValue() );
-                input.add( radio );
+
+
+    protected void refreshInput( Map<String, String> optionsValues, String defaultValue) {
+        input.clear();
+        for ( String key : optionsValues.keySet() ) {
+            Radio radio;
+            SafeHtml text = getOptionLabel( optionsValues.get( key ) );
+            if ( field.getInline() ) {
+                radio = new InlineRadio( field.getId(), text );
+            } else {
+                radio = new Radio( field.getId(), text );
             }
+            radio.setValue( key.equals( defaultValue ) );
+            radio.setFormValue( key );
+            input.add( radio );
         }
     }
 
-    protected SafeHtml getOptionLabel( SelectorOption option ) {
-        if ( option.getText() == null || option.getText().isEmpty() ) {
+
+    protected SafeHtml getOptionLabel( String text ) {
+        if ( text == null || text.isEmpty() ) {
             return SafeHtmlUtils.fromTrustedString( "&nbsp;" );
         }
-        return SafeHtmlUtils.fromString( option.getText() );
+        return SafeHtmlUtils.fromString( text );
     }
 }

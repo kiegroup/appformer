@@ -52,7 +52,7 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 import org.livespark.backend.server.service.build.BuildAndDeployWithCodeServerCallable;
 import org.livespark.backend.server.service.build.BuildCallableFactory;
 import org.livespark.client.shared.AppReady;
-import org.livespark.client.shared.GwtWarBuildService;
+import org.livespark.backend.server.service.GwtWarBuildServiceImpl;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.test.BaseIntegrationTest;
 import org.livespark.test.mock.MockHttpSession;
@@ -87,7 +87,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
 
 
     @Inject
-    private GwtWarBuildService buildService;
+    private GwtWarBuildServiceImpl buildService;
 
 
     private void removeDoDeployedMarkerFiles() {

@@ -52,11 +52,13 @@ public interface SourceGenerationUtil {
     public static final String EJB_TRANSACTION_ATTR = "javax.ejb.TransactionAttribute";
     public static final String EJB_REQUIRES_NEW = "javax.ejb.TransactionAttributeType.REQUIRES_NEW";
 
-    public static final String FORM_MODEL_ANNOTATION = "org.livespark.formmodeler.rendering.client.shared.meta.FormModel";
     public static final String FORM_MODEL_CLASS = "org.livespark.formmodeler.rendering.client.shared.FormModel";
     public static final String FORM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.FormView";
     public static final String LIST_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListView";
-    public static final String LIST_ITEM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListItemView";
+
+    public static final String COLUMN_META_CLASS_NAME = "org.uberfire.ext.widgets.table.client.ColumnMeta";
+    public static final String COLUMN_METAS_VAR_NAME = "columnMetas";
+    public static final String COLUMN_META_SUFFIX = "_columnMeta";
 
     public static final String LIST_VIEW_DELETE_EXECUTOR = "org.livespark.formmodeler.rendering.client.view.ListView.DeleteExecutor";
 

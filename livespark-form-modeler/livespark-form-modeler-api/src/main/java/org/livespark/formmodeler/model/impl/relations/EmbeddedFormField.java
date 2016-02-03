@@ -19,8 +19,4 @@ package org.livespark.formmodeler.model.impl.relations;
  * Created by pefernan on 7/2/15.
  */
 public interface EmbeddedFormField extends EntityRelationField {
-    public String getEmbeddedFormView();
-    public void setEmbeddedFormView( String embeddedFormView );
-    public String getEmbeddedModel();
-    public void setEmbeddedModel( String embeddedModel );
 }

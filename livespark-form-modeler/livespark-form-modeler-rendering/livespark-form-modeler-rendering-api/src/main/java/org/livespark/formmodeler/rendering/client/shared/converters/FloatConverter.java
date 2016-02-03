@@ -32,7 +32,7 @@ public class FloatConverter implements Converter<Float, String> {
     }
 
     @Override
-    public Class<String> getWidgetType() {
+    public Class<String> getComponentType() {
         return String.class;
     }
 

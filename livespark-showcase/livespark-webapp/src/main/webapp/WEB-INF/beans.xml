@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee" bean-discovery-mode="all">
+  <alternatives>
+    <class>org.jbpm.services.cdi.producer.JAASUserGroupInfoProducer</class>
+  </alternatives>
+
+  <scan>
+    <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
+    <!-- End of Errai exclusions -->
+
+
+
+
+    <exclude name="org.kie.workbench.drools.client.**"/>
+  </scan>
+</beans>

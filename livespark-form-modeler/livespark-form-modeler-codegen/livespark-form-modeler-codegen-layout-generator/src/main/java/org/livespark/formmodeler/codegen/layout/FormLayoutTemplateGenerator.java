@@ -24,4 +24,6 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 public interface FormLayoutTemplateGenerator {
 
     LayoutTemplate generateLayoutTemplate( FormDefinition formDefinition );
+
+    public abstract String getDraggableType();
 }

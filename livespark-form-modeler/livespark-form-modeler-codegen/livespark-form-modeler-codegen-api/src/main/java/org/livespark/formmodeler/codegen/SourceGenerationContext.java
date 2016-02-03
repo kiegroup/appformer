@@ -16,6 +16,8 @@
 
 package org.livespark.formmodeler.codegen;
 
+import java.util.List;
+
 import org.livespark.formmodeler.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
 import org.guvnor.common.services.project.model.Package;
@@ -27,7 +29,6 @@ public class SourceGenerationContext {
     public static final String FORM_MODEL_SUFFIX = "FormModel";
     public static final String FORM_VIEW_SUFFIX = "FormView";
     public static final String LIST_VIEW_SUFFIX = "ListView";
-    public static final String LIST_ITEM_VIEW_SUFFIX = "ListItemView";
     public static final String REST_SERVICE_SUFFIX = "RestService";
     public static final String ENTITY_SERVICE_SUFFIX = "EntityService";
     public static final String REST_IMPL_SUFFIX = "RestServiceImpl";
@@ -38,20 +39,21 @@ public class SourceGenerationContext {
     private Package local;
     private Package shared;
     private Package server;
-
-
+    private List<FormDefinition> projectForms;
 
     public SourceGenerationContext( FormDefinition form,
                                     Path path,
                                     Package root,
                                     Package local,
                                     Package shared,
-                                    Package server ) {
+                                    Package server,
+                                    List<FormDefinition> projectForms ) {
         this.path = path;
         this.root = root;
         this.local = local;
         this.shared = shared;
         this.server = server;
+        this.projectForms = projectForms;
         setFormDefinition( form );
     }
 
@@ -67,7 +69,7 @@ public class SourceGenerationContext {
         return path;
     }
 
-    public String getModelName() {
+    public String getFormModelName() {
         return formDefinition.getName() + FORM_MODEL_SUFFIX;
     }
 
@@ -77,10 +79,6 @@ public class SourceGenerationContext {
 
     public String getListViewName() {
         return formDefinition.getName() + LIST_VIEW_SUFFIX;
-    }
-
-    public String getListItemViewName() {
-        return formDefinition.getName() + LIST_ITEM_VIEW_SUFFIX;
     }
 
     public String getRestServiceName() {
@@ -115,12 +113,7 @@ public class SourceGenerationContext {
         return formDefinition.getName() + REST_IMPL_SUFFIX;
     }
 
-    public String getListItemRowId() {
-        return getFormDefinition().getName() + "-row";
+    public List<FormDefinition> getProjectForms() {
+        return projectForms;
     }
-
-    public String getListTBodyId() {
-        return getFormDefinition().getName() + "-table";
-    }
-
 }

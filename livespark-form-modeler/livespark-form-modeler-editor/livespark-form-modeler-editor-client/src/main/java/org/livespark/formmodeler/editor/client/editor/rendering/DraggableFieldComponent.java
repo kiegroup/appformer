@@ -31,8 +31,7 @@ import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextRe
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
 import org.livespark.formmodeler.editor.client.editor.properties.FieldPropertiesRenderer;
 import org.livespark.formmodeler.editor.client.editor.properties.FieldPropertiesRendererHelper;
-import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldPropertiesGenerator;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
@@ -48,7 +47,7 @@ import org.uberfire.ext.layout.editor.client.components.RenderingContext;
  * Created by pefernan on 9/22/15.
  */
 @Dependent
-public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorFormRenderingContext> implements HasDragAndDropSettings,
+public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRenderingContext> implements HasDragAndDropSettings,
         HasModalConfiguration, HasOnDropNotification, HasOnRemoveNotification {
 
     public final String[] SETTINGS_KEYS = new String[] { FORM_ID, FIELD_ID};
@@ -59,9 +58,6 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorForm
     boolean showProperties = false;
 
     protected FieldDefinitionPropertiesModal modal;
-
-    @Inject
-    protected FieldPropertiesGeneratorManager fieldPropertiesGeneratorManager;
 
     @Inject
     protected Event<FormEditorContextRequest> fieldRequest;
@@ -83,13 +79,19 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorForm
     private String formId;
 
     @Override
-    public void init( FormEditorFormRenderingContext renderingContext, FieldDefinition field ) {
+    public void init( FormEditorRenderingContext renderingContext, FieldDefinition field ) {
         super.init( renderingContext, field );
         initPropertiesConfig();
     }
 
     protected void initPropertiesConfig() {
         propertiesRendererHelper = new FieldPropertiesRendererHelper() {
+
+            @Override
+            public FormRenderingContext getCurrentRenderingContext() {
+                return renderingContext;
+            }
+
             @Override
             public FieldDefinition getCurrentField() {
                 return field;

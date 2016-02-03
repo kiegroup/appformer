@@ -34,7 +34,7 @@ public class BigIntegerConverter implements Converter<BigInteger, String> {
     }
 
     @Override
-    public Class<String> getWidgetType() {
+    public Class<String> getComponentType() {
         return String.class;
     }
 

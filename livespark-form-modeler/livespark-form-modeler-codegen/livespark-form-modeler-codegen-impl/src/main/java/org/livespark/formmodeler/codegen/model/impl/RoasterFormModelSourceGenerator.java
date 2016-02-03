@@ -113,14 +113,14 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
                             JavaClassSource modelClass ) {
         modelClass.addAnnotation( ERRAI_PORTABLE );
         modelClass.addAnnotation( ERRAI_BINDABLE );
-        modelClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getModelName() );
+        modelClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormModelName() );
     }
 
     private void addTypeSignature( SourceGenerationContext context,
                             JavaClassSource modelClass ) {
         modelClass.setPackage( context.getSharedPackage().getPackageName() )
                 .setPublic()
-                .setName( context.getModelName() );
+                .setName( context.getFormModelName() );
 
         modelClass.setSuperType( FORM_MODEL_CLASS );
     }

@@ -15,10 +15,15 @@
  */
 package org.livespark.formmodeler.model.impl.relations;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.livespark.formmodeler.metaModel.ListBox;
+import org.livespark.formmodeler.metaModel.SelectorDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 7/1/15.
@@ -30,11 +35,13 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
 
     private String code = _CODE;
 
-    @FieldDef( label = "Default Form")
+    @FieldDef( label = "Nested Form")
+    @ListBox( provider = @SelectorDataProvider(
+            type = SelectorDataProvider.ProviderType.REMOTE,
+            className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
+    @NotNull
+    @NotEmpty
     protected String nestedForm = "";
-
-    protected String embeddedFormView = "";
-    protected String embeddedModel = "";
 
     @Override
     public String getCode() {
@@ -49,22 +56,6 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
         this.nestedForm = nestedForm;
     }
 
-    public String getEmbeddedFormView() {
-        return embeddedFormView;
-    }
-
-    public void setEmbeddedFormView( String embeddedFormView ) {
-        this.embeddedFormView = embeddedFormView;
-    }
-
-    public String getEmbeddedModel() {
-        return embeddedModel;
-    }
-
-    public void setEmbeddedModel( String embeddedModel ) {
-        this.embeddedModel = embeddedModel;
-    }
-
     @Override
     public String[] getSupportedTypes() {
         return new String[] {
@@ -73,11 +64,10 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
     }
 
     @Override
-    protected void doCopyFrom(FieldDefinition other) {
-        if ( other instanceof EmbeddedFormField ) {
-            EmbeddedFormField otherForm = (EmbeddedFormField) other;
-            setEmbeddedModel( otherForm.getEmbeddedModel() );
-            setEmbeddedFormView( otherForm.getEmbeddedFormView() );
+    protected void doCopyFrom( FieldDefinition other ) {
+        if ( other instanceof SubFormFieldDefinition ) {
+            SubFormFieldDefinition otherForm = (SubFormFieldDefinition) other;
+            otherForm.setNestedForm( nestedForm );
         }
         setStandaloneClassName( other.getStandaloneClassName() );
     }

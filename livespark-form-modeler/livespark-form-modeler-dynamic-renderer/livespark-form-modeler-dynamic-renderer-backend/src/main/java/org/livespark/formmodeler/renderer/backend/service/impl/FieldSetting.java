@@ -16,7 +16,9 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl;
 
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import java.lang.annotation.Annotation;
+
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 public class FieldSetting implements Comparable<FieldSetting> {
     private String fieldName;
@@ -24,14 +26,17 @@ public class FieldSetting implements Comparable<FieldSetting> {
     private String label;
     private int position;
     private Class type;
+    private Class bag;
+    private Annotation[] annotations;
 
-    public FieldSetting( String fieldName, Class type, FieldDef definition ) {
+    public FieldSetting( String fieldName, Class type, FieldDef definition, Annotation[] annotations ) {
         this.fieldName = fieldName;
         this.type = type;
 
         this.label = definition.label();
         this.position = definition.position();
         this.property = definition.property();
+        this.annotations = annotations;
     }
 
     public String getFieldName() {
@@ -54,8 +59,20 @@ public class FieldSetting implements Comparable<FieldSetting> {
         return type;
     }
 
+    public Class getBag() {
+        return bag;
+    }
+
+    public void setBag( Class getBag ) {
+        this.bag = getBag;
+    }
+
     public String getProperty() {
         return property;
+    }
+
+    public Annotation[] getAnnotations() {
+        return annotations;
     }
 
     @Override

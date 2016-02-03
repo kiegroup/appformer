@@ -18,15 +18,13 @@ package org.livespark.backend.server.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Priority;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletRequest;
@@ -35,12 +33,19 @@ import javax.servlet.http.HttpSession;
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
-import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
+import org.guvnor.common.services.project.builder.service.PostBuildHandler;
 import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.service.DeploymentMode;
+import org.guvnor.common.services.project.service.POMService;
+import org.guvnor.common.services.project.service.ProjectRepositoriesService;
+import org.guvnor.common.services.project.service.ProjectRepositoryResolver;
 import org.guvnor.common.services.shared.message.Level;
+import org.guvnor.m2repo.backend.server.ExtendedM2RepoService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.bus.server.api.RpcContext;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
+import org.kie.workbench.common.services.backend.builder.LRUBuilderCache;
+import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.backend.server.service.build.BuildCallable;
 import org.livespark.backend.server.service.build.BuildCallableFactory;
 import org.livespark.backend.server.service.dir.TmpDirFactory;
@@ -48,18 +53,15 @@ import org.livespark.client.shared.GwtWarBuildService;
 import org.livespark.project.ProjectUnpacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardDeleteOption;
-import org.uberfire.workbench.events.ResourceChange;
 
+@Specializes
 @ApplicationScoped
 @Service
-@Alternative
-@Priority(value = 100)
-public class GwtWarBuildServiceImpl implements GwtWarBuildService {
+public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBuildService {
 
     private interface CallableProducer {
         BuildCallable get( Project project, File pomXml );
@@ -67,17 +69,31 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
 
     private static final Logger logger = LoggerFactory.getLogger( BuildServiceImpl.class );
 
-    @Inject
     private BuildCallableFactory callableFactory;
 
-    @Inject
     private TmpDirFactory tmpDirFactory;
 
     private ProjectUnpacker unpacker;
 
-    @Inject
-    @Named("ioStrategy")
     private IOService ioService;
+
+    @Inject
+    public GwtWarBuildServiceImpl( final POMService pomService,
+                                   final ExtendedM2RepoService m2RepoService,
+                                   final KieProjectService projectService,
+                                   final ProjectRepositoryResolver repositoryResolver,
+                                   final ProjectRepositoriesService projectRepositoriesService,
+                                   final LRUBuilderCache cache,
+                                   final Instance<PostBuildHandler> handlers,
+                                   final BuildCallableFactory callableFactory,
+                                   final TmpDirFactory tmpDirFactory,
+                                   final @Named("ioStrategy") IOService ioService ) {
+        super( pomService, m2RepoService, projectService, repositoryResolver, projectRepositoriesService, cache, handlers );
+        this.callableFactory = callableFactory;
+        this.tmpDirFactory = tmpDirFactory;
+        this.ioService = ioService;
+    }
+
 
     @Resource
     private ManagedExecutorService execService;
@@ -85,11 +101,6 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
     @PostConstruct
     private void setup() {
         unpacker = new ProjectUnpacker( ioService, new DotFileFilter() );
-    }
-
-    @Override
-    public BuildResults build( final Project project ) {
-        return new BuildResults();
     }
 
     private BuildResults buildHelper( final Project project,
@@ -191,27 +202,53 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
         return file;
     }
 
+
     @Override
     public BuildResults buildAndDeploy( Project project ) {
-        return buildAndDeploy( project,
-                               false );
+        BuildResults results = super.buildAndDeploy( project );
+        deployWar( project );
+        return results;
     }
 
     @Override
-    public BuildResults buildAndDeploy( Project project,
-                                        boolean suppressHandlers ) {
-        final String queueSessionId = RpcContext.getQueueSession().getSessionId();
-        final HttpSession session = RpcContext.getHttpSession();
-        final ServletRequest sreq = RpcContext.getServletRequest();
-        return buildHelper( project,
-                            session,
-                            new CallableProducer() {
+    public BuildResults buildAndDeploy( Project project, DeploymentMode mode ) {
+        BuildResults results = super.buildAndDeploy( project, mode );
+        deployWar( project );
+        return results;
+    }
 
-                                @Override
-                                public BuildCallable get( Project project, File pomXml ) {
-                                    return callableFactory.createProductionDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
-                                }
-                            } );
+    @Override
+    public BuildResults buildAndDeploy( Project project, boolean suppressHandlers ) {
+        BuildResults results =  super.buildAndDeploy( project, suppressHandlers );
+        deployWar( project );
+        return results;
+    }
+
+    @Override
+    public BuildResults buildAndDeploy( Project project, boolean suppressHandlers, DeploymentMode mode ) {
+        BuildResults results = super.buildAndDeploy( project, suppressHandlers, mode );
+        deployWar( project );
+        return results;
+    }
+
+    private void deployWar( final Project project ) {
+        new Runnable() {
+            @Override
+            public void run() {
+                final String queueSessionId = RpcContext.getQueueSession().getSessionId();
+                final HttpSession session = RpcContext.getHttpSession();
+                final ServletRequest sreq = RpcContext.getServletRequest();
+                buildHelper( project,
+                        session,
+                        new CallableProducer() {
+
+                            @Override
+                            public BuildCallable get( Project project, File pomXml ) {
+                                return callableFactory.createProductionDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
+                            }
+                        } );
+            }
+        }.run();
     }
 
     @Override
@@ -228,40 +265,6 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
                                     return callableFactory.createDevModeDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
                                 }
                             } );
-    }
-
-    @Override
-    public boolean isBuilt( Project project ) {
-        /*
-         * In BuildServiceImpl this returns true after the first initial build is performed so that incremental builds can be done subsequently.
-         * Since we don't currently have incremental builds, we always return true.
-         */
-        return true;
-    }
-
-    @Override
-    public IncrementalBuildResults addPackageResource( Path resource ) {
-        // Currently no incremental build support
-        return new IncrementalBuildResults();
-    }
-
-    @Override
-    public IncrementalBuildResults deletePackageResource( Path resource ) {
-        // Currently no incremental build support
-        return new IncrementalBuildResults();
-    }
-
-    @Override
-    public IncrementalBuildResults updatePackageResource( Path resource ) {
-        // Currently no incremental build support
-        return new IncrementalBuildResults();
-    }
-
-    @Override
-    public IncrementalBuildResults applyBatchResourceChanges( Project project,
-                                                              Map<Path, Collection<ResourceChange>> changes ) {
-        // Currently no incremental build support
-        return new IncrementalBuildResults();
     }
 
 }

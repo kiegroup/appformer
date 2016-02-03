@@ -24,6 +24,7 @@ import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
@@ -60,13 +61,23 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
         JavaClassSource subformAdapter = Roaster.create( JavaClassSource.class );
 
         viewClass.addImport( subformField.getStandaloneClassName() );
-        viewClass.addImport( subformField.getEmbeddedModel() );
-        viewClass.addImport( subformField.getEmbeddedFormView() );
+
+        FormDefinition nestedForm = getContextFormById( context, subformField.getNestedForm() );
+
+        if ( nestedForm == null ) {
+            throw new RuntimeException( "Unable to find form '" + subformField.getNestedForm() + "'." );
+        }
+
+        String formModelClassName = getFormModelClassName( nestedForm, context );
+        String formViewClassName = getFormViewClassName( nestedForm, context );
+
+        viewClass.addImport( formModelClassName );
+        viewClass.addImport( formViewClassName );
         viewClass.addImport( SUBFORM_ClASSNAME );
 
         String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
-        String modelName = cleanClassName( subformField.getEmbeddedModel() );
-        String viewName = cleanClassName( subformField.getEmbeddedFormView() );
+        String modelName = cleanClassName( formModelClassName );
+        String viewName = cleanClassName( formViewClassName );
 
         String superType = SUBFORM_ClASSNAME + "<" + standaloneName + ", " + modelName + ">";
         subformAdapter.setPublic()
@@ -83,10 +94,11 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
         MethodSource<JavaClassSource> modelMethod = subformAdapter.addMethod();
         modelMethod.setPublic()
                 .setName("getFormModelForModel")
-                .addParameter(subformField.getStandaloneClassName(), "model");
-        modelMethod.setReturnType( subformField.getEmbeddedModel() )
-                .setBody( " return new " + modelName + "( model );")
-                .addAnnotation(Override.class);
+                .addParameter( subformField.getStandaloneClassName(), "model");
+
+        modelMethod.setReturnType( modelName )
+                .setBody( " return new " + modelName + "( model );" )
+                .addAnnotation( Override.class );
 
         viewClass.addNestedType(subformAdapter);
 

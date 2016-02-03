@@ -15,6 +15,12 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.errai.common.client.api.Caller;
@@ -27,11 +33,11 @@ import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
+import org.livespark.formmodeler.editor.model.FormModelerContent;
+import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -49,12 +55,6 @@ import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.type.FileNameUtil;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pefernan on 7/7/15.

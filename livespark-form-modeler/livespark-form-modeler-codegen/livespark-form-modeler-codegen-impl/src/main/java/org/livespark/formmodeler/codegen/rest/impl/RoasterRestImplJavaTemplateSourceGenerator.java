@@ -70,8 +70,6 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
                                JavaClassSource restImpl ) {
         super.addImports( context, restImpl );
         restImpl.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
-        restImpl.addImport( context.getServerPackage().getPackageName() + "." + context.getEntityServiceName() );
-        restImpl.addImport( ArrayList.class );
     }
 
     private void addCrudMethodImpls( SourceGenerationContext context,
@@ -91,7 +89,7 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
 
     private void setUpdateMethodBody( SourceGenerationContext context,
                                       MethodSource<JavaClassSource> update ) {
-        update.setBody( ENTITY_SERVICE + ".updateFromFormModel(model); return true;" );
+        update.setBody( ENTITY_SERVICE + ".update( model ); return true;" );
     }
 
     @Override
@@ -110,7 +108,7 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
 
     private void setDeleteMethodBody( SourceGenerationContext context,
                                       MethodSource<JavaClassSource> delete ) {
-        delete.setBody( ENTITY_SERVICE + ".deleteFromFormModel(model); return true;" );
+        delete.setBody( ENTITY_SERVICE + ".delete( model ); return true;" );
     }
 
     @Override
@@ -138,23 +136,11 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
             throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
 
         DataHolder holder = dataHolders.get( 0 );
-        body.append( "List<" )
-                .append( holder.getType() )
-                .append( "> dataModels = " )
+        body.append( "return " )
                 .append( ENTITY_SERVICE )
-                .append( ".listAll(" )
-                .append( holder.getType() )
-                .append( ".class);" )
-            .append( "List<" )
-                .append( context.getModelName() )
-                .append( "> formModels = new ArrayList(dataModels.size());" )
-            .append( "for (" )
-                .append( holder.getType() )
-                .append( " dataModel : dataModels) {" )
-                    .append( "formModels.add(new " )
-                        .append( context.getModelName() )
-                        .append( "(dataModel)); }" )
-            .append( "return formModels;" );
+                .append( ".listAll( " )
+                .append( context.getEntityName() )
+                .append( ".class );" );
 
         load.setBody( body.toString() );
     }
@@ -184,7 +170,7 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
                                       MethodSource<JavaClassSource> create ) {
         StringBuilder body = new StringBuilder();
         body.append( ENTITY_SERVICE )
-            .append( ".createFromFormModel(model);" )
+            .append( ".create( model );" )
             .append( "return model;" );
 
         create.setBody( body.toString() );

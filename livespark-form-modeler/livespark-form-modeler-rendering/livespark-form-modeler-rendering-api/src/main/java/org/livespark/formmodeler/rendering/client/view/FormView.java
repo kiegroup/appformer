@@ -20,24 +20,31 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.Composite;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 
 /**
  * Created by pefernan on 4/17/15.
  */
-public abstract class FormView<M extends FormModel> extends BaseView<M> {
+public abstract class FormView<M extends FormModel> extends Composite implements IsFormView<M> {
 
     private boolean newModel = true;
 
     @Inject
     protected FormViewValidator validator;
 
+    @Inject
+    @AutoBound
+    protected DataBinder<M> binder;
+
     @Override
     public void setModel( M model ) {
-        super.setModel( model );
+        binder.setModel( model );
         newModel = false;
-        beforeDisplay();
         validator.clearFieldErrors();
     }
 
@@ -52,6 +59,7 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
             initEntities();
         }
         initForm();
+        beforeDisplay();
     }
 
     protected abstract void initForm();
@@ -76,4 +84,14 @@ public abstract class FormView<M extends FormModel> extends BaseView<M> {
     }
 
     public abstract void beforeDisplay();
+
+    @Override
+    public M getModel() {
+        return binder.getModel();
+    }
+
+    @Override
+    public boolean isValid() {
+        return validate();
+    }
 }

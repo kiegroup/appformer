@@ -19,10 +19,12 @@ package org.livespark.formmodeler.model.impl.basic;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import javax.validation.constraints.Min;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 3/19/15.
@@ -38,6 +40,7 @@ public class TextAreaFieldDefinition extends FieldDefinition implements HasRows,
     protected String placeHolder = "";
 
     @FieldDef( label = "Visible Lines", position = 2)
+    @Min(1)
     protected Integer rows = 4;
 
 
