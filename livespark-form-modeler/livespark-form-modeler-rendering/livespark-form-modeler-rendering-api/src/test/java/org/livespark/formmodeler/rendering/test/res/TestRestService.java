@@ -16,7 +16,8 @@
 package org.livespark.formmodeler.rendering.test.res;
 
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
+import org.livespark.widgets.crud.client.component.mock.CrudModel;
 
-public interface TestRestService extends LiveSparkRestService<TestFormModel> {
+public interface TestRestService extends LiveSparkRestService<CrudModel> {
 
 }

@@ -1,0 +1,99 @@
+#pfly-login-screen {
+    width: 100%;
+    min-width: 850px;
+    height: 100%;
+    background-color: #1D2226;
+    background-image: url("../images/login-screen-background.jpg");
+    background-position: top left;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    color: #fff;
+}
+
+#pfly-login-screen img#logo {
+    position: absolute;
+    top: 50px;
+    right: 64px;
+}
+
+#pfly-login-screen h3 {
+    font-weight: normal;
+    text-align: left;
+    margin: -31px 0 10px 0;
+    color: red;
+    letter-spacing: 0.03em;
+}
+
+#pfly-login-screen h3#logout {
+    color: #ffffff;    
+}
+
+#pfly-login-screen form {
+    position: absolute;
+    bottom: 15%;
+    padding-left: 100px;
+    width: 100%;
+    min-width: 850px;
+    border-top: 1px rgba(255, 255, 255, 0.05) solid;
+    border-bottom: 1px rgba(255, 255, 255, 0.05) solid;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#pfly-login-screen form aside {
+    float: left;
+    margin: 40px;
+}
+
+#pfly-login-screen form aside p {
+    margin-bottom: 8px;
+}
+
+#pfly-login-screen fieldset {
+    float: left;
+    margin: 30px 0;
+    padding: 10px;
+    padding-right: 44px;
+    width: 484px;
+    border-right: 1px rgba(255, 255, 255, 0.15) solid;
+}
+
+#pfly-login-screen fieldset legend {
+    position: absolute;
+    top: -54px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 200;
+    font-size: 22px;
+    font-size: 22px;
+}
+
+#pfly-login-screen fieldset legend strong {
+    margin-right: 4px;
+    font-weight: 700;
+}
+
+#pfly-login-screen fieldset label {
+    display: inline-block;
+    float: left;
+    margin-top: 5px;
+    width: 144px;;
+}
+
+#pfly-login-screen fieldset input[type="text"],
+#pfly-login-screen fieldset input[type="password"] {
+    margin: 4px 0;
+    width: 282px;
+}
+
+#pfly-login-screen fieldset input[type="button"] {
+    float: right;
+    margin-top: 16px;
+}
+
+#pfly-login-screen fieldset small {
+    line-height: 22px;
+    margin-left: 87px;
+    margin-top: 10px;
+    display: block;
+    float: left;
+}

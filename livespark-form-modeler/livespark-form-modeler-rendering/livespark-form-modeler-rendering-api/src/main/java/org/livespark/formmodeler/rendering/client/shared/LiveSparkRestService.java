@@ -28,7 +28,7 @@ import javax.ws.rs.Produces;
 /**
  * Created by pefernan on 6/25/15.
  */
-public interface LiveSparkRestService<M extends FormModel> {
+public interface LiveSparkRestService<M> {
 
    @POST
    @Consumes("application/json")

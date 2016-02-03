@@ -22,18 +22,10 @@ import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 
 @Portable
-public class DynamicRenderingContext extends FormRenderingContext {
-
-    public DynamicRenderingContext() {
-    }
-
-    public DynamicRenderingContext( @MapsTo( "rootForm" ) FormDefinition rootForm,
-                                    @MapsTo( "model" ) Object model ) {
-        super( rootForm, model );
-    }
+public class DynamicRenderingContext extends FormRenderingContext<Object> {
 
     @Override
-    protected FormRenderingContext getNewInstance( FormDefinition form, Object model ) {
-        return new DynamicRenderingContext(form, model);
+    protected FormRenderingContext getNewInstance() {
+        return new DynamicRenderingContext();
     }
 }

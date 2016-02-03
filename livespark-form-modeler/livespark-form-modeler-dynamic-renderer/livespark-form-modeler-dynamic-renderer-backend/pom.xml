@@ -149,7 +149,20 @@
 
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
+      <scope>test</scope>
+      <classifier>tests</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-backend</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

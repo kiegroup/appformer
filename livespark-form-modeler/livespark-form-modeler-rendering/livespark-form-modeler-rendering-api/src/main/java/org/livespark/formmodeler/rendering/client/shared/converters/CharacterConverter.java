@@ -32,7 +32,7 @@ public class CharacterConverter implements Converter<Character, String> {
     }
 
     @Override
-    public Class<String> getWidgetType() {
+    public Class<String> getComponentType() {
         return String.class;
     }
 

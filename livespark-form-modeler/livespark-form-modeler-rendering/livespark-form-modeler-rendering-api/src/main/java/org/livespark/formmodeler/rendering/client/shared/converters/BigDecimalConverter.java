@@ -34,7 +34,7 @@ public class BigDecimalConverter implements Converter<BigDecimal, String> {
     }
 
     @Override
-    public Class<String> getWidgetType() {
+    public Class<String> getComponentType() {
         return String.class;
     }
 

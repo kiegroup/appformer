@@ -26,14 +26,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.jboss.errai.databinding.client.api.DataBinder;
-import org.jboss.errai.databinding.client.api.InitialState;
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.client.rendering.FormLayoutGenerator;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
-import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
 @Dependent
 public class DynamicFormRendererViewImpl extends Composite implements DynamicFormRenderer.DynamicFormRendererView {
@@ -49,18 +45,15 @@ public class DynamicFormRendererViewImpl extends Composite implements DynamicFor
     @Inject @Any
     private FormLayoutGenerator layoutGenerator;
 
-    @Inject
-    private FormViewValidator formViewValidator;
 
     @UiField
     FlowPanel formContent;
 
-    private DataBinder binder;
-
     private DynamicFormRenderer presenter;
 
+
     public DynamicFormRendererViewImpl() {
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget( uiBinder.createAndBindUi( this ) );
     }
 
     @Override
@@ -69,26 +62,26 @@ public class DynamicFormRendererViewImpl extends Composite implements DynamicFor
     }
 
     @Override
-    public void render() {
+    public void render( FormRenderingContext context ) {
         formContent.clear();
-        if( presenter.getContext() != null && presenter.getContext().getRootForm() != null ) {
-            formContent.add( layoutGenerator.buildLayout( presenter.getContext() ) );
+
+        if( context != null ) {
+            formContent.add( layoutGenerator.buildLayout( context ) );
         }
     }
 
     @Override
     public void bind() {
-        binder = DataBinder.forModel( presenter.getContext().getModel(), InitialState.FROM_MODEL );
         for ( FieldLayoutComponent fieldComponent : layoutGenerator.getLayoutFields() ) {
             FieldDefinition field = fieldComponent.getField();
             Widget input = fieldComponent.getFieldRenderer().getInputWidget().asWidget();
-            binder.bind( input, field.getBindingExpression());
-            formViewValidator.registerInput( field.getName(), input );
+
+            presenter.bind( input, field );
         }
     }
 
     @Override
-    public boolean validate() {
-        return formViewValidator.validate( binder.getModel() );
+    public FieldLayoutComponent getFieldLayoutComponentForField( FieldDefinition field ) {
+        return layoutGenerator.getFieldLayoutComponentForField( field );
     }
 }

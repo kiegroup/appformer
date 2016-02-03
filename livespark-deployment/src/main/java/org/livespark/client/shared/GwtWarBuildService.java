@@ -23,7 +23,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 
 
 @Remote
-public interface GwtWarBuildService extends BuildService {
+public interface GwtWarBuildService {
 
     BuildResults buildAndDeployDevMode( Project project );
 

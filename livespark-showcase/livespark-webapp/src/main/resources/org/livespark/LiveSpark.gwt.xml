@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.4.0//EN"
+    "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
+<module>
+  <!-- Loads jQuery first -->
+  <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
+
+  <inherits name="org.jboss.errai.enterprise.CDI"/>
+
+  <!-- Uberfire dependencies -->
+  <inherits name="org.uberfire.UberfireClientAll"/>
+  <inherits name="org.uberfire.client.views.PatternFly"/>
+
+  <!-- Uberfire Extensions - Core Widgets -->
+  <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
+  <inherits name="org.uberfire.UberfireDocksClient"/>
+
+  <!-- Uberfire Extensions - Runtime Plugin -->
+  <inherits name="org.uberfire.ext.plugin.RuntimePluginClient"/>
+
+  <!-- Uberfire Extensions - Apps -->
+  <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
+
+  <!-- designer -->
+  <!-- Not apply for LS inherits name="org.jbpm.designer.jBPMDesignerAPI"/-->
+  <!-- Not apply for LS inherits name="org.jbpm.designer.jBPMDesignerClient"/-->
+
+  <!-- jbpm-wb -->
+  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
+  <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
+  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
+  <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeAPI"/>
+  <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsClient"/>
+  <inherits name="org.jbpm.console.ng.df.JbpmConsoleNGDataFiltersClient"/>
+
+  <!-- Form-Modeler -->
+  <!-- Not apply for LS inherits name="org.jbpm.formModeler.renderer.FormRendererAPI"/-->
+  <!-- Not apply for LS inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/-->
+
+  <!-- Guvnor dependencies -->
+  <inherits name="org.guvnor.structure.GuvnorStructureClient"/>
+  <inherits name="org.guvnor.inbox.GuvnorInboxClient"/>
+  <inherits name="org.guvnor.m2repo.GuvnorM2RepoEditorClient"/>
+  <inherits name='org.guvnor.common.services.GuvnorServicesAPI'/>
+  <inherits name="org.guvnor.common.services.project.GuvnorProjectAPI"/>
+  <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetAPI"/>
+  <inherits name="org.guvnor.common.services.workingset.GuvnorWorkingsetClient"/>
+  <inherits name="org.guvnor.messageconsole.GuvnorMessageConsoleClient"/>
+  <inherits name='org.guvnor.organizationalunit.manager.GuvnorOrganizationalUnitManager'/>
+
+  <inherits name="org.guvnor.asset.management.GuvnorAssetMgmtAPI"/>
+  <inherits name='org.guvnor.asset.management.GuvnorAssetMgmtClient'/>
+
+  <!-- Home Page - This has the same GWT Module name for Community and Product so we do not need a different module for Product -->
+  <inherits name="org.kie.workbench.common.screens.home.KieWorkbenchHomeClient"/>
+  <inherits name="org.livespark.LiveSparkHomePage"/>
+
+  <!--Common Screens -->
+  <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient"/>
+  <inherits name="org.kie.workbench.common.screens.search.KieWorkbenchSearchScreenClient"/>
+  <inherits name="org.kie.workbench.common.screens.datamodeller.KieWorkbenchDatamodellerClient"/>
+  <inherits name="org.kie.workbench.common.screens.projecteditor.KieWorkbenchCommonProjectEditorClient"/>
+  <inherits name="org.kie.workbench.common.screens.projectimportsscreen.KieWorkbenchCommonProjectImportsScreenClient"/>
+  <inherits name="org.kie.workbench.common.screens.javaeditor.KieWorkbenchCommonJavaEditorClient"/>
+  <inherits name="org.kie.workbench.common.screens.server.management.ServerManagementClient"/>
+  <inherits name="org.kie.workbench.common.screens.contributors.KieWorkbenchContributorsClient"/>
+  <inherits name="org.kie.workbench.common.screens.social.hp.SocialHomePageClient"/>
+  <inherits name="org.kie.workbench.common.screens.defaulteditor.DroolsWorkbenchDefaultEditorClient"/>
+  <inherits name="org.kie.workbench.common.screens.examples.KieWorkbenchCommonExamplesClient"/>
+
+  <!-- Common Services -->
+  <inherits name="org.kie.workbench.common.services.datamodeller.DataModellerCore" />
+  <inherits name="org.kie.workbench.common.services.KieWorkbenchCommonServicesAPI"/>
+  <inherits name='org.kie.workbench.common.services.datamodel.KieWorkbenchCommonDataModelAPI'/>
+  <inherits name='org.kie.workbench.common.services.refactoring.KieWorkbenchCommonRefactoringAPI'/>
+
+  <!-- Models for Drools Workbench Screens -->
+  <inherits name="org.drools.workbench.models.commons.DroolsWorkbenchModelsCommon"/>
+  <inherits name="org.drools.workbench.models.datamodel.DroolsWorkbenchDataModelAPI"/>
+
+  <inherits name="org.drools.workbench.models.testscenarios.DroolsWorkbenchModelsTestScenarios" />
+
+  <inherits name="org.drools.workbench.models.guided.dtable.DroolsWorkbenchModelsGuidedDTable" />
+
+  <!-- Drools Workbench Screens -->
+  <inherits name="org.drools.workbench.screens.drltext.DroolsWorkbenchDRLTextEditorClient"/>
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.enums.DroolsWorkbenchEnumEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.factmodel.DroolsWorkbenchFactModelEditorAPI"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.rule.DroolsWorkbenchGuidedRuleEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.template.DroolsWorkbenchGuidedTemplateEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.dtable.DroolsWorkbenchGuidedDecisionTableEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.dtree.DroolsWorkbenchGuidedDecisionTreeEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.scorecard.DroolsWorkbenchGuidedScoreCardEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.dsltext.DroolsWorkbenchDSLTextEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.globals.DroolsWorkbenchGlobalsEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.workitems.DroolsWorkbenchWorkItemsEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.dtablexls.DroolsWorkbenchDecisionTableXLSEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.scorecardxls.DroolsWorkbenchScoreCardXLSEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.testscenario.DroolsWorkbenchTestScenarioEditorClient"/-->
+
+  <!-- Optaplanner Workbench Screens -->
+  <!-- Not apply for LS inherits name="org.optaplanner.workbench.screens.domaineditor.OptaPlannerWorkbenchDomainEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.optaplanner.workbench.screens.solver.OptaPlannerWorkbenchSolverEditorClient"/-->
+
+  <!-- Security management. -->
+  <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementWorkbench"/>
+
+  <!-- Start LiveSpark Modules -->
+  <inherits name="org.livespark.formmodeler.renderer.FormModelerDynamicRendererClient"/>
+  <inherits name="org.livespark.formmodeler.editor.FormModelerEditorClient"/>
+  <inherits name="org.livespark.LiveSparkDeployment"/>
+
+  <!-- Dashbuilder must use Errai validation. Then this line can be removed.
+        We need this now because Dashbuilder's rebind rule for it's Validator
+        collides with our own. This overrides both. -->
+  <generate-with class="org.jboss.errai.validation.rebind.ValidatorFactoryGenerator">
+    <when-type-assignable
+        class="javax.validation.ValidatorFactory"/>
+  </generate-with>
+  <!-- End LiveSpark Modules -->
+
+  <!-- Specify the application specific style sheet. -->
+  <stylesheet src='css/livespark.css'/>
+
+  <!-- Specify the paths for translatable code -->
+  <source path='client'/>
+
+  <extend-property name="locale" values="es"/>
+  <extend-property name="locale" values="fr"/>
+  <extend-property name="locale" values="ja"/>
+  <extend-property name="locale" values="pt_BR"/>
+  <extend-property name="locale" values="zh_CN"/>
+  <extend-property name="locale" values="de"/>
+
+  <!-- We don't need to support IE10 or older -->
+  <!-- There is no "ie11" permutation. IE11 uses the Firefox one (gecko1_8) -->
+  <set-property name="user.agent" value="gecko1_8,safari"/>
+
+</module>

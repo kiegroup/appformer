@@ -32,7 +32,7 @@ public class ByteConverter implements Converter<Byte, String> {
     }
 
     @Override
-    public Class<String> getWidgetType() {
+    public Class<String> getComponentType() {
         return String.class;
     }
 

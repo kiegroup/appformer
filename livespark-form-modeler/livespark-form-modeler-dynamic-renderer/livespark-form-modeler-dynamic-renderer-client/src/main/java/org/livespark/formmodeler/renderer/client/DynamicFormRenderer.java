@@ -15,6 +15,8 @@
  */
 package org.livespark.formmodeler.renderer.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -23,33 +25,48 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.jboss.errai.databinding.client.PropertyChangeUnsubscribeHandle;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeHandler;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
+import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.subform.SubFormWidget;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
+import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 
 @Dependent
-public class DynamicFormRenderer implements IsWidget {
+public class DynamicFormRenderer implements IsWidget, IsFormView {
 
     public interface DynamicFormRendererView extends IsWidget {
         void setPresenter( DynamicFormRenderer presenter );
 
-        void render();
+        void render( FormRenderingContext context );
         void bind();
 
-        boolean validate();
+        FieldLayoutComponent getFieldLayoutComponentForField( FieldDefinition field );
     }
 
-    @Inject
     private DynamicFormRendererView view;
 
-    @Inject
     private Caller<Model2FormTransformerService> transformerService;
+
+    private FormViewValidator formViewValidator;
+
+    private DataBinder binder;
 
     private FormRenderingContext context;
 
-    private FormDefinition form;
+    private List<PropertyChangeUnsubscribeHandle> unsubscribeHandlers = new ArrayList<PropertyChangeUnsubscribeHandle>();
 
-    private Object model;
+    @Inject
+    public DynamicFormRenderer( DynamicFormRendererView view, Caller<Model2FormTransformerService> transformerService, FormViewValidator formViewValidator ) {
+        this.view = view;
+        this.transformerService = transformerService;
+        this.formViewValidator = formViewValidator;
+    }
 
     @PostConstruct
     protected void init() {
@@ -66,30 +83,150 @@ public class DynamicFormRenderer implements IsWidget {
     }
 
     public void render ( FormRenderingContext context ) {
+        unBind();
+        if ( context == null ) {
+            return;
+        }
         this.context = context;
-        view.render();
+        view.render( context );
         if ( context.getModel() != null ) {
-            view.bind();
+            bind( context.getModel() );
         }
     }
 
     public void bind( Object model ) {
         if ( context != null && model != null ) {
             context.setModel( model );
+            doBind( model );
             view.bind();
         }
     }
 
-    public FormRenderingContext getContext() {
-        return context;
+    protected void doBind( Object model ) {
+        binder = DataBinder.forModel( context.getModel() );
     }
 
-    public boolean validate() {
-        return view.validate();
+    public void bind( Widget input, FieldDefinition field ) {
+        doBind( input, field );
+    }
+
+    protected void doBind( Widget input, FieldDefinition field ) {
+        if ( isBinded() ) {
+            binder.bind( input, field.getBindingExpression() );
+            formViewValidator.registerInput( field.getName(), input );
+        }
+    }
+
+    public void addPropertyChangeHandler( PropertyChangeHandler handler ) {
+        addPropertyChangeHandler( null, handler );
+    }
+
+    public void addPropertyChangeHandler( String property, PropertyChangeHandler handler ) {
+        if ( context != null && isBinded() ) {
+            if ( property != null ) {
+
+                boolean composed = property.indexOf( "." ) != -1;
+
+                String root = property;
+                String child = null;
+
+                if ( composed ) {
+                    int index = property.indexOf( "." );
+                    root = property.substring( 0, index );
+
+                    child = property.substring( index + 1 );
+                }
+
+                FieldDefinition field = context.getRootForm().getFieldByName( root );
+                if ( field == null ) {
+                    registerChangeHandler( property, handler );
+                } else {
+                    if ( field instanceof SubFormFieldDefinition ) {
+
+                        FieldLayoutComponent component = view.getFieldLayoutComponentForField( field );
+
+                        SubFormWidget subFormWidget = (SubFormWidget) component.getFieldRenderer().getInputWidget();
+
+                        if ( composed ) {
+                            subFormWidget.addPropertyChangeHandler( child, handler );
+                        } else {
+                            subFormWidget.addPropertyChangeHandler( handler );
+                        }
+                    } else {
+                        registerChangeHandler( field.getBindingExpression(), handler );
+                    }
+                }
+            } else {
+                registerChangeHandler( null, handler );
+            }
+        }
+    }
+
+    protected void registerChangeHandler( String property, PropertyChangeHandler handler ) {
+        if ( isBinded() ) {
+            PropertyChangeUnsubscribeHandle unsubscribeHandle = doRegister( property, handler );
+
+            unsubscribeHandlers.add( unsubscribeHandle );
+        }
+    }
+
+    protected PropertyChangeUnsubscribeHandle doRegister( String property, PropertyChangeHandler handler ) {
+        if ( property == null ) {
+            return binder.addPropertyChangeHandler( handler );
+        }
+        return binder.addPropertyChangeHandler( property, handler );
+    }
+
+    public void unBind() {
+        if ( isBinded() ) {
+            doUnbind();
+            for ( PropertyChangeUnsubscribeHandle handle : unsubscribeHandlers ) {
+                handle.unsubscribe();
+            }
+            unsubscribeHandlers.clear();
+            for ( FieldDefinition field : context.getRootForm().getFields() ) {
+                if ( field instanceof SubFormFieldDefinition ) {
+                    FieldLayoutComponent component = view.getFieldLayoutComponentForField( field );
+                    SubFormWidget subFormWidget = (SubFormWidget) component.getFieldRenderer().getInputWidget();
+                    subFormWidget.unBind();
+                }
+            }
+        }
+    }
+
+    protected void doUnbind() {
+        if( isBinded() ) {
+            binder.unbind();
+        }
+    }
+
+    @Override
+    public void setModel( Object model ) {
+        bind( model );
+    }
+
+    @Override
+    public Object getModel() {
+        if ( isBinded() ) {
+            return binder.getModel();
+        }
+        return null;
+    }
+
+    public boolean isValid() {
+        return formViewValidator.validate( getBinderModel() );
+    }
+
+    protected Object getBinderModel() {
+        return binder.getModel();
     }
 
     @Override
     public Widget asWidget() {
         return view.asWidget();
+    }
+
+    protected boolean isBinded() {
+        return binder != null;
     }
 }

@@ -19,6 +19,7 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.model.FormDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
@@ -53,10 +54,27 @@ public abstract class AbstractNestedModelHelper extends AbstractInputCreatorHelp
                     .setPublic()
                     .setBody( body.toString() );
             setModelMethod.addAnnotation( JAVA_LANG_OVERRIDE );
-            setModelMethod.addParameter( context.getModelName(), "model" );
+            setModelMethod.addParameter( context.getFormModelName(), "model" );
         }
 
         return method;
+    }
+
+    protected FormDefinition getContextFormById( SourceGenerationContext context, String formId ) {
+        for ( FormDefinition form : context.getProjectForms() ) {
+            if ( form.getId().equals( formId ) ) {
+                return form;
+            }
+        }
+        return null;
+    }
+
+    protected String getFormModelClassName( FormDefinition form, SourceGenerationContext context ) {
+        return context.getSharedPackage().getPackageName() + "." + form.getName() + SourceGenerationContext.FORM_MODEL_SUFFIX;
+    }
+
+    protected String getFormViewClassName( FormDefinition form, SourceGenerationContext context ) {
+        return context.getLocalPackage().getPackageName() + "." + form.getName() + SourceGenerationContext.FORM_VIEW_SUFFIX;
     }
 
 }

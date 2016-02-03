@@ -30,7 +30,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupFieldDefinition> implements RequiresCustomCode<RadioGroupFieldDefinition>, RequiresExtraFields<RadioGroupFieldDefinition> {
 
-    public static final String SET_RADIO_DEFAULT_VALUE_METHOD_NAME = "setRadioDefaultValue_";
+    public static final String LOAD_RADIO_GROUP_VALUES = "loadRadioGroupValues_";
 
     public static final String RADIO_GROUP_NAME_SUFFIX = "_RadioGroupName";
     public static final String NESTED_RADIO_SUFFIX = "_Radio_";
@@ -64,8 +64,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupField
     @Override
     public void addCustomCode( RadioGroupFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
 
-        MethodSource<JavaClassSource> initFormMethod = viewClass.getMethod( INIT_FORM_METHOD );
-        StringBuffer body = new StringBuffer( initFormMethod.getBody() );
+        StringBuffer body = new StringBuffer();
 
         String defaultValue = null;
 
@@ -88,33 +87,30 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupField
             if ( option.getDefaultValue() ) {
                 defaultValue = option.getValue();
             }
-
         }
 
-        initFormMethod.setBody( body.toString() );
-
         if ( defaultValue != null ) {
-            body = new StringBuffer( );
             body.append( "if (" ).append( IS_NEW_MODEL_METHOD_CALL).append( ") {" );
             body.append( fieldDefinition.getName() )
                     .append( ".setValue( \"" )
                     .append( defaultValue )
                     .append( "\", true );" );
             body.append( "}" );
-
-            String setDefaultValueMethod = SET_RADIO_DEFAULT_VALUE_METHOD_NAME + fieldDefinition.getName();
-
-            viewClass.addMethod()
-                    .setName( setDefaultValueMethod )
-                    .setReturnTypeVoid()
-                    .setProtected()
-                    .setBody( body.toString() );
-
-            MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
-            body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
-            body.append( setDefaultValueMethod ).append( "();" );
-            beforeDisplayMethod.setBody( body.toString() );
         }
+
+        String loadRadioValuessMethod = LOAD_RADIO_GROUP_VALUES + fieldDefinition.getName();
+
+        viewClass.addMethod()
+                .setName( loadRadioValuessMethod )
+                .setReturnTypeVoid()
+                .setProtected()
+                .setBody( body.toString() );
+
+        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
+        body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
+        body.append( loadRadioValuessMethod ).append( "();" );
+        beforeDisplayMethod.setBody( body.toString() );
+
     }
 
     @Override

@@ -23,6 +23,8 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class FormResourceTypeDefinition implements ResourceTypeDefinition {
 
+    public static final String EXTENSION = "frm";
+
     @Override
     public String getShortName() {
         return "Form";
@@ -40,7 +42,7 @@ public class FormResourceTypeDefinition implements ResourceTypeDefinition {
 
     @Override
     public String getSuffix() {
-        return "frm";
+        return EXTENSION;
     }
 
     @Override
@@ -55,6 +57,6 @@ public class FormResourceTypeDefinition implements ResourceTypeDefinition {
 
     @Override
     public String getSimpleWildcardPattern() {
-        return "*.frm";
+        return "*." + getSuffix();
     }
 }

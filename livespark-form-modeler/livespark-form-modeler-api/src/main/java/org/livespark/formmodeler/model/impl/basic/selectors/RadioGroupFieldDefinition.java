@@ -21,6 +21,7 @@ import java.math.BigInteger;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 @Portable
 @Bindable
@@ -29,6 +30,7 @@ public class RadioGroupFieldDefinition extends SelectorField {
 
     private String code = _CODE;
 
+    @FieldDef( label = "Show options inline" )
     protected Boolean inline = Boolean.FALSE;
 
     @Override

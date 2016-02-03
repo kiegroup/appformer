@@ -15,6 +15,10 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -27,14 +31,8 @@ import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 
 @Dependent
 public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorPresenter.FormEditorView, RequiresResize {

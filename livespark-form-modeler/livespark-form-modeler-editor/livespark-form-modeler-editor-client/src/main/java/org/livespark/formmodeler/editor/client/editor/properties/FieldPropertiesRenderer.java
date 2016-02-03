@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.editor.service.FieldPropertiesService;
 
 @Dependent
@@ -33,7 +33,7 @@ public class FieldPropertiesRenderer implements IsWidget {
 
         void setPresenter( FieldPropertiesRenderer presenter );
 
-        void render( FieldPropertiesRendererHelper helper, FormEditorFormRenderingContext renderingContext );
+        void render( FieldPropertiesRendererHelper helper, FormEditorRenderingContext renderingContext );
     }
 
     @Inject
@@ -48,10 +48,11 @@ public class FieldPropertiesRenderer implements IsWidget {
     }
 
     public void render( final FieldPropertiesRendererHelper helper ) {
-        propertiesService.call( new RemoteCallback<FormEditorFormRenderingContext>() {
+        propertiesService.call( new RemoteCallback<FormEditorRenderingContext>() {
             @Override
-            public void callback( FormEditorFormRenderingContext renderingContext ) {
+            public void callback( FormEditorRenderingContext renderingContext ) {
                 renderingContext.setModel( helper.getCurrentField() );
+                renderingContext.setParentContext( helper.getCurrentRenderingContext() );
                 view.render( helper, renderingContext );
             }
         } ).getFieldPropertiesRenderingContext( helper.getCurrentField(), helper.getPath() );

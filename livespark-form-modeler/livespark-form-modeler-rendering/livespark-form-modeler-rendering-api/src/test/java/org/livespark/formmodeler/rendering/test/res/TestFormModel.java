@@ -15,18 +15,44 @@
  */
 package org.livespark.formmodeler.rendering.test.res;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.errai.common.client.api.annotations.MapsTo;
+import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.widgets.crud.client.component.mock.CrudModel;
 
+@Bindable
+@Portable
 public class TestFormModel extends FormModel {
 
+    private CrudModel model;
+
+    public TestFormModel() {
+    }
+
+    public TestFormModel( @MapsTo( "model" ) CrudModel model ) {
+        this.model = model;
+    }
+
+    public CrudModel getModel() {
+        return model;
+    }
+
+    public void setModel( CrudModel model ) {
+        this.model = model;
+    }
+
     /* (non-Javadoc)
-     * @see org.livespark.formmodeler.rendering.client.shared.FormModel#getDataModels()
-     */
+             * @see org.livespark.formmodeler.rendering.client.shared.FormModel#getDataModels()
+             */
     @Override
     public List<Object> getDataModels() {
-        throw new RuntimeException( "Not yet implemented." );
+        List dataModels = new ArrayList();
+        dataModels.add( model );
+        return dataModels;
     }
 
 }

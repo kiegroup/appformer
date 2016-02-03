@@ -16,6 +16,7 @@
 
 package org.livespark.formmodeler.codegen.view.impl.html;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -23,94 +24,27 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListView;
 import org.livespark.formmodeler.codegen.view.impl.html.util.HTMLTemplateFormatter;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.TemplateCompiler;
+import org.mvel2.templates.TemplateRuntime;
 
 @ListView
 @ApplicationScoped
 public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
-    private static final String LIST_WIDGET_FIELD_NAME = "items";
-    private static final String LIST_WIDGET_BUTTON_NAME = "create";
 
-    private static final String DELETE_BUTTON_NAME = "delete";
-    private static final String EDIT_BUTTON_NAME = "edit";
+    private String listViewTemplatePath = "templates/listview.mv";
+    private CompiledTemplate listViewTemplate;
+
+    @PostConstruct
+    protected void init() {
+        listViewTemplate = TemplateCompiler.compileTemplate( getClass().getResourceAsStream( listViewTemplatePath ) );
+    }
 
     @Inject
     private HTMLTemplateFormatter formatter;
 
     @Override
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("<div>");
-
-        builder.append("<div class=\"create-container\">")
-                .append( "<button class=\"btn btn-primary\" data-field=\"")
-                .append( LIST_WIDGET_BUTTON_NAME )
-                .append( "\">Create</button>" )
-                .append("<br/>")
-                .append("<br/>")
-                .append("</div>");
-
-        builder.append("<div>")
-                .append( "<table class=\"table blackened\">" )
-                .append("<thead>");
-
-        builder.append( "<tr>" );
-        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
-            if ( !isSupported( field ) ) continue;
-            String label = field.getLabel();
-            if ( label == null || "".equals( label ) ) {
-                label = field.getName();
-            }
-
-            builder.append( "<th>" )
-                    .append( label )
-                    .append( "</th>" );
-        }
-        builder.append( "<th></th>" );
-        builder.append( "</tr>" );
-
-        final String bodyId = context.getListTBodyId();
-        builder.append( "</thead>" )
-                .append( "<tbody id=\"" )
-                .append( bodyId )
-                .append( "\" data-field=\"" )
-                .append( LIST_WIDGET_FIELD_NAME )
-                .append("\">");
-
-        final String rowId = context.getListItemRowId();
-        builder.append( "<tr valign=\"top\" class=\"item\" id=\"")
-                .append( rowId )
-                .append("\">");
-        for ( FieldDefinition field : context.getFormDefinition().getFields() ) {
-            if ( !isSupported( field ) ) continue;
-            builder.append( "<td data-field=\"" )
-                    .append( field.getName() )
-                    .append( "\"></td>" );
-        }
-
-        builder.append("<td style=\"width:1px; white-space:nowrap;\">");
-
-        builder.append( "<button class=\"btn btn-primary\" data-field=\"" )
-                .append( EDIT_BUTTON_NAME )
-                .append( "\">Edit</button>" );
-        builder.append( "<button class=\"btn btn-primary\" data-field=\"" )
-                .append( DELETE_BUTTON_NAME )
-                .append( "\">Delete</button>" );
-
-        builder.append("</td>");
-
-        builder.append( "</tr>" );
-
-        builder.append( "</tbody>")
-                .append( "</table>" )
-                .append( "</div>")
-                .append("</div>");
-
-        return formatter.formatHTMLCode( builder.toString() );
-    }
-
-    protected boolean isSupported(FieldDefinition definition) {
-        return !(definition instanceof EntityRelationField );
+        return formatter.formatHTMLCode( (String) TemplateRuntime.execute( listViewTemplate ) );
     }
 }

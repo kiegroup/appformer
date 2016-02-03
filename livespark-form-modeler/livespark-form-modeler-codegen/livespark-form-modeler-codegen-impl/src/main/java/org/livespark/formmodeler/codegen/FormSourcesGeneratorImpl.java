@@ -18,29 +18,28 @@ package org.livespark.formmodeler.codegen;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Package;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
+import org.livespark.formmodeler.codegen.layout.Static;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
 import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
-import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
+import org.livespark.formmodeler.editor.service.VFSFormFinderService;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,9 +61,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private IOService ioService;
 
     @Inject
-    private User identity;
-
-    @Inject
     private KieProjectService projectService;
 
     @Inject
@@ -83,6 +79,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormDefinitionSerializer formDefinitionSerializer;
 
     @Inject
+    @Static
     private FormLayoutTemplateGenerator formLayoutTemplateGenerator;
 
     @Inject
@@ -92,10 +89,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @Inject
     @ListView
     private FormHTMLTemplateSourceGenerator htmlListTemplateSourceGenerator;
-
-    @Inject
-    @ListItemView
-    private FormJavaTemplateSourceGenerator javaListItemTemplateSourceGenerator;
 
     @Inject
     @RestApi
@@ -112,6 +105,12 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @Inject
     private ErraiAppPropertiesGenerator serializableTypesGenerator;
 
+    @Inject
+    private VFSFormFinderService vfsFormFinderService;
+
+    @Inject
+    private CommentedOptionFactory commentedOptionFactory;
+
     @Override
     public void generateEntityFormSources(FormDefinition form, Path resourcePath) {
         Package resPackage = projectService.resolvePackage(resourcePath);
@@ -124,7 +123,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         Package shared = getOrCreateSharedPackage(client);
         Package server = getOrCreateServerPackage(root);
 
-        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, server );
+        SourceGenerationContext context = new SourceGenerationContext( form,
+                resourcePath, root, local, shared, server,
+                vfsFormFinderService.findAllForms( resourcePath ) );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
 
@@ -139,7 +140,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         String listJavaTemplate = javaListTemplateSourceGenerator.generateJavaTemplateSource( context );
         String listHtmlTemplate = htmlListTemplateSourceGenerator.generateHTMLTemplateSource( context );
-        String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
 
         String restServiceTemplate = javaRestTemplateSourceGenerator.generateJavaTemplateSource( context );
         String restImplTemplate = javaRestImplTemplateSourceGenerator.generateJavaTemplateSource( context );
@@ -154,7 +154,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                 htmlTemplate,
                 listJavaTemplate,
                 listHtmlTemplate,
-                listItemJavaTemplate,
                 restServiceTemplate,
                 restImplTemplate,
                 entityServiceTemplate,
@@ -167,12 +166,11 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         ioService.startBatch( parent.getFileSystem() );
         try {
-            writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeJavaSource( resourcePath, context.getFormModelName(), modelSource, shared );
             writeFormTemplate( resourcePath, form.getName(), formTemplateLayout, shared );
 
             writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
             writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, local );
-            writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, local );
             writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, shared );
             writeJavaSource( resourcePath, context.getRestServiceImplName(), restImplTemplate, server );
             writeJavaSource( resourcePath, context.getEntityServiceName(), entityServiceTemplate, server );
@@ -198,7 +196,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         Package local = getOrCreateLocalPackage( client );
         Package shared = getOrCreateSharedPackage( client );
 
-        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, null );
+        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, null,
+                vfsFormFinderService.findAllForms( resourcePath ) );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
 
@@ -217,7 +216,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         ioService.startBatch( parent.getFileSystem() );
         try {
-            writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeJavaSource( resourcePath, context.getFormModelName(), modelSource, shared );
             writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
             writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
         } catch ( Exception e ) {
@@ -246,11 +245,12 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         return !( className.endsWith( SourceGenerationContext.ENTITY_SERVICE_SUFFIX )
         || className.endsWith( SourceGenerationContext.FORM_MODEL_SUFFIX )
         || className.endsWith( SourceGenerationContext.FORM_VIEW_SUFFIX )
-        || className.endsWith( SourceGenerationContext.LIST_ITEM_VIEW_SUFFIX )
         || className.endsWith( SourceGenerationContext.LIST_VIEW_SUFFIX )
         || className.endsWith( SourceGenerationContext.REST_IMPL_SUFFIX )
         || className.endsWith( SourceGenerationContext.REST_SERVICE_SUFFIX )
-        || className.contains( ".builtin." ) );
+        || className.contains( ".builtin." )
+        || className.contains( ".server." )
+        || className.contains( ".backend." ) );
     }
 
     private void writeErraiAppProperties( String serializableTypesDeclaration, KieProject project  ) {
@@ -345,13 +345,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     }
 
     public CommentedOption makeCommentedOption( String commitMessage ) {
-        final String name = identity.getIdentifier();
-        final Date when = new Date();
-
-        final CommentedOption option = new CommentedOption( name,
-                null,
-                commitMessage,
-                when );
-        return option;
+        return commentedOptionFactory.makeCommentedOption( commitMessage );
     }
 }

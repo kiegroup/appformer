@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.dom.client.Node;
@@ -94,19 +95,25 @@ public class FormViewValidator {
 
         clearFieldErrors();
 
-        Set<ConstraintViolation<Object>> result = validator.validate( model );
-        for ( ConstraintViolation<Object> validation : result ) {
-            String property = validation.getPropertyPath().toString().replace( ".", "_" );
-            if ( !formInputs.containsKey( property ) )
-                continue;
-            isValid = false;
+        try {
+            Set<ConstraintViolation<Object>> result = validator.validate( model );
 
-            FieldGroup group = formInputs.get( property );
+            for ( ConstraintViolation<Object> validation : result ) {
+                String property = validation.getPropertyPath().toString().replace( ".", "_" );
+                if ( !formInputs.containsKey( property ) )
+                    continue;
+                isValid = false;
 
-            if ( group.getFormGroup() != null )
-                group.getFormGroup().addClassName( "has-error" );
-            if ( group.getHelpBlock() != null )
-                group.getHelpBlock().setInnerHTML( validation.getMessage() );
+                FieldGroup group = formInputs.get( property );
+
+                if ( group.getFormGroup() != null )
+                    group.getFormGroup().addClassName( "has-error" );
+                if ( group.getHelpBlock() != null )
+                    group.getHelpBlock().setInnerHTML( validation.getMessage() );
+            }
+        } catch ( IllegalArgumentException ex ) {
+            GWT.log( "Error trying to validate model: model does not any validation constraint. " );
+            return true;
         }
 
         return isValid;

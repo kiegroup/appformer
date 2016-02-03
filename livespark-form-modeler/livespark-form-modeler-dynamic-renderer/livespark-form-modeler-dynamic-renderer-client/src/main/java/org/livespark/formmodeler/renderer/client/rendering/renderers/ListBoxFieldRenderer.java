@@ -15,14 +15,12 @@
  */
 package org.livespark.formmodeler.renderer.client.rendering.renderers;
 
-import java.util.HashMap;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.ValueListBox;
 import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 import org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer;
 
 @Dependent
@@ -40,6 +38,7 @@ public class ListBoxFieldRenderer extends SelectorFieldRenderer<ListBoxFieldDefi
     @Override
     public void initInputWidget() {
         widgetList.setEnabled( !field.getReadonly() );
+        widgetList.reset();
         refreshSelectorOptions();
     }
 
@@ -53,25 +52,12 @@ public class ListBoxFieldRenderer extends SelectorFieldRenderer<ListBoxFieldDefi
         return ListBoxFieldDefinition._CODE;
     }
 
-    @Override
-    public void refreshSelectorOptions() {
-        Map<String, String> optionsValues = new HashMap<String, String>( );
-        widgetList.reset();
-        if ( field.getOptions() != null ) {
-            String defaultValue = null;
-            for ( SelectorOption option : field.getOptions() ) {
-                optionsValues.put( option.getValue(), option.getText() );
-                if ( option.getDefaultValue() ) {
-                    defaultValue = option.getValue();
-                }
-            }
+    protected void refreshInput( Map<String, String> optionsValues, String defaultValue) {
 
-            if ( defaultValue != null ) {
-                widgetList.setValue( defaultValue );
-            } else {
-                widgetList.setValue( "" );
-            }
+        if ( defaultValue != null ) {
+            widgetList.setValue( defaultValue );
         }
+
         optionsRenderer.setValues( optionsValues );
         widgetList.setAcceptableValues( optionsValues.keySet() );
     }

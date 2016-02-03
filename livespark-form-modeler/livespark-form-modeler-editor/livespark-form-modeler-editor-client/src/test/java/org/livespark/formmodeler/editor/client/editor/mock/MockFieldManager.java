@@ -20,6 +20,10 @@ import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.service.AbstractFieldManager;
 
 public class MockFieldManager extends AbstractFieldManager {
@@ -29,6 +33,10 @@ public class MockFieldManager extends AbstractFieldManager {
         registerFieldDefinition( new DateBoxFieldDefinition() );
         registerFieldDefinition( new CheckBoxFieldDefinition() );
         registerFieldDefinition( new TextAreaFieldDefinition() );
+        registerFieldDefinition( new ListBoxFieldDefinition() );
+        registerFieldDefinition( new RadioGroupFieldDefinition() );
+        registerFieldDefinition( new SubFormFieldDefinition() );
+        registerFieldDefinition( new MultipleSubFormFieldDefinition() );
     }
 
     @Override
@@ -38,6 +46,10 @@ public class MockFieldManager extends AbstractFieldManager {
             if (definition.getCode().equals(TextAreaFieldDefinition._CODE)) return new TextAreaFieldDefinition();
             if (definition.getCode().equals(CheckBoxFieldDefinition._CODE)) return new CheckBoxFieldDefinition();
             if (definition.getCode().equals(DateBoxFieldDefinition._CODE)) return new DateBoxFieldDefinition();
+            if (definition.getCode().equals(ListBoxFieldDefinition._CODE)) return new ListBoxFieldDefinition();
+            if (definition.getCode().equals(RadioGroupFieldDefinition._CODE)) return new RadioGroupFieldDefinition();
+            if (definition.getCode().equals(SubFormFieldDefinition._CODE)) return new SubFormFieldDefinition();
+            if (definition.getCode().equals(MultipleSubFormFieldDefinition._CODE)) return new MultipleSubFormFieldDefinition();
         }
         return  null;
     }

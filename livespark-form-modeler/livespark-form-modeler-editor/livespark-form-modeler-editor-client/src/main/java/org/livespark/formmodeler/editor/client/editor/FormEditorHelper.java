@@ -15,6 +15,18 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
@@ -22,21 +34,14 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.model.FormModelerContent;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.service.FieldManager;
-import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import java.util.*;
 
 /**
  * Created by pefernan on 8/6/15.
@@ -297,7 +302,7 @@ public class FormEditorHelper {
         return false;
     }
 
-    public FormEditorFormRenderingContext getRenderingContext() {
+    public FormEditorRenderingContext getRenderingContext() {
         return content.getRenderingContext();
     }
 }

@@ -16,30 +16,31 @@
 
 package org.livespark.formmodeler.codegen.services.datamodeller.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.text.WordUtils;
-import org.kie.workbench.common.screens.datamodeller.model.maindomain.MainDomainAnnotations;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
-import org.kie.workbench.common.services.datamodeller.core.Annotation;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
-import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
+import org.livespark.formmodeler.editor.service.VFSFormFinderService;
 import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
+import org.livespark.formmodeler.editor.service.FormCreatorService;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.MultipleField;
 import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
 import org.livespark.formmodeler.service.FieldManager;
-import org.livespark.formmodeler.editor.service.FormFinderSerivce;
-import org.livespark.formmodeler.editor.service.SubFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
-
-import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by pefernan on 4/29/15.
@@ -63,14 +64,17 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     protected DataModellerFieldGenerator fieldGenerator;
 
     @Inject
-    protected FormFinderSerivce formFinderSerivce;
+    protected FormCreatorService formCreatorService;
+
+    @Inject
+    protected VFSFormFinderService vfsFormFinderService;
 
     @Override
     public void generateFormForDataObject( DataObject dataObject, Path path ) {
 
         if (dataObject.getProperties().isEmpty()) return;
 
-        FormDefinition form = formFinderSerivce.getNewFormInstance();
+        FormDefinition form = formCreatorService.getNewFormInstance();
 
         form.setName( dataObject.getName() );
 
@@ -98,29 +102,30 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     protected boolean loadEmbeddedFormConfig ( FieldDefinition field, Path path ) {
         if ( !(field instanceof EmbeddedFormField) ) return false;
 
-        List<SubFormData> subForms;
+        List<FormDefinition> subForms = vfsFormFinderService.findFormsForType( field.getStandaloneClassName(), path );
 
-        if ( field instanceof  MultipleField ) {
-            subForms = formFinderSerivce.getAvailableMultipleSubFormsByType( field.getStandaloneClassName(), path );
-        } else {
-            subForms = formFinderSerivce.getAvailableFormsByType( field.getStandaloneClassName(), path);
+        if ( subForms == null || subForms.isEmpty() ) {
+            return false;
         }
 
-        if ( subForms == null || subForms.isEmpty() ) return false;
+        if ( field instanceof  MultipleField ) {
+            MultipleSubFormFieldDefinition multipleSubFormFieldDefinition = (MultipleSubFormFieldDefinition) field;
+            FormDefinition form = subForms.get( 0 );
+            multipleSubFormFieldDefinition.setCreationForm( form.getId() );
+            multipleSubFormFieldDefinition.setEditionForm( form.getId() );
 
-        SubFormData data = subForms.get( 0 );
+            List<TableColumnMeta> columnMetas = new ArrayList<>();
+            for ( FieldDefinition nestedField : form.getFields() ) {
+                TableColumnMeta meta = new TableColumnMeta( nestedField.getLabel(), nestedField.getBoundPropertyName() );
+                columnMetas.add( meta );
+            }
 
-        EmbeddedFormField embeddedFormField = (EmbeddedFormField)field;
-        embeddedFormField.setEmbeddedModel( data.getFormModelClass() );
-        embeddedFormField.setEmbeddedFormView( data.getViewClass() );
+            multipleSubFormFieldDefinition.setColumnMetas( columnMetas );
+        } else {
+            SubFormFieldDefinition subFormField = (SubFormFieldDefinition) field;
+            subFormField.setNestedForm( subForms.get( 0 ).getId() );
+        }
 
         return true;
-    }
-
-    private String getPropertyLabel( ObjectProperty property ) {
-        Annotation labelAnnotation = property.getAnnotation( MainDomainAnnotations.LABEL_ANNOTATION );
-        if ( labelAnnotation != null ) return labelAnnotation.getValue( MainDomainAnnotations.VALUE_PARAM ).toString();
-
-        return property.getName();
     }
 }

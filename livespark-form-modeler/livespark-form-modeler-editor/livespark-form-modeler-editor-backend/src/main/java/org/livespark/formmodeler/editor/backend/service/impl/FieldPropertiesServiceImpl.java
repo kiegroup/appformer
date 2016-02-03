@@ -20,7 +20,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.editor.service.FieldPropertiesService;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
@@ -34,12 +34,12 @@ public class FieldPropertiesServiceImpl implements FieldPropertiesService {
     protected Model2FormTransformerService model2FormTransformerService;
 
     @Override
-    public FormEditorFormRenderingContext getFieldPropertiesRenderingContext( FieldDefinition fieldDefinition, Path formPath ) {
+    public FormEditorRenderingContext getFieldPropertiesRenderingContext( FieldDefinition fieldDefinition, Path formPath ) {
         FormRenderingContext context = model2FormTransformerService.createContext( fieldDefinition );
 
-        FormEditorFormRenderingContext editorContext = new FormEditorFormRenderingContext( context.getRootForm(),
-                context.getModel(),
-                formPath );
+        FormEditorRenderingContext editorContext = new FormEditorRenderingContext( formPath );
+        editorContext.setRootForm( context.getRootForm() );
+        editorContext.setModel( fieldDefinition );
 
         editorContext.getAvailableForms().putAll( context.getAvailableForms() );
 

@@ -27,7 +27,6 @@ import com.google.gwt.user.client.ui.Panel;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.client.components.LayoutDragComponent;
@@ -48,6 +47,9 @@ public class FormLayoutGenerator extends AbstractLayoutGenerator {
     public Panel buildLayout( FormRenderingContext renderingContext ) {
         this.renderingContext = renderingContext;
         layoutComponents.clear();
+        if ( renderingContext == null || renderingContext.getRootForm() == null ) {
+            return getLayoutContainer();
+        }
         return build( renderingContext.getRootForm().getLayoutTemplate() );
     }
 
@@ -72,5 +74,12 @@ public class FormLayoutGenerator extends AbstractLayoutGenerator {
 
     public List<FieldLayoutComponent> getLayoutFields() {
         return layoutComponents;
+    }
+
+    public FieldLayoutComponent getFieldLayoutComponentForField( FieldDefinition field ) {
+        for ( FieldLayoutComponent component : layoutComponents ) {
+            if ( component.getField().equals( field ) ) return component;
+        }
+        return null;
     }
 }

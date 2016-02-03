@@ -15,12 +15,16 @@
  */
 package org.livespark.formmodeler.renderer.client.rendering;
 
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.renderer.client.resources.i18n.FormRenderingConstants;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
@@ -42,6 +46,19 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
         FormGroup group = new FormGroup();
         group.getElement().setId( getFormGroupId( field ) );
 
+        if ( isFieldWellConfigured() ) {
+            addFormGroupContents( group );
+        } else {
+            group.setValidationState( ValidationState.ERROR );
+            HelpBlock helpBlock = new HelpBlock();
+            helpBlock.setIconType( IconType.WARNING );
+            helpBlock.setHTML( FormRenderingConstants.INSTANCE.unableToDisplayField() );
+            group.add( helpBlock );
+        }
+        return group;
+    }
+
+    protected void addFormGroupContents( FormGroup group ) {
         FormLabel label = new FormLabel();
         label.setText( field.getLabel() );
 
@@ -55,11 +72,14 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
         helpBlock.setId( getHelpBlokId( field ) );
 
         group.add( helpBlock );
-        return group;
     }
 
     public F getField() {
         return field;
+    }
+
+    public boolean isFieldWellConfigured() {
+        return true;
     }
 
     public abstract String getName();

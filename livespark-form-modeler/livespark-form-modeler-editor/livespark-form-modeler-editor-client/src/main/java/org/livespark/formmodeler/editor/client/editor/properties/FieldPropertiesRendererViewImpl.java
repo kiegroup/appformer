@@ -29,8 +29,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.shared.event.ModalHideEvent;
-import org.gwtbootstrap3.client.shared.event.ModalHideHandler;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ListBox;
 import org.gwtbootstrap3.client.ui.ModalBody;
@@ -38,7 +36,7 @@ import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 
@@ -69,33 +67,28 @@ public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldP
     private FieldPropertiesRendererHelper helper;
 
     public FieldPropertiesRendererViewImpl() {
-        this.setClosable( true );
+        this.setClosable( false );
         this.setTitle( FieldProperties.INSTANCE.title() );
         add( new ModalBody() {{
             add( uiBinder.createAndBindUi( FieldPropertiesRendererViewImpl.this ) );
         }} );
-        final Button close = new Button( Constants.INSTANCE.accept());
-        close.addClickHandler( new ClickHandler() {
+        final Button acceptButton = new Button( Constants.INSTANCE.accept());
+        acceptButton.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( ClickEvent event ) {
-                hide();
-            }
-        } );
-        close.setType( ButtonType.PRIMARY );
-        this.add( new ModalFooter() {{
-            add( close );
-        }} );
-        this.addHideHandler( new ModalHideHandler() {
-            @Override
-            public void onHide( ModalHideEvent evt ) {
                 closeModal();
             }
         } );
+        acceptButton.setType( ButtonType.PRIMARY );
+        this.add( new ModalFooter() {{
+            add( acceptButton );
+        }} );
     }
 
     protected void closeModal() {
-        if ( formRenderer.validate() ) {
+        if ( formRenderer.isValid() ) {
             helper.onClose();
+            hide();
         }
     }
 
@@ -110,7 +103,7 @@ public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldP
     }
 
     @Override
-    public void render( FieldPropertiesRendererHelper helper, FormEditorFormRenderingContext renderingContext ) {
+    public void render( FieldPropertiesRendererHelper helper, FormEditorRenderingContext renderingContext ) {
         this.helper = helper;
         formRenderer.render( renderingContext );
         initFieldTypeList();

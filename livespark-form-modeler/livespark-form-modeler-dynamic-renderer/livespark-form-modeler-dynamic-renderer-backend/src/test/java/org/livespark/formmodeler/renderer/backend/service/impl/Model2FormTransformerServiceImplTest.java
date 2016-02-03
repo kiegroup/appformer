@@ -16,23 +16,33 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl;
 
+import java.lang.annotation.Annotation;
+
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
+import org.livespark.formmodeler.codegen.layout.Static;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.renderer.backend.service.impl.model.Employee;
-import org.livespark.formmodeler.renderer.backend.service.impl.model.Person;
+import org.livespark.formmodeler.renderer.backend.service.impl.processors.FieldAnnotationProcessor;
+import org.livespark.formmodeler.renderer.test.model.Employee;
+import org.livespark.formmodeler.renderer.test.model.Person;
 import org.livespark.formmodeler.service.FieldManager;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class Model2FormTransformerServiceImplTest {
+
+    private Instance<FieldAnnotationProcessor> annotationProcessors;
 
     private FieldManager fieldManager;
 
@@ -45,9 +55,15 @@ public class Model2FormTransformerServiceImplTest {
         WeldContainer weld = new Weld().initialize();
 
         fieldManager = weld.instance().select( FieldManager.class ).get();
-        layoutTemplateGenerator = weld.instance().select( FormLayoutTemplateGenerator.class ).get();
+        annotationProcessors = weld.instance().select( FieldAnnotationProcessor.class );
+        layoutTemplateGenerator = weld.instance().select( FormLayoutTemplateGenerator.class, new Annotation() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return Static.class;
+            }
+        }).get();
 
-        service = new Model2FormTransformerServiceImpl( fieldManager, layoutTemplateGenerator );
+        service = new Model2FormTransformerServiceImpl( annotationProcessors, layoutTemplateGenerator );
     }
 
     @Test
@@ -57,7 +73,7 @@ public class Model2FormTransformerServiceImplTest {
 
     @Test
     public void testFormGenerationWithInheritance() {
-        doTest( new Employee(), 5 );
+        doTest( new Employee(), 6 );
     }
 
     protected void doTest( Object model, int expectedFields ) {

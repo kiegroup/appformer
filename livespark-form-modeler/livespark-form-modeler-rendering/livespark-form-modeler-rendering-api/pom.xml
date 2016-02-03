@@ -66,8 +66,21 @@
     </dependency>
 
     <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-crud-component</artifactId>
+    </dependency>
+
+    <!-- Tests -->
+    <dependency>
       <groupId>com.google.gwt.gwtmockito</groupId>
       <artifactId>gwtmockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-crud-component</artifactId>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>

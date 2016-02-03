@@ -16,19 +16,33 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
+import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
+import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
+import org.livespark.formmodeler.model.DataHolder;
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 @ListView
 @ApplicationScoped
 public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
+
+    @Inject
+    private ColumnMetaGeneratorManager columnMetaGeneratorManager;
 
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
@@ -51,6 +65,100 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         addGetFormTitleImpl( viewClass, context );
         addGetFormIdImpl( viewClass, context );
         addGetRemoteServiceClassImpl( viewClass, context );
+        addGetColumnsImpl( viewClass, context );
+        addGetModelImpl( viewClass, context );
+        addGetFormModelImpl( viewClass, context );
+    }
+
+    private void addGetFormModelImpl( JavaClassSource viewClass, SourceGenerationContext context ) {
+
+        StringBuffer body = new StringBuffer();
+
+        body.append( context.getFormModelName() )
+                .append( " formModel = new " )
+                .append( context.getFormModelName() )
+                .append( "();" );
+
+        // TODO: improve this, is there a real need to have more than one model?
+        DataHolder holder = context.getFormDefinition().getDataHolders().get( 0 );
+        String modelName = holder.getName();
+
+        body.append( "formModel.set" )
+                .append( StringUtils.capitalize( modelName ) )
+                .append( "( ")
+                .append( modelName )
+                .append( " );" );
+
+        body.append( "return formModel;" );
+
+        MethodSource<JavaClassSource> createFormModel = viewClass.addMethod()
+                .setName( "createFormModel" )
+                .setReturnType( context.getFormModelName() )
+                .setBody( body.toString() )
+                .setPublic();
+
+        createFormModel.addParameter( holder.getType(), modelName );
+        createFormModel.addAnnotation( Override.class );
+    }
+
+    private void addGetModelImpl( JavaClassSource viewClass, SourceGenerationContext context ) {
+        StringBuffer body = new StringBuffer();
+
+        // TODO: improve this, is there a real need to have more than one model?
+        body.append( "return formModel.get" )
+                .append( StringUtils.capitalize( context.getFormDefinition().getDataHolders().get( 0 ).getName() ) )
+                .append( "();" );
+
+        MethodSource<JavaClassSource> getModel = viewClass.addMethod()
+                .setName( "getModel" )
+                .setReturnType( context.getEntityName() )
+                .setBody( body.toString() )
+                .setPublic();
+        getModel.addParameter( context.getFormModelName(), "formModel" );
+        getModel.addAnnotation( Override.class );
+    }
+
+    private void addGetColumnsImpl( JavaClassSource viewClass,
+                                    SourceGenerationContext context ) {
+
+        viewClass.addImport( List.class.getName() );
+        viewClass.addImport( ArrayList.class.getName() );
+        viewClass.addImport( COLUMN_META_CLASS_NAME );
+
+        StringBuffer body = new StringBuffer();
+        body.append( "List<ColumnMeta> " )
+                .append( COLUMN_METAS_VAR_NAME )
+                .append( " = new ArrayList<ColumnMeta>();" );
+
+
+        FormDefinition form = context.getFormDefinition();
+
+        for ( FieldDefinition field : form.getFields() ) {
+            if ( !(field instanceof EntityRelationField) ) {
+                ColumnMetaGenerator generator = columnMetaGeneratorManager.getColumnMetaGeneratorForType( field.getStandaloneClassName() );
+                if ( generator != null ) {
+                    for ( String imp : generator.getImports() ) {
+                        viewClass.addImport( imp );
+                    }
+                    body.append( generator.generateColumnMeta( field.getBoundPropertyName(),
+                            field.getLabel(),
+                            context.getEntityName(),
+                            context ) );
+                }
+            }
+        }
+
+        body.append( "return " )
+                .append( COLUMN_METAS_VAR_NAME )
+                .append( ";" );
+
+        viewClass.addMethod()
+                .setName( "getCrudColumns" )
+                .setReturnType( "List<ColumnMeta>" )
+                .setBody( body.toString() )
+                .setPublic()
+                .addAnnotation( Override.class );
+
     }
 
     private void addGetFormTypeImpl( JavaClassSource viewClass,
@@ -113,19 +221,17 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         viewClass.setPackage( packageName )
                 .setPublic()
                 .setName( context.getListViewName() )
-                .setSuperType( LIST_VIEW_CLASS + "<" + context.getModelName() + ", " + context.getListItemViewName() + ">" );
+                .setSuperType( LIST_VIEW_CLASS + "<" + context.getEntityName() + ", " + context.getFormModelName() + ">" );
     }
 
     private void addAnnotations( SourceGenerationContext context, JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
-        viewClass.addAnnotation( FORM_MODEL_ANNOTATION ).setStringValue( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
     }
 
     private void addImports( SourceGenerationContext context,
             JavaClassSource viewClass ) {
-        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getFormViewName() );
-        viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getListItemViewName() );
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
     }
 
