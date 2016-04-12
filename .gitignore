@@ -1,11 +1,11 @@
 **/target
 **/WEB-INF/classes
 /local
-/src/main/gwt-unitCache/
-/src/main/webapp/WEB-INF/classes/
-/src/main/webapp/WEB-INF/deploy/
-/src/main/webapp/WEB-INF/lib/
-/src/main/webapp/livespark/
+**/gwt-unitCache/
+**/WEB-INF/deploy/
+**/WEB-INF/lib/
+**/src/main/webapp/livespark/
+**/webapp/org.livespark.*/
 
 # Eclipse, Netbeans and IntelliJ files
 /.*

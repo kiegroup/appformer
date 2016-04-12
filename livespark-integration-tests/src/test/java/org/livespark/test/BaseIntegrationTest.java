@@ -51,7 +51,6 @@ import org.livespark.test.mock.MockServletContext;
 import org.livespark.test.mock.MockServletRequest;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.ext.security.server.ServletSecurityAuthenticationService;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 
