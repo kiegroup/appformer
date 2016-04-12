@@ -101,11 +101,6 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         dataObject.addProperty( "shortVal", short.class.getCanonicalName() );
     }
 
-    private void assertTestPropertiesWithId( final String bindNamePrefix, final JavaClass<JavaClassSource> clazz ) {
-        assertViewProperty( bindNamePrefix + "_id", clazz );
-        assertTestPropertiesWithoutId( bindNamePrefix, clazz );
-    }
-
     private void assertViewProperty( final String name, final JavaClass<JavaClassSource> formViewClass ) {
         final Property<JavaClassSource> prop = formViewClass.getProperty( name );
 
