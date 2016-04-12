@@ -1,4 +1,5 @@
-/target
+**/target
+**/WEB-INF/classes
 /local
 /src/main/gwt-unitCache/
 /src/main/webapp/WEB-INF/classes/

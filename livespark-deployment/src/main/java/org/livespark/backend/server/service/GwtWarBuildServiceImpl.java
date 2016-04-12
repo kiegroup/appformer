@@ -77,6 +77,9 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
 
     private IOService ioService;
 
+    // For proxying
+    public GwtWarBuildServiceImpl() {}
+
     @Inject
     public GwtWarBuildServiceImpl( final POMService pomService,
                                    final ExtendedM2RepoService m2RepoService,

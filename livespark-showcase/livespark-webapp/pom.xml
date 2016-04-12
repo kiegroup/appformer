@@ -1466,7 +1466,7 @@
           <configuration>
             <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
             <localWorkers>${gwt.compiler.localWorkers}</localWorkers>
-            <extraJvmArgs>${gwt.memory.settings} -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.marshalling.server.classOutput=${project.build.outputDirectory} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.util.prefs.syncInterval=2000000 -Dorg.uberfire.async.executor.safemode=true -Dorg.uberfire.nio.git.dir=/tmp/niogit</extraJvmArgs>
+            <extraJvmArgs>${gwt.memory.settings} -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.server.classOutput=${project.build.outputDirectory} -Dorg.kie.demo=true -Dorg.kie.clean.onstartup=true -Djava.util.prefs.syncInterval=2000000 -Dorg.uberfire.async.executor.safemode=true -Dorg.uberfire.nio.git.dir=/tmp/niogit</extraJvmArgs>
             <draftCompile>true</draftCompile>
             <module>org.livespark.FastCompiledLiveSpark</module>
             <logLevel>INFO</logLevel>

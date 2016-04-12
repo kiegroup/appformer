@@ -19,8 +19,10 @@ package org.livespark.test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,12 +44,14 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.test.mock.MockAuthenticationService;
 import org.livespark.test.mock.MockHttpSession;
 import org.livespark.test.mock.MockQueueSession;
 import org.livespark.test.mock.MockServletContext;
 import org.livespark.test.mock.MockServletRequest;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.security.server.ServletSecurityAuthenticationService;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 
@@ -89,7 +93,8 @@ public class BaseIntegrationTest {
                                       MockQueueSession.class,
                                       MockHttpSession.class,
                                       MockServletRequest.class,
-                                      MockServletContext.class );
+                                      MockServletContext.class,
+                                      MockAuthenticationService.class);
         // Wildfly doesn't show console logging for per-deployment configured logging.
         archive.delete( "WEB-INF/classes/log4j.xml" );
         archive.delete( "WEB-INF/classes/logback.xml" );
@@ -196,14 +201,17 @@ public class BaseIntegrationTest {
 
     protected Project getProject() {
         // There should only be one repo with one project
-        for ( final Repository repo : repoService.getRepositories() ) {
-            for ( final Project project : projectService.getProjects( repo, "master" ) ) {
+        final Collection<Repository> repos = repoService.getRepositories();
+        assert !repos.isEmpty() : "No repositories available.";
+        for ( final Repository repo : repos ) {
+            final Set<Project> projects = projectService.getProjects( repo, "master" );
+            assert !projects.isEmpty() : "No master branch for " + repo.getAlias();
+            for ( final Project project : projects ) {
                 return project;
             }
         }
 
-        // Should never happen
-        throw new IllegalStateException();
+        throw new IllegalStateException("Could not load a project.");
     }
 
     protected String getSrcMainPackageHelper( Project project, String absPackagePath ) {

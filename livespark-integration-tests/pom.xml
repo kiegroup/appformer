@@ -149,6 +149,12 @@
       <scope>test</scope>
       <type>war</type>
     </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-servlet-security</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>
