@@ -77,7 +77,6 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
 
         FormDefinition form = generateFormDefinition( model, context );
         context.setRootForm( form );
-        context.setModel( model );
 
         return context;
     }
