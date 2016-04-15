@@ -77,6 +77,7 @@ public class DynamicFormRenderer implements IsWidget, IsFormView {
         transformerService.call( new RemoteCallback<FormRenderingContext>() {
             @Override
             public void callback( FormRenderingContext context ) {
+                context.setModel( model );
                 render( context );
             }
         } ).createContext( model );
