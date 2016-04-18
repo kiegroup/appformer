@@ -45,12 +45,7 @@ public class DevelopmentDeploymentExtension implements BuildOptionExtension {
 
     private Widget createNavLink( final Project project ) {
         return new AnchorListItem( LINK_NAME ) {{
-            addClickHandler( new ClickHandler() {
-                @Override
-                public void onClick( ClickEvent event ) {
-                    createClickHandler( project );
-                }
-            } );
+            addClickHandler( createClickHandler( project ) );
         }};
     }
 
