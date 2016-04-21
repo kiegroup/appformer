@@ -18,10 +18,12 @@ package org.livespark.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -33,6 +35,7 @@ import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -57,6 +60,9 @@ import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import com.google.common.io.Files;
 
 public class BaseIntegrationTest {
+
+    private static final String LS_PLAYGROUND_ALIAS = "ls-playground";
+    private static final String LS_PLAYGROUND_URL_PROP = "ls-playground";
 
     /**
      * Creates war deployment for LiveSpark integration test.
@@ -199,18 +205,43 @@ public class BaseIntegrationTest {
     }
 
     protected Project getProject() {
-        // There should only be one repo with one project
-        final Collection<Repository> repos = repoService.getRepositories();
-        assert !repos.isEmpty() : "No repositories available.";
-        for ( final Repository repo : repos ) {
-            final Set<Project> projects = projectService.getProjects( repo, "master" );
-            assert !projects.isEmpty() : "No master branch for " + repo.getAlias();
-            for ( final Project project : projects ) {
-                return project;
+        return findLSPlayground().orElseGet( () -> loadLSPlayground() );
+    }
+
+    private Optional<Project> findLSPlayground() {
+        for ( final Repository repo : repoService.getRepositories() ) {
+            if (repo.getAlias().equals( LS_PLAYGROUND_ALIAS )) {
+                for ( final Project project : projectService.getProjects( repo, "master" ) ) {
+                    return Optional.of( project );
+                }
             }
         }
 
-        throw new IllegalStateException("Could not load a project.");
+        return Optional.empty();
+    }
+
+    private Project loadLSPlayground() {
+        final String playgroundUrl = getPlaygroundUrl();
+        final RepositoryEnvironmentConfigurations config = new RepositoryEnvironmentConfigurations();
+        config.setOrigin( playgroundUrl );
+        final Repository repo = repoService.createRepository( "git", LS_PLAYGROUND_ALIAS, config );
+        final Set<Project> projects = projectService.getProjects( repo, "master" );
+
+        return projects
+                .stream()
+                .filter( p -> p.getProjectName().equals( "users-new" ) )
+                .findAny()
+                .orElseThrow( () -> new RuntimeException( "Could not find users-new project in livespark-playground." ) );
+    }
+
+    private String getPlaygroundUrl() {
+        try ( final InputStream propsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream( "/example-repositories.properties" ) ) {
+            final Properties props = new Properties();
+            props.load( propsStream );
+            return props.getProperty( LS_PLAYGROUND_URL_PROP );
+        } catch ( IOException e ) {
+            throw new RuntimeException( e );
+        }
     }
 
     protected String getSrcMainPackageHelper( Project project, String absPackagePath ) {

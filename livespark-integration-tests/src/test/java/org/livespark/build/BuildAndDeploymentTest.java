@@ -89,7 +89,6 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     @Inject
     private GwtWarBuildServiceImpl buildService;
 
-
     private void removeDoDeployedMarkerFiles() {
         for ( final File deployMarker : getWithSuffix( DEPLOY_DIR, ".deployed" ) ) {
             deployMarker.delete();

@@ -16,52 +16,52 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl;
 
-import java.lang.annotation.Annotation;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
-import org.livespark.formmodeler.codegen.layout.Static;
+import org.livespark.formmodeler.codegen.layout.impl.DynamicFormLayoutTemplateGenerator;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.renderer.backend.service.impl.processors.DefaultFieldAnnotationProcessor;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.FieldAnnotationProcessor;
+import org.livespark.formmodeler.renderer.backend.service.impl.processors.ListBoxFieldAnnotationProcessor;
+import org.livespark.formmodeler.renderer.backend.service.impl.processors.RadioGroupFieldAnnotationProcessor;
 import org.livespark.formmodeler.renderer.test.model.Employee;
 import org.livespark.formmodeler.renderer.test.model.Person;
 import org.livespark.formmodeler.service.FieldManager;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class Model2FormTransformerServiceImplTest {
 
     private Instance<FieldAnnotationProcessor> annotationProcessors;
 
-    private FieldManager fieldManager;
-
     private FormLayoutTemplateGenerator layoutTemplateGenerator;
 
     private Model2FormTransformerServiceImpl service;
 
+    @SuppressWarnings( "unchecked" )
     @Before
     public void init() {
-        WeldContainer weld = new Weld().initialize();
+        final FieldManager fieldManager = new MockFieldManager();
+        final List<FieldAnnotationProcessor> processors = Arrays.asList( new DefaultFieldAnnotationProcessor( fieldManager ),
+                                                                         new ListBoxFieldAnnotationProcessor( fieldManager ),
+                                                                         new RadioGroupFieldAnnotationProcessor( fieldManager ) );
+        annotationProcessors = mock( Instance.class );
+        when( annotationProcessors.iterator() ).then( inv -> processors.iterator() );
 
-        fieldManager = weld.instance().select( FieldManager.class ).get();
-        annotationProcessors = weld.instance().select( FieldAnnotationProcessor.class );
-        layoutTemplateGenerator = weld.instance().select( FormLayoutTemplateGenerator.class, new Annotation() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return Static.class;
-            }
-        }).get();
+        layoutTemplateGenerator = new DynamicFormLayoutTemplateGenerator();
 
         service = new Model2FormTransformerServiceImpl( annotationProcessors, layoutTemplateGenerator );
     }
