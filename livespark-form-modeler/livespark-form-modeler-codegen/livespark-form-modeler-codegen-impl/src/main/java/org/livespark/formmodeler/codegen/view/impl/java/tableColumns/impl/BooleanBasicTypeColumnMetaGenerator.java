@@ -60,7 +60,7 @@ public class BooleanBasicTypeColumnMetaGenerator extends AbstractColumnMetaGener
     public String[] getImports() {
         return new String[]{
             "com.google.gwt.user.cellview.client.Column",
-            "org.uberfire.ext.widgets.common.client.common.CheckboxCellImpl"
+            "org.uberfire.ext.widgets.table.client.CheckboxCellImpl"
         };
     }
 }

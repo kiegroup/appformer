@@ -18,10 +18,11 @@ package org.livespark.formmodeler.renderer.client.rendering.renderers.relations.
 
 import javax.enterprise.context.Dependent;
 
-import com.google.gwt.user.cellview.client.Column;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.multipleSubform.columns.ColumnGenerator;
-import org.uberfire.ext.widgets.common.client.common.CheckboxCellImpl;
+import org.uberfire.ext.widgets.table.client.CheckboxCellImpl;
+
+import com.google.gwt.user.cellview.client.Column;
 
 @Dependent
 public class BooleanColumnGenerator implements ColumnGenerator<Boolean> {
