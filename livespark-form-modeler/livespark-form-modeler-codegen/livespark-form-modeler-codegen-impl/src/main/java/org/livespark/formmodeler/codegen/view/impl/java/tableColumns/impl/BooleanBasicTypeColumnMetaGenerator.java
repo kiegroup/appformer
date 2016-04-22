@@ -21,7 +21,7 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public abstract class BooleanBasicTypeColumnMetaGenerator extends AbstractColumnMetaGenerator {
+public class BooleanBasicTypeColumnMetaGenerator extends AbstractColumnMetaGenerator {
 
     public static final String CHECKBOX_COLUMN_SUFFIX = COLUMN_META_SUFFIX + "_checkbox";
 
