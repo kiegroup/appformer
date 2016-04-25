@@ -21,7 +21,7 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public abstract class BooleanColumnMetaGenerator extends AbstractColumnMetaGenerator {
+public class BooleanColumnMetaGenerator extends AbstractColumnMetaGenerator {
 
     public static final String CHECKBOX_COLUMN_SUFFIX = COLUMN_META_SUFFIX + "_checkbox";
 
@@ -38,7 +38,7 @@ public abstract class BooleanColumnMetaGenerator extends AbstractColumnMetaGener
                 .append( "public Boolean getValue( " )
                 .append( modelTypeName )
                 .append( " model ) {" )
-                .append( "Boolean value = model.get" )
+                .append( "Boolean value = model.is" )
                 .append( StringUtils.capitalize( property ) )
                 .append( "();" )
                 .append( "if ( value == null ) { return Boolean.FALSE; }" )

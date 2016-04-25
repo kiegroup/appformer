@@ -141,13 +141,18 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
     }
 
     private File getTargetDir() {
-        final File targetDir = new File( pomXml.getParent(), "/target" );
+        final File targetDir = new File( pomXml.getParent(), "target" );
         return targetDir;
     }
 
     private Collection<File> getWarFiles( ) {
-        final Collection<File> wars = FileUtils.listFiles( getTargetDir(), new String[]{"war"}, false );
-        return wars;
+        final File targetDir = getTargetDir();
+        if (targetDir.exists()) {
+            return FileUtils.listFiles( targetDir, new String[]{"war"}, false );
+        }
+        else {
+            return Collections.emptyList();
+        }
     }
 
     private File getDeployDir() throws MalformedURLException,

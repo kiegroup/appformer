@@ -21,7 +21,7 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public abstract class BooleanBasicTypeColumnMetaGenerator extends AbstractColumnMetaGenerator {
+public class BooleanBasicTypeColumnMetaGenerator extends AbstractColumnMetaGenerator {
 
     public static final String CHECKBOX_COLUMN_SUFFIX = COLUMN_META_SUFFIX + "_checkbox";
 
@@ -60,7 +60,7 @@ public abstract class BooleanBasicTypeColumnMetaGenerator extends AbstractColumn
     public String[] getImports() {
         return new String[]{
             "com.google.gwt.user.cellview.client.Column",
-            "org.uberfire.ext.widgets.common.client.common.CheckboxCellImpl"
+            "org.uberfire.ext.widgets.table.client.CheckboxCellImpl"
         };
     }
 }

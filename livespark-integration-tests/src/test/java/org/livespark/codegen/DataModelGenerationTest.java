@@ -78,7 +78,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         assertViewProperty( bindNamePrefix + "_numOfFans", clazz );
         assertViewProperty( bindNamePrefix + "_iq", clazz );
         assertViewProperty( bindNamePrefix + "_favLetter", clazz );
-        assertViewProperty( bindNamePrefix + "_isPopular", clazz );
+        assertViewProperty( bindNamePrefix + "_popular", clazz );
         assertViewProperty( bindNamePrefix + "_height", clazz );
         assertViewProperty( bindNamePrefix + "_weight", clazz );
         assertViewProperty( bindNamePrefix + "_numOfGuitars", clazz );
@@ -94,7 +94,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         dataObject.addProperty( "numOfFans", BigInteger.class.getCanonicalName() );
         dataObject.addProperty( "iq", Byte.class.getCanonicalName() );
         dataObject.addProperty( "favLetter", char.class.getCanonicalName() );
-        dataObject.addProperty( "isPopular", boolean.class.getCanonicalName() );
+        dataObject.addProperty( "popular", boolean.class.getCanonicalName() );
         dataObject.addProperty( "height", double.class.getCanonicalName() );
         dataObject.addProperty( "weight", float.class.getCanonicalName() );
         dataObject.addProperty( "numOfGuitars", long.class.getCanonicalName() );
