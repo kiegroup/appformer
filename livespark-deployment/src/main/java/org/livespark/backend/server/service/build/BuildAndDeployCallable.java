@@ -23,7 +23,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.servlet.ServletRequest;
@@ -47,6 +49,7 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
 
     private final Event<AppReady> appReadyEvent;
     protected final HttpSession session;
+    private final Set<File> deployedWars = new LinkedHashSet<>();
 
     BuildAndDeployCallable( Project project,
                             File pomXml,
@@ -77,7 +80,7 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
     }
 
     protected void deploy() throws MalformedURLException, URISyntaxException, IOException, Exception {
-        final Collection<File> wars = getWarFiles();
+        final Collection<File> wars = getTargetWarFiles();
         File deployDir = getDeployDir();
         for ( final File war : wars ) {
             final File destination = getDeployWarFile( deployDir, war.getName() );
@@ -128,6 +131,7 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
                             final File destination ) throws IOException {
         FileUtils.deleteQuietly( destination );
         FileUtils.copyFile( war, destination );
+        deployedWars.add( destination );
     }
 
     private File getDeployWarFile( File deployDir, String packagedWarName ) {
@@ -145,10 +149,14 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
         return targetDir;
     }
 
-    private Collection<File> getWarFiles( ) {
+    private Collection<File> getTargetWarFiles( ) {
         final File targetDir = getTargetDir();
-        if (targetDir.exists()) {
-            return FileUtils.listFiles( targetDir, new String[]{"war"}, false );
+        return getWarFilesInDir( targetDir );
+    }
+
+    private Collection<File> getWarFilesInDir( final File dir ) {
+        if (dir.exists()) {
+            return FileUtils.listFiles( dir, new String[]{"war"}, false );
         }
         else {
             return Collections.emptyList();
@@ -177,13 +185,8 @@ public class BuildAndDeployCallable extends BaseBuildCallable implements HttpSes
 
     @Override
     public void valueUnbound( HttpSessionBindingEvent event ) {
-        try {
-            final File deploymentDir = getDeployDir();
-            for ( final File war : getWarFiles() ) {
-                FileUtils.deleteQuietly( getDeployWarFile( deploymentDir, war.getName() ) );
-            }
-        } catch ( Throwable t ) {
-            throw new RuntimeException( t );
+        for ( final File war : deployedWars ) {
+            FileUtils.deleteQuietly( war );
         }
     }
 }
