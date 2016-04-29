@@ -208,23 +208,17 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
 
     @Override
     public BuildResults buildAndDeploy( Project project ) {
-        BuildResults results = super.buildAndDeploy( project );
-        deployWar( project );
-        return results;
+        return buildAndDeploy( project, false, DeploymentMode.VALIDATED );
     }
 
     @Override
     public BuildResults buildAndDeploy( Project project, DeploymentMode mode ) {
-        BuildResults results = super.buildAndDeploy( project, mode );
-        deployWar( project );
-        return results;
+        return buildAndDeploy( project, false, mode );
     }
 
     @Override
     public BuildResults buildAndDeploy( Project project, boolean suppressHandlers ) {
-        BuildResults results =  super.buildAndDeploy( project, suppressHandlers );
-        deployWar( project );
-        return results;
+        return buildAndDeploy( project, suppressHandlers, DeploymentMode.VALIDATED );
     }
 
     @Override
