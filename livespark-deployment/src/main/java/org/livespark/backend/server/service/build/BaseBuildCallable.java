@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -44,6 +45,7 @@ public abstract class BaseBuildCallable implements BuildCallable {
     private static final Logger logger = LoggerFactory.getLogger( BaseBuildCallable.class );
     private static final String LOG_BUILD_OUTPUT_PROPERTY = "livespark.log_build_output";
     private static final boolean logBuildOutput = Boolean.valueOf( System.getProperty( LOG_BUILD_OUTPUT_PROPERTY, "false" ) );
+    private static final Optional<String> ALT_LOCAL_MVN_REPO = Optional.ofNullable( System.getProperty( "maven.repo.local" ) );
 
     protected final Project project;
     protected final File pomXml;
@@ -142,8 +144,16 @@ public abstract class BaseBuildCallable implements BuildCallable {
 
         packageRequest.setPomFile( pomXml );
         packageRequest.setGoals( Collections.singletonList( "package" ) );
+        maybeSetLocalRepo( packageRequest );
 
         return packageRequest;
+    }
+
+    protected void maybeSetLocalRepo( final DefaultInvocationRequest request ) {
+        ALT_LOCAL_MVN_REPO
+            .filter( path -> !path.isEmpty() )
+            .map( path -> new File(path) )
+            .ifPresent( repo -> request.setLocalRepositoryDirectory( repo ) );
     }
 
     private void cleanClientConsole() {

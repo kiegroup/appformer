@@ -94,6 +94,7 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
         codeServerRequest.setPomFile( pomXml );
         codeServerRequest.setGoals( Collections.singletonList( "gwt:run-codeserver" ) );
         codeServerRequest.setProperties( codeServerProperties );
+        maybeSetLocalRepo( codeServerRequest );
 
         return codeServerRequest;
     }
@@ -107,6 +108,7 @@ public class BuildAndDeployWithCodeServerCallable extends BuildAndDeployCallable
         packageRequest.setPomFile( pomXml );
         packageRequest.setGoals( Collections.singletonList( "package" ) );
         packageRequest.setProperties( props );
+        maybeSetLocalRepo( packageRequest );
 
         return packageRequest;
     }
