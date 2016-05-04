@@ -26,35 +26,25 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.client.rendering.FormLayoutGenerator;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 
 @Dependent
+@Templated
 public class DynamicFormRendererViewImpl extends Composite implements DynamicFormRenderer.DynamicFormRendererView {
-
-    interface DynamicFormRendererViewBinder
-            extends
-            UiBinder<Widget, DynamicFormRendererViewImpl> {
-
-    }
-
-    private static DynamicFormRendererViewBinder uiBinder = GWT.create( DynamicFormRendererViewBinder.class );
 
     @Inject @Any
     private FormLayoutGenerator layoutGenerator;
 
-
-    @UiField
-    FlowPanel formContent;
+    @Inject
+    @DataField
+    private FlowPanel formContent;
 
     private DynamicFormRenderer presenter;
-
-
-    public DynamicFormRendererViewImpl() {
-        initWidget( uiBinder.createAndBindUi( this ) );
-    }
 
     @Override
     public void setPresenter( DynamicFormRenderer presenter ) {

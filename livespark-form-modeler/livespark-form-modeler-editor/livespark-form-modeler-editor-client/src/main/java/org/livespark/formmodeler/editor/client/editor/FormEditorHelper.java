@@ -183,7 +183,7 @@ public class FormEditorHelper {
     public List<String> getCompatibleFields(FieldDefinition field) {
         List<String> compatibles = fieldManager.getCompatibleFieldTypes(field);
 
-        Set result = new TreeSet();
+        Set<String> result = new TreeSet<>();
         if ( field.getBindingExpression() != null ) result.add( field.getBindingExpression() );
         for ( String compatibleType : compatibles ) {
             for ( FieldDefinition definition : availableFields.values()) {

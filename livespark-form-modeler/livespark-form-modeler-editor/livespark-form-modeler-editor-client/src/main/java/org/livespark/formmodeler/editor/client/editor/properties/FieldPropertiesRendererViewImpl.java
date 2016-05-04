@@ -20,80 +20,74 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ListBox;
-import org.gwtbootstrap3.client.ui.ModalBody;
-import org.gwtbootstrap3.client.ui.ModalFooter;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
-import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
-import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
 
 @Dependent
-public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldPropertiesRenderer.FieldPropertiesRendererView {
-
-    interface FieldPropertiesRendererViewImplBinder
-            extends UiBinder<Widget, FieldPropertiesRendererViewImpl> {
-
-    }
-
-    private static FieldPropertiesRendererViewImplBinder uiBinder = GWT.create(FieldPropertiesRendererViewImplBinder.class);
-
-    @UiField
-    FlowPanel formContent;
-
-    @UiField
-    ListBox fieldType;
-
-    @UiField
-    ListBox fieldBinding;
+@Templated
+public class FieldPropertiesRendererViewImpl extends Composite implements FieldPropertiesRenderer.FieldPropertiesRendererView {
 
     @Inject
+    @DataField
+    private FlowPanel formContent;
+
+    @Inject
+    @DataField
+    private ListBox fieldType;
+
+    @Inject
+    @DataField
+    private ListBox fieldBinding;
+
     private DynamicFormRenderer formRenderer;
+
+    private TranslationService translationService;
 
     private FieldPropertiesRenderer presenter;
 
     private FieldPropertiesRendererHelper helper;
 
-    public FieldPropertiesRendererViewImpl() {
-        this.setClosable( false );
-        this.setTitle( FieldProperties.INSTANCE.title() );
-        add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( FieldPropertiesRendererViewImpl.this ) );
-        }} );
-        final Button acceptButton = new Button( Constants.INSTANCE.accept());
-        acceptButton.addClickHandler( new ClickHandler() {
-            @Override
-            public void onClick( ClickEvent event ) {
-                closeModal();
-            }
-        } );
-        acceptButton.setType( ButtonType.PRIMARY );
-        this.add( new ModalFooter() {{
-            add( acceptButton );
-        }} );
+    private BaseModal modal;
+
+    @Inject
+    public FieldPropertiesRendererViewImpl( DynamicFormRenderer formRenderer, TranslationService translationService ) {
+        this.formRenderer = formRenderer;
+        this.translationService = translationService;
     }
 
     protected void closeModal() {
         if ( formRenderer.isValid() ) {
             helper.onClose();
-            hide();
+            modal.hide();
         }
     }
 
     @PostConstruct
     protected void init() {
+
+        modal = new BaseModal();
+        modal.setClosable( false );
+        modal.setBody( this );
+        modal.add( new ModalFooterOKButton( new Command() {
+            @Override
+            public void execute() {
+                closeModal();
+            }
+        } ) );
+
         formContent.add( formRenderer );
     }
 
@@ -108,7 +102,13 @@ public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldP
         formRenderer.render( renderingContext );
         initFieldTypeList();
         initFieldBindings();
-        show();
+
+        modal.setTitle( translationService.getTranslation( FormEditorConstants.FieldPropertiesRendererViewImplTitle ) );
+    }
+
+    @Override
+    public Modal getPropertiesModal() {
+        return modal;
     }
 
     protected void initFieldTypeList() {
@@ -123,12 +123,12 @@ public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldP
         }
     }
 
-    @UiHandler( "fieldType" )
+    @EventHandler( "fieldType" )
     public void onTypeChange( ChangeEvent event ) {
         helper.onFieldTypeChange( fieldType.getSelectedValue() );
     }
 
-    @UiHandler( "fieldBinding" )
+    @EventHandler( "fieldBinding" )
     public void onBindingChange( ChangeEvent event ) {
         helper.onFieldBindingChange( fieldBinding.getSelectedValue() );
         initFieldBindings();

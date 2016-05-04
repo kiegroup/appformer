@@ -16,47 +16,54 @@
 
 package org.livespark.widgets.crud.client.component.formDisplay.embedded;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Heading;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
+import org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants;
 
 @Dependent
+@Templated
 public class EmbeddedFormDisplayerViewImpl extends Composite implements EmbeddedFormDisplayer.EmbeddedFormDisplayerView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, EmbeddedFormDisplayerViewImpl> {
+    @DataField
+    private Element heading = Document.get().createHElement( 3 );
 
+    @DataField
+    private SimplePanel content = new SimplePanel();
+
+    @Inject
+    @DataField
+    private Button accept;
+
+    @Inject
+    @DataField
+    private Button cancel;
+
+    private EmbeddedFormDisplayer presenter;
+
+    private TranslationService translationService;
+
+    @Inject
+    public EmbeddedFormDisplayerViewImpl( TranslationService translationService ) {
+        this.translationService = translationService;
     }
 
-    private static Binder uiBinder = GWT.create( Binder.class );
-
-    @UiField
-    Heading heading;
-
-    @UiField
-    SimplePanel content;
-
-    @UiField
-    Button accept;
-
-    @UiField
-    Button cancel;
-
-    protected EmbeddedFormDisplayer presenter;
-
-    public EmbeddedFormDisplayerViewImpl() {
-        initWidget( uiBinder.createAndBindUi( EmbeddedFormDisplayerViewImpl.this ) );
+    @PostConstruct
+    protected void initialize() {
+        accept.setText( translationService.getTranslation( CrudComponentConstants.ModalFormDisplayerViewImplAccept ) );
+        cancel.setText( translationService.getTranslation( CrudComponentConstants.ModalFormDisplayerViewImplCancel ) );
     }
 
     @Override
@@ -66,7 +73,7 @@ public class EmbeddedFormDisplayerViewImpl extends Composite implements Embedded
 
     @Override
     public void show( String title, IsFormView formView ) {
-        heading.setText( title );
+        heading.setInnerHTML( title );
         content.add( formView );
     }
 
@@ -75,12 +82,12 @@ public class EmbeddedFormDisplayerViewImpl extends Composite implements Embedded
         content.clear();
     }
 
-    @UiHandler( "accept" )
+    @EventHandler( "accept" )
     public void doAccept( ClickEvent event ) {
         presenter.submitForm();
     }
 
-    @UiHandler( "cancel" )
+    @EventHandler( "cancel" )
     public void doCancel( ClickEvent event ) {
         presenter.cancel();
     }

@@ -20,10 +20,11 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.workbench.common.widgets.client.handlers.DefaultNewResourceHandler;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.resources.i18n.CommonConstants;
-import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
+import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.uberfire.backend.vfs.Path;
@@ -54,9 +55,12 @@ public class NewFormDefinitionlHandler extends DefaultNewResourceHandler {
     @Inject
     private Event<NotificationEvent> notificationEvent;
 
+    @Inject
+    private TranslationService translationService;
+
     @Override
     public String getDescription() {
-        return Constants.INSTANCE.form_modeler_form();
+        return translationService.getTranslation( FormEditorConstants.NewFormDefinitionlHandlerForm );
     }
 
     @Override
@@ -73,7 +77,7 @@ public class NewFormDefinitionlHandler extends DefaultNewResourceHandler {
     public void create( org.guvnor.common.services.project.model.Package pkg,
                         String baseFileName,
                         final NewResourcePresenter presenter ) {
-        BusyPopup.showMessage( Constants.INSTANCE.creating_new_form() );
+        BusyPopup.showMessage( translationService.getTranslation( FormEditorConstants.NewFormDefinitionlHandlerCreatingNewForm ) );
 
         modelerService.call( new RemoteCallback<Path>() {
                                  @Override

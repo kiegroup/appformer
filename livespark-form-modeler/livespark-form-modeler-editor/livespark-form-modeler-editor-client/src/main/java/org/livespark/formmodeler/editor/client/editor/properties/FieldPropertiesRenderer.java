@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Modal;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
@@ -34,6 +35,8 @@ public class FieldPropertiesRenderer implements IsWidget {
         void setPresenter( FieldPropertiesRenderer presenter );
 
         void render( FieldPropertiesRendererHelper helper, FormEditorRenderingContext renderingContext );
+
+        Modal getPropertiesModal();
     }
 
     @Inject

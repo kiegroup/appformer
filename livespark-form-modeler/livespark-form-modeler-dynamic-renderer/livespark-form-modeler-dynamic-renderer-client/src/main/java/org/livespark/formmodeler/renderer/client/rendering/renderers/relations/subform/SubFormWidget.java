@@ -20,39 +20,27 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeHandler;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 
 @Dependent
+@Templated
 public class SubFormWidget extends Composite implements TakesValue<Object> {
-
-    interface SubFormWidgetBinder
-            extends
-            UiBinder<Widget, SubFormWidget> {
-
-    }
-
-    private static SubFormWidgetBinder uiBinder = GWT.create( SubFormWidgetBinder.class );
 
     @Inject
     private DynamicFormRenderer formRenderer;
 
-    @UiField
-    FlowPanel formContent;
+    @Inject
+    @DataField
+    private FlowPanel formContent;
 
     private FormRenderingContext renderingContext;
-
-    public SubFormWidget() {
-        initWidget( uiBinder.createAndBindUi( this ) );
-    }
 
     @PostConstruct
     protected void init() {

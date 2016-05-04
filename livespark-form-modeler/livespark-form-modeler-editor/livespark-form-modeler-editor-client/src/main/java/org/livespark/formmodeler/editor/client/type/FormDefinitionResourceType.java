@@ -15,17 +15,22 @@
  */
 package org.livespark.formmodeler.editor.client.type;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.livespark.formmodeler.editor.client.resources.FormModelerEditorResources;
-import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
+import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.editor.type.FormResourceTypeDefinition;
 import org.uberfire.client.workbench.type.ClientResourceType;
 
-import javax.enterprise.context.ApplicationScoped;
-
 @ApplicationScoped
 public class FormDefinitionResourceType extends FormResourceTypeDefinition implements ClientResourceType {
+
+    @Inject
+    private TranslationService translationService;
 
     @Override
     public IsWidget getIcon() {
@@ -34,7 +39,7 @@ public class FormDefinitionResourceType extends FormResourceTypeDefinition imple
 
     @Override
     public String getDescription() {
-        String desc = Constants.INSTANCE.formResourceTypeDescription();
+        String desc = translationService.getTranslation( FormEditorConstants.FormDefinitionResourceTypeFormTypeDescription );
         if ( desc == null || desc.isEmpty() ) return super.getDescription();
         return desc;
     }

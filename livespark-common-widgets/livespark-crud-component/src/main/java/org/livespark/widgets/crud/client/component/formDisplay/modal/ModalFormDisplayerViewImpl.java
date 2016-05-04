@@ -16,15 +16,14 @@
 
 package org.livespark.widgets.crud.client.component.formDisplay.modal;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenEvent;
 import org.gwtbootstrap3.client.shared.event.ModalHiddenHandler;
 import org.gwtbootstrap3.client.ui.Button;
@@ -34,45 +33,62 @@ import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.ModalSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.ModalBackdrop;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.livespark.widgets.crud.client.resources.i18n.CrudConstants;
+import org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants;
 
 @Dependent
-public class ModalFormDisplayerViewImpl extends Modal implements ModalFormDisplayer.ModalFormDisplayerView {
+@Templated
+public class ModalFormDisplayerViewImpl extends Composite implements ModalFormDisplayer.ModalFormDisplayerView {
 
-    interface Binder
-            extends
-            UiBinder<Widget, ModalFormDisplayerViewImpl> {
+    @DataField
+    private SimplePanel content = new SimplePanel();
 
-    }
+    private Button submit;
 
-    private static Binder uiBinder = GWT.create( Binder.class );
-
-    @UiField
-    SimplePanel content;
-
-    private Button submit = new Button( CrudConstants.INSTANCE.accept() );
-
-    private Button cancel = new Button( CrudConstants.INSTANCE.cancel() );
+    private Button cancel;
 
     protected ModalFormDisplayer presenter;
 
-    public ModalFormDisplayerViewImpl() {
-        setHideOtherModals( false );
-        setClosable( true );
-        setFade( true );
-        setDataKeyboard( true );
-        setDataBackdrop( ModalBackdrop.FALSE );
-        setSize( ModalSize.LARGE );
-        setRemoveOnHide( true );
+    private Modal modal;
 
-        this.add( new ModalBody() {{
-            add( uiBinder.createAndBindUi( ModalFormDisplayerViewImpl.this ) );
-        }} );
+    private ModalBody modalBody;
+
+    private TranslationService translationService;
+
+    @Inject
+    public ModalFormDisplayerViewImpl( TranslationService translationService ) {
+        this.translationService = translationService;
+    }
+
+    @PostConstruct
+    public void initialize() {
+
+        modal = new Modal();
+
+        modal.setHideOtherModals( false );
+        modal.setClosable( true );
+        modal.setFade( true );
+        modal.setDataKeyboard( true );
+        modal.setDataBackdrop( ModalBackdrop.FALSE );
+        modal.setSize( ModalSize.LARGE );
+        modal.setRemoveOnHide( true );
+
+        modalBody = new ModalBody();
+
+        modalBody.add( this );
+
+        modal.add( modalBody );
+
+        submit = new Button( translationService.getTranslation( CrudComponentConstants.ModalFormDisplayerViewImplAccept ) );
 
         submit.setType( ButtonType.PRIMARY );
 
-        add( new ModalFooter() {{
+        cancel = new Button( translationService.getTranslation( CrudComponentConstants.ModalFormDisplayerViewImplCancel ) );
+
+        modal.add( new ModalFooter() {{
             add( submit );
             add( cancel );
         }} );
@@ -91,7 +107,7 @@ public class ModalFormDisplayerViewImpl extends Modal implements ModalFormDispla
             }
         } );
 
-        this.addHiddenHandler( new ModalHiddenHandler() {
+        modal.addHiddenHandler( new ModalHiddenHandler() {
             @Override
             public void onHidden( ModalHiddenEvent evt ) {
                 doCancel();
@@ -106,10 +122,15 @@ public class ModalFormDisplayerViewImpl extends Modal implements ModalFormDispla
 
     @Override
     public void show( String title, IsFormView formView ) {
-        setTitle( title );
+        modal.setTitle( title );
         content.clear();
         content.add( formView );
-        show();
+        modal.show();
+    }
+
+    @Override
+    public void hide() {
+        modal.hide();
     }
 
     protected void doCancel() {
