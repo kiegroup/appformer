@@ -26,12 +26,13 @@ import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
-import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
+import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.livespark.formmodeler.editor.service.FormEditorService;
@@ -101,19 +102,22 @@ public class FormEditorPresenter extends KieEditor {
     private DataHolderAdminView objectsView;
     private FormDefinitionResourceType resourceType;
     private Caller<FormEditorService> editorService;
+    private TranslationService translationService;
 
     @Inject
     public FormEditorPresenter(FormEditorView view,
                                DataHolderAdminView objectsView,
                                FormDefinitionResourceType resourceType,
                                Caller<FormEditorService> editorService,
-                               SyncBeanManager beanManager) {
+                               SyncBeanManager beanManager,
+                               TranslationService translationService ) {
         super( view );
         this.view = view;
         this.objectsView = objectsView;
         this.resourceType = resourceType;
         this.editorService = editorService;
         this.beanManager = beanManager;
+        this.translationService = translationService;
     }
 
     @OnStartup
@@ -179,7 +183,7 @@ public class FormEditorPresenter extends KieEditor {
     @WorkbenchPartTitle
     public String getTitleText() {
         String fileName = FileNameUtil.removeExtension( versionRecordManager.getCurrentPath(), resourceType );
-        return Constants.INSTANCE.form_modeler_title( fileName );
+        return translationService.format( FormEditorConstants.FormEditorPresenterTitle, fileName );
     }
 
     @WorkbenchMenu

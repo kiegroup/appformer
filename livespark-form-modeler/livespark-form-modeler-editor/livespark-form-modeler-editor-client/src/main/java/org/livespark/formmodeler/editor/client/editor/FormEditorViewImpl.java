@@ -19,54 +19,59 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Container;
 import org.gwtbootstrap3.client.ui.TabListItem;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
+import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
 
 @Dependent
+@Templated
 public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorPresenter.FormEditorView, RequiresResize {
 
-    interface FormEditorViewBinder
-            extends
-            UiBinder<Widget, FormEditorViewImpl> {
+    @DataField
+    private Element container = DOM.createDiv();
 
-    }
+    @Inject
+    @DataField
+    private Button createHolder;
 
-    private static FormEditorViewBinder uiBinder = GWT.create(FormEditorViewBinder.class);
+    @Inject
+    @DataField
+    private FlowPanel editorContent;
 
-    @UiField
-    Container container;
+    @Inject
+    @DataField
+    private FlowPanel previewContent;
 
-    @UiField
-    Button createHolder;
-
-    @UiField
-    FlowPanel editorContent;
-
-    @UiField
-    FlowPanel previewContent;
-
-    @UiField
-    TabListItem previewTab;
+    @Inject
+    @DataField
+    private Anchor previewTab;
 
     @Inject
     private DynamicFormRenderer formRenderer;
 
+    private TranslationService translationService;
+
     private FormEditorPresenter presenter;
 
-    public FormEditorViewImpl() {
-        initWidget(uiBinder.createAndBindUi(this));
+    @Inject
+    public FormEditorViewImpl( TranslationService translationService ) {
+        this.translationService = translationService;
     }
 
     @PostConstruct
@@ -76,22 +81,22 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     @Override
-    public void init(FormEditorPresenter presenter) {
+    public void init( FormEditorPresenter presenter ) {
         this.presenter = presenter;
     }
 
     @Override
     public void setupLayoutEditor( LayoutEditor layoutEditor ) {
         editorContent.clear();
-        editorContent.add(layoutEditor.asWidget());
+        editorContent.add( layoutEditor.asWidget() );
     }
 
-    @UiHandler("createHolder")
-    void handleClick(ClickEvent event) {
+    @EventHandler( "createHolder" )
+    void handleClick( ClickEvent event ) {
         presenter.initDataObjectsTab();
     }
 
-    @UiHandler("previewTab")
+    @EventHandler( "previewTab" )
     public void onPreview( ClickEvent event ) {
         formRenderer.render( presenter.getRenderingContext() );
     }
@@ -103,6 +108,8 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
         }
         int height = getParent().getOffsetHeight();
         int width = getParent().getOffsetWidth();
-        container.setPixelSize( width, height );
+
+        container.getStyle().setWidth( width, Style.Unit.PX );
+        container.getStyle().setHeight( height, Style.Unit.PX );
     }
 }

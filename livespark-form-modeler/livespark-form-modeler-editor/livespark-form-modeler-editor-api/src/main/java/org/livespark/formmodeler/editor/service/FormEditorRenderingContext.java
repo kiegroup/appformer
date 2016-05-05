@@ -18,11 +18,12 @@ package org.livespark.formmodeler.editor.service;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.Path;
 
 @Portable
-public class FormEditorRenderingContext extends FormRenderingContext<Object> {
+public class FormEditorRenderingContext extends FormRenderingContext<FieldDefinition> {
     private Path formPath;
 
     public FormEditorRenderingContext( @MapsTo( "formPath" ) Path formPath ) {

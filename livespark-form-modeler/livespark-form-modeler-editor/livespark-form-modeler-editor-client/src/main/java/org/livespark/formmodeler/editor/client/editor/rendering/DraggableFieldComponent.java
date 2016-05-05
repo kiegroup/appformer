@@ -57,8 +57,6 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
 
     boolean showProperties = false;
 
-    protected FieldDefinitionPropertiesModal modal;
-
     @Inject
     protected Event<FormEditorContextRequest> fieldRequest;
 
@@ -183,7 +181,7 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
 
         }
 
-        return (Modal) propertiesRenderer.getView();
+        return propertiesRenderer.getView().getPropertiesModal();
     }
 
     @Override

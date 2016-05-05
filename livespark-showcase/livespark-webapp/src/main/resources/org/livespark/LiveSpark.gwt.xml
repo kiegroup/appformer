@@ -131,6 +131,8 @@
   <extend-property name="locale" values="pt_BR"/>
   <extend-property name="locale" values="zh_CN"/>
   <extend-property name="locale" values="de"/>
+  <extend-property name="locale" values="zh_TW"/>
+  <extend-property name="locale" values="ru"/>
 
   <!-- We don't need to support IE10 or older -->
   <!-- There is no "ie11" permutation. IE11 uses the Firefox one (gecko1_8) -->

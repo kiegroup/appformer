@@ -19,6 +19,7 @@ package org.livespark.widgets.crud.client.component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,11 +33,12 @@ import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.livespark.widgets.crud.client.resources.i18n.CrudConstants;
+import org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.ext.widgets.table.client.UberfirePagedTable;
 
@@ -50,8 +52,16 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
 
     protected FormDisplayer displayer;
 
+    @Inject
     @DataField
     protected FlowPanel content = new FlowPanel();
+
+    private TranslationService translationService;
+
+    @Inject
+    public CrudComponentViewImpl( TranslationService translationService ) {
+        this.translationService = translationService;
+    }
 
     @Override
     public void setPresenter( CrudComponent presenter ) {
@@ -66,7 +76,7 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
         table.getRightToolbar().clear();
 
         if ( crudDefinition.isAllowCreate() ) {
-            Button createButton = new Button( CrudConstants.INSTANCE.newInstanceButton() );
+            Button createButton = new Button( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceButton ) );
             createButton.setType( ButtonType.PRIMARY );
             createButton.setIcon( IconType.PLUS );
             table.getLeftToolbar().add( createButton );
@@ -84,7 +94,7 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
             Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
                 @Override
                 public String getValue( Object model ) {
-                    return CrudConstants.INSTANCE.editInstanceButton();
+                    return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceButton );
                 }
             };
             column.setFieldUpdater( new FieldUpdater<Object, String>() {
@@ -100,13 +110,13 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
             Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
                 @Override
                 public String getValue( Object model ) {
-                    return CrudConstants.INSTANCE.deleteInstance();
+                    return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteInstance );
                 }
             };
             column.setFieldUpdater( new FieldUpdater<Object, String>() {
                 @Override
                 public void update( final int index, Object model, String s ) {
-                    if ( Window.confirm(CrudConstants.INSTANCE.deleteBody()) ) {
+                    if ( Window.confirm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteBody ) ) ) {
                         deleteInstance( index );
                     }
                 }
@@ -129,7 +139,7 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
 
     @Override
     public void showCreateForm() {
-        renderNestedForm( CrudConstants.INSTANCE.newInstanceTitle(),
+        renderNestedForm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceTitle ),
                 presenter.getCreateForm(), new FormDisplayer.FormDisplayerCallback() {
             @Override
             public void onAccept() {
@@ -145,7 +155,7 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
 
     @Override
     public void showEditionForm( int index ) {
-        renderNestedForm( CrudConstants.INSTANCE.editInstanceTitle(),
+        renderNestedForm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceTitle ),
                 presenter.getEditForm( index ), new FormDisplayer.FormDisplayerCallback() {
             @Override
             public void onAccept() {

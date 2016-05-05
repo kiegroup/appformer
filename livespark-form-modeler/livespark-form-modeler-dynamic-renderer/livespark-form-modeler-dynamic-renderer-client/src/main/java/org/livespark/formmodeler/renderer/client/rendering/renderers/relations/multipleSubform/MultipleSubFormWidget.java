@@ -5,18 +5,17 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import org.jboss.errai.databinding.client.BindableProxy;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
@@ -28,20 +27,14 @@ import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
+@Templated
 public class MultipleSubFormWidget extends Composite implements TakesValue<List<Object>> {
 
     public static final int PAGE_SIZE = 5;
 
-    interface MultipleSubFormWidgetBinder
-            extends
-            UiBinder<Widget, MultipleSubFormWidget> {
-
-    }
-
-    private static MultipleSubFormWidgetBinder uiBinder = GWT.create( MultipleSubFormWidgetBinder.class );
-
-    @UiField
-    FlowPanel content;
+    @Inject
+    @DataField
+    private FlowPanel content;
 
     @Inject
     protected ColumnGeneratorManager columnGeneratorManager;
@@ -60,10 +53,6 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
 
     private List<Object> values = null;
     private List<HasProperties> tableValues = new ArrayList<>();
-
-    public MultipleSubFormWidget() {
-        initWidget( uiBinder.createAndBindUi( this ) );
-    }
 
     protected void init( FieldDefinition field ) {
         content.clear();

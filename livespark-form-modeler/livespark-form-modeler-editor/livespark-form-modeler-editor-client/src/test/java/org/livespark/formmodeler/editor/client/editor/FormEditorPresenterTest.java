@@ -25,6 +25,7 @@ import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,6 +95,9 @@ public class FormEditorPresenterTest extends TestCase {
     @Mock
     private FormEditorPresenter.DataHolderAdminView objectsView;
 
+    @Mock
+    private TranslationService translationService;
+
     @GwtMock
     private KieEditorWrapperView kieView;
 
@@ -144,7 +148,11 @@ public class FormEditorPresenterTest extends TestCase {
 
         editorContext = new FormEditorHelper( new MockFieldManager(), eventMock, new ServiceMock(), beanManager);
 
-        presenter = new FormEditorPresenter( view, objectsView, formDefinitionResourceType, new ServiceMock(), beanManager ) {
+        presenter = new FormEditorPresenter( view,
+                objectsView,
+                formDefinitionResourceType,
+                new ServiceMock(), beanManager,
+                translationService ) {
             {
                 kieView = mock( KieEditorWrapperView.class );
                 versionRecordManager = FormEditorPresenterTest.this.versionRecordManager;

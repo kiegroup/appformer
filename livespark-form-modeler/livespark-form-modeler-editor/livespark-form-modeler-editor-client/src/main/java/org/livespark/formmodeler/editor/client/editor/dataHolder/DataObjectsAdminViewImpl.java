@@ -15,95 +15,123 @@
  */
 package org.livespark.formmodeler.editor.client.editor.dataHolder;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.view.client.ListDataProvider;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.Label;
 import org.gwtbootstrap3.client.ui.ListBox;
-import org.gwtbootstrap3.client.ui.ModalBody;
 import org.gwtbootstrap3.client.ui.TextBox;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.gwtbootstrap3.client.ui.gwt.CellTable;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.formmodeler.editor.client.editor.FormEditorPresenter;
-import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
+import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.model.DataHolder;
+import org.uberfire.ext.widgets.common.client.common.StyleHelper;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
+import org.uberfire.ext.widgets.common.client.common.popups.footers.ModalFooterOKButton;
 
 /**
  * Created by pefernan on 9/29/15.
  */
 @Dependent
-public class DataObjectsAdminView extends BaseModal implements FormEditorPresenter.DataHolderAdminView {
+@Templated
+public class DataObjectsAdminViewImpl extends Composite implements FormEditorPresenter.DataHolderAdminView {
 
-    interface DataObjectsAdminBinder
-            extends UiBinder<Widget, DataObjectsAdminView> {
+    @DataField
+    private Element dataObjectIDGroup = DOM.createDiv();
 
-    }
+    @Inject
+    @DataField
+    private TextBox dataObjectID;
 
-    private static DataObjectsAdminBinder uiBinder = GWT.create(DataObjectsAdminBinder.class);
+    @Inject
+    @DataField
+    private HelpBlock dataObjectIDHelp;
 
-    @UiField
-    FormGroup dataObjectIDGroup;
+    @DataField
+    private Element dataObjectTypeGroup = DOM.createDiv();
 
-    @UiField
-    TextBox dataObjectID;
+    @Inject
+    @DataField
+    private ListBox dataObjectType;
 
-    @UiField
-    HelpBlock dataObjectIDHelp;
+    @Inject
+    @DataField
+    private HelpBlock dataObjectTypeHelp;
 
-    @UiField
-    FormGroup dataObjectTypeGroup;
+    @Inject
+    @DataField
+    private Button newDataObject;
 
-    @UiField
-    ListBox dataObjectType;
+    @Inject
+    @DataField
+    private CellTable<DataHolder> dataObjectTable;
 
-    @UiField
-    HelpBlock dataObjectTypeHelp;
-
-    @UiField
-    Button newDataObject;
-
-    @UiField
-    CellTable<DataHolder> dataObjectTable;
+    private TranslationService translationService;
 
     private ListDataProvider<DataHolder> dataHolderListDataProvider = new ListDataProvider<DataHolder>();
 
-    protected FormEditorPresenter presenter;
+    private FormEditorPresenter presenter;
 
-    public DataObjectsAdminView() {
-        setTitle( Constants.INSTANCE.dataObjects() );
-        add(new ModalBody() {{
-            add(uiBinder.createAndBindUi(DataObjectsAdminView.this));
-        }});
+    private BaseModal modal;
 
-        //Init data objects table
-        dataObjectTable.setEmptyTableWidget( new Label( Constants.INSTANCE.emptyDataObjectsTable() ) );
+    @Inject
+    public DataObjectsAdminViewImpl( TranslationService translationService ) {
+        this.translationService = translationService;
+        modal = new BaseModal();
+    }
 
-        dataHolderListDataProvider.addDataDisplay( dataObjectTable );
+    @PostConstruct
+    protected void initialize() {
+        dataObjectTable.setBordered( true );
+        dataObjectTable.setStriped( true );
+        dataObjectTable.setHover( true );
     }
 
     public void init(final FormEditorPresenter presenter) {
+
         this.presenter = presenter;
+
+        modal.setTitle( translationService.getTranslation( FormEditorConstants.FormEditorViewImplDataObjects ) );
+
+        modal.setBody( this );
+
+        modal.add( new ModalFooterOKButton( new Command() {
+            @Override
+            public void execute() {
+                modal.hide();
+            }
+        } ) );
+
+        //Init data objects table
+        dataObjectTable.setEmptyTableWidget( new Label( translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplEmptyDataObjectsTable ) ) );
+
+        dataHolderListDataProvider.addDataDisplay( dataObjectTable );
+
         final TextColumn<DataHolder> nameColumn = new TextColumn<DataHolder>() {
 
             @Override
@@ -134,7 +162,8 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
             }
         };
 
-        dataObjectTable.addColumn(nameColumn, Constants.INSTANCE.dataObjectID());
+        dataObjectTable.addColumn( nameColumn,
+                translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplDataObjectID ) );
         dataObjectTable.setColumnWidth(nameColumn, 30, Style.Unit.PCT);
 
         final TextColumn<DataHolder> typeColumn = new TextColumn<DataHolder>() {
@@ -167,13 +196,14 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
             }
         };
 
-        dataObjectTable.addColumn(typeColumn, Constants.INSTANCE.dataObjectType());
+        dataObjectTable.addColumn( typeColumn,
+                translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplDataObjectType ) );
 
         final ButtonCell deleteCell = new ButtonCell( ButtonType.DANGER, IconType.TRASH );
         final Column<DataHolder, String> deleteDataObject = new Column<DataHolder, String>( deleteCell ) {
             @Override
             public String getValue( final DataHolder global ) {
-                return Constants.INSTANCE.remove();
+                return translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplRemove );
             }
         };
 
@@ -183,9 +213,9 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
                                final String value) {
                 boolean doIt = false;
                 if (presenter.hasBindedFields(dataHolder)) {
-                    doIt = Window.confirm(Constants.INSTANCE.dataObjectIsBindedMessage());
+                    doIt = Window.confirm( translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplDataObjectIsBindedMessage ) );
                 } else {
-                    doIt = Window.confirm(Constants.INSTANCE.areYouSureRemoveDataObject());
+                    doIt = Window.confirm( translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplAreYouSureRemoveDataObject ) );
                 }
                 if (doIt) presenter.removeDataHolder(dataHolder.getName());
             }
@@ -197,7 +227,7 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
     @Override
     public void initView() {
         doInit(true);
-        show();
+        modal.show();
     }
 
     @Override
@@ -206,15 +236,15 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
     }
 
     protected void doInit( boolean clearTypes ) {
-        clearState(clearTypes);
-        dataHolderListDataProvider.setList(presenter.getFormDefinition().getDataHolders());
+        clearState( clearTypes );
+        dataHolderListDataProvider.setList( presenter.getFormDefinition().getDataHolders() );
         dataHolderListDataProvider.refresh();
     }
 
-    @UiHandler("newDataObject")
+    @EventHandler("newDataObject")
     protected void addDataObject( ClickEvent event ) {
         if ( validate() ) {
-            presenter.addDataHolder(getDataObjectID(), getDataObjectType());
+            presenter.addDataHolder( getDataObjectID(), getDataObjectType() );
             refreshView();
         }
     }
@@ -239,17 +269,17 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
         String value = getDataObjectID();
         String errorMsg = "";
         if (value == null || value.isEmpty()) {
-            errorMsg = Constants.INSTANCE.idCannotBeEmpty();
+            errorMsg = translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplIdCannotBeEmpty );
             valid = false;
         } else if ( presenter.getFormDefinition().getDataHolderByName(value) != null ) {
-            errorMsg = Constants.INSTANCE.idAreadyExists();
+            errorMsg = translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplIdAreadyExists );
             valid = false;
         }
 
         if ( !valid ) {
-            dataObjectIDGroup.setValidationState(ValidationState.ERROR);
+            StyleHelper.addUniqueEnumStyleName( dataObjectIDGroup, ValidationState.class, ValidationState.ERROR );
         } else {
-            dataObjectIDGroup.setValidationState( ValidationState.NONE );
+            StyleHelper.addUniqueEnumStyleName( dataObjectIDGroup, ValidationState.class, ValidationState.NONE );
         }
         dataObjectIDHelp.setText( errorMsg );
 
@@ -262,14 +292,14 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
         String value = getDataObjectType();
         String errorMsg = "";
         if (value == null || value.isEmpty()) {
-            errorMsg = Constants.INSTANCE.typeCannotBeEmpty();
+            errorMsg = translationService.getTranslation( FormEditorConstants.DataObjectsAdminViewImplTypeCannotBeEmpty );
             valid = false;
         }
 
         if ( !valid ) {
-            dataObjectTypeGroup.setValidationState(ValidationState.ERROR);
+            StyleHelper.addUniqueEnumStyleName( dataObjectTypeGroup, ValidationState.class, ValidationState.ERROR );
         } else {
-            dataObjectTypeGroup.setValidationState( ValidationState.NONE );
+            StyleHelper.addUniqueEnumStyleName( dataObjectTypeGroup, ValidationState.class, ValidationState.NONE );
         }
         dataObjectTypeHelp.setText(errorMsg);
 
@@ -282,10 +312,10 @@ public class DataObjectsAdminView extends BaseModal implements FormEditorPresent
     }
 
     protected void clearState( boolean clearTypes ) {
-        dataObjectIDGroup.setValidationState(ValidationState.NONE);
+        StyleHelper.addUniqueEnumStyleName( dataObjectTypeGroup, ValidationState.class, ValidationState.NONE );
+        StyleHelper.addUniqueEnumStyleName( dataObjectIDGroup, ValidationState.class, ValidationState.NONE );
         dataObjectID.setValue("");
         dataObjectIDHelp.setText("");
-        dataObjectTypeGroup.setValidationState(ValidationState.NONE);
         if ( clearTypes ) {
             dataObjectType.clear();
             dataObjectType.addItem( "" );

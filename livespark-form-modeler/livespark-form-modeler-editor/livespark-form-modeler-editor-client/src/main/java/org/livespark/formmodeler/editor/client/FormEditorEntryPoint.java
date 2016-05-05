@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.rendering.client.view.display;
 
-import com.google.gwt.user.client.ui.IsWidget;
+package org.livespark.formmodeler.editor.client;
 
-public interface FormDisplayer extends IsWidget {
+import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 
-    public void display( FormDisplayerConfig config );
-
-    public FormDisplayerConfig getFormDisplayerConfig();
-
-    public interface FormDisplayerCallback {
-        public void onSubmit();
-        public void onCancel();
-    }
+/**
+ * @author Pere Fernandez <pefernan@redhat.com>
+ */
+@EntryPoint
+@Bundle("resources/i18n/FormEditorConstants.properties")
+public class FormEditorEntryPoint {
 }

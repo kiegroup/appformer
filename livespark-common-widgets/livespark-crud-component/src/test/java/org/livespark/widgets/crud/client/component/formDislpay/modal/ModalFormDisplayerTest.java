@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.rendering.client.view.display.modal;
+package org.livespark.widgets.crud.client.component.formDislpay.modal;
 
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.junit.runner.RunWith;
-import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayerConfig;
-import org.livespark.formmodeler.rendering.test.res.TestFormModel;
+import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
+import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
+import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayerViewImpl;
 import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
@@ -35,17 +36,11 @@ public class ModalFormDisplayerTest extends TestCase {
 
     private ModalFormDisplayer displayer;
 
-    @Mock
-    private FormDisplayerConfig displayerConfig;
-
     @GwtMock
     private ModalFormDisplayerViewImpl displayerView;
 
-    @Mock
-    private TestFormModel formModel;
-
     @GwtMock
-    private FormView formView;
+    private IsFormView formView;
 
     @Mock
     private FormDisplayer.FormDisplayerCallback displayerCallback;
@@ -53,10 +48,6 @@ public class ModalFormDisplayerTest extends TestCase {
 
     @Before
     public void setup() {
-        when( displayerConfig.getFormView() ).thenReturn( formView );
-        when( displayerConfig.getCallback() ).thenReturn( displayerCallback );
-        when( displayerConfig.getFormTitle() ).thenReturn( "Form Title" );
-
         displayer = new ModalFormDisplayer( displayerView );
 
         verify( displayerView ).setPresenter( displayer );
@@ -64,56 +55,45 @@ public class ModalFormDisplayerTest extends TestCase {
         displayer.asWidget();
 
         verify( displayerView ).asWidget();
+
+        displayer.display( "Form Title", formView, displayerCallback );
+
+        verify( displayerView ).show( "Form Title", formView );
     }
 
     @Test
     public void testCancelForm() {
-        displayer.display( displayerConfig );
-
-        verify( displayerView ).show( formView );
-
-        displayer.onCancel();
+        displayer.cancel();
 
         verify( displayerCallback ).onCancel();
 
         verify( displayerView ).hide();
-
-        assertNull( "DisplayerConfig should be null", displayer.getFormDisplayerConfig() );
-
     }
 
     @Test
     public void testSubmitFormValidationPassed() {
         testSubmitForm( true );
 
-        verify( displayerCallback ).onSubmit();
+        verify( displayerCallback ).onAccept();
 
         verify( displayerView ).hide();
-
-        assertNull( "DisplayerConfig should be null", displayer.getFormDisplayerConfig() );
     }
 
     @Test
     public void testSubmitFormValidationFailed() {
         testSubmitForm( false );
 
-        verify( displayerCallback, times( 0 ) ).onSubmit();
+        verify( displayerCallback, never() ).onAccept();
 
-        verify( displayerView, times( 0 ) ).hide();
-
-        assertNotNull( "DisplayerConfig shouldn't be null", displayer.getFormDisplayerConfig() );
+        verify( displayerView, never() ).hide();
     }
 
     private void testSubmitForm( final boolean validate ) {
-        when( formView.validate() ).thenReturn( validate );
+        when( formView.isValid() ).thenReturn( validate );
 
-        displayer.display( displayerConfig );
+        displayer.submitForm();
 
-        verify( displayerView ).show( formView );
-
-        displayer.onSubmit();
-
-        verify( formView ).validate();
+        verify( formView ).isValid();
     }
 
 }
