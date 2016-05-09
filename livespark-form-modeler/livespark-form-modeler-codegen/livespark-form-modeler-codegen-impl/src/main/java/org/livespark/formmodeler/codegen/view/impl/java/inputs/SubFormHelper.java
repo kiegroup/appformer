@@ -32,7 +32,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 /**
  * Created by pefernan on 4/28/15.
  */
-public class SubFormHelper extends AbstractNestedModelHelper implements RequiresCustomCode {
+public class SubFormHelper extends AbstractNestedModelHelper<SubFormFieldDefinition> implements RequiresCustomCode<SubFormFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -45,27 +45,26 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
     }
 
     @Override
-    public String getInputWidget( FieldDefinition fieldDefinition ) {
+    public String getInputWidget( SubFormFieldDefinition fieldDefinition ) {
         return "org.livespark.formmodeler.rendering.client.shared.fields.SubForm";
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, FieldDefinition fieldDefinition ) {
+    public String getInputInitLiteral( SourceGenerationContext context, SubFormFieldDefinition fieldDefinition ) {
         return "new SubForm( new " + WordUtils.capitalize( fieldDefinition.getName() ) + SUBFORM_ADAPTER_SUFFIX + "() );";
     }
 
     @Override
-    public void addCustomCode( FieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
-        SubFormFieldDefinition subformField = ( SubFormFieldDefinition ) fieldDefinition;
+    public void addCustomCode( SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
 
         JavaClassSource subformAdapter = Roaster.create( JavaClassSource.class );
 
-        viewClass.addImport( subformField.getStandaloneClassName() );
+        viewClass.addImport( fieldDefinition.getStandaloneClassName() );
 
-        FormDefinition nestedForm = getContextFormById( context, subformField.getNestedForm() );
+        FormDefinition nestedForm = getContextFormById( context, fieldDefinition.getNestedForm() );
 
         if ( nestedForm == null ) {
-            throw new RuntimeException( "Unable to find form '" + subformField.getNestedForm() + "'." );
+            throw new RuntimeException( "Unable to find form '" + fieldDefinition.getNestedForm() + "'." );
         }
 
         String formModelClassName = getFormModelClassName( nestedForm, context );
@@ -75,7 +74,7 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
         viewClass.addImport( formViewClassName );
         viewClass.addImport( SUBFORM_ClASSNAME );
 
-        String standaloneName = cleanClassName( subformField.getStandaloneClassName() );
+        String standaloneName = cleanClassName( fieldDefinition.getStandaloneClassName() );
         String modelName = cleanClassName( formModelClassName );
         String viewName = cleanClassName( formViewClassName );
 
@@ -94,7 +93,7 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
         MethodSource<JavaClassSource> modelMethod = subformAdapter.addMethod();
         modelMethod.setPublic()
                 .setName("getFormModelForModel")
-                .addParameter( subformField.getStandaloneClassName(), "model");
+                .addParameter( fieldDefinition.getStandaloneClassName(), "model");
 
         modelMethod.setReturnType( modelName )
                 .setBody( " return new " + modelName + "( model );" )
@@ -102,9 +101,9 @@ public class SubFormHelper extends AbstractNestedModelHelper implements Requires
 
         viewClass.addNestedType(subformAdapter);
 
-        amendUpdateNestedModels(subformField, context, viewClass);
+        amendUpdateNestedModels(fieldDefinition, context, viewClass);
 
-        amendValidateNestedModels( subformField, context, viewClass );
+        amendValidateNestedModels( fieldDefinition, context, viewClass );
     }
 
     private void amendValidateNestedModels(SubFormFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass) {
