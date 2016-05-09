@@ -19,11 +19,12 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public abstract class AbstractNestedModelHelper extends AbstractInputCreatorHelper {
+public abstract class AbstractNestedModelHelper<F extends FieldDefinition> extends AbstractInputCreatorHelper<F> {
     public static final String UPDATE_NESTED_MODELS_METHOD = "updateNestedModels";
 
     protected MethodSource<JavaClassSource> getUpdateNestedModelsMethod( SourceGenerationContext context,

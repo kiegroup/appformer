@@ -32,7 +32,6 @@ import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
 import org.livespark.formmodeler.editor.service.DataObjectFinderService;
-import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
@@ -42,7 +41,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 /**
  * Created by pefernan on 4/28/15.
  */
-public class MultipleSubFormHelper extends AbstractNestedModelHelper implements RequiresCustomCode<MultipleSubFormFieldDefinition> {
+public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSubFormFieldDefinition> implements RequiresCustomCode<MultipleSubFormFieldDefinition> {
 
     @Inject
     private DataObjectFinderService dataObjectFinderService;
@@ -61,12 +60,12 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper implements 
     }
 
     @Override
-    public String getInputWidget( FieldDefinition fieldDefinition ) {
+    public String getInputWidget( MultipleSubFormFieldDefinition fieldDefinition ) {
         return "org.livespark.formmodeler.rendering.client.shared.fields.MultipleSubForm";
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, FieldDefinition fieldDefinition ) {
+    public String getInputInitLiteral( SourceGenerationContext context, MultipleSubFormFieldDefinition fieldDefinition ) {
         return "new MultipleSubForm( new " + WordUtils.capitalize( fieldDefinition.getName() ) + MULTIPLE_SUBFORM_ADAPTER_SUFFIX + "() );";
     }
 
