@@ -18,6 +18,9 @@ package org.livespark.backend.server.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -33,6 +36,7 @@ import javax.servlet.http.HttpSession;
 import org.guvnor.common.services.backend.file.DotFileFilter;
 import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
+import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.builder.service.PostBuildHandler;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.DeploymentMode;
@@ -53,10 +57,12 @@ import org.livespark.client.shared.GwtWarBuildService;
 import org.livespark.project.ProjectUnpacker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 import org.uberfire.java.nio.file.StandardDeleteOption;
+import org.uberfire.workbench.events.ResourceChange;
 
 @Specializes
 @ApplicationScoped
@@ -262,6 +268,63 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
                                     return callableFactory.createDevModeDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
                                 }
                             } );
+    }
+
+    @Override
+    public IncrementalBuildResults addPackageResource( final Path resource ) {
+        if ( isNotLiveSparkGeneratedJavaSource( resource ) ) {
+            return super.addPackageResource( resource );
+        }
+        else {
+            return new IncrementalBuildResults();
+        }
+    }
+
+    @Override
+    public IncrementalBuildResults updatePackageResource( final Path resource ) {
+        if ( isNotLiveSparkGeneratedJavaSource( resource ) ) {
+            return super.updatePackageResource( resource );
+        }
+        else {
+            return new IncrementalBuildResults();
+        }
+    }
+
+    @Override
+    public IncrementalBuildResults applyBatchResourceChanges( final Project project,
+                                                              final Map<Path, Collection<ResourceChange>> changes ) {
+        final Map<Path, Collection<ResourceChange>> nonGeneratedFileChanges =
+                changes.entrySet()
+                       .stream()
+                       .filter( e -> isNotLiveSparkGeneratedJavaSource( e.getKey() ) )
+                       .collect( Collectors.toMap( e -> e.getKey(), e -> e.getValue() ) );
+
+        if ( nonGeneratedFileChanges.isEmpty() ) {
+            return new IncrementalBuildResults();
+        }
+        else {
+            return super.applyBatchResourceChanges( project, nonGeneratedFileChanges );
+        }
+    }
+
+    @Override
+    public IncrementalBuildResults deletePackageResource( final Path resource ) {
+        if ( isNotLiveSparkGeneratedJavaSource( resource ) ) {
+            return super.deletePackageResource( resource );
+        }
+        else {
+            return new IncrementalBuildResults();
+        }
+    }
+
+    private boolean isNotLiveSparkGeneratedJavaSource( final Path resource ) {
+        final String fileName = resource.getFileName();
+        return !(fileName.endsWith( "FormModel.java" )
+                || fileName.endsWith( "FormView.java" )
+                || fileName.endsWith( "ListView.java" )
+                || fileName.endsWith( "RestService.java" )
+                || fileName.endsWith( "EntityService.java" )
+                || fileName.endsWith( "RestServiceImpl.java" ));
     }
 
 }
