@@ -22,6 +22,8 @@ import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_VIE
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
 
+import java.util.Arrays;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -32,7 +34,6 @@ import org.kie.workbench.common.services.datamodeller.core.DataModel;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
@@ -62,7 +63,7 @@ public class DataObjectChangeObserver {
 
 
     public void processResourceAdd( @Observes final ResourceAddedEvent resourceAddedEvent ) {
-        if ( isFormAware( resourceAddedEvent.getPath() ) ) {
+        if ( isNotGeneratedJavaSource( resourceAddedEvent.getPath() ) ) {
             generateSources( resourceAddedEvent.getPath() );
         }
     }
@@ -72,7 +73,7 @@ public class DataObjectChangeObserver {
     }
 
     public void processResourceUpdate( @Observes final ResourceUpdatedEvent resourceUpdatedEvent ) {
-        if ( isFormAware( resourceUpdatedEvent.getPath() ) ) {
+        if ( isNotGeneratedJavaSource( resourceUpdatedEvent.getPath() ) ) {
             generateSources( resourceUpdatedEvent.getPath() );
         }
     }
@@ -101,11 +102,7 @@ public class DataObjectChangeObserver {
             String className = calculateClassName( project, path );
             DataObject dataObject = dataModel != null ? dataModel.getDataObject( className ) : null;
 
-            if ( dataObject != null ) {
-                if ( !dataObject.getSuperClassName().equals( SourceGenerationUtil.FORM_MODEL_CLASS )
-                        && !dataObject.getSuperClassName().equals( SourceGenerationUtil.FORM_VIEW_CLASS ) )
-                    return dataObject;
-            }
+            return dataObject;
 
         } catch ( Exception e ) {
             logger.warn( "Error loading Data Object for path '{}': {}", path.toURI(), e );
@@ -113,16 +110,17 @@ public class DataObjectChangeObserver {
         return null;
     }
 
-    protected boolean isFormAware( final Path path ) {
-        return path != null &&
-                //TODO review this filtering.
-                path.getFileName().endsWith( ".java" ) &&
-                !path.getFileName().endsWith( ENTITY_SERVICE_SUFFIX ) &&
-                !path.getFileName().endsWith( FORM_MODEL_SUFFIX ) &&
-                !path.getFileName().endsWith( FORM_VIEW_SUFFIX ) &&
-                !path.getFileName().endsWith( LIST_VIEW_SUFFIX ) &&
-                !path.getFileName().endsWith( REST_IMPL_SUFFIX ) &&
-                !path.getFileName().endsWith( REST_SERVICE_SUFFIX );
+    protected boolean isNotGeneratedJavaSource( final Path path ) {
+        return path != null
+                && path.getFileName().endsWith( ".java" )
+                && !Arrays.asList( ENTITY_SERVICE_SUFFIX,
+                                   FORM_MODEL_SUFFIX,
+                                   FORM_VIEW_SUFFIX,
+                                   LIST_VIEW_SUFFIX,
+                                   REST_IMPL_SUFFIX,
+                                   REST_SERVICE_SUFFIX )
+                    .stream()
+                    .anyMatch( suffix -> path.getFileName().endsWith( suffix + ".java" ) );
     }
 
     private String calculateClassName(Project project,
