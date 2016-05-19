@@ -26,6 +26,7 @@ import com.google.gwt.user.client.Window;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
 import org.uberfire.client.annotations.Perspective;
@@ -63,7 +64,7 @@ public class DroolsAuthoringNoContextNavigationPerspective {
     private Caller<VFSService> vfsServices;
 
     @Inject
-    private org.livespark.client.docks.AuthoringWorkbenchDocks docks;
+    private AuthoringWorkbenchDocks docks;
 
     private String explorerMode;
     private String projectPathString;

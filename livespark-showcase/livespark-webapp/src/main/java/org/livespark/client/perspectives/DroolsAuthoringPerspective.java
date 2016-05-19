@@ -26,7 +26,7 @@ import org.kie.workbench.common.services.shared.preferences.ApplicationPreferenc
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcesMenu;
 import org.kie.workbench.common.widgets.client.menu.RepositoryMenu;
-import org.livespark.client.docks.AuthoringWorkbenchDocks;
+import org.kie.workbench.common.workbench.client.docks.AuthoringWorkbenchDocks;
 import org.livespark.client.resources.i18n.AppConstants;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
