@@ -39,9 +39,6 @@ public interface FormEditorConstants {
     String FormEditorViewImplDataObjects = "FormEditorViewImpl.dataObjects";
 
     @TranslationKey( defaultValue = "" )
-    String FormEditorViewImplEditor = "FormEditorViewImpl.editor";
-
-    @TranslationKey( defaultValue = "" )
     String FormEditorViewImplPreview = "FormEditorViewImpl.preview";
 
     @TranslationKey( defaultValue = "" )

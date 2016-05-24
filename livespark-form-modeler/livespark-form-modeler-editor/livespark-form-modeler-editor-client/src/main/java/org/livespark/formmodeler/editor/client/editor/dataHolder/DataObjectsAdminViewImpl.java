@@ -112,7 +112,7 @@ public class DataObjectsAdminViewImpl extends Composite implements FormEditorPre
         dataObjectTable.setHover( true );
     }
 
-    public void init(final FormEditorPresenter presenter) {
+    public void init( final FormEditorPresenter presenter ) {
 
         this.presenter = presenter;
 

@@ -65,8 +65,8 @@ import org.uberfire.workbench.type.FileNameUtil;
 public class FormEditorPresenter extends KieEditor {
 
     public interface FormEditorView extends KieEditorView {
-        public void init(FormEditorPresenter presenter);
-        public void setupLayoutEditor(LayoutEditor layoutEditor);
+        public void init( FormEditorPresenter presenter );
+        public void setupLayoutEditor( LayoutEditor layoutEditor );
     }
 
     public interface DataHolderAdminView extends IsWidget {
@@ -139,11 +139,15 @@ public class FormEditorPresenter extends KieEditor {
 
     @Override
     protected void save( String commitMessage ) {
-        editorContext.getFormDefinition().setLayoutTemplate( layoutEditor.getLayout() );
+        synchronizeFormLayout();
         editorService.call( getSaveSuccessCallback( editorContext.getContent().hashCode() )  ).save( versionRecordManager.getCurrentPath(),
                 editorContext.getContent(),
                 metadata,
                 commitMessage );
+    }
+
+    protected void synchronizeFormLayout() {
+        editorContext.getFormDefinition().setLayoutTemplate( layoutEditor.getLayout() );
     }
 
     public void doLoadContent( FormModelerContent content ) {
@@ -307,6 +311,7 @@ public class FormEditorPresenter extends KieEditor {
     }
 
     public FormRenderingContext getRenderingContext() {
+        synchronizeFormLayout();
         return editorContext.getRenderingContext();
     }
 }

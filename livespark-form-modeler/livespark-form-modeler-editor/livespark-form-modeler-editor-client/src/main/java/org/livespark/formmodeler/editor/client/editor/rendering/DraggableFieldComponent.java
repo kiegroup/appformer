@@ -107,7 +107,6 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
 
             @Override
             public void onClose() {
-                fieldRenderer.initInputWidget();
                 renderContent();
                 showProperties = false;
                 if ( configContext != null) {
@@ -260,6 +259,7 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
             propertiesRenderer.render( propertiesRendererHelper );
         }
 
+        fieldRenderer.init( renderingContext, field );
         renderContent();
     }
 
@@ -273,6 +273,8 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
         if ( showProperties ) {
             propertiesRenderer.render( propertiesRendererHelper );
         }
+
+        renderContent();
     }
 
     public Path getFormPath() {
