@@ -132,8 +132,16 @@ public abstract class FieldDefinition {
     public void copyFrom( FieldDefinition other ) {
         if ( other == null ) return;
         setLabel(other.getLabel());
-        if ( !other.isAnnotatedId() ) setReadonly( other.getReadonly() );
+
         setRequired( other.getRequired() );
+
+        setAnnotatedId( other.isAnnotatedId() );
+        if ( !other.isAnnotatedId() ) setReadonly( other.getReadonly() );
+
+        setStandaloneClassName( other.getStandaloneClassName());
+        setModelName( other.getModelName() );
+        setBoundPropertyName( other.getBoundPropertyName() );
+
         doCopyFrom( other );
     }
 

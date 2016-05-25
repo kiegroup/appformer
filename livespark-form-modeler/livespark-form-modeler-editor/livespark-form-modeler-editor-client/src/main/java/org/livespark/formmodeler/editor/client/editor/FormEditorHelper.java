@@ -217,12 +217,10 @@ public class FormEditorHelper {
 
                 resultDefinition.setId( destField.getId() );
                 resultDefinition.setName(destField.getName());
-                resultDefinition.setStandaloneClassName(destField.getStandaloneClassName());
-                resultDefinition.setAnnotatedId(destField.isAnnotatedId());
-                resultDefinition.setModelName(destField.getModelName());
-                resultDefinition.setBoundPropertyName(destField.getBoundPropertyName());
 
-                content.getDefinition().getFields().add(resultDefinition);
+                resultDefinition.copyFrom( destField );
+
+                content.getDefinition().getFields().add( resultDefinition );
 
                 it.remove();
 
@@ -249,22 +247,18 @@ public class FormEditorHelper {
     public FieldDefinition switchToFieldType(FieldDefinition field, String typeCode) {
         FieldDefinition resultDefinition = fieldManager.getDefinitionByTypeCode( typeCode );
 
-        resultDefinition.copyFrom(field);
+        resultDefinition.copyFrom( field );
         resultDefinition.setId( field.getId() );
         resultDefinition.setName( field.getName() );
-        resultDefinition.setStandaloneClassName( field.getStandaloneClassName() );
-        resultDefinition.setAnnotatedId( field.isAnnotatedId() );
-        resultDefinition.setModelName( field.getModelName() );
-        resultDefinition.setBoundPropertyName( field.getBoundPropertyName() );
 
-        removeField(field.getId());
+        removeField( field.getId() );
 
         content.getDefinition().getFields().add( resultDefinition );
 
         return resultDefinition;
     }
 
-    public void removeDataHolder(String holderName, LayoutTemplate layout) {
+    public void removeDataHolder( String holderName, LayoutTemplate layout ) {
         getFormDefinition().removeDataHolder( holderName );
         for (FieldDefinition field : getFormDefinition().getFields()) {
             if (holderName.equals(field.getModelName())) {

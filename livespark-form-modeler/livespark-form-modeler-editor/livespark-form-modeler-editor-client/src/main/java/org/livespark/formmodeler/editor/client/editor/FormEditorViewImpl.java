@@ -15,7 +15,6 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -23,20 +22,15 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.Container;
-import org.gwtbootstrap3.client.ui.TabListItem;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
-import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
-import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
+import org.livespark.formmodeler.editor.client.editor.preview.PreviewFormPresenter;
 import org.uberfire.ext.layout.editor.client.LayoutEditor;
 
 @Dependent
@@ -52,32 +46,22 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
 
     @Inject
     @DataField
+    private Button preview;
+
+    @Inject
+    @DataField
     private FlowPanel editorContent;
 
-    @Inject
-    @DataField
-    private FlowPanel previewContent;
-
-    @Inject
-    @DataField
-    private Anchor previewTab;
-
-    @Inject
-    private DynamicFormRenderer formRenderer;
-
     private TranslationService translationService;
+
+    private PreviewFormPresenter previewFormPresenter;
 
     private FormEditorPresenter presenter;
 
     @Inject
-    public FormEditorViewImpl( TranslationService translationService ) {
+    public FormEditorViewImpl( TranslationService translationService, PreviewFormPresenter previewFormPresenter ) {
         this.translationService = translationService;
-    }
-
-    @PostConstruct
-    protected void initView() {
-        previewContent.clear();
-        previewContent.add( formRenderer );
+        this.previewFormPresenter = previewFormPresenter;
     }
 
     @Override
@@ -92,13 +76,13 @@ public class FormEditorViewImpl extends KieEditorViewImpl implements FormEditorP
     }
 
     @EventHandler( "createHolder" )
-    void handleClick( ClickEvent event ) {
+    public void handleClick( ClickEvent event ) {
         presenter.initDataObjectsTab();
     }
 
-    @EventHandler( "previewTab" )
+    @EventHandler( "preview" )
     public void onPreview( ClickEvent event ) {
-        formRenderer.render( presenter.getRenderingContext() );
+        previewFormPresenter.preview( presenter.getRenderingContext() );
     }
 
     @Override

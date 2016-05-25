@@ -39,10 +39,11 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
     public void init( FormRenderingContext renderingContext, F field ) {
         this.renderingContext = renderingContext;
         this.field = field;
-        initInputWidget();
     }
 
     public IsWidget renderWidget() {
+        initInputWidget();
+
         FormGroup group = new FormGroup();
         group.getElement().setId( getFormGroupId( field ) );
 
