@@ -1,0 +1,10 @@
+            <div id="@{field.name}_form_group" class="form-group">
+                <label class="control-label">@{field.label}</label>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="@{field.name}">
+                        </div>
+                    </div>
+                </div>
+                <p id="@{field.name}_help_block" class="help-block"></p>
+            </div>

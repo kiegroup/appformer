@@ -34,8 +34,8 @@ import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPre
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
-import org.livespark.formmodeler.editor.client.editor.mock.MockFieldManager;
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
+import org.livespark.formmodeler.editor.client.editor.service.ClientFieldManagerImpl;
 import org.livespark.formmodeler.editor.client.resources.images.FormEditorImageResources;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.model.FieldDefinition;
@@ -146,7 +146,11 @@ public class FormEditorPresenterTest extends TestCase {
             }
         });
 
-        editorContext = new FormEditorHelper( new MockFieldManager(), eventMock, new ServiceMock(), beanManager);
+        editorContext = new FormEditorHelper( new ClientFieldManagerImpl() {
+            {
+                init();
+            }
+        }, eventMock, new ServiceMock(), beanManager);
 
         presenter = new FormEditorPresenter( view,
                 objectsView,
@@ -172,8 +176,8 @@ public class FormEditorPresenterTest extends TestCase {
         presenter.onStartup(path,
                 mock(PlaceRequest.class));
 
-        assertTrue("There should be at least 4 base field types", editorContext.getBaseFields().size() == 8);
-        assertTrue("There should be at least 4 base field draggables", editorContext.getBaseFieldsDraggables().size() == 8);
+        assertTrue("There should be at least 9 base field types", editorContext.getBaseFields().size() == 9);
+        assertTrue("There should be at least 9 base field draggables", editorContext.getBaseFieldsDraggables().size() == 9);
     }
 
     @Test
@@ -275,10 +279,10 @@ public class FormEditorPresenterTest extends TestCase {
 
         presenter.addDataHolder(EMPLOYEE_NAME, EMPLOYEE_TYPE);
 
-        testFieldProperties( FormEditorHelper.UNBINDED + TextBoxFieldDefinition._CODE, false);
+        testFieldProperties( FormEditorHelper.UNBINDED + TextBoxFieldDefinition.CODE, false);
     }
 
-    protected void testFieldProperties( String fieldId, boolean binded) {
+    protected void testFieldProperties( String fieldId, boolean binded ) {
         presenter.onFieldDropped(new FieldDroppedEvent(editorContext.getFormDefinition().getId(), fieldId));
         checkExpectedFields(editorContext.getAvailableFields().size(), 1, binded);
 
@@ -288,11 +292,17 @@ public class FormEditorPresenterTest extends TestCase {
 
         List<String> compatibleTypes = editorContext.getCompatibleFieldTypes(field);
 
-        assertNotNull("No compatibles types found!", compatibleTypes);
-        assertEquals("There should exist 4 compatible types for TextBoxFieldDefinition!", 4 , compatibleTypes.size());
-        assertTrue("Missing TextAreaFieldDefinition as a compatible type for TextBoxFieldDefinition", compatibleTypes.contains(TextAreaFieldDefinition._CODE));
+        int expected = 4;
 
-        field = editorContext.switchToFieldType( field, TextAreaFieldDefinition._CODE);
+        if ( !binded )  {
+            expected ++;
+        }
+
+        assertNotNull("No compatibles types found!", compatibleTypes);
+        assertEquals("There should exist " + expected + " compatible types for TextBoxFieldDefinition!", expected , compatibleTypes.size());
+        assertTrue("Missing TextAreaFieldDefinition as a compatible type for TextBoxFieldDefinition", compatibleTypes.contains(TextAreaFieldDefinition.CODE ));
+
+        field = editorContext.switchToFieldType( field, TextAreaFieldDefinition.CODE );
         checkFieldType(field, TextAreaFieldDefinition.class);
 
         List<String> compatibleFields = editorContext.getCompatibleFields(field);

@@ -20,22 +20,8 @@ import org.gwtbootstrap3.client.ui.base.mixin.BlankValidatorMixin;
 import org.gwtbootstrap3.client.ui.form.error.ErrorHandler;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.base.RadioGroupBase;
 
-/**
- * Blank validator mixin for a radio group.
- *
- * @param <W> the widget type
- * @param <V> the value type
- *
- * @author Steven Jardine
- */
 public class RadioGroupBlankValidatorMixin<W extends RadioGroupBase<V>, V> extends BlankValidatorMixin<W, V> {
 
-    /**
-     * Constructor.
-     *
-     * @param inputWidget the input widget
-     * @param errorHandler the error handler
-     */
     public RadioGroupBlankValidatorMixin( final W inputWidget, final ErrorHandler errorHandler ) {
         super(inputWidget, errorHandler);
     }

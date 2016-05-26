@@ -49,12 +49,6 @@ import org.gwtbootstrap3.client.ui.form.validator.Validator;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.validator.RadioGroupBlankValidatorMixin;
 
-/**
- * Contains a group of radio input elements.
- *
- * @param <T> the return value type of the radio group.
- * @author Steven Jardine
- */
 public class RadioGroupBase<T> extends FlowPanel implements HasName, HasValue<T>, LeafValueEditor<T>,
         HasEditorErrors<T>, HasErrorHandler, HasValidators<T>, HasBlankValidator<T> {
 

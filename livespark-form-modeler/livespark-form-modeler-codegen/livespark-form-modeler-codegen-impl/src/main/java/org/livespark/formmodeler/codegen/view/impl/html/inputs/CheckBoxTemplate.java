@@ -28,7 +28,7 @@ public class CheckBoxTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return CheckBoxFieldDefinition._CODE;
+        return CheckBoxFieldDefinition.CODE;
     }
 
     @Override

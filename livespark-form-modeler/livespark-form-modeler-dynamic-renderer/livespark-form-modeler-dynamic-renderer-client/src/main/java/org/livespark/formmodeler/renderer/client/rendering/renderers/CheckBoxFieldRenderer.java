@@ -56,6 +56,6 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
 
     @Override
     public String getSupportedFieldDefinitionCode() {
-        return CheckBoxFieldDefinition._CODE;
+        return CheckBoxFieldDefinition.CODE;
     }
 }

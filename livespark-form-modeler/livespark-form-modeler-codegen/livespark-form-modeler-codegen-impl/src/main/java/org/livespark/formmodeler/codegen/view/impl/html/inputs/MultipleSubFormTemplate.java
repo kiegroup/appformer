@@ -28,7 +28,7 @@ public class MultipleSubFormTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return MultipleSubFormFieldDefinition._CODE;
+        return MultipleSubFormFieldDefinition.CODE;
     }
 
     @Override

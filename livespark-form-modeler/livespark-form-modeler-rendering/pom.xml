@@ -18,6 +18,7 @@
 
   <modules>
     <module>livespark-form-modeler-rendering-api</module>
+    <module>livespark-form-modeler-processing-engine</module>
   </modules>
 
 </project>

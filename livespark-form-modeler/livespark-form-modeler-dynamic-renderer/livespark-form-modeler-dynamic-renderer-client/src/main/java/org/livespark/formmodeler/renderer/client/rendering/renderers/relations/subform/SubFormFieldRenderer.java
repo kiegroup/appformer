@@ -76,7 +76,7 @@ public class SubFormFieldRenderer extends FieldRenderer<SubFormFieldDefinition> 
 
     @Override
     public String getSupportedFieldDefinitionCode() {
-        return SubFormFieldDefinition._CODE;
+        return SubFormFieldDefinition.CODE;
     }
 
     public void setHtmlContent( String template ) {

@@ -28,9 +28,9 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Bindable
 public class ListBoxFieldDefinition extends SelectorField {
 
-    public static final String _CODE = "ListBox";
+    public static final String CODE = "ListBox";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @Override
     public String getCode() {

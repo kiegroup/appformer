@@ -26,9 +26,9 @@ import org.livespark.formmodeler.model.FieldDefinition;
 @Portable
 @Bindable
 public class CheckBoxFieldDefinition extends FieldDefinition {
-    public static final String _CODE = "CheckBox";
+    public static final String CODE = "CheckBox";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @Override
     public String getCode() {

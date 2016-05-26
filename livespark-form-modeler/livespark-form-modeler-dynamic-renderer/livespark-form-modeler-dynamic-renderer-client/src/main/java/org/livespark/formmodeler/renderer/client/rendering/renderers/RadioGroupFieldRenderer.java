@@ -17,8 +17,6 @@
 package org.livespark.formmodeler.renderer.client.rendering.renderers;
 
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
 
@@ -27,9 +25,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.InlineRadio;
 import org.gwtbootstrap3.client.ui.Radio;
-import org.livespark.formmodeler.model.config.SelectorData;
 import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.StringRadioGroup;
 
 @Dependent
@@ -55,7 +51,7 @@ public class RadioGroupFieldRenderer extends SelectorFieldRenderer<RadioGroupFie
 
     @Override
     public String getSupportedFieldDefinitionCode() {
-        return RadioGroupFieldDefinition._CODE;
+        return RadioGroupFieldDefinition.CODE;
     }
 
 

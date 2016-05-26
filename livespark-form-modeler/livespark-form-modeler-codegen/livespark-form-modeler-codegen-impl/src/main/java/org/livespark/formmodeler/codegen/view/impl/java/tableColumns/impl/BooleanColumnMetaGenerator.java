@@ -38,7 +38,7 @@ public class BooleanColumnMetaGenerator extends AbstractColumnMetaGenerator {
                 .append( "public Boolean getValue( " )
                 .append( modelTypeName )
                 .append( " model ) {" )
-                .append( "Boolean value = model.is" )
+                .append( "Boolean value = model.get" )
                 .append( StringUtils.capitalize( property ) )
                 .append( "();" )
                 .append( "if ( value == null ) { return Boolean.FALSE; }" )
@@ -62,7 +62,7 @@ public class BooleanColumnMetaGenerator extends AbstractColumnMetaGenerator {
     public String[] getImports() {
         return new String[]{
             "com.google.gwt.user.cellview.client.Column",
-            "org.uberfire.ext.widgets.common.client.common.CheckboxCellImpl"
+            "org.uberfire.ext.widgets.table.client.CheckboxCellImpl"
         };
     }
 }

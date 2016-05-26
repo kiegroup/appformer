@@ -23,6 +23,7 @@
   <inherits name="org.livespark.widgets.crud.LiveSparkCRUDWidget"/>
   <inherits name="org.livespark.formmodeler.renderer.FormModelerDynamicRendererAPI"/>
   <inherits name="org.livespark.formmodeler.rendering.FormModelerRenderingAPI"/>
+  <inherits name="org.livespark.formmodeler.processing.FormProcessingEngine"/>
 
   <source path="client"/>
 </module>

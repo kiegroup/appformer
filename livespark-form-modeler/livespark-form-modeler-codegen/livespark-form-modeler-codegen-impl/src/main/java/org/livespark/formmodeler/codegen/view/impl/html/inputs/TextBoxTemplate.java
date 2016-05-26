@@ -25,6 +25,6 @@ public class TextBoxTemplate extends AbstractInputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextBoxFieldDefinition._CODE;
+        return TextBoxFieldDefinition.CODE;
     }
 }

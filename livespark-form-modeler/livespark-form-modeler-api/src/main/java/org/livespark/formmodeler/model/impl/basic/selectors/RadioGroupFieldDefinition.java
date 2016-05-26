@@ -26,9 +26,9 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Portable
 @Bindable
 public class RadioGroupFieldDefinition extends SelectorField {
-    public static final String _CODE = "RadioGroup";
+    public static final String CODE = "RadioGroup";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @FieldDef( label = "Show options inline" )
     protected Boolean inline = Boolean.FALSE;

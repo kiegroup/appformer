@@ -25,7 +25,7 @@ public class RadioGroupTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return RadioGroupFieldDefinition._CODE;
+        return RadioGroupFieldDefinition.CODE;
     }
 
     @Override

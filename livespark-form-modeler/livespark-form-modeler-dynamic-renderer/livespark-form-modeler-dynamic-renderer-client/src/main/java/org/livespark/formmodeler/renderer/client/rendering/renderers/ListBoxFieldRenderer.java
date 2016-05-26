@@ -49,7 +49,7 @@ public class ListBoxFieldRenderer extends SelectorFieldRenderer<ListBoxFieldDefi
 
     @Override
     public String getSupportedFieldDefinitionCode() {
-        return ListBoxFieldDefinition._CODE;
+        return ListBoxFieldDefinition.CODE;
     }
 
     protected void refreshInput( Map<String, String> optionsValues, String defaultValue) {

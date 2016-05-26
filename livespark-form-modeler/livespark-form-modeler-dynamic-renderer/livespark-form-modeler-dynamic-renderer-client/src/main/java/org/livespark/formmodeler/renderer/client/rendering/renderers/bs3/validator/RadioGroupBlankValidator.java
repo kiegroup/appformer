@@ -20,28 +20,15 @@ import org.gwtbootstrap3.client.ui.Radio;
 import org.gwtbootstrap3.client.ui.form.validator.BlankValidator;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.base.RadioGroupBase;
 
-/**
- * Radio group blank validator.
- *
- * @param <T> the generic type
- *
- * @author Steven Jardine
- */
 public class RadioGroupBlankValidator<T> extends BlankValidator<T> {
 
     private RadioGroupBase<T> inputWidget = null;
 
-    /**
-     * Constructor.
-     *
-     * @param inputWidget the input widget
-     */
     public RadioGroupBlankValidator( final RadioGroupBase<T> inputWidget ) {
         super();
         this.inputWidget = inputWidget;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isValid(final T value) {
         boolean valid = false;

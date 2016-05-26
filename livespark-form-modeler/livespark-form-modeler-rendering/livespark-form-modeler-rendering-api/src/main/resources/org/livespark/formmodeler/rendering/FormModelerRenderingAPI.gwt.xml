@@ -26,6 +26,7 @@
   <inherits name="org.jboss.errai.validation.Validation" />
   <inherits name="org.gwtbootstrap3.extras.datepicker.DatePicker"/>
   <inherits name="org.gwtbootstrap3.extras.datetimepicker.DateTimePicker"/>
+  <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
 
   <inherits name="org.livespark.widgets.crud.LiveSparkCRUDWidget"/>
 

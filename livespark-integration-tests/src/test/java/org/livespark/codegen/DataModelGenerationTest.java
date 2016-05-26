@@ -84,6 +84,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         assertViewProperty( bindNamePrefix + "_numOfGuitars", clazz );
         assertViewProperty( bindNamePrefix + "_shortVal", clazz );
         assertViewProperty( bindNamePrefix + "_bac", clazz );
+        assertViewProperty( bindNamePrefix + "_married", clazz );
     }
 
     private void addTestProperties( final DataObject dataObject ) {
@@ -99,6 +100,7 @@ public class DataModelGenerationTest extends BaseIntegrationTest {
         dataObject.addProperty( "weight", float.class.getCanonicalName() );
         dataObject.addProperty( "numOfGuitars", long.class.getCanonicalName() );
         dataObject.addProperty( "shortVal", short.class.getCanonicalName() );
+        dataObject.addProperty( "married", Boolean.class.getCanonicalName() );
     }
 
     private void assertViewProperty( final String name, final JavaClass<JavaClassSource> formViewClass ) {

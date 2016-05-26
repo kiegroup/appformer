@@ -51,6 +51,6 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
 
     @Override
     public String getSupportedFieldDefinitionCode() {
-        return TextAreaFieldDefinition._CODE;
+        return TextAreaFieldDefinition.CODE;
     }
 }
