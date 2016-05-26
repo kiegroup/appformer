@@ -35,9 +35,9 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Portable
 @Bindable
 public class MultipleSubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField, MultipleField {
-    public static final String _CODE = "MultipleSubForm";
+    public static final String CODE = "MultipleSubForm";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @FieldDef( label = "Create Form" )
     @ListBox( provider = @SelectorDataProvider(

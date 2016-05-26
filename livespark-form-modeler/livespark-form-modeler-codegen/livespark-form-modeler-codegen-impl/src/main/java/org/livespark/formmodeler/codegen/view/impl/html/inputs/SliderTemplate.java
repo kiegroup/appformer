@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs;
+package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
-import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
+import java.io.InputStream;
+
+import org.livespark.formmodeler.codegen.view.impl.html.InputTemplateProvider;
+import org.livespark.formmodeler.model.impl.basic.SliderFieldDefinition;
 
 /**
- * Created by pefernan on 4/28/15.
+ * Created by pefernan on 4/29/15.
  */
-public class TextAreaHelper extends AbstractInputCreatorHelper<TextAreaFieldDefinition> {
+public class SliderTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextAreaFieldDefinition._CODE;
+        return SliderFieldDefinition.CODE;
     }
 
     @Override
-    public String getInputWidget( TextAreaFieldDefinition fieldDefinition ) {
-        return "org.gwtbootstrap3.client.ui.TextArea";
+    public InputStream getTemplateInputStream() {
+        return getClass().getResourceAsStream( "/org/livespark/formmodeler/codegen/view/impl/html/templates/slider.mv" );
     }
 }

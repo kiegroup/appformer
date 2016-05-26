@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs;
+package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.
  */
-public class CheckBoxHelper extends AbstractInputCreatorHelper<CheckBoxFieldDefinition> {
+public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return CheckBoxFieldDefinition._CODE;
+        return TextBoxFieldDefinition.CODE;
     }
 
     @Override
-    public String getInputWidget( CheckBoxFieldDefinition fieldDefinition ) {
-        return "org.gwtbootstrap3.client.ui.SimpleCheckBox";
-    }
-
-    @Override
-    public String getReadonlyMethod( String fieldName, String readonlyParam ) {
-        return fieldName + ".setEnabled( !" + readonlyParam + ");";
+    public String getInputWidget( TextBoxFieldDefinition fieldDefinition ) {
+        return "org.gwtbootstrap3.client.ui.TextBox";
     }
 }

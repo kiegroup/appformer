@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs;
+package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -23,7 +23,6 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
-import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 
@@ -36,7 +35,7 @@ public class SubFormHelper extends AbstractNestedModelHelper<SubFormFieldDefinit
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return SubFormFieldDefinition._CODE;
+        return SubFormFieldDefinition.CODE;
     }
 
     @Override

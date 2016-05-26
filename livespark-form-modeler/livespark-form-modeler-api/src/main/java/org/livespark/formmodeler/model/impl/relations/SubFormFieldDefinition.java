@@ -31,9 +31,9 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Portable
 @Bindable
 public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField {
-    public static final String _CODE = "SubForm";
+    public static final String CODE = "SubForm";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @FieldDef( label = "Nested Form")
     @ListBox( provider = @SelectorDataProvider(

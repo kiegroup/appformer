@@ -32,9 +32,9 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Portable
 @Bindable
 public class TextAreaFieldDefinition extends FieldDefinition implements HasRows, HasPlaceHolder {
-    public static final String _CODE = "TextArea";
+    public static final String CODE = "TextArea";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @FieldDef( label = "Placeholder", position = 1)
     protected String placeHolder = "";

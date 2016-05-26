@@ -1,0 +1,61 @@
+/*
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
+
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.model.impl.basic.SliderFieldDefinition;
+
+/**
+ * @author Pere Fernandez <pefernan@redhat.com>
+ */
+public class SliderHelper extends AbstractInputCreatorHelper<SliderFieldDefinition> {
+
+    @Override
+    public String getSupportedFieldTypeCode() {
+        return SliderFieldDefinition.CODE;
+    }
+
+    @Override
+    public String getInputWidget( SliderFieldDefinition fieldDefinition ) {
+        /*
+            Patch class to avoid error descrived on: https://github.com/gwtproject/gwt/issues/9242
+            TODO: change it when fixed
+        */
+        return "org.livespark.formmodeler.rendering.client.widgets.Slider";
+    }
+
+    @Override
+    public String getReadonlyMethod( String fieldName, String readonlyParam ) {
+        return fieldName + ".setEnabled( !" + readonlyParam + ");";
+    }
+
+    @Override
+    public String getInputInitLiteral( SourceGenerationContext context, SliderFieldDefinition field ) {
+        return "new Slider( "
+                + field.getMin() + ", "
+                + field.getMax() + ", "
+                + field.getPrecision() + ", "
+                + field.getStep()
+                + " );";
+    }
+
+
+    @Override
+    public boolean isInputInjectable() {
+        return false;
+    }
+}

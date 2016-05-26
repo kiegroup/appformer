@@ -29,9 +29,9 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Portable
 @Bindable
 public class DateBoxFieldDefinition extends FieldDefinition implements HasPlaceHolder {
-    public static final String _CODE = "DatePicker";
+    public static final String CODE = "DatePicker";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @FieldDef( label = "Placeholder", position = 1)
     protected String placeHolder = "";

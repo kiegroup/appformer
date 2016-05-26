@@ -28,7 +28,7 @@ public class DateBoxTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return DateBoxFieldDefinition._CODE;
+        return DateBoxFieldDefinition.CODE;
     }
 
     @Override

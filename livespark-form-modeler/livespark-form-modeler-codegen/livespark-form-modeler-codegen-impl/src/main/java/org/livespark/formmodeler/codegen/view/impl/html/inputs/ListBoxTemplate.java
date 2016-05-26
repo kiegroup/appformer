@@ -28,7 +28,7 @@ public class ListBoxTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return ListBoxFieldDefinition._CODE;
+        return ListBoxFieldDefinition.CODE;
     }
 
     @Override

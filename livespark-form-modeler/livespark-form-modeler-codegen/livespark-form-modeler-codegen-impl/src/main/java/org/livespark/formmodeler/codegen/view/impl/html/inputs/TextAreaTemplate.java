@@ -28,7 +28,7 @@ public class TextAreaTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextAreaFieldDefinition._CODE;
+        return TextAreaFieldDefinition.CODE;
     }
 
     @Override

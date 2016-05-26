@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs;
+package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return MultipleSubFormFieldDefinition._CODE;
+        return MultipleSubFormFieldDefinition.CODE;
     }
 
     @Override

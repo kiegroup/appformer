@@ -28,9 +28,9 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Portable
 @Bindable
 public class TextBoxFieldDefinition extends AbstractIntputFieldDefinition {
-    public static final String _CODE = "TextBox";
+    public static final String CODE = "TextBox";
 
-    private String code = _CODE;
+    private String code = CODE;
 
     @Override
     public String getCode() {

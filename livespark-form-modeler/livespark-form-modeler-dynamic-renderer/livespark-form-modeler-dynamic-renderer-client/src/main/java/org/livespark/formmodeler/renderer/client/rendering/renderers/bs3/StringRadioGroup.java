@@ -20,18 +20,8 @@ import com.google.gwt.text.shared.testing.PassthroughParser;
 import com.google.gwt.uibinder.client.UiConstructor;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.base.RadioGroupBase;
 
-/**
- * A radio group that returns a string value.
- *
- * @author Steven Jardine
- */
 public class StringRadioGroup extends RadioGroupBase<String> {
 
-    /**
-     * Constructor.
-     *
-     * @param name the name.
-     */
     @UiConstructor
     public StringRadioGroup( final String name ) {
         super(name, PassthroughParser.instance());

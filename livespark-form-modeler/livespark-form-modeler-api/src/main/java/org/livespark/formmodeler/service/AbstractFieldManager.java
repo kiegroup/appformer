@@ -43,36 +43,36 @@ public abstract class AbstractFieldManager implements FieldManager {
     protected Map<String, FieldDefinition> basicListDefinitions = new HashMap<String, FieldDefinition>(  );
     protected Map<String, List<String>> basicListCompatibleDefinitions = new HashMap<String, List<String>>(  );
 
-    protected String defaultSingleEntity = SubFormFieldDefinition._CODE;
+    protected String defaultSingleEntity = SubFormFieldDefinition.CODE;
     protected Map<String, FieldDefinition> singleEntityDefinitions = new HashMap<String, FieldDefinition>(  );
 
-    protected String defaultMultipleEntity = MultipleSubFormFieldDefinition._CODE;
+    protected String defaultMultipleEntity = MultipleSubFormFieldDefinition.CODE;
     protected Map<String, FieldDefinition> multipleEntityDefinitions = new HashMap<String, FieldDefinition>(  );
 
     protected Map<String, String> defaultBasicTypes = new HashMap<String, String>(  );
     protected Map<String, String> defaultBasicListsTypes = new HashMap<String, String>(  );
 
     {
-        defaultBasicTypes.put( BigDecimal.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( BigInteger.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Byte.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( byte.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Boolean.class.getName(), CheckBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( boolean.class.getName(), CheckBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Character.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( char.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Date.class.getName(), DateBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Double.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( double.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Float.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( float.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Integer.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( int.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Long.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( long.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( Short.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( short.class.getName(), TextBoxFieldDefinition._CODE );
-        defaultBasicTypes.put( String.class.getName(), TextBoxFieldDefinition._CODE );
+        defaultBasicTypes.put( BigDecimal.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( BigInteger.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Byte.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( byte.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Boolean.class.getName(), CheckBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( boolean.class.getName(), CheckBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Character.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( char.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Date.class.getName(), DateBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Double.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( double.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Float.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( float.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Integer.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( int.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Long.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( long.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( Short.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( short.class.getName(), TextBoxFieldDefinition.CODE );
+        defaultBasicTypes.put( String.class.getName(), TextBoxFieldDefinition.CODE );
 
         // TODO: register multipletypes when defined
     }

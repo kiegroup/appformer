@@ -18,11 +18,9 @@ package org.livespark.formmodeler.renderer.client;
 
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.databinding.client.PropertyChangeUnsubscribeHandle;
-import org.jboss.errai.databinding.client.api.handler.property.PropertyChangeHandler;
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.processing.engine.handling.FormHandler;
 import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
-import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
 public class DynamicFormRendererMock extends DynamicFormRenderer {
 
@@ -30,41 +28,13 @@ public class DynamicFormRendererMock extends DynamicFormRenderer {
 
     protected boolean binded = false;
 
-    public DynamicFormRendererMock( DynamicFormRendererView view, Caller<Model2FormTransformerService> transformerService, FormViewValidator formViewValidator ) {
-        super( view, transformerService, formViewValidator );
-    }
-
-    @Override
-    protected void doBind( Object model ) {
-        this.model = model;
-        binded = model != null;
+    public DynamicFormRendererMock( DynamicFormRendererView view,
+                                    Caller<Model2FormTransformerService> transformerService,
+                                    FormHandler formHandler ) {
+        super( view, transformerService, formHandler );
     }
 
     @Override
     protected void doBind( Widget input, FieldDefinition field ) {
-    }
-
-    @Override
-    protected PropertyChangeUnsubscribeHandle doRegister( String property, PropertyChangeHandler handler ) {
-        return new PropertyChangeUnsubscribeHandle() {
-            @Override
-            public void unsubscribe() {
-            }
-        };
-    }
-
-    @Override
-    protected void doUnbind() {
-        binded = false;
-    }
-
-    @Override
-    protected boolean isBinded() {
-        return binded;
-    }
-
-    @Override
-    protected Object getBinderModel() {
-        return model;
     }
 }

@@ -39,6 +39,9 @@ public abstract class FieldDefinition {
     @FieldDef( label = "Readonly", position = 100)
     protected Boolean readonly = Boolean.FALSE;
 
+    @FieldDef( label = "Validate on Value Change", position = 101)
+    protected Boolean validateOnChange = Boolean.TRUE;
+
     protected String modelName;
 
     protected String boundPropertyName;
@@ -127,6 +130,14 @@ public abstract class FieldDefinition {
 
     public void setStandaloneClassName(String standaloneClassName) {
         this.standaloneClassName = standaloneClassName;
+    }
+
+    public Boolean getValidateOnChange() {
+        return validateOnChange;
+    }
+
+    public void setValidateOnChange( Boolean validateOnChange ) {
+        this.validateOnChange = validateOnChange;
     }
 
     public void copyFrom( FieldDefinition other ) {

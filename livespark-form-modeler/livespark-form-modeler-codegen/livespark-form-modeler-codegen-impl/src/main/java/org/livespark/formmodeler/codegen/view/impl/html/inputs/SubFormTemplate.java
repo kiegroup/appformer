@@ -28,7 +28,7 @@ public class SubFormTemplate implements InputTemplateProvider {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return SubFormFieldDefinition._CODE;
+        return SubFormFieldDefinition.CODE;
     }
 
     @Override
