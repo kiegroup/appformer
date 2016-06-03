@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
 
 /**
@@ -55,7 +55,7 @@ public class CheckBoxFieldRenderer extends FieldRenderer<CheckBoxFieldDefinition
     }
 
     @Override
-    public String getSupportedFieldDefinitionCode() {
+    public String getSupportedCode() {
         return CheckBoxFieldDefinition.CODE;
     }
 }

@@ -21,14 +21,14 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
 import org.gwtbootstrap3.extras.datetimepicker.client.ui.DateTimePicker;
-import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
 
 /**
  * Created by pefernan on 9/21/15.
  */
 @Dependent
-public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinition> {
+public class DatePickerFieldRenderer extends FieldRenderer<DatePickerFieldDefinition> {
 
     private  Widget input;
 
@@ -63,7 +63,7 @@ public class DatePickerFieldRenderer extends FieldRenderer<DateBoxFieldDefinitio
     }
 
     @Override
-    public String getSupportedFieldDefinitionCode() {
-        return DateBoxFieldDefinition.CODE;
+    public String getSupportedCode() {
+        return DatePickerFieldDefinition.CODE;
     }
 }

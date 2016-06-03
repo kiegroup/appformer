@@ -32,23 +32,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.livespark.formmodeler.codegen.layout.Dynamic;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
+import org.livespark.formmodeler.metaModel.FieldDef;
+import org.livespark.formmodeler.model.DefaultFieldTypeInfo;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.metaModel.FieldDef;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
+import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.FieldInitializer;
+import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.FormAwareFieldInitializer;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.FieldAnnotationProcessor;
+import org.livespark.formmodeler.renderer.service.FormDefintionGenerator;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
 import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
-import org.livespark.formmodeler.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
 @Dependent
-public class Model2FormTransformerServiceImpl implements Model2FormTransformerService {
+public class Model2FormTransformerServiceImpl implements Model2FormTransformerService, FormDefintionGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger( Model2FormTransformerServiceImpl.class );
 
@@ -56,10 +56,13 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
 
     private List<FieldAnnotationProcessor> processors = new ArrayList<>();
 
+    private List<FieldInitializer<? extends FieldDefinition>> fieldInitializers = new ArrayList<>();
+
     private FieldAnnotationProcessor defaultAnnotationProcessor;
 
     @Inject
     public Model2FormTransformerServiceImpl( Instance<FieldAnnotationProcessor> installedProcessors,
+                                             Instance<FieldInitializer<? extends FieldDefinition>> installedInitializers,
                                              @Dynamic FormLayoutTemplateGenerator layoutGenerator) {
         this.layoutGenerator = layoutGenerator;
         for ( FieldAnnotationProcessor processor : installedProcessors ) {
@@ -69,26 +72,35 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
                 processors.add( processor );
             }
         }
+
+        for( FieldInitializer initializer : installedInitializers ) {
+            if ( initializer instanceof FormAwareFieldInitializer ) {
+                ( (FormAwareFieldInitializer) initializer ).setTransformerService( this );
+            }
+            fieldInitializers.add( initializer );
+        }
     }
 
     @Override
     public FormRenderingContext createContext( Object model ) {
         DynamicRenderingContext context = new DynamicRenderingContext();
 
-        FormDefinition form = generateFormDefinition( model, context );
+        FormDefinition form = generateFormDefinitionForModel( model, context );
         context.setRootForm( form );
 
         return context;
     }
 
-    public FormDefinition generateFormDefinition( Object model, DynamicRenderingContext context ) {
+    @Override
+    public FormDefinition generateFormDefinitionForModel( Object model, DynamicRenderingContext context ) {
         if ( model == null) {
             return null;
         }
-        return generateFormDefinition( model.getClass(), context );
+        return generateFormDefinitionForClass( model.getClass(), context );
     }
 
-    protected FormDefinition generateFormDefinition( Class clazz, DynamicRenderingContext context ) {
+    @Override
+    public FormDefinition generateFormDefinitionForClass( Class clazz, DynamicRenderingContext context ) {
         FormDefinition form = new FormDefinition();
 
         form.setId( clazz.getName() );
@@ -114,27 +126,9 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
                 continue;
             }
 
-            if ( field instanceof SubFormFieldDefinition ) {
-                FormDefinition nested = generateFormDefinition( setting.getType(), context );
-                if ( nested != null ) {
-                    ((SubFormFieldDefinition) field).setNestedForm( nested.getId() );
-                    context.getAvailableForms().put( nested.getId(), nested );
-                }
-            } else if ( field instanceof MultipleSubFormFieldDefinition ) {
-                FormDefinition nested = generateFormDefinition( setting.getBag(), context );
-
-                if ( nested != null ) {
-                    context.getAvailableForms().put( nested.getId(), nested );
-
-                    List<TableColumnMeta> metas = new ArrayList<TableColumnMeta>();
-                    for ( FieldDefinition fieldDefinition : nested.getFields() ) {
-                        metas.add( new TableColumnMeta( fieldDefinition.getLabel(),
-                                fieldDefinition.getModelName() ) );
-                    }
-                    MultipleSubFormFieldDefinition multipleSubForm = (MultipleSubFormFieldDefinition) field;
-                    multipleSubForm.setCreationForm( nested.getId() );
-                    multipleSubForm.setEditionForm( nested.getId() );
-                    multipleSubForm.setColumnMetas( metas );
+            for ( FieldInitializer initializer : fieldInitializers ) {
+                if ( initializer.supports( field ) ) {
+                    initializer.initializeField( field, setting, context );
                 }
             }
 
@@ -153,14 +147,18 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
                     FieldDef fieldDef = (FieldDef) annotation;
                     Class fieldType = getFieldType( field, fieldDef );
 
-                    FieldSetting setting = new FieldSetting( field.getName(), fieldType, fieldDef, field.getAnnotations() );
+                    Class realType = fieldType;
 
                     if ( field.getGenericType() instanceof ParameterizedType ) {
-
                         ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
                         Type paramArg = parameterizedType.getActualTypeArguments()[0];
-                        setting.setBag( (Class) paramArg );
+                        realType = (Class) paramArg;
                     }
+
+                    FieldSetting setting = new FieldSetting( field.getName(),
+                            new DefaultFieldTypeInfo( realType.getName(),
+                                    fieldType.isAssignableFrom( List.class ),
+                                    fieldType.isEnum()), realType, fieldDef, field.getAnnotations() );
 
                     settings.add( setting );
                 }

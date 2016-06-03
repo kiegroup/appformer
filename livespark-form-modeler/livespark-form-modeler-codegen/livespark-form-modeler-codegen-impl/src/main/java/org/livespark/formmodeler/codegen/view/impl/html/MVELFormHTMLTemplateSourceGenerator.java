@@ -34,7 +34,7 @@ import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
 
 /**
- * Created by pefernan on 4/29/15.
+ * @author Pere Fernandez <pefernan@redhat.com>
  */
 @ApplicationScoped
 public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
@@ -54,7 +54,7 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
         formTemplate = TemplateCompiler.compileTemplate( getClass().getResourceAsStream( formTemplatePath ) );
 
         for ( InputTemplateProvider provider : providers ) {
-            registry.addNamedTemplate( provider.getSupportedFieldTypeCode(), TemplateCompiler.compileTemplate( provider.getTemplateInputStream() ) );
+            provider.registerTemplates( registry );
         }
 
     }
@@ -63,6 +63,6 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
     public String generateHTMLTemplateSource( SourceGenerationContext context ) {
         Map<String, FormDefinition> params = new HashMap<String, FormDefinition>(  );
         params.put( "formDefinition", context.getFormDefinition() );
-        return formatter.formatHTMLCode( ( String ) TemplateRuntime.execute(formTemplate, null, params, registry) );
+        return formatter.formatHTMLCode( ( String ) TemplateRuntime.execute( formTemplate, null, params, registry ) );
     }
 }

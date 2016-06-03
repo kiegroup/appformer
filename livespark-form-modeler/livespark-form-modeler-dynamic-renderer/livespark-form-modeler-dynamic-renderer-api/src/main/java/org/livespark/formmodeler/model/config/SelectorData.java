@@ -22,31 +22,31 @@ import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class SelectorData {
-    private Map<String, String> values;
-    private String selectedValue;
+public class SelectorData<T> {
+    private Map<T, String> values;
+    private T selectedValue;
 
     public SelectorData() {
     }
 
-    public SelectorData( @MapsTo( "values" ) Map<String, String> values, @MapsTo( "selectedValue" ) String selectedValue ) {
+    public SelectorData( @MapsTo( "values" ) Map<T, String> values, @MapsTo( "selectedValue" ) T selectedValue ) {
         this.values = values;
         this.selectedValue = selectedValue;
     }
 
-    public Map<String, String> getValues() {
+    public Map<T, String> getValues() {
         return values;
     }
 
-    public void setValues( Map<String, String> values ) {
+    public void setValues( Map<T, String> values ) {
         this.values = values;
     }
 
-    public String getSelectedValue() {
+    public T getSelectedValue() {
         return selectedValue;
     }
 
-    public void setSelectedValue( String selectedValue ) {
+    public void setSelectedValue( T selectedValue ) {
         this.selectedValue = selectedValue;
     }
 }

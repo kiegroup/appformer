@@ -17,7 +17,6 @@
 package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
 import java.lang.annotation.Annotation;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 

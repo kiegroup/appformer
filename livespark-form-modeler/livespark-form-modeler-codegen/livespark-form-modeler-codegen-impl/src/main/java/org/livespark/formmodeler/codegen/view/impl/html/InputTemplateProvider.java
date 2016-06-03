@@ -16,12 +16,12 @@
 
 package org.livespark.formmodeler.codegen.view.impl.html;
 
-import java.io.InputStream;
+import org.mvel2.templates.TemplateRegistry;
 
 /**
- * Created by pefernan on 4/29/15.
+ * @author Pere Fernandez <pefernan@redhat.com>
  */
 public interface InputTemplateProvider {
-    String getSupportedFieldTypeCode();
-    InputStream getTemplateInputStream();
+
+    void registerTemplates( TemplateRegistry registry );
 }

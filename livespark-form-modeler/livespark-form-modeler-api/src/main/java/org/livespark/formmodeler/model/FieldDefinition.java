@@ -26,6 +26,8 @@ public abstract class FieldDefinition {
 
     protected boolean annotatedId;
 
+    protected String code;
+
     private String id;
 
     protected String name;
@@ -48,8 +50,9 @@ public abstract class FieldDefinition {
 
     protected String standaloneClassName;
 
-    public FieldDefinition() {
+    protected FieldDefinition( String code ) {
         id = ID_PREFFIX + IDGenerator.generateRandomId();
+        this.code = code;
     }
 
     public String getId() {
@@ -58,6 +61,10 @@ public abstract class FieldDefinition {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public String getName() {
@@ -132,6 +139,10 @@ public abstract class FieldDefinition {
         this.standaloneClassName = standaloneClassName;
     }
 
+    public FieldTypeInfo getFieldTypeInfo() {
+        return new DefaultFieldTypeInfo( standaloneClassName );
+    }
+
     public Boolean getValidateOnChange() {
         return validateOnChange;
     }
@@ -144,8 +155,6 @@ public abstract class FieldDefinition {
         if ( other == null ) return;
         setLabel(other.getLabel());
 
-        setRequired( other.getRequired() );
-
         setAnnotatedId( other.isAnnotatedId() );
         if ( !other.isAnnotatedId() ) setReadonly( other.getReadonly() );
 
@@ -153,12 +162,12 @@ public abstract class FieldDefinition {
         setModelName( other.getModelName() );
         setBoundPropertyName( other.getBoundPropertyName() );
 
+        setRequired( other.getRequired() );
+        setReadonly( other.getReadonly() );
+        setValidateOnChange( other.getValidateOnChange() );
+
         doCopyFrom( other );
     }
 
-    public abstract String getCode();
-
-    public abstract String[] getSupportedTypes();
-
-    protected abstract void doCopyFrom(FieldDefinition other);
+    protected abstract void doCopyFrom( FieldDefinition other );
 }

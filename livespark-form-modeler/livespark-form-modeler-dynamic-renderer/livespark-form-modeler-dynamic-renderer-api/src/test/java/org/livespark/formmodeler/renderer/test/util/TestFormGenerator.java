@@ -19,9 +19,9 @@ package org.livespark.formmodeler.renderer.test.util;
 import java.util.Date;
 
 import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 import org.livespark.formmodeler.renderer.test.model.Address;
@@ -63,7 +63,7 @@ public class TestFormGenerator {
         lastName.setModelName( "surname" );
         lastName.setStandaloneClassName( String.class.getName() );
 
-        DateBoxFieldDefinition birthday = new DateBoxFieldDefinition();
+        DatePickerFieldDefinition birthday = new DatePickerFieldDefinition();
         birthday.setId( "birthday" );
         birthday.setName( "birthday" );
         birthday.setLabel( "Birthday" );

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.livespark.formmodeler.metaModel.SelectorDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.MultipleField;
 import org.livespark.formmodeler.metaModel.FieldDef;
+import org.livespark.formmodeler.service.impl.fieldProviders.MultipleSubFormFieldProvider;
 
 /**
  * Created by pefernan on 7/1/15.
@@ -36,8 +37,6 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Bindable
 public class MultipleSubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField, MultipleField {
     public static final String CODE = "MultipleSubForm";
-
-    private String code = CODE;
 
     @FieldDef( label = "Create Form" )
     @ListBox( provider = @SelectorDataProvider(
@@ -58,16 +57,8 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
     @NotEmpty
     private List<TableColumnMeta> columnMetas = new ArrayList<TableColumnMeta>();
 
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    @Override
-    public String[] getSupportedTypes() {
-        return new String[] {
-                List.class.getName()
-        };
+    public MultipleSubFormFieldDefinition() {
+        super( CODE );
     }
 
     public List<TableColumnMeta> getColumnMetas() {

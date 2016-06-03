@@ -23,7 +23,10 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.VALIDATION_NOT_NULL;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.VALIDATION_VALID;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,13 +41,35 @@ import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.service.FieldManager;
 
 /**
  * Created by pefernan on 4/27/15.
  */
 @ApplicationScoped
 public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator {
+
+    public static final String[] BASIC_TYPES = new String[]{
+            BigDecimal.class.getName(),
+            BigInteger.class.getName(),
+            Byte.class.getName(),
+            byte.class.getName(),
+            Boolean.class.getName(),
+            boolean.class.getName(),
+            Character.class.getName(),
+            char.class.getName(),
+            Date.class.getName(),
+            Double.class.getName(),
+            double.class.getName(),
+            Float.class.getName(),
+            float.class.getName(),
+            Integer.class.getName(),
+            int.class.getName(),
+            Long.class.getName(),
+            long.class.getName(),
+            Short.class.getName(),
+            short.class.getName(),
+            String.class.getName()
+    };
 
     @Inject
     private ConstructorGenerator constructorGenerator;
@@ -130,7 +155,7 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
             FieldSource<JavaClassSource> modelField = modelClass.addProperty( dataHolder.getType(),
                                                                               dataHolder.getName() ).getField();
 
-            if ( ArrayUtils.contains( FieldManager.BASIC_TYPES,
+            if ( ArrayUtils.contains( BASIC_TYPES,
                                       dataHolder.getType() ) ) {
                 modelField.addAnnotation( VALIDATION_NOT_NULL );
             } else {

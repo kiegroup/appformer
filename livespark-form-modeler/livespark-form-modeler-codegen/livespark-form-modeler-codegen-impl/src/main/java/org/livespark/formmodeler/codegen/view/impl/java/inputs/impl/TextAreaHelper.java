@@ -16,7 +16,8 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
+
+import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.

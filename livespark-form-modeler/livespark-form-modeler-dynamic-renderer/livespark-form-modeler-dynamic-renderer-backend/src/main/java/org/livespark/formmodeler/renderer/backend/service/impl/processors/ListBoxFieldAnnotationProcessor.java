@@ -18,19 +18,18 @@ package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.metaModel.ListBox;
 import org.livespark.formmodeler.metaModel.Option;
-import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.StringSelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.listBox.ListBoxBase;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.service.FieldManager;
 import org.livespark.formmodeler.renderer.service.SelectorDataProviderManager;
+import org.livespark.formmodeler.service.FieldManager;
 
 @Dependent
 public class ListBoxFieldAnnotationProcessor extends AbstractFieldAnnotationProcessor {
@@ -46,14 +45,13 @@ public class ListBoxFieldAnnotationProcessor extends AbstractFieldAnnotationProc
     }
 
     @Override
-    public ListBoxFieldDefinition buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
+    public ListBoxBase buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
 
-        ListBoxFieldDefinition fieldDefinition = new ListBoxFieldDefinition();
-
-        if ( !Arrays.asList( fieldDefinition.getSupportedTypes() ).contains( setting.getType().getName() )
-                || !supportsAnnotation( annotation )) {
+        if ( !supportsAnnotation( annotation )) {
             return null;
         }
+
+        ListBoxBase fieldDefinition = (ListBoxBase) fieldManager.getFieldFromProvider( ListBoxBase.CODE, setting.getTypeInfo() );
 
         ListBox listBoxDef = (ListBox) annotation;
 
@@ -67,10 +65,11 @@ public class ListBoxFieldAnnotationProcessor extends AbstractFieldAnnotationProc
         } else {
             List<SelectorOption> options = new ArrayList<SelectorOption>();
             for ( Option option : listBoxDef.options() ) {
-                SelectorOption selectorOption = new SelectorOption();
+                StringSelectorOption selectorOption = new StringSelectorOption();
                 selectorOption.setValue( option.value() );
                 selectorOption.setText( option.text() );
                 selectorOption.setDefaultValue( option.isDefault() );
+                options.add( selectorOption );
             }
             fieldDefinition.setOptions( options );
         }

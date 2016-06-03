@@ -31,7 +31,7 @@ import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
-import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
+import org.livespark.formmodeler.editor.client.editor.rendering.EditorFieldLayoutComponent;
 import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
@@ -254,10 +254,10 @@ public class FormEditorPresenter extends KieEditor {
         LayoutDragComponentGroup group = new LayoutDragComponentGroup( holderName );
 
         for ( FieldDefinition field : fields ) {
-            DraggableFieldComponent dragComponent = beanManager.lookupBean( DraggableFieldComponent.class ).newInstance();
-            if (dragComponent != null) {
-                dragComponent.init( editorContext.getRenderingContext(), field );
-                group.addLayoutDragComponent( field.getId(), dragComponent );
+            EditorFieldLayoutComponent layoutFieldComponent = beanManager.lookupBean( EditorFieldLayoutComponent.class ).newInstance();
+            if (layoutFieldComponent != null) {
+                layoutFieldComponent.init( editorContext.getRenderingContext(), field );
+                group.addLayoutDragComponent( field.getId(), layoutFieldComponent );
             }
         }
 
@@ -277,10 +277,10 @@ public class FormEditorPresenter extends KieEditor {
         if (event.getFormId().equals( editorContext.getFormDefinition().getId() )) {
             FieldDefinition field = editorContext.removeField( event.getFieldId() );
             if (field != null) {
-                DraggableFieldComponent dragComponent = beanManager.lookupBean( DraggableFieldComponent.class ).newInstance();
-                if (dragComponent != null) {
-                    dragComponent.init( editorContext.getRenderingContext(), field );
-                    layoutEditor.addDraggableComponentToGroup( field.getModelName(), field.getId(), dragComponent );
+                EditorFieldLayoutComponent layoutFieldComponent = beanManager.lookupBean( EditorFieldLayoutComponent.class ).newInstance();
+                if (layoutFieldComponent != null) {
+                    layoutFieldComponent.init( editorContext.getRenderingContext(), field );
+                    layoutEditor.addDraggableComponentToGroup( field.getModelName(), field.getId(), layoutFieldComponent );
                 }
             }
         }

@@ -8,9 +8,29 @@
     <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
     <!-- End of Errai exclusions -->
 
+    <!-- Errai -->
+    <exclude name="org.jboss.errai.databinding.client.**"/>
 
+    <!-- UF -->
+    <exclude name="org.uberfire.client.**"/>
 
+    <!-- UF Extensions -->
+    <exclude name="org.uberfire.ext.apps.client.**"/>
+    <exclude name="org.uberfire.ext.editor.commons.client.**"/>
+    <exclude name="org.uberfire.ext.plugin.client.**"/>
+    <exclude name="org.uberfire.ext.widgets.common.client.**"/>
+    <exclude name="org.uberfire.ext.widgets.sandbox.client.**"/>
+    <exclude name="org.uberfire.ext.properties.editor.client.**"/>
+    <exclude name="org.uberfire.ext.widgets.core.client.**"/>
 
+    <!-- Workbench -->
     <exclude name="org.kie.workbench.drools.client.**"/>
+
+    <!-- LiveSpark -->
+    <exclude name="org.livespark.client.**"/>
+    <exclude name="org.livespark.formmodeler.rendering.client.**"/>
+    <exclude name="org.livespark.formmodeler.renderer.client.**"/>
+    <exclude name="org.livespark.formmodeler.editor.client.**"/>
+
   </scan>
 </beans>

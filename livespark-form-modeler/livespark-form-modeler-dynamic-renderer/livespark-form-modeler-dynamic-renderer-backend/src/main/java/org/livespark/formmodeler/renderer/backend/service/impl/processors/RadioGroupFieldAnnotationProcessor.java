@@ -18,17 +18,15 @@ package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.livespark.formmodeler.metaModel.ListBox;
 import org.livespark.formmodeler.metaModel.Option;
 import org.livespark.formmodeler.metaModel.RadioGroup;
-import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.StringSelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.radioGroup.RadioGroupBase;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
 import org.livespark.formmodeler.renderer.service.SelectorDataProviderManager;
 import org.livespark.formmodeler.service.FieldManager;
@@ -47,19 +45,17 @@ public class RadioGroupFieldAnnotationProcessor extends AbstractFieldAnnotationP
     }
 
     @Override
-    public RadioGroupFieldDefinition buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
+    public RadioGroupBase buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
 
-        RadioGroupFieldDefinition fieldDefinition = new RadioGroupFieldDefinition();
-
-        if ( !Arrays.asList( fieldDefinition.getSupportedTypes() ).contains( setting.getType().getName() )
-                || !supportsAnnotation( annotation )) {
+        if ( !supportsAnnotation( annotation )) {
             return null;
         }
+
+        RadioGroupBase fieldDefinition = (RadioGroupBase) fieldManager.getFieldFromProvider( RadioGroupBase.CODE, setting.getTypeInfo() );
 
         RadioGroup radioGroupDef = (RadioGroup) annotation;
 
         if ( !radioGroupDef.provider().className().isEmpty() ) {
-
             String providerId =  radioGroupDef.provider().type().getCode()
                     + SelectorDataProviderManager.SEPARATOR
                     + radioGroupDef.provider().className();
@@ -68,10 +64,11 @@ public class RadioGroupFieldAnnotationProcessor extends AbstractFieldAnnotationP
         } else {
             List<SelectorOption> options = new ArrayList<SelectorOption>();
             for ( Option option : radioGroupDef.options() ) {
-                SelectorOption selectorOption = new SelectorOption();
+                StringSelectorOption selectorOption = new StringSelectorOption();
                 selectorOption.setValue( option.value() );
                 selectorOption.setText( option.text() );
                 selectorOption.setDefaultValue( option.isDefault() );
+                options.add( selectorOption );
             }
             fieldDefinition.setOptions( options );
         }

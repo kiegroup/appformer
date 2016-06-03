@@ -16,30 +16,28 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl;
 
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.service.AbstractFieldManager;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.service.FieldProvider;
+import org.livespark.formmodeler.service.impl.AbstractFieldManager;
+
+/**
+ * @author Pere Fernandez <pefernan@redhat.com>
+ */
 @ApplicationScoped
 public class BackendFieldManagerImpl extends AbstractFieldManager {
 
     @Inject
-    private Instance<FieldDefinition> definitions;
+    private Instance<FieldProvider<? extends FieldDefinition>> providers;
 
     @PostConstruct
     protected void init() {
-        for (FieldDefinition definition : definitions ) {
-            registerFieldDefinition( definition );
+        for ( FieldProvider provider : providers ) {
+            registerFieldProvider( provider );
         }
-    }
-
-    @Override
-    protected FieldDefinition createNewInstance(FieldDefinition definition) throws Exception {
-        if ( definition == null ) return null;
-        return definition.getClass().newInstance();
     }
 }

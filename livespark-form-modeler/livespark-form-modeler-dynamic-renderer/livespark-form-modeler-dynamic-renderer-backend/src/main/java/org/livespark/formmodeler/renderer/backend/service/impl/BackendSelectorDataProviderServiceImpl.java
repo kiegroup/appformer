@@ -18,13 +18,10 @@ package org.livespark.formmodeler.renderer.backend.service.impl;
 
 import java.util.Map;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
 import org.livespark.formmodeler.model.config.SelectorData;
-import org.livespark.formmodeler.model.config.SelectorDataProvider;
-import org.livespark.formmodeler.renderer.service.AbstractSelectorDataProviderManager;
 import org.livespark.formmodeler.renderer.service.BackendSelectorDataProviderService;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 

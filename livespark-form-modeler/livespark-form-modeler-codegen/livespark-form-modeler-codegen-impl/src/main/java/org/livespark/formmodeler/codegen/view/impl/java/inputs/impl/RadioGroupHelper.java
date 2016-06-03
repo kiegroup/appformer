@@ -23,12 +23,13 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresExtraFields;
-import org.livespark.formmodeler.model.impl.basic.selectors.RadioGroupFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
+import org.livespark.formmodeler.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupFieldDefinition> implements RequiresCustomCode<RadioGroupFieldDefinition>, RequiresExtraFields<RadioGroupFieldDefinition> {
+public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGroupFieldDefinition> implements
+        RequiresCustomCode<StringRadioGroupFieldDefinition>, RequiresExtraFields<StringRadioGroupFieldDefinition> {
 
     public static final String LOAD_RADIO_GROUP_VALUES = "loadRadioGroupValues_";
 
@@ -48,21 +49,21 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupField
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return RadioGroupFieldDefinition.CODE;
+        return StringRadioGroupFieldDefinition.CODE;
     }
 
     @Override
-    public String getInputWidget( RadioGroupFieldDefinition fieldDefinition ) {
+    public String getInputWidget( StringRadioGroupFieldDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.StringRadioGroup";
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, RadioGroupFieldDefinition fieldDefinition ) {
+    public String getInputInitLiteral( SourceGenerationContext context, StringRadioGroupFieldDefinition fieldDefinition ) {
         return "new StringRadioGroup( " + fieldDefinition.getName() + RADIO_GROUP_NAME_SUFFIX + " );";
     }
 
     @Override
-    public void addCustomCode( RadioGroupFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
+    public void addCustomCode( StringRadioGroupFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
 
         StringBuffer body = new StringBuffer();
 
@@ -84,8 +85,8 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupField
                     .append( inputName )
                     .append( ");" );
 
-            if ( option.getDefaultValue() ) {
-                defaultValue = option.getValue();
+            if ( option.isDefaultValue() ) {
+                defaultValue = option.getValue().toString();
             }
         }
 
@@ -119,7 +120,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupField
     }
 
     @Override
-    public String getExtraReadOnlyCode( RadioGroupFieldDefinition fieldDefinition, String readonlyParam ) {
+    public String getExtraReadOnlyCode( StringRadioGroupFieldDefinition fieldDefinition, String readonlyParam ) {
         StringBuffer readonlySrc = new StringBuffer( );
 
         for (int i = 0; i<fieldDefinition.getOptions().size(); i++) {
@@ -135,7 +136,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<RadioGroupField
     }
 
     @Override
-    public void addExtraFields( JavaClassSource viewClass, RadioGroupFieldDefinition fieldDefinition ) {
+    public void addExtraFields( JavaClassSource viewClass, StringRadioGroupFieldDefinition fieldDefinition ) {
         String inputClassName;
         String inputFullClassName;
 

@@ -16,7 +16,8 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
+
+import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
 
 /**
  * Created by pefernan on 4/28/15.

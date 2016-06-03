@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,60 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.livespark.formmodeler.model.impl.basic.selectors;
 
-import org.hibernate.validator.constraints.NotEmpty;
-import org.jboss.errai.common.client.api.annotations.MapsTo;
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.jboss.errai.databinding.client.api.Bindable;
-import org.livespark.formmodeler.metaModel.FieldDef;
-
 /**
- * Created by pefernan on 10/5/15.
+ * @author Pere Fernandez <pefernan@redhat.com>
  */
-@Portable
-@Bindable
-public class SelectorOption {
-    @FieldDef( label = "Value", position = 0)
-    @NotEmpty
-    private String value;
+public interface SelectorOption<T> {
 
-    @FieldDef( label = "Text", position = 1)
-    @NotEmpty
-    private String text;
+    T getValue();
 
-    @FieldDef( label = "Is default", position = 2)
-    private Boolean defaultValue = Boolean.FALSE;
+    String getText();
 
-    public SelectorOption() {
-    }
-
-    public SelectorOption( @MapsTo( "value" ) String value, @MapsTo( "text" ) String text ) {
-        this.value = value;
-        this.text = text;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText( String text ) {
-        this.text = text;
-    }
-
-    public Boolean getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(Boolean defaultValue) {
-        this.defaultValue = defaultValue;
-    }
+    boolean isDefaultValue();
 }
