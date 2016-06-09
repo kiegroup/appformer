@@ -19,17 +19,12 @@
   -->
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.0">
   <deployment>
-    <exclusions>
-      <!-- Need to exclude the ecj jar in Wildfly 8 that does not support Java 8. -->
-      <module name="io.undertow.jsp"/>
-    </exclusions>
     <dependencies>
       <!-- IMPORTANT: when adding dependency (module) here, make sure it is a public one.
            Do not add private modules as there is no guarantee they won't be changed or
            removed in future. WildFly also generates warning(s) during the deployment if
            the WAR depends on private modules. -->
       <!-- Keep the alphabetical order! -->
-      <module name="deployment.jsp"/>
       <module name="javax.activation.api"/>
       <module name="javax.ejb.api"/>
       <module name="javax.faces.api"/>
@@ -78,15 +73,4 @@
       <module name="org.jboss.dmr"/>
     </dependencies>
   </deployment>
-
-  <!-- A dependency for all classes in io.undertow.jsp *except* those in Wildfly's ecj jar. -->
-  <module name="deployment.jsp">
-    <dependencies>
-      <module name="io.undertow.jsp" export="true">
-        <imports>
-          <exclude path="org/eclipse/jdt/**"/>
-        </imports>
-      </module>
-    </dependencies>
-  </module>
 </jboss-deployment-structure>
