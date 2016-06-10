@@ -22,6 +22,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormLayoutComponent;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
@@ -34,10 +35,13 @@ import org.uberfire.ext.layout.editor.client.components.RenderingContext;
 @Dependent
 public class FieldLayoutComponent<T extends FormRenderingContext> implements FormLayoutComponent, LayoutDragComponent  {
 
-    protected SimplePanel content = new SimplePanel(  );
+    protected SimplePanel content = new SimplePanel();
 
     @Inject
     protected FieldRendererManager fieldRendererManager;
+
+    @Inject
+    protected TranslationService translationService;
 
     protected FieldDefinition field;
 
@@ -65,11 +69,23 @@ public class FieldLayoutComponent<T extends FormRenderingContext> implements For
         TextBox textBox = GWT.create( TextBox.class );
 
         textBox.setReadOnly(true);
+
+        String name = "";
+
         if ( field.getModelName() != null ) {
-            textBox.setPlaceholder( field.getBoundPropertyName() );
+            if ( field.getBoundPropertyName() != null ) {
+                name = field.getBoundPropertyName();
+            } else {
+                name = field.getModelName();
+            }
         } else {
-            textBox.setPlaceholder( fieldRenderer.getName() );
+            name = translationService.getTranslation( fieldRenderer.getName() );
+            if ( name == null || name.isEmpty() ) {
+                name = fieldRenderer.getName();
+            }
         }
+
+        textBox.setPlaceholder( name );
 
         return textBox;
     }

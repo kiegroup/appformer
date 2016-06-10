@@ -19,7 +19,7 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.TextArea;
-import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
 
 /**
@@ -50,7 +50,7 @@ public class TextAreaFieldRenderer extends FieldRenderer<TextAreaFieldDefinition
     }
 
     @Override
-    public String getSupportedFieldDefinitionCode() {
+    public String getSupportedCode() {
         return TextAreaFieldDefinition.CODE;
     }
 }

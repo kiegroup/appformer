@@ -43,7 +43,7 @@ public class FieldRendererManager {
         for (SyncBeanDef<FieldRenderer> rendererDef : renderers) {
             FieldRenderer renderer = rendererDef.getInstance();
             if ( renderer != null ) {
-                availableRenderers.put(renderer.getSupportedFieldDefinitionCode(), renderer);
+                availableRenderers.put(renderer.getSupportedCode(), renderer);
             }
         }
     }
@@ -51,10 +51,10 @@ public class FieldRendererManager {
     public FieldRenderer getRendererForField( FieldDefinition fieldDefinition ) {
         FieldRenderer def = availableRenderers.get( fieldDefinition.getCode() );
 
-        if ( def == null ) return null;
+        if ( def != null) {
+            return iocBeanManager.lookupBean( def.getClass() ).newInstance();
+        }
 
-        FieldRenderer renderer = iocBeanManager.lookupBean( def.getClass() ).getInstance();
-
-        return renderer;
+        return null;
     }
 }

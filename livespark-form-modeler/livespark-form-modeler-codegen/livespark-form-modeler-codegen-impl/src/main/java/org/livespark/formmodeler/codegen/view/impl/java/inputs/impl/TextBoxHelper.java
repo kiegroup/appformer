@@ -16,20 +16,21 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+
+import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxBase;
 
 /**
  * Created by pefernan on 4/28/15.
  */
-public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxFieldDefinition> {
+public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBase> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextBoxFieldDefinition.CODE;
+        return TextBoxBase.CODE;
     }
 
     @Override
-    public String getInputWidget( TextBoxFieldDefinition fieldDefinition ) {
+    public String getInputWidget( TextBoxBase fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.TextBox";
     }
 }

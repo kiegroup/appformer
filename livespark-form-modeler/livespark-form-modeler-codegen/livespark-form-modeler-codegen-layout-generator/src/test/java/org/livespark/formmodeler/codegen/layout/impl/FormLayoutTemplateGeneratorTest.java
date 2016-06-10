@@ -23,9 +23,9 @@ import org.junit.Test;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.FormLayoutComponent;
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
 import org.uberfire.ext.layout.editor.api.editor.LayoutColumn;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutRow;
@@ -63,7 +63,7 @@ public abstract class FormLayoutTemplateGeneratorTest {
         lastName.setBoundPropertyName( "lastName" );
         lastName.setStandaloneClassName( String.class.getName() );
 
-        DateBoxFieldDefinition birthday = new DateBoxFieldDefinition();
+        DatePickerFieldDefinition birthday = new DatePickerFieldDefinition();
         birthday.setId( "birthday" );
         birthday.setName( "employee_birthday" );
         birthday.setLabel( "Birthday" );

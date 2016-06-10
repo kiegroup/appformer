@@ -23,6 +23,7 @@ import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.HasPlaceHolder;
+import org.livespark.formmodeler.model.DefaultFieldTypeInfo;
 import org.livespark.formmodeler.service.FieldManager;
 
 import javax.inject.Inject;
@@ -68,8 +69,8 @@ public class DataModellerFieldGenerator {
         String propertyName = holderName + "_" + property.getName();
 
         FieldDefinition field = null;
-        if (property.getBag() == null) field = fieldManager.getDefinitionByValueType( property.getClassName() );
-        else field = fieldManager.getDefinitionByValueType( property.getBag(), property.getClassName() );
+        if (property.getBag() == null) field = fieldManager.getDefinitionByValueType( new DefaultFieldTypeInfo( property.getClassName(), false, false ) );
+        else field = fieldManager.getDefinitionByValueType( new DefaultFieldTypeInfo( property.getClassName(), true, false ) );
 
         if (field == null) return null;
 

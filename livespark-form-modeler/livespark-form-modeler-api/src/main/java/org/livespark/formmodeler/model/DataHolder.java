@@ -28,7 +28,6 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class DataHolder {
     private String name;
     private String type;
-    private List<FieldDefinition> fields;
 
     public DataHolder( @MapsTo("name") String name,
                        @MapsTo("type") String type ) {

@@ -18,10 +18,14 @@ package org.livespark.formmodeler.renderer.service;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 
+
+/**
+ * @author Pere Fernandez <pefernan@redhat.com>
+ */
 @Remote
 public interface Model2FormTransformerService {
-    String DYNAMIC_FORM_ID = "DynamicForm_";
 
     FormRenderingContext createContext( Object model );
 }

@@ -15,6 +15,7 @@
  */
 package org.livespark.formmodeler.editor.client.editor.properties;
 
+import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -113,13 +114,14 @@ public class FieldPropertiesRendererViewImpl extends Composite implements FieldP
 
     protected void initFieldTypeList() {
         fieldType.clear();
-        List<String> types = helper.getCompatibleFieldTypes();
-        for ( int i = 0; i < types.size(); i++ ) {
-            String type = types.get( i );
+        Collection<String> types = helper.getCompatibleFieldTypes();
+        int i = 0;
+        for ( String type : types ) {
             fieldType.addItem( type );
             if ( type.equals( helper.getCurrentField().getCode() )) {
                 fieldType.setSelectedIndex( i );
             }
+            i++;
         }
     }
 

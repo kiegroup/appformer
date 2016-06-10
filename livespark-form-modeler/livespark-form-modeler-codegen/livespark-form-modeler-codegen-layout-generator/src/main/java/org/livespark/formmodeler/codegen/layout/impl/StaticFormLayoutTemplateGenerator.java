@@ -28,7 +28,7 @@ import org.livespark.formmodeler.codegen.layout.Static;
 @Default
 @Dependent
 public class StaticFormLayoutTemplateGenerator extends AbstractFormLayoutTemplateGenerator {
-    public static final String DRAGGABLE_TYPE = "org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent";
+    public static final String DRAGGABLE_TYPE = "org.livespark.formmodeler.editor.client.editor.rendering.EditorFieldLayoutComponent";
 
     @Override
     public String getDraggableType() {

@@ -80,7 +80,7 @@ public class MultipleSubFormFieldRenderer extends FieldRenderer<MultipleSubFormF
     }
 
     @Override
-    public String getSupportedFieldDefinitionCode() {
+    public String getSupportedCode() {
         return MultipleSubFormFieldDefinition.CODE;
     }
 

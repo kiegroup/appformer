@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,16 @@ import org.livespark.formmodeler.metaModel.ListBox;
 import org.livespark.formmodeler.metaModel.SelectorDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.metaModel.FieldDef;
+import org.livespark.formmodeler.service.impl.fieldProviders.SubFormFieldProvider;
 
 /**
- * Created by pefernan on 7/1/15.
+ * @author Pere Fernandez <pefernan@redhat.com>
  */
 @Portable
 @Bindable
 public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField {
     public static final String CODE = "SubForm";
 
-    private String code = CODE;
 
     @FieldDef( label = "Nested Form")
     @ListBox( provider = @SelectorDataProvider(
@@ -43,9 +43,8 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
     @NotEmpty
     protected String nestedForm = "";
 
-    @Override
-    public String getCode() {
-        return code;
+    public SubFormFieldDefinition() {
+        super( CODE );
     }
 
     public String getNestedForm() {
@@ -54,13 +53,6 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
 
     public void setNestedForm( String nestedForm ) {
         this.nestedForm = nestedForm;
-    }
-
-    @Override
-    public String[] getSupportedTypes() {
-        return new String[] {
-                Object.class.getName()
-        };
     }
 
     @Override

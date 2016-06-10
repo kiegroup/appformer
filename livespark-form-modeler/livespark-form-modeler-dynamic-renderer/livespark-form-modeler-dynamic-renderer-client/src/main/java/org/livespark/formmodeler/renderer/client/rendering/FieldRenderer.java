@@ -89,7 +89,7 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
 
     public abstract IsWidget getInputWidget();
 
-    public abstract String getSupportedFieldDefinitionCode();
+    public abstract String getSupportedCode();
 
     protected String getFormGroupId( F field ) {
         return generateRelatedId( field, FormViewValidator.FORM_GROUP_SUFFIX );

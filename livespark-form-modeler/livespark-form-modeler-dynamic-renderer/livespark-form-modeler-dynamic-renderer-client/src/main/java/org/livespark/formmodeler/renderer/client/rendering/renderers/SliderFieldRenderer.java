@@ -25,7 +25,7 @@ import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.constants.ColumnSize;
-import org.livespark.formmodeler.model.impl.basic.SliderFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.slider.SliderBase;
 import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
 import org.livespark.formmodeler.rendering.client.widgets.Slider;
 
@@ -33,18 +33,21 @@ import org.livespark.formmodeler.rendering.client.widgets.Slider;
  * @author Pere Fernandez <pefernan@redhat.com>
  */
 @Dependent
-public class SliderFieldRenderer extends FieldRenderer<SliderFieldDefinition> {
+public class SliderFieldRenderer extends FieldRenderer<SliderBase> {
 
     private Slider slider;
 
     @Override
     public String getName() {
-        return SliderFieldDefinition.CODE;
+        return SliderBase.CODE;
     }
 
     @Override
     public void initInputWidget() {
-        slider = new Slider( field.getMin(), field.getMax(), field.getPrecision(), field.getStep() );
+        slider = new Slider( field.getMin().doubleValue(),
+                field.getMax().doubleValue(),
+                field.getPrecision().doubleValue(),
+                field.getStep().doubleValue() );
         slider.setEnabled( !field.getReadonly() );
     }
 
@@ -78,7 +81,7 @@ public class SliderFieldRenderer extends FieldRenderer<SliderFieldDefinition> {
     }
 
     @Override
-    public String getSupportedFieldDefinitionCode() {
-        return SliderFieldDefinition.CODE;
+    public String getSupportedCode() {
+        return SliderBase.CODE;
     }
 }

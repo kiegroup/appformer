@@ -17,12 +17,11 @@
 package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.metaModel.Slider;
-import org.livespark.formmodeler.model.impl.basic.SliderFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.slider.SliderBase;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
 import org.livespark.formmodeler.service.FieldManager;
 
@@ -30,7 +29,7 @@ import org.livespark.formmodeler.service.FieldManager;
  * @author Pere Fernandez <pefernan@redhat.com>
  */
 @Dependent
-public class SliderAnnotationProcessor extends AbstractFieldAnnotationProcessor<SliderFieldDefinition> {
+public class SliderAnnotationProcessor extends AbstractFieldAnnotationProcessor<SliderBase> {
 
     @Inject
     public SliderAnnotationProcessor( FieldManager fieldManager ) {
@@ -38,13 +37,13 @@ public class SliderAnnotationProcessor extends AbstractFieldAnnotationProcessor<
     }
 
     @Override
-    protected SliderFieldDefinition buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
-        SliderFieldDefinition field = new SliderFieldDefinition();
+    protected SliderBase buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
 
-        if ( !Arrays.asList( field.getSupportedTypes() ).contains( setting.getType().getName() )
-                || !supportsAnnotation( annotation )) {
+        if ( !supportsAnnotation( annotation )) {
             return null;
         }
+
+        SliderBase field = (SliderBase) fieldManager.getFieldFromProvider( SliderBase.CODE, setting.getTypeInfo() );
 
         Slider sliderDef = (Slider) annotation;
 

@@ -34,18 +34,18 @@ import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPre
 import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
-import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
-import org.livespark.formmodeler.editor.client.editor.service.ClientFieldManagerImpl;
+import org.livespark.formmodeler.editor.client.editor.rendering.EditorFieldLayoutComponent;
 import org.livespark.formmodeler.editor.client.resources.images.FormEditorImageResources;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
-import org.livespark.formmodeler.model.impl.basic.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.TextAreaFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
 import org.livespark.formmodeler.editor.service.FormEditorService;
+import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
+import org.livespark.formmodeler.service.mock.MockFieldManager;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -59,6 +59,7 @@ import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +118,7 @@ public class FormEditorPresenterTest extends TestCase {
     private SyncBeanManager beanManager;
 
     @Mock
-    private SyncBeanDef<DraggableFieldComponent> draggableFieldDef;
+    private SyncBeanDef<EditorFieldLayoutComponent> fieldLayoutComponentDef;
 
     @Mock
     protected EventSourceMock<FormEditorContextResponse> eventMock;
@@ -136,21 +137,18 @@ public class FormEditorPresenterTest extends TestCase {
         when( formDefinitionResourceType.accept(path) ).thenReturn(true);
 //        when( formDefinitionResourceType.accept(path) ).thenReturn(false);
 
-        when( beanManager.lookupBean(eq(DraggableFieldComponent.class)) ).thenReturn( draggableFieldDef );
+        when( beanManager.lookupBean(eq(EditorFieldLayoutComponent.class)) ).thenReturn( fieldLayoutComponentDef );
 
-        when( draggableFieldDef.newInstance() ).thenAnswer(new Answer<DraggableFieldComponent>() {
+        when( fieldLayoutComponentDef.newInstance() ).thenAnswer( new Answer<EditorFieldLayoutComponent>() {
             @Override
-            public DraggableFieldComponent answer(InvocationOnMock invocationOnMock) throws Throwable {
-                final DraggableFieldComponent mocked = mock(DraggableFieldComponent.class);
+            public EditorFieldLayoutComponent answer(InvocationOnMock invocationOnMock) throws Throwable {
+                final EditorFieldLayoutComponent mocked = mock(EditorFieldLayoutComponent.class);
                 return mocked;
             }
         });
 
-        editorContext = new FormEditorHelper( new ClientFieldManagerImpl() {
-            {
-                init();
-            }
-        }, eventMock, new ServiceMock(), beanManager);
+        editorContext = new FormEditorHelper( new MockFieldManager(),
+                eventMock, new ServiceMock(), beanManager);
 
         presenter = new FormEditorPresenter( view,
                 objectsView,
@@ -176,7 +174,6 @@ public class FormEditorPresenterTest extends TestCase {
         presenter.onStartup(path,
                 mock(PlaceRequest.class));
 
-        assertTrue("There should be at least 9 base field types", editorContext.getBaseFields().size() == 9);
         assertTrue("There should be at least 9 base field draggables", editorContext.getBaseFieldsDraggables().size() == 9);
     }
 
@@ -205,7 +202,7 @@ public class FormEditorPresenterTest extends TestCase {
     public void testUnbindedFields() {
         loadContent();
 
-        testAddRemoveUnbindedFields();
+        //testAddRemoveUnbindedFields();
 
         testUnbindedFieldProperties();
     }
@@ -247,9 +244,10 @@ public class FormEditorPresenterTest extends TestCase {
         testAddRemoveFields(employeeFields, editorContext.getAvailableFields().size(), true);
     }
 
+    /*
     public void testAddRemoveUnbindedFields() {
-        testAddRemoveFields(editorContext.getBaseFields(), 0, false);
-    }
+        testAddRemoveFields( editorContext.getBaseFieldTypes(), 0, false);
+    }*/
 
     protected void testAddRemoveFields (List<FieldDefinition> fields, int availableFields, boolean checkAvailable ) {
         int formFields = 0;
@@ -279,7 +277,7 @@ public class FormEditorPresenterTest extends TestCase {
 
         presenter.addDataHolder(EMPLOYEE_NAME, EMPLOYEE_TYPE);
 
-        testFieldProperties( FormEditorHelper.UNBINDED + TextBoxFieldDefinition.CODE, false);
+        testFieldProperties( TextBoxFieldDefinition.CODE, false);
     }
 
     protected void testFieldProperties( String fieldId, boolean binded ) {
@@ -290,7 +288,7 @@ public class FormEditorPresenterTest extends TestCase {
 
         checkFieldType(field, TextBoxFieldDefinition.class);
 
-        List<String> compatibleTypes = editorContext.getCompatibleFieldTypes(field);
+        Collection<String> compatibleTypes = editorContext.getCompatibleFieldTypes(field);
 
         int expected = 4;
 
@@ -300,12 +298,12 @@ public class FormEditorPresenterTest extends TestCase {
 
         assertNotNull("No compatibles types found!", compatibleTypes);
         assertEquals("There should exist " + expected + " compatible types for TextBoxFieldDefinition!", expected , compatibleTypes.size());
-        assertTrue("Missing TextAreaFieldDefinition as a compatible type for TextBoxFieldDefinition", compatibleTypes.contains(TextAreaFieldDefinition.CODE ));
+        assertTrue("Missing TextAreaFieldDefinition as a compatible type for TextBoxFieldDefinition", compatibleTypes.contains( TextAreaFieldDefinition.CODE ));
 
         field = editorContext.switchToFieldType( field, TextAreaFieldDefinition.CODE );
         checkFieldType(field, TextAreaFieldDefinition.class);
 
-        List<String> compatibleFields = editorContext.getCompatibleFields(field);
+        List<String> compatibleFields = editorContext.getCompatibleFieldCodes(field);
 
         assertNotNull( "No compatibles fields found!", compatibleFields);
 
@@ -454,7 +452,7 @@ public class FormEditorPresenterTest extends TestCase {
         lastName.setBoundPropertyName("lastName");
         lastName.setStandaloneClassName(String.class.getName());
 
-        DateBoxFieldDefinition birthday = new DateBoxFieldDefinition();
+        DatePickerFieldDefinition birthday = new DatePickerFieldDefinition();
         birthday.setId("birthday");
         birthday.setName("employee_birthday");
         birthday.setLabel("Birthday");

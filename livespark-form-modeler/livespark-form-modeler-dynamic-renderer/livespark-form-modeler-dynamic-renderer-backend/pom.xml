@@ -77,10 +77,18 @@
 
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-api</artifactId>
+      <scope>test</scope>
+      <classifier>tests</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
+
   </dependencies>
 
 </project>

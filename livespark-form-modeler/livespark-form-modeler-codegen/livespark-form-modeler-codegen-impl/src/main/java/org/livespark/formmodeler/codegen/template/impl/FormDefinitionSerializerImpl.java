@@ -38,6 +38,12 @@ public class FormDefinitionSerializerImpl implements FormDefinitionSerializer {
     @Inject
     private FieldSerializer fieldSerializer;
 
+    @Inject
+    public FormDefinitionSerializerImpl( FieldSerializer fieldSerializer, FieldDeserializer fieldDeserializer ) {
+        this.fieldSerializer = fieldSerializer;
+        this.fieldDeserializer = fieldDeserializer;
+    }
+
     @Override
     public String serialize( FormDefinition form ) {
         GsonBuilder builder = new GsonBuilder();

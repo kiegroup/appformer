@@ -16,6 +16,7 @@
 package org.livespark.formmodeler.editor.client.editor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,13 +34,14 @@ import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
-import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
+import org.livespark.formmodeler.editor.client.editor.rendering.EditorFieldLayoutComponent;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.model.impl.basic.HasPlaceHolder;
 import org.livespark.formmodeler.service.FieldManager;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
@@ -49,7 +51,7 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 @Dependent
 public class FormEditorHelper {
 
-    public static final String UNBINDED = "unbinded_";
+    public static final String UNBINDED_FIELD_NAME_PREFFIX = "__unbinded_field_";
 
     private FieldManager fieldManager;
 
@@ -63,9 +65,9 @@ public class FormEditorHelper {
 
     private Map<String, FieldDefinition> availableFields = new HashMap<String, FieldDefinition>(  );
 
-    private List<FieldDefinition> baseTypes;
+    private List<FieldDefinition> baseFields;
 
-    private List<DraggableFieldComponent> draggableFieldComponents;
+    private List<EditorFieldLayoutComponent> fieldLayoutComponents;
 
     @Inject
     public FormEditorHelper(FieldManager fieldManager,
@@ -76,7 +78,6 @@ public class FormEditorHelper {
         this.responseEvent = responseEvent;
         this.editorService = editorService;
         this.beanManager = beanManager;
-        baseTypes = fieldManager.getBaseTypes();
     }
 
     public FormModelerContent getContent() {
@@ -86,16 +87,17 @@ public class FormEditorHelper {
     public void initHelper( FormModelerContent content ) {
         this.content = content;
 
-        if (draggableFieldComponents != null && !draggableFieldComponents.isEmpty()) return;
-        draggableFieldComponents = new ArrayList<DraggableFieldComponent>();
+        if ( fieldLayoutComponents != null && !fieldLayoutComponents.isEmpty()) return;
+        fieldLayoutComponents = new ArrayList<EditorFieldLayoutComponent>();
 
-        for ( FieldDefinition field : baseTypes ) {
-            SyncBeanDef<DraggableFieldComponent> beanDef = beanManager.lookupBean( DraggableFieldComponent.class );
-            DraggableFieldComponent dragComponent = beanDef.newInstance();
-            if (dragComponent != null) {
-                field.setId( UNBINDED + field.getCode() );
-                dragComponent.init( content.getRenderingContext(), field );
-                draggableFieldComponents.add( dragComponent );
+        for ( String baseType : fieldManager.getBaseFieldTypes() ) {
+            SyncBeanDef<EditorFieldLayoutComponent> beanDef = beanManager.lookupBean( EditorFieldLayoutComponent.class );
+            EditorFieldLayoutComponent layoutComponent = beanDef.newInstance();
+            if (layoutComponent != null) {
+                FieldDefinition field = fieldManager.getDefinitionByTypeCode( baseType );
+                field.setId( baseType );
+                layoutComponent.init( content.getRenderingContext(), field );
+                fieldLayoutComponents.add( layoutComponent );
             }
         }
     }
@@ -126,18 +128,19 @@ public class FormEditorHelper {
     public FieldDefinition getFormField( String fieldId ) {
         FieldDefinition result = content.getDefinition().getFieldById( fieldId );
         if ( result == null) {
-            if ( fieldId.startsWith( UNBINDED )) {
-                String typeCode = fieldId.substring( UNBINDED.length() );
-                result = fieldManager.getDefinitionByTypeCode( typeCode );
+
+            result = availableFields.get(fieldId);
+            if (result != null) {
+                availableFields.remove(fieldId);
+            } else {
+                result = fieldManager.getDefinitionByTypeCode( fieldId );
 
                 if ( result != null ) {
                     result.setName( generateUnbindedFieldName( result ) );
                     result.setLabel( result.getCode() );
-                }
-            } else {
-                result = availableFields.get(fieldId);
-                if (result != null) {
-                    availableFields.remove(fieldId);
+                    if ( result instanceof HasPlaceHolder ) {
+                        ((HasPlaceHolder) result).setPlaceHolder( result.getCode() );
+                    }
                 }
             }
             if ( result != null ) {
@@ -162,10 +165,6 @@ public class FormEditorHelper {
          return null;
     }
 
-    public List<FieldDefinition> getBaseFields() {
-        return baseTypes;
-    }
-
     public void onFieldRequest( @Observes FormEditorContextRequest request ) {
         if (request.getFormId().equals( content.getDefinition().getId() )) {
             responseEvent.fire( new FormEditorContextResponse( request.getFormId(), request.getFieldId(), this ) );
@@ -180,8 +179,8 @@ public class FormEditorHelper {
         return true;
     }
 
-    public List<String> getCompatibleFields(FieldDefinition field) {
-        List<String> compatibles = fieldManager.getCompatibleFieldTypes(field);
+    public List<String> getCompatibleFieldCodes( FieldDefinition field ) {
+        Collection<String> compatibles = fieldManager.getCompatibleFields( field );
 
         Set<String> result = new TreeSet<>();
         if ( field.getBindingExpression() != null ) result.add( field.getBindingExpression() );
@@ -190,11 +189,11 @@ public class FormEditorHelper {
                 if ( definition.getCode().equals( compatibleType )) result.add( definition.getBindingExpression() );
             }
         }
-        return new ArrayList<String>(result);
+        return new ArrayList<>(result);
     }
 
-    public List<String> getCompatibleFieldTypes(FieldDefinition field) {
-        return fieldManager.getCompatibleFieldTypes(field);
+    public Collection<String> getCompatibleFieldTypes( FieldDefinition field ) {
+        return fieldManager.getCompatibleFields( field );
     }
 
     public FieldDefinition switchToField(FieldDefinition field, String bindingExpression) {
@@ -234,7 +233,7 @@ public class FormEditorHelper {
     }
 
     protected void resetField( FieldDefinition field ) {
-        if ( field.getName().startsWith(FieldManager.UNBINDED_FIELD_NAME_PREFFIX) ) return;
+        if ( field.getName().startsWith( UNBINDED_FIELD_NAME_PREFFIX ) ) return;
 
         editorService.call(new RemoteCallback<FieldDefinition>() {
             @Override
@@ -244,8 +243,9 @@ public class FormEditorHelper {
         }).resetField(content.getDefinition(), field, content.getPath());
     }
 
-    public FieldDefinition switchToFieldType(FieldDefinition field, String typeCode) {
-        FieldDefinition resultDefinition = fieldManager.getDefinitionByTypeCode( typeCode );
+    public FieldDefinition switchToFieldType( FieldDefinition field, String fieldCode ) {
+        FieldDefinition resultDefinition = fieldManager.getFieldFromProvider( fieldCode,
+                                                                             field.getFieldTypeInfo() );
 
         resultDefinition.copyFrom( field );
         resultDefinition.setId( field.getId() );
@@ -276,11 +276,11 @@ public class FormEditorHelper {
     }
 
     public String generateUnbindedFieldName( FieldDefinition field ) {
-        return FieldManager.UNBINDED_FIELD_NAME_PREFFIX + field.getId();
+        return UNBINDED_FIELD_NAME_PREFFIX + field.getId();
     }
 
-    public List<DraggableFieldComponent> getBaseFieldsDraggables() {
-        return draggableFieldComponents;
+    public List<EditorFieldLayoutComponent> getBaseFieldsDraggables() {
+        return fieldLayoutComponents;
     }
 
     public Map<String, FieldDefinition> getAvailableFields() {

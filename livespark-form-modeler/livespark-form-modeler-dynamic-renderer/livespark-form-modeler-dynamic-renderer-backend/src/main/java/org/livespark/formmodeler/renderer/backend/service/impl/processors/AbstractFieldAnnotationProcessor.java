@@ -26,7 +26,7 @@ import org.livespark.formmodeler.service.FieldManager;
 
 public abstract class AbstractFieldAnnotationProcessor<T extends FieldDefinition> implements FieldAnnotationProcessor {
 
-    private FieldManager fieldManager;
+    protected FieldManager fieldManager;
 
     protected abstract T buildFieldDefinition( Annotation annotation, FieldSetting setting );
 
@@ -40,11 +40,8 @@ public abstract class AbstractFieldAnnotationProcessor<T extends FieldDefinition
         FieldDefinition field = buildFieldDefinition( annotation, setting );
 
         if ( field == null ) {
-            if ( setting.getBag() != null ) {
-                field = fieldManager.getDefinitionByValueType( setting.getType().getName(), setting.getBag().getName() );
-            } else {
-                field = fieldManager.getDefinitionByValueType( setting.getType().getName() );
-            }
+            field = fieldManager.getDefinitionByValueType( setting.getTypeInfo() );
+
             if ( field == null ) {
                 return null;
             }
@@ -54,6 +51,7 @@ public abstract class AbstractFieldAnnotationProcessor<T extends FieldDefinition
         field.setName( setting.getFieldName() );
         field.setLabel( setting.getLabel() );
         field.setModelName( setting.getFieldName() );
+
         if ( !StringUtils.isEmpty( setting.getProperty() ) ) {
             field.setBoundPropertyName( setting.getProperty() );
         }

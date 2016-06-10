@@ -25,7 +25,11 @@ import org.livespark.formmodeler.metaModel.FieldDef;
 @Bindable
 @Portable
 public class Person {
-    @FieldDef(label = "Name", position = 0)
+
+    @FieldDef(label = "Title", position = 0)
+    private Title title;
+
+    @FieldDef(label = "Name", position = 1)
     private String name;
 
     @FieldDef(label = "Surname")
@@ -33,6 +37,14 @@ public class Person {
 
     @FieldDef(label = "Birthday", position = 3)
     private Date birthday;
+
+    public Title getTitle() {
+        return title;
+    }
+
+    public void setTitle( Title title ) {
+        this.title = title;
+    }
 
     public String getName() {
         return name;

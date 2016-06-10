@@ -19,14 +19,14 @@ import javax.enterprise.context.Dependent;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxBase;
 import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
 
 /**
  * Created by pefernan on 9/21/15.
  */
 @Dependent
-public class TextBoxFieldRenderer extends FieldRenderer<TextBoxFieldDefinition> {
+public class TextBoxFieldRenderer extends FieldRenderer<TextBoxBase> {
 
     private TextBox textBox = new TextBox();
 
@@ -50,7 +50,7 @@ public class TextBoxFieldRenderer extends FieldRenderer<TextBoxFieldDefinition> 
     }
 
     @Override
-    public String getSupportedFieldDefinitionCode() {
-        return TextBoxFieldDefinition.CODE;
+    public String getSupportedCode() {
+        return TextBoxBase.CODE;
     }
 }

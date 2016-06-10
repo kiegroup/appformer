@@ -16,6 +16,7 @@
 
 package org.livespark.formmodeler.editor.client.editor.properties;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.livespark.formmodeler.model.FieldDefinition;
@@ -26,7 +27,8 @@ public interface FieldPropertiesRendererHelper {
     FormRenderingContext getCurrentRenderingContext();
     FieldDefinition getCurrentField();
     List<String> getAvailableFields();
-    List<String> getCompatibleFieldTypes();
+
+    Collection<String> getCompatibleFieldTypes();
 
     void onClose();
     void onFieldTypeChange(String newType);
