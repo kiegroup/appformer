@@ -16,8 +16,12 @@
 
 package org.livespark.formmodeler.metaModel;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+
+@java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
+@java.lang.annotation.Target({ ElementType.TYPE, ElementType.FIELD })
 public @interface TextArea {
-    String label();
     String placeHolder() default "";
     int rows() default 4;
 }

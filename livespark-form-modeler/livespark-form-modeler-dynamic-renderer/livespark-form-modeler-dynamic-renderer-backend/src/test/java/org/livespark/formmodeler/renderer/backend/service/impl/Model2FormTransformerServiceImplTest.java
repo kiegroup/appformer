@@ -35,6 +35,7 @@ import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.selectors.listBox.EnumListBoxFieldDefinition;
+import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.EnumSelectorFieldInitializer;
@@ -45,6 +46,8 @@ import org.livespark.formmodeler.renderer.backend.service.impl.processors.Defaul
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.FieldAnnotationProcessor;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.ListBoxFieldAnnotationProcessor;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.RadioGroupFieldAnnotationProcessor;
+import org.livespark.formmodeler.renderer.backend.service.impl.processors.SliderAnnotationProcessor;
+import org.livespark.formmodeler.renderer.backend.service.impl.processors.TextAreaAnnotationProcessor;
 import org.livespark.formmodeler.renderer.test.model.Address;
 import org.livespark.formmodeler.renderer.test.model.Employee;
 import org.livespark.formmodeler.renderer.test.model.Person;
@@ -70,7 +73,9 @@ public class Model2FormTransformerServiceImplTest {
         final FieldManager fieldManager = new MockFieldManager();
         final List<FieldAnnotationProcessor> processors = Arrays.asList( new DefaultFieldAnnotationProcessor( fieldManager ),
                                                                          new ListBoxFieldAnnotationProcessor( fieldManager ),
-                                                                         new RadioGroupFieldAnnotationProcessor( fieldManager ) );
+                                                                         new RadioGroupFieldAnnotationProcessor( fieldManager ),
+                                                                         new SliderAnnotationProcessor( fieldManager ),
+                                                                         new TextAreaAnnotationProcessor( fieldManager ) );
 
         final List<FieldInitializer> initializers = Arrays.asList( new SubFormFieldInitializer(),
                 new MultipleSubFormFieldInitializer(),
@@ -95,11 +100,12 @@ public class Model2FormTransformerServiceImplTest {
 
     @Test
     public void testFormGenerationWithInheritance() {
-        FormDefinition form = testFormGeneration( new Employee(), 7 );
+        FormDefinition form = testFormGeneration( new Employee(), 8 );
 
         checkMarried( form.getFieldById( "married" ) );
         checkAge( form.getFieldById( "age" ) );
         checkAddress( form.getFieldById( "address" ) );
+        checkRole( form.getFieldById( "roleDescription" ) );
     }
 
     protected FormDefinition testFormGeneration( Person model, int expectedFields ) {
@@ -157,5 +163,13 @@ public class Model2FormTransformerServiceImplTest {
         assertNotNull( field );
         assertTrue( field instanceof SubFormFieldDefinition );
         assertEquals( Address.class.getName(), field.getStandaloneClassName() );
+    }
+
+    protected void checkRole( FieldDefinition field ) {
+        assertNotNull( field );
+        assertTrue( field instanceof TextAreaFieldDefinition );
+        TextAreaFieldDefinition textArea = (TextAreaFieldDefinition) field;
+        assertSame( 4, textArea.getRows() );
+        assertEquals( "Role Description", textArea.getPlaceHolder() );
     }
 }
