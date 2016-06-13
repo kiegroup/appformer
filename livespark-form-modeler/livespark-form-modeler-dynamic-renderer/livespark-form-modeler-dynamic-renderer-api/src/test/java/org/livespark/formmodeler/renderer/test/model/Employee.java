@@ -19,6 +19,7 @@ package org.livespark.formmodeler.renderer.test.model;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.FieldDef;
+import org.livespark.formmodeler.metaModel.TextArea;
 
 @Bindable
 @Portable
@@ -32,6 +33,10 @@ public class Employee extends Person {
 
     @FieldDef( label = "Address" )
     private Address address = new Address();
+
+    @FieldDef( label = "Role Description" )
+    @TextArea( placeHolder = "Role Description")
+    private String roleDescription;
 
     public Boolean getMarried() {
         return married;
@@ -55,5 +60,13 @@ public class Employee extends Person {
 
     public void setAddress( Address address ) {
         this.address = address;
+    }
+
+    public String getRoleDescription() {
+        return roleDescription;
+    }
+
+    public void setRoleDescription( String roleDescription ) {
+        this.roleDescription = roleDescription;
     }
 }
