@@ -153,7 +153,7 @@ public class BaseIntegrationTest {
 
         // FIXME don't hardcode this.
         // Note: it doesn't matter that this path doesn't exist.
-        final File webXml = new File( "target/wildfly-8.1.0.Final/fakeDir/WEB-INF/web.xml" );
+        final File webXml = new File( "target/wildfly-10.0.0.Final/fakeDir/WEB-INF/web.xml" );
 
         mockRequest.setServletContext( mockContext.addRealPath( "/WEB-INF/web.xml", webXml.getAbsolutePath() ) )
         // As long as we don't load the app, these values don't matter

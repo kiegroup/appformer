@@ -66,7 +66,7 @@ public class BuildAndDeploymentTest extends BaseIntegrationTest {
     // Currently this is the only package where building will work because it is where the App.gwt.xml lives.
     private static final String PACKAGE = "demo";
     private static final String PACKAGE_PATH = PACKAGE.replace( '.', '/' );
-    private static final File DEPLOY_DIR = new File( "target/wildfly-8.1.0.Final/standalone/deployments/" );
+    private static final File DEPLOY_DIR = new File( "target/wildfly-10.0.0.Final/standalone/deployments/" );
 
     private static final Queue<AppReady> observedEvents = new ConcurrentLinkedQueue<AppReady>();
     private static Message message;
