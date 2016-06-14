@@ -42,7 +42,7 @@
   <!--Common Screens -->
   <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient"/>
   <inherits name="org.kie.workbench.common.screens.search.KieWorkbenchSearchScreenClient"/>
-  <inherits name="org.kie.workbench.common.screens.datamodeller.KieWorkbenchDatamodellerClient"/>
+  <inherits name="org.kie.workbench.common.screens.datamodeller.KieWorkbenchDatamodellerWithDataSourcesClient"/>
   <inherits name="org.kie.workbench.common.screens.projecteditor.KieWorkbenchCommonProjectEditorClient"/>
   <inherits name="org.kie.workbench.common.screens.projectimportsscreen.KieWorkbenchCommonProjectImportsScreenClient"/>
   <inherits name="org.kie.workbench.common.screens.javaeditor.KieWorkbenchCommonJavaEditorClient"/>
@@ -77,6 +77,10 @@
   <inherits name="org.livespark.formmodeler.renderer.FormModelerDynamicRendererClient"/>
   <inherits name="org.livespark.formmodeler.editor.FormModelerEditorClient"/>
   <inherits name="org.livespark.LiveSparkDeployment"/>
+
+  <!-- Data sources management -->
+  <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceAPI" />
+  <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceClient" />
 
   <!-- Dashbuilder must use Errai validation. Then this line can be removed.
         We need this now because Dashbuilder's rebind rule for it's Validator
