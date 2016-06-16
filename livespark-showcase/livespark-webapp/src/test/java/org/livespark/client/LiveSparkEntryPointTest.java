@@ -16,19 +16,29 @@
 
 package org.livespark.client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.shared.config.AppConfigService;
-import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
-import org.kie.workbench.common.services.shared.security.KieWorkbenchSecurityService;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
+import org.kie.workbench.common.workbench.client.authz.PermissionTreeSetup;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.livespark.client.home.HomeProducer;
 import org.livespark.client.resources.i18n.AppConstants;
@@ -48,11 +58,7 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.*;
+import com.google.gwtmockito.GwtMockitoTestRunner;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class LiveSparkEntryPointTest {
@@ -62,15 +68,8 @@ public class LiveSparkEntryPointTest {
     private CallerMock<AppConfigService> appConfigServiceCallerMock;
 
     @Mock
-    private KieWorkbenchSecurityService kieSecurityService;
-    private CallerMock<KieWorkbenchSecurityService> kieSecurityServiceCallerMock;
-
-    @Mock
     private PlaceManagerActivityService pmas;
     private CallerMock<PlaceManagerActivityService> pmasCallerMock;
-
-    @Mock
-    private KieWorkbenchACL kieACL;
 
     @Mock
     private ActivityBeansCache activityBeansCache;
@@ -99,6 +98,9 @@ public class LiveSparkEntryPointTest {
 
     @Mock
     private PlaceManager placeManager;
+    
+    @Mock
+    private PermissionTreeSetup permissionTreeSetup;
 
     private LiveSparkEntryPoint liveSparkEntryPoint;
 
@@ -113,14 +115,11 @@ public class LiveSparkEntryPointTest {
         } ).when( userSystemManager ).waitForInitialization( any( Command.class ) );
 
         appConfigServiceCallerMock = new CallerMock<>( appConfigService );
-        kieSecurityServiceCallerMock = new CallerMock<>( kieSecurityService );
         socialConfigurationServiceCallerMock = new CallerMock<>( socialConfigurationService );
         pmasCallerMock = new CallerMock<>( pmas );
 
         liveSparkEntryPoint = spy( new LiveSparkEntryPoint( appConfigServiceCallerMock,
-                                                            kieSecurityServiceCallerMock,
                                                             pmasCallerMock,
-                                                            kieACL,
                                                             activityBeansCache,
                                                             homeProducer,
                                                             socialConfigurationServiceCallerMock,
@@ -129,10 +128,10 @@ public class LiveSparkEntryPointTest {
                                                             menuBar,
                                                             iocManager,
                                                             workbench,
-                                                            placeManager ) );
+                                                            placeManager,
+                                                            permissionTreeSetup ) );
         mockMenuHelper();
         mockConstants();
-        mockKieSecurityService();
         IocTestingUtils.mockIocManager( iocManager );
 
         doNothing().when( liveSparkEntryPoint ).hideLoadingPopup();
@@ -201,18 +200,13 @@ public class LiveSparkEntryPointTest {
     private void mockMenuHelper() {
         final ArrayList<MenuItem> menuItems = new ArrayList<>();
         menuItems.add( mock( MenuItem.class ) );
-        doReturn( menuItems ).when( menusHelper ).getHomeViews( anyBoolean(), anyBoolean() );
+        doReturn( menuItems ).when( menusHelper ).getHomeViews( anyBoolean() );
         doReturn( menuItems ).when( menusHelper ).getAuthoringViews();
         doReturn( menuItems ).when( menusHelper ).getExtensionsViews();
     }
 
     private void mockConstants() {
         liveSparkEntryPoint.constants = mock( AppConstants.class, new ConstantsAnswerMock() );
-    }
-
-    private void mockKieSecurityService() {
-        doReturn( "key=value" ).when( kieSecurityService ).loadPolicy();
-        kieSecurityServiceCallerMock = new CallerMock<>( kieSecurityService );
     }
 
 }

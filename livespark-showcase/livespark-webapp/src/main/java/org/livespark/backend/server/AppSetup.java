@@ -23,9 +23,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
-import org.guvnor.common.services.shared.security.KieWorkbenchSecurityService;
-import org.guvnor.common.services.shared.security.impl.KieWorkbenchACLImpl;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
@@ -40,7 +37,6 @@ import org.kie.workbench.screens.workbench.backend.BaseAppSetup;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
-import org.uberfire.ext.security.server.RolesRegistry;
 import org.uberfire.io.IOService;
 
 //This is a temporary solution when running in PROD-MODE as /webapp/.niogit/system.git folder
@@ -59,8 +55,6 @@ public class AppSetup extends BaseAppSetup {
 
     private Event<ApplicationStarted> applicationStartedEvent;
 
-    private KieWorkbenchSecurityService securityService;
-
     protected AppSetup() {
     }
 
@@ -72,12 +66,10 @@ public class AppSetup extends BaseAppSetup {
                      final ConfigurationService configurationService,
                      final ConfigurationFactory configurationFactory,
                      final AdministrationService administrationService,
-                     final Event<ApplicationStarted> applicationStartedEvent,
-                     final KieWorkbenchSecurityService securityService ) {
+                     final Event<ApplicationStarted> applicationStartedEvent ) {
         super( ioService, repositoryService, organizationalUnitService, projectService, configurationService, configurationFactory );
         this.administrationService = administrationService;
         this.applicationStartedEvent = applicationStartedEvent;
-        this.securityService = securityService;
     }
 
     @PostConstruct
@@ -116,15 +108,6 @@ public class AppSetup extends BaseAppSetup {
                                      getGlobalConfiguration(),
                                      supportRuntimeDeployConfigItem );
 
-
-            final KieWorkbenchPolicy policy = new KieWorkbenchPolicy( securityService.loadPolicy() );
-            // register roles
-            for ( final Map.Entry<String, String> entry : policy.entrySet() ) {
-                if ( entry.getKey().startsWith( KieWorkbenchACLImpl.PREFIX_ROLES ) ) {
-                    String role = entry.getValue();
-                    RolesRegistry.get().registerRole( role );
-                }
-            }
             // rest of jbpm wb bootstrap
             administrationService.bootstrapConfig();
             administrationService.bootstrapDeployments();

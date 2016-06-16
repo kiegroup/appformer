@@ -22,14 +22,12 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.screens.home.model.HomeModel;
 import org.kie.workbench.common.screens.home.model.ModelUtils;
-import org.kie.workbench.common.screens.home.model.Section;
 import org.kie.workbench.common.screens.home.model.SectionEntry;
-import org.guvnor.common.services.shared.security.KieWorkbenchACL;
 import org.livespark.client.resources.i18n.HomePageCommunityConstants;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.mvp.Command;
 
-import static org.livespark.client.security.KieWorkbenchFeatures.*;
+import static org.uberfire.workbench.model.ActivityResourceType.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
 
 /**
  * Producer method for the Home Page content
@@ -44,9 +42,6 @@ public class HomeProducer {
     @Inject
     private PlaceManager placeManager;
 
-    @Inject
-    private KieWorkbenchACL kieACL;
-
     public void init() {
         final String url = GWT.getModuleBaseURL();
         model = new HomeModel( constants.homeTheKnowledgeLifeCycle() );
@@ -57,80 +52,35 @@ public class HomeProducer {
                                                               constants.homeDeployCaption(),
                                                               url + "/images/HandHome.jpg" ) );
 
-        final Section s1 = new Section( constants.authoring() );
-        final SectionEntry s1_a = ModelUtils.makeSectionEntry( constants.project_authoring(),
-                                                               new Command() {
+        final SectionEntry s1 = ModelUtils.makeSectionEntry( constants.authoring() );
 
-                                                                   @Override
-                                                                   public void execute() {
-                                                                       placeManager.goTo( "AuthoringPerspective" );
-                                                                   }
-                                                               } );
+        s1.addChild( ModelUtils.makeSectionEntry( constants.project_authoring(),
+                () -> placeManager.goTo( AUTHORING ),
+                AUTHORING, PERSPECTIVE ) );
 
-        final SectionEntry s1_b = ModelUtils.makeSectionEntry( constants.contributors(),
-                                                               new Command() {
+        s1.addChild( ModelUtils.makeSectionEntry( constants.contributors(),
+                () -> placeManager.goTo( CONTRIBUTORS ),
+                CONTRIBUTORS, PERSPECTIVE ) );
 
-                                                                   @Override
-                                                                   public void execute() {
-                                                                       placeManager.goTo( "ContributorsPerspective" );
-                                                                   }
-                                                               } );
+        s1.addChild( ModelUtils.makeSectionEntry( constants.artifactRepository(),
+                () -> placeManager.goTo( GUVNOR_M2REPO ),
+                GUVNOR_M2REPO, PERSPECTIVE ) );
 
-        final SectionEntry s1_d = ModelUtils.makeSectionEntry( constants.artifactRepository(),
-                                                               new Command() {
+        s1.addChild( ModelUtils.makeSectionEntry( constants.administration(),
+                () -> placeManager.goTo( ADMINISTRATION ),
+                ADMINISTRATION, PERSPECTIVE ) );
 
-                                                                   @Override
-                                                                   public void execute() {
-                                                                       placeManager.goTo( "org.guvnor.m2repo.client.perspectives.GuvnorM2RepoPerspective" );
-                                                                   }
-                                                               } );
+        final SectionEntry s2 = ModelUtils.makeSectionEntry( constants.deploy() );
 
-        final SectionEntry s1_e = ModelUtils.makeSectionEntry( constants.administration(),
-                                                               new Command() {
+        s2.addChild( ModelUtils.makeSectionEntry( constants.ruleDeployments(),
+                () -> placeManager.goTo( SERVER_MANAGEMENT ),
+                SERVER_MANAGEMENT, PERSPECTIVE ) );
 
-                                                                   @Override
-                                                                   public void execute() {
-                                                                       placeManager.goTo( "AdministrationPerspective" );
-                                                                   }
-                                                               } );
+        final SectionEntry s3 = ModelUtils.makeSectionEntry( constants.tasks() );
 
-        final Section s2 = new Section( constants.deploy() );
-        final SectionEntry s2_a = ModelUtils.makeSectionEntry( constants.ruleDeployments(),
-                                                               new Command() {
-
-                                                                   @Override
-                                                                   public void execute() {
-                                                                       placeManager.goTo( "ServerManagementPerspective" );
-                                                                   }
-                                                               } );
-
-        final Section s3 = new Section( constants.tasks() );
-        final SectionEntry s3_a = ModelUtils.makeSectionEntry( constants.Tasks_List(),
-                                                               new Command() {
-
-                                                                   @Override
-                                                                   public void execute() {
-                                                                       placeManager.goTo( "DataSet Tasks" );
-                                                                   }
-                                                               } );
-
-        s1.setRoles( kieACL.getGrantedRoles( G_AUTHORING ) );
-        s1_a.setRoles( kieACL.getGrantedRoles( F_PROJECT_AUTHORING ) );
-        s1_b.setRoles( kieACL.getGrantedRoles( F_CONTRIBUTORS ) );
-        s1_d.setRoles( kieACL.getGrantedRoles( F_ARTIFACT_REPO ) );
-        s1_e.setRoles( kieACL.getGrantedRoles( F_ADMINISTRATION ) );
-
-        s2.setRoles( kieACL.getGrantedRoles( G_AUTHORING ) );
-        s2_a.setRoles( kieACL.getGrantedRoles( F_MANAGEMENT ) );
-
-        s1.addEntry( s1_a );
-        s1.addEntry( s1_b );
-        s1.addEntry( s1_d );
-        s1.addEntry( s1_e );
-
-        s2.addEntry( s2_a );
-
-        s3.addEntry( s3_a );
+        s3.addChild( ModelUtils.makeSectionEntry( constants.Tasks_List(),
+                () -> placeManager.goTo( DATASET_TASKS ),
+                DATASET_TASKS, PERSPECTIVE ) );
 
         model.addSection( s1 );
         model.addSection( s2 );

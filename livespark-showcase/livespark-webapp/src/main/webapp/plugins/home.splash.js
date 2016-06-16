@@ -5,5 +5,5 @@ $registerSplashScreen({
     title: 'What\'s New',
     enabled: false,
     display_next_time: false,
-    interception_points: ['org.kie.workbench.common.screens.home.client.perspectives.HomePerspective']
+    interception_points: ['HomePerspective']
 });
