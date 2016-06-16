@@ -100,6 +100,8 @@ public class LiveSparkEntryPoint extends DefaultWorkbenchEntryPoint {
     @PostConstruct
     public void init() {
         workbench.addStartupBlocker( LiveSparkEntryPoint.class );
+        homeProducer.init();
+        permissionTreeSetup.configureTree();
     }
 
     protected void onAppReady( @Observes AppReady appReady ) {
