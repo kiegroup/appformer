@@ -15,7 +15,6 @@
  */
 package org.livespark.formmodeler.renderer.client.rendering;
 
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.FormGroup;

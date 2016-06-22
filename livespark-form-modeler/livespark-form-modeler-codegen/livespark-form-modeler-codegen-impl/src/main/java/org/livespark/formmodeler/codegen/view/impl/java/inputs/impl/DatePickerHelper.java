@@ -19,9 +19,7 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
 
-/**
- * Created by pefernan on 4/28/15.
- */
+
 public class DatePickerHelper extends AbstractInputCreatorHelper<DatePickerFieldDefinition> {
     public static String DATE_TIME_PICKER_NAME = "DateTimePicker";
     public static String DATE_TIME_PICKER_CLASS_NAME = "org.gwtbootstrap3.extras.datetimepicker.client.ui." + DATE_TIME_PICKER_NAME;

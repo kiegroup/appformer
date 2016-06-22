@@ -69,7 +69,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGrou
 
         String defaultValue = null;
 
-        for (int i = 0; i<fieldDefinition.getOptions().size(); i++) {
+        for ( int i = 0; i < fieldDefinition.getOptions().size(); i++ ) {
 
             String inputName = fieldDefinition.getName() + NESTED_RADIO_SUFFIX + i;
 

@@ -25,7 +25,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.ListBox;
 import org.livespark.formmodeler.metaModel.SelectorDataProvider;
+import org.livespark.formmodeler.model.DefaultFieldTypeInfo;
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.model.FieldTypeInfo;
 import org.livespark.formmodeler.model.MultipleField;
 import org.livespark.formmodeler.metaModel.FieldDef;
 import org.livespark.formmodeler.service.impl.fieldProviders.MultipleSubFormFieldProvider;
@@ -83,6 +85,11 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
 
     public void setEditionForm( String editionForm ) {
         this.editionForm = editionForm;
+    }
+
+    @Override
+    public FieldTypeInfo getFieldTypeInfo() {
+        return new DefaultFieldTypeInfo( standaloneClassName, true, false );
     }
 
     @Override

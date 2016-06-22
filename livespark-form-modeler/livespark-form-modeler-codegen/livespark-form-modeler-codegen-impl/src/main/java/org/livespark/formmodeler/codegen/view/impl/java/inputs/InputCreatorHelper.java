@@ -19,9 +19,6 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.model.FieldDefinition;
 
-/**
- * Created by pefernan on 4/28/15.
- */
 public interface InputCreatorHelper<F extends FieldDefinition> {
     String getSupportedFieldTypeCode();
     boolean isInputInjectable();

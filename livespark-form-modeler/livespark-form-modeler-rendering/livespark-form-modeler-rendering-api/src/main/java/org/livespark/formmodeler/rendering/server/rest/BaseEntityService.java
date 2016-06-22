@@ -37,7 +37,7 @@ public abstract class BaseEntityService {
     }
 
     public <E> void create( E entity ) {
-        em.persist( entity );
+        em.merge( entity );
     }
 
     // TODO this should use an identifier

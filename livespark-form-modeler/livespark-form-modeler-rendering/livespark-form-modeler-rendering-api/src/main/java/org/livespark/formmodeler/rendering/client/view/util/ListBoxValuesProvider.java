@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.slider;
+package org.livespark.formmodeler.rendering.client.view.util;
 
-import javax.enterprise.context.Dependent;
-
-import org.livespark.formmodeler.model.impl.basic.slider.DoubleSliderDefinition;
+import org.gwtbootstrap3.client.ui.ValueListBox;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
  */
-@Dependent
-public class IntegerSliderHelper extends SliderBaseHelper<DoubleSliderDefinition> {
-
-    @Override
-    public String getSupportedFieldTypeCode() {
-        return DoubleSliderDefinition.CODE;
-    }
+public interface ListBoxValuesProvider<T> {
+    public void loadValues( ValueListBox<T> valueListBox );
 }

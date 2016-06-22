@@ -20,9 +20,6 @@ import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.livespark.formmodeler.model.FieldDefinition;
 
-/**
- * Created by pefernan on 4/28/15.
- */
 public abstract class AbstractInputCreatorHelper<F extends FieldDefinition> implements InputCreatorHelper<F> {
 
     @Override

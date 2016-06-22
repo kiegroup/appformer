@@ -40,20 +40,11 @@ public class DoubleSliderDefinition extends SliderBase<Double> {
     @FieldDef( label = "Step")
     protected Double step;
 
-    public static final String CODE = "Slider";
-
-    private String code = CODE;
-
     public DoubleSliderDefinition() {
         min = new Double( 0.0 );
         max = new Double( 50.0 );
         precision = new Double( 1.0 );
         step =  new Double( 1.0 );
-    }
-
-    @Override
-    public String getCode() {
-        return code;
     }
 
     @Override

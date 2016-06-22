@@ -23,6 +23,7 @@ import org.livespark.formmodeler.service.impl.fieldProviders.CheckBoxFieldProvid
 import org.livespark.formmodeler.service.impl.fieldProviders.DatePickerFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.ListBoxFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.MultipleSubFormFieldProvider;
+import org.livespark.formmodeler.service.impl.fieldProviders.ObjectSelectorFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.RadioGroupFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.SliderFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.SubFormFieldProvider;
@@ -55,6 +56,7 @@ public class MockFieldManager extends AbstractFieldManager {
         } );
         registerFieldProvider( new SubFormFieldProvider() );
         registerFieldProvider( new MultipleSubFormFieldProvider() );
+        registerFieldProvider( new ObjectSelectorFieldProvider() );
     }
 
     public Collection<BasicTypeFieldProvider> getAllBasicTypeProviders() {

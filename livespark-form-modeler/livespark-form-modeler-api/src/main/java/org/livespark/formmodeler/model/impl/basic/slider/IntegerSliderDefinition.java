@@ -21,16 +21,9 @@ import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.FieldDef;
 import org.livespark.formmodeler.model.FieldDefinition;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Portable
 @Bindable
 public class IntegerSliderDefinition extends SliderBase<Integer> {
-
-    public static final String CODE = "IntSlider";
-
-    private String code = CODE;
 
     @FieldDef( label = "Min. Value" )
     protected Integer min;

@@ -19,12 +19,10 @@ package org.livespark.formmodeler.rendering.client.widgets;
 import com.google.gwt.dom.client.Element;
 import org.gwtbootstrap3.extras.slider.client.ui.base.constants.HandleType;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 /*
     Patch class to avoid error descrived on: https://github.com/gwtproject/gwt/issues/9242
     TODO: remove it when fixed
+    TODO: there's an issue when the witget is binded, the value is update but it doesn't refresh the selected value.
  */
 public class Slider extends org.gwtbootstrap3.extras.slider.client.ui.Slider {
 

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -38,10 +37,13 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 public abstract class RoasterClientTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {
 
-    @Inject
     private Instance<InputCreatorHelper<? extends FieldDefinition>> creatorInstances;
 
-    private Map<String, InputCreatorHelper> creatorHelpers = new HashMap<String, InputCreatorHelper>(  );
+    protected Map<String, InputCreatorHelper> creatorHelpers = new HashMap<String, InputCreatorHelper>(  );
+
+    public RoasterClientTemplateSourceGenerator( Instance<InputCreatorHelper<? extends FieldDefinition>> creatorInstances ) {
+        this.creatorInstances = creatorInstances;
+    }
 
     @PostConstruct
     protected void init() {
@@ -53,7 +55,7 @@ public abstract class RoasterClientTemplateSourceGenerator implements FormJavaTe
 
     @Override
     public String generateJavaTemplateSource( SourceGenerationContext context ) {
-        JavaClassSource viewClass = Roaster.create( JavaClassSource.class );
+        JavaClassSource viewClass = createClassSource();
         String packageName = getPackageName( context );
 
         addTypeSignature( context, viewClass, packageName );
@@ -63,6 +65,10 @@ public abstract class RoasterClientTemplateSourceGenerator implements FormJavaTe
 
         addBaseViewFieldsAndMethodImpls( context, viewClass );
         return viewClass.toString();
+    }
+
+    protected JavaClassSource createClassSource() {
+        return Roaster.create( JavaClassSource.class );
     }
 
     protected abstract void addAdditional( SourceGenerationContext context,
