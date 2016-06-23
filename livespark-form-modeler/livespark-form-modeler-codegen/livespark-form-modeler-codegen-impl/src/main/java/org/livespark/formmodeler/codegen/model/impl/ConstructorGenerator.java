@@ -32,25 +32,27 @@ public class ConstructorGenerator {
                 .setBody( "" );
     }
 
-    public void addFormModelConstructor( SourceGenerationContext context,
-            JavaClassSource modelClass ) {
-        MethodSource<JavaClassSource> constructor = modelClass.addMethod()
-                .setConstructor( true )
-                .setPublic();
-        StringBuffer source = new StringBuffer();
+    public void addFormModelConstructor(SourceGenerationContext context,
+            JavaClassSource modelClass) {
+        if (!context.getFormDefinition().getDataHolders().isEmpty()) {
+            MethodSource<JavaClassSource> constructor = modelClass.addMethod()
+                    .setConstructor(true)
+                    .setPublic();
+            StringBuffer source = new StringBuffer();
 
-        for ( DataHolder dataHolder : context.getFormDefinition().getDataHolders() ) {
-            constructor.addParameter( dataHolder.getType(),
-                    dataHolder.getName() )
-                    .addAnnotation( ERRAI_MAPS_TO )
-                    .setStringValue( dataHolder.getName() );
-            source.append( "this." )
-                    .append( dataHolder.getName() )
-                    .append( " = " )
-                    .append( dataHolder.getName() )
-                    .append( ";" );
+            for (DataHolder dataHolder : context.getFormDefinition().getDataHolders()) {
+                constructor.addParameter(dataHolder.getType(),
+                        dataHolder.getName())
+                        .addAnnotation(ERRAI_MAPS_TO)
+                        .setStringValue(dataHolder.getName());
+                source.append("this.")
+                        .append(dataHolder.getName())
+                        .append(" = ")
+                        .append(dataHolder.getName())
+                        .append(";");
+            }
+
+            constructor.setBody(source.toString());
         }
-
-        constructor.setBody( source.toString() );
     }
 }

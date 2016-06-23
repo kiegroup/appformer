@@ -70,10 +70,13 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
             short.class.getName(),
             String.class.getName()
     };
-
+    
     @Inject
+    public RoasterFormModelSourceGenerator(ConstructorGenerator constructorGenerator) {
+        this.constructorGenerator = constructorGenerator;
+    }
+    
     private ConstructorGenerator constructorGenerator;
-
     @Override
     public String generateFormModelSource( SourceGenerationContext context ) {
 
