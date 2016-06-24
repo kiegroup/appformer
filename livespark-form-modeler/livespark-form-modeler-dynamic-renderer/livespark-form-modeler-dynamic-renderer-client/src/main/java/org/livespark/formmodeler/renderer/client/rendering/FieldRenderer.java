@@ -42,12 +42,11 @@ public abstract class FieldRenderer<F extends FieldDefinition> {
     }
 
     public IsWidget renderWidget() {
-        initInputWidget();
-
         FormGroup group = new FormGroup();
         group.getElement().setId( getFormGroupId( field ) );
 
         if ( isFieldWellConfigured() ) {
+            initInputWidget();
             addFormGroupContents( group );
         } else {
             group.setValidationState( ValidationState.ERROR );

@@ -21,6 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.livespark.formmodeler.model.DefaultFieldTypeInfo;
 import org.livespark.formmodeler.model.FieldDefinition;
@@ -48,11 +49,18 @@ public class FieldDeserializer implements JsonDeserializer<FieldDefinition> {
 
         for (JsonElement je : ja) {
 
-            String typeCode = je.getAsJsonObject().get( "code" ).getAsString();
+            JsonObject jsonObject = je.getAsJsonObject();
 
-            String type = je.getAsJsonObject().get( "standaloneClassName" ).getAsString();
+            String typeCode = jsonObject.get( "code" ).getAsString();
 
-            FieldDefinition definition = fieldManager.getFieldFromProviderWithType( typeCode, new DefaultFieldTypeInfo( type ) );
+            FieldDefinition definition;
+
+            if ( jsonObject.get( "standaloneClassName" ) != null ) {
+                String type = jsonObject.get( "standaloneClassName" ).getAsString();
+                definition = fieldManager.getFieldFromProviderWithType( typeCode, new DefaultFieldTypeInfo( type ) );
+            } else {
+                definition =  fieldManager.getDefinitionByTypeCode( typeCode );
+            }
 
             return context.deserialize( je, definition.getClass() );
         }
