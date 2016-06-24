@@ -142,12 +142,6 @@ public class LiveSparkEntryPointTest {
         liveSparkEntryPoint.init();
 
         verify( workbench ).addStartupBlocker( LiveSparkEntryPoint.class );
-    }
-
-    @Test
-    public void startDefaultWorkbenchWithCustomSecurityLoadedCallbackTest() {
-        liveSparkEntryPoint.startDefaultWorkbench();
-
         verify( homeProducer ).init();
     }
 
