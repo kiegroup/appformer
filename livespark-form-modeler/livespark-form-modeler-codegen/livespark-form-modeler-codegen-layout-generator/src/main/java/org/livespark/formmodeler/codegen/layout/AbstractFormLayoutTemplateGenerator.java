@@ -37,7 +37,7 @@ public abstract class AbstractFormLayoutTemplateGenerator implements FormLayoutT
             layoutComponent.addProperty( FormLayoutComponent.FIELD_ID, field.getId() );
 
             LayoutColumn column = new LayoutColumn("12");
-            column.addLayoutComponent( layoutComponent );
+            column.add( layoutComponent );
 
             LayoutRow row = new LayoutRow();
             row.add( column );

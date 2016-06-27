@@ -16,6 +16,7 @@
 package org.livespark.formmodeler.editor.client.editor.rendering;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.Dependent;
@@ -37,19 +38,14 @@ import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.ext.layout.editor.client.components.HasDragAndDropSettings;
-import org.uberfire.ext.layout.editor.client.components.HasModalConfiguration;
-import org.uberfire.ext.layout.editor.client.components.HasOnDropNotification;
-import org.uberfire.ext.layout.editor.client.components.HasOnRemoveNotification;
-import org.uberfire.ext.layout.editor.client.components.ModalConfigurationContext;
-import org.uberfire.ext.layout.editor.client.components.RenderingContext;
+import org.uberfire.ext.layout.editor.client.api.*;
 
 /**
  * Created by pefernan on 9/22/15.
  */
 @Dependent
 public class EditorFieldLayoutComponent extends FieldLayoutComponent<FormEditorRenderingContext> implements HasDragAndDropSettings,
-        HasModalConfiguration, HasOnDropNotification, HasOnRemoveNotification {
+        HasModalConfiguration {
 
     public final String[] SETTINGS_KEYS = new String[] { FORM_ID, FIELD_ID};
 
@@ -167,6 +163,14 @@ public class EditorFieldLayoutComponent extends FieldLayoutComponent<FormEditorR
     }
 
     @Override
+    public Map<String, String> getMapSettings() {
+        Map<String, String> settings = new HashMap<>();
+        settings.put( FORM_ID, getSettingValue( FORM_ID ) );
+        settings.put( FIELD_ID, getSettingValue( FIELD_ID ) );
+        return settings;
+    }
+
+    @Override
     public Modal getConfigurationModal( final ModalConfigurationContext ctx ) {
 
         showProperties = true;
@@ -183,13 +187,13 @@ public class EditorFieldLayoutComponent extends FieldLayoutComponent<FormEditorR
         return propertiesRenderer.getView().getPropertiesModal();
     }
 
-    @Override
-    public void onDropComponent() {
+    public void onDropComponent(@Observes ComponentDropEvent event) {
+        //TODO convert from ComponentDropEvent for FieldDroppedEvent
         fieldDroppedEvent.fire( new FieldDroppedEvent( formId, fieldId ) );
     }
 
-    @Override
-    public void onRemoveComponent() {
+    public void onRemoveComponent(@Observes ComponentRemovedEvent event) {
+        //TODO convert from ComponentRemovedEvent for FieldDroppedEvent
         fieldRemovedEvent.fire( new FieldRemovedEvent( formId, fieldId ) );
     }
 

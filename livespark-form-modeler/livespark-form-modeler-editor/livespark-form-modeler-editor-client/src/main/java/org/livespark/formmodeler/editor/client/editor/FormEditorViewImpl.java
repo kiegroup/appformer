@@ -31,7 +31,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorViewImpl;
 import org.livespark.formmodeler.editor.client.editor.preview.PreviewFormPresenter;
-import org.uberfire.ext.layout.editor.client.LayoutEditor;
+import org.uberfire.ext.layout.editor.client.api.LayoutEditor;
 
 @Dependent
 @Templated
