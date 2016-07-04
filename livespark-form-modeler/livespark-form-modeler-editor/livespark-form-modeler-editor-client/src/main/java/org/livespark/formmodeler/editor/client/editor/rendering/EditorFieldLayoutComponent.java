@@ -27,8 +27,6 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.Modal;
 import org.livespark.formmodeler.editor.client.editor.FormEditorHelper;
-import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
-import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextRequest;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
 import org.livespark.formmodeler.editor.client.editor.properties.FieldPropertiesRenderer;
@@ -38,7 +36,9 @@ import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.client.api.*;
+import org.uberfire.ext.layout.editor.client.infra.LayoutDragComponentHelper;
 
 /**
  * Created by pefernan on 9/22/15.
@@ -52,16 +52,19 @@ public class EditorFieldLayoutComponent extends FieldLayoutComponent<FormEditorR
     @Inject
     protected FieldPropertiesRenderer propertiesRenderer;
 
+    @Inject
+    protected LayoutDragComponentHelper layoutDragComponentHelper;
+
     boolean showProperties = false;
 
     @Inject
     protected Event<FormEditorContextRequest> fieldRequest;
 
     @Inject
-    protected Event<FieldDroppedEvent> fieldDroppedEvent;
+    protected Event<ComponentDropEvent> fieldDroppedEvent;
 
     @Inject
-    protected Event<FieldRemovedEvent> fieldRemovedEvent;
+    protected Event<ComponentRemovedEvent> fieldRemovedEvent;
 
     protected FormEditorHelper editorHelper;
 
@@ -187,16 +190,6 @@ public class EditorFieldLayoutComponent extends FieldLayoutComponent<FormEditorR
         return propertiesRenderer.getView().getPropertiesModal();
     }
 
-    public void onDropComponent(@Observes ComponentDropEvent event) {
-        //TODO convert from ComponentDropEvent for FieldDroppedEvent
-        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, fieldId ) );
-    }
-
-    public void onRemoveComponent(@Observes ComponentRemovedEvent event) {
-        //TODO convert from ComponentRemovedEvent for FieldDroppedEvent
-        fieldRemovedEvent.fire( new FieldRemovedEvent( formId, fieldId ) );
-    }
-
     @Override
     protected IsWidget generateContent( RenderingContext ctx ) {
         if ( fieldRenderer != null) {
@@ -254,17 +247,22 @@ public class EditorFieldLayoutComponent extends FieldLayoutComponent<FormEditorR
 
         if ( destField == null ) return;
 
-        fieldDroppedEvent.fire( new FieldDroppedEvent( formId, destField.getId() ) );
-        fieldRemovedEvent.fire( new FieldRemovedEvent( formId, field.getId() ) );
+        LayoutComponent component = layoutDragComponentHelper.getLayoutComponent( this );
+
+        fieldRemovedEvent.fire( new ComponentRemovedEvent( component ) );
 
         fieldId = destField.getId();
         field = destField;
+
+        component = layoutDragComponentHelper.getLayoutComponent( this );
+        fieldDroppedEvent.fire( new ComponentDropEvent( component ) );
 
         if ( showProperties ) {
             propertiesRenderer.render( propertiesRendererHelper );
         }
 
         fieldRenderer.init( renderingContext, field );
+
         renderContent();
     }
 

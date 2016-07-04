@@ -29,8 +29,6 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.workbench.common.widgets.metadata.client.KieEditor;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorView;
-import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
-import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.rendering.EditorFieldLayoutComponent;
 import org.livespark.formmodeler.editor.client.resources.i18n.FormEditorConstants;
 import org.livespark.formmodeler.editor.client.type.FormDefinitionResourceType;
@@ -39,6 +37,7 @@ import org.livespark.formmodeler.editor.service.FormEditorService;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.client.annotations.WorkbenchEditor;
@@ -46,6 +45,8 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
+import org.uberfire.ext.layout.editor.client.api.ComponentDropEvent;
+import org.uberfire.ext.layout.editor.client.api.ComponentRemovedEvent;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditor;
@@ -264,18 +265,25 @@ public class FormEditorPresenter extends KieEditor {
         layoutEditor.addDraggableComponentGroup( group );
     }
 
-    public void onFieldDropped(@Observes FieldDroppedEvent event) {
-        if (event.getFormId().equals( editorContext.getFormDefinition().getId() )) {
-            FieldDefinition field = editorContext.getDroppedField( event.getFieldId() );
+    public void onDropComponent(@Observes ComponentDropEvent event) {
+        String formId = event.getComponent().getProperties().get( FieldLayoutComponent.FORM_ID );
+
+        if ( editorContext.getFormDefinition().getId().equals( formId ) ) {
+            String fieldId = event.getComponent().getProperties().get( FieldLayoutComponent.FIELD_ID );
+
+            FieldDefinition field = editorContext.getDroppedField( fieldId );
             if (field != null) {
                 layoutEditor.removeDraggableGroupComponent( field.getModelName(), field.getId() );
             }
         }
     }
 
-    public void onFieldRemoved(@Observes FieldRemovedEvent event) {
-        if (event.getFormId().equals( editorContext.getFormDefinition().getId() )) {
-            FieldDefinition field = editorContext.removeField( event.getFieldId() );
+    public void onRemoveComponent(@Observes ComponentRemovedEvent event) {
+        String formId = event.getLayoutComponent().getProperties().get( FieldLayoutComponent.FORM_ID );
+
+        if ( editorContext.getFormDefinition().getId().equals( formId ) ) {
+            String fieldId = event.getLayoutComponent().getProperties().get( FieldLayoutComponent.FIELD_ID );
+            FieldDefinition field = editorContext.removeField( fieldId );
             if (field != null) {
                 EditorFieldLayoutComponent layoutFieldComponent = beanManager.lookupBean( EditorFieldLayoutComponent.class ).newInstance();
                 if (layoutFieldComponent != null) {
