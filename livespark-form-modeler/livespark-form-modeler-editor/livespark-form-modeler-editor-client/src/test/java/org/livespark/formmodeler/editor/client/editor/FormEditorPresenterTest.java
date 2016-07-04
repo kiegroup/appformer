@@ -31,8 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.widgets.metadata.client.KieEditorWrapperView;
 import org.kie.workbench.common.widgets.metadata.client.widget.OverviewWidgetPresenter;
-import org.livespark.formmodeler.editor.client.editor.events.FieldDroppedEvent;
-import org.livespark.formmodeler.editor.client.editor.events.FieldRemovedEvent;
 import org.livespark.formmodeler.editor.client.editor.events.FormEditorContextResponse;
 import org.livespark.formmodeler.editor.client.editor.rendering.EditorFieldLayoutComponent;
 import org.livespark.formmodeler.editor.client.resources.images.FormEditorImageResources;
@@ -45,6 +43,7 @@ import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefiniti
 import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
+import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.service.mock.MockFieldManager;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -52,6 +51,9 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.history.VersionRecordManager;
+import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
+import org.uberfire.ext.layout.editor.client.api.ComponentDropEvent;
+import org.uberfire.ext.layout.editor.client.api.ComponentRemovedEvent;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditor;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
@@ -253,7 +255,7 @@ public class FormEditorPresenterTest extends TestCase {
         int formFields = 0;
 
         for ( FieldDefinition field : fields ) {
-            presenter.onFieldDropped(new FieldDroppedEvent(editorContext.getFormDefinition().getId(), field.getId()));
+            presenter.onDropComponent( createComponentDropEvent( editorContext.getFormDefinition(), field) );
             availableFields --;
             formFields ++;
             checkExpectedFields(availableFields, formFields, checkAvailable);
@@ -262,7 +264,7 @@ public class FormEditorPresenterTest extends TestCase {
         List<FieldDefinition> formFieldsList = new ArrayList<FieldDefinition>( editorContext.getFormDefinition().getFields() );
 
         for ( FieldDefinition field : formFieldsList ) {
-            presenter.onFieldRemoved(new FieldRemovedEvent(editorContext.getFormDefinition().getId(), field.getId()));
+            presenter.onRemoveComponent( createComponentRemovedEvent( editorContext.getFormDefinition(), field) );
             availableFields ++;
             formFields --;
             checkExpectedFields(availableFields, formFields, checkAvailable);
@@ -281,10 +283,14 @@ public class FormEditorPresenterTest extends TestCase {
     }
 
     protected void testFieldProperties( String fieldId, boolean binded ) {
-        presenter.onFieldDropped(new FieldDroppedEvent(editorContext.getFormDefinition().getId(), fieldId));
-        checkExpectedFields(editorContext.getAvailableFields().size(), 1, binded);
 
-        FieldDefinition field = editorContext.getFormDefinition().getFields().get(0);
+        FormDefinition form = editorContext.getFormDefinition();
+
+        presenter.onDropComponent( createComponentDropEvent( editorContext.getFormDefinition(), editorContext.getFormField( fieldId )) );
+
+        checkExpectedFields( editorContext.getAvailableFields().size(), 1, binded );
+
+        FieldDefinition field = editorContext.getFormDefinition().getFields().get( 0 );
 
         checkFieldType(field, TextBoxFieldDefinition.class);
 
@@ -303,7 +309,7 @@ public class FormEditorPresenterTest extends TestCase {
         field = editorContext.switchToFieldType( field, TextAreaFieldDefinition.CODE );
         checkFieldType(field, TextAreaFieldDefinition.class);
 
-        List<String> compatibleFields = editorContext.getCompatibleFieldCodes(field);
+        List<String> compatibleFields = editorContext.getCompatibleFieldCodes( field );
 
         assertNotNull( "No compatibles fields found!", compatibleFields);
 
@@ -319,7 +325,23 @@ public class FormEditorPresenterTest extends TestCase {
             assertNotNull("Missing field name", editorContext.getAvailableFields().get(fieldId));
         }
 
-        presenter.onFieldRemoved( new FieldRemovedEvent( editorContext.getFormDefinition().getId(), "lastName" ));
+        presenter.onRemoveComponent( createComponentRemovedEvent( form, field) );
+    }
+
+    protected ComponentDropEvent createComponentDropEvent( FormDefinition form, FieldDefinition field ) {
+        return new ComponentDropEvent( createLayoutComponent( form, field ) );
+    }
+
+    protected ComponentRemovedEvent createComponentRemovedEvent( FormDefinition form, FieldDefinition field ) {
+
+        return new ComponentRemovedEvent( createLayoutComponent( form, field ) );
+    }
+
+    protected LayoutComponent createLayoutComponent( FormDefinition form, FieldDefinition field ) {
+        LayoutComponent component = new LayoutComponent( "" );
+        component.addProperty( FieldLayoutComponent.FORM_ID, form.getId() );
+        component.addProperty( FieldLayoutComponent.FIELD_ID, field.getId() );
+        return component;
     }
 
     protected void checkFieldType( FieldDefinition field, Class<? extends FieldDefinition> type ) {
