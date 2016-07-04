@@ -1099,15 +1099,33 @@
       <artifactId>livespark-form-modeler-codegen-data-modeller</artifactId>
     </dependency>
 
+    <!-- Required to correctly build LS apps -->
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-rendering-api</artifactId>
-      <scope>provided</scope><!-- Required to correctly build LS apps -->
+    </dependency>
+    
+    <!-- FIXME We shouldn't have to depend on this here, but because
+         of the StanadaloneFormWrapper in the rendering-api, we need this. -->
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-app-flow-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-common</artifactId>
+      <artifactId>livespark-app-flow-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-app-flow-cdi-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-commons</artifactId>
     </dependency>
 
     <dependency>
@@ -1339,6 +1357,10 @@
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-dynamic-renderer-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
+              <compileSourcesArtifact>org.livespark:livespark-app-flow-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.livespark:livespark-app-flow-cdi-api</compileSourcesArtifact>
+              <!-- FIXME We shouldn't have to depend on this but do because of the StandaloneFormWrapper -->
+              <compileSourcesArtifact>org.livespark:livespark-app-flow-client</compileSourcesArtifact>
 
               <!-- Data sources management -->
               <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-datasource-mgmt-api</compileSourcesArtifact>

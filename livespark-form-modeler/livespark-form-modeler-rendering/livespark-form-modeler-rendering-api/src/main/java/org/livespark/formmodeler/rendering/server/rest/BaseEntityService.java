@@ -36,29 +36,29 @@ public abstract class BaseEntityService {
         builder = em.getCriteriaBuilder();
     }
 
-    public <E> void create( E entity ) {
-        em.merge( entity );
+    public <E> E create( final E entity ) {
+        return em.merge( entity );
     }
 
     // TODO this should use an identifier
-    public <E> void delete( E entity ) {
+    public <E> void delete( final E entity ) {
         final E attachedEntity = em.merge( entity );
         em.remove( attachedEntity );
     }
 
-    public <E> void update( E entity ) {
+    public <E> void update( final E entity ) {
         em.merge( entity );
     }
 
-    public <E> List<E> listAll( Class<E> type ) {
-        CriteriaQuery<E> selectAllQuery = createSelectAllQuery( type );
+    public <E> List<E> listAll( final Class<E> type ) {
+        final CriteriaQuery<E> selectAllQuery = createSelectAllQuery( type );
 
         return em.createQuery( selectAllQuery ).getResultList();
     }
 
-    private <E> CriteriaQuery<E> createSelectAllQuery( Class<E> entityType ) {
-        CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
-        Root<E> rootEntity = criteriaQuery.from( entityType );
+    private <E> CriteriaQuery<E> createSelectAllQuery( final Class<E> entityType ) {
+        final CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
+        final Root<E> rootEntity = criteriaQuery.from( entityType );
 
         return criteriaQuery.select( rootEntity );
     }

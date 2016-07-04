@@ -16,19 +16,21 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INIT_FORM_METHOD;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.SET_MODEL_METHOD;
+
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
 
 public abstract class AbstractNestedModelHelper<F extends FieldDefinition> extends AbstractInputCreatorHelper<F> {
     public static final String UPDATE_NESTED_MODELS_METHOD = "updateNestedModels";
 
-    protected MethodSource<JavaClassSource> getUpdateNestedModelsMethod( SourceGenerationContext context,
-                                                                         JavaClassSource viewClass ) {
+    protected MethodSource<JavaClassSource> getUpdateNestedModelsMethod( final SourceGenerationContext context,
+                                                                         final JavaClassSource viewClass ) {
         MethodSource<JavaClassSource> method = viewClass.getMethod( UPDATE_NESTED_MODELS_METHOD, boolean.class );
 
         if ( method == null ) {
@@ -39,7 +41,9 @@ public abstract class AbstractNestedModelHelper<F extends FieldDefinition> exten
                     .setReturnTypeVoid()
                     .setProtected();
 
-            MethodSource<JavaClassSource> initFormMethod = viewClass.getMethod( INIT_FORM_METHOD );
+            method.addAnnotation( JAVA_LANG_OVERRIDE );
+
+            final MethodSource<JavaClassSource> initFormMethod = viewClass.getMethod( INIT_FORM_METHOD );
             StringBuffer body = new StringBuffer( initFormMethod.getBody() );
             if ( body.indexOf( UPDATE_NESTED_MODELS_METHOD ) == -1 ) {
                 body.append( UPDATE_NESTED_MODELS_METHOD ).append( "(true);" );
@@ -49,7 +53,7 @@ public abstract class AbstractNestedModelHelper<F extends FieldDefinition> exten
             body = new StringBuffer( "super.setModel( model );" );
             body.append( UPDATE_NESTED_MODELS_METHOD ).append( "( false );" );
 
-            MethodSource<JavaClassSource> setModelMethod = viewClass.addMethod()
+            final MethodSource<JavaClassSource> setModelMethod = viewClass.addMethod()
                     .setName( SET_MODEL_METHOD )
                     .setReturnTypeVoid()
                     .setPublic()
@@ -61,8 +65,8 @@ public abstract class AbstractNestedModelHelper<F extends FieldDefinition> exten
         return method;
     }
 
-    protected FormDefinition getContextFormById( SourceGenerationContext context, String formId ) {
-        for ( FormDefinition form : context.getProjectForms() ) {
+    protected FormDefinition getContextFormById( final SourceGenerationContext context, final String formId ) {
+        for ( final FormDefinition form : context.getProjectForms() ) {
             if ( form.getId().equals( formId ) ) {
                 return form;
             }
@@ -70,11 +74,11 @@ public abstract class AbstractNestedModelHelper<F extends FieldDefinition> exten
         return null;
     }
 
-    protected String getFormModelClassName( FormDefinition form, SourceGenerationContext context ) {
+    protected String getFormModelClassName( final FormDefinition form, final SourceGenerationContext context ) {
         return context.getSharedPackage().getPackageName() + "." + form.getName() + SourceGenerationContext.FORM_MODEL_SUFFIX;
     }
 
-    protected String getFormViewClassName( FormDefinition form, SourceGenerationContext context ) {
+    protected String getFormViewClassName( final FormDefinition form, final SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName() + "." + form.getName() + SourceGenerationContext.FORM_VIEW_SUFFIX;
     }
 

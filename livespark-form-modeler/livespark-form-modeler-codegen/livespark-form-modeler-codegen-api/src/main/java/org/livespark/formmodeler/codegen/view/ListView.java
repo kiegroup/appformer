@@ -22,10 +22,10 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Qualifier;
 
-import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 
 /**
- * Used for implementations of {@link FormJavaTemplateSourceGenerator} or {@link FormHTMLTemplateSourceGenerator} that
+ * Used for implementations of {@link JavaSourceGenerator} or {@link HTMLTemplateGenerator} that
  * generate a list view for viewing, updating, and deleting entries.
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -15,15 +15,17 @@
  */
 package org.livespark.formmodeler.codegen.model.impl;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static junit.framework.TestCase.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.kie.workbench.common.forms.model.DataHolder;
 import org.kie.workbench.common.forms.model.FormDefinition;
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 
@@ -70,7 +72,7 @@ public class RoasterFormModelSourceGeneratorTest {
         shared = new org.guvnor.common.services.project.model.Package(path, null, null, null, null, PACKAGE_NAME, "caption", "relativeCaption");
 
         context = new SourceGenerationContext(formDefinition, path, root, local, shared, null, projectForms);
-        generatedSource = sourceGenerator.generateFormModelSource(context);
+        generatedSource = sourceGenerator.generateJavaSource(context);
         gslen = generatedSource.length();
     }
 
@@ -83,21 +85,21 @@ public class RoasterFormModelSourceGeneratorTest {
         assertEquals(FIELD_NAMES, getConstructorFields(generatedSource));
     }
 
-    private String getStringThatEndsWithBreakPoint(int start, char breakPoint, String generatedSource) {
+    private String getStringThatEndsWithBreakPoint(final int start, final char breakPoint, final String generatedSource) {
         return generatedSource.substring(start, generatedSource.indexOf(breakPoint, start));
     }
 
-    private String getPackagename(String generatedSource) {
+    private String getPackagename(final String generatedSource) {
         return getStringThatEndsWithBreakPoint(PACKAGE_NAME_INDEX, ';', generatedSource);
     }
 
-    private String getNamedParameter(String generatedSource) {
+    private String getNamedParameter(final String generatedSource) {
         return getStringThatEndsWithBreakPoint(NAMED_PARAMETER_INDEX, '"', generatedSource);
     }
 
-    private List<String> getAllStringsThatStartAfterSearchPhrase(String searchPhrase, char breakPoint, String generatedSource) {
-        List<String> fields = new ArrayList<>();
-        int shift = searchPhrase.length();
+    private List<String> getAllStringsThatStartAfterSearchPhrase(final String searchPhrase, final char breakPoint, final String generatedSource) {
+        final List<String> fields = new ArrayList<>();
+        final int shift = searchPhrase.length();
         int nextIndex = generatedSource.indexOf(searchPhrase, CLASS_NAME_INDEX) + shift;
         while (nextIndex != -1 + shift && nextIndex < gslen) {
             fields.add(getStringThatEndsWithBreakPoint(nextIndex, breakPoint, generatedSource));
@@ -106,19 +108,19 @@ public class RoasterFormModelSourceGeneratorTest {
         return fields;
     }
 
-    private List<String> getFields(String generatedSource) {
+    private List<String> getFields(final String generatedSource) {
         return getAllStringsThatStartAfterSearchPhrase("private ", ';', generatedSource);
     }
 
-    private List<String> getConstructorFields(String generatedSource) {
+    private List<String> getConstructorFields(final String generatedSource) {
         return getAllStringsThatStartAfterSearchPhrase("@MapsTo(\"", '"', generatedSource);
     }
 
-    private List<String> getFieldAnnotations(String generatedSource, List<String> fields) {
-        List<String> fieldAnnotations = new ArrayList<>();
-        int shift = "@".length();
+    private List<String> getFieldAnnotations(final String generatedSource, final List<String> fields) {
+        final List<String> fieldAnnotations = new ArrayList<>();
+        final int shift = "@".length();
         int start = generatedSource.indexOf("@", CLASS_NAME_INDEX) + shift;
-        for (String f : fields) {
+        for (final String f : fields) {
             fieldAnnotations.add(getStringThatEndsWithBreakPoint(start, '\n', generatedSource));
             start = generatedSource.indexOf("@", start + 1) + shift;
         }
