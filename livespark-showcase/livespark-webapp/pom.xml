@@ -1667,6 +1667,8 @@
               <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-widgets-properties-editor-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-simple-docks-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-layout-editor-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-layout-editor-client</compileSourcesArtifact>
 
               <!-- Security Management -->
               <compileSourcesArtifact>org.uberfire:uberfire-security-management-api</compileSourcesArtifact>

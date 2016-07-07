@@ -16,6 +16,7 @@
 
 package org.livespark.formmodeler.model.impl.basic.selectors;
 
+import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.FieldDef;
@@ -35,6 +36,17 @@ public class StringSelectorOption implements SelectorOption<String> {
 
     @FieldDef( label = "Is default value")
     private boolean defaultValue = false;
+
+    public StringSelectorOption() {
+    }
+
+    public StringSelectorOption( @MapsTo( "value" ) String value,
+                                 @MapsTo( "text" ) String text,
+                                 @MapsTo( "defaultValue" ) boolean defaultValue ) {
+        this.value = value;
+        this.text = text;
+        this.defaultValue = defaultValue;
+    }
 
     @Override
     public String getValue() {

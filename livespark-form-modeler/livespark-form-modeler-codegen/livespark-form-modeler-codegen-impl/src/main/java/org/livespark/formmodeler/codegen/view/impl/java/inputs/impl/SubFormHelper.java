@@ -28,9 +28,6 @@ import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-/**
- * Created by pefernan on 4/28/15.
- */
 public class SubFormHelper extends AbstractNestedModelHelper<SubFormFieldDefinition> implements RequiresCustomCode<SubFormFieldDefinition> {
 
     @Override

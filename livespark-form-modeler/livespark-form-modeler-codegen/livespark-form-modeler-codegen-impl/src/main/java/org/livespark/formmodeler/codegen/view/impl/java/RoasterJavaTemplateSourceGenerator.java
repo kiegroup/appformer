@@ -18,6 +18,8 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import org.codehaus.plexus.util.StringUtils;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -36,6 +38,11 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
  */
 @ApplicationScoped
 public class RoasterJavaTemplateSourceGenerator extends RoasterClientTemplateSourceGenerator {
+
+    @Inject
+    public RoasterJavaTemplateSourceGenerator( Instance<InputCreatorHelper<? extends FieldDefinition>> creatorInstances ) {
+        super( creatorInstances );
+    }
 
     @Override
     protected void addAdditional( SourceGenerationContext context,

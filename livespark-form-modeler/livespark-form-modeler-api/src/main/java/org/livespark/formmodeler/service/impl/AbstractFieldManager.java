@@ -144,7 +144,7 @@ public abstract class AbstractFieldManager implements FieldManager {
                 if ( fieldDefinition.getFieldTypeInfo().isList() ) {
                     return new TreeSet<>( multipleEntityTypeFieldProvider.keySet() );
                 }
-                return new TreeSet<>( multipleEntityTypeFieldProvider.keySet() );
+                return new TreeSet<>( entityTypeFieldProvider.keySet() );
             }
 
             Set result = new TreeSet();

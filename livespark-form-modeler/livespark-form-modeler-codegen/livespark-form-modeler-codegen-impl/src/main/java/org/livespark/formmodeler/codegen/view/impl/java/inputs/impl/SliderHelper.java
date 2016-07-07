@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.slider;
+package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.AbstractInputCreatorHelper;
 import org.livespark.formmodeler.model.impl.basic.slider.SliderBase;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
-public abstract class SliderBaseHelper<T extends SliderBase> extends AbstractInputCreatorHelper<T> {
+public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
 
     @Override
-    public String getInputWidget( T fieldDefinition ) {
+    public String getInputWidget( SliderBase fieldDefinition ) {
         /*
             Patch class to avoid error descrived on: https://github.com/gwtproject/gwt/issues/9242
             TODO: change it when fixed
@@ -40,7 +37,7 @@ public abstract class SliderBaseHelper<T extends SliderBase> extends AbstractInp
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, T field ) {
+    public String getInputInitLiteral( SourceGenerationContext context, SliderBase field ) {
         return "new Slider( "
                 + field.getMin().doubleValue() + ", "
                 + field.getMax().doubleValue() + ", "
@@ -49,6 +46,11 @@ public abstract class SliderBaseHelper<T extends SliderBase> extends AbstractInp
                 + " );";
     }
 
+
+    @Override
+    public String getSupportedFieldTypeCode() {
+        return SliderBase.CODE;
+    }
 
     @Override
     public boolean isInputInjectable() {

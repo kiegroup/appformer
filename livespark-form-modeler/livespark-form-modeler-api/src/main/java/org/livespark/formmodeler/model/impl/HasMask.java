@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.slider;
-
-import javax.enterprise.context.Dependent;
-
-import org.livespark.formmodeler.model.impl.basic.slider.IntegerSliderDefinition;
+package org.livespark.formmodeler.model.impl;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
  */
-@Dependent
-public class DoubleSliderHelper extends SliderBaseHelper<IntegerSliderDefinition> {
+public interface HasMask {
 
-    @Override
-    public String getSupportedFieldTypeCode() {
-        return IntegerSliderDefinition.CODE;
-    }
+    String getMask();
+    void setMask( String mask );
 }

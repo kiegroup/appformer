@@ -33,9 +33,6 @@ import org.livespark.formmodeler.service.mock.MockFieldManager;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @RunWith( MockitoJUnitRunner.class )
 public class FormDefinitionSerializerImplTest extends TestCase {
 

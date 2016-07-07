@@ -20,6 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.model.impl.basic.selectors.listBox.ListBoxBase;
+import org.livespark.formmodeler.model.impl.relations.ObjectSelectorFieldDefinition;
 import org.livespark.formmodeler.service.FieldManager;
 
 /**
@@ -35,7 +36,7 @@ public class ListBoxTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { ListBoxBase.CODE };
+        return new String[] { ListBoxBase.CODE, ObjectSelectorFieldDefinition.CODE};
     }
 
     @Override

@@ -176,7 +176,7 @@ public class FormEditorPresenterTest extends TestCase {
         presenter.onStartup(path,
                 mock(PlaceRequest.class));
 
-        assertTrue("There should be at least 9 base field draggables", editorContext.getBaseFieldsDraggables().size() == 9);
+        assertTrue( "There should exist base field draggables", editorContext.getBaseFieldsDraggables().size() > 0 );
     }
 
     @Test

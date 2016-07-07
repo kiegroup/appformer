@@ -34,6 +34,7 @@ import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.MultipleField;
 import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
@@ -116,6 +117,9 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
             List<TableColumnMeta> columnMetas = new ArrayList<>();
             for ( FieldDefinition nestedField : form.getFields() ) {
+                if ( field instanceof EntityRelationField ) {
+                    continue;
+                }
                 TableColumnMeta meta = new TableColumnMeta( nestedField.getLabel(), nestedField.getBoundPropertyName() );
                 columnMetas.add( meta );
             }
