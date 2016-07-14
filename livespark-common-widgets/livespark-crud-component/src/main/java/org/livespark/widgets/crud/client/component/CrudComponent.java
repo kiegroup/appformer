@@ -15,19 +15,25 @@
  */
 package org.livespark.widgets.crud.client.component;
 
+import static org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants.CrudComponentViewImplEditInstanceTitle;
+import static org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants.CrudComponentViewImplNewInstanceTitle;
+
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 
 @Dependent
 public class CrudComponent implements IsWidget{
@@ -35,50 +41,62 @@ public class CrudComponent implements IsWidget{
     public interface CrudComponentView extends IsWidget{
         void setPresenter( CrudComponent presenter );
 
-        void init ( CrudMetaDefinition definition );
-
         int getCurrentPage();
 
-        void showCreateForm();
+        void addDisplayer( FormDisplayer displayer );
 
-        void showEditionForm( int index );
+        void removeDisplayer( FormDisplayer displayer );
 
-        void renderNestedForm( String title, IsFormView formView, FormDisplayer.FormDisplayerCallback callback );
+        void initTableView( List<ColumnMeta> dataColumns, int pageSize );
 
-        void deleteInstance( int index );
+        void showCreateButton();
 
-        void doCreate();
+        void setDataProvider( final AsyncDataProvider dataProvider );
 
-        void doEdit();
+        void showDeleteButtons();
 
-        void doCancel();
-
-        void restoreTable();
+        void showEditButtons();
     }
 
-    private CrudComponentView view;
+    private final CrudComponentView view;
 
-    private EmbeddedFormDisplayer embeddedFormDisplayer;
+    private final EmbeddedFormDisplayer embeddedFormDisplayer;
 
-    private ModalFormDisplayer modalFormDisplayer;
+    private final ModalFormDisplayer modalFormDisplayer;
 
     protected boolean embedded = true;
 
-    private CrudActionsHelper helper;
+    protected CrudActionsHelper helper;
+
+    private final TranslationService translationService;
 
     @Inject
-    public CrudComponent( CrudComponentView view,
-                          EmbeddedFormDisplayer embeddedFormDisplayer,
-                          ModalFormDisplayer modalFormDisplayer ) {
+    public CrudComponent( final CrudComponentView view,
+                          final EmbeddedFormDisplayer embeddedFormDisplayer,
+                          final ModalFormDisplayer modalFormDisplayer,
+                          final TranslationService translationService ) {
         this.view = view;
         this.embeddedFormDisplayer = embeddedFormDisplayer;
         this.modalFormDisplayer = modalFormDisplayer;
+        this.translationService = translationService;
         view.setPresenter( this );
     }
 
     public void init( final CrudActionsHelper helper ) {
         this.helper = helper;
-        view.init( new CrudMetaDefinition() );
+        view.initTableView( helper.getGridColumns(), helper.getPageSize() );
+        if ( helper.isAllowCreate() ) {
+            view.showCreateButton();
+        }
+        if ( helper.isAllowEdit() ) {
+            view.showEditButtons();
+        }
+        if ( helper.isAllowDelete() ) {
+            view.showDeleteButtons();
+        }
+
+        view.setDataProvider( helper.getDataProvider() );
+        refresh();
     }
 
     public FormDisplayer getFormDisplayer() {
@@ -92,7 +110,7 @@ public class CrudComponent implements IsWidget{
         return helper.getCreateInstanceForm();
     }
 
-    public IsFormView getEditForm( int index ) {
+    public IsFormView getEditForm( final int index ) {
         return helper.getEditInstanceForm( index );
     }
 
@@ -104,7 +122,7 @@ public class CrudComponent implements IsWidget{
         helper.editInstance();
     }
 
-    public void deleteInstance( int index ) {
+    public void deleteInstance( final int index ) {
         helper.deleteInstance( index );
     }
 
@@ -113,7 +131,7 @@ public class CrudComponent implements IsWidget{
     }
 
     public void refresh() {
-        HasData next = (HasData) helper.getDataProvider().getDataDisplays().iterator().next();
+        final HasData next = (HasData) helper.getDataProvider().getDataDisplays().iterator().next();
         next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
     }
 
@@ -121,7 +139,7 @@ public class CrudComponent implements IsWidget{
         return embedded;
     }
 
-    public void setEmbedded( boolean embedded ) {
+    public void setEmbedded( final boolean embedded ) {
         this.embedded = embedded;
     }
 
@@ -130,29 +148,66 @@ public class CrudComponent implements IsWidget{
         return view.asWidget();
     }
 
-    public class CrudMetaDefinition {
-        public boolean isAllowCreate() {
-            return helper.isAllowCreate();
+    public void renderNestedForm( final String title, final IsFormView formView, final FormDisplayer.FormDisplayerCallback callback ) {
+        final FormDisplayer displayer = getFormDisplayer();
+
+        if ( displayer.isEmbeddable() ) {
+            view.addDisplayer( displayer );
         }
 
-        public boolean isAllowDelete() {
-            return helper.isAllowDelete();
-        }
+        displayer.display( title, formView, callback );
+    }
 
-        public boolean isAllowEdit() {
-            return helper.isAllowEdit();
+    public void restoreTable() {
+        final FormDisplayer displayer = getFormDisplayer();
+        if ( displayer.isEmbeddable() ) {
+            view.removeDisplayer( displayer );
         }
+    }
 
-        public int getPageSize() {
-            return helper.getPageSize();
-        }
+    public void doCreate() {
+        restoreTable();
+        createInstance();
+    }
 
-        public List<ColumnMeta<?>> getGridColumns() {
-            return helper.getGridColumns();
-        }
+    public void doEdit() {
+        restoreTable();
+        editInstance();
+    }
 
-        public AsyncDataProvider getDataProvider() {
-            return helper.getDataProvider();
-        }
+    public void doCancel() {
+        restoreTable();
+    }
+
+    public void showCreateForm() {
+        renderNestedForm( translationService.getTranslation( CrudComponentViewImplNewInstanceTitle ),
+                          getCreateForm(),
+                          new FormDisplayer.FormDisplayerCallback() {
+                              @Override
+                              public void onAccept() {
+                                  doCreate();
+                              }
+
+                              @Override
+                              public void onCancel() {
+                                  doCancel();
+                              }
+                          } );
+    }
+
+    public void showEditForm( final int index ) {
+        renderNestedForm( translationService.getTranslation( CrudComponentViewImplEditInstanceTitle ),
+                          getEditForm( index ),
+                          new FormDisplayer.FormDisplayerCallback() {
+                              @Override
+                              public void onAccept() {
+                                  doEdit();
+                              }
+
+                              @Override
+                              public void onCancel() {
+                                  doCancel();
+                              }
+                          } );
     }
 }

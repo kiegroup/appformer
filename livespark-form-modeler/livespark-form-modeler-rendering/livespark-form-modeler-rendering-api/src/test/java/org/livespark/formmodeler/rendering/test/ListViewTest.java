@@ -15,38 +15,56 @@
  */
 package org.livespark.formmodeler.rendering.test;
 
-import java.util.Date;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwtmockito.GwtMock;
-import com.google.gwtmockito.GwtMockitoTestRunner;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
-import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
+import org.livespark.formmodeler.rendering.test.res.TestFormView;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
 import org.livespark.widgets.crud.client.component.AbstractCrudComponentTest;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.component.mock.CrudModel;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.mockito.Mockito.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwtmockito.GwtMock;
+import com.google.gwtmockito.GwtMockitoTestRunner;
 
 @RunWith( GwtMockitoTestRunner.class )
 public class ListViewTest extends AbstractCrudComponentTest {
 
+    @InjectMocks
     private TestListView listView;
 
     @GwtMock
-    private FormView<TestFormModel> formView;
+    private TestFormView formView;
 
     @GwtMock
     private ClickEvent clickEvent;
+
+    @GwtMock
+    private FlowPanel content;
 
     @Mock
     private RemoteCallback callback;
@@ -57,14 +75,34 @@ public class ListViewTest extends AbstractCrudComponentTest {
     @Mock
     private LiveSparkRestService<CrudModel> restService;
 
+    @Mock
+    private SyncBeanManager beanManager;
+
+    @Mock
+    private SyncBeanDef beanDef;
+
+    private final List<CrudModel> models = new ArrayList<>();
+
+    @Override
     @Before
     public void init() {
         super.init();
-
-        listView = new TestListView( crudComponent, formView, restService );
-
+        crudComponent = Mockito.spy( crudComponent );
+        listView.setCrudComponent( crudComponent );
+        listView.callbacks.clear();
+        models.clear();
         when( formView.validate() ).thenReturn( true );
         when( formView.getModel() ).thenReturn( formModel );
+        when( restService.create( any() ) ).then( invocation -> {
+            final CrudModel model = (CrudModel) invocation.getArguments()[0];
+            @SuppressWarnings( "unchecked" )
+            final
+            RemoteCallback<CrudModel> callback = (RemoteCallback<CrudModel>) listView.callbacks.get( listView.callbacks.size()-1 );
+            callback.callback( model );
+            return null;
+        } );
+        when( beanManager.lookupBean( TestFormView.class ) ).thenReturn( beanDef );
+        when( beanDef.getInstance() ).thenReturn( formView );
     }
 
     @Test
@@ -72,27 +110,32 @@ public class ListViewTest extends AbstractCrudComponentTest {
         listView.init();
         verify( restService ).load();
         verifyNoMoreInteractions( restService );
+        verify( crudComponent ).refresh();
+
+        assertEquals( 1, listView.callbacks.size() );
+        @SuppressWarnings( "unchecked" )
+        final RemoteCallback<List<CrudModel>> callback = (RemoteCallback<List<CrudModel>>) listView.callbacks.get( listView.callbacks.size()-1 );
+        callback.callback( models );
+
+        verify( crudComponent, times( 2 ) ).refresh();
     }
 
     @Test
-    public void callbackParameterOfLoadDataCallsSetItemsOnce() throws Exception {
-        try {
-            initLoadsDataOnce();
-            assertNotNull( listView.crudModelListCallback );
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-        listView.crudModelListCallback.callback( models );
+    public void initCallsCrudComponentInit() throws Exception {
+        listView.init();
+        verify( crudComponent, times( 1 ) ).init( getActionsHelper() );
+        verify( crudComponent, times( 1 ) ).setEmbedded( false );
+        verify( content, times( 1 ) ).add( crudComponent );
     }
 
     @Test
     public void testCreateModal() {
         listView.init();
+        verify( restService ).load();
         listView.loadItems( models );
 
         runCreationTest();
 
-        verify( restService ).load();
         verify( restService ).create( any( CrudModel.class ) );
     }
 
@@ -103,7 +146,7 @@ public class ListViewTest extends AbstractCrudComponentTest {
 
         runCreationTest();
 
-        runEditionTest();
+        runEditTest();
 
         verify( restService ).load();
         verify( restService ).create( any( CrudModel.class ) );
@@ -129,8 +172,8 @@ public class ListViewTest extends AbstractCrudComponentTest {
     protected void runCreationTest() {
         doAnswer( new Answer() {
             @Override
-            public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                CrudModel model = new CrudModel( "Ned", "Stark", new Date() );
+            public TestFormModel answer( final InvocationOnMock invocationOnMock ) throws Throwable {
+                final CrudModel model = new CrudModel( "Ned", "Stark", new Date() );
                 models.clear();
                 return new TestFormModel( model );
             }
@@ -139,30 +182,32 @@ public class ListViewTest extends AbstractCrudComponentTest {
     }
 
     @Override
-    protected void runEditionTest() {
+    protected void runEditTest() {
         doAnswer( new Answer() {
             @Override
-            public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                CrudModel model = models.get( 0 );
+            public TestFormModel answer( final InvocationOnMock invocationOnMock ) throws Throwable {
+                final CrudModel model = models.get( 0 );
                 model.setName( "Tyrion" );
                 model.setLastName( "Lannister" );
                 return new TestFormModel( model );
             }
         } ).when( formView ).getModel();
-        super.runEditionTest();
+        super.runEditTest();
     }
 
+    @Override
     protected void runDeletionTest() {
 
         super.runDeletionTest();
     }
 
-    private void failedPrecondition( final Throwable cause ) {
-        throw new AssertionError( "Precondition failed.", cause );
+    @Override
+    protected CrudActionsHelper getActionsHelper() {
+        return listView.getCrudActionsHelper();
     }
 
     @Override
-    protected CrudActionsHelper getActionsHelper() {
-        return listView.getActionsHelper();
+    protected IsFormView getFormView() {
+        return formView;
     }
 }

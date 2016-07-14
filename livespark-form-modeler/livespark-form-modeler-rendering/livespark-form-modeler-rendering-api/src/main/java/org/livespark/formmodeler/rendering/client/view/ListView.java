@@ -18,12 +18,9 @@ package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -35,13 +32,18 @@ import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+
 public abstract class ListView<M, F extends FormModel> extends Composite {
 
     @Inject
     protected SyncBeanManager beanManager;
 
     @DataField
-    protected FlowPanel content = new FlowPanel();
+    protected FlowPanel content = createFlowPanel();
 
     @Inject
     protected CrudComponent crudComponent;
@@ -52,12 +54,12 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
 
     AsyncDataProvider<M> dataProvider;
 
-    protected CrudActionsHelper crudActionsHelper = new ListViewCrudActionsHelper();
+    protected final CrudActionsHelper crudActionsHelper = new ListViewCrudActionsHelper();
 
     public void init() {
         dataProvider = new AsyncDataProvider<M>() {
             @Override
-            protected void onRangeChanged( HasData<M> hasData ) {
+            protected void onRangeChanged( final HasData<M> hasData ) {
                 if ( crudItems != null ) {
                     updateRowCount( crudItems.size(), true );
                     updateRowData( 0, crudItems );
@@ -76,7 +78,7 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
         loadData( new RemoteCallback<List<M>>() {
 
             @Override
-            public void callback( List<M> response ) {
+            public void callback( final List<M> response ) {
                 loadItems( response );
             }
         } );
@@ -85,15 +87,22 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     /*
      * Is overridable for testing.
      */
-    protected <S extends LiveSparkRestService<M>, R> S createRestCaller( RemoteCallback<R> callback ) {
+    protected <S extends LiveSparkRestService<M>, R> S createRestCaller( final RemoteCallback<R> callback ) {
         return org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create( this.<S>getRemoteServiceClass(), callback );
     }
 
-    protected void loadData( RemoteCallback<List<M>> callback ) {
+    /*
+     * Is overridable for testing.
+     */
+    protected FlowPanel createFlowPanel() {
+        return new FlowPanel();
+    }
+
+    protected void loadData( final RemoteCallback<List<M>> callback ) {
         createRestCaller( callback ).load();
     }
 
-    public void loadItems(List<M> itemsToLoad) {
+    public void loadItems(final List<M> itemsToLoad) {
         this.crudItems = itemsToLoad;
         initCrud();
     }
@@ -103,7 +112,7 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     }
 
     public FormView<F> getForm() {
-        SyncBeanDef<? extends FormView<F>> beanDef = beanManager.lookupBean( getFormType() );
+        final SyncBeanDef<? extends FormView<F>> beanDef = beanManager.lookupBean( getFormType() );
         return beanDef.getInstance();
     }
 
@@ -170,7 +179,7 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
             createRestCaller(
                     new RemoteCallback<M>() {
                         @Override
-                        public void callback( M response ) {
+                        public void callback( final M response ) {
                             crudItems.add( response );
                             crudComponent.refresh();
                         }
@@ -178,7 +187,7 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
         }
 
         @Override
-        public IsFormView getEditInstanceForm( Integer index ) {
+        public IsFormView getEditInstanceForm( final Integer index ) {
             currentForm = getForm();
             currentForm.setModel( createFormModel( crudItems.get( index ) ) );
             return currentForm;
@@ -189,19 +198,19 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
             createRestCaller(
                     new RemoteCallback<Boolean>() {
                         @Override
-                        public void callback( Boolean response ) {
+                        public void callback( final Boolean response ) {
                             crudComponent.refresh();
                         }
                     } ).update( getModel( currentForm.getModel() ) );
         }
 
         @Override
-        public void deleteInstance( int index ) {
+        public void deleteInstance( final int index ) {
             final M model = crudItems.get( index );
             createRestCaller(
                     new RemoteCallback<Boolean>() {
                         @Override
-                        public void callback( Boolean response ) {
+                        public void callback( final Boolean response ) {
                             if ( response ) {
                                 crudItems.remove( model );
                                 crudComponent.refresh();

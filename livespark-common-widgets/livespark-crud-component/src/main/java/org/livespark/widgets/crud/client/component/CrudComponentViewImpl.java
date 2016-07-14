@@ -18,16 +18,10 @@ package org.livespark.widgets.crud.client.component;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -37,10 +31,18 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
-import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.ext.widgets.table.client.UberfirePagedTable;
+
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.view.client.AsyncDataProvider;
 
 @Dependent
 @Templated
@@ -56,80 +58,81 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
     @DataField
     protected FlowPanel content = new FlowPanel();
 
-    private TranslationService translationService;
+    private final TranslationService translationService;
 
     @Inject
-    public CrudComponentViewImpl( TranslationService translationService ) {
+    public CrudComponentViewImpl( final TranslationService translationService ) {
         this.translationService = translationService;
     }
 
     @Override
-    public void setPresenter( CrudComponent presenter ) {
+    public void setPresenter( final CrudComponent presenter ) {
         this.presenter = presenter;
     }
 
     @Override
-    public void init( CrudComponent.CrudMetaDefinition crudDefinition ) {
+    public void setDataProvider( final AsyncDataProvider dataProvider ) {
+        table.setDataProvider( dataProvider );
+    }
+
+    @Override
+    public void showDeleteButtons() {
+        final Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
+            @Override
+            public String getValue( final Object model ) {
+                return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteInstance );
+            }
+        };
+        column.setFieldUpdater( new FieldUpdater<Object, String>() {
+            @Override
+            public void update( final int index, final Object model, final String s ) {
+                if ( Window.confirm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteBody ) ) ) {
+                    presenter.deleteInstance( index );
+                }
+            }
+        } );
+        table.addColumn( column, "" );
+    }
+
+    @Override
+    public void showEditButtons() {
+        final Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
+            @Override
+            public String getValue( final Object model ) {
+                return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceButton );
+            }
+        };
+        column.setFieldUpdater( new FieldUpdater<Object, String>() {
+            @Override
+            public void update( final int index, final Object model, final String s ) {
+                presenter.showEditForm( index );
+            }
+        } );
+        table.addColumn( column, "" );
+    }
+
+    @Override
+    public void initTableView( final List<ColumnMeta> dataColumns, final int pageSize ) {
         content.clear();
-
-        table = new UberfirePagedTable<>( crudDefinition.getPageSize() );
+        table = new UberfirePagedTable<>( pageSize );
         table.getRightToolbar().clear();
-
-        if ( crudDefinition.isAllowCreate() ) {
-            Button createButton = new Button( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceButton ) );
-            createButton.setType( ButtonType.PRIMARY );
-            createButton.setIcon( IconType.PLUS );
-            table.getLeftToolbar().add( createButton );
-            createButton.addClickHandler( new ClickHandler() {
-                @Override
-                public void onClick( ClickEvent clickEvent ) {
-                    showCreateForm();
-                }
-            } );
-        }
-
-        List<ColumnMeta> columns = new ArrayList<ColumnMeta>( crudDefinition.getGridColumns() );
-
-        if ( crudDefinition.isAllowEdit() ) {
-            Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
-                @Override
-                public String getValue( Object model ) {
-                    return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceButton );
-                }
-            };
-            column.setFieldUpdater( new FieldUpdater<Object, String>() {
-                @Override
-                public void update( int index, Object model, String s ) {
-                    showEditionForm( index );
-                }
-            } );
-            columns.add( new ColumnMeta( column, "" ) );
-        }
-
-        if ( crudDefinition.isAllowDelete() ) {
-            Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
-                @Override
-                public String getValue( Object model ) {
-                    return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteInstance );
-                }
-            };
-            column.setFieldUpdater( new FieldUpdater<Object, String>() {
-                @Override
-                public void update( final int index, Object model, String s ) {
-                    if ( Window.confirm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteBody ) ) ) {
-                        deleteInstance( index );
-                    }
-                }
-            } );
-            columns.add( new ColumnMeta( column, "" ) );
-        }
+        final List<ColumnMeta> columns = new ArrayList<>( dataColumns );
         table.addColumns( columns );
-
-        table.setDataProvider( crudDefinition.getDataProvider() );
-
-        presenter.refresh();
-
         content.add( table );
+    }
+
+    @Override
+    public void showCreateButton() {
+        final Button createButton = new Button( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceButton ) );
+        createButton.setType( ButtonType.PRIMARY );
+        createButton.setIcon( IconType.PLUS );
+        table.getLeftToolbar().add( createButton );
+        createButton.addClickHandler( new ClickHandler() {
+            @Override
+            public void onClick( final ClickEvent clickEvent ) {
+                presenter.showCreateForm();
+            }
+        } );
     }
 
     @Override
@@ -138,76 +141,14 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
     }
 
     @Override
-    public void showCreateForm() {
-        renderNestedForm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceTitle ),
-                presenter.getCreateForm(), new FormDisplayer.FormDisplayerCallback() {
-            @Override
-            public void onAccept() {
-                doCreate();
-            }
-
-            @Override
-            public void onCancel() {
-                doCancel();
-            }
-        } );
+    public void addDisplayer( final FormDisplayer displayer ) {
+        content.clear();
+        content.add( displayer );
     }
 
     @Override
-    public void showEditionForm( int index ) {
-        renderNestedForm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceTitle ),
-                presenter.getEditForm( index ), new FormDisplayer.FormDisplayerCallback() {
-            @Override
-            public void onAccept() {
-                doEdit();
-            }
-
-            @Override
-            public void onCancel() {
-                doCancel();
-            }
-        } );
-    }
-
-    @Override
-    public void renderNestedForm( String title, IsFormView formView, FormDisplayer.FormDisplayerCallback callback ) {
-        displayer = presenter.getFormDisplayer();
-
-        if ( displayer.isEmbeddable() ) {
-            content.clear();
-            content.add( displayer );
-        }
-
-        displayer.display( title, formView, callback );
-    }
-
-    @Override
-    public void deleteInstance( int index ) {
-        presenter.deleteInstance( index );
-    }
-
-    @Override
-    public void doCreate() {
-        restoreTable();
-        presenter.createInstance();
-    }
-
-    @Override
-    public void doEdit() {
-        restoreTable();
-        presenter.editInstance();
-    }
-
-    @Override
-    public void doCancel() {
-        restoreTable();
-    }
-
-    @Override
-    public void restoreTable() {
-        if ( displayer.isEmbeddable() ) {
-            content.remove( displayer );
-            content.add( table );
-        }
+    public void removeDisplayer( final FormDisplayer displayer ) {
+        content.remove( displayer );
+        content.add( table );
     }
 }
