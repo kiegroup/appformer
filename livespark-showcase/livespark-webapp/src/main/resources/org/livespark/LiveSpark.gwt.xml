@@ -9,7 +9,7 @@
 
   <!-- Uberfire dependencies -->
   <inherits name="org.uberfire.UberfireClientAll"/>
-  <inherits name="org.uberfire.client.views.PatternFly"/>
+  <inherits name="org.uberfire.client.views.PatternFlyTheme"/>
 
   <!-- Uberfire Extensions - Core Widgets -->
   <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
