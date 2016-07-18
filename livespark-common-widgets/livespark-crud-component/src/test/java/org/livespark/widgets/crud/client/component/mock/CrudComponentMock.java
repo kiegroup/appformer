@@ -16,14 +16,18 @@
 
 package org.livespark.widgets.crud.client.component.mock;
 
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
 
 public class CrudComponentMock extends CrudComponent {
 
-    public CrudComponentMock( CrudComponentView view, EmbeddedFormDisplayer embeddedFormDisplayer, ModalFormDisplayer modalFormDisplayer ) {
-        super( view, embeddedFormDisplayer, modalFormDisplayer );
+    public CrudComponentMock( final CrudComponentView view,
+                              final EmbeddedFormDisplayer embeddedFormDisplayer,
+                              final ModalFormDisplayer modalFormDisplayer,
+                              final TranslationService translationService ) {
+        super( view, embeddedFormDisplayer, modalFormDisplayer, translationService );
     }
 
     @Override

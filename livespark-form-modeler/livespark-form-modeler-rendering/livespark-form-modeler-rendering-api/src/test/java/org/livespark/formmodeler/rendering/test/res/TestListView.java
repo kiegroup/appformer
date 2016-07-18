@@ -18,8 +18,6 @@ package org.livespark.formmodeler.rendering.test.res;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.rpc.core.java.lang.Boolean_CustomFieldSerializer;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
@@ -29,48 +27,26 @@ import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.mock.CrudModel;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
+import com.google.gwt.user.cellview.client.TextColumn;
+
 public class TestListView extends ListView<CrudModel, TestFormModel> {
 
-    private FormView<TestFormModel> formView;
+    private LiveSparkRestService<CrudModel> restService;
 
-    private LiveSparkRestService<CrudModel> service;
+    public final List<RemoteCallback<?>> callbacks = new ArrayList<>();
 
-    public RemoteCallback<Object> crudModelListCallback;
-
-    public TestListView( final CrudComponent crudComponent, FormView<TestFormModel> formView, LiveSparkRestService<CrudModel> restService ) {
+    public void setCrudComponent( final CrudComponent crudComponent ) {
         this.crudComponent = crudComponent;
-        this.formView = formView;
-        this.service = restService;
-
-        crudActionsHelper = new ListViewCrudActionsHelper() {
-            @Override
-            public void createInstance() {
-                super.createInstance();
-                crudModelListCallback.callback( getModel( currentForm.getModel() ) );
-            }
-
-            @Override
-            public void editInstance() {
-                super.editInstance();
-                crudModelListCallback.callback( Boolean.TRUE );
-            }
-
-            @Override
-            public void deleteInstance( int index ) {
-                super.deleteInstance( index );
-                crudModelListCallback.callback( Boolean.TRUE );
-            }
-        };
     }
 
     @Override
     public List<ColumnMeta> getCrudColumns() {
 
-        List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
+        final List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
 
         ColumnMeta<CrudModel> columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
             @Override
-            public String getValue( CrudModel model ) {
+            public String getValue( final CrudModel model ) {
                 if ( model.getName() == null ) {
                     return "";
                 }
@@ -82,7 +58,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
 
         columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
             @Override
-            public String getValue( CrudModel model ) {
+            public String getValue( final CrudModel model ) {
                 if ( model.getLastName() == null ) {
                     return "";
                 }
@@ -94,7 +70,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
 
         columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
             @Override
-            public String getValue( CrudModel model ) {
+            public String getValue( final CrudModel model ) {
                 if ( model.getBirthday() == null ) {
                     return "";
                 }
@@ -108,12 +84,12 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
     }
 
     @Override
-    public CrudModel getModel( TestFormModel formModel ) {
+    public CrudModel getModel( final TestFormModel formModel ) {
         return formModel.getModel();
     }
 
     @Override
-    public TestFormModel createFormModel( CrudModel model ) {
+    public TestFormModel createFormModel( final CrudModel model ) {
         return new TestFormModel( model );
     }
 
@@ -122,9 +98,9 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
          */
     @SuppressWarnings( "unchecked" )
     @Override
-    public <S extends LiveSparkRestService<CrudModel>, R> S createRestCaller( RemoteCallback<R> callback ) {
-        crudModelListCallback = (RemoteCallback<Object>) callback;
-        return (S) service;
+    public <S extends LiveSparkRestService<CrudModel>, R> S createRestCaller( final RemoteCallback<R> callback ) {
+        callbacks.add( callback );
+        return (S) restService;
     }
 
     /* (non-Javadoc)
@@ -144,14 +120,6 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
     }
 
     /* (non-Javadoc)
-     * @see org.livespark.formmodeler.rendering.client.view.ListView#getForm()
-     */
-    @Override
-    public FormView<TestFormModel> getForm() {
-        return formView;
-    }
-
-    /* (non-Javadoc)
      * @see org.livespark.formmodeler.rendering.client.view.ListView#getRemoteServiceClass()
      */
     @SuppressWarnings( "unchecked" )
@@ -165,7 +133,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
      */
     @Override
     protected Class< ? extends FormView<TestFormModel>> getFormType() {
-        throw new RuntimeException( "Not yet implemented." );
+        return TestFormView.class;
     }
 
     /* (non-Javadoc)
@@ -173,10 +141,10 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
      */
     @Override
     public String getListTitle() {
-        throw new RuntimeException( "Not yet implemented." );
+        return "List Title";
     }
 
-    public CrudActionsHelper getActionsHelper() {
+    public CrudActionsHelper getCrudActionsHelper() {
         return crudActionsHelper;
     }
 }

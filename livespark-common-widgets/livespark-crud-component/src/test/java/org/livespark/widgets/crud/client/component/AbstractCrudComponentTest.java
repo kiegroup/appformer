@@ -16,29 +16,33 @@
 
 package org.livespark.widgets.crud.client.component;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.google.gwtmockito.GwtMock;
-import junit.framework.TestCase;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.junit.Before;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
 import org.livespark.widgets.crud.client.component.mock.CrudComponentMock;
-import org.livespark.widgets.crud.client.component.mock.CrudComponentTestHelper;
-import org.livespark.widgets.crud.client.component.mock.CrudModel;
+import org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.Mockito;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import com.google.gwtmockito.GwtMock;
+
+import junit.framework.TestCase;
 
 public abstract class AbstractCrudComponentTest extends TestCase {
     @Mock
     protected CrudComponent.CrudComponentView view;
+
+    @Mock
+    protected TranslationService translationService;
 
     @GwtMock
     protected EmbeddedFormDisplayer embeddedFormDisplayer;
@@ -47,184 +51,134 @@ public abstract class AbstractCrudComponentTest extends TestCase {
     protected ModalFormDisplayer modalFormDisplayer;
 
     @Mock
-    protected IsFormView formView;
+    private IsFormView formView;
 
-    protected CrudComponentTestHelper helper;
+    protected CrudActionsHelper helper = Mockito.mock( CrudActionsHelper.class );
 
-    protected List<CrudModel> models = new ArrayList<>();
+    protected CrudComponentMock crudComponent;
 
-    protected CrudComponent crudComponent;
+    protected static final String NEW_INSTANCE_TITLE = "New Instance Title";
+    protected static final String EDIT_INSTANCE_TITLE = "Edit Instance Title";
 
     @Before
     public void init() {
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                crudComponent.refresh();
-                return null;
-            }
-        } ).when( view ).init( any( CrudComponent.CrudMetaDefinition.class ) );
-
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                view.renderNestedForm( "New Instance",
-                        crudComponent.getCreateForm(), new FormDisplayer.FormDisplayerCallback() {
-                            @Override
-                            public void onAccept() {
-                                view.doCreate();
-                            }
-
-                            @Override
-                            public void onCancel() {
-                                view.doCancel();
-                            }
-                        } );
-                return null;
-            }
-        } ).when( view ).showCreateForm();
-
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                view.restoreTable();
-                crudComponent.createInstance();
-                return null;
-            }
-        } ).when( view ).doCreate();
-
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                view.restoreTable();
-                return null;
-            }
-        } ).when( view ).doCancel();
-
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                view.renderNestedForm( "Edit Instance",
-                        crudComponent.getEditForm( 0 ), new FormDisplayer.FormDisplayerCallback() {
-                            @Override
-                            public void onAccept() {
-                                view.doCreate();
-                            }
-
-                            @Override
-                            public void onCancel() {
-                                view.doCancel();
-                            }
-                        } );
-                return null;
-            }
-        } ).when( view ).showEditionForm( anyInt() );
-
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                view.restoreTable();
-                crudComponent.editInstance();
-                return null;
-            }
-        } ).when( view ).doEdit();
-
-        doAnswer( new Answer<Void>() {
-            @Override
-            public Void answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                crudComponent.deleteInstance( 0 );
-                return null;
-            }
-        } ).when( view ).deleteInstance( anyInt() );
-
-        models.clear();
-
-        helper = new CrudComponentTestHelper( formView, models );
-
-        crudComponent = new CrudComponentMock( view, embeddedFormDisplayer, modalFormDisplayer );
+        when( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceTitle ) ).thenReturn( NEW_INSTANCE_TITLE );
+        when( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceTitle ) ).thenReturn( EDIT_INSTANCE_TITLE );
+        when( helper.getCreateInstanceForm() ).thenReturn( getFormView() );
+        when( helper.getEditInstanceForm( anyInt() ) ).thenReturn( getFormView() );
+        when( embeddedFormDisplayer.isEmbeddable() ).thenReturn( true );
+        crudComponent = new CrudComponentMock( view, embeddedFormDisplayer, modalFormDisplayer, translationService );
     }
 
     protected void initTest() {
         verify( view ).setPresenter( crudComponent );
 
         crudComponent.init( getActionsHelper() );
-        verify( view ).init( any( CrudComponent.CrudMetaDefinition.class ) );
+        verify( view ).initTableView( helper.getGridColumns(), helper.getPageSize() );
 
         crudComponent.getCurrentPage();
         verify( view ).getCurrentPage();
-
-        crudComponent.asWidget();
     }
 
     protected void runCreationTest() {
-        view.showCreateForm();
+        crudComponent.showCreateForm();
 
-        verify( view ).showCreateForm();
-        verify( view ).renderNestedForm( anyString(), any( IsFormView.class), any( FormDisplayer.FormDisplayerCallback.class ) );
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).getCreateInstanceForm();
+        }
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).addDisplayer( embeddedFormDisplayer );
+            verify( embeddedFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        } else {
+            verify( modalFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        }
 
-        view.doCreate();
+        crudComponent.doCreate();
 
-        verify( view ).doCreate();
-        verify( view ).restoreTable();
-
-        assertTrue( !models.isEmpty() );
-
-        CrudModel model = models.get( 0 );
-
-        assertEquals( "Ned", model.getName() );
-        assertEquals( "Stark", model.getLastName() );
-
-        // TEST CANCEL
-        view.showCreateForm();
-
-        verify( view, times( 2 ) ).showCreateForm();
-        verify( view, times( 2 ) ).renderNestedForm( anyString(), any( IsFormView.class), any( FormDisplayer.FormDisplayerCallback.class ) );
-
-        view.doCancel();
-
-        verify( view ).doCancel();
-        verify( view, times( 2 ) ).restoreTable();
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).removeDisplayer( embeddedFormDisplayer );
+        }
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).createInstance();
+        }
     }
 
-    protected void runEditionTest() {
-        view.showEditionForm( 0 );
+    protected void runCreationCancelTest() {
+        crudComponent.showCreateForm();
 
-        verify( view ).showEditionForm( anyInt() );
-        verify( view, times( 3 ) ).renderNestedForm( anyString(), any( IsFormView.class), any( FormDisplayer.FormDisplayerCallback.class ) );
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).getCreateInstanceForm();
+        }
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).addDisplayer( embeddedFormDisplayer );
+            verify( embeddedFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        } else {
+            verify( modalFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        }
 
-        view.doEdit();
+        crudComponent.doCancel();
 
-        verify( view ).doEdit();
-        verify( view, times( 3 ) ).restoreTable();
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).removeDisplayer( embeddedFormDisplayer );
+        }
+    }
 
-        assertTrue( !models.isEmpty() );
+    protected void runEditTest() {
+        crudComponent.showEditForm( 0 );
 
-        CrudModel model = models.get( 0 );
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).getEditInstanceForm( 0 );
+        }
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).addDisplayer( embeddedFormDisplayer );
+            verify( embeddedFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        } else {
+            verify( modalFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        }
 
-        assertEquals( "Tyrion", model.getName() );
-        assertEquals( "Lannister", model.getLastName() );
+        crudComponent.doEdit();
 
-        // TEST CANCEL
-        view.showEditionForm( 0 );
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).removeDisplayer( embeddedFormDisplayer );
+        }
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).editInstance();
+        }
+    }
 
-        verify( view, times( 2 ) ).showEditionForm( anyInt() );
-        verify( view, times( 4 ) ).renderNestedForm( anyString(), any( IsFormView.class), any( FormDisplayer.FormDisplayerCallback.class ) );
+    protected void runEditCancelTest() {
+        crudComponent.showEditForm( 0 );
 
-        view.doCancel();
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).getEditInstanceForm( 0 );
+        }
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).addDisplayer( embeddedFormDisplayer );
+            verify( embeddedFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        } else {
+            verify( modalFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
+        }
 
-        verify( view, times( 2 ) ).doCancel();
-        verify( view, times( 4 ) ).restoreTable();
+        crudComponent.doCancel();
+
+        if ( getActionsHelper().showEmbeddedForms() ) {
+            verify( view ).removeDisplayer( embeddedFormDisplayer );
+        }
     }
 
     protected void runDeletionTest() {
-        view.deleteInstance( 0 );
+        crudComponent.deleteInstance( 0 );
 
-        verify( view ).deleteInstance( anyInt() );
-
-        assertTrue( models.isEmpty() );
+        if ( helper == getActionsHelper() ) {
+            verify( helper ).deleteInstance( 0 );
+        }
     }
 
     protected CrudActionsHelper getActionsHelper() {
         return helper;
+    }
+
+    protected IsFormView getFormView() {
+        return formView;
     }
 }
