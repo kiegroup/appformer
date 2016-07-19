@@ -49,9 +49,9 @@ public interface AppConstants
     String timeline();
 
     String people();
-    
+
     String userManagement();
-    
+
     String groupManagement();
 
     String deploy();
@@ -107,10 +107,6 @@ public interface AppConstants
     String Refresh();
 
     String Asset_Management();
-
-    String tasks();
-
-    String Tasks_List();
 
     String Apps();
 

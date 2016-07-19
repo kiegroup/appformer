@@ -272,14 +272,7 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-workbench-models-guided-dtable</artifactId>
     </dependency>
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-workbench-models-guided-scorecard</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-workbench-models-guided-template</artifactId>
-    </dependency-->
+
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-workbench-models-test-scenarios</artifactId>
@@ -380,10 +373,6 @@
     <dependency>
       <groupId>org.guvnor</groupId>
       <artifactId>guvnor-asset-mgmt-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-asset-mgmt-project</artifactId>
     </dependency>
 
     <!-- Common -->
@@ -555,42 +544,7 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-rule-editor-backend</artifactId>
     </dependency>
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-template-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-template-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-dtable-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-dtree-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-dtree-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-scorecard-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-guided-scorecard-editor-backend</artifactId>
-    </dependency-->
+
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-drl-text-editor-client</artifactId>
@@ -600,131 +554,11 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-drl-text-editor-backend</artifactId>
     </dependency>
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-enum-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-enum-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-factmodel-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-dsl-text-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-dsl-text-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-dtable-xls-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-dtable-xls-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-scorecard-xls-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-globals-editor-api</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-globals-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-globals-editor-backend</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-test-scenario-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
+
     <dependency> <!-- WM: required by GuidedRule indexer -->
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
     </dependency>
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-workitems-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-wb-workitems-editor-backend</artifactId>
-    </dependency-->
-
-    <!-- OptaPlanner Workbench Screens -->
-    <!-- Not apply for LS dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-wb-domain-editor-api</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-wb-domain-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-wb-domain-editor-backend</artifactId>
-    </dependency -->
-    <!-- Not apply for LS dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-wb-solver-editor-api</artifactId>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-wb-solver-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency-->
-    <!-- Not apply for LS dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-wb-solver-editor-backend</artifactId>
-    </dependency-->
-
-    <!-- jBPM Designer -->
-    <!-- Not apply for LS dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-designer-backend</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jbpm</groupId>
-          <artifactId>jbpm-workitems</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>-->
 
     <!-- org.dashbuilder -->
     <dependency>
@@ -1136,174 +970,6 @@
       <artifactId>guvnor-rest-backend</artifactId>
     </dependency>
 
-    <!-- Form Modeler dependencies -->
-    <!-- Not apply for LS
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-service-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-bpmn-form-builder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-form-modeler-renderer-backend</artifactId>
-    </dependency>
-    -->
-
-    <!-- jBPM Console dependencies -->
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-forms-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-asset-mgmt-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-business-domain-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-forms-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-human-tasks-forms-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-forms-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-generic-forms-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-forms-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-process-runtime-forms-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-console-ng-data-filters-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- jBPM dependencies -->
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-services-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-kie-services</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-services-cdi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-runtime-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-human-task-audit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-human-task-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.mail</groupId>
-          <artifactId>mail</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jbpm</groupId>
-      <artifactId>jbpm-workitems</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-databinding-jaxb</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-transports-http</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.mail</groupId>
-          <artifactId>mail</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.neethi</groupId>
-          <artifactId>neethi</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>wsdl4j</groupId>
-          <artifactId>wsdl4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
     <dependency>
       <groupId>org.kie.uberfire</groupId>
       <artifactId>i18n-taglib</artifactId>
@@ -1507,29 +1173,6 @@
               <compileSourcesArtifact>org.kie.server:kie-server-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.server:kie-server-controller-api</compileSourcesArtifact>
 
-              <!-- jBPM Console NG -->
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-business-domain-api</compileSourcesArtifact>t>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-human-tasks-forms-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-process-runtime-forms-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-generic-forms-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.jbpm:jbpm-console-ng-data-filters-client</compileSourcesArtifact>
-
-
-              <!-- Not apply for LS compileSourcesArtifact>org.jbpm:jbpm-form-modeler-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.jbpm:jbpm-form-modeler-renderer-client</compileSourcesArtifact-->
-
-              <!-- Not apply for LS compileSourcesArtifact>org.jbpm:jbpm-designer-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.jbpm:jbpm-designer-client</compileSourcesArtifact-->
-
               <!-- Dashbuilder -->
               <compileSourcesArtifact>org.dashbuilder:dashbuilder-json</compileSourcesArtifact>
               <compileSourcesArtifact>org.dashbuilder:dashbuilder-widgets</compileSourcesArtifact>
@@ -1601,44 +1244,11 @@
               <!-- Models for Drools WB -->
               <compileSourcesArtifact>org.drools:drools-workbench-models-commons</compileSourcesArtifact>
               <compileSourcesArtifact>org.drools:drools-workbench-models-guided-dtable</compileSourcesArtifact>
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-workbench-models-guided-scorecard</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-workbench-models-guided-template</compileSourcesArtifact-->
               <compileSourcesArtifact>org.drools:drools-workbench-models-test-scenarios</compileSourcesArtifact>
 
               <!-- Drools WB -->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-enum-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-enum-editor-client</compileSourcesArtifact-->
               <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-client</compileSourcesArtifact>
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-factmodel-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-rule-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-rule-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-template-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-template-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtable-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtable-editor-client</-compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtree-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtree-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-scorecard-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-scorecard-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dsl-text-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dsl-text-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-globals-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-globals-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dtable-xls-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dtable-xls-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-scorecard-xls-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-scorecard-xls-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact -->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-test-scenario-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-test-scenario-editor-client</compileSourcesArtifact-->
-
-              <!-- OptaPlanner WB -->
-              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-domain-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-domain-editor-client</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-solver-editor-api</compileSourcesArtifact-->
-              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-solver-editor-client</compileSourcesArtifact-->
 
               <!-- UberFire -->
               <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>

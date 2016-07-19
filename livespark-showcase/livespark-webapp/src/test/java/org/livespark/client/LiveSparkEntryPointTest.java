@@ -98,7 +98,7 @@ public class LiveSparkEntryPointTest {
 
     @Mock
     private PlaceManager placeManager;
-    
+
     @Mock
     private PermissionTreeSetup permissionTreeSetup;
 
@@ -161,12 +161,11 @@ public class LiveSparkEntryPointTest {
 
         Menus menus = menusCaptor.getValue();
 
-        assertEquals( 6, menus.getItems().size() );
+        assertEquals( 5, menus.getItems().size() );
 
         assertEquals( liveSparkEntryPoint.constants.home(), menus.getItems().get( 0 ).getCaption() );
         assertEquals( liveSparkEntryPoint.constants.authoring(), menus.getItems().get( 1 ).getCaption() );
         assertEquals( liveSparkEntryPoint.constants.deploy(), menus.getItems().get( 2 ).getCaption() );
-        assertEquals( liveSparkEntryPoint.constants.tasks(), menus.getItems().get( 3 ).getCaption() );
         assertEquals( liveSparkEntryPoint.constants.extensions(), menus.getItems().get( 4 ).getCaption() );
 
         verify( menusHelper ).addRolesMenuItems();
@@ -182,13 +181,6 @@ public class LiveSparkEntryPointTest {
 
         assertEquals( 1, deploymentMenuItems.size() );
         assertEquals( liveSparkEntryPoint.constants.ruleDeployments(), deploymentMenuItems.get( 0 ).getCaption() );
-    }
-
-    @Test
-    public void getTasksViewTest() {
-        final PlaceRequest tasksView = liveSparkEntryPoint.getTasksView();
-
-        assertNotNull( tasksView );
     }
 
     private void mockMenuHelper() {

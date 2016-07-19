@@ -21,22 +21,6 @@
   <!-- Uberfire Extensions - Apps -->
   <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
 
-  <!-- designer -->
-  <!-- Not apply for LS inherits name="org.jbpm.designer.jBPMDesignerAPI"/-->
-  <!-- Not apply for LS inherits name="org.jbpm.designer.jBPMDesignerClient"/-->
-
-  <!-- jbpm-wb -->
-  <inherits name="org.jbpm.console.ng.ht.JbpmConsoleNGHumanTasksClient"/>
-  <inherits name="org.jbpm.console.ng.gc.JbpmConsoleNGGenericClient"/>
-  <inherits name="org.jbpm.console.ng.bd.JbpmConsoleNGBusinessDomainAPI"/>
-  <inherits name="org.jbpm.console.ng.pr.JbpmConsoleNGProcessRuntimeAPI"/>
-  <inherits name="org.jbpm.console.ng.ht.forms.JbpmConsoleNGHumanTasksFormsClient"/>
-  <inherits name="org.jbpm.console.ng.df.JbpmConsoleNGDataFiltersClient"/>
-
-  <!-- Form-Modeler -->
-  <!-- Not apply for LS inherits name="org.jbpm.formModeler.renderer.FormRendererAPI"/-->
-  <!-- Not apply for LS inherits name="org.jbpm.formModeler.renderer.FormRendererClient"/-->
-
   <!-- Guvnor dependencies -->
   <inherits name="org.guvnor.structure.GuvnorStructureClient"/>
   <inherits name="org.guvnor.inbox.GuvnorInboxClient"/>
@@ -85,23 +69,6 @@
 
   <!-- Drools Workbench Screens -->
   <inherits name="org.drools.workbench.screens.drltext.DroolsWorkbenchDRLTextEditorClient"/>
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.enums.DroolsWorkbenchEnumEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.factmodel.DroolsWorkbenchFactModelEditorAPI"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.rule.DroolsWorkbenchGuidedRuleEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.template.DroolsWorkbenchGuidedTemplateEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.dtable.DroolsWorkbenchGuidedDecisionTableEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.dtree.DroolsWorkbenchGuidedDecisionTreeEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.scorecard.DroolsWorkbenchGuidedScoreCardEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.dsltext.DroolsWorkbenchDSLTextEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.globals.DroolsWorkbenchGlobalsEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.workitems.DroolsWorkbenchWorkItemsEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.dtablexls.DroolsWorkbenchDecisionTableXLSEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.scorecardxls.DroolsWorkbenchScoreCardXLSEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.drools.workbench.screens.testscenario.DroolsWorkbenchTestScenarioEditorClient"/-->
-
-  <!-- Optaplanner Workbench Screens -->
-  <!-- Not apply for LS inherits name="org.optaplanner.workbench.screens.domaineditor.OptaPlannerWorkbenchDomainEditorClient"/-->
-  <!-- Not apply for LS inherits name="org.optaplanner.workbench.screens.solver.OptaPlannerWorkbenchSolverEditorClient"/-->
 
   <!-- Security management. -->
   <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementWorkbench"/>
