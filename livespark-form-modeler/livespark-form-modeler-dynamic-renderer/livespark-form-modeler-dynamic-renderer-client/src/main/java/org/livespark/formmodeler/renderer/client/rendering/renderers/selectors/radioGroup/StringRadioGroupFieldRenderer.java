@@ -25,9 +25,9 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.gwtbootstrap3.client.ui.InlineRadio;
 import org.gwtbootstrap3.client.ui.Radio;
+import org.gwtbootstrap3.client.ui.StringRadioGroup;
 import org.livespark.formmodeler.model.impl.basic.selectors.StringSelectorOption;
 import org.livespark.formmodeler.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
-import org.livespark.formmodeler.renderer.client.rendering.renderers.bs3.StringRadioGroup;
 
 @Dependent
 public class StringRadioGroupFieldRenderer extends RadioGroupFieldRendererBase<StringRadioGroupFieldDefinition, StringSelectorOption, String> {
