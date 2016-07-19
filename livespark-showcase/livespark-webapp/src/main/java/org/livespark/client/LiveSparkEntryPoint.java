@@ -69,7 +69,7 @@ public class LiveSparkEntryPoint extends DefaultWorkbenchEntryPoint {
     protected Workbench workbench;
 
     protected PlaceManager placeManager;
-    
+
     protected PermissionTreeSetup permissionTreeSetup;
 
     @Inject
@@ -124,7 +124,6 @@ public class LiveSparkEntryPoint extends DefaultWorkbenchEntryPoint {
                             MenuFactory.newTopLevelMenu( constants.home() ).withItems( menusHelper.getHomeViews( socialEnabled ) ).endMenu()
                                     .newTopLevelMenu( constants.authoring() ).withItems( menusHelper.getAuthoringViews() ).endMenu()
                                     .newTopLevelMenu( constants.deploy() ).withItems( getDeploymentViews() ).endMenu()
-                                    .newTopLevelMenu( constants.tasks() ).place( getTasksView() ).endMenu()
                                     .newTopLevelMenu( constants.extensions() ).withItems( menusHelper.getExtensionsViews() ).endMenu()
                                     .newTopLevelCustomMenu( iocManager.lookupBean( SearchMenuBuilder.class ).getInstance() ).endMenu()
                                     .build();
@@ -151,9 +150,5 @@ public class LiveSparkEntryPoint extends DefaultWorkbenchEntryPoint {
                                     .endMenu().build().getItems().get( 0 ) );
 
         return result;
-    }
-
-    protected PlaceRequest getTasksView() {
-        return new DefaultPlaceRequest( "DataSet Tasks" );
     }
 }

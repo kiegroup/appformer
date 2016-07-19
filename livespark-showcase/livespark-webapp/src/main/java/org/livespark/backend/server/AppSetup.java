@@ -27,11 +27,9 @@ import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigGroup;
-import org.guvnor.structure.server.config.ConfigItem;
 import org.guvnor.structure.server.config.ConfigType;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
-import org.jbpm.console.ng.bd.service.AdministrationService;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.screens.workbench.backend.BaseAppSetup;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
@@ -51,8 +49,6 @@ public class AppSetup extends BaseAppSetup {
     private static final String OU_OWNER = "demo@demo.org";
     // default repository section - end
 
-    private AdministrationService administrationService;
-
     private Event<ApplicationStarted> applicationStartedEvent;
 
     protected AppSetup() {
@@ -65,10 +61,8 @@ public class AppSetup extends BaseAppSetup {
                      final KieProjectService projectService,
                      final ConfigurationService configurationService,
                      final ConfigurationFactory configurationFactory,
-                     final AdministrationService administrationService,
                      final Event<ApplicationStarted> applicationStartedEvent ) {
         super( ioService, repositoryService, organizationalUnitService, projectService, configurationService, configurationFactory );
-        this.administrationService = administrationService;
         this.applicationStartedEvent = applicationStartedEvent;
     }
 
@@ -100,17 +94,10 @@ public class AppSetup extends BaseAppSetup {
             }
 
             //Define mandatory properties
-            final ConfigItem<String> supportRuntimeDeployConfigItem = new ConfigItem<>();
-            supportRuntimeDeployConfigItem.setName( "support.runtime.deploy" );
-            supportRuntimeDeployConfigItem.setValue( "false" );
             setupConfigurationGroup( ConfigType.GLOBAL,
                                      GLOBAL_SETTINGS,
-                                     getGlobalConfiguration(),
-                                     supportRuntimeDeployConfigItem );
+                                     getGlobalConfiguration() );
 
-            // rest of jbpm wb bootstrap
-            administrationService.bootstrapConfig();
-            administrationService.bootstrapDeployments();
             // notify components that bootstrap is completed to start post setups
             applicationStartedEvent.fire( new ApplicationStarted() );
         } catch ( final Exception e ) {
