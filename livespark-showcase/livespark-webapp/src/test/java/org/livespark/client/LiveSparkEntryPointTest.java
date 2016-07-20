@@ -17,7 +17,6 @@
 package org.livespark.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
@@ -156,17 +155,17 @@ public class LiveSparkEntryPointTest {
     public void setupMenuTest() {
         liveSparkEntryPoint.setupMenu();
 
-        ArgumentCaptor<Menus> menusCaptor = ArgumentCaptor.forClass( Menus.class );
+        final ArgumentCaptor<Menus> menusCaptor = ArgumentCaptor.forClass( Menus.class );
         verify( menuBar ).addMenus( menusCaptor.capture() );
 
-        Menus menus = menusCaptor.getValue();
+        final Menus menus = menusCaptor.getValue();
 
         assertEquals( 5, menus.getItems().size() );
 
         assertEquals( liveSparkEntryPoint.constants.home(), menus.getItems().get( 0 ).getCaption() );
         assertEquals( liveSparkEntryPoint.constants.authoring(), menus.getItems().get( 1 ).getCaption() );
         assertEquals( liveSparkEntryPoint.constants.deploy(), menus.getItems().get( 2 ).getCaption() );
-        assertEquals( liveSparkEntryPoint.constants.extensions(), menus.getItems().get( 4 ).getCaption() );
+        assertEquals( liveSparkEntryPoint.constants.extensions(), menus.getItems().get( 3 ).getCaption() );
 
         verify( menusHelper ).addRolesMenuItems();
         verify( menusHelper ).addWorkbenchConfigurationMenuItem();
@@ -177,7 +176,7 @@ public class LiveSparkEntryPointTest {
 
     @Test
     public void getDeploymentViewsTest() {
-        List<? extends MenuItem> deploymentMenuItems = liveSparkEntryPoint.getDeploymentViews();
+        final List<? extends MenuItem> deploymentMenuItems = liveSparkEntryPoint.getDeploymentViews();
 
         assertEquals( 1, deploymentMenuItems.size() );
         assertEquals( liveSparkEntryPoint.constants.ruleDeployments(), deploymentMenuItems.get( 0 ).getCaption() );
