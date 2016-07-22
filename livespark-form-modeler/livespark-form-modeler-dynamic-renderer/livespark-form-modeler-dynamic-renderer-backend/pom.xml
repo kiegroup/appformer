@@ -49,6 +49,13 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
     </dependency>
+
+    <!-- required to use DMO -->
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-datamodel-backend</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-api</artifactId>
@@ -88,7 +95,6 @@
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
-
   </dependencies>
 
 </project>

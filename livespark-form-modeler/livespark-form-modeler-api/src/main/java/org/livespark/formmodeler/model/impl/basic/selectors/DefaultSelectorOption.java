@@ -21,9 +21,6 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.FieldDef;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Portable
 @Bindable
 public class DefaultSelectorOption<T> implements SelectorOption<T> {
@@ -34,15 +31,15 @@ public class DefaultSelectorOption<T> implements SelectorOption<T> {
     @FieldDef( label = "Text")
     private String text;
 
-    @FieldDef( label = "Is default value")
-    private boolean defaultValue = false;
+    @FieldDef( label = "Is default value", position = 2 )
+    private Boolean defaultValue = false;
 
     public DefaultSelectorOption() {
     }
 
     public DefaultSelectorOption( @MapsTo( "value" ) T value,
                                   @MapsTo( "text" ) String text,
-                                  @MapsTo( "defaultValue" ) boolean defaultValue ) {
+                                  @MapsTo( "defaultValue" ) Boolean defaultValue ) {
         this.value = value;
         this.text = text;
         this.defaultValue = defaultValue;
@@ -67,11 +64,11 @@ public class DefaultSelectorOption<T> implements SelectorOption<T> {
     }
 
     @Override
-    public boolean isDefaultValue() {
+    public Boolean isDefaultValue() {
         return defaultValue;
     }
 
-    public void setDefaultValue( boolean defaultValue ) {
+    public void setDefaultValue( Boolean defaultValue ) {
         this.defaultValue = defaultValue;
     }
 }

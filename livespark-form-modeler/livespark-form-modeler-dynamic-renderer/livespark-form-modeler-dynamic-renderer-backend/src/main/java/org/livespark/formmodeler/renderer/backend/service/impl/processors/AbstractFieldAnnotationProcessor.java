@@ -16,35 +16,30 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
-import java.lang.annotation.Annotation;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.drools.workbench.models.datamodel.oracle.Annotation;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.service.FieldManager;
+import org.livespark.formmodeler.renderer.service.TransformerContext;
+import org.livespark.formmodeler.service.FieldProvider;
 
-public abstract class AbstractFieldAnnotationProcessor<T extends FieldDefinition> implements FieldAnnotationProcessor {
+public abstract class AbstractFieldAnnotationProcessor<T extends FieldDefinition, P extends FieldProvider<T>> implements FieldAnnotationProcessor<T> {
 
-    protected FieldManager fieldManager;
-
-    protected abstract T buildFieldDefinition( Annotation annotation, FieldSetting setting );
+    protected P fieldProvider;
 
     @Inject
-    public AbstractFieldAnnotationProcessor( FieldManager fieldManager ) {
-        this.fieldManager = fieldManager;
+    public AbstractFieldAnnotationProcessor( P fieldProvider ) {
+        this.fieldProvider = fieldProvider;
     }
 
     @Override
-    public FieldDefinition getFieldDefinition( Annotation annotation, FieldSetting setting ) {
-        FieldDefinition field = buildFieldDefinition( annotation, setting );
+    public T getFieldDefinition( FieldSetting setting, Annotation annotation, TransformerContext context ) {
+        T field = fieldProvider.getFieldByType( setting.getTypeInfo() );
 
         if ( field == null ) {
-            field = fieldManager.getDefinitionByValueType( setting.getTypeInfo() );
-
-            if ( field == null ) {
-                return null;
-            }
+            return null;
         }
 
         field.setId( setting.getFieldName() );
@@ -56,11 +51,17 @@ public abstract class AbstractFieldAnnotationProcessor<T extends FieldDefinition
             field.setBoundPropertyName( setting.getProperty() );
         }
 
+        initField( field, annotation, context );
+
         return field;
     }
 
     @Override
-    public boolean isDefault() {
-        return false;
+    public boolean supportsAnnotation( Annotation annotation ) {
+        return annotation.getQualifiedTypeName().equals( getSupportedAnnotation().getName() );
     }
+
+    protected abstract void initField( T field, Annotation annotation, TransformerContext context );
+
+    protected abstract Class< ? extends java.lang.annotation.Annotation> getSupportedAnnotation();
 }

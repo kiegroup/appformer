@@ -17,8 +17,8 @@
 package org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers;
 
 import org.livespark.formmodeler.model.FieldDefinition;
+import org.livespark.formmodeler.renderer.backend.service.impl.DMOBasedTransformerContext;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
@@ -26,5 +26,5 @@ import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 public interface FieldInitializer<T extends FieldDefinition> {
     public boolean supports( FieldDefinition field );
 
-    public void initializeField( T field, FieldSetting setting, DynamicRenderingContext context );
+    public void initializeField( T field, FieldSetting setting, DMOBasedTransformerContext context );
 }

@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.renderer.service.impl;
+package org.livespark.formmodeler.renderer.test.model;
 
-import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.renderer.service.FormRenderingContext;
+import org.jboss.errai.databinding.client.api.Bindable;
 
+@Bindable
 @Portable
-public class DynamicRenderingContext extends FormRenderingContext<Object> {
+public class MetaAddress {
 
-    @Override
-    protected FormRenderingContext getNewInstance() {
-        return new DynamicRenderingContext();
+    private Address address;
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress( Address address ) {
+        this.address = address;
     }
 }

@@ -23,8 +23,8 @@ import javax.enterprise.context.Dependent;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.selectors.DefaultSelectorOption;
 import org.livespark.formmodeler.model.impl.basic.selectors.SelectorFieldBase;
+import org.livespark.formmodeler.renderer.backend.service.impl.DMOBasedTransformerContext;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
@@ -38,16 +38,27 @@ public class EnumSelectorFieldInitializer implements FieldInitializer<SelectorFi
     }
 
     @Override
-    public void initializeField( SelectorFieldBase field, FieldSetting setting, DynamicRenderingContext context ) {
-        if ( setting.getType().getEnumConstants() != null && ( field.getOptions() == null || field.getOptions().isEmpty() ) ) {
-            List<DefaultSelectorOption<Enum>> options = new ArrayList<>();
-            for ( Object enumConstant : setting.getType().getEnumConstants() ) {
-                DefaultSelectorOption<Enum> selectorOption = new DefaultSelectorOption<>(
-                        (Enum) enumConstant, enumConstant.toString(), false);
+    public void initializeField( SelectorFieldBase field, FieldSetting setting, DMOBasedTransformerContext context ) {
 
-                options.add( selectorOption );
+        try {
+            Enum[] enumValues = (Enum[])Class.forName( setting.getType() ).getEnumConstants();
+
+            if ( enumValues != null && ( field.getOptions() == null || field.getOptions().isEmpty() ) ) {
+                List<DefaultSelectorOption<Enum>> options = new ArrayList<>();
+                for ( Enum enumConstant : enumValues ) {
+                    DefaultSelectorOption<Enum> selectorOption = new DefaultSelectorOption<>(
+                            enumConstant, enumConstant.toString(), false);
+
+                    options.add( selectorOption );
+                }
+                field.setOptions( options );
             }
-            field.setOptions( options );
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
         }
+
+
+
     }
 }

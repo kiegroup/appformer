@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.metaModel;
+package org.livespark.formmodeler.renderer.service;
 
-import java.lang.annotation.Inherited;
+public interface TransformerContext<F extends FormRenderingContext> {
 
-@Inherited
-public @interface TextBox {
-    String label();
-    String placeHolder() default "";
-    int maxLength() default 100;
+    TransformerContext copyFor( String type );
+
+    Object getModel();
+
+    String getType();
+
+    F getRenderingContext();
 }

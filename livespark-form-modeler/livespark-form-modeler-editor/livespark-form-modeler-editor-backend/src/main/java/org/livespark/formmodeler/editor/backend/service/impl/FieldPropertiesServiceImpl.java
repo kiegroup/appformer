@@ -25,16 +25,23 @@ import org.livespark.formmodeler.editor.service.FieldPropertiesService;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
+import org.livespark.formmodeler.renderer.service.TransformerContext;
 import org.uberfire.backend.vfs.Path;
 
 @Service
 @ApplicationScoped
 public class FieldPropertiesServiceImpl implements FieldPropertiesService {
+
+    protected Model2FormTransformerService<? extends TransformerContext<?>, ? extends FormRenderingContext> model2FormTransformerService;
+
     @Inject
-    protected Model2FormTransformerService model2FormTransformerService;
+    public FieldPropertiesServiceImpl( Model2FormTransformerService<? extends TransformerContext<?>, ? extends FormRenderingContext> model2FormTransformerService ) {
+        this.model2FormTransformerService = model2FormTransformerService;
+    }
 
     @Override
-    public FormEditorRenderingContext getFieldPropertiesRenderingContext( FieldDefinition fieldDefinition, Path formPath ) {
+    public FormEditorRenderingContext getFieldPropertiesRenderingContext( FieldDefinition fieldDefinition,
+                                                                          Path formPath ) {
         FormRenderingContext context = model2FormTransformerService.createContext( fieldDefinition );
 
         FormEditorRenderingContext editorContext = new FormEditorRenderingContext( formPath );

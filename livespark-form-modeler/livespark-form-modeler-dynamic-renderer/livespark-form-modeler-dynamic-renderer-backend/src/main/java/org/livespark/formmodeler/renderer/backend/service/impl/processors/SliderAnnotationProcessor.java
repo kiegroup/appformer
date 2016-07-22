@@ -16,47 +16,34 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
-import java.lang.annotation.Annotation;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.drools.workbench.models.datamodel.oracle.Annotation;
 import org.livespark.formmodeler.metaModel.Slider;
 import org.livespark.formmodeler.model.impl.basic.slider.SliderBase;
-import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.service.FieldManager;
+import org.livespark.formmodeler.renderer.service.TransformerContext;
+import org.livespark.formmodeler.service.impl.fieldProviders.SliderFieldProvider;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
-public class SliderAnnotationProcessor extends AbstractFieldAnnotationProcessor<SliderBase> {
+public class SliderAnnotationProcessor extends AbstractFieldAnnotationProcessor<SliderBase, SliderFieldProvider> {
 
     @Inject
-    public SliderAnnotationProcessor( FieldManager fieldManager ) {
-        super( fieldManager );
+    public SliderAnnotationProcessor( SliderFieldProvider fieldProvider ) {
+        super( fieldProvider );
     }
 
     @Override
-    protected SliderBase buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
+    protected void initField( SliderBase field, Annotation annotation, TransformerContext context ) {
 
-        if ( !supportsAnnotation( annotation )) {
-            return null;
-        }
-
-        SliderBase field = (SliderBase) fieldManager.getFieldFromProvider( SliderBase.CODE, setting.getTypeInfo() );
-
-        Slider sliderDef = (Slider) annotation;
-
-        field.setMin( sliderDef.min() );
-        field.setMax( sliderDef.max() );
-        field.setPrecision( sliderDef.precision() );
-        field.setStep( sliderDef.step() );
-
-        return field;
+        field.setMin( ((Number)annotation.getParameters().get( "min" )).doubleValue() );
+        field.setMax( ((Number)annotation.getParameters().get( "max" )).doubleValue() );
+        field.setPrecision( ((Number)annotation.getParameters().get( "precission" )).doubleValue() );
+        field.setStep( ((Number)annotation.getParameters().get( "step" )).doubleValue() );
     }
 
     @Override
-    public boolean supportsAnnotation( Annotation annotation ) {
-        return annotation instanceof Slider;
+    protected Class<Slider> getSupportedAnnotation() {
+        return Slider.class;
     }
 }

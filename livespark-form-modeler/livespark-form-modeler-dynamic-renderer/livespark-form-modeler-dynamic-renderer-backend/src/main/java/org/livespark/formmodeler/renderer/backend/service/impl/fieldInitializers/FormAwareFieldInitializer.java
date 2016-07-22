@@ -17,16 +17,16 @@
 package org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers;
 
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.renderer.service.FormDefintionGenerator;
+import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
  */
 public abstract class FormAwareFieldInitializer<T extends FieldDefinition> implements FieldInitializer<T> {
 
-    protected FormDefintionGenerator formGenerator;
+    protected Model2FormTransformerService formGenerator;
 
-    public void setTransformerService( FormDefintionGenerator formGenerator ) {
+    public void setTransformerService( Model2FormTransformerService formGenerator ) {
         this.formGenerator = formGenerator;
     }
 }

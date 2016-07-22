@@ -16,14 +16,11 @@
 
 package org.livespark.formmodeler.model.impl.basic.selectors;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 public interface SelectorOption<T> {
 
     T getValue();
 
     String getText();
 
-    boolean isDefaultValue();
+    Boolean isDefaultValue();
 }

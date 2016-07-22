@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.metaModel;
+package org.livespark.formmodeler.renderer.backend.service.impl;
 
-import java.lang.annotation.Inherited;
+import org.jboss.errai.common.client.api.annotations.Portable;
+import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 
-@Inherited
-public @interface TextBox {
-    String label();
-    String placeHolder() default "";
-    int maxLength() default 100;
+@Portable
+public class DynamicRenderingContext extends FormRenderingContext<Object> {
+
+    @Override
+    protected FormRenderingContext getNewInstance() {
+        return new DynamicRenderingContext();
+    }
 }

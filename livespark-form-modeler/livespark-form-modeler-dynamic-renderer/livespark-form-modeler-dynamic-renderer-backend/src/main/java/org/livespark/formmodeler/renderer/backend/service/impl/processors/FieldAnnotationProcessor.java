@@ -16,15 +16,14 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
-import java.lang.annotation.Annotation;
-
+import org.drools.workbench.models.datamodel.oracle.Annotation;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
+import org.livespark.formmodeler.renderer.service.TransformerContext;
 
-public interface FieldAnnotationProcessor {
-    public boolean supportsAnnotation( Annotation annotation );
+public interface FieldAnnotationProcessor<F extends FieldDefinition> {
 
-    public FieldDefinition getFieldDefinition( Annotation annotation, FieldSetting setting );
+    boolean supportsAnnotation( Annotation annotation );
 
-    public boolean isDefault();
+    public F getFieldDefinition( FieldSetting setting, Annotation annotation, TransformerContext context );
 }

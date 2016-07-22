@@ -23,15 +23,15 @@ import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefiniti
 import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
 import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
+import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.renderer.test.model.Address;
 import org.livespark.formmodeler.renderer.test.model.Employee;
 
 public class TestFormGenerator {
 
-    public static DynamicRenderingContext getContextForEmployee( Employee employee ) {
+    public static FormRenderingContext getContextForEmployee( Employee employee ) {
         FormDefinition form = getEmployeeForm();
-        DynamicRenderingContext context = new DynamicRenderingContext();
+        MockFormRenderingContext context = new MockFormRenderingContext();
         context.setRootForm( form );
         context.setModel( employee );
         context.getAvailableForms().put( form.getId(), form );

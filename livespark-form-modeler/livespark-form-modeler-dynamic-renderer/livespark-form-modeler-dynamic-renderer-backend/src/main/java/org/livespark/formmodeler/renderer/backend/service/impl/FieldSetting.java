@@ -16,9 +16,9 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl;
 
-import java.lang.annotation.Annotation;
+import java.util.Set;
 
-import org.livespark.formmodeler.metaModel.FieldDef;
+import org.livespark.formmodeler.model.DefaultFieldTypeInfo;
 import org.livespark.formmodeler.model.FieldTypeInfo;
 
 public class FieldSetting implements Comparable<FieldSetting> {
@@ -26,17 +26,17 @@ public class FieldSetting implements Comparable<FieldSetting> {
     private String property;
     private String label;
     private int position;
-    private Class type;
-    private Annotation[] annotations;
+    private String type;
+    private Set<org.drools.workbench.models.datamodel.oracle.Annotation> annotations;
     private FieldTypeInfo typeInfo;
 
-    public FieldSetting( String fieldName, FieldTypeInfo typeInfo, Class type, FieldDef definition, Annotation[] annotations ) {
+    public FieldSetting( String fieldName, DefaultFieldTypeInfo typeInfo, org.drools.workbench.models.datamodel.oracle.Annotation annotation, Set<org.drools.workbench.models.datamodel.oracle.Annotation> annotations ) {
         this.fieldName = fieldName;
         this.typeInfo = typeInfo;
-        this.type = type;
-        this.label = definition.label();
-        this.position = definition.position();
-        this.property = definition.property();
+        this.type = typeInfo.getType();
+        this.label = annotation.getParameters().get( "label" ).toString();
+        this.position = Integer.valueOf( annotation.getParameters().get( "position" ).toString() );
+        this.property = annotation.getParameters().get( "property" ).toString();
         this.annotations = annotations;
     }
 
@@ -60,7 +60,7 @@ public class FieldSetting implements Comparable<FieldSetting> {
         return position;
     }
 
-    public Class getType() {
+    public String getType() {
         return type;
     }
 
@@ -68,7 +68,7 @@ public class FieldSetting implements Comparable<FieldSetting> {
         return property;
     }
 
-    public Annotation[] getAnnotations() {
+    public Set<org.drools.workbench.models.datamodel.oracle.Annotation> getAnnotations() {
         return annotations;
     }
 
