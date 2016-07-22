@@ -40,14 +40,14 @@ import org.livespark.formmodeler.service.impl.fieldProviders.MultipleSubFormFiel
 public class MultipleSubFormFieldDefinition extends FieldDefinition implements EmbeddedFormField, MultipleField {
     public static final String CODE = "MultipleSubForm";
 
-    @FieldDef( label = "Create Form" )
+    @FieldDef( label = "Create Form", position = 4 )
     @ListBox( provider = @SelectorDataProvider(
             type = SelectorDataProvider.ProviderType.REMOTE,
             className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
     @NotEmpty
     protected String creationForm = "";
 
-    @FieldDef( label = "Edit Form")
+    @FieldDef( label = "Edit Form", position = 5 )
     @ListBox( provider = @SelectorDataProvider(
             type = SelectorDataProvider.ProviderType.REMOTE,
             className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))

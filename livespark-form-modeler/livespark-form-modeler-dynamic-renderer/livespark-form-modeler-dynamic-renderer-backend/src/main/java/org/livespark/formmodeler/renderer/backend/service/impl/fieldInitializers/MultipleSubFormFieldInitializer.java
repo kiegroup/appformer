@@ -25,8 +25,8 @@ import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
+import org.livespark.formmodeler.renderer.backend.service.impl.DMOBasedTransformerContext;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
@@ -40,11 +40,11 @@ public class MultipleSubFormFieldInitializer extends FormAwareFieldInitializer<M
     }
 
     @Override
-    public void initializeField( MultipleSubFormFieldDefinition field, FieldSetting setting, DynamicRenderingContext context ) {
-        FormDefinition form = context.getAvailableForms().get( field.getStandaloneClassName() );
+    public void initializeField( MultipleSubFormFieldDefinition field, FieldSetting setting, DMOBasedTransformerContext context ) {
+        FormDefinition form = context.getRenderingContext().getAvailableForms().get( field.getStandaloneClassName() );
         if ( form == null ) {
-            form = formGenerator.generateFormDefinitionForClass( setting.getType(), context );
-            context.getAvailableForms().put( field.getStandaloneClassName(), form );
+            form = formGenerator.generateFormDefinitionForType( setting.getType(), context );
+            context.getRenderingContext().getAvailableForms().put( field.getStandaloneClassName(), form );
         }
 
         List<TableColumnMeta> metas = new ArrayList<TableColumnMeta>();

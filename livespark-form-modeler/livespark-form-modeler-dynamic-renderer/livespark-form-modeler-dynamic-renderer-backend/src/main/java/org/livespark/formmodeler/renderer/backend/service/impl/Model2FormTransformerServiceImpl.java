@@ -16,10 +16,7 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +26,9 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.drools.workbench.models.datamodel.oracle.Annotation;
+import org.drools.workbench.models.datamodel.oracle.DataType;
+import org.drools.workbench.models.datamodel.oracle.ModelField;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.livespark.formmodeler.codegen.layout.Dynamic;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
@@ -39,38 +39,35 @@ import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.FieldInitializer;
 import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.FormAwareFieldInitializer;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.FieldAnnotationProcessor;
-import org.livespark.formmodeler.renderer.service.FormDefintionGenerator;
-import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
+import org.livespark.formmodeler.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
 @Dependent
-public class Model2FormTransformerServiceImpl implements Model2FormTransformerService, FormDefintionGenerator {
+public class Model2FormTransformerServiceImpl implements Model2FormTransformerService<DMOBasedTransformerContext, DynamicRenderingContext> {
 
     private static final Logger logger = LoggerFactory.getLogger( Model2FormTransformerServiceImpl.class );
 
+    private FieldManager fieldManager;
+
     private FormLayoutTemplateGenerator layoutGenerator;
 
-    private List<FieldAnnotationProcessor> processors = new ArrayList<>();
+    private List<FieldAnnotationProcessor<? extends FieldDefinition>> processors = new ArrayList<>();
 
     private List<FieldInitializer<? extends FieldDefinition>> fieldInitializers = new ArrayList<>();
 
-    private FieldAnnotationProcessor defaultAnnotationProcessor;
-
     @Inject
-    public Model2FormTransformerServiceImpl( Instance<FieldAnnotationProcessor> installedProcessors,
+    public Model2FormTransformerServiceImpl( Instance<FieldAnnotationProcessor<? extends FieldDefinition>> installedProcessors,
                                              Instance<FieldInitializer<? extends FieldDefinition>> installedInitializers,
-                                             @Dynamic FormLayoutTemplateGenerator layoutGenerator) {
+                                             @Dynamic FormLayoutTemplateGenerator layoutGenerator,
+                                             FieldManager fieldManager ) {
         this.layoutGenerator = layoutGenerator;
+        this.fieldManager = fieldManager;
+
         for ( FieldAnnotationProcessor processor : installedProcessors ) {
-            if ( processor.isDefault() ) {
-                defaultAnnotationProcessor = processor;
-            } else {
-                processors.add( processor );
-            }
+            processors.add( processor );
         }
 
         for( FieldInitializer initializer : installedInitializers ) {
@@ -82,44 +79,55 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
     }
 
     @Override
-    public FormRenderingContext createContext( Object model ) {
-        DynamicRenderingContext context = new DynamicRenderingContext();
+    public DynamicRenderingContext createContext( Object model ) {
 
-        FormDefinition form = generateFormDefinitionForModel( model, context );
-        context.setRootForm( form );
+        try {
+            DMOBasedTransformerContext context = DMOBasedTransformerContext.getTransformerContextFor( model );
 
-        return context;
-    }
+            FormDefinition form = generateFormDefinition( context );
+            context.getRenderingContext().setRootForm( form );
 
-    @Override
-    public FormDefinition generateFormDefinitionForModel( Object model, DynamicRenderingContext context ) {
-        if ( model == null) {
-            return null;
+            return context.getRenderingContext();
+        } catch ( IOException e ) {
+            logger.warn( "Error creating context: ", e );
         }
-        return generateFormDefinitionForClass( model.getClass(), context );
+        return null;
     }
 
-    @Override
-    public FormDefinition generateFormDefinitionForClass( Class clazz, DynamicRenderingContext context ) {
+
+    public FormDefinition generateFormDefinition( DMOBasedTransformerContext context ) {
         FormDefinition form = new FormDefinition();
 
-        form.setId( clazz.getName() );
+        final String modelType = context.getType();
 
-        Set<FieldSetting> settings = getClassFieldSettings( clazz );
+        form.setId( modelType );
 
-        for ( FieldSetting setting : settings ) {
+        Set<FieldSetting> settings = getClassFieldSettings( modelType, context );
+
+        for( FieldSetting setting : settings ) {
+
             FieldDefinition field = null;
 
             for( Annotation annotation : setting.getAnnotations() ) {
                 for ( FieldAnnotationProcessor processor : processors ) {
                     if ( processor.supportsAnnotation( annotation ) ) {
-                        field = processor.getFieldDefinition( annotation, setting );
+                        field = processor.getFieldDefinition( setting, annotation, context );
                     }
                 }
             }
 
             if ( field == null ) {
-                field = defaultAnnotationProcessor.getFieldDefinition( null, setting );
+                field = fieldManager.getDefinitionByValueType( setting.getTypeInfo() );
+                if ( field != null ) {
+                    field.setId( setting.getFieldName() );
+                    field.setName( setting.getFieldName() );
+                    field.setLabel( setting.getLabel() );
+                    field.setModelName( setting.getFieldName() );
+
+                    if ( !StringUtils.isEmpty( setting.getProperty() ) ) {
+                        field.setBoundPropertyName( setting.getProperty() );
+                    }
+                }
             }
 
             if ( field == null ) {
@@ -134,51 +142,102 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
 
             form.getFields().add( field );
         }
+
         form.setLayoutTemplate( layoutGenerator.generateLayoutTemplate( form ) );
 
         return form;
     }
 
-    protected Set<FieldSetting> getClassFieldSettings( Class clazz ) {
+    @Override
+    public FormDefinition generateFormDefinitionForType( String type, DMOBasedTransformerContext context ) {
+
+        if ( !context.getType().equals( type ) ) {
+            context = context.copyFor( type );
+        }
+
+        return generateFormDefinition( context );
+    }
+
+    protected Set<FieldSetting> getClassFieldSettings( String modelType, DMOBasedTransformerContext context ) {
         TreeSet<FieldSetting> settings = new TreeSet<FieldSetting>();
-        for ( Field field : clazz.getDeclaredFields() ) {
-            for ( Annotation annotation : field.getAnnotations() ) {
-                if ( annotation instanceof FieldDef ) {
-                    FieldDef fieldDef = (FieldDef) annotation;
-                    Class fieldType = getFieldType( field, fieldDef );
 
-                    Class realType = fieldType;
+        ModelField[] modelFields = context.getOracle().getProjectModelFields().get( modelType );
 
-                    if ( field.getGenericType() instanceof ParameterizedType ) {
-                        ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-                        Type paramArg = parameterizedType.getActualTypeArguments()[0];
-                        realType = (Class) paramArg;
+        for( ModelField modelField : modelFields ) {
+
+            final String fieldName = modelField.getName();
+
+            if ( fieldName.equals( "this" ) ) {
+                continue;
+            }
+
+            Set<Annotation> annotations = context.getOracle().getProjectTypeFieldsAnnotations().get( modelType ).get( fieldName );
+
+            if ( annotations == null || annotations.isEmpty() ) {
+                continue;
+            }
+
+            for ( Annotation annotation : annotations ) {
+                if ( annotation.getQualifiedTypeName().equals( FieldDef.class.getName() ) ) {
+
+                    String fieldModelType = modelType;
+                    String fieldClassName = modelField.getClassName();
+
+                    boolean isEnunm = context.getOracle().getProjectJavaEnumDefinitions().get( modelType + "#" + modelField.getName() ) != null;
+
+                    // here we store final field we want to generate the Form Field for.
+                    ModelField finalModelField = modelField;
+
+                    // If field is collection check for the generic type
+                    if ( isCollection( modelField ) ) {
+                        fieldModelType = modelType;
+                    } else {
+
+                        String property = annotation.getParameters().get( "property" ).toString();
+
+                        /*
+                            if the annotation has property let's get the nested field and overwrite the finalField value
+                            in order to generate a Form Field with the right type.
+                        */
+                        if ( property != null && !property.isEmpty() ) {
+                            ModelField[] fields = context.getOracle().getProjectModelFields().get( fieldClassName );
+
+                            for ( int i = 0; i < fields.length; i++ ) {
+                                if ( fields[i].getName().equals( property ) ) {
+                                    finalModelField = fields[i];
+                                    /*
+                                     if field isn't a collection let's get the real className, if it is a collection
+                                      we'll use the type to get the generic type later.
+                                    */
+                                    if ( !isCollection( finalModelField ) )  {
+                                        fieldClassName = finalModelField.getClassName();
+                                    } else {
+                                        fieldModelType = fieldClassName;
+                                    }
+                                }
+                            }
+                        }
                     }
 
-                    FieldSetting setting = new FieldSetting( field.getName(),
-                            new DefaultFieldTypeInfo( realType.getName(),
-                                    fieldType.isAssignableFrom( List.class ),
-                                    fieldType.isEnum()), realType, fieldDef, field.getAnnotations() );
+                    boolean isCollection = isCollection( finalModelField );
 
-                    settings.add( setting );
+                    if ( isCollection ) {
+                        // if field is a collection let's get the generic type of it.
+                        fieldClassName = context.getOracle().getProjectFieldParametersType().get( fieldModelType + "#" + finalModelField.getName() );
+                    }
+
+                    if ( fieldClassName != null ) {
+                        FieldSetting setting = new FieldSetting( fieldName, new DefaultFieldTypeInfo( fieldClassName, isCollection, isEnunm ), annotation, annotations );
+                        settings.add( setting );
+                    }
                 }
             }
         }
-        if ( clazz.getSuperclass() != null ) {
-            settings.addAll( getClassFieldSettings( clazz.getSuperclass() ) );
-        }
+
         return settings;
     }
 
-    protected Class getFieldType( Field field, FieldDef definition ) {
-        if ( !StringUtils.isEmpty( definition.property() ) ) {
-            try {
-                Field nestedField = field.getType().getDeclaredField( definition.property() );
-                return nestedField.getType();
-            } catch ( NoSuchFieldException e ) {
-                logger.warn( "Error parsing model: Unable to find field '{}'", definition.property() );
-            }
-        }
-        return field.getType();
+    private boolean isCollection( ModelField modelField ) {
+        return DataType.TYPE_COLLECTION.equals( modelField.getType() );
     }
 }

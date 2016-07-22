@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.renderer.service;
+package org.livespark.formmodeler.renderer.test.util;
 
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
+import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
-public interface FormDefintionGenerator {
-    FormDefinition generateFormDefinitionForModel( Object model, DynamicRenderingContext context );
-
-    FormDefinition generateFormDefinitionForClass( Class clazz, DynamicRenderingContext context );
+public class MockFormRenderingContext extends FormRenderingContext {
+    @Override
+    protected FormRenderingContext getNewInstance() {
+        return new MockFormRenderingContext();
+    }
 }

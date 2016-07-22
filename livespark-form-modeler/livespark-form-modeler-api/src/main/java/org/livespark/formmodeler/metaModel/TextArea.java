@@ -17,8 +17,10 @@
 package org.livespark.formmodeler.metaModel;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.RetentionPolicy;
 
+@Inherited
 @java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
 @java.lang.annotation.Target({ ElementType.TYPE, ElementType.FIELD })
 public @interface TextArea {

@@ -21,8 +21,8 @@ import javax.enterprise.context.Dependent;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
+import org.livespark.formmodeler.renderer.backend.service.impl.DMOBasedTransformerContext;
 import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
@@ -36,11 +36,11 @@ public class SubFormFieldInitializer extends FormAwareFieldInitializer<SubFormFi
     }
 
     @Override
-    public void initializeField( SubFormFieldDefinition field, FieldSetting setting, DynamicRenderingContext context ) {
-        FormDefinition form = context.getAvailableForms().get( field.getStandaloneClassName() );
+    public void initializeField( SubFormFieldDefinition field, FieldSetting setting, DMOBasedTransformerContext context ) {
+        FormDefinition form = context.getRenderingContext().getAvailableForms().get( field.getStandaloneClassName() );
         if ( form == null ) {
-            form = formGenerator.generateFormDefinitionForClass( setting.getType(), context );
-            context.getAvailableForms().put( field.getStandaloneClassName(), form );
+            form = formGenerator.generateFormDefinitionForType( setting.getType(), context );
+            context.getRenderingContext().getAvailableForms().put( field.getStandaloneClassName(), form );
         }
 
         field.setNestedForm( form.getId() );

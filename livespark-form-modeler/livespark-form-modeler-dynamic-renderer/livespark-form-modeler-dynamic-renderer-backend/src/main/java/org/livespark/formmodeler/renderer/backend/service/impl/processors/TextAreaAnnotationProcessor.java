@@ -16,44 +16,34 @@
 
 package org.livespark.formmodeler.renderer.backend.service.impl.processors;
 
-import java.lang.annotation.Annotation;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.drools.workbench.models.datamodel.oracle.Annotation;
 import org.livespark.formmodeler.metaModel.TextArea;
 import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
-import org.livespark.formmodeler.renderer.backend.service.impl.FieldSetting;
-import org.livespark.formmodeler.renderer.backend.service.impl.processors.AbstractFieldAnnotationProcessor;
-import org.livespark.formmodeler.service.FieldManager;
+import org.livespark.formmodeler.renderer.service.TransformerContext;
+import org.livespark.formmodeler.service.impl.fieldProviders.TextAreaFieldProvider;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
-public class TextAreaAnnotationProcessor extends AbstractFieldAnnotationProcessor<TextAreaFieldDefinition> {
+public class TextAreaAnnotationProcessor extends AbstractFieldAnnotationProcessor<TextAreaFieldDefinition, TextAreaFieldProvider> {
 
     @Inject
-    public TextAreaAnnotationProcessor( FieldManager fieldManager ) {
-        super( fieldManager );
+    public TextAreaAnnotationProcessor( TextAreaFieldProvider fieldProvider ) {
+        super( fieldProvider );
     }
 
     @Override
-    protected TextAreaFieldDefinition buildFieldDefinition( Annotation annotation, FieldSetting setting ) {
-        if ( !supportsAnnotation( annotation )) {
-            return null;
+    protected void initField( TextAreaFieldDefinition field, Annotation annotation, TransformerContext context ) {
+        String placeHolder = annotation.getParameters().get( "placeHolder" ).toString();
+        if ( !placeHolder.isEmpty() ) {
+            field.setPlaceHolder( placeHolder );
         }
-
-        TextArea textAreaAnnotation = (TextArea) annotation;
-        TextAreaFieldDefinition textArea = (TextAreaFieldDefinition) fieldManager.getFieldFromProvider( TextAreaFieldDefinition.CODE, setting.getTypeInfo() );
-        if ( !textAreaAnnotation.placeHolder().isEmpty() ) {
-            textArea.setPlaceHolder( textAreaAnnotation.placeHolder() );
-        }
-        textArea.setRows( textAreaAnnotation.rows() );
-        return textArea;
+        field.setRows( (Integer) annotation.getParameters().get( "rows" ) );
     }
 
     @Override
-    public boolean supportsAnnotation( Annotation annotation ) {
-        return annotation instanceof TextArea;
+    protected Class<TextArea> getSupportedAnnotation() {
+        return TextArea.class;
     }
 }
