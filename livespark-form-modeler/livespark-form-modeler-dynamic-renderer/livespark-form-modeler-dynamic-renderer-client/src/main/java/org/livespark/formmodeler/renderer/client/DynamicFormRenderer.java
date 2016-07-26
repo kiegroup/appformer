@@ -32,7 +32,7 @@ import org.livespark.formmodeler.processing.engine.handling.impl.FormFieldImpl;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.subform.SubFormWidget;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
-import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
+import org.livespark.formmodeler.renderer.service.FormRenderingContextGeneratorService;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.mvp.Command;
 
@@ -50,7 +50,7 @@ public class DynamicFormRenderer implements IsWidget, IsFormView {
 
     private DynamicFormRendererView view;
 
-    private Caller<Model2FormTransformerService> transformerService;
+    private Caller<FormRenderingContextGeneratorService> transformerService;
 
     private FormHandler formHandler;
 
@@ -58,7 +58,7 @@ public class DynamicFormRenderer implements IsWidget, IsFormView {
 
     @Inject
     public DynamicFormRenderer( DynamicFormRendererView view,
-                                Caller<Model2FormTransformerService> transformerService,
+                                Caller<FormRenderingContextGeneratorService> transformerService,
                                 FormHandler formHandler) {
         this.view = view;
         this.transformerService = transformerService;

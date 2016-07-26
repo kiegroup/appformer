@@ -31,7 +31,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BasicModel2FormTransformerServiceTest extends AbstractModel2FormTransformerServiceTest<Person> {
+public class BasicFormRenderingContextGeneratorTest extends AbstractFormRenderingContextGeneratorTest<Person> {
 
     @Before
     @Override

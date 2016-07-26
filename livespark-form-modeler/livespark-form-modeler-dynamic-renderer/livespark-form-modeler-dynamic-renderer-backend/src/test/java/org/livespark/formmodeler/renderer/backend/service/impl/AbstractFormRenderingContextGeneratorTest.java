@@ -33,6 +33,7 @@ import org.livespark.formmodeler.renderer.backend.service.impl.processors.ListBo
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.RadioGroupFieldAnnotationProcessor;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.SliderAnnotationProcessor;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.TextAreaAnnotationProcessor;
+import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 import org.livespark.formmodeler.service.impl.fieldProviders.ListBoxFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.RadioGroupFieldProvider;
 import org.livespark.formmodeler.service.impl.fieldProviders.SliderFieldProvider;
@@ -42,7 +43,7 @@ import org.livespark.formmodeler.service.mock.MockFieldManager;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public abstract class AbstractModel2FormTransformerServiceTest<T> {
+public abstract class AbstractFormRenderingContextGeneratorTest<T> {
 
     protected Instance<FieldAnnotationProcessor<? extends FieldDefinition>> annotationProcessors;
 
@@ -50,7 +51,7 @@ public abstract class AbstractModel2FormTransformerServiceTest<T> {
 
     protected FormLayoutTemplateGenerator layoutTemplateGenerator;
 
-    protected Model2FormTransformerServiceImpl service;
+    protected FormRenderingContextGeneratorImpl service;
 
     protected DynamicRenderingContext context;
 
@@ -90,10 +91,10 @@ public abstract class AbstractModel2FormTransformerServiceTest<T> {
 
         layoutTemplateGenerator = new DynamicFormLayoutTemplateGenerator();
 
-        service = new Model2FormTransformerServiceImpl( annotationProcessors,
-                                                        fieldInitializers,
-                                                        layoutTemplateGenerator,
-                                                        new MockFieldManager() );
+        service = new FormRenderingContextGeneratorImpl( annotationProcessors,
+                                                         fieldInitializers,
+                                                         layoutTemplateGenerator,
+                                                         new MockFieldManager() );
     }
 
     public void initTest( T model, int expectedFields ) {

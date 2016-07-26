@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers;
+package org.livespark.formmodeler.renderer.service;
 
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.renderer.service.FormRenderingContextGenerator;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+import javax.inject.Qualifier;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
-public abstract class FormAwareFieldInitializer<T extends FieldDefinition> implements FieldInitializer<T> {
-
-    protected FormRenderingContextGenerator formGenerator;
-
-    public void setTransformerService( FormRenderingContextGenerator formGenerator ) {
-        this.formGenerator = formGenerator;
-    }
+@Qualifier
+@java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
+@java.lang.annotation.Target( {ElementType.TYPE, ElementType.PARAMETER} )
+public @interface DynamicGenerator {
 }

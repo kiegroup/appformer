@@ -58,9 +58,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.type.FileNameUtil;
 
-/**
- * Created by pefernan on 7/7/15.
- */
 @Dependent
 @WorkbenchEditor(identifier = "LSFormEditor", supportedTypes = { FormDefinitionResourceType.class })
 public class FormEditorPresenter extends KieEditor {

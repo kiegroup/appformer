@@ -38,7 +38,7 @@ public class SliderAnnotationProcessor extends AbstractFieldAnnotationProcessor<
 
         field.setMin( ((Number)annotation.getParameters().get( "min" )).doubleValue() );
         field.setMax( ((Number)annotation.getParameters().get( "max" )).doubleValue() );
-        field.setPrecision( ((Number)annotation.getParameters().get( "precission" )).doubleValue() );
+        field.setPrecision( ((Number)annotation.getParameters().get( "precision" )).doubleValue() );
         field.setStep( ((Number)annotation.getParameters().get( "step" )).doubleValue() );
     }
 

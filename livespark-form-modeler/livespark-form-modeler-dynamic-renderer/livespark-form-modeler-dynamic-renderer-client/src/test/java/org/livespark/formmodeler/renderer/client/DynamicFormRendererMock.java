@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.api.Caller;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.processing.engine.handling.FormHandler;
-import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
+import org.livespark.formmodeler.renderer.service.FormRenderingContextGeneratorService;
 
 public class DynamicFormRendererMock extends DynamicFormRenderer {
 
@@ -29,7 +29,7 @@ public class DynamicFormRendererMock extends DynamicFormRenderer {
     protected boolean binded = false;
 
     public DynamicFormRendererMock( DynamicFormRendererView view,
-                                    Caller<Model2FormTransformerService> transformerService,
+                                    Caller<FormRenderingContextGeneratorService> transformerService,
                                     FormHandler formHandler ) {
         super( view, transformerService, formHandler );
     }
