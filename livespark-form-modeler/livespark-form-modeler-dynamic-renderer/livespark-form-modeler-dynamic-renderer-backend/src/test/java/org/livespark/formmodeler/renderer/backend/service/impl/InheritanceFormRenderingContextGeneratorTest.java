@@ -32,7 +32,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InheritanceModel2FormTransformerServiceTest extends BasicModel2FormTransformerServiceTest {
+public class InheritanceFormRenderingContextGeneratorTest extends BasicFormRenderingContextGeneratorTest {
 
     @Before
     @Override

@@ -23,9 +23,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class PreviewFormPresenter implements IsWidget {
 

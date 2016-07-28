@@ -27,9 +27,6 @@ import org.livespark.formmodeler.renderer.client.resources.i18n.FormRenderingCon
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
-/**
- * Created by pefernan on 9/21/15.
- */
 public abstract class FieldRenderer<F extends FieldDefinition> {
 
     protected FormRenderingContext renderingContext;

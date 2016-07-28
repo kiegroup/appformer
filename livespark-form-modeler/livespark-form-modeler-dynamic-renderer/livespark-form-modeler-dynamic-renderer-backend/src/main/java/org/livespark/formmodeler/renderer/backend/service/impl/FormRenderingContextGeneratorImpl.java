@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.drools.workbench.models.datamodel.oracle.Annotation;
 import org.drools.workbench.models.datamodel.oracle.DataType;
 import org.drools.workbench.models.datamodel.oracle.ModelField;
-import org.jboss.errai.bus.server.annotations.Service;
 import org.livespark.formmodeler.codegen.layout.Dynamic;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
 import org.livespark.formmodeler.metaModel.FieldDef;
@@ -39,16 +38,20 @@ import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.FieldInitializer;
 import org.livespark.formmodeler.renderer.backend.service.impl.fieldInitializers.FormAwareFieldInitializer;
 import org.livespark.formmodeler.renderer.backend.service.impl.processors.FieldAnnotationProcessor;
-import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
+import org.livespark.formmodeler.renderer.service.DynamicGenerator;
+import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
+import org.livespark.formmodeler.renderer.service.FormRenderingContextGenerator;
+import org.livespark.formmodeler.renderer.service.StaticGenerator;
 import org.livespark.formmodeler.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Service
+@StaticGenerator
+@DynamicGenerator
 @Dependent
-public class Model2FormTransformerServiceImpl implements Model2FormTransformerService<DMOBasedTransformerContext, DynamicRenderingContext> {
+public class FormRenderingContextGeneratorImpl implements FormRenderingContextGenerator<DMOBasedTransformerContext, DynamicRenderingContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger( Model2FormTransformerServiceImpl.class );
+    private static final Logger logger = LoggerFactory.getLogger( FormRenderingContextGeneratorImpl.class );
 
     private FieldManager fieldManager;
 
@@ -59,10 +62,10 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
     private List<FieldInitializer<? extends FieldDefinition>> fieldInitializers = new ArrayList<>();
 
     @Inject
-    public Model2FormTransformerServiceImpl( Instance<FieldAnnotationProcessor<? extends FieldDefinition>> installedProcessors,
-                                             Instance<FieldInitializer<? extends FieldDefinition>> installedInitializers,
-                                             @Dynamic FormLayoutTemplateGenerator layoutGenerator,
-                                             FieldManager fieldManager ) {
+    public FormRenderingContextGeneratorImpl( Instance<FieldAnnotationProcessor<? extends FieldDefinition>> installedProcessors,
+                                              Instance<FieldInitializer<? extends FieldDefinition>> installedInitializers,
+                                              @Dynamic FormLayoutTemplateGenerator layoutGenerator,
+                                              FieldManager fieldManager ) {
         this.layoutGenerator = layoutGenerator;
         this.fieldManager = fieldManager;
 
@@ -205,6 +208,10 @@ public class Model2FormTransformerServiceImpl implements Model2FormTransformerSe
                             for ( int i = 0; i < fields.length; i++ ) {
                                 if ( fields[i].getName().equals( property ) ) {
                                     finalModelField = fields[i];
+
+                                    // check if the nested value is an Enum
+                                    isEnunm = context.getOracle().getProjectJavaEnumDefinitions().get( fieldClassName + "#" + property ) != null;
+
                                     /*
                                      if field isn't a collection let's get the real className, if it is a collection
                                       we'll use the type to get the generic type later.

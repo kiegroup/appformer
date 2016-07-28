@@ -16,65 +16,24 @@
 
 package org.livespark.formmodeler.renderer.service;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.livespark.formmodeler.model.FormDefinition;
 
-public abstract class FormRenderingContext<T> {
+public interface FormRenderingContext<T> {
+    FormDefinition getRootForm();
 
-    protected Map<String, FormDefinition> availableForms = new HashMap<String, FormDefinition>();
+    void setRootForm( FormDefinition rootForm );
 
-    protected String rootFormId;
+    void setModel( T model );
 
-    protected T model;
+    T getModel();
 
-    protected FormRenderingContext parentContext;
+    FormRenderingContext getParentContext();
 
-    public FormRenderingContext() {
-    }
+    void setParentContext( FormRenderingContext parentContext );
 
-    public FormDefinition getRootForm() {
-        return availableForms.get( rootFormId );
-    }
+    Map<String, FormDefinition> getAvailableForms();
 
-    public void setRootForm( FormDefinition rootForm ) {
-        this.rootFormId = rootForm.getId();
-        availableForms.put( rootFormId, rootForm );
-    }
-
-    public void setModel( T model ) {
-        this.model = model;
-    }
-
-    public T getModel() {
-        return model;
-    }
-
-    public FormRenderingContext getParentContext() {
-        return parentContext;
-    }
-
-    public void setParentContext( FormRenderingContext parentContext ) {
-        this.parentContext = parentContext;
-    }
-
-    public Map<String, FormDefinition> getAvailableForms() {
-        return availableForms;
-    }
-
-    protected abstract FormRenderingContext getNewInstance();
-
-    public FormRenderingContext getCopyFor( String formKey, T model ) {
-        if ( formKey == null || formKey.isEmpty() ) {
-            return null;
-        }
-        FormRenderingContext copy = getNewInstance();
-        copy.setRootForm( availableForms.get( formKey ) );
-        copy.setModel( model );
-        copy.availableForms = availableForms;
-        copy.setParentContext( this );
-        return copy;
-    }
+    FormRenderingContext getCopyFor( String formKey, T model );
 }

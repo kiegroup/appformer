@@ -18,7 +18,6 @@ package org.livespark.formmodeler.renderer.service;
 
 import java.util.Map;
 
-import org.jboss.errai.bus.server.annotations.Remote;
 import org.livespark.formmodeler.model.config.SelectorData;
 
 public interface SelectorDataProviderManager {

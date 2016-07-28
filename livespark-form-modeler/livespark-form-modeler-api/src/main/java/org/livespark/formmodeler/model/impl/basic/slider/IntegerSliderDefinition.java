@@ -82,7 +82,7 @@ public class IntegerSliderDefinition extends SliderBase<Integer> {
 
     @Override
     public void setPrecision( Integer precision ) {
-        // Integer Slider doesn't require precission
+        // Integer Slider doesn't require precision
     }
 
     @Override

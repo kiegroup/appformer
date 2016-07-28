@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.inject.Inject;
 
-import org.livespark.formmodeler.editor.service.VFSFormFinderService;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
+import org.livespark.formmodeler.editor.service.VFSFormFinderService;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.config.SelectorData;

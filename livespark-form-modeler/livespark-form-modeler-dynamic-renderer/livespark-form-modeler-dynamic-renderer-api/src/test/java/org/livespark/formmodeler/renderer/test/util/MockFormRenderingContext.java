@@ -16,11 +16,11 @@
 
 package org.livespark.formmodeler.renderer.test.util;
 
-import org.livespark.formmodeler.renderer.service.FormRenderingContext;
+import org.livespark.formmodeler.renderer.service.AbstractFormRenderingContext;
 
-public class MockFormRenderingContext extends FormRenderingContext {
+public class MockFormRenderingContext extends AbstractFormRenderingContext {
     @Override
-    protected FormRenderingContext getNewInstance() {
+    protected AbstractFormRenderingContext getNewInstance() {
         return new MockFormRenderingContext();
     }
 }

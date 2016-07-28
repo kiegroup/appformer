@@ -16,11 +16,9 @@
 
 package org.livespark.formmodeler.renderer.service;
 
-import org.jboss.errai.bus.server.annotations.Remote;
 import org.livespark.formmodeler.model.FormDefinition;
 
-@Remote
-public interface Model2FormTransformerService<T extends TransformerContext<C>, C extends FormRenderingContext> {
+public interface FormRenderingContextGenerator<T extends TransformerContext<C>, C extends FormRenderingContext> {
 
     C createContext( Object model );
 

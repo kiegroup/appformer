@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.renderer.backend.service.impl;
+package org.livespark.formmodeler.renderer.service;
 
-import org.jboss.errai.common.client.api.annotations.Portable;
-import org.livespark.formmodeler.renderer.service.FormRenderingContext;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+import javax.inject.Qualifier;
 
-@Portable
-public class DynamicRenderingContext extends FormRenderingContext<Object> {
-
-    @Override
-    protected FormRenderingContext getNewInstance() {
-        return new DynamicRenderingContext();
-    }
+@Qualifier
+@java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
+@java.lang.annotation.Target( {ElementType.TYPE, ElementType.PARAMETER} )
+public @interface StaticGenerator {
 }

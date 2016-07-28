@@ -29,9 +29,6 @@ import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.api.RenderingContext;
 
-/**
- * Created by pefernan on 9/22/15.
- */
 @Dependent
 public class FieldLayoutComponent<T extends FormRenderingContext> implements FormLayoutComponent, LayoutDragComponent {
 

@@ -29,7 +29,7 @@ import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
 import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.subform.SubFormWidget;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
-import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
+import org.livespark.formmodeler.renderer.service.FormRenderingContextGeneratorService;
 import org.livespark.formmodeler.renderer.test.model.Employee;
 import org.livespark.formmodeler.renderer.test.util.TestFormGenerator;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
@@ -59,9 +59,9 @@ public class DynamicFormRendererTest extends TestCase {
 
     private DynamicFormRenderer.DynamicFormRendererView view;
 
-    private Model2FormTransformerService model2FormTransformerService;
+    private FormRenderingContextGeneratorService formRenderingContextGeneratorService;
 
-    private CallerMock<Model2FormTransformerService> transformer;
+    private CallerMock<FormRenderingContextGeneratorService> transformer;
 
     private FormViewValidator formViewValidator;
 
@@ -74,11 +74,11 @@ public class DynamicFormRendererTest extends TestCase {
         component = mock(FieldLayoutComponent.class);
         view = mock( DynamicFormRenderer.DynamicFormRendererView.class );
         fieldRenderer = mock( FieldRenderer.class );
-        model2FormTransformerService = mock( Model2FormTransformerService.class );
-        transformer = new CallerMock<>( model2FormTransformerService );
+        formRenderingContextGeneratorService = mock( FormRenderingContextGeneratorService.class );
+        transformer = new CallerMock<FormRenderingContextGeneratorService>( formRenderingContextGeneratorService );
         formViewValidator = mock( FormViewValidator.class );
 
-        when( model2FormTransformerService.createContext( any( Employee.class ) ) ).thenAnswer( new Answer<FormRenderingContext>() {
+        when( formRenderingContextGeneratorService.createContext( any( Employee.class ) ) ).thenAnswer( new Answer<FormRenderingContext>() {
             @Override
             public FormRenderingContext answer( InvocationOnMock invocationOnMock ) throws Throwable {
                 return TestFormGenerator.getContextForEmployee( employee );

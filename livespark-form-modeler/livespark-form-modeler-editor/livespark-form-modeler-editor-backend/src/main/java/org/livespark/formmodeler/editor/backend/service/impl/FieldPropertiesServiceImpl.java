@@ -20,29 +20,28 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.editor.service.FieldPropertiesService;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
-import org.livespark.formmodeler.renderer.service.Model2FormTransformerService;
-import org.livespark.formmodeler.renderer.service.TransformerContext;
+import org.livespark.formmodeler.renderer.service.FormRenderingContextGeneratorService;
 import org.uberfire.backend.vfs.Path;
 
 @Service
 @ApplicationScoped
 public class FieldPropertiesServiceImpl implements FieldPropertiesService {
 
-    protected Model2FormTransformerService<? extends TransformerContext<?>, ? extends FormRenderingContext> model2FormTransformerService;
+    protected FormRenderingContextGeneratorService formRenderingContextGeneratorService;
 
     @Inject
-    public FieldPropertiesServiceImpl( Model2FormTransformerService<? extends TransformerContext<?>, ? extends FormRenderingContext> model2FormTransformerService ) {
-        this.model2FormTransformerService = model2FormTransformerService;
+    public FieldPropertiesServiceImpl( FormRenderingContextGeneratorService formRenderingContextGeneratorService ) {
+        this.formRenderingContextGeneratorService = formRenderingContextGeneratorService;
     }
 
     @Override
     public FormEditorRenderingContext getFieldPropertiesRenderingContext( FieldDefinition fieldDefinition,
                                                                           Path formPath ) {
-        FormRenderingContext context = model2FormTransformerService.createContext( fieldDefinition );
+        FormRenderingContext context = formRenderingContextGeneratorService.createContext( fieldDefinition );
 
         FormEditorRenderingContext editorContext = new FormEditorRenderingContext( formPath );
         editorContext.setRootForm( context.getRootForm() );

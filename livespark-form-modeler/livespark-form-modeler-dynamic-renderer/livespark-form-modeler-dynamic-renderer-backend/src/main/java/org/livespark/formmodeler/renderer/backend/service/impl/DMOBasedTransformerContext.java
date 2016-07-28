@@ -27,6 +27,7 @@ import org.jboss.errai.common.client.api.Assert;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ClassFactBuilder;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.FactBuilder;
 import org.kie.workbench.common.services.datamodel.backend.server.builder.projects.ProjectDataModelOracleBuilder;
+import org.livespark.formmodeler.renderer.service.impl.DynamicRenderingContext;
 import org.livespark.formmodeler.renderer.service.TransformerContext;
 
 public class DMOBasedTransformerContext implements TransformerContext<DynamicRenderingContext> {
