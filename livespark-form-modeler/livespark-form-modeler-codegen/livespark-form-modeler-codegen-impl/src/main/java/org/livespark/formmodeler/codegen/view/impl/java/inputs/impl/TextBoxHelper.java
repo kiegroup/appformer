@@ -17,7 +17,7 @@
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 
-import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxBase;
+import org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxBase;
 
 public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBase> {
 

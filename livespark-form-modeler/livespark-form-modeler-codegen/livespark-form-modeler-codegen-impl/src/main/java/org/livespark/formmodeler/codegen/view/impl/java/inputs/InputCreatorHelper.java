@@ -16,8 +16,8 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs;
 
+import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.model.FieldDefinition;
 
 public interface InputCreatorHelper<F extends FieldDefinition> {
     String getSupportedFieldTypeCode();

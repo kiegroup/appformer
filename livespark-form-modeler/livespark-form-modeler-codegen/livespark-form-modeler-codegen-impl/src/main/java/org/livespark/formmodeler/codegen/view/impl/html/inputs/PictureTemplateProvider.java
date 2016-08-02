@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,24 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.image.PictureFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
-public class TextAreaTemplateProvider extends AbstractTemplateProvider {
+public class PictureTemplateProvider extends AbstractTemplateProvider {
 
     @Inject
-    public TextAreaTemplateProvider( FieldManager fieldManager ) {
+    public PictureTemplateProvider( FieldManager fieldManager ) {
         super( fieldManager );
     }
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[]{TextAreaFieldDefinition.CODE };
+        return new String[]{ PictureFieldDefinition.CODE };
     }
 
     @Override
     protected String getTemplateForFieldTypeCode( String fieldCode ) {
-        return "/org/livespark/formmodeler/codegen/view/impl/html/templates/textarea.mv" ;
+        return "/org/livespark/formmodeler/codegen/view/impl/html/templates/picture.mv";
     }
 }

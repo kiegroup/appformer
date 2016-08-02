@@ -18,7 +18,7 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.AbstractInputCreatorHelper;
-import org.livespark.formmodeler.model.impl.basic.slider.SliderBase;
+import org.kie.workbench.common.forms.model.impl.basic.slider.SliderBase;
 
 public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
 
@@ -28,7 +28,7 @@ public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
             Patch class to avoid error descrived on: https://github.com/gwtproject/gwt/issues/9242
             TODO: change it when fixed
         */
-        return "org.livespark.formmodeler.rendering.client.widgets.Slider";
+        return "org.kie.workbench.common.forms.common.widgets.slider.Slider";
     }
 
     @Override

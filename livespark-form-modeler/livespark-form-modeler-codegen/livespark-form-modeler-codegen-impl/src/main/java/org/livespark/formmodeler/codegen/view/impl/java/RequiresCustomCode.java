@@ -18,7 +18,7 @@ package org.livespark.formmodeler.codegen.view.impl.java;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.FieldDefinition;
 
 /**
  * Created by pefernan on 7/2/15.

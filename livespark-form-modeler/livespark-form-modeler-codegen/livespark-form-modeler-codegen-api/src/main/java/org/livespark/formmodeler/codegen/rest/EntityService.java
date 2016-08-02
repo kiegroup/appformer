@@ -29,7 +29,7 @@ import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
  * accessing JPA entities.
  */
 @Qualifier
-@Retention(RetentionPolicy.RUNTIME)
+@Retention( RetentionPolicy.RUNTIME )
 @Documented
 public @interface EntityService {
 

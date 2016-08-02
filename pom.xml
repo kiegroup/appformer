@@ -34,13 +34,6 @@
   </licenses>
 
   <properties>
-    <arquillian.version>1.1.10.Final</arquillian.version>
-    <gwtmockito.version>1.1.5</gwtmockito.version>
-    <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
-    <validation.api.version>1.0.0.GA</validation.api.version>
-    <javaee.version>1.0.2.Final</javaee.version>
-    <jdk.min.version>1.7.0</jdk.min.version>
-    <maven.invoker.version>2.1.1</maven.invoker.version>    
     <enforcer.skip>true</enforcer.skip>
   </properties>
 
@@ -73,8 +66,9 @@
   </issueManagement>
 
   <modules>
+    <module>livespark-bom</module>
+    <module>livespark-deps</module>
     <module>livespark-commons</module>
-    <module>livespark-common-widgets</module>
     <module>livespark-form-modeler</module>
     <module>livespark-deployment</module>
     <module>livespark-showcase</module>
@@ -82,157 +76,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!--
-      Added Form Modeler deps here to make livespark module self-contained.
-      They should be moved to droolsjbpm-build-bootstrap module as soon as possible.
-       -->
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${validation.api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${validation.api.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${hibernate.validator.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${hibernate.validator.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.spec</groupId>
-        <artifactId>jboss-javaee-7.0</artifactId>
-        <version>${javaee.version}</version>
-        <type>pom</type>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.shared</groupId>
-        <artifactId>maven-invoker</artifactId>
-        <version>${maven.invoker.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-crud-component</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-crud-component</artifactId>
-        <version>${project.version}</version>
-        <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-api</artifactId>
-        <version>${project.version}</version>
-        <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
-        <version>${project.version}</version>
-        <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-dynamic-renderer-backend</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-editor-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-editor-backend</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-editor-client</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-codegen-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-codegen-layout-generator</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-codegen-impl</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-codegen-data-modeller</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-processing-engine</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-form-modeler-rendering-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.livespark</groupId>
-        <artifactId>livespark-deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.arquillian</groupId>
-        <artifactId>arquillian-bom</artifactId>
-        <version>${arquillian.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt.gwtmockito</groupId>
-        <artifactId>gwtmockito</artifactId>
-        <version>${gwtmockito.version}</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

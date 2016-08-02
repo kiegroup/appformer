@@ -17,7 +17,7 @@
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 
-import org.livespark.formmodeler.model.impl.basic.datePicker.DatePickerFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.datePicker.DatePickerFieldDefinition;
 
 
 public class DatePickerHelper extends AbstractInputCreatorHelper<DatePickerFieldDefinition> {

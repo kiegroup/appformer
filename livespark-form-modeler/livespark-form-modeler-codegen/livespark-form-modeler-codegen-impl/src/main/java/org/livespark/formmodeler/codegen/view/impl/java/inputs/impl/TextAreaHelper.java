@@ -17,7 +17,7 @@
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 
-import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition;
 
 public class TextAreaHelper extends AbstractInputCreatorHelper<TextAreaFieldDefinition> {
 

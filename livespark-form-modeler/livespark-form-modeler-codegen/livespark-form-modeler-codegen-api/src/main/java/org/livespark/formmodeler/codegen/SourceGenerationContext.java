@@ -18,13 +18,10 @@ package org.livespark.formmodeler.codegen;
 
 import java.util.List;
 
-import org.livespark.formmodeler.model.FormDefinition;
+import org.kie.workbench.common.forms.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
 import org.guvnor.common.services.project.model.Package;
 
-/**
- * Created by pefernan on 4/28/15.
- */
 public class SourceGenerationContext {
     public static final String FORM_MODEL_SUFFIX = "FormModel";
     public static final String FORM_VIEW_SUFFIX = "FormView";

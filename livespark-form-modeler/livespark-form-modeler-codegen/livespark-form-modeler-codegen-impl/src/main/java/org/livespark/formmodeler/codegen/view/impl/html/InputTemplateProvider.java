@@ -18,9 +18,6 @@ package org.livespark.formmodeler.codegen.view.impl.html;
 
 import org.mvel2.templates.TemplateRegistry;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 public interface InputTemplateProvider {
 
     void registerTemplates( TemplateRegistry registry );

@@ -28,7 +28,7 @@ import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
  * Used for implementations of {@link FormJavaTemplateSourceGenerator} that generate a JAX-RS interface.
  */
 @Qualifier
-@Retention(RetentionPolicy.RUNTIME)
+@Retention( RetentionPolicy.RUNTIME )
 @Documented
 public @interface RestApi {
 

@@ -23,8 +23,8 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresExtraFields;
-import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
-import org.livespark.formmodeler.model.impl.basic.selectors.listBox.ListBoxBase;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.SelectorOption;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.ListBoxBase;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 

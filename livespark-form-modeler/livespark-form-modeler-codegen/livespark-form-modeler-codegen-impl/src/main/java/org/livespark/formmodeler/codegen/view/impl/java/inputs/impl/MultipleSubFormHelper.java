@@ -25,16 +25,16 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.editor.service.DataObjectFinderService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
-import org.livespark.formmodeler.editor.service.DataObjectFinderService;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
+import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.TableColumnMeta;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
@@ -150,10 +150,13 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
         getEditionModelMethod.addAnnotation( Override.class );
 
 
+        String returnType = "List<ColumnMeta<" + standaloneName + ">>";
         StringBuffer getCrudColumnsBody = new StringBuffer();
-        getCrudColumnsBody.append( "List<ColumnMeta> " )
-                .append( COLUMN_METAS_VAR_NAME )
-                .append( " = new ArrayList<ColumnMeta>();" );
+        getCrudColumnsBody
+            .append( returnType )
+            .append( " " )
+            .append( COLUMN_METAS_VAR_NAME )
+            .append( " = new ArrayList<>();" );
 
         DataObject dataObject = dataObjectFinderService.getDataObject( field.getStandaloneClassName(),
                 context.getPath() );
@@ -178,7 +181,7 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
 
         multipleSubformAdapter.addMethod()
                 .setName( "getCrudColumns" )
-                .setReturnType( "List<ColumnMeta>" )
+                .setReturnType( returnType )
                 .setBody( getCrudColumnsBody.toString() )
                 .setPublic()
                 .addAnnotation( Override.class );

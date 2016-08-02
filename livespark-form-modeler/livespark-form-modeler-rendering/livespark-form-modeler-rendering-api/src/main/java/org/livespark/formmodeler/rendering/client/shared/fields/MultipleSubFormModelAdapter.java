@@ -26,7 +26,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
  */
 public interface MultipleSubFormModelAdapter <L extends List<M>, M, C extends FormModel, E extends FormModel> {
 
-    public List<ColumnMeta> getCrudColumns();
+    public List<ColumnMeta<M>> getCrudColumns();
 
     public Class<? extends FormView<C>> getCreationForm();
 

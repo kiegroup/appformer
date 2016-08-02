@@ -25,15 +25,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
-import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
@@ -125,16 +125,17 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         viewClass.addImport( ArrayList.class.getName() );
         viewClass.addImport( COLUMN_META_CLASS_NAME );
 
+        String returnType = "List<ColumnMeta<" + context.getEntityName() + ">>";
         StringBuffer body = new StringBuffer();
-        body.append( "List<ColumnMeta> " )
+        body.append( returnType )
                 .append( COLUMN_METAS_VAR_NAME )
-                .append( " = new ArrayList<ColumnMeta>();" );
+                .append( " = new ArrayList<>();" );
 
 
         FormDefinition form = context.getFormDefinition();
 
         for ( FieldDefinition field : form.getFields() ) {
-            if ( !(field instanceof EntityRelationField) ) {
+            if ( !(field instanceof EntityRelationField ) ) {
                 ColumnMetaGenerator generator = columnMetaGeneratorManager.getColumnMetaGeneratorForType( field.getStandaloneClassName() );
                 if ( generator != null ) {
                     for ( String imp : generator.getImports() ) {
@@ -154,7 +155,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
 
         viewClass.addMethod()
                 .setName( "getCrudColumns" )
-                .setReturnType( "List<ColumnMeta>" )
+                .setReturnType( returnType )
                 .setBody( body.toString() )
                 .setPublic()
                 .addAnnotation( Override.class );

@@ -21,8 +21,8 @@ import java.util.List;
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
-import org.livespark.widgets.crud.client.component.mock.CrudModel;
 
 @Bindable
 @Portable

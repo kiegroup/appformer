@@ -26,21 +26,21 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Package;
+import org.kie.workbench.common.forms.commons.layout.FormLayoutTemplateGenerator;
+import org.kie.workbench.common.forms.commons.layout.Static;
+import org.kie.workbench.common.forms.editor.service.FormDefinitionSerializer;
+import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
-import org.livespark.formmodeler.codegen.layout.Static;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
-import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.ListView;
-import org.livespark.formmodeler.editor.service.VFSFormFinderService;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.kie.workbench.common.forms.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -49,9 +49,6 @@ import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.CommentedOption;
 
-/**
- * Created by pefernan on 5/5/15.
- */
 @ApplicationScoped
 public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private static transient Logger log = LoggerFactory.getLogger( FormSourcesGeneratorImpl.class );

@@ -28,7 +28,8 @@
   <inherits name="org.gwtbootstrap3.extras.datetimepicker.DateTimePicker"/>
   <inherits name="org.gwtbootstrap3.extras.slider.Slider"/>
 
-  <inherits name="org.livespark.widgets.crud.LiveSparkCRUDWidget"/>
+  <inherits name="org.kie.workbench.common.forms.crud.FormsCRUDWidget"/>
+  <inherits name="org.kie.workbench.common.forms.common.CommonFormWidgets"/>
 
   <source path="client"/>
 </module>

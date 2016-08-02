@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2016 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>livespark-parent</artifactId>
+    <groupId>org.livespark</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>livespark-deps</artifactId>
+  <name>LiveSpark Dependencies</name>
+
+  <packaging>pom</packaging>
+
+  <properties>
+    <version.org.jboss.integration-platform>6.0.0.Final</version.org.jboss.integration-platform>
+    <version.org.uberfire>1.0.0-SNAPSHOT</version.org.uberfire>
+    <version.org.jboss.errai>4.0.0-SNAPSHOT</version.org.jboss.errai>
+    <version.org.kie>7.0.0-SNAPSHOT</version.org.kie>
+    <version.arquillian>1.1.10.Final</version.arquillian>
+    <version.gwtmockito>1.1.5</version.gwtmockito>
+    <version.hibernate.validator>4.1.0.Final</version.hibernate.validator>
+    <version.validation.api>1.0.0.GA</version.validation.api>
+    <version.javaee>1.0.2.Final</version.javaee>
+    <version.maven.invoker>2.1.1</version.maven.invoker>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- LiveSpark -->
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-bom</artifactId>
+        <type>pom</type>
+        <version>${project.version}</version>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Integration Platform -->
+      <dependency>
+        <groupId>org.jboss.integration-platform</groupId>
+        <artifactId>jboss-integration-platform-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.jboss.integration-platform}</version>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- UberFire -->
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>uberfire-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.uberfire}</version>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- KIE -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-parent-with-dependencies</artifactId>
+        <type>pom</type>
+        <version>${version.org.kie}</version>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Errai -->
+      <dependency>
+        <groupId>org.jboss.errai.bom</groupId>
+        <artifactId>errai-internal-bom</artifactId>
+        <type>pom</type>
+        <version>${version.org.jboss.errai}</version>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${version.validation.api}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${version.validation.api}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${version.hibernate.validator}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${version.hibernate.validator}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.spec</groupId>
+        <artifactId>jboss-javaee-7.0</artifactId>
+        <version>${version.javaee}</version>
+        <type>pom</type>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-invoker</artifactId>
+        <version>${version.maven.invoker}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.arquillian</groupId>
+        <artifactId>arquillian-bom</artifactId>
+        <version>${version.arquillian}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.gwt.gwtmockito</groupId>
+        <artifactId>gwtmockito</artifactId>
+        <version>${version.gwtmockito}</version>
+        <scope>test</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+</project>

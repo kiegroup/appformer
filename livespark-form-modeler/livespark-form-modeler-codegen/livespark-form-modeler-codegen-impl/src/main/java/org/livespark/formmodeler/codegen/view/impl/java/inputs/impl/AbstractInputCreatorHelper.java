@@ -18,7 +18,7 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.FieldDefinition;
 
 public abstract class AbstractInputCreatorHelper<F extends FieldDefinition> implements InputCreatorHelper<F> {
 

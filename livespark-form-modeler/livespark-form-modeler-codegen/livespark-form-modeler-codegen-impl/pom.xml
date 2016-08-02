@@ -101,16 +101,18 @@
     </dependency>
 
     <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-layout-generator</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-codegen-layout-generator</artifactId>
     </dependency>
 
     <!-- test -->
@@ -121,8 +123,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-api</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

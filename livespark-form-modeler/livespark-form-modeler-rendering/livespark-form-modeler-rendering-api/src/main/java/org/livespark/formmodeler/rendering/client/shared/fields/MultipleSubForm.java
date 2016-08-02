@@ -18,28 +18,25 @@ package org.livespark.formmodeler.rendering.client.shared.fields;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.errai.ioc.client.container.IOC;
+import org.jboss.errai.ui.client.widget.HasModel;
+import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
+import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
+import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer;
+import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.FormView;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
+
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ui.client.widget.HasModel;
-import org.livespark.formmodeler.rendering.client.shared.FormModel;
-import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.widgets.crud.client.component.CrudActionsHelper;
-import org.livespark.widgets.crud.client.component.CrudComponent;
-import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.uberfire.ext.widgets.table.client.ColumnMeta;
-
-/**
- * Created by pefernan on 6/18/15.
- */
 
 public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extends FormModel> extends SimplePanel implements HasModel<L> {
 
-    private CrudComponent crudComponent;
+    private CrudComponent<M, FormModel> crudComponent;
 
     private MultipleSubFormModelAdapter<L, M, C, E> multipleSubFormModelAdapter;
 
@@ -51,7 +48,8 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
 
-        crudComponent = IOC.getBeanManager().lookupBean( CrudComponent.class ).newInstance();
+        // FIXME This bean is never destroyed
+        crudComponent = IOC.getBeanManager().lookupBean( CrudComponent.class ).getInstance();
 
         add( crudComponent );
 
@@ -83,12 +81,7 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
             }
         };
 
-        crudComponent.init( new CrudActionsHelper() {
-
-            private FormView<C> creationForm;
-            private FormView<E> editionForm;
-
-            private int editionIndex;
+        crudComponent.init( new CrudActionsHelper<M>() {
 
             @Override
             public boolean showEmbeddedForms() {
@@ -116,44 +109,65 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
             }
 
             @Override
-            public List<ColumnMeta> getGridColumns() {
+            public List<ColumnMeta<M>> getGridColumns() {
                 return multipleSubFormModelAdapter.getCrudColumns();
             }
 
             @Override
-            public AsyncDataProvider<?> getDataProvider() {
+            public AsyncDataProvider<M> getDataProvider() {
                 return dataProvider;
             }
 
-            @Override
-            public IsFormView getCreateInstanceForm() {
-                creationForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
-                return creationForm;
+            @SuppressWarnings( "unchecked" )
+            private FormView<FormModel> getCreateInstanceForm() {
+                // FIXME This bean is never destroyed
+                return (FormView<FormModel>) IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
             }
 
             @Override
             public void createInstance() {
-                model.add( (M) creationForm.getModel().getDataModels().get( 0 ) );
-                editionForm = null;
-                crudComponent.refresh();
+                FormView<FormModel> form = getCreateInstanceForm();
+                crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
+
+                    @Override
+                    public void onCancel() {
+                    }
+
+                    @Override
+                    public void onAccept() {
+                        model.add( (M) form.getModel().getDataModels().get( 0 ) );
+                        crudComponent.refresh();
+                    }
+                } );
             }
 
-            @Override
-            public IsFormView getEditInstanceForm( Integer index ) {
-                editionIndex = index;
-                editionForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
+            private FormView<FormModel> getEditInstanceForm( int index ) {
+                // FIXME This bean is never destroyed
+                @SuppressWarnings( "unchecked" )
+                FormView<FormModel> form = (FormView<FormModel>) IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
 
                 M model = MultipleSubForm.this.model.get( index );
+                form.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
+                form.pauseBinding();
 
-                editionForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
-
-                return editionForm;
+                return form;
             }
 
             @Override
-            public void editInstance() {
-                crudComponent.refresh();
-                editionForm = null;
+            public void editInstance( int index ) {
+                FormView<FormModel> form = getEditInstanceForm( index );
+                crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
+
+                    @Override
+                    public void onCancel() {
+                    }
+
+                    @Override
+                    public void onAccept() {
+                        form.resumeBinding( true );
+                        crudComponent.refresh();
+                    }
+                } );
             }
 
             @Override
