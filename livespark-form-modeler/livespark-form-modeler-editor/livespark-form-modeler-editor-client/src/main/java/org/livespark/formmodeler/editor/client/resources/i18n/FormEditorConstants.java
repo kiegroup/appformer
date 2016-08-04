@@ -36,6 +36,12 @@ public interface FormEditorConstants {
     String FormEditorPresenterTitle = "FormEditorPresenter.title";
 
     @TranslationKey( defaultValue = "" )
+    String FormEditorPresenterEmptyLayoutTitleText =  "FormEditorPresenter.emptyLayoutTitleText";
+
+    @TranslationKey( defaultValue = "" )
+    String FormEditorPresenterEmptySubTitleText = "FormEditorPresenter.emptyLayoutSubTitleText";
+
+    @TranslationKey( defaultValue = "" )
     String FormEditorViewImplDataObjects = "FormEditorViewImpl.dataObjects";
 
     @TranslationKey( defaultValue = "" )
@@ -79,4 +85,6 @@ public interface FormEditorConstants {
 
     @TranslationKey( defaultValue = "" )
     String FieldPropertiesRendererViewImplFieldBinding = "FieldPropertiesRendererViewImpl.fieldBinding";
+
+
 }

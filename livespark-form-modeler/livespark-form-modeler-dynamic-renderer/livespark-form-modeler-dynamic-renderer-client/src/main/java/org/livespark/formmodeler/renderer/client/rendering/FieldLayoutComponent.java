@@ -62,10 +62,7 @@ public class FieldLayoutComponent<T extends FormRenderingContext> implements For
     }
 
     @Override
-    public IsWidget getDragWidget() {
-        TextBox textBox = GWT.create( TextBox.class );
-
-        textBox.setReadOnly(true);
+    public String getDragComponentTitle() {
 
         String name = "";
 
@@ -82,9 +79,8 @@ public class FieldLayoutComponent<T extends FormRenderingContext> implements For
             }
         }
 
-        textBox.setPlaceholder( name );
 
-        return textBox;
+        return name;
     }
 
     @Override

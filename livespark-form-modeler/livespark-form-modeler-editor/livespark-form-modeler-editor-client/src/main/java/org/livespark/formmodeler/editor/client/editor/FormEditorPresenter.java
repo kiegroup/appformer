@@ -15,12 +15,6 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.jboss.errai.common.client.api.Caller;
@@ -47,7 +41,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.client.api.ComponentDropEvent;
 import org.uberfire.ext.layout.editor.client.api.ComponentRemovedEvent;
-import org.uberfire.ext.layout.editor.client.api.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditor;
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent;
@@ -58,12 +51,18 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.type.FileNameUtil;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.List;
+
 @Dependent
-@WorkbenchEditor(identifier = "LSFormEditor", supportedTypes = { FormDefinitionResourceType.class })
+@WorkbenchEditor( identifier = "LSFormEditor", supportedTypes = {FormDefinitionResourceType.class} )
 public class FormEditorPresenter extends KieEditor {
 
     public interface FormEditorView extends KieEditorView {
         public void init( FormEditorPresenter presenter );
+
         public void setupLayoutEditor( LayoutEditor layoutEditor );
     }
 
@@ -75,7 +74,7 @@ public class FormEditorPresenter extends KieEditor {
 
         void refreshView();
 
-        public void addDataType(String dataType);
+        public void addDataType( String dataType );
     }
 
     @Inject
@@ -103,12 +102,12 @@ public class FormEditorPresenter extends KieEditor {
     private TranslationService translationService;
 
     @Inject
-    public FormEditorPresenter(FormEditorView view,
-                               DataHolderAdminView objectsView,
-                               FormDefinitionResourceType resourceType,
-                               Caller<FormEditorService> editorService,
-                               SyncBeanManager beanManager,
-                               TranslationService translationService ) {
+    public FormEditorPresenter( FormEditorView view,
+                                DataHolderAdminView objectsView,
+                                FormDefinitionResourceType resourceType,
+                                Caller<FormEditorService> editorService,
+                                SyncBeanManager beanManager,
+                                TranslationService translationService ) {
         super( view );
         this.view = view;
         this.objectsView = objectsView;
@@ -120,9 +119,9 @@ public class FormEditorPresenter extends KieEditor {
 
     @OnStartup
     public void onStartup( final ObservablePath path,
-            final PlaceRequest place ) {
+                           final PlaceRequest place ) {
 
-        init(path, place, resourceType);
+        init( path, place, resourceType );
     }
 
     @Override
@@ -138,10 +137,11 @@ public class FormEditorPresenter extends KieEditor {
     @Override
     protected void save( String commitMessage ) {
         synchronizeFormLayout();
-        editorService.call( getSaveSuccessCallback( editorContext.getContent().hashCode() )  ).save( versionRecordManager.getCurrentPath(),
-                editorContext.getContent(),
-                metadata,
-                commitMessage );
+        editorService.call( getSaveSuccessCallback( editorContext.getContent().hashCode() ) )
+                .save( versionRecordManager.getCurrentPath(),
+                       editorContext.getContent(),
+                       metadata,
+                       commitMessage );
     }
 
     protected void synchronizeFormLayout() {
@@ -152,19 +152,24 @@ public class FormEditorPresenter extends KieEditor {
         busyIndicatorView.hideBusyIndicator();
 
         // TODO: fix this, this return avoids to reload the layout editor again
-        if (editorContext.getContent() != null) return;
+        if ( editorContext.getContent() != null ) return;
 
         editorContext.initHelper( content );
 
-        layoutEditor.init(content.getDefinition().getName(), getLayoutComponents());
+        layoutEditor.init( content.getDefinition().getName(), getLayoutComponent(),
+                           translationService
+                                   .getTranslation( FormEditorConstants.FormEditorPresenterEmptyLayoutTitleText ),
+                           translationService
+                                   .getTranslation( FormEditorConstants.FormEditorPresenterEmptySubTitleText ) );
 
-        if (content.getDefinition().getLayoutTemplate() == null) content.getDefinition().setLayoutTemplate( new LayoutTemplate(  ) );
+        if ( content.getDefinition().getLayoutTemplate() == null )
+            content.getDefinition().setLayoutTemplate( new LayoutTemplate() );
 
-        loadAvailableFields(content);
+        loadAvailableFields( content );
 
-        layoutEditor.loadLayout(content.getDefinition().getLayoutTemplate());
+        layoutEditor.loadLayout( content.getDefinition().getLayoutTemplate() );
 
-        resetEditorPages(content.getOverview());
+        resetEditorPages( content.getOverview() );
 
         view.init( this );
 
@@ -173,13 +178,13 @@ public class FormEditorPresenter extends KieEditor {
         view.setupLayoutEditor( layoutEditor );
     }
 
-    protected List<LayoutDragComponent> getLayoutComponents() {
-
-        List<LayoutDragComponent>  list = new ArrayList<LayoutDragComponent>();
-        list.add( htmlLayoutDragComponent );
-        list.addAll( editorContext.getBaseFieldsDraggables() );
-
-        return list;
+    protected LayoutDragComponentGroup getLayoutComponent() {
+        LayoutDragComponentGroup group = new LayoutDragComponentGroup( "Uberfire Widgets" );
+        group.addLayoutDragComponent( "id", htmlLayoutDragComponent );
+        for ( EditorFieldLayoutComponent drag : editorContext.getBaseFieldsDraggables() ) {
+            group.addLayoutDragComponent( drag.getFieldId(), drag );
+        }
+        return group;
     }
 
     @WorkbenchPartTitle
@@ -203,18 +208,18 @@ public class FormEditorPresenter extends KieEditor {
 
     protected void makeMenuBar() {
         menus = menuBuilder
-                .addSave(versionRecordManager.newSaveMenuItem(new Command() {
+                .addSave( versionRecordManager.newSaveMenuItem( new Command() {
                     @Override
                     public void execute() {
                         onSave();
                     }
-                }))
-                .addCopy(versionRecordManager.getCurrentPath(),
-                        fileNameValidator)
-                .addRename(versionRecordManager.getPathToLatest(),
-                        fileNameValidator)
-                .addDelete(versionRecordManager.getPathToLatest())
-                .addNewTopLevelMenu(versionRecordManager.buildMenu())
+                } ) )
+                .addCopy( versionRecordManager.getCurrentPath(),
+                          fileNameValidator )
+                .addRename( versionRecordManager.getPathToLatest(),
+                            fileNameValidator )
+                .addDelete( versionRecordManager.getPathToLatest() )
+                .addNewTopLevelMenu( versionRecordManager.buildMenu() )
                 .build();
     }
 
@@ -227,7 +232,7 @@ public class FormEditorPresenter extends KieEditor {
     }
 
     public void addDataHolder( final String name, final String type ) {
-        if ( editorContext.addDataHolder(name, type) ) {
+        if ( editorContext.addDataHolder( name, type ) ) {
             editorService.call( new RemoteCallback<List<FieldDefinition>>() {
                 @Override
                 public void callback( List<FieldDefinition> fields ) {
@@ -246,14 +251,15 @@ public class FormEditorPresenter extends KieEditor {
         }
     }
 
-    protected void addAvailableFields(String holderName, List<FieldDefinition> fields) {
+    protected void addAvailableFields( String holderName, List<FieldDefinition> fields ) {
         editorContext.addAvailableFields( fields );
 
         LayoutDragComponentGroup group = new LayoutDragComponentGroup( holderName );
 
         for ( FieldDefinition field : fields ) {
-            EditorFieldLayoutComponent layoutFieldComponent = beanManager.lookupBean( EditorFieldLayoutComponent.class ).newInstance();
-            if (layoutFieldComponent != null) {
+            EditorFieldLayoutComponent layoutFieldComponent = beanManager.lookupBean( EditorFieldLayoutComponent.class )
+                    .newInstance();
+            if ( layoutFieldComponent != null ) {
                 layoutFieldComponent.init( editorContext.getRenderingContext(), field );
                 group.addLayoutDragComponent( field.getId(), layoutFieldComponent );
             }
@@ -262,30 +268,32 @@ public class FormEditorPresenter extends KieEditor {
         layoutEditor.addDraggableComponentGroup( group );
     }
 
-    public void onDropComponent(@Observes ComponentDropEvent event) {
+    public void onDropComponent( @Observes ComponentDropEvent event ) {
         String formId = event.getComponent().getProperties().get( FieldLayoutComponent.FORM_ID );
 
         if ( editorContext.getFormDefinition().getId().equals( formId ) ) {
             String fieldId = event.getComponent().getProperties().get( FieldLayoutComponent.FIELD_ID );
 
             FieldDefinition field = editorContext.getDroppedField( fieldId );
-            if (field != null) {
+            if ( field != null ) {
                 layoutEditor.removeDraggableGroupComponent( field.getModelName(), field.getId() );
             }
         }
     }
 
-    public void onRemoveComponent(@Observes ComponentRemovedEvent event) {
+    public void onRemoveComponent( @Observes ComponentRemovedEvent event ) {
         String formId = event.getLayoutComponent().getProperties().get( FieldLayoutComponent.FORM_ID );
 
         if ( editorContext.getFormDefinition().getId().equals( formId ) ) {
             String fieldId = event.getLayoutComponent().getProperties().get( FieldLayoutComponent.FIELD_ID );
             FieldDefinition field = editorContext.removeField( fieldId );
-            if (field != null) {
-                EditorFieldLayoutComponent layoutFieldComponent = beanManager.lookupBean( EditorFieldLayoutComponent.class ).newInstance();
-                if (layoutFieldComponent != null) {
+            if ( field != null ) {
+                EditorFieldLayoutComponent layoutFieldComponent = beanManager
+                        .lookupBean( EditorFieldLayoutComponent.class ).newInstance();
+                if ( layoutFieldComponent != null ) {
                     layoutFieldComponent.init( editorContext.getRenderingContext(), field );
-                    layoutEditor.addDraggableComponentToGroup( field.getModelName(), field.getId(), layoutFieldComponent );
+                    layoutEditor
+                            .addDraggableComponentToGroup( field.getModelName(), field.getId(), layoutFieldComponent );
                 }
             }
         }
@@ -293,21 +301,21 @@ public class FormEditorPresenter extends KieEditor {
 
     public void initDataObjectsTab() {
         objectsView.initView();
-        editorService.call(new RemoteCallback<List<String>>() {
+        editorService.call( new RemoteCallback<List<String>>() {
             @Override
-            public void callback(List<String> availableDataObjects) {
+            public void callback( List<String> availableDataObjects ) {
                 for ( String dataType : availableDataObjects ) {
                     objectsView.addDataType( dataType );
                 }
             }
-        }).getAvailableDataObjects(versionRecordManager.getCurrentPath());
+        } ).getAvailableDataObjects( versionRecordManager.getCurrentPath() );
     }
 
-    public boolean hasBindedFields(DataHolder dataHolder) {
+    public boolean hasBindedFields( DataHolder dataHolder ) {
         return editorContext.hasBindedFields( dataHolder );
     }
 
-    public void removeDataHolder( String holderName) {
+    public void removeDataHolder( String holderName ) {
         if ( getFormDefinition().getDataHolderByName( holderName ) != null ) {
             editorContext.removeDataHolder( holderName, layoutEditor.getLayout() );
             layoutEditor.removeDraggableComponentGroup( holderName );
