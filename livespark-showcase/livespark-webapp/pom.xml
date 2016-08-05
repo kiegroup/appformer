@@ -43,6 +43,12 @@
   </properties>
 
   <dependencies>
+    <!-- errai-cdi-jboss provides gwt-dev with the proper dependency exclusions -->
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-cdi-jboss</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.annotation</groupId>
       <artifactId>jboss-annotations-api_1.2_spec</artifactId>
@@ -908,12 +914,6 @@
       <artifactId>errai-jboss-as-support</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-cdi-jboss</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- CDI Integration Modules -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -1190,8 +1190,6 @@
             <disableCastChecking>true</disableCastChecking>
             <runTarget>livespark.html</runTarget>
             <hostedWebapp>src/main/webapp</hostedWebapp>
-            <!-- drools-compiler has dependency on org.eclipse.jdt.core.compiler:ecj:jar:3.5.1:compile, see http://code.google.com/p/google-web-toolkit/issues/detail?id=4479 -->
-            <gwtSdkFirstInClasspath>false</gwtSdkFirstInClasspath>
             <compileSourcesArtifacts>
               <!-- Kie Server needed by Exec Server UI -->
               <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
