@@ -1102,6 +1102,31 @@
     </dependency>
     <!-- End LiveSpark Modules -->
 
+    <!-- Data sources management -->
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-wildfly</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-dbcp</artifactId>
+    </dependency>
 
     <!-- test -->
     <dependency>
@@ -1305,6 +1330,11 @@
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
+
+              <!-- Data sources management -->
+              <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-datasource-mgmt-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-datasource-mgmt-client</compileSourcesArtifact>
+
             </compileSourcesArtifacts>
           </configuration>
         </plugin>

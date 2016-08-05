@@ -68,6 +68,8 @@ public interface AppConstants
 
     String extensions();
 
+    String dataSourceManagement();
+
     String search();
 
     String missingDefaultPerspective();
