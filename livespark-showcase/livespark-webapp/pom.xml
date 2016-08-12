@@ -313,19 +313,6 @@
     </dependency>
     <dependency>
       <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-inbox-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-inbox-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-inbox-backend</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.guvnor</groupId>
       <artifactId>guvnor-project-api</artifactId>
     </dependency>
     <dependency>
@@ -1218,8 +1205,6 @@
               <compileSourcesArtifact>org.guvnor:guvnor-asset-mgmt-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.guvnor:guvnor-structure-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.guvnor:guvnor-structure-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.guvnor:guvnor-inbox-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.guvnor:guvnor-inbox-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.guvnor:guvnor-m2repo-editor-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.guvnor:guvnor-workingset-api</compileSourcesArtifact>

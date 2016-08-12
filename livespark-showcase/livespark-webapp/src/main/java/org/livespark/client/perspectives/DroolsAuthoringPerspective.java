@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.guvnor.inbox.client.InboxPresenter;
 import org.kie.workbench.common.screens.examples.client.wizard.ExamplesWizard;
 import org.kie.workbench.common.screens.examples.service.ExamplesService;
 import org.kie.workbench.common.services.shared.preferences.ApplicationPreferences;
@@ -113,38 +112,6 @@ public class DroolsAuthoringPerspective {
                     }
                 } )
                 .endMenu()
-                .newTopLevelMenu( constants.explore() )
-                .menus()
-                .menu( constants.inboxIncomingChanges() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        placeManager.goTo( "Inbox" );
-                    }
-                } )
-                .endMenu()
-                .menu( constants.inboxRecentlyEdited() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        PlaceRequest p = new DefaultPlaceRequest( "Inbox" );
-                        p.addParameter( "inboxname", InboxPresenter.RECENT_EDITED_ID );
-                        placeManager.goTo( p );
-                    }
-                } )
-                .endMenu()
-                .menu( constants.inboxRecentlyOpened() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        PlaceRequest p = new DefaultPlaceRequest( "Inbox" );
-                        p.addParameter( "inboxname", InboxPresenter.RECENT_VIEWED_ID );
-                        placeManager.goTo( p );
-                    }
-                } )
-                .endMenu()
-                .endMenus()
-                .endMenu()
                 .newTopLevelMenu( constants.newItem() )
                 .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
@@ -170,38 +137,6 @@ public class DroolsAuthoringPerspective {
 
     private Menus buildMenuBarWithoutExamples() {
         return MenuFactory
-                .newTopLevelMenu( constants.explore() )
-                .menus()
-                .menu( constants.inboxIncomingChanges() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        placeManager.goTo( "Inbox" );
-                    }
-                } )
-                .endMenu()
-                .menu( constants.inboxRecentlyEdited() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        PlaceRequest p = new DefaultPlaceRequest( "Inbox" );
-                        p.addParameter( "inboxname", InboxPresenter.RECENT_EDITED_ID );
-                        placeManager.goTo( p );
-                    }
-                } )
-                .endMenu()
-                .menu( constants.inboxRecentlyOpened() )
-                .respondsWith( new Command() {
-                    @Override
-                    public void execute() {
-                        PlaceRequest p = new DefaultPlaceRequest( "Inbox" );
-                        p.addParameter( "inboxname", InboxPresenter.RECENT_VIEWED_ID );
-                        placeManager.goTo( p );
-                    }
-                } )
-                .endMenu()
-                .endMenus()
-                .endMenu()
                 .newTopLevelMenu( constants.newItem() )
                 .withItems( newResourcesMenu.getMenuItems() )
                 .endMenu()
