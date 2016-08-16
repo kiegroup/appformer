@@ -15,9 +15,6 @@
  */
 package org.livespark.formmodeler.codegen.util;
 
-/**
- * Created by pefernan on 4/27/15.
- */
 public interface SourceGenerationUtil {
 
     public static final String GWT_DOM_CLASSNAME = "com.google.gwt.user.client.DOM";

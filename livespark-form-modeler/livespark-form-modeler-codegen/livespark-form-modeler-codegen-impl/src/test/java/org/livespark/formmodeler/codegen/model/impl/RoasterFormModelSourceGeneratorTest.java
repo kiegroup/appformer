@@ -22,8 +22,8 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.model.FormDefinition;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 

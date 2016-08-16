@@ -26,16 +26,13 @@ import javax.inject.Inject;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.impl.html.util.HTMLTemplateFormatter;
-import org.livespark.formmodeler.model.FormDefinition;
+import org.kie.workbench.common.forms.model.FormDefinition;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.SimpleTemplateRegistry;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @ApplicationScoped
 public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
     TemplateRegistry registry = new SimpleTemplateRegistry();

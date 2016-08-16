@@ -19,12 +19,9 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
-import org.livespark.formmodeler.service.FieldManager;
+import org.kie.workbench.common.forms.model.impl.basic.checkBox.CheckBoxFieldDefinition;
+import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class CheckBoxTemplateProvider extends AbstractTemplateProvider {
 

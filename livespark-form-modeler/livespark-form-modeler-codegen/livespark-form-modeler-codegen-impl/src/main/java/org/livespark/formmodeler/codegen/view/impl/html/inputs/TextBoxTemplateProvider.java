@@ -20,9 +20,9 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.livespark.formmodeler.model.impl.basic.textArea.TextAreaFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.textBox.TextBoxFieldDefinition;
-import org.livespark.formmodeler.service.FieldManager;
+import org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition;
+import org.kie.workbench.common.forms.service.FieldManager;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>

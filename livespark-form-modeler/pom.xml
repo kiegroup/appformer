@@ -3,9 +3,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
+    <artifactId>livespark-deps</artifactId>
     <groupId>org.livespark</groupId>
-    <artifactId>livespark-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../livespark-deps/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -15,10 +16,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>livespark-form-modeler-api</module>
     <module>livespark-form-modeler-codegen</module>
     <module>livespark-form-modeler-rendering</module>
-    <module>livespark-form-modeler-dynamic-renderer</module>
     <module>livespark-form-modeler-editor</module>
   </modules>
 

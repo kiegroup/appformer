@@ -21,31 +21,27 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.text.WordUtils;
+import org.kie.workbench.common.forms.editor.backend.service.util.DataModellerFieldGenerator;
+import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
+import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.MultipleField;
+import org.kie.workbench.common.forms.model.impl.relations.EmbeddedFormField;
+import org.kie.workbench.common.forms.model.impl.relations.EntityRelationField;
+import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.SubFormFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.TableColumnMeta;
+import org.kie.workbench.common.forms.service.FieldManager;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
-import org.livespark.formmodeler.editor.service.VFSFormFinderService;
-import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
-import org.livespark.formmodeler.editor.service.FormCreatorService;
-import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.MultipleField;
-import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
-import org.livespark.formmodeler.model.impl.relations.EntityRelationField;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
-import org.livespark.formmodeler.service.FieldManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
 
-/**
- * Created by pefernan on 4/29/15.
- */
 public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator {
     private static transient Logger log = LoggerFactory.getLogger( DataModellerFormGeneratorImpl.class );
 
@@ -65,9 +61,6 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     protected DataModellerFieldGenerator fieldGenerator;
 
     @Inject
-    protected FormCreatorService formCreatorService;
-
-    @Inject
     protected VFSFormFinderService vfsFormFinderService;
 
     @Override
@@ -75,7 +68,9 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         if (dataObject.getProperties().isEmpty()) return;
 
-        FormDefinition form = formCreatorService.getNewFormInstance();
+        FormDefinition form = new FormDefinition();
+
+        form.setId( dataObject.getClassName() );
 
         form.setName( dataObject.getName() );
 
@@ -117,7 +112,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
             List<TableColumnMeta> columnMetas = new ArrayList<>();
             for ( FieldDefinition nestedField : form.getFields() ) {
-                if ( field instanceof EntityRelationField ) {
+                if ( nestedField instanceof EntityRelationField ) {
                     continue;
                 }
                 TableColumnMeta meta = new TableColumnMeta( nestedField.getLabel(), nestedField.getBoundPropertyName() );

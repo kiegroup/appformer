@@ -25,17 +25,14 @@ import org.codehaus.plexus.util.StringUtils;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.FormDefinition;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
-import org.livespark.formmodeler.model.DataHolder;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.FormDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
-/**
- * Created by pefernan on 4/28/15.
- */
 @ApplicationScoped
 public class RoasterJavaTemplateSourceGenerator extends RoasterClientTemplateSourceGenerator {
 

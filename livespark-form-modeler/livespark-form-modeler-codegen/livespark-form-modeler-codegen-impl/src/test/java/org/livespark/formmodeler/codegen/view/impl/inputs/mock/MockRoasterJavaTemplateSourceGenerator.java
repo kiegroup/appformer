@@ -19,9 +19,9 @@ package org.livespark.formmodeler.codegen.view.impl.inputs.mock;
 import javax.enterprise.inject.Instance;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.livespark.formmodeler.codegen.view.impl.java.RoasterJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
 
 public class MockRoasterJavaTemplateSourceGenerator extends RoasterJavaTemplateSourceGenerator {
 

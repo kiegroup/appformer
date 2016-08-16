@@ -18,14 +18,11 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 
 import javax.inject.Inject;
 
+import org.kie.workbench.common.forms.service.FieldManager;
 import org.livespark.formmodeler.codegen.view.impl.html.InputTemplateProvider;
-import org.livespark.formmodeler.service.FieldManager;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 public abstract class AbstractTemplateProvider implements InputTemplateProvider {
 
     protected FieldManager fieldManager;

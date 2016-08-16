@@ -17,19 +17,19 @@
 package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.api.StateSync;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.kie.workbench.common.forms.crud.client.component.formDisplay.IsFormView;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
-import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 
-/**
- * Created by pefernan on 4/17/15.
- */
+import com.google.gwt.user.client.ui.Composite;
+
 public abstract class FormView<M extends FormModel> extends Composite implements IsFormView<M> {
 
     private boolean newModel = true;
@@ -73,6 +73,14 @@ public abstract class FormView<M extends FormModel> extends Composite implements
     protected abstract void initEntities();
 
     public abstract boolean doExtraValidations();
+
+    public void pauseBinding() {
+        binder.pause();
+    }
+
+    public void resumeBinding( boolean keepChanges ) {
+        binder.resume( keepChanges ? StateSync.FROM_UI : StateSync.FROM_MODEL );
+    }
 
     public boolean validate() {
 

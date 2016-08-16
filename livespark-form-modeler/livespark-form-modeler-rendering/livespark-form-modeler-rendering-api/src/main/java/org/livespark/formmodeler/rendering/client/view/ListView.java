@@ -25,11 +25,11 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
+import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
+import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
-import org.livespark.widgets.crud.client.component.CrudActionsHelper;
-import org.livespark.widgets.crud.client.component.CrudComponent;
-import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -46,15 +46,13 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     protected FlowPanel content = createFlowPanel();
 
     @Inject
-    protected CrudComponent crudComponent;
+    protected CrudComponent<M, F> crudComponent;
 
     protected List<M> crudItems;
 
-    protected FormView<F> currentForm;
-
     AsyncDataProvider<M> dataProvider;
 
-    protected final CrudActionsHelper crudActionsHelper = new ListViewCrudActionsHelper();
+    protected final CrudActionsHelper<M> crudActionsHelper = new ListViewCrudActionsHelper();
 
     public void init() {
         dataProvider = new AsyncDataProvider<M>() {
@@ -126,13 +124,13 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
 
     protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
 
-    public abstract List<ColumnMeta> getCrudColumns();
+    public abstract List<ColumnMeta<M>> getCrudColumns();
 
     public abstract M getModel( F formModel );
 
     public abstract F createFormModel( M model );
 
-    protected class ListViewCrudActionsHelper implements CrudActionsHelper {
+    protected class ListViewCrudActionsHelper implements CrudActionsHelper<M> {
         @Override
         public boolean showEmbeddedForms() {
             return false;
@@ -159,49 +157,61 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
         }
 
         @Override
-        public List<ColumnMeta> getGridColumns() {
+        public List<ColumnMeta<M>> getGridColumns() {
             return getCrudColumns();
         }
 
         @Override
-        public AsyncDataProvider<?> getDataProvider() {
+        public AsyncDataProvider<M> getDataProvider() {
             return dataProvider;
         }
 
         @Override
-        public IsFormView getCreateInstanceForm() {
-            currentForm = getForm();
-            return currentForm;
-        }
-
-        @Override
         public void createInstance() {
-            createRestCaller(
-                    new RemoteCallback<M>() {
-                        @Override
-                        public void callback( final M response ) {
-                            crudItems.add( response );
-                            crudComponent.refresh();
-                        }
-                    } ).create( getModel( currentForm.getModel() ) );
+            FormView<F> form = getForm();
+            crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
+
+                @Override
+                public void onCancel() {
+                }
+
+                @Override
+                public void onAccept() {
+                    createRestCaller(
+                                     new RemoteCallback<M>() {
+                                         @Override
+                                         public void callback( final M response ) {
+                                             crudItems.add( response );
+                                             crudComponent.refresh();
+                                         }
+                                     } ).create( getModel( form.getModel() ) );
+                }
+            } );
+
         }
 
         @Override
-        public IsFormView getEditInstanceForm( final Integer index ) {
-            currentForm = getForm();
-            currentForm.setModel( createFormModel( crudItems.get( index ) ) );
-            return currentForm;
-        }
+        public void editInstance( int index ) {
+            FormView<F> form = getForm();
+            form.setModel( createFormModel( crudItems.get( index ) ) );
+            form.pauseBinding();
+            crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
+                @Override
+                public void onCancel() {
+                }
 
-        @Override
-        public void editInstance() {
-            createRestCaller(
-                    new RemoteCallback<Boolean>() {
-                        @Override
-                        public void callback( final Boolean response ) {
-                            crudComponent.refresh();
-                        }
-                    } ).update( getModel( currentForm.getModel() ) );
+                @Override
+                public void onAccept() {
+                    createRestCaller(
+                                     new RemoteCallback<Boolean>() {
+                                         @Override
+                                         public void callback( final Boolean response ) {
+                                             form.resumeBinding( true );
+                                             crudComponent.refresh();
+                                         }
+                                     } ).update( getModel( form.getModel() ) );
+                }
+            } );
         }
 
         @Override

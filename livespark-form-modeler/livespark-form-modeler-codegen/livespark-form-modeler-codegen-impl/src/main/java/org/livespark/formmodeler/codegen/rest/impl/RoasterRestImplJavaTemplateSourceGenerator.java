@@ -27,9 +27,9 @@ import javax.inject.Inject;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.model.DataHolder;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
-import org.livespark.formmodeler.model.DataHolder;
 
 
 @ApplicationScoped
@@ -170,8 +170,8 @@ public class RoasterRestImplJavaTemplateSourceGenerator extends RoasterRestJavaT
                                       MethodSource<JavaClassSource> create ) {
         StringBuilder body = new StringBuilder();
         body.append( ENTITY_SERVICE )
-            .append( ".create( model );" )
-            .append( "return model;" );
+                .append( ".create( model );" )
+                .append( "return model;" );
 
         create.setBody( body.toString() );
     }

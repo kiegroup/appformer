@@ -26,9 +26,9 @@ import org.livespark.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTes
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.StringSelectorOption;
-import org.livespark.formmodeler.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.StringSelectorOption;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper.*;

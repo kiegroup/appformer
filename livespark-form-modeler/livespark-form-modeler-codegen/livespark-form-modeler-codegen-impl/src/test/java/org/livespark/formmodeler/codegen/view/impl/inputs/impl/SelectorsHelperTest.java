@@ -27,12 +27,12 @@ import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelpe
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.DefaultSelectorOption;
-import org.livespark.formmodeler.model.impl.basic.selectors.StringSelectorOption;
-import org.livespark.formmodeler.model.impl.basic.selectors.listBox.EnumListBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.listBox.StringListBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.DefaultSelectorOption;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.StringSelectorOption;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.EnumListBoxFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.StringListBoxFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;

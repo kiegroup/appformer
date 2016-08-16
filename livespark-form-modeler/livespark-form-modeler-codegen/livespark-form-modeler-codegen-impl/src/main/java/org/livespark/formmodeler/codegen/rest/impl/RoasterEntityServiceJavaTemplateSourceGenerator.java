@@ -29,7 +29,6 @@ import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 
-
 @ApplicationScoped
 @EntityService
 public class RoasterEntityServiceJavaTemplateSourceGenerator implements FormJavaTemplateSourceGenerator {

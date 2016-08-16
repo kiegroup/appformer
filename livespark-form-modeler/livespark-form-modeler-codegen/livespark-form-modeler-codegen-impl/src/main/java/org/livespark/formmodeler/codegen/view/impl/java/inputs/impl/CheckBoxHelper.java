@@ -17,7 +17,7 @@
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 
-import org.livespark.formmodeler.model.impl.basic.checkBox.CheckBoxFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.checkBox.CheckBoxFieldDefinition;
 
 public class CheckBoxHelper extends AbstractInputCreatorHelper<CheckBoxFieldDefinition> {
 

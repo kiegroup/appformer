@@ -38,13 +38,10 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.model.DataHolder;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
-import org.livespark.formmodeler.model.DataHolder;
 
-/**
- * Created by pefernan on 4/27/15.
- */
 @ApplicationScoped
 public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator {
 
@@ -70,13 +67,14 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
             short.class.getName(),
             String.class.getName()
     };
-    
+
     @Inject
-    public RoasterFormModelSourceGenerator(ConstructorGenerator constructorGenerator) {
+    public RoasterFormModelSourceGenerator( ConstructorGenerator constructorGenerator ) {
         this.constructorGenerator = constructorGenerator;
     }
-    
+
     private ConstructorGenerator constructorGenerator;
+
     @Override
     public String generateFormModelSource( SourceGenerationContext context ) {
 
@@ -107,10 +105,10 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
                                        JavaClassSource modelClass ) {
         MethodSource<JavaClassSource> getDataModels = modelClass.addMethod();
         getDataModels.setPublic()
-                     .setName( "getDataModels" )
-                     .setReturnType( "List<Object>" )
-                     .setBody( generateGetDataModelsBody( context ) )
-                     .addAnnotation( Override.class );
+                .setName( "getDataModels" )
+                .setReturnType( "List<Object>" )
+                .setBody( generateGetDataModelsBody( context ) )
+                .addAnnotation( Override.class );
     }
 
     private String generateGetDataModelsBody( SourceGenerationContext context ) {
@@ -132,20 +130,20 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
     }
 
     private void addConstructors( SourceGenerationContext context,
-                            JavaClassSource modelClass ) {
+                                  JavaClassSource modelClass ) {
         constructorGenerator.addNoArgConstructor( modelClass );
         constructorGenerator.addFormModelConstructor( context, modelClass );
     }
 
     private void addTypeAnnotations( SourceGenerationContext context,
-                            JavaClassSource modelClass ) {
+                                     JavaClassSource modelClass ) {
         modelClass.addAnnotation( ERRAI_PORTABLE );
         modelClass.addAnnotation( ERRAI_BINDABLE );
         modelClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormModelName() );
     }
 
     private void addTypeSignature( SourceGenerationContext context,
-                            JavaClassSource modelClass ) {
+                                   JavaClassSource modelClass ) {
         modelClass.setPackage( context.getSharedPackage().getPackageName() )
                 .setPublic()
                 .setName( context.getFormModelName() );

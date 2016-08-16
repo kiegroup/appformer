@@ -490,6 +490,12 @@
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-data-modeller-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-envers</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
@@ -498,6 +504,12 @@
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-data-modeller-backend</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-envers</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
@@ -1005,45 +1017,68 @@
       <artifactId>uberfire-security-management-wildfly</artifactId>
     </dependency>
 
+    <!-- Forms Engine -->
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-dynamic-forms-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-dynamic-forms-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-editor-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-editor-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-editor-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-layout-generator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-common-widgets</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-crud-component</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-processing-engine</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Start LiveSpark Modules -->
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-crud-component</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-dynamic-renderer-backend</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-editor-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-editor-client</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-editor-backend</artifactId>
@@ -1053,14 +1088,12 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-codegen-layout-generator</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-impl</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-data-modeller</artifactId>
@@ -1070,12 +1103,6 @@
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-rendering-api</artifactId>
       <scope>provided</scope><!-- Required to correctly build LS apps -->
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
-      <artifactId>livespark-form-modeler-processing-engine</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -1294,24 +1321,23 @@
               <compileSourcesArtifact>org.uberfire:uberfire-security-management-client-wb</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-widgets-security-management</compileSourcesArtifact>
 
-              <!-- Wires -->
-              <compileSourcesArtifact>org.uberfire:uberfire-wires-core-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.uberfire:uberfire-wires-core-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.uberfire:uberfire-wires-core-trees</compileSourcesArtifact>
-
               <!-- KIE UberFire extensions -->
               <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-client</compileSourcesArtifact>
 
+              <!-- Forms -->
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-processing-engine</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-common-widgets</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-crud-component</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-dynamic-forms-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-dynamic-forms-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-editor-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-editor-client</compileSourcesArtifact>
+
               <!-- LiveSpark -->
-              <compileSourcesArtifact>org.livespark:livespark-crud-component</compileSourcesArtifact>
-              <compileSourcesArtifact>org.livespark:livespark-form-modeler-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-rendering-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.livespark:livespark-form-modeler-processing-engine</compileSourcesArtifact>
-              <compileSourcesArtifact>org.livespark:livespark-form-modeler-dynamic-renderer-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-dynamic-renderer-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.livespark:livespark-form-modeler-editor-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
 
               <!-- Data sources management -->

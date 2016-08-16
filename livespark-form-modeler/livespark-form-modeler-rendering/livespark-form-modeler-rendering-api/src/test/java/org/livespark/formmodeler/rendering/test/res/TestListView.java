@@ -19,12 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
+import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
-import org.livespark.widgets.crud.client.component.CrudActionsHelper;
-import org.livespark.widgets.crud.client.component.CrudComponent;
-import org.livespark.widgets.crud.client.component.mock.CrudModel;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -35,16 +34,12 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
 
     public final List<RemoteCallback<?>> callbacks = new ArrayList<>();
 
-    public void setCrudComponent( final CrudComponent crudComponent ) {
-        this.crudComponent = crudComponent;
-    }
-
     @Override
-    public List<ColumnMeta> getCrudColumns() {
+    public List<ColumnMeta<CrudModel>> getCrudColumns() {
 
-        final List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
+        final List<ColumnMeta<CrudModel>> metas = new ArrayList<>();
 
-        ColumnMeta<CrudModel> columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+        ColumnMeta<CrudModel> columnMeta = new ColumnMeta<>( new TextColumn<CrudModel>() {
             @Override
             public String getValue( final CrudModel model ) {
                 if ( model.getName() == null ) {
@@ -56,7 +51,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
 
         metas.add( columnMeta );
 
-        columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+        columnMeta = new ColumnMeta<>( new TextColumn<CrudModel>() {
             @Override
             public String getValue( final CrudModel model ) {
                 if ( model.getLastName() == null ) {
@@ -68,7 +63,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
 
         metas.add( columnMeta );
 
-        columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+        columnMeta = new ColumnMeta<>( new TextColumn<CrudModel>() {
             @Override
             public String getValue( final CrudModel model ) {
                 if ( model.getBirthday() == null ) {
@@ -132,7 +127,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
      * @see org.livespark.formmodeler.rendering.client.view.ListView#getFormType()
      */
     @Override
-    protected Class< ? extends FormView<TestFormModel>> getFormType() {
+    protected Class<? extends FormView<TestFormModel>> getFormType() {
         return TestFormView.class;
     }
 
@@ -144,7 +139,7 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
         return "List Title";
     }
 
-    public CrudActionsHelper getCrudActionsHelper() {
+    public CrudActionsHelper<CrudModel> getCrudActionsHelper() {
         return crudActionsHelper;
     }
 }
