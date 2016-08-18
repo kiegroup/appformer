@@ -24,7 +24,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.view.FormView;
+import org.livespark.formmodeler.codegen.view.HTMLTemplateGenerator;
 import org.livespark.formmodeler.codegen.view.impl.html.util.HTMLTemplateFormatter;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.mvel2.templates.CompiledTemplate;
@@ -33,8 +34,9 @@ import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
 
+@FormView
 @ApplicationScoped
-public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
+public class MVELFormHTMLTemplateSourceGenerator implements HTMLTemplateGenerator {
     TemplateRegistry registry = new SimpleTemplateRegistry();
 
     @Inject
@@ -43,22 +45,22 @@ public class MVELFormHTMLTemplateSourceGenerator implements FormHTMLTemplateSour
     @Inject
     private HTMLTemplateFormatter formatter;
 
-    private String formTemplatePath = "templates/form.mv";
+    private final String formTemplatePath = "templates/form.mv";
     private CompiledTemplate formTemplate;
 
     @PostConstruct
     protected void init() {
         formTemplate = TemplateCompiler.compileTemplate( getClass().getResourceAsStream( formTemplatePath ) );
 
-        for ( InputTemplateProvider provider : providers ) {
+        for ( final InputTemplateProvider provider : providers ) {
             provider.registerTemplates( registry );
         }
 
     }
 
     @Override
-    public String generateHTMLTemplateSource( SourceGenerationContext context ) {
-        Map<String, FormDefinition> params = new HashMap<String, FormDefinition>(  );
+    public String generateHTMLTemplate( final SourceGenerationContext context ) {
+        final Map<String, FormDefinition> params = new HashMap<>(  );
         params.put( "formDefinition", context.getFormDefinition() );
         return formatter.formatHTMLCode( ( String ) TemplateRuntime.execute( formTemplate, null, params, registry ) );
     }

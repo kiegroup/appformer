@@ -59,12 +59,27 @@
       </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
-        <artifactId>livespark-common</artifactId>
+        <artifactId>livespark-commons</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-app-flow-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-app-flow-cdi-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-app-flow-client</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

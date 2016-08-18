@@ -21,7 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.view.HTMLTemplateGenerator;
 import org.livespark.formmodeler.codegen.view.ListView;
 import org.livespark.formmodeler.codegen.view.impl.html.util.HTMLTemplateFormatter;
 import org.mvel2.templates.CompiledTemplate;
@@ -30,7 +30,7 @@ import org.mvel2.templates.TemplateRuntime;
 
 @ListView
 @ApplicationScoped
-public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGenerator {
+public class ListHTMLTemplateSourceGenerator implements HTMLTemplateGenerator {
 
     private String listViewTemplatePath = "templates/listview.mv";
     private CompiledTemplate listViewTemplate;
@@ -44,7 +44,7 @@ public class ListHTMLTemplateSourceGenerator implements FormHTMLTemplateSourceGe
     private HTMLTemplateFormatter formatter;
 
     @Override
-    public String generateHTMLTemplateSource( SourceGenerationContext context ) {
+    public String generateHTMLTemplate( SourceGenerationContext context ) {
         return formatter.formatHTMLCode( (String) TemplateRuntime.execute( listViewTemplate ) );
     }
 }

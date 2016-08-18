@@ -18,10 +18,8 @@ package org.livespark.formmodeler.rendering.test.res;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
 import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
-import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -29,10 +27,6 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import com.google.gwt.user.cellview.client.TextColumn;
 
 public class TestListView extends ListView<CrudModel, TestFormModel> {
-
-    private LiveSparkRestService<CrudModel> restService;
-
-    public final List<RemoteCallback<?>> callbacks = new ArrayList<>();
 
     @Override
     public List<ColumnMeta<CrudModel>> getCrudColumns() {
@@ -89,16 +83,6 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
     }
 
     /* (non-Javadoc)
-         * @see org.livespark.formmodeler.rendering.client.view.ListView#createRestCaller(org.jboss.errai.common.client.api.RemoteCallback)
-         */
-    @SuppressWarnings( "unchecked" )
-    @Override
-    public <S extends LiveSparkRestService<CrudModel>, R> S createRestCaller( final RemoteCallback<R> callback ) {
-        callbacks.add( callback );
-        return (S) restService;
-    }
-
-    /* (non-Javadoc)
      * @see org.livespark.formmodeler.rendering.client.view.ListView#getFormTitle()
      */
     @Override
@@ -115,23 +99,6 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
     }
 
     /* (non-Javadoc)
-     * @see org.livespark.formmodeler.rendering.client.view.ListView#getRemoteServiceClass()
-     */
-    @SuppressWarnings( "unchecked" )
-    @Override
-    protected Class<TestRestService> getRemoteServiceClass() {
-        return TestRestService.class;
-    }
-
-    /* (non-Javadoc)
-     * @see org.livespark.formmodeler.rendering.client.view.ListView#getFormType()
-     */
-    @Override
-    protected Class<? extends FormView<TestFormModel>> getFormType() {
-        return TestFormView.class;
-    }
-
-    /* (non-Javadoc)
      * @see org.livespark.formmodeler.rendering.client.view.ListView#getListTitle()
      */
     @Override
@@ -141,5 +108,10 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
 
     public CrudActionsHelper<CrudModel> getCrudActionsHelper() {
         return crudActionsHelper;
+    }
+
+    @Override
+    public CrudModel newModel() {
+        return new CrudModel();
     }
 }

@@ -30,7 +30,7 @@ import org.jboss.forge.roaster.model.source.MethodSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.view.impl.inputs.mock.MockRoasterJavaTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.view.impl.inputs.mock.MockRoasterFormViewSourceGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.workbench.common.forms.model.DataHolder;
 import org.kie.workbench.common.forms.model.FieldDefinition;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
 
 public abstract class AbstractInputHelperTest extends TestCase {
 
-    protected MockRoasterJavaTemplateSourceGenerator roasterJavaTemplateSourceGenerator;
+    protected MockRoasterFormViewSourceGenerator roasterJavaTemplateSourceGenerator;
 
     protected Instance<InputCreatorHelper<? extends FieldDefinition>> creatorHelpers;
 
@@ -94,7 +94,7 @@ public abstract class AbstractInputHelperTest extends TestCase {
 
         when( creatorHelpers.iterator() ).then( it -> helpers.iterator() );
 
-        roasterJavaTemplateSourceGenerator = new MockRoasterJavaTemplateSourceGenerator( classSource, creatorHelpers );
+        roasterJavaTemplateSourceGenerator = new MockRoasterFormViewSourceGenerator( classSource, creatorHelpers );
 
         formDefinition = new FormDefinition();
 
@@ -114,7 +114,7 @@ public abstract class AbstractInputHelperTest extends TestCase {
                 serverPackage,
                 new ArrayList<>());
 
-        String template = roasterJavaTemplateSourceGenerator.generateJavaTemplateSource( context );
+        String template = roasterJavaTemplateSourceGenerator.generateJavaSource( context );
 
         assertNotNull( "Form template shouldn't be null", template );
     }

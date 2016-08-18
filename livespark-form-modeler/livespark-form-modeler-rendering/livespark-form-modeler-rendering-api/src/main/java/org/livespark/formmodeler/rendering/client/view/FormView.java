@@ -23,14 +23,16 @@ import javax.inject.Inject;
 
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.api.StateSync;
+import org.jboss.errai.ui.client.local.api.IsElement;
+import org.jboss.errai.ui.shared.TemplateWidgetMapper;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.IsFormView;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.validation.FormViewValidator;
 
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
 
-public abstract class FormView<M extends FormModel> extends Composite implements IsFormView<M> {
+public abstract class FormView<MODEL, FORM_MODEL extends FormModel> implements IsFormView<FORM_MODEL>, IsElement {
 
     private boolean newModel = true;
 
@@ -39,13 +41,22 @@ public abstract class FormView<M extends FormModel> extends Composite implements
 
     @Inject
     @AutoBound
-    protected DataBinder<M> binder;
+    protected DataBinder<FORM_MODEL> binder;
 
     @Override
-    public void setModel( M model ) {
+    public void setModel( final FORM_MODEL model ) {
         binder.setModel( model );
         newModel = false;
         validator.clearFieldErrors();
+        updateNestedModels( true );
+    }
+
+    public void pauseBinding() {
+        binder.pause();
+    }
+
+    public void resumeBinding( final boolean keepChanges ) {
+        binder.resume( keepChanges ? StateSync.FROM_UI : StateSync.FROM_MODEL );
     }
 
     public boolean isNewModel() {
@@ -54,12 +65,15 @@ public abstract class FormView<M extends FormModel> extends Composite implements
 
     @PostConstruct
     private void init() {
-        List entites = getEntities();
+        final List<MODEL> entites = getEntities();
         if (entites == null || entites.isEmpty() || entites.size() < getEntitiesCount()) {
             initEntities();
         }
         initForm();
         beforeDisplay();
+    }
+
+    protected void updateNestedModels( final boolean init ) {
     }
 
     protected abstract void initForm();
@@ -68,25 +82,17 @@ public abstract class FormView<M extends FormModel> extends Composite implements
 
     protected abstract int getEntitiesCount();
 
-    protected abstract List getEntities();
+    protected abstract List<MODEL> getEntities();
 
     protected abstract void initEntities();
 
     public abstract boolean doExtraValidations();
 
-    public void pauseBinding() {
-        binder.pause();
-    }
-
-    public void resumeBinding( boolean keepChanges ) {
-        binder.resume( keepChanges ? StateSync.FROM_UI : StateSync.FROM_MODEL );
-    }
-
     public boolean validate() {
 
-        boolean isValid = validator.validate( binder.getModel() );
+        final boolean isValid = validator.validate( binder.getModel() );
 
-        boolean extraValidations = doExtraValidations();
+        final boolean extraValidations = doExtraValidations();
 
         return isValid && extraValidations;
     }
@@ -94,12 +100,17 @@ public abstract class FormView<M extends FormModel> extends Composite implements
     public abstract void beforeDisplay();
 
     @Override
-    public M getModel() {
+    public FORM_MODEL getModel() {
         return binder.getModel();
     }
 
     @Override
     public boolean isValid() {
         return validate();
+    }
+
+    @Override
+    public Widget asWidget() {
+        return TemplateWidgetMapper.get( this );
     }
 }

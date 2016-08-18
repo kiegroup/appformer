@@ -16,8 +16,8 @@
 package org.livespark.formmodeler.rendering.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -26,16 +26,16 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer;
 import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
-import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
+import org.livespark.flow.api.Command;
+import org.livespark.flow.api.CrudOperation;
+import org.livespark.flow.cdi.api.FlowInput;
+import org.livespark.flow.cdi.api.FlowOutput;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestFormView;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
@@ -71,48 +71,31 @@ public class ListViewTest {
     private TestFormModel formModel;
 
     @Mock
-    private LiveSparkRestService<CrudModel> restService;
+    private FlowInput<List<CrudModel>> input;
 
     @Mock
-    private SyncBeanManager beanManager;
-
-    @SuppressWarnings( "rawtypes" )
-    @Mock
-    private SyncBeanDef beanDef;
+    private FlowOutput<Command<CrudOperation, CrudModel>> output;
 
     @Captor
-    private ArgumentCaptor<FormDisplayer.FormDisplayerCallback> callbackCaptor;
-
-    @Captor
-    private ArgumentCaptor<CrudModel> modelCaptor;
+    private ArgumentCaptor<Command<CrudOperation, CrudModel>> outputCaptor;
 
     private final List<CrudModel> models = new ArrayList<>();
 
-    @SuppressWarnings( "unchecked" )
     @Before
     public void init() {
-        listView.callbacks.clear();
         models.clear();
+        when( input.get() ).thenReturn( models );
         when( formView.validate() ).thenReturn( true );
         when( formView.getModel() ).thenReturn( formModel );
-        when( beanManager.lookupBean( TestFormView.class ) ).thenReturn( beanDef );
-        when( beanDef.getInstance() ).thenReturn( formView );
     }
 
     @Test
     public void initLoadsDataOnce() throws Exception {
         listView.init();
-        verify( restService ).load();
-        assertEquals( 1, listView.callbacks.size() );
-        verifyNoMoreInteractions( restService );
+        verify( input ).get();
+        verifyNoMoreInteractions( input );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
-
-        assertEquals( 1, listView.callbacks.size() );
-        @SuppressWarnings( "unchecked" )
-        final RemoteCallback<List<CrudModel>> callback = (RemoteCallback<List<CrudModel>>) listView.callbacks.get( listView.callbacks.size()-1 );
-        callback.callback( models );
-
         verify( crudComponent ).refresh();
     }
 
@@ -125,155 +108,62 @@ public class ListViewTest {
     }
 
     @Test
-    public void createFormAcceptAddsModelAndRefreshes() {
-        CrudModel createModel = new CrudModel();
-        when( formModel.getModel() ).thenReturn( createModel );
-
+    public void createInstanceSubmitsCreateCommand() {
         // Init view
         listView.init();
-        verify( restService ).load();
-        assertEquals( 1, listView.callbacks.size() );
-        listView.loadItems( models );
+        verify( input ).get();
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
 
-        // Display form
+        // Call helper, verify command submitted
         listView.getCrudActionsHelper().createInstance();
-        verify( crudComponent ).displayForm( same( formView ), callbackCaptor.capture() );
-
-        // Accept form
-        callbackCaptor.getValue().onAccept();
-        verify( restService ).create( modelCaptor.capture() );
-        assertSame( formModel.getModel(), modelCaptor.getValue() );
-        assertEquals( 2, listView.callbacks.size() );
-
-        // Invoke rest callback
-        @SuppressWarnings( "unchecked" )
-        RemoteCallback<CrudModel> callback = (RemoteCallback<CrudModel>) listView.callbacks.get( 1 );
-        CrudModel response = new CrudModel();
-        callback.callback( response );
-        assertEquals( 1, models.size() );
-        assertSame( response, models.get( 0 ) );
-        verify( crudComponent, times( 2 ) ).refresh();
+        verify( output ).submit( outputCaptor.capture() );
+        final Command<CrudOperation, CrudModel> submitted = outputCaptor.getValue();
+        assertEquals( CrudOperation.CREATE, submitted.commandType );
+        assertNotNull( submitted.value );
     }
 
     @Test
-    public void createFormCancelDoesNothing() {
-        CrudModel createModel = new CrudModel();
-        when( formModel.getModel() ).thenReturn( createModel );
-
-        // Init view
-        listView.init();
-        verify( restService ).load();
-        assertEquals( 1, listView.callbacks.size() );
-        listView.loadItems( models );
-        verify( crudComponent ).init( listView.getCrudActionsHelper() );
-        verify( crudComponent ).setEmbedded( false );
-        verify( crudComponent ).refresh();
-
-        // Display form
-        listView.getCrudActionsHelper().createInstance();
-        verify( crudComponent ).displayForm( same( formView ), callbackCaptor.capture() );
-
-        // Cancel form
-        callbackCaptor.getValue().onCancel();
-
-        // Verify nothing happened
-        assertEquals( 1, listView.callbacks.size() );
-        assertEquals( 0, models.size() );
-        verifyNoMoreInteractions( restService, crudComponent );
-    }
-
-    @Test
-    public void editFormAcceptCallsResumeBindingAndRefresh() {
-        CrudModel editModel = new CrudModel();
+    public void editInstanceCallsUpdateCommand() {
+        final CrudModel editModel = new CrudModel();
         models.add( editModel );
         when( formModel.getModel() ).thenReturn( editModel );
 
         // Init view
         listView.init();
-        verify( restService ).load();
-        assertEquals( 1, listView.callbacks.size() );
-        listView.loadItems( models );
+        verify( input ).get();
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
 
-        // Display form
+        // Call helper, verify command submitted
         listView.getCrudActionsHelper().editInstance( 0 );
-        verify( crudComponent ).displayForm( same( formView ), callbackCaptor.capture() );
-
-        // Accept form
-        callbackCaptor.getValue().onAccept();
-        verify( restService ).update( modelCaptor.capture() );
-        assertSame( formModel.getModel(), modelCaptor.getValue() );
-        assertEquals( 2, listView.callbacks.size() );
-
-        // Invoke rest callback
-        @SuppressWarnings( "unchecked" )
-        RemoteCallback<Boolean> callback = (RemoteCallback<Boolean>) listView.callbacks.get( 1 );
-        callback.callback( true );
-        assertEquals( 1, models.size() );
-        verify( formView ).resumeBinding( true );
-        verify( crudComponent, times( 2 ) ).refresh();
+        verify( output ).submit( outputCaptor.capture() );
+        final Command<CrudOperation, CrudModel> submitted = outputCaptor.getValue();
+        assertEquals( CrudOperation.UPDATE, submitted.commandType );
+        assertSame( formModel.getModel(), submitted.value );
     }
 
     @Test
-    public void editFormCancelDoesNothing() {
-        CrudModel editModel = new CrudModel();
-        models.add( editModel );
-        when( formModel.getModel() ).thenReturn( editModel );
-
-        // Init view
-        listView.init();
-        verify( restService ).load();
-        assertEquals( 1, listView.callbacks.size() );
-        listView.loadItems( models );
-        verify( crudComponent ).init( listView.getCrudActionsHelper() );
-        verify( crudComponent ).setEmbedded( false );
-        verify( crudComponent ).refresh();
-
-        // Display form
-        listView.getCrudActionsHelper().editInstance( 0 );
-        verify( crudComponent ).displayForm( same( formView ), callbackCaptor.capture() );
-
-        // Cancel form
-        callbackCaptor.getValue().onCancel();
-
-        // Verify nothing happened
-        assertEquals( 1, listView.callbacks.size() );
-        assertEquals( 1, models.size() );
-        verifyNoMoreInteractions( restService, crudComponent );
-    }
-
-    @Test
-    public void testDeletion() {
-        CrudModel deleteModel = new CrudModel();
+    public void testDeletionInstanceCallsDeleteCommand() {
+        final CrudModel deleteModel = new CrudModel();
         models.add( deleteModel );
         when( formModel.getModel() ).thenReturn( deleteModel );
 
         // Init view
         listView.init();
-        verify( restService ).load();
-        assertEquals( 1, listView.callbacks.size() );
-        listView.loadItems( models );
+        verify( input ).get();
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
 
-        // Trigger rest call
+        // Call helper, verify command submitted
         listView.getCrudActionsHelper().deleteInstance( 0 );
-        verify( restService ).delete( modelCaptor.capture() );
-        assertSame( formModel.getModel(), modelCaptor.getValue() );
-        assertEquals( 2, listView.callbacks.size() );
-
-        // Invoke rest callback
-        @SuppressWarnings( "unchecked" )
-        RemoteCallback<Boolean> callback = (RemoteCallback<Boolean>) listView.callbacks.get( 1 );
-        callback.callback( true );
-        assertEquals( 0, models.size() );
-        verify( crudComponent, times( 2 ) ).refresh();
+        verify( output ).submit( outputCaptor.capture() );
+        final Command<CrudOperation, CrudModel> submitted = outputCaptor.getValue();
+        assertEquals( CrudOperation.DELETE, submitted.commandType );
+        assertSame( formModel.getModel(), submitted.value );
     }
 
 }

@@ -39,11 +39,13 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.forms.model.DataHolder;
+import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
+import org.livespark.formmodeler.codegen.model.FormModel;
 
+@FormModel
 @ApplicationScoped
-public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator {
+public class RoasterFormModelSourceGenerator implements JavaSourceGenerator {
 
     public static final String[] BASIC_TYPES = new String[]{
             BigDecimal.class.getName(),
@@ -69,16 +71,16 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
     };
 
     @Inject
-    public RoasterFormModelSourceGenerator( ConstructorGenerator constructorGenerator ) {
+    public RoasterFormModelSourceGenerator( final ConstructorGenerator constructorGenerator ) {
         this.constructorGenerator = constructorGenerator;
     }
 
-    private ConstructorGenerator constructorGenerator;
+    private final ConstructorGenerator constructorGenerator;
 
     @Override
-    public String generateFormModelSource( SourceGenerationContext context ) {
+    public String generateJavaSource( final SourceGenerationContext context ) {
 
-        JavaClassSource modelClass = Roaster.create( JavaClassSource.class );
+        final JavaClassSource modelClass = Roaster.create( JavaClassSource.class );
 
         addTypeSignature( context, modelClass );
         addImports( context, modelClass );
@@ -90,20 +92,20 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
         return modelClass.toString();
     }
 
-    private void addImports( SourceGenerationContext context,
-                             JavaClassSource modelClass ) {
+    private void addImports( final SourceGenerationContext context,
+                             final JavaClassSource modelClass ) {
         modelClass.addImport( List.class );
         modelClass.addImport( Arrays.class );
     }
 
-    private void addMethodImpls( SourceGenerationContext context,
-                                 JavaClassSource modelClass ) {
+    private void addMethodImpls( final SourceGenerationContext context,
+                                 final JavaClassSource modelClass ) {
         addGetDataModelsImpl( context, modelClass );
     }
 
-    private void addGetDataModelsImpl( SourceGenerationContext context,
-                                       JavaClassSource modelClass ) {
-        MethodSource<JavaClassSource> getDataModels = modelClass.addMethod();
+    private void addGetDataModelsImpl( final SourceGenerationContext context,
+                                       final JavaClassSource modelClass ) {
+        final MethodSource<JavaClassSource> getDataModels = modelClass.addMethod();
         getDataModels.setPublic()
                 .setName( "getDataModels" )
                 .setReturnType( "List<Object>" )
@@ -111,14 +113,14 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
                 .addAnnotation( Override.class );
     }
 
-    private String generateGetDataModelsBody( SourceGenerationContext context ) {
-        StringBuilder body = new StringBuilder();
+    private String generateGetDataModelsBody( final SourceGenerationContext context ) {
+        final StringBuilder body = new StringBuilder();
 
         body.append( "return Arrays.<Object>asList(" );
 
-        Iterator<DataHolder> iter = context.getFormDefinition().getDataHolders().iterator();
+        final Iterator<DataHolder> iter = context.getFormDefinition().getDataHolders().iterator();
         while ( iter.hasNext() ) {
-            DataHolder holder = iter.next();
+            final DataHolder holder = iter.next();
             body.append( holder.getName() );
             if ( iter.hasNext() ) {
                 body.append( ", " );
@@ -129,21 +131,21 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
         return body.toString();
     }
 
-    private void addConstructors( SourceGenerationContext context,
-                                  JavaClassSource modelClass ) {
+    private void addConstructors( final SourceGenerationContext context,
+                                  final JavaClassSource modelClass ) {
         constructorGenerator.addNoArgConstructor( modelClass );
         constructorGenerator.addFormModelConstructor( context, modelClass );
     }
 
-    private void addTypeAnnotations( SourceGenerationContext context,
-                                     JavaClassSource modelClass ) {
+    private void addTypeAnnotations( final SourceGenerationContext context,
+                                     final JavaClassSource modelClass ) {
         modelClass.addAnnotation( ERRAI_PORTABLE );
         modelClass.addAnnotation( ERRAI_BINDABLE );
         modelClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormModelName() );
     }
 
-    private void addTypeSignature( SourceGenerationContext context,
-                                   JavaClassSource modelClass ) {
+    private void addTypeSignature( final SourceGenerationContext context,
+                                   final JavaClassSource modelClass ) {
         modelClass.setPackage( context.getSharedPackage().getPackageName() )
                 .setPublic()
                 .setName( context.getFormModelName() );
@@ -151,9 +153,9 @@ public class RoasterFormModelSourceGenerator implements FormModelSourceGenerator
         modelClass.setSuperType( FORM_MODEL_CLASS );
     }
 
-    private void addProperties( SourceGenerationContext context, JavaClassSource modelClass ) {
-        for ( DataHolder dataHolder : context.getFormDefinition().getDataHolders() ) {
-            FieldSource<JavaClassSource> modelField = modelClass.addProperty( dataHolder.getType(),
+    private void addProperties( final SourceGenerationContext context, final JavaClassSource modelClass ) {
+        for ( final DataHolder dataHolder : context.getFormDefinition().getDataHolders() ) {
+            final FieldSource<JavaClassSource> modelField = modelClass.addProperty( dataHolder.getType(),
                                                                               dataHolder.getName() ).getField();
 
             if ( ArrayUtils.contains( BASIC_TYPES,

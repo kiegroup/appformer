@@ -22,10 +22,10 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Qualifier;
 
-import org.livespark.formmodeler.codegen.FormJavaTemplateSourceGenerator;
+import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 
 /**
- * Used for implementations of {@link FormJavaTemplateSourceGenerator} that generate a JAX-RS interface.
+ * Used for implementations of {@link JavaSourceGenerator} that generate a JAX-RS interface.
  */
 @Qualifier
 @Retention( RetentionPolicy.RUNTIME )

@@ -119,14 +119,14 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
             }
 
             @SuppressWarnings( "unchecked" )
-            private FormView<FormModel> getCreateInstanceForm() {
+            private FormView<M, FormModel> getCreateInstanceForm() {
                 // FIXME This bean is never destroyed
-                return (FormView<FormModel>) IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
+                return (FormView<M, FormModel>) IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
             }
 
             @Override
             public void createInstance() {
-                FormView<FormModel> form = getCreateInstanceForm();
+                FormView<M, FormModel> form = getCreateInstanceForm();
                 crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
 
                     @Override
@@ -141,10 +141,10 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
                 } );
             }
 
-            private FormView<FormModel> getEditInstanceForm( int index ) {
+            private FormView<M, FormModel> getEditInstanceForm( int index ) {
                 // FIXME This bean is never destroyed
                 @SuppressWarnings( "unchecked" )
-                FormView<FormModel> form = (FormView<FormModel>) IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
+                FormView<M, FormModel> form = (FormView<M, FormModel>) IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
 
                 M model = MultipleSubForm.this.model.get( index );
                 form.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
@@ -155,7 +155,7 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
 
             @Override
             public void editInstance( int index ) {
-                FormView<FormModel> form = getEditInstanceForm( index );
+                FormView<M, FormModel> form = getEditInstanceForm( index );
                 crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
 
                     @Override

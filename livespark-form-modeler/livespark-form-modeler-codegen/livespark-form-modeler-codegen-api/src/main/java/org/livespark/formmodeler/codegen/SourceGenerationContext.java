@@ -29,22 +29,23 @@ public class SourceGenerationContext {
     public static final String REST_SERVICE_SUFFIX = "RestService";
     public static final String ENTITY_SERVICE_SUFFIX = "EntityService";
     public static final String REST_IMPL_SUFFIX = "RestServiceImpl";
+    public static final String FLOW_PRODUCER_SUFFIX = "FlowProducer";
 
     private FormDefinition formDefinition;
-    private Path path;
-    private Package root;
-    private Package local;
-    private Package shared;
-    private Package server;
-    private List<FormDefinition> projectForms;
+    private final Path path;
+    private final Package root;
+    private final Package local;
+    private final Package shared;
+    private final Package server;
+    private final List<FormDefinition> projectForms;
 
-    public SourceGenerationContext( FormDefinition form,
-                                    Path path,
-                                    Package root,
-                                    Package local,
-                                    Package shared,
-                                    Package server,
-                                    List<FormDefinition> projectForms ) {
+    public SourceGenerationContext( final FormDefinition form,
+                                    final Path path,
+                                    final Package root,
+                                    final Package local,
+                                    final Package shared,
+                                    final Package server,
+                                    final List<FormDefinition> projectForms ) {
         this.path = path;
         this.root = root;
         this.local = local;
@@ -58,7 +59,7 @@ public class SourceGenerationContext {
         return formDefinition;
     }
 
-    public void setFormDefinition( FormDefinition formDefinition ) {
+    public void setFormDefinition( final FormDefinition formDefinition ) {
         this.formDefinition = formDefinition;
     }
 
@@ -84,6 +85,10 @@ public class SourceGenerationContext {
 
     public String getEntityServiceName() {
         return formDefinition.getName() + ENTITY_SERVICE_SUFFIX;
+    }
+
+    public String getFlowProducerName() {
+        return formDefinition.getName() + FLOW_PRODUCER_SUFFIX;
     }
 
     public String getEntityName() {

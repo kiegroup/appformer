@@ -16,28 +16,32 @@
 
 package org.livespark.formmodeler.rendering.client.view;
 
+import static org.livespark.flow.api.CrudOperation.CREATE;
+import static org.livespark.flow.api.CrudOperation.DELETE;
+import static org.livespark.flow.api.CrudOperation.UPDATE;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
 import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
-import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer;
+import org.livespark.flow.api.Command;
+import org.livespark.flow.api.CrudOperation;
+import org.livespark.flow.cdi.api.FlowInput;
+import org.livespark.flow.cdi.api.FlowOutput;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
-import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 
-public abstract class ListView<M, F extends FormModel> extends Composite {
+public abstract class ListView<M, F extends FormModel> implements IsElement {
 
     @Inject
     protected SyncBeanManager beanManager;
@@ -48,13 +52,36 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     @Inject
     protected CrudComponent<M, F> crudComponent;
 
+    @Inject
+    private FlowInput<List<M>> input;
+
+    @Inject
+    private FlowOutput<Command<CrudOperation, M>> output;
+
     protected List<M> crudItems;
 
     AsyncDataProvider<M> dataProvider;
 
-    protected final CrudActionsHelper<M> crudActionsHelper = new ListViewCrudActionsHelper();
+    protected CrudActionsHelper<M> crudActionsHelper = new ListViewCrudActionsHelper();
+
+    private boolean allowCreate = true;
+    private boolean allowEdit = true;
+    private boolean allowDelete = true;
+
+    public void setAllowCreate( final boolean allowCreate ) {
+        this.allowCreate = allowCreate;
+    }
+
+    public void setAllowEdit( final boolean allowEdit ) {
+        this.allowEdit = allowEdit;
+    }
+
+    public void setAllowDelete( final boolean allowDelete ) {
+        this.allowDelete = allowDelete;
+    }
 
     public void init() {
+        crudItems = input.get();
         dataProvider = new AsyncDataProvider<M>() {
             @Override
             protected void onRangeChanged( final HasData<M> hasData ) {
@@ -72,21 +99,7 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
         crudComponent.setEmbedded( false );
 
         content.add( crudComponent );
-
-        loadData( new RemoteCallback<List<M>>() {
-
-            @Override
-            public void callback( final List<M> response ) {
-                loadItems( response );
-            }
-        } );
-    }
-
-    /*
-     * Is overridable for testing.
-     */
-    protected <S extends LiveSparkRestService<M>, R> S createRestCaller( final RemoteCallback<R> callback ) {
-        return org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create( this.<S>getRemoteServiceClass(), callback );
+        loadItems( crudItems );
     }
 
     /*
@@ -94,10 +107,6 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
      */
     protected FlowPanel createFlowPanel() {
         return new FlowPanel();
-    }
-
-    protected void loadData( final RemoteCallback<List<M>> callback ) {
-        createRestCaller( callback ).load();
     }
 
     public void loadItems(final List<M> itemsToLoad) {
@@ -109,26 +118,19 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
         crudComponent.refresh();
     }
 
-    public FormView<F> getForm() {
-        final SyncBeanDef<? extends FormView<F>> beanDef = beanManager.lookupBean( getFormType() );
-        return beanDef.getInstance();
-    }
-
-    protected abstract Class<? extends FormView<F>> getFormType();
-
     public abstract String getListTitle();
 
     public abstract String getFormTitle();
 
     protected abstract String getFormId();
 
-    protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
-
     public abstract List<ColumnMeta<M>> getCrudColumns();
 
     public abstract M getModel( F formModel );
 
     public abstract F createFormModel( M model );
+
+    public abstract M newModel();
 
     protected class ListViewCrudActionsHelper implements CrudActionsHelper<M> {
         @Override
@@ -143,17 +145,17 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
 
         @Override
         public boolean isAllowCreate() {
-            return true;
+            return allowCreate;
         }
 
         @Override
         public boolean isAllowEdit() {
-            return true;
+            return allowEdit;
         }
 
         @Override
         public boolean isAllowDelete() {
-            return true;
+            return allowDelete;
         }
 
         @Override
@@ -167,66 +169,18 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
         }
 
         @Override
-        public void createInstance() {
-            FormView<F> form = getForm();
-            crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
-
-                @Override
-                public void onCancel() {
-                }
-
-                @Override
-                public void onAccept() {
-                    createRestCaller(
-                                     new RemoteCallback<M>() {
-                                         @Override
-                                         public void callback( final M response ) {
-                                             crudItems.add( response );
-                                             crudComponent.refresh();
-                                         }
-                                     } ).create( getModel( form.getModel() ) );
-                }
-            } );
-
-        }
-
-        @Override
-        public void editInstance( int index ) {
-            FormView<F> form = getForm();
-            form.setModel( createFormModel( crudItems.get( index ) ) );
-            form.pauseBinding();
-            crudComponent.displayForm( form, new FormDisplayer.FormDisplayerCallback() {
-                @Override
-                public void onCancel() {
-                }
-
-                @Override
-                public void onAccept() {
-                    createRestCaller(
-                                     new RemoteCallback<Boolean>() {
-                                         @Override
-                                         public void callback( final Boolean response ) {
-                                             form.resumeBinding( true );
-                                             crudComponent.refresh();
-                                         }
-                                     } ).update( getModel( form.getModel() ) );
-                }
-            } );
-        }
-
-        @Override
         public void deleteInstance( final int index ) {
-            final M model = crudItems.get( index );
-            createRestCaller(
-                    new RemoteCallback<Boolean>() {
-                        @Override
-                        public void callback( final Boolean response ) {
-                            if ( response ) {
-                                crudItems.remove( model );
-                                crudComponent.refresh();
-                            }
-                        }
-                    } ).delete( model );
+            output.submit( new Command<>( DELETE, crudItems.get( index ) ) );
+        }
+
+        @Override
+        public void createInstance() {
+            output.submit( new Command<>( CREATE, newModel() ) );
+        }
+
+        @Override
+        public void editInstance( final int index ) {
+            output.submit( new Command<>( UPDATE, crudItems.get( index ) ) );
         }
     };
 }

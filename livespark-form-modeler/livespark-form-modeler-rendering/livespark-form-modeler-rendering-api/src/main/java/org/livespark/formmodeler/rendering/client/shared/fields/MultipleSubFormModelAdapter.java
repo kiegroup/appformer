@@ -28,9 +28,9 @@ public interface MultipleSubFormModelAdapter <L extends List<M>, M, C extends Fo
 
     public List<ColumnMeta<M>> getCrudColumns();
 
-    public Class<? extends FormView<C>> getCreationForm();
+    public Class<? extends FormView<M, C>> getCreationForm();
 
-    public Class<? extends FormView<E>> getEditionForm();
+    public Class<? extends FormView<M, E>> getEditionForm();
 
     public E getEditionFormModel( M model );
 

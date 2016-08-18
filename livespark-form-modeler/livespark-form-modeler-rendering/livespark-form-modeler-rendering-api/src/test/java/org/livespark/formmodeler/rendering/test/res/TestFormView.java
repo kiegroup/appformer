@@ -18,6 +18,7 @@
 package org.livespark.formmodeler.rendering.test.res;
 
 import org.livespark.formmodeler.rendering.client.view.FormView;
+import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
 
-public abstract class TestFormView extends FormView<TestFormModel> {
+public abstract class TestFormView extends FormView<CrudModel, TestFormModel> {
 }

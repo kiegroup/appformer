@@ -16,6 +16,8 @@
 package org.livespark.formmodeler.rendering.client.shared.fields;
 
 import com.google.gwt.user.client.ui.SimplePanel;
+
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ui.client.widget.HasModel;
@@ -28,27 +30,29 @@ import org.livespark.formmodeler.rendering.client.view.FormView;
  */
 public class SubForm<M, F extends FormModel> extends SimplePanel implements HasModel<M> {
 
-    private SubFormModelAdapter<M, F> subFormModelAdapter;
-    private FormView<F> formView;
+    private final SubFormModelAdapter<M, F> subFormModelAdapter;
+    private FormView<M, F> formView;
     private M model;
 
-    public SubForm( SubFormModelAdapter<M, F> adapter ) {
+    public SubForm( final SubFormModelAdapter<M, F> adapter ) {
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
         subFormModelAdapter = adapter;
         initFormView();
     }
 
+    @Override
     public M getModel() {
         return model;
     }
 
-    public void setModel( M model ) {
+    @Override
+    public void setModel( final M model ) {
         this.model = model;
         formView.setModel( subFormModelAdapter.getFormModelForModel( model ) );
     }
 
-    public void setReadOnly(boolean readonly) {
+    public void setReadOnly(final boolean readonly) {
         if (formView != null) formView.setReadOnly( readonly );
     }
 
@@ -57,9 +61,9 @@ public class SubForm<M, F extends FormModel> extends SimplePanel implements HasM
     }
 
     protected void initFormView() {
-        SyncBeanDef<? extends FormView<F>> beanDef = IOC.getBeanManager().lookupBean( subFormModelAdapter.getFormViewType() );
+        final SyncBeanDef<? extends FormView<M, F>> beanDef = IOC.getBeanManager().lookupBean( subFormModelAdapter.getFormViewType() );
         this.formView = beanDef.getInstance();
-        this.add( formView );
+        this.add( ElementWrapperWidget.getWidget( formView.getElement() ) );
     }
 
 }
