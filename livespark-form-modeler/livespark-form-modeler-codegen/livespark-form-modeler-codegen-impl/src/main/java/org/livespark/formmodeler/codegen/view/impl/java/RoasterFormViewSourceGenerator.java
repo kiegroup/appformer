@@ -26,7 +26,6 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_ARRAYLIST_CLASSNAME;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_LIST_CLASSNAME;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LS_FLOW_COMPONENT;
 
 import java.util.List;
 
@@ -160,7 +159,6 @@ public class RoasterFormViewSourceGenerator extends RoasterViewSourceGenerator {
             final JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
         viewClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormViewName() );
-        viewClass.addAnnotation( LS_FLOW_COMPONENT );
     }
 
     @Override

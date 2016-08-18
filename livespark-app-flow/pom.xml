@@ -12,6 +12,5 @@
   <modules>
    <module>livespark-app-flow-api</module>
    <module>livespark-app-flow-client</module>
-   <module>livespark-app-flow-cdi-api</module>
   </modules>
 </project>

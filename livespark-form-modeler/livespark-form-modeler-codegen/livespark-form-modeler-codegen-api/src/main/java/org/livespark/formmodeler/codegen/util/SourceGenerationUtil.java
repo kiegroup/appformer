@@ -39,8 +39,6 @@ public interface SourceGenerationUtil {
     public static final String INJECT_NAMED = "javax.inject.Named";
     public static final String INJECT_INJECT = "javax.inject.Inject";
 
-    public static final String LS_FLOW_COMPONENT = "org.livespark.flow.cdi.api.FlowComponent";
-
     public static final String VALIDATION_VALID = "javax.validation.Valid";
     public static final String VALIDATION_NOT_NULL = "javax.validation.constraints.NotNull";
     public static final String HIBERNATE_NOT_EMPTY = "org.hibernate.validator.constraints.NotEmpty";

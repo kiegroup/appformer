@@ -20,7 +20,6 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.COLUMN
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.COLUMN_META_CLASS_NAME;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LS_FLOW_COMPONENT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,7 +221,6 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
 
     private void addAnnotations( final SourceGenerationContext context, final JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
-        viewClass.addAnnotation( LS_FLOW_COMPONENT );
     }
 
     private void addImports( final SourceGenerationContext context,

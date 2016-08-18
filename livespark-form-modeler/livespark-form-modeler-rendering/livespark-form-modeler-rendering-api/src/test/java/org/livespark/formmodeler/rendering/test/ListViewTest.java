@@ -20,22 +20,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
-import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer;
 import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
 import org.livespark.flow.api.Command;
 import org.livespark.flow.api.CrudOperation;
-import org.livespark.flow.cdi.api.FlowInput;
-import org.livespark.flow.cdi.api.FlowOutput;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestFormView;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
@@ -71,10 +68,7 @@ public class ListViewTest {
     private TestFormModel formModel;
 
     @Mock
-    private FlowInput<List<CrudModel>> input;
-
-    @Mock
-    private FlowOutput<Command<CrudOperation, CrudModel>> output;
+    private Consumer<Command<CrudOperation, CrudModel>> callback;
 
     @Captor
     private ArgumentCaptor<Command<CrudOperation, CrudModel>> outputCaptor;
@@ -84,24 +78,21 @@ public class ListViewTest {
     @Before
     public void init() {
         models.clear();
-        when( input.get() ).thenReturn( models );
         when( formView.validate() ).thenReturn( true );
         when( formView.getModel() ).thenReturn( formModel );
     }
 
     @Test
-    public void initLoadsDataOnce() throws Exception {
-        listView.init();
-        verify( input ).get();
-        verifyNoMoreInteractions( input );
+    public void startLoadsDataOnce() throws Exception {
+        listView.start( models, callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
     }
 
     @Test
-    public void initCallsCrudComponentInit() throws Exception {
-        listView.init();
+    public void startCallsCrudComponentInit() throws Exception {
+        listView.start( models, callback );
         verify( crudComponent, times( 1 ) ).init( listView.getCrudActionsHelper() );
         verify( crudComponent, times( 1 ) ).setEmbedded( false );
         verify( content, times( 1 ) ).add( crudComponent );
@@ -110,15 +101,14 @@ public class ListViewTest {
     @Test
     public void createInstanceSubmitsCreateCommand() {
         // Init view
-        listView.init();
-        verify( input ).get();
+        listView.start( models, callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
 
         // Call helper, verify command submitted
         listView.getCrudActionsHelper().createInstance();
-        verify( output ).submit( outputCaptor.capture() );
+        verify( callback ).accept( outputCaptor.capture() );
         final Command<CrudOperation, CrudModel> submitted = outputCaptor.getValue();
         assertEquals( CrudOperation.CREATE, submitted.commandType );
         assertNotNull( submitted.value );
@@ -131,15 +121,14 @@ public class ListViewTest {
         when( formModel.getModel() ).thenReturn( editModel );
 
         // Init view
-        listView.init();
-        verify( input ).get();
+        listView.start( models, callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
 
         // Call helper, verify command submitted
         listView.getCrudActionsHelper().editInstance( 0 );
-        verify( output ).submit( outputCaptor.capture() );
+        verify( callback ).accept( outputCaptor.capture() );
         final Command<CrudOperation, CrudModel> submitted = outputCaptor.getValue();
         assertEquals( CrudOperation.UPDATE, submitted.commandType );
         assertSame( formModel.getModel(), submitted.value );
@@ -152,15 +141,14 @@ public class ListViewTest {
         when( formModel.getModel() ).thenReturn( deleteModel );
 
         // Init view
-        listView.init();
-        verify( input ).get();
+        listView.start( models, callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
 
         // Call helper, verify command submitted
         listView.getCrudActionsHelper().deleteInstance( 0 );
-        verify( output ).submit( outputCaptor.capture() );
+        verify( callback ).accept( outputCaptor.capture() );
         final Command<CrudOperation, CrudModel> submitted = outputCaptor.getValue();
         assertEquals( CrudOperation.DELETE, submitted.commandType );
         assertSame( formModel.getModel(), submitted.value );
