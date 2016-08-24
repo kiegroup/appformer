@@ -33,6 +33,7 @@ import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
 import org.kie.workbench.common.forms.crud.client.component.mock.CrudModel;
 import org.livespark.flow.api.Command;
 import org.livespark.flow.api.CrudOperation;
+import org.livespark.formmodeler.rendering.client.flow.ListAsyncDataProviderAdapter;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestFormView;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
@@ -84,7 +85,7 @@ public class ListViewTest {
 
     @Test
     public void startLoadsDataOnce() throws Exception {
-        listView.start( models, callback );
+        listView.start( new ListAsyncDataProviderAdapter<>( models ), callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
@@ -92,7 +93,7 @@ public class ListViewTest {
 
     @Test
     public void startCallsCrudComponentInit() throws Exception {
-        listView.start( models, callback );
+        listView.start( new ListAsyncDataProviderAdapter<>( models ), callback );
         verify( crudComponent, times( 1 ) ).init( listView.getCrudActionsHelper() );
         verify( crudComponent, times( 1 ) ).setEmbedded( false );
         verify( content, times( 1 ) ).add( crudComponent );
@@ -101,7 +102,7 @@ public class ListViewTest {
     @Test
     public void createInstanceSubmitsCreateCommand() {
         // Init view
-        listView.start( models, callback );
+        listView.start( new ListAsyncDataProviderAdapter<>( models ), callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
@@ -121,7 +122,7 @@ public class ListViewTest {
         when( formModel.getModel() ).thenReturn( editModel );
 
         // Init view
-        listView.start( models, callback );
+        listView.start( new ListAsyncDataProviderAdapter<>( models ), callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();
@@ -141,7 +142,7 @@ public class ListViewTest {
         when( formModel.getModel() ).thenReturn( deleteModel );
 
         // Init view
-        listView.start( models, callback );
+        listView.start( new ListAsyncDataProviderAdapter<>( models ), callback );
         verify( crudComponent ).init( listView.getCrudActionsHelper() );
         verify( crudComponent ).setEmbedded( false );
         verify( crudComponent ).refresh();

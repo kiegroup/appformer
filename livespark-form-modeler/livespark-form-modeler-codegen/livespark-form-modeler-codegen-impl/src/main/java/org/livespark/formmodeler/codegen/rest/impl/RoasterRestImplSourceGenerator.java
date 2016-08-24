@@ -75,6 +75,7 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
                                      final JavaClassSource restImpl ) {
         addCreateMethodImpl( context, restImpl );
         addLoadMethodImpl( context, restImpl );
+        addRangedLoadMethodImpl( context, restImpl );
         addUpdateMethodImpl( context, restImpl );
         addDeleteMethodImpl( context, restImpl );
     }
@@ -147,6 +148,40 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
     protected void setLoadMethodSignature( final SourceGenerationContext context,
                                            final MethodSource<JavaClassSource> load ) {
         super.setLoadMethodSignature( context, load );
+        load.addAnnotation( Override.class );
+    }
+
+    private void addRangedLoadMethodImpl( final SourceGenerationContext context,
+                                          final JavaClassSource restImpl ) {
+        final MethodSource<JavaClassSource> load = restImpl.addMethod();
+        setRangedLoadMethodSignature( context, load );
+        setRangedLoadMethodBody( context, load );
+    }
+
+    private void setRangedLoadMethodBody( final SourceGenerationContext context,
+                            final MethodSource<JavaClassSource> load ) {
+        final StringBuilder body = new StringBuilder();
+        final List<DataHolder> dataHolders = context.getFormDefinition().getDataHolders();
+        if ( dataHolders.size() > 1 )
+            throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
+
+        body.append( "return " )
+                .append( ENTITY_SERVICE )
+                .append( ".list( " )
+                .append( context.getEntityName() )
+                .append( ".class, start, end );" );
+
+        load.setBody( body.toString() );
+    }
+
+    private void setRangedLoadMethodSignature( final SourceGenerationContext context,
+                                               final MethodSource<JavaClassSource> load ) {
+        load
+        .setName( "load" )
+        .setPublic()
+        .setReturnType( "List<" + context.getEntityName() + ">" );
+        load.addParameter( int.class, "start" );
+        load.addParameter( int.class, "end" );
         load.addAnnotation( Override.class );
     }
 

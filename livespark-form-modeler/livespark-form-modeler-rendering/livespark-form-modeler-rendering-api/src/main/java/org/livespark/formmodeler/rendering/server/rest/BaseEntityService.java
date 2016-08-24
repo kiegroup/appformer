@@ -56,6 +56,19 @@ public abstract class BaseEntityService {
         return em.createQuery( selectAllQuery ).getResultList();
     }
 
+    public <E> List<E> list( final Class<E> type, final int start, final int end ) {
+        final CriteriaQuery<E> selectAllQuery = createSelectQuery( type );
+
+        return em.createQuery( selectAllQuery ).setFirstResult( start ).setMaxResults( end - start + 1 ).getResultList();
+    }
+
+    private <E> CriteriaQuery<E> createSelectQuery( final Class<E> entityType ) {
+        final CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
+        final Root<E> rootEntity = criteriaQuery.from( entityType );
+
+        return criteriaQuery.select( rootEntity );
+    }
+
     private <E> CriteriaQuery<E> createSelectAllQuery( final Class<E> entityType ) {
         final CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
         final Root<E> rootEntity = criteriaQuery.from( entityType );
