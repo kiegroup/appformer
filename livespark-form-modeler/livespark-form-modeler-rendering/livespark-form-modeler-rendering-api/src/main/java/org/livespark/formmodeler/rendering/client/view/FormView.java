@@ -90,7 +90,7 @@ public abstract class FormView<MODEL, FORM_MODEL extends FormModel> implements I
 
     public boolean validate() {
 
-        final boolean isValid = validator.validate( binder.getModel() );
+        final boolean isValid = validator.validate( binder.getWorkingModel() );
 
         final boolean extraValidations = doExtraValidations();
 
