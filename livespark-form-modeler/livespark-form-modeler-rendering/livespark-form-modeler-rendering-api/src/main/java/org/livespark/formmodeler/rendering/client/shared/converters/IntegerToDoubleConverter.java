@@ -23,30 +23,30 @@ import org.jboss.errai.databinding.client.api.DefaultConverter;
  * @author Pere Fernandez <pefernan@redhat.com>
  */
 @DefaultConverter
-public class IntegerToDoubleConverter implements Converter<Double, Integer> {
+public class IntegerToDoubleConverter implements Converter<Integer, Double> {
     @Override
-    public Class<Double> getModelType() {
-        return Double.class;
-    }
-
-    @Override
-    public Class<Integer> getComponentType() {
+    public Class<Integer> getModelType() {
         return Integer.class;
     }
 
     @Override
-    public Double toModelValue( Integer aInteger ) {
-        if ( aInteger == null ) {
-            return null;
-        }
-        return aInteger.doubleValue();
+    public Class<Double> getComponentType() {
+        return Double.class;
     }
 
     @Override
-    public Integer toWidgetValue( Double aDouble ) {
+    public Integer toModelValue( Double aDouble ) {
         if ( aDouble == null ) {
             return null;
         }
         return aDouble.intValue();
+    }
+
+    @Override
+    public Double toWidgetValue( Integer integer ) {
+        if ( integer == null ) {
+            return null;
+        }
+        return integer.doubleValue();
     }
 }
