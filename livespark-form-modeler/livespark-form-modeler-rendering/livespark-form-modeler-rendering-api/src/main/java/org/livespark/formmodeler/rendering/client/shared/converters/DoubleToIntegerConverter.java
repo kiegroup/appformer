@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,31 +20,33 @@ import org.jboss.errai.databinding.client.api.Converter;
 import org.jboss.errai.databinding.client.api.DefaultConverter;
 
 /**
- * Created by pefernan on 6/12/15.
+ * @author Pere Fernandez <pefernan@redhat.com>
  */
-
 @DefaultConverter
-public class FloatConverter implements Converter<Float, String> {
-
+public class DoubleToIntegerConverter implements Converter<Double, Integer> {
     @Override
-    public Class<Float> getModelType() {
-        return Float.class;
+    public Class<Double> getModelType() {
+        return Double.class;
     }
 
     @Override
-    public Class<String> getComponentType() {
-        return String.class;
+    public Class<Integer> getComponentType() {
+        return Integer.class;
     }
 
     @Override
-    public Float toModelValue( String s ) {
-        if (s == null) return null;
-        return Float.parseFloat( s );
+    public Double toModelValue( Integer aInteger ) {
+        if ( aInteger == null ) {
+            return null;
+        }
+        return aInteger.doubleValue();
     }
 
     @Override
-    public String toWidgetValue( Float aFloat ) {
-        if (aFloat == null) return null;
-        return aFloat.toString();
+    public Integer toWidgetValue( Double aDouble ) {
+        if ( aDouble == null ) {
+            return null;
+        }
+        return aDouble.intValue();
     }
 }
