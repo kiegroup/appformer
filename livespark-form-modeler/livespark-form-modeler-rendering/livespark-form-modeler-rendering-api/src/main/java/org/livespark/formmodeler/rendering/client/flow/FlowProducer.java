@@ -20,7 +20,6 @@ package org.livespark.formmodeler.rendering.client.flow;
 import static java.util.Collections.singletonList;
 import static org.jboss.errai.common.client.dom.DOMUtil.removeFromParent;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -38,14 +37,14 @@ import org.livespark.flow.api.AppFlowFactory;
 import org.livespark.flow.api.Command;
 import org.livespark.flow.api.CrudOperation;
 import org.livespark.flow.api.Step;
-import org.livespark.flow.api.UIComponent;
 import org.livespark.flow.api.Unit;
-import org.livespark.flow.client.local.CDIFlowComponentFactory;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
 import org.livespark.formmodeler.rendering.client.view.StandaloneFormWrapper;
+import org.livespark.formmodeler.rendering.client.view.UIComponent;
+import org.livespark.formmodeler.rendering.client.view.UIComponentCleanUpWrapper;
 
 public abstract class FlowProducer<MODEL,
                                    FORM_MODEL extends FormModel,
@@ -55,9 +54,6 @@ public abstract class FlowProducer<MODEL,
 
     @Inject
     private AppFlowFactory flowFactory;
-
-    @Inject
-    private CDIFlowComponentFactory stepFactory;
 
     @Inject
     private Caller<REST_SERVICE> restService;
@@ -136,15 +132,13 @@ public abstract class FlowProducer<MODEL,
         };
     }
 
-    public Step<Unit, List<MODEL>> load() {
-        return new Step<Unit, List<MODEL>>() {
+    public Step<Unit, FlowDataProvider<MODEL>> load() {
+        return new Step<Unit, FlowDataProvider<MODEL>>() {
 
             @Override
             public void execute( final Unit input,
-                                 final Consumer<List<MODEL>> callback ) {
-                restService
-                    .call( (final List<MODEL> result) -> callback.accept( result ) )
-                    .load();
+                                 final Consumer<FlowDataProvider<MODEL>> callback ) {
+                callback.accept( new RestCallerDataProvider<>( restService ) );
             }
 
             @Override
@@ -155,20 +149,35 @@ public abstract class FlowProducer<MODEL,
     }
 
     public UIComponent<FORM_MODEL, Optional<FORM_MODEL>, IsElement> standaloneFormView() {
-        return stepFactory
-                .createUIComponent( () -> {
-                                        final StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW> wrapper = wrapperProvider.get();
-                                        wrapper.setFormView( formViewProvider.get() );
-                                        return wrapper;
-                                    },
-                                    view -> {
-                                        view.init();
-                                    },
-                                    view -> {
-                                        formViewProvider.destroy( view.getFormView() );
-                                        wrapperProvider.destroy( view );
-                                    },
-                                    "Form" );
+        final StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW> wrapper = wrapperProvider.get();
+        final FORM_VIEW formView = formViewProvider.get();
+
+        return new UIComponent<FORM_MODEL, Optional<FORM_MODEL>, IsElement>() {
+
+            @Override
+            public void start( final FORM_MODEL input,
+                               final Consumer<Optional<FORM_MODEL>> callback ) {
+                formView.setModel( input );
+                wrapper.start( formView, oFormView -> callback.accept( oFormView.map( view -> view.getModel() ) ) );
+            }
+
+            @Override
+            public void onHide() {
+                wrapper.onHide();
+                formViewProvider.destroy( wrapper.getFormView() );
+                wrapperProvider.destroy( wrapper );
+            }
+
+            @Override
+            public IsElement asComponent() {
+                return wrapper;
+            }
+
+            @Override
+            public String getName() {
+                return "Standalone Form View";
+            }
+        };
     }
 
     public Step<FORM_MODEL, Optional<FORM_MODEL>> displayModalForm() {
@@ -212,21 +221,15 @@ public abstract class FlowProducer<MODEL,
         };
     }
 
-    public UIComponent<List<MODEL>, Command<CrudOperation, MODEL>, LIST_VIEW> listView( final boolean allowCreate,
-                                                                                        final boolean allowEdit,
-                                                                                        final boolean allowDelete ) {
-        return stepFactory
-                .createUIComponent( () -> listViewProvider.get(),
-                                    view -> {
-                                        view.setAllowCreate( allowCreate );
-                                        view.setAllowEdit( allowEdit );
-                                        view.setAllowDelete( allowDelete );
-                                        view.init();
-                                    },
-                                    view -> {
-                                        listViewProvider.destroy( view );
-                                    },
-                                    "List" );
+    public UIComponent<FlowDataProvider<MODEL>, Command<CrudOperation, MODEL>, ListView<MODEL, FORM_MODEL>> listView( final boolean allowCreate,
+                                                                                                                       final boolean allowEdit,
+                                                                                                                       final boolean allowDelete ) {
+        final LIST_VIEW listView = listViewProvider.get();
+        listView.setAllowCreate( allowCreate );
+        listView.setAllowEdit( allowEdit );
+        listView.setAllowDelete( allowDelete );
+
+        return new UIComponentCleanUpWrapper<>( listView, listViewProvider::destroy );
     }
 
     public <INPUT, OUTPUT, COMPONENT extends IsElement> Step<INPUT, OUTPUT> displayMain( final UIComponent<INPUT, OUTPUT, COMPONENT> ui ) {
@@ -252,7 +255,7 @@ public abstract class FlowProducer<MODEL,
             public void execute( final OUTPUT input,
                                  final Consumer<OUTPUT> callback ) {
                 removeFromParent( ui.asComponent().getElement() );
-                ui.destroy();
+                ui.onHide();
                 callback.accept( input );
             }
 
@@ -301,32 +304,24 @@ public abstract class FlowProducer<MODEL,
     public AppFlow<Unit, Unit> crud() {
         return flowFactory
                 .buildFromStep( load() )
-                .transitionTo( initial -> {
-                    final UIComponent<List<MODEL>, Command<CrudOperation, MODEL>, LIST_VIEW> listView = listView( true, true, true );
+                .transitionTo( (final FlowDataProvider<MODEL> initial) -> {
+                    final UIComponent<FlowDataProvider<MODEL>, Command<CrudOperation, MODEL>, ListView<MODEL, FORM_MODEL>> listView = listView( true, true, true );
                     return flowFactory
                             .buildFromStep( displayMain( listView ) )
                             .transitionTo( this::crudTransition )
                             .loop( flowFactory,
-                                   ( list, oExecutedCommand ) ->
+                                   ( final FlowDataProvider<MODEL> provider,
+                                     final Optional<Command<CrudOperation, MODEL>> oExecutedCommand ) ->
                                        oExecutedCommand
                                            .map( executedCommand -> {
-                                                switch ( executedCommand.commandType ) {
-                                                    case CREATE :
-                                                        list.add( executedCommand.value );
-                                                        break;
-                                                    case DELETE :
-                                                        list.remove( executedCommand.value );
-                                                        break;
-                                                    case UPDATE :
-                                                        break;
-                                                    default :
-                                                        throw new RuntimeException( "Unrecognized command type " + executedCommand.commandType );
-                                                }
+                                               if ( executedCommand.commandType.equals( CrudOperation.DELETE ) ) {
+                                                   provider.clearCache();
+                                               }
 
-                                                return list;
-                                           } )
+                                               return provider;
+                                            } )
                                            .map( Optional::of )
-                                           .orElseGet( () -> Optional.of( list ) )
+                                           .orElseGet( () -> Optional.of( provider ) )
                                    )
                             .withInput( initial )
                             .toUnit();
@@ -372,11 +367,11 @@ public abstract class FlowProducer<MODEL,
 
     public AppFlow<Unit, Unit> review( final FORM_MODEL formModel ) {
         return flowFactory
-                .buildFromConstant( singletonList( formModelToModel( formModel ) ) )
-                .transitionTo( ( final List<MODEL> list ) -> {
-                    final UIComponent<List<MODEL>, Command<CrudOperation, MODEL>, LIST_VIEW> listView = listView( false, true, true );
+                .buildFromConstant( new ListAsyncDataProviderAdapter<>( singletonList( formModelToModel( formModel ) ) ) )
+                .transitionTo( (final ListAsyncDataProviderAdapter<MODEL> provider) -> {
+                    final UIComponent<FlowDataProvider<MODEL>, Command<CrudOperation, MODEL>, ListView<MODEL, FORM_MODEL>> listView = listView( false, true, true );
                     return flowFactory
-                        .buildFromConstant( list )
+                        .buildFromConstant( provider )
                         .andThen( displayMain( listView ) )
                         .andThen( hideMain( listView ) );
                 } )
@@ -407,10 +402,10 @@ public abstract class FlowProducer<MODEL,
     public AppFlow<Unit, Unit> view() {
         return flowFactory
                 .buildFromStep( load() )
-                .transitionTo( ( final List<MODEL> list ) -> {
-                    final UIComponent<List<MODEL>, Command<CrudOperation, MODEL>, LIST_VIEW> listView = listView( false, false, false );
+                .transitionTo( (final FlowDataProvider<MODEL> provider) -> {
+                    final UIComponent<FlowDataProvider<MODEL>, Command<CrudOperation, MODEL>, ListView<MODEL, FORM_MODEL>> listView = listView( false, false, false );
                     return flowFactory
-                            .buildFromConstant( list )
+                            .buildFromConstant( provider )
                             .andThen( displayMain( listView ) )
                             .andThen( hideMain( listView ) );
                 } )

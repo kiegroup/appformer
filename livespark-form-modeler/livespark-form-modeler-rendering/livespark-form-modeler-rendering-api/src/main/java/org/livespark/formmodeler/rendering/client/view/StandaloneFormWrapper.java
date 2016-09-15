@@ -20,6 +20,7 @@ package org.livespark.formmodeler.rendering.client.view;
 import static org.jboss.errai.common.client.dom.DOMUtil.removeAllElementChildren;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -31,22 +32,18 @@ import org.jboss.errai.ui.shared.TemplateWidgetMapper;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.livespark.flow.cdi.api.FlowInput;
-import org.livespark.flow.cdi.api.FlowOutput;
-import org.livespark.flow.cdi.api.FlowComponent;
-import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.IsFormView;
+import org.livespark.formmodeler.rendering.client.shared.FormModel;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Widget;
 
-@FlowComponent
 @Dependent
 @Templated
-public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel, FORM_VIEW extends FormView<MODEL, FORM_MODEL>> implements IsElement, IsFormView<FORM_MODEL> {
-    /*
-     * FIXME This should not be in this module, because it fails Errai IOC generation without the livespark-app-flow-client module.
-     */
+public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel, FORM_VIEW extends FormView<MODEL, FORM_MODEL>>
+    implements IsElement, IsFormView<FORM_MODEL>, UIComponent<FORM_VIEW, Optional<FORM_VIEW>, StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW>> {
+
+    private final Consumer<Optional<FORM_VIEW>> noOpCallback = o -> {};
 
     private FORM_VIEW formView;
 
@@ -62,15 +59,28 @@ public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel, FORM_VIE
     @DataField
     private Button cancel;
 
-    @Inject
-    private FlowInput<FORM_MODEL> input;
+    private Consumer<Optional<FORM_VIEW>> callback = noOpCallback;
 
-    @Inject
-    private FlowOutput<Optional<FORM_MODEL>> output;
-
-    public void init() {
-        setModel( input.get() );
+    @Override
+    public void start( final FORM_VIEW formView,
+                       final Consumer<Optional<FORM_VIEW>> callback ) {
+        this.callback = callback;
+        setFormView( formView );
         formView.pauseBinding();
+    }
+
+    @Override
+    public void onHide() {
+    }
+
+    @Override
+    public String getName() {
+        return "StandaloneFormWrapper";
+    }
+
+    @Override
+    public StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW> asComponent() {
+        return this;
     }
 
     public void setFormView( final FORM_VIEW formView ) {
@@ -83,14 +93,18 @@ public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel, FORM_VIE
     public void onAccept( final ClickEvent event ) {
         if ( formView.isValid() ) {
             formView.resumeBinding( true );
-            output.submit( Optional.of( getModel() ) );
+            final Consumer<Optional<FORM_VIEW>> callback = this.callback;
+            this.callback = noOpCallback;
+            callback.accept( Optional.of( formView ) );
         }
     }
 
     @EventHandler("cancel")
     public void onCancel( final ClickEvent event ) {
         formView.resumeBinding( false );
-        output.submit( Optional.empty() );
+        final Consumer<Optional<FORM_VIEW>> callback = this.callback;
+        this.callback = noOpCallback;
+        callback.accept( Optional.empty() );
     }
 
     @Override

@@ -6,7 +6,6 @@
   <inherits name="org.jboss.errai.ioc.Container"/>
   <inherits name="org.jboss.errai.enterprise.CDI"/>
   <inherits name="org.livespark.flow.AppFlowAPI"/>
-  <inherits name="org.livespark.flow.cdi.AppFlowAPI"/>
 
   <!-- Specify the paths for translatable code -->
   <source path="client"/>

@@ -15,25 +15,13 @@
  */
 
 
-package org.livespark.flow.cdi.api;
+package org.livespark.formmodeler.rendering.client.flow;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.google.gwt.view.client.AsyncDataProvider;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+public abstract class FlowDataProvider<M> extends AsyncDataProvider<M> {
 
-import org.livespark.flow.api.AppFlow;
-
-/**
- * <p>
- * Marks a type as being usable in an {@link AppFlow} via the CDI API. Types with this annotation can inject
- * {@link FlowInput} and {@link FlowOutput} instances.
- */
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface FlowComponent {
+    public abstract M getRowData(int index);
+    public abstract void clearCache();
 
 }

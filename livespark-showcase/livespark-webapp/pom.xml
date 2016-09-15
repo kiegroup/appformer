@@ -1120,11 +1120,6 @@
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-app-flow-cdi-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
       <artifactId>livespark-commons</artifactId>
     </dependency>
 
@@ -1358,7 +1353,6 @@
               <compileSourcesArtifact>org.livespark:livespark-form-modeler-dynamic-renderer-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-deployment</compileSourcesArtifact>
               <compileSourcesArtifact>org.livespark:livespark-app-flow-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.livespark:livespark-app-flow-cdi-api</compileSourcesArtifact>
               <!-- FIXME We shouldn't have to depend on this but do because of the StandaloneFormWrapper -->
               <compileSourcesArtifact>org.livespark:livespark-app-flow-client</compileSourcesArtifact>
 

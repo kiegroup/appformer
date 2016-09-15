@@ -15,9 +15,11 @@
  */
 
 
-package org.livespark.flow.api;
+package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.function.Consumer;
+
+import org.livespark.flow.api.Step;
 
 /**
  * <p>
@@ -62,9 +64,10 @@ public interface UIComponent<INPUT, OUTPUT, COMPONENT> {
     void start( INPUT input, Consumer<OUTPUT> callback );
 
     /**
-     * Signals that this component is no longer in service, and as such it may tear-down any resources necessary.
+     * A handle for UI components to perform clean-up after they have been hidden. Once this is
+     * called a UI component is out of service.
      */
-    void destroy();
+    void onHide();
 
     /**
      * @return The aspect of this component that is a displayable UI element (such as a GWT Widget or an HTML Element).

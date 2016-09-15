@@ -23,6 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 /**
@@ -37,6 +38,10 @@ public interface LiveSparkRestService<M> {
    @Path("load")
    @GET
    @Produces("application/json") List<M> load();
+
+   @Path("load/{start}/{end}")
+   @GET
+   @Produces("application/json") List<M> load( @PathParam( "start" ) int start, @PathParam( "end" ) int end);
 
    @Path("update")
    @PUT

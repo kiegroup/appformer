@@ -20,8 +20,8 @@ import static org.livespark.flow.api.CrudOperation.CREATE;
 import static org.livespark.flow.api.CrudOperation.DELETE;
 import static org.livespark.flow.api.CrudOperation.UPDATE;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -32,16 +32,15 @@ import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
 import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
 import org.livespark.flow.api.Command;
 import org.livespark.flow.api.CrudOperation;
-import org.livespark.flow.cdi.api.FlowInput;
-import org.livespark.flow.cdi.api.FlowOutput;
+import org.livespark.formmodeler.rendering.client.flow.FlowDataProvider;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
 
-public abstract class ListView<M, F extends FormModel> implements IsElement {
+public abstract class ListView<M, F extends FormModel> implements IsElement, UIComponent<FlowDataProvider<M>, Command<CrudOperation, M>, ListView<M, F>> {
+
 
     @Inject
     protected SyncBeanManager beanManager;
@@ -52,17 +51,12 @@ public abstract class ListView<M, F extends FormModel> implements IsElement {
     @Inject
     protected CrudComponent<M, F> crudComponent;
 
-    @Inject
-    private FlowInput<List<M>> input;
-
-    @Inject
-    private FlowOutput<Command<CrudOperation, M>> output;
-
-    protected List<M> crudItems;
-
-    AsyncDataProvider<M> dataProvider;
+    FlowDataProvider<M> dataProvider;
 
     protected CrudActionsHelper<M> crudActionsHelper = new ListViewCrudActionsHelper();
+
+    private final Consumer<Command<CrudOperation, M>> noOpCallback = o -> {};
+    private Consumer<Command<CrudOperation, M>> callback = noOpCallback;
 
     private boolean allowCreate = true;
     private boolean allowEdit = true;
@@ -80,26 +74,30 @@ public abstract class ListView<M, F extends FormModel> implements IsElement {
         this.allowDelete = allowDelete;
     }
 
-    public void init() {
-        crudItems = input.get();
-        dataProvider = new AsyncDataProvider<M>() {
-            @Override
-            protected void onRangeChanged( final HasData<M> hasData ) {
-                if ( crudItems != null ) {
-                    updateRowCount( crudItems.size(), true );
-                    updateRowData( 0, crudItems );
-                } else {
-                    updateRowCount( 0, true );
-                    updateRowData( 0, new ArrayList<M>() );
-                }
-            }
-        };
-
+    @Override
+    public void start( final FlowDataProvider<M> input,
+                       final Consumer<Command<CrudOperation, M>> callback ) {
+        this.callback = callback;
+        dataProvider = input;
         crudComponent.init( crudActionsHelper );
         crudComponent.setEmbedded( false );
 
         content.add( crudComponent );
-        loadItems( crudItems );
+        initCrud();
+    }
+
+    @Override
+    public void onHide() {
+    }
+
+    @Override
+    public ListView<M, F> asComponent() {
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return "ListView";
     }
 
     /*
@@ -107,11 +105,6 @@ public abstract class ListView<M, F extends FormModel> implements IsElement {
      */
     protected FlowPanel createFlowPanel() {
         return new FlowPanel();
-    }
-
-    public void loadItems(final List<M> itemsToLoad) {
-        this.crudItems = itemsToLoad;
-        initCrud();
     }
 
     protected void initCrud() {
@@ -170,17 +163,23 @@ public abstract class ListView<M, F extends FormModel> implements IsElement {
 
         @Override
         public void deleteInstance( final int index ) {
-            output.submit( new Command<>( DELETE, crudItems.get( index ) ) );
+            final Consumer<Command<CrudOperation, M>> callback = ListView.this.callback;
+            ListView.this.callback = ListView.this.noOpCallback;
+            callback.accept( new Command<>( DELETE, dataProvider.getRowData( index ) ) );
         }
 
         @Override
         public void createInstance() {
-            output.submit( new Command<>( CREATE, newModel() ) );
+            final Consumer<Command<CrudOperation, M>> callback = ListView.this.callback;
+            ListView.this.callback = ListView.this.noOpCallback;
+            callback.accept( new Command<>( CREATE, newModel() ) );
         }
 
         @Override
         public void editInstance( final int index ) {
-            output.submit( new Command<>( UPDATE, crudItems.get( index ) ) );
+            final Consumer<Command<CrudOperation, M>> callback = ListView.this.callback;
+            ListView.this.callback = ListView.this.noOpCallback;
+            callback.accept( new Command<>( UPDATE, dataProvider.getRowData( index ) ) );
         }
     };
 }
