@@ -16,24 +16,40 @@
 
 package org.livespark.formmodeler.rendering.server.rest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+
+import org.livespark.formmodeler.rendering.client.shared.query.QueryCriteria;
+import org.livespark.formmodeler.rendering.server.rest.query.QueryCriteriaGenerator;
 
 public abstract class BaseEntityService {
 
     @PersistenceContext
     protected EntityManager em;
 
+    @Inject
+    private Instance<QueryCriteriaGenerator<? extends QueryCriteria>> installedQueryCriteriaGenerators;
+
+    protected Map<Class<? extends QueryCriteria>, QueryCriteriaGenerator> queryCriteriaGenerators = new HashMap<>();
+
     protected CriteriaBuilder builder;
 
     @PostConstruct
     private void init() {
         builder = em.getCriteriaBuilder();
+        for( QueryCriteriaGenerator generator : installedQueryCriteriaGenerators ) {
+            queryCriteriaGenerators.put( generator.getSupportedType(), generator );
+        }
     }
 
     public <E> E create( final E entity ) {
@@ -51,29 +67,33 @@ public abstract class BaseEntityService {
     }
 
     public <E> List<E> listAll( final Class<E> type ) {
-        final CriteriaQuery<E> selectAllQuery = createSelectAllQuery( type );
+        final CriteriaQuery<E> selectAllQuery = createQuery( type, null );
 
         return em.createQuery( selectAllQuery ).getResultList();
     }
 
-    public <E> List<E> list( final Class<E> type, final int start, final int end ) {
-        final CriteriaQuery<E> selectAllQuery = createSelectQuery( type );
+    public <E> List<E> list( final Class<E> type, QueryCriteria criteria ) {
+        final CriteriaQuery<E> selectAllQuery = createQuery( type, criteria );
 
-        return em.createQuery( selectAllQuery ).setFirstResult( start ).setMaxResults( end - start + 1 ).getResultList();
+        return em.createQuery( selectAllQuery ).getResultList();
     }
 
-    private <E> CriteriaQuery<E> createSelectQuery( final Class<E> entityType ) {
+    private <E> CriteriaQuery<E> createQuery( Class<E> entityType, QueryCriteria criteria ) {
         final CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
         final Root<E> rootEntity = criteriaQuery.from( entityType );
 
+        if ( criteria != null ) {
+            QueryCriteriaGenerator generator = queryCriteriaGenerators.get( criteria.getClass() );
+
+            if ( generator != null ) {
+                Expression filter = generator.buildCriteriaExpression( criteria, builder, rootEntity );
+
+                if ( filter != null ) {
+                    criteriaQuery.where( filter );
+                }
+            }
+        }
+
         return criteriaQuery.select( rootEntity );
     }
-
-    private <E> CriteriaQuery<E> createSelectAllQuery( final Class<E> entityType ) {
-        final CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
-        final Root<E> rootEntity = criteriaQuery.from( entityType );
-
-        return criteriaQuery.select( rootEntity );
-    }
-
 }

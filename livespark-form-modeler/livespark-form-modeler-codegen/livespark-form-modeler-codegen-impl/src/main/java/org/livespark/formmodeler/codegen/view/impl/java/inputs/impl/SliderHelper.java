@@ -28,7 +28,7 @@ public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
             Patch class to avoid error descrived on: https://github.com/gwtproject/gwt/issues/9242
             TODO: change it when fixed
         */
-        return "org.kie.workbench.common.forms.common.widgets.slider.Slider";
+        return "org.kie.workbench.common.forms.common.rendering.client.widgets.slider.Slider";
     }
 
     @Override

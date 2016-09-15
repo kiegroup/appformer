@@ -26,9 +26,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-/**
- * Created by pefernan on 6/25/15.
- */
+import org.livespark.formmodeler.rendering.client.shared.query.QueryCriteria;
+
 public interface LiveSparkRestService<M> {
 
    @POST
@@ -42,6 +41,12 @@ public interface LiveSparkRestService<M> {
    @Path("load/{start}/{end}")
    @GET
    @Produces("application/json") List<M> load( @PathParam( "start" ) int start, @PathParam( "end" ) int end);
+
+   @Path("list")
+   @POST
+   @Consumes("application/json")
+   @Produces("application/json") List<M> list( QueryCriteria criteria );
+
 
    @Path("update")
    @PUT

@@ -34,7 +34,7 @@ public class PictureHelper extends AbstractInputCreatorHelper<PictureFieldDefini
 
     @Override
     public String getInputWidget( PictureFieldDefinition fieldDefinition ) {
-        return "org.kie.workbench.common.forms.common.client.widgets.picture.widget.PictureInput";
+        return "org.kie.workbench.common.forms.common.rendering.client.widgets.picture.PictureInput";
     }
 
     @Override

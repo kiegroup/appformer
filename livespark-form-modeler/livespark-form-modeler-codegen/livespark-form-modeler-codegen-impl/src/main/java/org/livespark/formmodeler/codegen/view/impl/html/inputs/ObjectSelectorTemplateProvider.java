@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,24 @@ package org.livespark.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.ListBoxBase;
+import org.kie.workbench.common.forms.model.impl.relations.ObjectSelectorFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
 @Dependent
-public class ListBoxTemplateProvider extends AbstractTemplateProvider {
+public class ObjectSelectorTemplateProvider extends AbstractTemplateProvider {
 
     @Inject
-    public ListBoxTemplateProvider( FieldManager fieldManager ) {
+    public ObjectSelectorTemplateProvider( FieldManager fieldManager ) {
         super( fieldManager );
     }
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { ListBoxBase.CODE };
+        return new String[] { ObjectSelectorFieldDefinition.CODE};
     }
 
     @Override
     protected String getTemplateForFieldTypeCode( String fieldCode ) {
-        return "/org/livespark/formmodeler/codegen/view/impl/html/templates/listbox.mv";
+        return "/org/livespark/formmodeler/codegen/view/impl/html/templates/objectselector.mv";
     }
 }

@@ -22,6 +22,7 @@ import org.jboss.forge.roaster.model.source.JavaSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.rendering.client.shared.query.QueryCriteria;
 
 public abstract class RoasterRestServiceSourceGenerator<O extends JavaSource<O>> implements JavaSourceGenerator {
 
@@ -55,6 +56,14 @@ public abstract class RoasterRestServiceSourceGenerator<O extends JavaSource<O>>
               .setReturnType( Boolean.class );
         // TODO The parameter should be a unique identifier, not the entire model.
         delete.addParameter( context.getEntityName(), "model" );
+    }
+
+    protected void setListMethodSignature( SourceGenerationContext context,
+                                             MethodSource<O> list ) {
+        list.setName( "list" )
+                .setPublic()
+                .setReturnType( "List<" + context.getEntityName() + ">" )
+                .addParameter( QueryCriteria.class, "criteria" );
     }
 
     protected abstract String getPackageName( SourceGenerationContext context );

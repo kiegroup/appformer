@@ -66,13 +66,18 @@
     </dependency>
 
     <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-widgets-table</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-forms-crud-component</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
-      <artifactId>kie-wb-common-forms-common-widgets</artifactId>
+      <artifactId>kie-wb-common-forms-common-rendering-client</artifactId>
     </dependency>
 
     <dependency>
