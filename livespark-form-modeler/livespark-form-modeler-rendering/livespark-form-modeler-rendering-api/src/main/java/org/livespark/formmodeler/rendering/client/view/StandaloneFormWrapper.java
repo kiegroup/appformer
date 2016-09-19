@@ -33,6 +33,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.IsFormView;
+import org.livespark.flow.api.UIComponent;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 
 import com.google.gwt.event.dom.client.ClickEvent;

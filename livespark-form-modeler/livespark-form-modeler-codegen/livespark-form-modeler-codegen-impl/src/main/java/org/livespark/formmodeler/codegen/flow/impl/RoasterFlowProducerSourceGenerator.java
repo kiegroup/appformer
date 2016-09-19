@@ -25,6 +25,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
@@ -75,7 +76,8 @@ public class RoasterFlowProducerSourceGenerator implements JavaSourceGenerator {
                                .append( ", " )
                                .append( context.getRestServiceName() )
                                .append( '>' )
-                               .toString() );
+                               .toString() )
+            .addAnnotation( EntryPoint.class );
     }
 
     private static void implementProducerMethods( final JavaClassSource producerClass,
@@ -153,6 +155,30 @@ public class RoasterFlowProducerSourceGenerator implements JavaSourceGenerator {
         modelToFormModel( producerClass, context );
         formModelToModel( producerClass, context );
         newModel( producerClass, context );
+        getModelType( producerClass, context );
+        getFormModelType( producerClass, context );
+    }
+
+    private static void getFormModelType( final JavaClassSource producerClass,
+                                          final SourceGenerationContext context ) {
+        producerClass
+        .addMethod()
+        .setName( "getFormModelType" )
+        .setPublic()
+        .setBody( "return " + context.getFormModelName() + ".class;" )
+        .setReturnType( "Class<" + context.getFormModelName() + ">" )
+        .addAnnotation( Override.class );
+    }
+
+    private static void getModelType( final JavaClassSource producerClass,
+                                      final SourceGenerationContext context ) {
+        producerClass
+        .addMethod()
+        .setName( "getModelType" )
+        .setPublic()
+        .setBody( "return " + context.getEntityName() + ".class;" )
+        .setReturnType( "Class<" + context.getEntityName() + ">" )
+        .addAnnotation( Override.class );
     }
 
     private static void newModel( final JavaClassSource producerClass,

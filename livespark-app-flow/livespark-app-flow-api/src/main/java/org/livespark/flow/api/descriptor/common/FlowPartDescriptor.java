@@ -15,20 +15,18 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.api.descriptor.common;
 
-import java.util.Optional;
+import org.livespark.flow.api.AppFlow;
+import org.livespark.flow.api.descriptor.type.Type;
 
-abstract class FlowNode<INPUT, OUTPUT> {
+/**
+ * <p>
+ * Base interface for descriptors of parts of an {@link AppFlow}.
+ */
+public interface FlowPartDescriptor {
 
-    Optional<FlowNode<OUTPUT, ?>> next;
-    Optional<FlowNode<? , INPUT>> prev;
-
-    FlowNode( final Optional<FlowNode<?, INPUT>> prev, final Optional<FlowNode<OUTPUT, ?>> next ) {
-        this.prev = prev;
-        this.next = next;
-    }
-
-    abstract FlowNode<INPUT, OUTPUT> copy();
+    Type getInputType();
+    Type getOutputType();
 
 }

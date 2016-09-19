@@ -15,7 +15,7 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.impl;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;

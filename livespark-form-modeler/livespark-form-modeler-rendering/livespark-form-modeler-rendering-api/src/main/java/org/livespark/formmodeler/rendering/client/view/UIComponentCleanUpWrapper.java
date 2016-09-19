@@ -19,6 +19,8 @@ package org.livespark.formmodeler.rendering.client.view;
 
 import java.util.function.Consumer;
 
+import org.livespark.flow.api.UIComponent;
+
 public class UIComponentCleanUpWrapper<INPUT, OUTPUT, COMPONENT, WRAPPED extends UIComponent<INPUT, OUTPUT, COMPONENT>>
     implements
     UIComponent<INPUT, OUTPUT, COMPONENT> {
