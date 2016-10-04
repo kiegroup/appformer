@@ -78,6 +78,7 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
         addRangedLoadMethodImpl( context, restImpl );
         addUpdateMethodImpl( context, restImpl );
         addDeleteMethodImpl( context, restImpl );
+        addListMethodImpl( context, restImpl );
     }
 
     private void addUpdateMethodImpl( final SourceGenerationContext context,
@@ -116,6 +117,36 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
                                              final MethodSource<JavaClassSource> delete ) {
         super.setDeleteMethodSignature( context, delete );
         delete.addAnnotation( Override.class );
+    }
+
+    private void addListMethodImpl( final SourceGenerationContext context,
+                                    final JavaClassSource restImpl ) {
+        final MethodSource<JavaClassSource> list = restImpl.addMethod();
+        setListMethodSignature( context, list );
+        setListMethodBody( context, list );
+    }
+
+    @Override
+    protected void setListMethodSignature( final SourceGenerationContext context,
+                                             final MethodSource<JavaClassSource> list ) {
+        super.setListMethodSignature( context, list );
+        list.addAnnotation( Override.class );
+    }
+
+    private void setListMethodBody( final SourceGenerationContext context,
+                                      final MethodSource<JavaClassSource> list ) {
+        final StringBuilder body = new StringBuilder();
+        final List<DataHolder> dataHolders = context.getFormDefinition().getDataHolders();
+        if ( dataHolders.size() > 1 )
+            throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
+
+        body.append( "return " )
+                .append( ENTITY_SERVICE )
+                .append( ".list( " )
+                .append( context.getEntityName() )
+                .append( ".class, criteria );" );
+
+        list.setBody( body.toString() );
     }
 
     private void addLoadMethodImpl( final SourceGenerationContext context,

@@ -32,12 +32,10 @@ import org.kie.workbench.common.forms.model.impl.basic.selectors.DefaultSelector
 import org.kie.workbench.common.forms.model.impl.basic.selectors.StringSelectorOption;
 import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.EnumListBoxFieldDefinition;
 import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.StringListBoxFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
-import static org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper.LISTBOX_RENDERER_SUFFIX;
-import static org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper.LOAD_LIST_VALUES_METHOD_NAME;
+import static org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper.*;
 
 @RunWith( MockitoJUnitRunner.class )
 public class SelectorsHelperTest extends AbstractInputHelperTest {

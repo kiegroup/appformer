@@ -174,7 +174,7 @@ public class RoasterFormViewSourceGenerator extends RoasterViewSourceGenerator {
     @Override
     protected void addExtraFields( final InputCreatorHelper helper, final SourceGenerationContext context, final JavaClassSource viewClass, final FieldDefinition fieldDefinition ) {
         if ( helper instanceof RequiresExtraFields ) {
-            ((RequiresExtraFields)helper).addExtraFields( viewClass, fieldDefinition );
+            ((RequiresExtraFields)helper).addExtraFields( viewClass, fieldDefinition, context );
         }
     }
 

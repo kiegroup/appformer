@@ -136,7 +136,9 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGrou
     }
 
     @Override
-    public void addExtraFields( JavaClassSource viewClass, StringRadioGroupFieldDefinition fieldDefinition ) {
+    public void addExtraFields( JavaClassSource viewClass,
+                                StringRadioGroupFieldDefinition fieldDefinition,
+                                SourceGenerationContext context ) {
         String inputClassName;
         String inputFullClassName;
 

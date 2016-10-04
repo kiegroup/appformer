@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.livespark.formmodeler.codegen.view.impl.java;
+package org.livespark.formmodeler.rendering.server.rest.query;
 
-import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 
-public interface RequiresExtraFields<F extends FieldDefinition> {
+import org.livespark.formmodeler.rendering.client.shared.query.QueryCriteria;
 
-    void addExtraFields( JavaClassSource viewClass, F fieldDefinition, SourceGenerationContext context );
+public interface QueryCriteriaGenerator<T extends QueryCriteria> {
 
-    String getExtraReadOnlyCode( F fieldDefinition, String readonlyParam );
+    public Class<? extends QueryCriteria> getSupportedType();
+
+    public Expression buildCriteriaExpression( T criteria, CriteriaBuilder builder, Root rootEntity );
 }

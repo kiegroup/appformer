@@ -118,7 +118,9 @@ public class ListBoxHelper<T extends  SelectorOption> extends AbstractInputCreat
     }
 
     @Override
-    public void addExtraFields( JavaClassSource viewClass, ListBoxBase fieldDefinition ) {
+    public void addExtraFields( JavaClassSource viewClass,
+                                ListBoxBase fieldDefinition,
+                                SourceGenerationContext context ) {
         viewClass.addImport( LISTBOX_STRING_RENDERER_CLASSNAME );
         PropertySource<JavaClassSource> property = viewClass.addProperty( LISTBOX_STRING_RENDERER_NAME, fieldDefinition.getName() + LISTBOX_RENDERER_SUFFIX );
 

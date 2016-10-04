@@ -16,35 +16,27 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import javax.inject.Inject;
-
-import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
+import org.jboss.forge.roaster.model.source.PropertySource;
 import org.kie.workbench.common.forms.model.impl.basic.selectors.SelectorOption;
 import org.kie.workbench.common.forms.model.impl.relations.ObjectSelectorFieldDefinition;
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
+import org.livespark.formmodeler.codegen.view.impl.java.RequiresExtraFields;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
 
 public class ObjectSelectorBoxHelper<T extends  SelectorOption> extends AbstractInputCreatorHelper<ObjectSelectorFieldDefinition>
-        implements RequiresCustomCode<ObjectSelectorFieldDefinition> {
+        implements RequiresExtraFields<ObjectSelectorFieldDefinition>, RequiresCustomCode<ObjectSelectorFieldDefinition> {
 
 
-    public static final String LISTBOX_RENDERER_CLASSNAME = "org.livespark.formmodeler.rendering.client.view.util.ObjectValuesRenderer";
+    public static final String FIELD_MASK_SUFFIX = "_fieldMask";
 
-    public static final String REMOTE_VALUES_PROVIDER =  "org.livespark.formmodeler.rendering.client.view.util.RemoteListBoxValuesProvider";
-    public static final String INSTANCE_PROVIDER_SUFFIX = "Provider";
+    public static final String WIDGET_CLASSNAME = "org.kie.workbench.common.forms.common.rendering.client.widgets.typeahead.BindableTypeAhead";
 
-    public static final String LOAD_LIST_VALUES_METHOD_NAME = "loadListValues_";
-
-    public static final String WIDGET = "org.gwtbootstrap3.client.ui.ValueListBox";
-
-    @Override
-    public boolean isInputInjectable() {
-        return false;
-    }
+    public static final String DATASET_CLASSNAME = "org.livespark.formmodeler.rendering.client.widgets.typeahead.LiveSparkStaticDataset";
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -53,79 +45,7 @@ public class ObjectSelectorBoxHelper<T extends  SelectorOption> extends Abstract
 
     @Override
     public String getInputWidget( ObjectSelectorFieldDefinition fieldDefinition ) {
-        return getClassName( WIDGET ) + "<" + getClassName( fieldDefinition.getStandaloneClassName() ) + ">";
-    }
-
-    @Override
-    public String getInputInitLiteral( SourceGenerationContext context, ObjectSelectorFieldDefinition fieldDefinition ) {
-
-        String mask = "";
-
-        if ( isEvaluableMask( fieldDefinition.getMask() ) ) {
-            mask = "\"" + fieldDefinition.getMask() + "\"";
-        }
-
-        StringBuffer buffer = new StringBuffer( "new ValueListBox<" )
-                .append( getClassName( fieldDefinition.getStandaloneClassName() ) )
-                .append( ">( new " )
-                .append( getClassName( LISTBOX_RENDERER_CLASSNAME ) )
-                .append( "( " )
-                .append( mask )
-                .append( " ) );" );
-
-        return buffer.toString();
-    }
-
-    @Override
-    public void addCustomCode( ObjectSelectorFieldDefinition fieldDefinition, SourceGenerationContext context, JavaClassSource viewClass ) {
-
-        String typeName = getClassName( fieldDefinition.getStandaloneClassName() );
-
-        viewClass.addImport( WIDGET );
-        viewClass.addImport( LISTBOX_RENDERER_CLASSNAME );
-        viewClass.addImport( fieldDefinition.getStandaloneClassName() );
-
-        String dataProvider = typeName + INSTANCE_PROVIDER_SUFFIX;
-
-        if ( !viewClass.hasNestedType( dataProvider ) ) {
-            String sharedPackage = context.getSharedPackage().getPackageName();
-
-            String restServiceName = typeName + SourceGenerationContext.REST_SERVICE_SUFFIX;
-
-            viewClass.addImport( REMOTE_VALUES_PROVIDER );
-            viewClass.addImport( sharedPackage + "." + restServiceName );
-
-            JavaClassSource instanceProvider = Roaster.create( JavaClassSource.class );
-
-            instanceProvider.setName( dataProvider );
-            instanceProvider.setSuperType( getClassName( REMOTE_VALUES_PROVIDER ) + "<" + typeName + ">" );
-
-            instanceProvider.addMethod()
-                    .setName(  "getRemoteServiceClass" )
-                    .setProtected()
-                    .setReturnType( "Class<" + restServiceName + ">" )
-                    .setBody( "return " + restServiceName + ".class;" )
-                    .addAnnotation( Override.class);
-
-            viewClass.addNestedType( instanceProvider ).setProtected();
-        }
-
-        StringBuffer body = new StringBuffer();
-
-        body.append( "new " ).append( dataProvider ).append( "().loadValues( " ).append( fieldDefinition.getName() ).append( " );" );
-
-        String initListMethodName = LOAD_LIST_VALUES_METHOD_NAME + fieldDefinition.getName();
-
-        viewClass.addMethod()
-                .setName( initListMethodName )
-                .setReturnTypeVoid()
-                .setProtected()
-                .setBody( body.toString() );
-
-        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
-        body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
-        body.append( initListMethodName ).append( "();" );
-        beforeDisplayMethod.setBody( body.toString() );
+        return getClassName( WIDGET_CLASSNAME ) + "<" + getClassName( fieldDefinition.getStandaloneClassName() ) + ">";
     }
 
     protected boolean isEvaluableMask( String mask ) {
@@ -136,9 +56,64 @@ public class ObjectSelectorBoxHelper<T extends  SelectorOption> extends Abstract
         return countOpeners != 0 && countOpeners == countClosers;
     }
 
+    protected String getMaskFieldName( ObjectSelectorFieldDefinition fieldDefinition ) {
+        return fieldDefinition.getName() + FIELD_MASK_SUFFIX;
+    }
+
     @Override
-    public String getReadonlyMethod( String fieldName, String readonlyParam ) {
-        return fieldName + ".setEnabled( !" + readonlyParam + " );";
+    public void addCustomCode( ObjectSelectorFieldDefinition fieldDefinition,
+                               SourceGenerationContext context,
+                               JavaClassSource viewClass ) {
+
+        if ( !isEvaluableMask( fieldDefinition.getMask() ) ) {
+            throw new IllegalArgumentException( "Unsupported mask format" );
+        }
+
+        viewClass.addImport( DATASET_CLASSNAME );
+        viewClass.addImport( WIDGET_CLASSNAME );
+        viewClass.addImport( fieldDefinition.getStandaloneClassName() );
+
+        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
+        StringBuffer body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
+
+
+        body.append( fieldDefinition.getName() )
+                .append( ".init( " )
+                .append( getMaskFieldName( fieldDefinition ) )
+                .append( ", new " )
+                .append( getClassName( DATASET_CLASSNAME ) )
+                .append( "( " )
+                .append( getMaskFieldName( fieldDefinition ) )
+                .append( ", " )
+                .append( getClassName( fieldDefinition.getStandaloneClassName() ) )
+                .append( SourceGenerationContext.REST_SERVICE_SUFFIX )
+                .append( ".class ) );" );
+
+        beforeDisplayMethod.setBody( body.toString() );
+
+    }
+
+    @Override
+    public void addExtraFields( JavaClassSource viewClass,
+                                ObjectSelectorFieldDefinition fieldDefinition,
+                                SourceGenerationContext context ) {
+
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + getClassName( fieldDefinition.getStandaloneClassName() ) + context.REST_SERVICE_SUFFIX );
+
+        PropertySource<JavaClassSource> property = viewClass.addProperty( String.class.getName(), getMaskFieldName( fieldDefinition ) );
+
+        FieldSource<JavaClassSource> field = property.getField();
+        field.setPrivate();
+        field.setFinal( true );
+        field.setLiteralInitializer( "\"" + fieldDefinition.getMask() + "\";" );
+
+        property.removeAccessor();
+        property.removeMutator();
+    }
+
+    @Override
+    public String getExtraReadOnlyCode( ObjectSelectorFieldDefinition fieldDefinition, String readonlyParam ) {
+        return "";
     }
 
     private String getClassName( String qualifiedClassName ) {
