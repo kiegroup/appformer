@@ -32,6 +32,7 @@ import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
 import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
 import org.livespark.flow.api.Command;
 import org.livespark.flow.api.CrudOperation;
+import org.livespark.flow.api.UIComponent;
 import org.livespark.formmodeler.rendering.client.flow.FlowDataProvider;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;

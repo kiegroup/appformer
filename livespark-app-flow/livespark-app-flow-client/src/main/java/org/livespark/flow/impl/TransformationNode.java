@@ -15,37 +15,34 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.impl;
 
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.livespark.flow.api.AppFlow;
-import org.livespark.flow.api.Unit;
+final class TransformationNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
 
-final class TransitionNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
+    final Function<INPUT, OUTPUT> transformation;
 
-    Function<INPUT, AppFlow<Unit, OUTPUT>> transition;
-
-    TransitionNode( final Function<INPUT, AppFlow<Unit, OUTPUT>> transition ) {
-        this( transition, Optional.empty(), Optional.empty() );
+    TransformationNode( final Function<INPUT, OUTPUT> transformation ) {
+        this( transformation, Optional.empty(), Optional.empty() );
     }
 
-    TransitionNode( final Function<INPUT, AppFlow<Unit, OUTPUT>> transition,
-                    final Optional<FlowNode<?, INPUT>> prev,
-                    final Optional<FlowNode<OUTPUT, ? >> next ) {
+    TransformationNode( final Function<INPUT, OUTPUT> transformation,
+                        final Optional<FlowNode<?, INPUT>> prev,
+                        final Optional<FlowNode<OUTPUT, ? >> next ) {
         super( prev, next );
-        this.transition = transition;
+        this.transformation = transformation;
     }
 
     @Override
     FlowNode<INPUT, OUTPUT> copy() {
-        return new TransitionNode<>( transition, prev, next );
+        return new TransformationNode<>( transformation, prev, next );
     }
 
     @Override
     public String toString() {
-        return "TransitionNode(transition=" + transition + ")";
+        return "TransformationNode(transformation=" + transformation + ")";
     }
 
 }

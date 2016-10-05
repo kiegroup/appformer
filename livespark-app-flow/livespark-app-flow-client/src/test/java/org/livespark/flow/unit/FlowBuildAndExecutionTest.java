@@ -19,7 +19,7 @@ package org.livespark.flow.unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.livespark.flow.client.local.StepUtil.wrap;
+import static org.livespark.flow.impl.StepUtil.wrap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,9 @@ import org.livespark.flow.api.AppFlowExecutor;
 import org.livespark.flow.api.AppFlowFactory;
 import org.livespark.flow.api.Step;
 import org.livespark.flow.api.Unit;
-import org.livespark.flow.client.local.FlowContext;
-import org.livespark.flow.client.local.RuntimeAppFlowExecutor;
-import org.livespark.flow.client.local.RuntimeAppFlowFactory;
+import org.livespark.flow.impl.FlowContext;
+import org.livespark.flow.impl.RuntimeAppFlowExecutor;
+import org.livespark.flow.impl.RuntimeAppFlowFactory;
 import org.livespark.flow.util.Ref;
 
 public class FlowBuildAndExecutionTest {

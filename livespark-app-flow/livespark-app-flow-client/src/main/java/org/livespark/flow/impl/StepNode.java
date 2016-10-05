@@ -15,34 +15,35 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.impl;
 
 import java.util.Optional;
-import java.util.function.Function;
 
-final class TransformationNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
+import org.livespark.flow.api.Step;
 
-    final Function<INPUT, OUTPUT> transformation;
+final class StepNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
 
-    TransformationNode( final Function<INPUT, OUTPUT> transformation ) {
-        this( transformation, Optional.empty(), Optional.empty() );
+    final Step<INPUT, OUTPUT> step;
+
+    StepNode( final Step<INPUT, OUTPUT> step ) {
+        this( step, Optional.empty(), Optional.empty() );
     }
 
-    TransformationNode( final Function<INPUT, OUTPUT> transformation,
-                        final Optional<FlowNode<?, INPUT>> prev,
-                        final Optional<FlowNode<OUTPUT, ? >> next ) {
+    StepNode( final Step<INPUT, OUTPUT> step,
+              final Optional<FlowNode<?, INPUT>> prev,
+              final Optional<FlowNode<OUTPUT, ? >> next ) {
         super( prev, next );
-        this.transformation = transformation;
+        this.step = step;
     }
 
     @Override
     FlowNode<INPUT, OUTPUT> copy() {
-        return new TransformationNode<>( transformation, prev, next );
+        return new StepNode<>( step, prev, next );
     }
 
     @Override
     public String toString() {
-        return "TransformationNode(transformation=" + transformation + ")";
+        return "Step(name=" + step.getName() + ", hashCode=" + hashCode() + ")";
     }
 
 }

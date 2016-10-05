@@ -15,35 +15,37 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.impl;
 
 import java.util.Optional;
+import java.util.function.Function;
 
-import org.livespark.flow.api.Step;
+import org.livespark.flow.api.AppFlow;
+import org.livespark.flow.api.Unit;
 
-final class StepNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
+final class TransitionNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
 
-    final Step<INPUT, OUTPUT> step;
+    Function<INPUT, AppFlow<Unit, OUTPUT>> transition;
 
-    StepNode( final Step<INPUT, OUTPUT> step ) {
-        this( step, Optional.empty(), Optional.empty() );
+    TransitionNode( final Function<INPUT, AppFlow<Unit, OUTPUT>> transition ) {
+        this( transition, Optional.empty(), Optional.empty() );
     }
 
-    StepNode( final Step<INPUT, OUTPUT> step,
-              final Optional<FlowNode<?, INPUT>> prev,
-              final Optional<FlowNode<OUTPUT, ? >> next ) {
+    TransitionNode( final Function<INPUT, AppFlow<Unit, OUTPUT>> transition,
+                    final Optional<FlowNode<?, INPUT>> prev,
+                    final Optional<FlowNode<OUTPUT, ? >> next ) {
         super( prev, next );
-        this.step = step;
+        this.transition = transition;
     }
 
     @Override
     FlowNode<INPUT, OUTPUT> copy() {
-        return new StepNode<>( step, prev, next );
+        return new TransitionNode<>( transition, prev, next );
     }
 
     @Override
     public String toString() {
-        return "Step(name=" + step.getName() + ", hashCode=" + hashCode() + ")";
+        return "TransitionNode(transition=" + transition + ")";
     }
 
 }
