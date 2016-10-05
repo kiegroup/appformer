@@ -19,6 +19,7 @@ package org.livespark.formmodeler.rendering.server.rest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -47,7 +48,7 @@ public abstract class BaseEntityService {
     @PostConstruct
     private void init() {
         builder = em.getCriteriaBuilder();
-        for( QueryCriteriaGenerator generator : installedQueryCriteriaGenerators ) {
+        for( final QueryCriteriaGenerator generator : installedQueryCriteriaGenerators ) {
             queryCriteriaGenerators.put( generator.getSupportedType(), generator );
         }
     }
@@ -72,21 +73,31 @@ public abstract class BaseEntityService {
         return em.createQuery( selectAllQuery ).getResultList();
     }
 
-    public <E> List<E> list( final Class<E> type, QueryCriteria criteria ) {
+    public <E> List<E> list( final Class<E> type, final QueryCriteria criteria ) {
         final CriteriaQuery<E> selectAllQuery = createQuery( type, criteria );
 
         return em.createQuery( selectAllQuery ).getResultList();
     }
 
-    private <E> CriteriaQuery<E> createQuery( Class<E> entityType, QueryCriteria criteria ) {
+    public <E> List<E> list( final Class<E> type, final int start, final int end ) {
+        final CriteriaQuery<E> selectAllQuery = createQuery( type, null );
+
+        return em
+                .createQuery( selectAllQuery )
+                .setFirstResult( start )
+                .setMaxResults( end - start + 1 )
+                .getResultList();
+    }
+
+    private <E> CriteriaQuery<E> createQuery( final Class<E> entityType, final QueryCriteria criteria ) {
         final CriteriaQuery<E> criteriaQuery = builder.createQuery( entityType );
         final Root<E> rootEntity = criteriaQuery.from( entityType );
 
         if ( criteria != null ) {
-            QueryCriteriaGenerator generator = queryCriteriaGenerators.get( criteria.getClass() );
+            final QueryCriteriaGenerator generator = queryCriteriaGenerators.get( criteria.getClass() );
 
             if ( generator != null ) {
-                Expression filter = generator.buildCriteriaExpression( criteria, builder, rootEntity );
+                final Expression filter = generator.buildCriteriaExpression( criteria, builder, rootEntity );
 
                 if ( filter != null ) {
                     criteriaQuery.where( filter );
