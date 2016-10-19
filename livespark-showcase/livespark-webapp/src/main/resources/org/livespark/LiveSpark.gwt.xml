@@ -11,15 +11,12 @@
   <inherits name="org.uberfire.UberfireClientAll"/>
   <inherits name="org.uberfire.client.views.PatternFlyTheme"/>
 
-  <!-- Uberfire Extensions - Core Widgets -->
+  <!-- Uberfire Extensions -->
   <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
   <inherits name="org.uberfire.UberfireDocksClient"/>
-
-  <!-- Uberfire Extensions - Runtime Plugin -->
   <inherits name="org.uberfire.ext.plugin.RuntimePluginClient"/>
-
-  <!-- Uberfire Extensions - Apps -->
   <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
+  <inherits name="org.uberfire.ext.preferences.UberfirePreferences"/>
 
   <!-- Guvnor dependencies -->
   <inherits name="org.guvnor.structure.GuvnorStructureClient"/>
