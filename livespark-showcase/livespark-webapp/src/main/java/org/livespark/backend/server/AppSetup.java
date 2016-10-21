@@ -16,12 +16,34 @@
 
 package org.livespark.backend.server;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.guvnor.ala.build.maven.config.MavenBuildConfig;
+import org.guvnor.ala.build.maven.config.MavenBuildExecConfig;
+import org.guvnor.ala.build.maven.config.MavenProjectConfig;
+import org.guvnor.ala.build.maven.config.gwt.GWTCodeServerMavenExecConfig;
+import org.guvnor.ala.config.BinaryConfig;
+import org.guvnor.ala.config.BuildConfig;
+import org.guvnor.ala.config.ProjectConfig;
+import org.guvnor.ala.config.ProviderConfig;
+import org.guvnor.ala.config.RuntimeConfig;
+import org.guvnor.ala.config.SourceConfig;
+import org.guvnor.ala.pipeline.Input;
+import org.guvnor.ala.pipeline.Pipeline;
+import org.guvnor.ala.pipeline.PipelineFactory;
+import org.guvnor.ala.pipeline.Stage;
+import static org.guvnor.ala.pipeline.StageUtil.config;
+import org.guvnor.ala.registry.PipelineRegistry;
+import org.guvnor.ala.registry.RuntimeRegistry;
+import org.guvnor.ala.source.git.config.GitConfig;
+import org.guvnor.ala.wildfly.config.WildflyProviderConfig;
+import org.guvnor.ala.wildfly.config.impl.ContextAwareWildflyRuntimeExecConfig;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -50,6 +72,11 @@ public class AppSetup extends BaseAppSetup {
     // default repository section - end
 
     private Event<ApplicationStarted> applicationStartedEvent;
+    
+    private RuntimeRegistry runtimeRegistry;
+    
+    private PipelineRegistry pipelineRegistry;
+    
 
     protected AppSetup() {
     }
@@ -61,13 +88,20 @@ public class AppSetup extends BaseAppSetup {
                      final KieProjectService projectService,
                      final ConfigurationService configurationService,
                      final ConfigurationFactory configurationFactory,
-                     final Event<ApplicationStarted> applicationStartedEvent ) {
+                     final Event<ApplicationStarted> applicationStartedEvent, 
+                     final RuntimeRegistry runtimeRegistry, 
+                     final PipelineRegistry pipelineRegistry ) {
         super( ioService, repositoryService, organizationalUnitService, projectService, configurationService, configurationFactory );
         this.applicationStartedEvent = applicationStartedEvent;
+        this.runtimeRegistry = runtimeRegistry;
+        this.pipelineRegistry = pipelineRegistry;
+        
     }
 
+    
+    
     @PostConstruct
-    public void assertPlayground() {
+    public void init() {
         try {
             configurationService.startBatch();
             final String exampleRepositoriesRoot = System.getProperty( "org.kie.example.repositories" );
@@ -106,6 +140,72 @@ public class AppSetup extends BaseAppSetup {
         } finally {
             configurationService.endBatch();
         }
+        initPipelines();
+    }
+    
+    public void initPipelines(){
+        // Create Wildfly Pipeline Configuration
+        Stage<Input, SourceConfig> sourceConfig = config( "Git Source", (s) -> new GitConfig() {} );
+        Stage<SourceConfig, ProjectConfig> projectConfig = config( "Maven Project", (s) -> new MavenProjectConfig() {} );
+         Stage<ProjectConfig, BuildConfig> buildConfig = config( "Maven Build Config", (s) -> new MavenBuildConfig() {
+            @Override
+            public List<String> getGoals() {
+                final List<String> result = new ArrayList<>();
+                result.add( "clean" );
+                result.add( "package" );
+                return result;
+            }
+           
+            @Override
+            public Properties getProperties() {
+                final Properties result = new Properties();
+                result.setProperty("failIfNoTests", "false");
+                return result;
+            }
+        } );
+        Stage<ProjectConfig, BuildConfig> buildSDMConfig = config( "Maven Build Config", (s) -> new MavenBuildConfig() {
+            @Override
+            public List<String> getGoals() {
+                final List<String> result = new ArrayList<>();
+                result.add( "package" );
+                return result;
+            }
+            @Override
+            public Properties getProperties() {
+                final Properties result = new Properties();
+                result.setProperty("failIfNoTests", "false");
+                result.setProperty("gwt.compiler.skip", "true");
+                return result;
+            }
+
+        } );
+        Stage<BuildConfig, BuildConfig> codeServerExec = config( "Start Code Server", (s) -> new GWTCodeServerMavenExecConfig() {} );
+        Stage<BuildConfig, BinaryConfig> buildExec = config( "Maven Build", (s) -> new MavenBuildExecConfig() {} );
+        Stage<BinaryConfig, ProviderConfig> providerConfig = config( "Wildfly Provider Config", (s) -> new WildflyProviderConfig() {} );
+        Stage<ProviderConfig, RuntimeConfig> runtimeExec = config( "Wildfly Runtime Exec", (s) -> new ContextAwareWildflyRuntimeExecConfig() );
+        
+        Pipeline wildflyPipeline = PipelineFactory
+                .startFrom( sourceConfig )
+                .andThen( projectConfig )
+                .andThen( buildConfig )
+                .andThen( buildExec )
+                .andThen( providerConfig )
+                .andThen( runtimeExec ).buildAs( "wildfly pipeline" );
+        //Registering the Wildfly Pipeline to be available to the whole workbench
+        pipelineRegistry.registerPipeline(wildflyPipeline);
+        
+        Pipeline wildflySDMPipeline = PipelineFactory
+                .startFrom( sourceConfig )
+                .andThen( projectConfig )
+                .andThen( buildSDMConfig )
+                .andThen( codeServerExec )
+                .andThen( buildExec )
+                .andThen( providerConfig )
+                .andThen( runtimeExec ).buildAs( "wildfly sdm pipeline" );
+        //Registering the Wildfly Pipeline to be available to the whole workbench
+        pipelineRegistry.registerPipeline(wildflySDMPipeline);
+        
+        
     }
 
     private ConfigGroup getGlobalConfiguration() {
