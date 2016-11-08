@@ -15,6 +15,12 @@
       <artifactId>jboss-javaee-7.0</artifactId>
       <type>pom</type>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>jaxrs-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -41,14 +47,32 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.ws.rs</groupId>
+          <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
       <artifactId>kie-wb-common-services-backend</artifactId>
-    </dependency>
+       <exclusions>
+        <exclusion>
+          <groupId>javax</groupId>
+          <artifactId>javaee-web-api</artifactId>
+        </exclusion>
 
+        <exclusion>
+          <groupId>org.jboss.spec.javax.ws.rs</groupId>
+          <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>javax.ws.rs-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench-processors</artifactId>
@@ -64,6 +88,56 @@
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-commons</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-spi</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-build-maven</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-source-git</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-registry-local</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-wildfly-provider</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-standalone</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.arquillian.cube</groupId>
+        <artifactId>arquillian-cube-docker</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.arquillian.cube</groupId>
+        <artifactId>arquillian-cube-requirement</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
