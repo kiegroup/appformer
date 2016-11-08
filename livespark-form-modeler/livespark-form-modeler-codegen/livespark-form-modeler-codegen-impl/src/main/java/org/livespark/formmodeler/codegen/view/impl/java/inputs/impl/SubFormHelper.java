@@ -125,9 +125,9 @@ public class SubFormHelper extends AbstractNestedModelHelper<SubFormFieldDefinit
         if ( updateNestedModelsMethod != null ) {
             String body = updateNestedModelsMethod.getBody();
 
-            String pName = fieldDefinition.getBoundPropertyName();
+            String pName = fieldDefinition.getBinding();
             String pType = fieldDefinition.getStandaloneClassName();
-            String modelName = StringUtils.capitalize( fieldDefinition.getModelName() );
+            String modelName = StringUtils.capitalize( context.getFormDefinition().getModel().getName() );
 
             body += pType + " " + pName + " = getModel().get" + modelName + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";

@@ -28,7 +28,7 @@ import org.livespark.formmodeler.rendering.client.view.FormView;
 /**
  * Created by pefernan on 6/18/15.
  */
-public class SubForm<M, F extends FormModel> extends SimplePanel implements HasModel<M> {
+public class SubForm<M, F extends FormModel<M>> extends SimplePanel implements HasModel<M> {
 
     private final SubFormModelAdapter<M, F> subFormModelAdapter;
     private FormView<M, F> formView;

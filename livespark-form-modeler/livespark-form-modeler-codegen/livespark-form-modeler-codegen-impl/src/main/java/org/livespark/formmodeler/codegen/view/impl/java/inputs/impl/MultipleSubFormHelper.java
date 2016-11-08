@@ -25,7 +25,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.forms.editor.service.DataObjectFinderService;
+import org.kie.workbench.common.forms.data.modeller.service.DataObjectFinderService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
@@ -199,10 +199,10 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
 
             String body = updateNestedModelsMethod.getBody();
 
-            String pName = fieldDefinition.getBoundPropertyName();
+            String pName = fieldDefinition.getBinding();
             String pType = fieldDefinition.getStandaloneClassName();
 
-            String modelName = StringUtils.capitalize( fieldDefinition.getModelName() );
+            String modelName = StringUtils.capitalize( context.getFormDefinition().getModel().getName() );
 
             body += "List " + pName + " = getModel().get" + modelName + "().get" + StringUtils.capitalize( pName ) + "();\n";
             body += "if (" + pName + " == null && init) {\n";

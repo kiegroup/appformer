@@ -26,7 +26,7 @@ import org.livespark.formmodeler.rendering.client.shared.FormModel;
 
 @Bindable
 @Portable
-public class TestFormModel extends FormModel {
+public class TestFormModel extends FormModel<CrudModel> {
 
     private CrudModel model;
 
@@ -37,6 +37,7 @@ public class TestFormModel extends FormModel {
         this.model = model;
     }
 
+    @Override
     public CrudModel getModel() {
         return model;
     }
@@ -45,14 +46,8 @@ public class TestFormModel extends FormModel {
         this.model = model;
     }
 
-    /* (non-Javadoc)
-             * @see org.livespark.formmodeler.rendering.client.shared.FormModel#getDataModels()
-             */
     @Override
-    public List<Object> getDataModels() {
-        List dataModels = new ArrayList();
-        dataModels.add( model );
-        return dataModels;
+    public void initModel() {
+        model = new CrudModel();
     }
-
 }

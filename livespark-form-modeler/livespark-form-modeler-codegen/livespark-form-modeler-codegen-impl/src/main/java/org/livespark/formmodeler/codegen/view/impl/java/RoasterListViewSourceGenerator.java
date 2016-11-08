@@ -16,14 +16,8 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.COLUMN_METAS_VAR_NAME;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.COLUMN_META_CLASS_NAME;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -31,15 +25,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.forms.model.DataHolder;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.IsJavaModel;
 import org.kie.workbench.common.forms.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
+
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 @ListView
 @ApplicationScoped
@@ -63,12 +59,11 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
     }
 
     private void addMethods( final JavaClassSource viewClass,
-            final SourceGenerationContext context ) {
+                             final SourceGenerationContext context ) {
         addGetListTitleImpl( viewClass, context );
         addGetFormTitleImpl( viewClass, context );
         addGetFormIdImpl( viewClass, context );
         addGetColumnsImpl( viewClass, context );
-        addGetModelImpl( viewClass, context );
         addGetFormModelImpl( viewClass, context );
         addNewModelImpl( viewClass, context );
     }
@@ -77,14 +72,18 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
                                   final SourceGenerationContext context ) {
         final String body = "return new " + context.getEntityName() + "();";
         viewClass
-            .addMethod()
-            .setName( "newModel" )
-            .setPublic()
-            .setReturnType( context.getEntityName() )
-            .setBody( body );
+                .addMethod()
+                .setName( "newModel" )
+                .setPublic()
+                .setReturnType( context.getEntityName() )
+                .setBody( body );
     }
 
     private void addGetFormModelImpl( final JavaClassSource viewClass, final SourceGenerationContext context ) {
+
+        FormDefinition form = context.getFormDefinition();
+
+        checkFormDefinition( form );
 
         final StringBuffer body = new StringBuffer();
 
@@ -93,13 +92,11 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
                 .append( context.getFormModelName() )
                 .append( "();" );
 
-        // TODO: improve this, is there a real need to have more than one model?
-        final DataHolder holder = context.getFormDefinition().getDataHolders().get( 0 );
-        final String modelName = holder.getName();
+        final String modelName = form.getModel().getName();
 
         body.append( "formModel.set" )
                 .append( StringUtils.capitalize( modelName ) )
-                .append( "( ")
+                .append( "( " )
                 .append( modelName )
                 .append( " );" );
 
@@ -111,25 +108,8 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
                 .setBody( body.toString() )
                 .setPublic();
 
-        createFormModel.addParameter( holder.getType(), modelName );
+        createFormModel.addParameter( ( (IsJavaModel) form.getModel() ).getType(), modelName );
         createFormModel.addAnnotation( Override.class );
-    }
-
-    private void addGetModelImpl( final JavaClassSource viewClass, final SourceGenerationContext context ) {
-        final StringBuffer body = new StringBuffer();
-
-        // TODO: improve this, is there a real need to have more than one model?
-        body.append( "return formModel.get" )
-                .append( StringUtils.capitalize( context.getFormDefinition().getDataHolders().get( 0 ).getName() ) )
-                .append( "();" );
-
-        final MethodSource<JavaClassSource> getModel = viewClass.addMethod()
-                .setName( "getModel" )
-                .setReturnType( context.getEntityName() )
-                .setBody( body.toString() )
-                .setPublic();
-        getModel.addParameter( context.getFormModelName(), "formModel" );
-        getModel.addAnnotation( Override.class );
     }
 
     private void addGetColumnsImpl( final JavaClassSource viewClass,
@@ -149,16 +129,16 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
         final FormDefinition form = context.getFormDefinition();
 
         for ( final FieldDefinition field : form.getFields() ) {
-            if ( !(field instanceof EntityRelationField ) ) {
+            if ( !( field instanceof EntityRelationField ) ) {
                 final ColumnMetaGenerator generator = columnMetaGeneratorManager.getColumnMetaGeneratorForType( field.getStandaloneClassName() );
                 if ( generator != null ) {
                     for ( final String imp : generator.getImports() ) {
                         viewClass.addImport( imp );
                     }
-                    body.append( generator.generateColumnMeta( field.getBoundPropertyName(),
-                            field.getLabel(),
-                            context.getEntityName(),
-                            context ) );
+                    body.append( generator.generateColumnMeta( field.getBinding(),
+                                                               field.getLabel(),
+                                                               context.getEntityName(),
+                                                               context ) );
                 }
             }
         }
@@ -177,7 +157,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
     }
 
     private void addGetListTitleImpl( final JavaClassSource viewClass,
-            final SourceGenerationContext context ) {
+                                      final SourceGenerationContext context ) {
         viewClass.addMethod()
                 .setName( "getListTitle" )
                 .setPublic()
@@ -187,7 +167,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
     }
 
     private void addGetFormIdImpl( final JavaClassSource viewClass,
-            final SourceGenerationContext context ) {
+                                   final SourceGenerationContext context ) {
         viewClass.addMethod()
                 .setName( "getFormId" )
                 .setProtected()
@@ -197,7 +177,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
     }
 
     private void addGetFormTitleImpl( final JavaClassSource viewClass,
-            final SourceGenerationContext context ) {
+                                      final SourceGenerationContext context ) {
         viewClass.addMethod()
                 .setName( "getFormTitle" )
                 .setPublic()
@@ -211,8 +191,8 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
     }
 
     private void addTypeSignature( final SourceGenerationContext context,
-            final JavaClassSource viewClass,
-            final String packageName ) {
+                                   final JavaClassSource viewClass,
+                                   final String packageName ) {
         viewClass.setPackage( packageName )
                 .setPublic()
                 .setName( context.getListViewName() )
@@ -224,7 +204,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
     }
 
     private void addImports( final SourceGenerationContext context,
-            final JavaClassSource viewClass ) {
+                             final JavaClassSource viewClass ) {
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
         viewClass.addImport( context.getLocalPackage().getPackageName() + "." + context.getFormViewName() );
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );

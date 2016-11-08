@@ -54,7 +54,7 @@ import org.livespark.formmodeler.rendering.client.view.StandaloneFormWrapper;
 import org.livespark.formmodeler.rendering.client.view.UIComponentCleanUpWrapper;
 
 public abstract class FlowProducer<MODEL,
-                                   FORM_MODEL extends FormModel,
+                                   FORM_MODEL extends FormModel<MODEL>,
                                    FORM_VIEW extends FormView<MODEL, FORM_MODEL>,
                                    LIST_VIEW extends ListView<MODEL, FORM_MODEL>,
                                    REST_SERVICE extends LiveSparkRestService<MODEL>> {

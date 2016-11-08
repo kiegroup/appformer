@@ -19,10 +19,11 @@ package org.livespark.formmodeler.codegen.model.impl;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.model.FormModel;
+import org.kie.workbench.common.forms.model.IsJavaModel;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_MAPS_TO;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 public class ConstructorGenerator {
 
@@ -35,23 +36,24 @@ public class ConstructorGenerator {
 
     public void addFormModelConstructor( SourceGenerationContext context,
                                          JavaClassSource modelClass ) {
-        if ( !context.getFormDefinition().getDataHolders().isEmpty() ) {
+        FormModel model = context.getFormDefinition().getModel();
+        if ( model != null && model instanceof IsJavaModel ) {
             MethodSource<JavaClassSource> constructor = modelClass.addMethod()
                     .setConstructor( true )
                     .setPublic();
             StringBuffer source = new StringBuffer();
 
-            for ( DataHolder dataHolder : context.getFormDefinition().getDataHolders() ) {
-                constructor.addParameter( dataHolder.getType(),
-                                          dataHolder.getName() )
-                        .addAnnotation( ERRAI_MAPS_TO )
-                        .setStringValue( dataHolder.getName() );
-                source.append( "this." )
-                        .append( dataHolder.getName() )
-                        .append( " = " )
-                        .append( dataHolder.getName() )
-                        .append( ";" );
-            }
+            constructor.addParameter( ( (IsJavaModel) model ).getType(),
+                                      model.getName() )
+                    .addAnnotation( ERRAI_MAPS_TO )
+                    .setStringValue( model.getName() );
+
+
+            source.append( "this." )
+                    .append( model.getName() )
+                    .append( " = " )
+                    .append( model.getName() )
+                    .append( ";" );
 
             constructor.setBody( source.toString() );
         }

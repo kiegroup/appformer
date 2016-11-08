@@ -16,19 +16,19 @@
 
 package org.livespark.formmodeler.codegen.rest.impl;
 
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.EJB_STATELESS;
-
-import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
-import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.FormModel;
+import org.kie.workbench.common.forms.model.IsJavaModel;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
+
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 
 @ApplicationScoped
@@ -128,17 +128,17 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
 
     @Override
     protected void setListMethodSignature( final SourceGenerationContext context,
-                                             final MethodSource<JavaClassSource> list ) {
+                                           final MethodSource<JavaClassSource> list ) {
         super.setListMethodSignature( context, list );
         list.addAnnotation( Override.class );
     }
 
     private void setListMethodBody( final SourceGenerationContext context,
-                                      final MethodSource<JavaClassSource> list ) {
+                                    final MethodSource<JavaClassSource> list ) {
+
+        checkFormDefinition( context.getFormDefinition() );
+
         final StringBuilder body = new StringBuilder();
-        final List<DataHolder> dataHolders = context.getFormDefinition().getDataHolders();
-        if ( dataHolders.size() > 1 )
-            throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
 
         body.append( "return " )
                 .append( ENTITY_SERVICE )
@@ -161,10 +161,10 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
      */
     private void setLoadMethodBody( final SourceGenerationContext context,
                                     final MethodSource<JavaClassSource> load ) {
+
+        checkFormDefinition( context.getFormDefinition() );
+
         final StringBuilder body = new StringBuilder();
-        final List<DataHolder> dataHolders = context.getFormDefinition().getDataHolders();
-        if ( dataHolders.size() > 1 )
-            throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
 
         body.append( "return " )
                 .append( ENTITY_SERVICE )
@@ -190,11 +190,11 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
     }
 
     private void setRangedLoadMethodBody( final SourceGenerationContext context,
-                            final MethodSource<JavaClassSource> load ) {
+                                          final MethodSource<JavaClassSource> load ) {
+
+        checkFormDefinition( context.getFormDefinition() );
+
         final StringBuilder body = new StringBuilder();
-        final List<DataHolder> dataHolders = context.getFormDefinition().getDataHolders();
-        if ( dataHolders.size() > 1 )
-            throw new UnsupportedOperationException( "Cannot load form models with multiple data models." );
 
         body.append( "return " )
                 .append( ENTITY_SERVICE )
@@ -208,9 +208,9 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
     private void setRangedLoadMethodSignature( final SourceGenerationContext context,
                                                final MethodSource<JavaClassSource> load ) {
         load
-        .setName( "load" )
-        .setPublic()
-        .setReturnType( "List<" + context.getEntityName() + ">" );
+                .setName( "load" )
+                .setPublic()
+                .setReturnType( "List<" + context.getEntityName() + ">" );
         load.addParameter( int.class, "start" );
         load.addParameter( int.class, "end" );
         load.addAnnotation( Override.class );
@@ -234,8 +234,8 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
                                       final MethodSource<JavaClassSource> create ) {
         final StringBuilder body = new StringBuilder();
         body.append( "return " )
-            .append( ENTITY_SERVICE )
-            .append( ".create( model );" );
+                .append( ENTITY_SERVICE )
+                .append( ".create( model );" );
 
         create.setBody( body.toString() );
     }

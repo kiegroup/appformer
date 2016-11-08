@@ -40,7 +40,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.AsyncDataProvider;
 
-public abstract class ListView<M, F extends FormModel> implements IsElement, UIComponent<FlowDataProvider<M>, Command<CrudOperation, M>, ListView<M, F>> {
+public abstract class ListView<M, F extends FormModel<M>> implements IsElement, UIComponent<FlowDataProvider<M>, Command<CrudOperation, M>, ListView<M, F>> {
 
 
     @Inject
@@ -112,6 +112,10 @@ public abstract class ListView<M, F extends FormModel> implements IsElement, UIC
         crudComponent.refresh();
     }
 
+    public M getModel( final F formModel ) {
+        return formModel.getModel();
+    }
+
     public abstract String getListTitle();
 
     public abstract String getFormTitle();
@@ -119,8 +123,6 @@ public abstract class ListView<M, F extends FormModel> implements IsElement, UIC
     protected abstract String getFormId();
 
     public abstract List<ColumnMeta<M>> getCrudColumns();
-
-    public abstract M getModel( F formModel );
 
     public abstract F createFormModel( M model );
 
