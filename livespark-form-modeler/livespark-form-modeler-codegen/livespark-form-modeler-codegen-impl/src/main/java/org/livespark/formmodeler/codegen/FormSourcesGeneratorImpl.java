@@ -29,9 +29,9 @@ import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Package;
 import org.kie.workbench.common.forms.commons.layout.FormLayoutTemplateGenerator;
 import org.kie.workbench.common.forms.commons.layout.Static;
-import org.kie.workbench.common.forms.editor.service.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
 import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -137,7 +137,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         final String formModelSource = formModelSourceGenerator.generateJavaSource( context );
 
         if ( form.getLayoutTemplate() == null ) {
-            form.setLayoutTemplate( formLayoutTemplateGenerator.generateLayoutTemplate( form ) );
+            formLayoutTemplateGenerator.generateLayoutTemplate( form );
         }
 
         final String formTemplateLayout = formDefinitionSerializer.serialize( form );

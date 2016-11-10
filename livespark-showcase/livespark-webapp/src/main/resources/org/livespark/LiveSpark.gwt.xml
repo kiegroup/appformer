@@ -72,6 +72,7 @@
   <!-- Forms Engine -->
   <inherits name="org.kie.workbench.common.forms.dynamic.DynamicFormsClient"/>
   <inherits name="org.kie.workbench.common.forms.editor.FormModelerEditorClient"/>
+  <inherits name="org.kie.workbench.common.forms.data.modeller.FormDataModellerIntegrationClient"/>
 
   <!-- Start LiveSpark Modules -->
   <inherits name="org.livespark.LiveSparkDeployment"/>

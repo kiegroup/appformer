@@ -65,10 +65,7 @@ public abstract class FormView<MODEL, FORM_MODEL extends FormModel> implements I
 
     @PostConstruct
     private void init() {
-        final List<MODEL> entites = getEntities();
-        if (entites == null || entites.isEmpty() || entites.size() < getEntitiesCount()) {
-            initEntities();
-        }
+        getModel().initModel();
         initForm();
         beforeDisplay();
     }
@@ -79,12 +76,6 @@ public abstract class FormView<MODEL, FORM_MODEL extends FormModel> implements I
     protected abstract void initForm();
 
     public abstract void setReadOnly( boolean readOnly );
-
-    protected abstract int getEntitiesCount();
-
-    protected abstract List<MODEL> getEntities();
-
-    protected abstract void initEntities();
 
     public abstract boolean doExtraValidations();
 

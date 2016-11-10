@@ -25,11 +25,12 @@ import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.forms.editor.backend.service.impl.FormEditorServiceImpl;
-import org.kie.workbench.common.forms.editor.backend.service.util.DataModellerFieldGenerator;
 import org.kie.workbench.common.forms.editor.model.FormModelerContent;
 import org.kie.workbench.common.forms.editor.service.FormCreatorService;
 import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
+import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.FormModelHandlerManager;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -54,27 +55,27 @@ public class LiveSparkFormEditorServiceImpl extends FormEditorServiceImpl {
                                            User identity,
                                            SessionInfo sessionInfo,
                                            Event<ResourceOpenedEvent> resourceOpenedEvent,
-                                           DataModelerService dataModelerService,
                                            FieldManager fieldManager,
-                                           DataModellerFieldGenerator fieldGenerator,
+                                           FormModelHandlerManager modelHandlerManager,
                                            KieProjectService projectService,
-                                           org.kie.workbench.common.forms.editor.service.FormDefinitionSerializer formDefinitionSerializer,
+                                           FormDefinitionSerializer formDefinitionSerializer,
                                            FormCreatorService formCreatorService,
-                                           FormSourcesGenerator formSourcesGenerator,
-                                           VFSFormFinderService vfsFormFinderService ) {
+                                           VFSFormFinderService vfsFormFinderService,
+                                           FormSourcesGenerator formSourcesGenerator ) {
         super( ioService,
                identity,
                sessionInfo,
                resourceOpenedEvent,
-               dataModelerService,
                fieldManager,
-               fieldGenerator,
+               modelHandlerManager,
                projectService,
                formDefinitionSerializer,
                formCreatorService,
                vfsFormFinderService );
+
         this.formSourcesGenerator = formSourcesGenerator;
     }
+
 
     @Override
     public Path save( Path path, FormModelerContent content, Metadata metadata, String comment ) {
@@ -86,6 +87,7 @@ public class LiveSparkFormEditorServiceImpl extends FormEditorServiceImpl {
         return result;
     }
 
+    /*
     @Override
     protected boolean isDataObjectBanned( DataObject dataObject ) {
         return dataObject.getSuperClassName().equals( SourceGenerationUtil.LIST_VIEW_CLASS )
@@ -94,5 +96,5 @@ public class LiveSparkFormEditorServiceImpl extends FormEditorServiceImpl {
                 || dataObject.getSuperClassName().equals( SourceGenerationUtil.ENTITY_SERVICE_CLASS )
                 || dataObject.getSuperClassName().equals( SourceGenerationUtil.BASE_REST_SERVICE )
                 || dataObject.getClassName().endsWith( SourceGenerationContext.REST_IMPL_SUFFIX );
-    }
+    }*/
 }

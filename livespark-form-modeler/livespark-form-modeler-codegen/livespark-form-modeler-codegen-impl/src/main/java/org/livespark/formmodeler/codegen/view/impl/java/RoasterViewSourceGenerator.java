@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -103,8 +104,10 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
 
             if (helper instanceof RequiresCustomCode ) ((RequiresCustomCode )helper).addCustomCode( fieldDefinition, context, viewClass );
 
-            if (fieldDefinition.getBindingExpression() != null && !(fieldDefinition instanceof EmbeddedFormField )) {
-                field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", fieldDefinition.getBindingExpression() );
+
+            if ( !StringUtils.isEmpty(fieldDefinition.getBinding()) && !(fieldDefinition instanceof EmbeddedFormField )) {
+                String bindingExpression = context.getFormDefinition().getModel().getName() + "." + fieldDefinition.getBinding();
+                field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", bindingExpression );
             }
 
             field.addAnnotation( ERRAI_DATAFIELD );

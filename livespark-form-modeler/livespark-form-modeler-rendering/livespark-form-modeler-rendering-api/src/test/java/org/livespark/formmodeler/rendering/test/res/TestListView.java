@@ -73,11 +73,6 @@ public class TestListView extends ListView<CrudModel, TestFormModel> {
     }
 
     @Override
-    public CrudModel getModel( final TestFormModel formModel ) {
-        return formModel.getModel();
-    }
-
-    @Override
     public TestFormModel createFormModel( final CrudModel model ) {
         return new TestFormModel( model );
     }

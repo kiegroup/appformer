@@ -29,13 +29,13 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.junit.Before;
 import org.junit.Test;
-import org.livespark.formmodeler.codegen.SourceGenerationContext;
-import org.livespark.formmodeler.codegen.view.impl.inputs.mock.MockRoasterFormViewSourceGenerator;
-import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
-import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.impl.relations.EmbeddedFormField;
+import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.codegen.view.impl.inputs.mock.MockRoasterFormViewSourceGenerator;
+import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.uberfire.backend.vfs.Path;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
@@ -100,7 +100,7 @@ public abstract class AbstractInputHelperTest extends TestCase {
 
         formDefinition.setName( "Test" );
         formDefinition.setId( "Test" );
-        formDefinition.addDataHolder( new DataHolder( "employee", "org.test.Employee" ) );
+        formDefinition.setModel( new DataObjectFormModel( "employee", "org.test.Employee" ) );
 
         formDefinition.getFields().addAll( getFieldsToTest() );
 
@@ -149,7 +149,7 @@ public abstract class AbstractInputHelperTest extends TestCase {
         if ( !(field instanceof EmbeddedFormField) ) {
             AnnotationSource boundAnnotation = fieldSource.getAnnotation( ERRAI_BOUND );
             assertNotNull( "@Bound annotation missing for field", boundAnnotation );
-            assertEquals( "Invalid binding expression for field", field.getBindingExpression(),
+            assertEquals( "Invalid binding expression for field", formDefinition.getModel().getName() + "." + field.getBinding(),
                     boundAnnotation.getStringValue( "property" ) );
         }
 
@@ -167,8 +167,7 @@ public abstract class AbstractInputHelperTest extends TestCase {
 
     protected FieldDefinition initFieldDefinition( FieldDefinition field ) {
         field.setName( "test" + fieldCount );
-        field.setModelName( "employee" );
-        field.setBoundPropertyName( "test" + fieldCount );
+        field.setBinding( "test" + fieldCount );
         fieldCount ++;
         return field;
     }

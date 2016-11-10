@@ -15,19 +15,19 @@
  */
 package org.livespark.formmodeler.codegen.model.impl;
 
-import static junit.framework.TestCase.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.kie.workbench.common.forms.model.DataHolder;
+import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
+
+import static junit.framework.TestCase.*;
 
 /**
  *
@@ -39,13 +39,10 @@ public class RoasterFormModelSourceGeneratorTest {
     private final String FORM_NAME = "myFormName";
     private final String FORM_URI = "/test/";
     private final String PACKAGE_NAME = "org.juraj.mypackage";
-    private final List<String> FIELD_NAMES = Arrays.asList("Employee", "Age", "Salary");
-    private final List<String> FIELD_TYPES = Arrays.asList("String", "int", "Double");
-    private final List<String> FIELD_ANNOTATIONS = Arrays.asList("Valid", "NotNull", "Valid");
-    private final List<String> FIELDS = Arrays.asList("String Employee", "int Age", "Double Salary");
-    private final int NAMED_PARAMETER_INDEX = 485;
+    private final List<String> FIELD_NAMES = Arrays.asList("employee");
+    private final List<String> FIELD_ANNOTATIONS = Arrays.asList("Valid");
+    private final List<String> FIELDS = Arrays.asList("Employee employee");
     private final int PACKAGE_NAME_INDEX = 8;
-    private final int CLASS_NAME_INDEX = 520;
     private int gslen;
     private String generatedSource;
 
@@ -65,9 +62,9 @@ public class RoasterFormModelSourceGeneratorTest {
         formDefinition = new FormDefinition();
         formDefinition.setId(FORM_ID);
         formDefinition.setName(FORM_NAME);
-        for (int i = 0; i < 3; i++) {
-            formDefinition.addDataHolder(new DataHolder(FIELD_NAMES.get(i), FIELD_TYPES.get(i)));
-        }
+
+        formDefinition.setModel( new DataObjectFormModel( "employee", "org.juraj.mypackage.Employee" ) );
+
         path = PathFactory.newPath(FORM_NAME, FORM_URI);
         shared = new org.guvnor.common.services.project.model.Package(path, null, null, null, null, PACKAGE_NAME, "caption", "relativeCaption");
 
@@ -94,13 +91,13 @@ public class RoasterFormModelSourceGeneratorTest {
     }
 
     private String getNamedParameter(final String generatedSource) {
-        return getStringThatEndsWithBreakPoint(NAMED_PARAMETER_INDEX, '"', generatedSource);
+        return getStringThatEndsWithBreakPoint(generatedSource.indexOf( "@Named(\"" ) + 8, '"', generatedSource );
     }
 
     private List<String> getAllStringsThatStartAfterSearchPhrase(final String searchPhrase, final char breakPoint, final String generatedSource) {
         final List<String> fields = new ArrayList<>();
         final int shift = searchPhrase.length();
-        int nextIndex = generatedSource.indexOf(searchPhrase, CLASS_NAME_INDEX) + shift;
+        int nextIndex = generatedSource.indexOf(searchPhrase, generatedSource.indexOf( "{" )) + shift;
         while (nextIndex != -1 + shift && nextIndex < gslen) {
             fields.add(getStringThatEndsWithBreakPoint(nextIndex, breakPoint, generatedSource));
             nextIndex = generatedSource.indexOf(searchPhrase, nextIndex + 1) + shift;
@@ -119,7 +116,7 @@ public class RoasterFormModelSourceGeneratorTest {
     private List<String> getFieldAnnotations(final String generatedSource, final List<String> fields) {
         final List<String> fieldAnnotations = new ArrayList<>();
         final int shift = "@".length();
-        int start = generatedSource.indexOf("@", CLASS_NAME_INDEX) + shift;
+        int start = generatedSource.indexOf("@", generatedSource.indexOf( "{" )) + shift;
         for (final String f : fields) {
             fieldAnnotations.add(getStringThatEndsWithBreakPoint(start, '\n', generatedSource));
             start = generatedSource.indexOf("@", start + 1) + shift;

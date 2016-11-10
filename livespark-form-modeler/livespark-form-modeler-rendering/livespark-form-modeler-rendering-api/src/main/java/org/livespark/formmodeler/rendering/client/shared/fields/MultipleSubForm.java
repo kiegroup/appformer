@@ -135,7 +135,7 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
 
                     @Override
                     public void onAccept() {
-                        model.add( (M) form.getModel().getDataModels().get( 0 ) );
+                        model.add( (M) form.getModel().getModel() );
                         crudComponent.refresh();
                     }
                 } );

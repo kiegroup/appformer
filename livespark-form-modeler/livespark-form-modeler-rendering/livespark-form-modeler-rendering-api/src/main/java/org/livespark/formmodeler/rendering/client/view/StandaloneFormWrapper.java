@@ -41,7 +41,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 @Dependent
 @Templated
-public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel, FORM_VIEW extends FormView<MODEL, FORM_MODEL>>
+public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel<MODEL>, FORM_VIEW extends FormView<MODEL, FORM_MODEL>>
     implements IsElement, IsFormView<FORM_MODEL>, UIComponent<FORM_VIEW, Optional<FORM_VIEW>, StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW>> {
 
     private final Consumer<Optional<FORM_VIEW>> noOpCallback = o -> {};

@@ -21,9 +21,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.text.WordUtils;
-import org.kie.workbench.common.forms.editor.backend.service.util.DataModellerFieldGenerator;
+import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
+import org.kie.workbench.common.forms.data.modeller.service.impl.DataModellerFieldGenerator;
 import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
-import org.kie.workbench.common.forms.model.DataHolder;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.MultipleField;
@@ -68,19 +68,17 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         if (dataObject.getProperties().isEmpty()) return;
 
-        FormDefinition form = new FormDefinition();
+        String modelName = WordUtils.uncapitalize( dataObject.getName() );
+
+        DataObjectFormModel model = new DataObjectFormModel( modelName, dataObject.getClassName() );
+
+        FormDefinition form = new FormDefinition( model );
 
         form.setId( dataObject.getClassName() );
 
         form.setName( dataObject.getName() );
 
-        String holderName = WordUtils.uncapitalize( dataObject.getName() );
-
-        DataHolder holder = new DataHolder( holderName, dataObject.getClassName() );
-
-        form.addDataHolder( holder );
-
-        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(holderName, dataObject);
+        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(modelName, dataObject);
 
         for (FieldDefinition field : availabeFields ) {
             if (field instanceof EmbeddedFormField) {
@@ -115,7 +113,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
                 if ( nestedField instanceof EntityRelationField ) {
                     continue;
                 }
-                TableColumnMeta meta = new TableColumnMeta( nestedField.getLabel(), nestedField.getBoundPropertyName() );
+                TableColumnMeta meta = new TableColumnMeta( nestedField.getLabel(), nestedField.getBinding() );
                 columnMetas.add( meta );
             }
 

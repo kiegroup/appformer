@@ -111,6 +111,16 @@
     </dependency>
 
     <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-serialization</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-data-modeller-integration-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
     </dependency>
