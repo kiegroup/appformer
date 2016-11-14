@@ -68,7 +68,6 @@
   <modules>
     <module>livespark-bom</module>
     <module>livespark-deps</module>
-    <module>livespark-commons</module>
     <module>livespark-app-flow</module>
     <module>livespark-form-modeler</module>
     <module>livespark-deployment</module>

@@ -1161,11 +1161,6 @@
 
     <dependency>
       <groupId>org.livespark</groupId>
-      <artifactId>livespark-commons</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.livespark</groupId>
       <artifactId>livespark-deployment</artifactId>
     </dependency>
     <!-- End LiveSpark Modules -->
