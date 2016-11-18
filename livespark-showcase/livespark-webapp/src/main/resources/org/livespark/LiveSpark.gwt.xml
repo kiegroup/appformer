@@ -48,6 +48,7 @@
   <inherits name="org.kie.workbench.common.screens.defaulteditor.DroolsWorkbenchDefaultEditorClient"/>
   <inherits name="org.kie.workbench.common.screens.examples.KieWorkbenchCommonExamplesClient"/>
   <inherits name="org.kie.workbench.common.workbench.KieDefaultWorkbenchClient"/>
+  <inherits name="org.kie.workbench.common.screens.library.LibraryClient"/>
 
   <!-- Common Services -->
   <inherits name="org.kie.workbench.common.services.datamodeller.DataModellerCore" />
