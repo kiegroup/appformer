@@ -123,7 +123,7 @@ public class LiveSparkEntryPoint extends DefaultWorkbenchEntryPoint {
                             MenuFactory.newTopLevelMenu( constants.home() ).withItems( menusHelper.getHomeViews( socialEnabled ) ).endMenu()
                                     .newTopLevelMenu( constants.authoring() ).withItems( menusHelper.getAuthoringViews() ).endMenu()
                                     .newTopLevelMenu( constants.deploy() ).withItems( getDeploymentViews() ).endMenu()
-                                    .newTopLevelMenu( constants.extensions() ).withItems( getExtensionsViews() ).endMenu()
+                                    .newTopLevelMenu( constants.extensions() ).withItems( menusHelper.getExtensionsViews() ).endMenu()
                                     .newTopLevelCustomMenu( iocManager.lookupBean( SearchMenuBuilder.class ).getInstance() ).endMenu()
                                     .build();
 
@@ -139,24 +139,6 @@ public class LiveSparkEntryPoint extends DefaultWorkbenchEntryPoint {
 
             }
         } ).isSocialEnable();
-    }
-
-    protected List<? extends MenuItem> getExtensionsViews() {
-
-        //the data source management perspective is not yet added to the platform by default extensions
-        //to be sure we don't interfere in other workbenches. So it's basically added here.
-        final List<MenuItem> result = new ArrayList<>();
-
-        result.addAll( menusHelper.getExtensionsViews() );
-
-        result.add( MenuFactory.newSimpleItem( constants.dataSourceManagement() )
-                .place( new DefaultPlaceRequest( DATASOURCE_MANAGEMENT ) )
-                .endMenu()
-                .build()
-                .getItems()
-                .get( 0 ) );
-
-        return result;
     }
 
     protected List<MenuItem> getDeploymentViews() {
