@@ -1206,6 +1206,10 @@
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-datasource-mgmt-dbcp</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-dashbuilder</artifactId>
+    </dependency>
 
     <!-- test -->
     <dependency>
