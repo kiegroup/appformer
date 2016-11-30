@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>app-former-deps</artifactId>
+    <groupId>org.kie.appformer</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../app-former-deps/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>app-former-form-modeler</artifactId>
+  <name>AppFormer::Form Modeler</name>
+
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>app-former-form-modeler-codegen</module>
+    <module>app-former-form-modeler-rendering</module>
+    <module>app-former-form-modeler-editor</module>
+  </modules>
+
+</project>
