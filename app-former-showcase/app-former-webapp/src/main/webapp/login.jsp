@@ -12,7 +12,7 @@
     locale= request.getLocale();
   }
 %>
-<i18n:bundle id="bundle" baseName="org.livespark.client.resources.i18n.LoginConstants"
+<i18n:bundle id="bundle" baseName="org.kie.appformer.client.resources.i18n.LoginConstants"
              locale='<%= locale%>' />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

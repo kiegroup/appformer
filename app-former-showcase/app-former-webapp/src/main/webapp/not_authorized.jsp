@@ -13,7 +13,7 @@
     locale = request.getLocale();
   }
 %>
-<i18n:bundle id="bundle" baseName="org.livespark.client.resources.i18n.LoginConstants"
+<i18n:bundle id="bundle" baseName="org.kie.appformer.client.resources.i18n.LoginConstants"
              locale='<%= locale%>'/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -33,7 +33,7 @@
     </div>
 
     <div id="login-content" class="png_bg">
-      <form action="<%= request.getContextPath() %>/livespark.html" method="GET">
+      <form action="<%= request.getContextPath() %>/app-former.html" method="GET">
         <h3><i18n:message key="loginFailed">Login failed: Not Authorized</i18n:message></h3>
         <p>
           <% if (request.getParameter("gwt.codesvr") != null) { %>

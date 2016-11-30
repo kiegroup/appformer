@@ -6,6 +6,7 @@
   <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
 
   <inherits name="org.jboss.errai.enterprise.CDI"/>
+  <inherits name="org.jboss.errai.validation.Validation"/>
 
   <!-- Uberfire dependencies -->
   <inherits name="org.uberfire.UberfireClientAll"/>

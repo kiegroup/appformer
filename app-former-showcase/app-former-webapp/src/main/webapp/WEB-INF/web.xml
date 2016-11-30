@@ -25,7 +25,7 @@
   </filter>
   <filter-mapping>
     <filter-name>Cache Filter</filter-name>
-    <url-pattern>/livespark.html</url-pattern>
+    <url-pattern>/app-former.html</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>Cache Filter</filter-name>
@@ -37,7 +37,7 @@
   </filter>
   <filter-mapping>
     <filter-name>Host Page Patch</filter-name>
-    <url-pattern>/livespark.html</url-pattern>
+    <url-pattern>/app-former.html</url-pattern>
   </filter-mapping>
   <filter>
     <filter-name>GWT Locale Filter</filter-name>
@@ -45,7 +45,7 @@
   </filter>
   <filter-mapping>
     <filter-name>GWT Locale Filter</filter-name>
-    <url-pattern>/livespark.html</url-pattern>
+    <url-pattern>/app-former.html</url-pattern>
   </filter-mapping>
   <filter>
     <filter-name>UberFire Security Headers Filter</filter-name>
@@ -72,7 +72,7 @@
     <servlet-class>org.uberfire.ext.security.server.LoginRedirectServlet</servlet-class>
     <init-param>
       <param-name>display-after-login</param-name>
-      <param-value>/livespark.html</param-value>
+      <param-value>/app-former.html</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>
@@ -109,7 +109,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>ArchiveServlet</servlet-name>
-    <url-pattern>/org.livespark.LiveSpark/archive</url-pattern>
+    <url-pattern>/org.kie.appformer.AppFormer/archive</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>UberfireFileUploadServlet</servlet-name>
@@ -125,7 +125,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>UberfireFileUploadServlet</servlet-name>
-    <url-pattern>/org.livespark.LiveSpark/defaulteditor/upload/*</url-pattern>
+    <url-pattern>/org.kie.appformer.AppFormer/defaulteditor/upload/*</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>UberfireFileDownloadServlet</servlet-name>
@@ -141,7 +141,7 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>UberfireFileDownloadServlet</servlet-name>
-    <url-pattern>/org.livespark.LiveSpark/defaulteditor/download/*</url-pattern>
+    <url-pattern>/org.kie.appformer.AppFormer/defaulteditor/download/*</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>M2Servlet</servlet-name>
@@ -181,11 +181,11 @@
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>download</web-resource-name>
-      <url-pattern>/org.livespark.LiveSpark/archive</url-pattern>
-      <url-pattern>/org.livespark.LiveSpark/defaulteditor/upload/*</url-pattern>
-      <url-pattern>/org.livespark.LiveSpark/defaulteditor/download/*</url-pattern>
-      <url-pattern>/org.livespark.LiveSpark/dtablexls/file</url-pattern>
-      <url-pattern>/org.livespark.LiveSpark/scorecardxls/file</url-pattern>
+      <url-pattern>/org.kie.appformer.AppFormer/archive</url-pattern>
+      <url-pattern>/org.kie.appformer.AppFormer/defaulteditor/upload/*</url-pattern>
+      <url-pattern>/org.kie.appformer.AppFormer/defaulteditor/download/*</url-pattern>
+      <url-pattern>/org.kie.appformer.AppFormer/dtablexls/file</url-pattern>
+      <url-pattern>/org.kie.appformer.AppFormer/scorecardxls/file</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>admin</role-name>
@@ -195,8 +195,8 @@
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>console</web-resource-name>
-      <url-pattern>/livespark.html</url-pattern>
-      <url-pattern>/org.livespark.LiveSpark/*</url-pattern>
+      <url-pattern>/app-former.html</url-pattern>
+      <url-pattern>/org.kie.appformer.AppFormer/*</url-pattern>
       <url-pattern>*.erraiBus</url-pattern>
       <url-pattern>/resourceList</url-pattern>
       <url-pattern>/editor</url-pattern>
