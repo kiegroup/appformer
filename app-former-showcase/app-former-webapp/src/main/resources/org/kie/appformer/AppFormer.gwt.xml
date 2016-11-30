@@ -34,7 +34,7 @@
 
   <!-- Home Page - This has the same GWT Module name for Community and Product so we do not need a different module for Product -->
   <inherits name="org.kie.workbench.common.screens.home.KieWorkbenchHomeClient"/>
-  <inherits name="org.livespark.LiveSparkHomePage"/>
+  <inherits name="org.kie.appformer.AppFormerHomePage"/>
 
   <!--Common Screens -->
   <inherits name="org.kie.workbench.common.screens.explorer.KieWorkbenchProjectExplorerClient"/>
@@ -76,8 +76,8 @@
   <inherits name="org.kie.workbench.common.forms.editor.FormModelerEditorClient"/>
   <inherits name="org.kie.workbench.common.forms.data.modeller.FormDataModellerIntegrationClient"/>
 
-  <!-- Start LiveSpark Modules -->
-  <inherits name="org.livespark.LiveSparkDeployment"/>
+  <!-- Start AppFormer Modules -->
+  <inherits name="org.kie.appformer.AppFormerDeployment"/>
 
   <!-- Data sources management -->
   <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceAPI" />
@@ -90,7 +90,7 @@
     <when-type-assignable
         class="javax.validation.ValidatorFactory"/>
   </generate-with>
-  <!-- End LiveSpark Modules -->
+  <!-- End AppFormer Modules -->
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/livespark.css'/>

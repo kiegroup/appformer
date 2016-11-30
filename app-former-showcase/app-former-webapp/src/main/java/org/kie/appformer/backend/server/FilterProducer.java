@@ -17,12 +17,12 @@
 
 package org.kie.appformer.backend.server;
 
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.ENTITY_SERVICE_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_MODEL_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_VIEW_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_VIEW_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
+import static org.kie.appformer.formmodeler.codegen.SourceGenerationContext.ENTITY_SERVICE_SUFFIX;
+import static org.kie.appformer.formmodeler.codegen.SourceGenerationContext.FORM_MODEL_SUFFIX;
+import static org.kie.appformer.formmodeler.codegen.SourceGenerationContext.FORM_VIEW_SUFFIX;
+import static org.kie.appformer.formmodeler.codegen.SourceGenerationContext.LIST_VIEW_SUFFIX;
+import static org.kie.appformer.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
+import static org.kie.appformer.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
 
 import java.util.Arrays;
 import java.util.function.Predicate;

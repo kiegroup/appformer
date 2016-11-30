@@ -19,6 +19,8 @@ package org.kie.appformer.backend.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Function;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -72,11 +74,11 @@ public class AppSetup extends BaseAppSetup {
     // default repository section - end
 
     private Event<ApplicationStarted> applicationStartedEvent;
-    
+
     private RuntimeRegistry runtimeRegistry;
-    
+
     private PipelineRegistry pipelineRegistry;
-    
+
 
     protected AppSetup() {
     }
@@ -88,18 +90,18 @@ public class AppSetup extends BaseAppSetup {
                      final KieProjectService projectService,
                      final ConfigurationService configurationService,
                      final ConfigurationFactory configurationFactory,
-                     final Event<ApplicationStarted> applicationStartedEvent, 
-                     final RuntimeRegistry runtimeRegistry, 
+                     final Event<ApplicationStarted> applicationStartedEvent,
+                     final RuntimeRegistry runtimeRegistry,
                      final PipelineRegistry pipelineRegistry ) {
         super( ioService, repositoryService, organizationalUnitService, projectService, configurationService, configurationFactory );
         this.applicationStartedEvent = applicationStartedEvent;
         this.runtimeRegistry = runtimeRegistry;
         this.pipelineRegistry = pipelineRegistry;
-        
+
     }
 
-    
-    
+
+
     @PostConstruct
     public void init() {
         try {
@@ -113,7 +115,7 @@ public class AppSetup extends BaseAppSetup {
 
             } else if ( "true".equalsIgnoreCase( System.getProperty( "org.kie.example" ) ) ) {
 
-                Repository exampleRepo = createRepository( "repository1",
+                final Repository exampleRepo = createRepository( "repository1",
                                                            "git",
                                                            null,
                                                            "",
@@ -142,12 +144,12 @@ public class AppSetup extends BaseAppSetup {
         }
         initPipelines();
     }
-    
+
     public void initPipelines(){
         // Create Wildfly Pipeline Configuration
-        Stage<Input, SourceConfig> sourceConfig = config( "Git Source", (s) -> new GitConfig() {} );
-        Stage<SourceConfig, ProjectConfig> projectConfig = config( "Maven Project", (s) -> new MavenProjectConfig() {} );
-         Stage<ProjectConfig, BuildConfig> buildConfig = config( "Maven Build Config", (s) -> new MavenBuildConfig() {
+        final Stage<Input, SourceConfig> sourceConfig = config( "Git Source", (Function<Input, SourceConfig>) (s) -> new GitConfig() {} );
+        final Stage<SourceConfig, ProjectConfig> projectConfig = config( "Maven Project", (Function<SourceConfig, ProjectConfig>) (s) -> new MavenProjectConfig() {} );
+         final Stage<ProjectConfig, BuildConfig> buildConfig = config( "Maven Build Config", (Function<ProjectConfig, BuildConfig>) (s) -> new MavenBuildConfig() {
             @Override
             public List<String> getGoals() {
                 final List<String> result = new ArrayList<>();
@@ -155,7 +157,7 @@ public class AppSetup extends BaseAppSetup {
                 result.add( "package" );
                 return result;
             }
-           
+
             @Override
             public Properties getProperties() {
                 final Properties result = new Properties();
@@ -163,7 +165,7 @@ public class AppSetup extends BaseAppSetup {
                 return result;
             }
         } );
-        Stage<ProjectConfig, BuildConfig> buildSDMConfig = config( "Maven Build Config", (s) -> new MavenBuildConfig() {
+        final Stage<ProjectConfig, BuildConfig> buildSDMConfig = config( "Maven Build Config", (Function<ProjectConfig, BuildConfig>) (s) -> new MavenBuildConfig() {
             @Override
             public List<String> getGoals() {
                 final List<String> result = new ArrayList<>();
@@ -179,12 +181,12 @@ public class AppSetup extends BaseAppSetup {
             }
 
         } );
-        Stage<BuildConfig, BuildConfig> codeServerExec = config( "Start Code Server", (s) -> new GWTCodeServerMavenExecConfig() {} );
-        Stage<BuildConfig, BinaryConfig> buildExec = config( "Maven Build", (s) -> new MavenBuildExecConfig() {} );
-        Stage<BinaryConfig, ProviderConfig> providerConfig = config( "Wildfly Provider Config", (s) -> new WildflyProviderConfig() {} );
-        Stage<ProviderConfig, RuntimeConfig> runtimeExec = config( "Wildfly Runtime Exec", (s) -> new ContextAwareWildflyRuntimeExecConfig() );
-        
-        Pipeline wildflyPipeline = PipelineFactory
+        final Stage<BuildConfig, BuildConfig> codeServerExec = config( "Start Code Server", (Function<BuildConfig, BuildConfig>) (s) -> new GWTCodeServerMavenExecConfig() {} );
+        final Stage<BuildConfig, BinaryConfig> buildExec = config( "Maven Build", (Function<BuildConfig, BinaryConfig>) (s) -> new MavenBuildExecConfig() {} );
+        final Stage<BinaryConfig, ProviderConfig> providerConfig = config( "Wildfly Provider Config", (Function<BinaryConfig, ProviderConfig>) (s) -> new WildflyProviderConfig() {} );
+        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config( "Wildfly Runtime Exec", (Function<ProviderConfig, RuntimeConfig>) (s) -> new ContextAwareWildflyRuntimeExecConfig() );
+
+        final Pipeline wildflyPipeline = PipelineFactory
                 .startFrom( sourceConfig )
                 .andThen( projectConfig )
                 .andThen( buildConfig )
@@ -193,8 +195,8 @@ public class AppSetup extends BaseAppSetup {
                 .andThen( runtimeExec ).buildAs( "wildfly pipeline" );
         //Registering the Wildfly Pipeline to be available to the whole workbench
         pipelineRegistry.registerPipeline(wildflyPipeline);
-        
-        Pipeline wildflySDMPipeline = PipelineFactory
+
+        final Pipeline wildflySDMPipeline = PipelineFactory
                 .startFrom( sourceConfig )
                 .andThen( projectConfig )
                 .andThen( buildSDMConfig )
@@ -204,8 +206,8 @@ public class AppSetup extends BaseAppSetup {
                 .andThen( runtimeExec ).buildAs( "wildfly sdm pipeline" );
         //Registering the Wildfly Pipeline to be available to the whole workbench
         pipelineRegistry.registerPipeline(wildflySDMPipeline);
-        
-        
+
+
     }
 
     private ConfigGroup getGlobalConfiguration() {
