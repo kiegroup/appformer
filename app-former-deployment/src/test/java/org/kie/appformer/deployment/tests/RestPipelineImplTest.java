@@ -274,7 +274,7 @@ public class RestPipelineImplTest {
                 put("create-repo", "true");
                 put("branch", "master");
                 put("out-dir", tempPath.getAbsolutePath());
-                put("origin", "https://github.com/mbarkley/livespark-playground");
+                put("origin", "https://github.com/mbarkley/app-former-playground");
                 put("project-dir", "users-new");
                 put("wildfly-user", "admin");
                 put("wildfly-password", "Admin#70365");
