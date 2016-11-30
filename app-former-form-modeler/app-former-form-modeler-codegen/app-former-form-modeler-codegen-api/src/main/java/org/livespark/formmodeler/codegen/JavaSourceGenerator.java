@@ -19,17 +19,18 @@ package org.livespark.formmodeler.codegen;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.FormModel;
 import org.kie.workbench.common.forms.model.IsJavaModel;
+import org.kie.workbench.common.forms.model.JavaModel;
 
 public interface JavaSourceGenerator {
     public String generateJavaSource( SourceGenerationContext context );
 
-    default void checkFormDefinition( FormDefinition form ) {
-        FormModel model = form.getModel();
+    default void checkFormDefinition( final FormDefinition form ) {
+        final FormModel model = form.getModel();
 
         if ( model == null ) {
             throw new UnsupportedOperationException( "Cannot generate RestService for an empty model." );
         }
-        if ( !( model instanceof IsJavaModel ) ) {
+        if ( !( model instanceof JavaModel ) ) {
             throw new UnsupportedOperationException( "Cannot generate RestService for a model which is not Java." );
         }
     }

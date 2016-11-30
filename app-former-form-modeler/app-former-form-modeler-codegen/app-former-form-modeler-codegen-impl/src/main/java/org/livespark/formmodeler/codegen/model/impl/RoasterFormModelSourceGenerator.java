@@ -16,8 +16,12 @@
 
 package org.livespark.formmodeler.codegen.model.impl;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_BINDABLE;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_PORTABLE;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.FORM_MODEL_CLASS;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_NAMED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.VALIDATION_VALID;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -25,12 +29,10 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.IsJavaModel;
+import org.kie.workbench.common.forms.model.JavaModel;
 import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.model.FormModel;
-
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 @FormModel
 @ApplicationScoped
@@ -86,11 +88,11 @@ public class RoasterFormModelSourceGenerator implements JavaSourceGenerator {
 
     private void addProperties( final SourceGenerationContext context, final JavaClassSource modelClass ) {
 
-        FormDefinition form = context.getFormDefinition();
+        final FormDefinition form = context.getFormDefinition();
 
         checkFormDefinition( form );
 
-        IsJavaModel model = (IsJavaModel) context.getFormDefinition().getModel();
+        final JavaModel model = (JavaModel) context.getFormDefinition().getModel();
 
         final FieldSource<JavaClassSource> modelField = modelClass.addProperty( model.getType(),
                                                                                 form.getModel().getName() ).getField();

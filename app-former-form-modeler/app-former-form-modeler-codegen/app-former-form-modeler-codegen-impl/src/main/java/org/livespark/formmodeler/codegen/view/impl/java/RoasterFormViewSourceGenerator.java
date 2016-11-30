@@ -16,6 +16,17 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.DO_EXTRA_VALIDATIONS_METHOD;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.FORM_VIEW_CLASS;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INIT_FORM_METHOD;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_INJECT;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.INJECT_NAMED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_ARRAYLIST_CLASSNAME;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_LIST_CLASSNAME;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -24,12 +35,10 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.IsJavaModel;
+import org.kie.workbench.common.forms.model.JavaModel;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.FormView;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
-
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 @FormView
 @ApplicationScoped
@@ -84,7 +93,7 @@ public class RoasterFormViewSourceGenerator extends RoasterViewSourceGenerator {
         viewClass.addImport( JAVA_UTIL_ARRAYLIST_CLASSNAME );
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
 
-        IsJavaModel model = (IsJavaModel) context.getFormDefinition().getModel();
+        final JavaModel model = (JavaModel) context.getFormDefinition().getModel();
 
         viewClass.addImport( model.getType() );
 

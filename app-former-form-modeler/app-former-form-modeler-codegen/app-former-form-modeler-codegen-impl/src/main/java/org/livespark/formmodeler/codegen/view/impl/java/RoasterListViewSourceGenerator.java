@@ -16,8 +16,14 @@
 
 package org.livespark.formmodeler.codegen.view.impl.java;
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.COLUMN_METAS_VAR_NAME;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.COLUMN_META_CLASS_NAME;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_TEMPLATED;
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.LIST_VIEW_CLASS;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -27,15 +33,13 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.IsJavaModel;
+import org.kie.workbench.common.forms.model.JavaModel;
 import org.kie.workbench.common.forms.model.impl.relations.EntityRelationField;
 import org.livespark.formmodeler.codegen.JavaSourceGenerator;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.ListView;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
-
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 @ListView
 @ApplicationScoped
@@ -81,7 +85,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
 
     private void addGetFormModelImpl( final JavaClassSource viewClass, final SourceGenerationContext context ) {
 
-        FormDefinition form = context.getFormDefinition();
+        final FormDefinition form = context.getFormDefinition();
 
         checkFormDefinition( form );
 
@@ -108,7 +112,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
                 .setBody( body.toString() )
                 .setPublic();
 
-        createFormModel.addParameter( ( (IsJavaModel) form.getModel() ).getType(), modelName );
+        createFormModel.addParameter( ( (JavaModel) form.getModel() ).getType(), modelName );
         createFormModel.addAnnotation( Override.class );
     }
 

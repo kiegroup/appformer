@@ -17,33 +17,33 @@
 package org.livespark.formmodeler.codegen.model.impl;
 
 
+import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_MAPS_TO;
+
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.IsJavaModel;
+import org.kie.workbench.common.forms.model.JavaModel;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
-
-import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
 public class ConstructorGenerator {
 
-    public void addNoArgConstructor( JavaClassSource modelClass ) {
+    public void addNoArgConstructor( final JavaClassSource modelClass ) {
         modelClass.addMethod()
                 .setConstructor( true )
                 .setPublic()
                 .setBody( "" );
     }
 
-    public void addFormModelConstructor( SourceGenerationContext context,
-                                         JavaClassSource modelClass ) {
-        FormModel model = context.getFormDefinition().getModel();
-        if ( model != null && model instanceof IsJavaModel ) {
-            MethodSource<JavaClassSource> constructor = modelClass.addMethod()
+    public void addFormModelConstructor( final SourceGenerationContext context,
+                                         final JavaClassSource modelClass ) {
+        final FormModel model = context.getFormDefinition().getModel();
+        if ( model != null && model instanceof JavaModel ) {
+            final MethodSource<JavaClassSource> constructor = modelClass.addMethod()
                     .setConstructor( true )
                     .setPublic();
-            StringBuffer source = new StringBuffer();
+            final StringBuffer source = new StringBuffer();
 
-            constructor.addParameter( ( (IsJavaModel) model ).getType(),
+            constructor.addParameter( ( (JavaModel) model ).getType(),
                                       model.getName() )
                     .addAnnotation( ERRAI_MAPS_TO )
                     .setStringValue( model.getName() );
