@@ -10,12 +10,12 @@
     <version>7.0.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.livespark</groupId>
-  <artifactId>livespark-parent</artifactId>
+  <groupId>org.kie.appformer</groupId>
+  <artifactId>app-former-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>LiveSpark parent</name>
+  <name>AppFormer parent</name>
   <description>
     A web platform to rapidly build forms for data management and business automation.
   </description>
@@ -66,12 +66,12 @@
   </issueManagement>
 
   <modules>
-    <module>livespark-bom</module>
-    <module>livespark-deps</module>
-    <module>livespark-app-flow</module>
-    <module>livespark-form-modeler</module>
-    <module>livespark-deployment</module>
-    <module>livespark-showcase</module>
+    <module>app-former-bom</module>
+    <module>app-former-deps</module>
+    <module>app-former-flow</module>
+    <module>app-former-form-modeler</module>
+    <module>app-former-deployment</module>
+    <module>app-former-showcase</module>
   </modules>
 
   <dependencyManagement>
