@@ -50,6 +50,18 @@
     </dependency>
 
     <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-widgets-core-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-commons-editor-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-library-api</artifactId>
     </dependency>
@@ -57,6 +69,18 @@
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-library-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-config-resource-widget</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.widgets</groupId>
+      <artifactId>kie-wb-metadata-widget</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- errai-cdi-jboss provides gwt-dev with the proper dependency exclusions -->
@@ -905,11 +929,27 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-validation</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-ioc</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-ioc-bus-support</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-jaxrs-client</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -964,6 +1004,7 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-client</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -1201,6 +1242,7 @@
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-datasource-mgmt-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
