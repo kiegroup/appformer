@@ -11,7 +11,7 @@
   </parent>
 
   <groupId>org.kie.appformer</groupId>
-  <artifactId>app-former-parent</artifactId>
+  <artifactId>appformer-parent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -66,12 +66,12 @@
   </issueManagement>
 
   <modules>
-    <module>app-former-bom</module>
-    <module>app-former-deps</module>
-    <module>app-former-flow</module>
-    <module>app-former-form-modeler</module>
-    <module>app-former-deployment</module>
-    <module>app-former-showcase</module>
+    <module>appformer-bom</module>
+    <module>appformer-deps</module>
+    <module>appformer-flow</module>
+    <module>appformer-form-modeler</module>
+    <module>appformer-deployment</module>
+    <module>appformer-showcase</module>
   </modules>
 
   <dependencyManagement>
