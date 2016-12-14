@@ -4,8 +4,8 @@
 **/gwt-unitCache/
 **/WEB-INF/deploy/
 **/WEB-INF/lib/
-**/src/main/webapp/livespark/
-**/webapp/org.livespark.*/
+**/src/main/webapp/appformer/
+**/webapp/org.appformer.*/
 
 # Eclipse, Netbeans and IntelliJ files
 /.*

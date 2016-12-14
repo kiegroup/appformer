@@ -46,6 +46,7 @@ import org.guvnor.ala.registry.RuntimeRegistry;
 import org.guvnor.ala.source.git.config.GitConfig;
 import org.guvnor.ala.wildfly.config.WildflyProviderConfig;
 import org.guvnor.ala.wildfly.config.impl.ContextAwareWildflyRuntimeExecConfig;
+import org.kie.appformer.ala.wildfly.config.AppFormerWildflyRuntimeExecConfig;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Repository;
@@ -56,6 +57,8 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.kie.workbench.screens.workbench.backend.BaseAppSetup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.ApplicationStarted;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
@@ -67,6 +70,8 @@ import org.uberfire.io.IOService;
 @Startup(StartupType.BOOTSTRAP)
 @ApplicationScoped
 public class AppSetup extends BaseAppSetup {
+
+    private static final Logger logger = LoggerFactory.getLogger( AppSetup.class );
 
     // default repository section - start
     private static final String OU_NAME = "demo";
@@ -147,44 +152,81 @@ public class AppSetup extends BaseAppSetup {
 
     public void initPipelines(){
         // Create Wildfly Pipeline Configuration
-        final Stage<Input, SourceConfig> sourceConfig = config( "Git Source", (Function<Input, SourceConfig>) (s) -> new GitConfig() {} );
-        final Stage<SourceConfig, ProjectConfig> projectConfig = config( "Maven Project", (Function<SourceConfig, ProjectConfig>) (s) -> new MavenProjectConfig() {} );
-         final Stage<ProjectConfig, BuildConfig> buildConfig = config( "Maven Build Config", (Function<ProjectConfig, BuildConfig>) (s) -> new MavenBuildConfig() {
+        final Stage<Input, SourceConfig> sourceConfig = config( "Git Source", (Function<Input , SourceConfig>) (s) -> {
+
+            logger.info("Executing function STAGE: Git Source con input: " + s );
+            return new GitConfig(){};
+        } );
+        final Stage<SourceConfig, ProjectConfig> projectConfig = config( "Maven Project", (Function<SourceConfig, ProjectConfig>) (s) -> {
+            logger.info("Executing function STAGE: Maven Project con input: " + s );
+            return new MavenProjectConfig() {};
+        } );
+
+        final Stage<ProjectConfig, BuildConfig> buildConfig = config( "Maven Build Config", (Function<ProjectConfig, BuildConfig>) (s) -> {
+            logger.info("Executing function STAGE: Maven Build Config con input: " + s );
+            return new MavenBuildConfig() {
+                @Override
+                public List< String > getGoals( ) {
+                    final List< String > result = new ArrayList<>( );
+                    result.add( "clean" );
+                    result.add( "package" );
+                    return result;
+                }
+
+                @Override
+                public Properties getProperties( ) {
+                    final Properties result = new Properties( );
+                    result.setProperty( "failIfNoTests", "false" );
+                    return result;
+                }
+            };
+        } );
+        final Stage<ProjectConfig, BuildConfig> buildSDMConfig = config( "Maven Build Config", (Function<ProjectConfig, BuildConfig>) (s) -> {
+            logger.info("Executing function STAGE: Maven Build SDM Config con input: " + s );
+        return new MavenBuildConfig() {
             @Override
-            public List<String> getGoals() {
-                final List<String> result = new ArrayList<>();
-                result.add( "clean" );
+            public List< String > getGoals( ) {
+                final List< String > result = new ArrayList<>( );
                 result.add( "package" );
                 return result;
             }
 
             @Override
-            public Properties getProperties() {
-                final Properties result = new Properties();
-                result.setProperty("failIfNoTests", "false");
+            public Properties getProperties( ) {
+                final Properties result = new Properties( );
+                result.setProperty( "failIfNoTests", "false" );
+                result.setProperty( "gwt.compiler.skip", "true" );
                 return result;
             }
+            };
         } );
-        final Stage<ProjectConfig, BuildConfig> buildSDMConfig = config( "Maven Build Config", (Function<ProjectConfig, BuildConfig>) (s) -> new MavenBuildConfig() {
-            @Override
-            public List<String> getGoals() {
-                final List<String> result = new ArrayList<>();
-                result.add( "package" );
-                return result;
-            }
-            @Override
-            public Properties getProperties() {
-                final Properties result = new Properties();
-                result.setProperty("failIfNoTests", "false");
-                result.setProperty("gwt.compiler.skip", "true");
-                return result;
-            }
+        final Stage<BuildConfig, BuildConfig> codeServerExec = config( "Start Code Server", (Function<BuildConfig, BuildConfig>) (s) -> {
+            logger.info("Executing function STAGE: Start Code Server: " + s );
+            return new GWTCodeServerMavenExecConfig() {}; } );
 
-        } );
-        final Stage<BuildConfig, BuildConfig> codeServerExec = config( "Start Code Server", (Function<BuildConfig, BuildConfig>) (s) -> new GWTCodeServerMavenExecConfig() {} );
-        final Stage<BuildConfig, BinaryConfig> buildExec = config( "Maven Build", (Function<BuildConfig, BinaryConfig>) (s) -> new MavenBuildExecConfig() {} );
-        final Stage<BinaryConfig, ProviderConfig> providerConfig = config( "Wildfly Provider Config", (Function<BinaryConfig, ProviderConfig>) (s) -> new WildflyProviderConfig() {} );
-        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config( "Wildfly Runtime Exec", (Function<ProviderConfig, RuntimeConfig>) (s) -> new ContextAwareWildflyRuntimeExecConfig() );
+        final Stage<BuildConfig, BinaryConfig> buildExec = config( "Maven Build", (Function<BuildConfig, BinaryConfig>) (s) -> {
+            logger.info("Executing function STAGE: Maven Build con input: " + s );
+            return new MavenBuildExecConfig() {}; } );
+
+
+        final Stage<BinaryConfig, ProviderConfig> providerConfig = config( "Wildfly Provider Config", (Function<BinaryConfig, ProviderConfig>) (s) -> {
+            logger.info("Executing function STAGE: Wildfly Provider Config con input: " + s );
+            return new WildflyProviderConfig() {
+                @Override
+                public String getName( ) {
+                    return "${input.provider-name}";
+                }
+            }; } );
+
+        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config( "Wildfly Runtime Exec", (Function<ProviderConfig, RuntimeConfig>) (s) ->  {
+            logger.info("Executing function STAGE: Widlfly Runtime Exec: " + s );
+            return new ContextAwareWildflyRuntimeExecConfig(); }
+        );
+
+        final Stage<ProviderConfig, RuntimeConfig> appFormerRuntimeExec = config( "AppFormer Wildfly Runtime Exec", (Function<ProviderConfig, RuntimeConfig>) (s) ->  {
+            logger.info("Executing function STAGE: AppFormer Widlfly Runtime Exec: " + s );
+            return new AppFormerWildflyRuntimeExecConfig(); }
+        );
 
         final Pipeline wildflyPipeline = PipelineFactory
                 .startFrom( sourceConfig )
@@ -192,7 +234,7 @@ public class AppSetup extends BaseAppSetup {
                 .andThen( buildConfig )
                 .andThen( buildExec )
                 .andThen( providerConfig )
-                .andThen( runtimeExec ).buildAs( "wildfly pipeline" );
+                .andThen( appFormerRuntimeExec ).buildAs( "wildfly pipeline" );
         //Registering the Wildfly Pipeline to be available to the whole workbench
         pipelineRegistry.registerPipeline(wildflyPipeline);
 

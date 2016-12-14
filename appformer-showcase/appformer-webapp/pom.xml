@@ -419,6 +419,11 @@
       <artifactId>guvnor-asset-mgmt-backend</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-ala-source-git</artifactId>
+    </dependency>
+
     <!-- Common -->
     <dependency>
       <groupId>org.kie.workbench.services</groupId>
@@ -1229,8 +1234,24 @@
 
     <dependency>
       <groupId>org.kie.appformer</groupId>
-      <artifactId>appformer-deployment</artifactId>
+      <artifactId>appformer-ala-wildfly-provider</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.kie.appformer</groupId>
+      <artifactId>appformer-provisioning-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.appformer</groupId>
+      <artifactId>appformer-provisioning-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.appformer</groupId>
+      <artifactId>appformer-provisioning-client</artifactId>
+    </dependency>
+
     <!-- End AppFormer Modules -->
 
     <!-- Data sources management -->
@@ -1465,7 +1486,8 @@
               <!-- AppFormer -->
               <compileSourcesArtifact>org.kie.appformer:appformer-form-modeler-rendering-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.appformer:appformer-form-modeler-dynamic-renderer-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.kie.appformer:appformer-deployment</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.appformer:appformer-provisioning-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.appformer:appformer-provisioning-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.appformer:appformer-flow-api</compileSourcesArtifact>
               <!-- FIXME We shouldn't have to depend on this but do because of the StandaloneFormWrapper -->
               <compileSourcesArtifact>org.kie.appformer:appformer-flow-client</compileSourcesArtifact>

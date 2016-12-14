@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>appformer-provisioning</artifactId>
+    <groupId>org.kie.appformer</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>appformer-provisioning-backend</artifactId>
+  <name>AppFormer::Provisioning Backend</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-7.0</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.resteasy</groupId>
+          <artifactId>jaxrs-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+     <dependency>
+       <groupId>org.jboss.errai</groupId>
+       <artifactId>errai-bus</artifactId>
+     </dependency>
+
+      <dependency>
+          <groupId>org.uberfire</groupId>
+          <artifactId>uberfire-api</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>org.uberfire</groupId>
+          <artifactId>uberfire-workbench-processors</artifactId>
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>org.uberfire</groupId>
+          <artifactId>uberfire-nio2-model</artifactId>
+      </dependency>
+
+      <dependency>
+          <groupId>org.uberfire</groupId>
+          <artifactId>uberfire-nio2-api</artifactId>
+      </dependency>
+
+      <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.services</groupId>
+      <artifactId>kie-wb-common-services-backend</artifactId>
+       <exclusions>
+        <exclusion>
+          <groupId>javax</groupId>
+          <artifactId>javaee-web-api</artifactId>
+        </exclusion>
+
+        <exclusion>
+          <groupId>org.jboss.spec.javax.ws.rs</groupId>
+          <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>javax.ws.rs-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-spi</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-build-maven</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-source-git</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-registry-local</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.guvnor</groupId>
+        <artifactId>guvnor-ala-wildfly-provider</artifactId>
+    </dependency>
+
+      <dependency>
+          <groupId>org.kie.appformer</groupId>
+          <artifactId>appformer-ala-wildfly-provider</artifactId>
+      </dependency>
+
+    <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-provisioning-api</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.jboss.weld.se</groupId>
+        <artifactId>weld-se-core</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-standalone</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.arquillian.cube</groupId>
+        <artifactId>arquillian-cube-docker</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.arquillian.cube</groupId>
+        <artifactId>arquillian-cube-requirement</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

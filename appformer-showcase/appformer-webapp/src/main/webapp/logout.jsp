@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="styles/forms.css">
   <link rel="stylesheet" href="styles/login-screen.css">
   <link rel="shortcut icon" href="favicon.ico" />
-  <title><i18n:message key="LoginTitle">LiveSpark</i18n:message></title>
+  <title><i18n:message key="LoginTitle">AppFormer</i18n:message></title>
 </head>
 
 <body id="login">

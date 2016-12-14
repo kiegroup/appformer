@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.project.model.Project;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.jboss.errai.common.client.api.Caller;
-import org.kie.appformer.client.shared.GwtWarBuildService;
+import org.kie.appformer.provisioning.service.GwtWarBuildService;
 import org.kie.workbench.common.screens.projecteditor.client.editor.extension.BuildOptionExtension;
 
 import javax.enterprise.context.ApplicationScoped;

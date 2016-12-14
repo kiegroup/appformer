@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>appformer-deps</artifactId>
+    <groupId>org.kie.appformer</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../appformer-deps/pom.xml</relativePath>
+  </parent>
+  <artifactId>appformer-ala-wildfly-provider</artifactId>
+  <name>AppFormer::ALA Wildfly Provider</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-ala-wildfly-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-wildfly</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-data-modeller-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-datasource-mgmt-backend</artifactId>
+    </dependency>
+  </dependencies>
+</project>

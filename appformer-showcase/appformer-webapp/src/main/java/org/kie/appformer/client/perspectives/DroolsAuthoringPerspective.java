@@ -86,7 +86,7 @@ public class DroolsAuthoringPerspective {
         south.setWidth( 400 );
         south.setMinWidth( 350 );
         south.setHeight(300);
-        south.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "MavenBuildOutput" ) ) );
+        south.addPart( new PartDefinitionImpl( new DefaultPlaceRequest( "BuildConsoleScreen" ) ) );
         perspective.getRoot().insertChild( CompassPosition.SOUTH,
                 south);
         return perspective;
