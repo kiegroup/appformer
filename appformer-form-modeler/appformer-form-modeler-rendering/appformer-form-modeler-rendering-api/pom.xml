@@ -95,7 +95,7 @@
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-forms-crud-component</artifactId>
-      <classifier>tests</classifier>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
   </dependencies>

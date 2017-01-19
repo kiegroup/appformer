@@ -3,7 +3,7 @@
                 <input class="form-control" id="@{field.name}" type="text"
                     maxlength="@{field.maxLength}"
                     placeholder="@{field.placeHolder}"
-                    @if{field.readonly}
+                    @if{field.readOnly}
                         disabled="disabled"
                     @end{}/>
                 <p id="@{field.name}_help_block" class="help-block"></p>

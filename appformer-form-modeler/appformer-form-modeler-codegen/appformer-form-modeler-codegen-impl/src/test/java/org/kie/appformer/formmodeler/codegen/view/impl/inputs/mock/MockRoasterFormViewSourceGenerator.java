@@ -40,6 +40,6 @@ public class MockRoasterFormViewSourceGenerator extends RoasterFormViewSourceGen
     }
 
     public InputCreatorHelper getHelperForField( FieldDefinition fieldDefinition ) {
-        return creatorHelpers.get( fieldDefinition.getCode() );
+        return creatorHelpers.get( fieldDefinition.getFieldType().getTypeName() );
     }
 }

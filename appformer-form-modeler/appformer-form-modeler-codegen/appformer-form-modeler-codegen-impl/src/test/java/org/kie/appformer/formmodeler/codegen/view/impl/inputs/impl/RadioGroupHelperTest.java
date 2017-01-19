@@ -28,9 +28,9 @@ import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelpe
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.StringSelectorOption;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.radioGroup.definition.StringRadioGroupFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.StringSelectorOption;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith( MockitoJUnitRunner.class )

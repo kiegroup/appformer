@@ -25,14 +25,14 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.SubFormFieldDefinition;
 
 public class SubFormHelper extends AbstractNestedModelHelper<SubFormFieldDefinition> implements RequiresCustomCode<SubFormFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return SubFormFieldDefinition.CODE;
+        return SubFormFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

@@ -25,10 +25,10 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresExtraFields;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.SelectorOption;
-import org.kie.workbench.common.forms.model.impl.relations.ObjectSelectorFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.SelectorOption;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
 
-public class ObjectSelectorBoxHelper<T extends  SelectorOption> extends AbstractInputCreatorHelper<ObjectSelectorFieldDefinition>
+public class ObjectSelectorBoxHelper<T extends SelectorOption> extends AbstractInputCreatorHelper<ObjectSelectorFieldDefinition>
         implements RequiresExtraFields<ObjectSelectorFieldDefinition>, RequiresCustomCode<ObjectSelectorFieldDefinition> {
 
 
@@ -40,7 +40,7 @@ public class ObjectSelectorBoxHelper<T extends  SelectorOption> extends Abstract
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return ObjectSelectorFieldDefinition.CODE;
+        return ObjectSelectorFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

@@ -3,7 +3,7 @@
                 <textarea  class="form-control"
                     id="@{field.name}" rows="@{field.rows}"
                     placeholder="@{field.placeHolder}"
-                    @if{field.readonly}
+                    @if{field.readOnly}
                         disabled="disabled"
                     @end{}>
                 </textarea>

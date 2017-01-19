@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.image.PictureFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
 @Dependent
@@ -32,7 +32,7 @@ public class PictureTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[]{ PictureFieldDefinition.CODE };
+        return new String[]{ PictureFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

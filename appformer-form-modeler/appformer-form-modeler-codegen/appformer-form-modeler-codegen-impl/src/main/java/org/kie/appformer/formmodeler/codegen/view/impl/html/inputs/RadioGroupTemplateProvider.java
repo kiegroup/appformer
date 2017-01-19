@@ -19,12 +19,9 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.radioGroup.definition.StringRadioGroupFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class RadioGroupTemplateProvider extends AbstractTemplateProvider {
 
@@ -35,7 +32,7 @@ public class RadioGroupTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] {StringRadioGroupFieldDefinition.CODE };
+        return new String[] { StringRadioGroupFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

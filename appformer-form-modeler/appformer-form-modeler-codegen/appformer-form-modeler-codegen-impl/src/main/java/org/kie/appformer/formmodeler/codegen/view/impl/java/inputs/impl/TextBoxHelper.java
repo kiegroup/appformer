@@ -16,18 +16,17 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxBaseDefinition;
 
-import org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxBase;
-
-public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBase> {
+public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBaseDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextBoxBase.CODE;
+        return TextBoxBaseDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override
-    public String getInputWidget( TextBoxBase fieldDefinition ) {
+    public String getInputWidget( TextBoxBaseDefinition fieldDefinition ) {
         return "org.gwtbootstrap3.client.ui.TextBox";
     }
 }

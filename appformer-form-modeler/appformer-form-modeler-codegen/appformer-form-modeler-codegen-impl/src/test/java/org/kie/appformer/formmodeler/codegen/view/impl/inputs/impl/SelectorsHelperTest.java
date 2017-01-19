@@ -25,13 +25,12 @@ import org.junit.runner.RunWith;
 import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper;
-import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.DefaultSelectorOption;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.StringSelectorOption;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.definition.EnumListBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.definition.StringListBoxFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.DefaultSelectorOption;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.StringSelectorOption;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.EnumListBoxFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.StringListBoxFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;

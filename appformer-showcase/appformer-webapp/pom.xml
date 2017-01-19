@@ -1113,6 +1113,32 @@
 
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-fields</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-adf-base</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-adf-engine-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-adf-engine-backend</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-adf-engine-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
     </dependency>
 
@@ -1453,6 +1479,10 @@
 
               <!-- Forms -->
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-adf-base</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-adf-engine-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-adf-engine-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-fields</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-processing-engine</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-common-rendering-shared</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-common-rendering-client</compileSourcesArtifact>

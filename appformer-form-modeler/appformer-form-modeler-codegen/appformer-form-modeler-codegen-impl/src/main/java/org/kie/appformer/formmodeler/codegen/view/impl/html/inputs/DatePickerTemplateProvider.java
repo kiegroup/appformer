@@ -19,12 +19,9 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.datePicker.DatePickerFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.definition.DatePickerFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class DatePickerTemplateProvider extends AbstractTemplateProvider {
 
@@ -35,7 +32,7 @@ public class DatePickerTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { DatePickerFieldDefinition.CODE };
+        return new String[] { DatePickerFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.relations.SubFormFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
 /**
@@ -35,7 +35,7 @@ public class SubFormTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { SubFormFieldDefinition.CODE };
+        return new String[] { SubFormFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

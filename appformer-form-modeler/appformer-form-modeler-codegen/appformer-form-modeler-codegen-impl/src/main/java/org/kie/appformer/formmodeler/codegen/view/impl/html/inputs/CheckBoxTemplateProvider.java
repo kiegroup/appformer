@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.checkBox.CheckBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.checkBox.definition.CheckBoxFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
 @Dependent
@@ -32,7 +32,7 @@ public class CheckBoxTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[]{ CheckBoxFieldDefinition.CODE };
+        return new String[]{ CheckBoxFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

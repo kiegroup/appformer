@@ -23,13 +23,13 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
-import org.kie.workbench.common.forms.model.impl.basic.image.PictureFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureFieldDefinition;
 
 public class PictureHelper extends AbstractInputCreatorHelper<PictureFieldDefinition> implements RequiresCustomCode<PictureFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return PictureFieldDefinition.CODE;
+        return PictureFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

@@ -19,12 +19,9 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.definition.TextAreaFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class TextAreaTemplateProvider extends AbstractTemplateProvider {
 
@@ -35,7 +32,7 @@ public class TextAreaTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[]{TextAreaFieldDefinition.CODE };
+        return new String[]{ TextAreaFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

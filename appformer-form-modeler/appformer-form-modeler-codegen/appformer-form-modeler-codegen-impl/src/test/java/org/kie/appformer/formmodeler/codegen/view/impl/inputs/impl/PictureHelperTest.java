@@ -27,9 +27,9 @@ import org.junit.runner.RunWith;
 import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.PictureHelper;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureSize;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.image.PictureFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.image.PictureSize;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith( MockitoJUnitRunner.class )

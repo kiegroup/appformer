@@ -20,12 +20,9 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class TextBoxTemplateProvider extends AbstractTemplateProvider {
 
@@ -36,7 +33,7 @@ public class TextBoxTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { TextBoxFieldDefinition.CODE };
+        return new String[] { TextBoxFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

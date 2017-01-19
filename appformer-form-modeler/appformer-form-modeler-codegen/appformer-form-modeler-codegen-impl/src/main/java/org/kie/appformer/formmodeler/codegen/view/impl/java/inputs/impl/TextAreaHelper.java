@@ -16,14 +16,13 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-
-import org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.definition.TextAreaFieldDefinition;
 
 public class TextAreaHelper extends AbstractInputCreatorHelper<TextAreaFieldDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return TextAreaFieldDefinition.CODE;
+        return TextAreaFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

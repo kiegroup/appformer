@@ -37,8 +37,8 @@ import org.kie.appformer.formmodeler.codegen.JavaSourceGenerator;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EmbedsForm;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.EmbeddedFormField;
 
 public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator {
 
@@ -88,7 +88,7 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
             if ((fieldDefinition.isAnnotatedId() && !displaysId()) || isBanned( fieldDefinition ))
                 continue;
 
-            final InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getCode() );
+            final InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getFieldType().getTypeName() );
             if (helper == null) continue;
 
             if ( extraFieldsEnabled() ) {
@@ -105,7 +105,7 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
             if (helper instanceof RequiresCustomCode ) ((RequiresCustomCode )helper).addCustomCode( fieldDefinition, context, viewClass );
 
 
-            if ( !StringUtils.isEmpty(fieldDefinition.getBinding()) && !(fieldDefinition instanceof EmbeddedFormField )) {
+            if ( !StringUtils.isEmpty(fieldDefinition.getBinding()) && !(fieldDefinition instanceof EmbedsForm )) {
                 String bindingExpression = context.getFormDefinition().getModel().getName() + "." + fieldDefinition.getBinding();
                 field.addAnnotation( ERRAI_BOUND ).setStringValue( "property", bindingExpression );
             }

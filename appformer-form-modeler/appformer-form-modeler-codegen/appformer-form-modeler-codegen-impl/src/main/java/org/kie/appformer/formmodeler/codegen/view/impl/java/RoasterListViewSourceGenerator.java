@@ -36,10 +36,10 @@ import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.ListView;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EntityRelationField;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.JavaModel;
-import org.kie.workbench.common.forms.model.impl.relations.EntityRelationField;
 
 @ListView
 @ApplicationScoped
