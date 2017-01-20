@@ -809,14 +809,14 @@
       <artifactId>uberfire-apps-backend</artifactId>
     </dependency>
 
-    <!-- Kie UF Extensions -->
+    <!-- UF Extensions -->
     <dependency>
-      <groupId>org.kie.uberfire</groupId>
-      <artifactId>kie-uberfire-social-activities-api</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-social-activities-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.uberfire</groupId>
-      <artifactId>kie-uberfire-social-activities-client</artifactId>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-social-activities-client</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1440,16 +1440,14 @@
               <compileSourcesArtifact>org.uberfire:uberfire-simple-docks-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-layout-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-layout-editor-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-social-activities-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-social-activities-client</compileSourcesArtifact>
 
               <!-- Security Management -->
               <compileSourcesArtifact>org.uberfire:uberfire-security-management-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-security-management-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-security-management-client-wb</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-widgets-security-management</compileSourcesArtifact>
-
-              <!-- KIE UberFire extensions -->
-              <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-client</compileSourcesArtifact>
 
               <!-- Forms -->
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-api</compileSourcesArtifact>
