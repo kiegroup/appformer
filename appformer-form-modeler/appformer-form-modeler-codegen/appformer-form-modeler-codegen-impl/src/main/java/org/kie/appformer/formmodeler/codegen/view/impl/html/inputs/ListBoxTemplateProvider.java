@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.basic.selectors.listBox.ListBoxBase;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.definition.ListBoxBaseDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
 @Dependent
@@ -32,7 +32,7 @@ public class ListBoxTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { ListBoxBase.CODE };
+        return new String[] { ListBoxBaseDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

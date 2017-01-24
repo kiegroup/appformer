@@ -32,11 +32,11 @@ import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
 import org.kie.workbench.common.forms.data.modeller.service.DataObjectFinderService;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.TableColumnMeta;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.multipleSubform.definition.MultipleSubFormFieldDefinition;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.TableColumnMeta;
 
 public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSubFormFieldDefinition> implements RequiresCustomCode<MultipleSubFormFieldDefinition> {
 
@@ -52,7 +52,7 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return MultipleSubFormFieldDefinition.CODE;
+        return MultipleSubFormFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

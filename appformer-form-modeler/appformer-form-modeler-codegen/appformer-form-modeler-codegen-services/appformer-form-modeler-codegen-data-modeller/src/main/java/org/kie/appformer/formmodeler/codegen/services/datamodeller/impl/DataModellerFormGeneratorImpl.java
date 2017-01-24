@@ -26,14 +26,13 @@ import org.kie.appformer.formmodeler.codegen.services.datamodeller.DataModellerF
 import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
 import org.kie.workbench.common.forms.data.modeller.service.impl.DataModellerFieldGenerator;
 import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EmbedsForm;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EntityRelationField;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.TableColumnMeta;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.multipleSubform.definition.MultipleSubFormFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.MultipleField;
-import org.kie.workbench.common.forms.model.impl.relations.EmbeddedFormField;
-import org.kie.workbench.common.forms.model.impl.relations.EntityRelationField;
-import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.SubFormFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.TableColumnMeta;
 import org.kie.workbench.common.forms.service.FieldManager;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
@@ -81,7 +80,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
         List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(modelName, dataObject);
 
         for (FieldDefinition field : availabeFields ) {
-            if (field instanceof EmbeddedFormField) {
+            if (field instanceof EmbedsForm) {
                 if ( !loadEmbeddedFormConfig( field, path ) ) continue;
             }
             form.getFields().add( field );
@@ -94,7 +93,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     }
 
     protected boolean loadEmbeddedFormConfig ( FieldDefinition field, Path path ) {
-        if ( !(field instanceof EmbeddedFormField) ) return false;
+        if ( !(field instanceof EmbedsForm) ) return false;
 
         List<FormDefinition> subForms = vfsFormFinderService.findFormsForType( field.getStandaloneClassName(), path );
 
@@ -102,7 +101,7 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
             return false;
         }
 
-        if ( field instanceof  MultipleField ) {
+        if ( field instanceof  MultipleSubFormFieldDefinition ) {
             MultipleSubFormFieldDefinition multipleSubFormFieldDefinition = (MultipleSubFormFieldDefinition) field;
             FormDefinition form = subForms.get( 0 );
             multipleSubFormFieldDefinition.setCreationForm( form.getId() );

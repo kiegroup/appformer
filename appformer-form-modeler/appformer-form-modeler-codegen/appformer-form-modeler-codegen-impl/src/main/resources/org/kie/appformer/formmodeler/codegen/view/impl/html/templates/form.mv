@@ -15,7 +15,7 @@
             @if{component.dragTypeName != "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.HTMLLayoutDragComponent"}
                 @code{field = form.getFieldById(component.properties["field_id"])}
                 @if{field != null}
-                    @includeNamed{field.code}
+                    @includeNamed{field.fieldType.typeName}
                 @end{}
             @else{}
                 @{component.properties["HTML_CODE"]}

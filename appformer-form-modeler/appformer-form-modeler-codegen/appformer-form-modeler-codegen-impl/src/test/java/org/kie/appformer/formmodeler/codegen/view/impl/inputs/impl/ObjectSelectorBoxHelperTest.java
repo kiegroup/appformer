@@ -23,8 +23,8 @@ import org.junit.runner.RunWith;
 import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.ObjectSelectorFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith( MockitoJUnitRunner.class )

@@ -33,9 +33,9 @@ import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.impl.inputs.mock.MockRoasterFormViewSourceGenerator;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EmbedsForm;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.impl.relations.EmbeddedFormField;
 import org.uberfire.backend.vfs.Path;
 
 import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.*;
@@ -146,7 +146,7 @@ public abstract class AbstractInputHelperTest extends TestCase {
                     helper.getInputWidget( field ), fieldSource.getType().toString() );
         }
 
-        if ( !(field instanceof EmbeddedFormField) ) {
+        if ( !(field instanceof EmbedsForm) ) {
             AnnotationSource boundAnnotation = fieldSource.getAnnotation( ERRAI_BOUND );
             assertNotNull( "@Bound annotation missing for field", boundAnnotation );
             assertEquals( "Invalid binding expression for field", formDefinition.getModel().getName() + "." + field.getBinding(),

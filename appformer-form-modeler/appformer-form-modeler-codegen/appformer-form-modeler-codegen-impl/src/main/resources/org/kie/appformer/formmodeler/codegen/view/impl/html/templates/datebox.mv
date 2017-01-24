@@ -1,7 +1,7 @@
             <div id="@{field.name}_form_group" class="form-group">
                 <label class="control-label" for="@{field.name}">@{field.label}</label>
                 <div id="@{field.name}" placeholder="@{field.placeHolder}"
-                    @if{field.readonly}
+                    @if{field.readOnly}
                        disabled="disabled"
                     @end{}>
                 </div>

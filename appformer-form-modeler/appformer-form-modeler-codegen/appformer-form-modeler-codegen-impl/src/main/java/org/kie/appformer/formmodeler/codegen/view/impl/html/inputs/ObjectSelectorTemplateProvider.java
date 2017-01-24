@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.relations.ObjectSelectorFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
 @Dependent
@@ -32,7 +32,7 @@ public class ObjectSelectorTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { ObjectSelectorFieldDefinition.CODE};
+        return new String[] { ObjectSelectorFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override

@@ -34,11 +34,11 @@ public abstract class AbstractTemplateProvider implements InputTemplateProvider 
 
     @Override
     public void registerTemplates( TemplateRegistry registry ) {
-        for ( String fieldCode : getSupportedFieldCodes() ) {
-            if ( fieldCode != null && fieldManager.getDefinitionByTypeCode( fieldCode ) != null ) {
-                registry.addNamedTemplate( fieldCode,
+        for ( String typeName : getSupportedFieldCodes() ) {
+            if ( typeName != null && fieldManager.getDefinitionByFieldTypeName( typeName ) != null ) {
+                registry.addNamedTemplate( typeName,
                         TemplateCompiler.compileTemplate(
-                                getClass().getResourceAsStream( getTemplateForFieldTypeCode( fieldCode ) ) ) );
+                                getClass().getResourceAsStream( getTemplateForFieldTypeCode( typeName ) ) ) );
             }
         }
     }

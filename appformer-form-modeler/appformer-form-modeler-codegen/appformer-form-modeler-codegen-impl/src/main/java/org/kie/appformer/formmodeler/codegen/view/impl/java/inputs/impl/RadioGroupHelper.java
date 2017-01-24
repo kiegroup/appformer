@@ -25,8 +25,8 @@ import org.jboss.forge.roaster.model.source.PropertySource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresExtraFields;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.SelectorOption;
-import org.kie.workbench.common.forms.model.impl.basic.selectors.radioGroup.StringRadioGroupFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.SelectorOption;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.radioGroup.definition.StringRadioGroupFieldDefinition;
 
 public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGroupFieldDefinition> implements
         RequiresCustomCode<StringRadioGroupFieldDefinition>, RequiresExtraFields<StringRadioGroupFieldDefinition> {
@@ -49,7 +49,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGrou
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return StringRadioGroupFieldDefinition.CODE;
+        return StringRadioGroupFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

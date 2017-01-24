@@ -27,14 +27,14 @@ import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.DatePick
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.SliderHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.TextAreaHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.TextBoxHelper;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.checkBox.definition.CheckBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.definition.DatePickerFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.slider.definition.DoubleSliderDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.slider.definition.IntegerSliderDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.definition.TextAreaFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.CharacterBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.checkBox.CheckBoxFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.datePicker.DatePickerFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.slider.DoubleSliderDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.slider.IntegerSliderDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.textArea.TextAreaFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.textBox.CharacterBoxFieldDefinition;
-import org.kie.workbench.common.forms.model.impl.basic.textBox.TextBoxFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith( MockitoJUnitRunner.class )

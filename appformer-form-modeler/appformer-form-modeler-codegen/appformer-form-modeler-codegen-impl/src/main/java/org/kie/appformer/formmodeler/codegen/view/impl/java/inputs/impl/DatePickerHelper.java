@@ -16,9 +16,7 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-
-import org.kie.workbench.common.forms.model.impl.basic.datePicker.DatePickerFieldDefinition;
-
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.definition.DatePickerFieldDefinition;
 
 public class DatePickerHelper extends AbstractInputCreatorHelper<DatePickerFieldDefinition> {
     public static String DATE_TIME_PICKER_NAME = "DateTimePicker";
@@ -29,7 +27,7 @@ public class DatePickerHelper extends AbstractInputCreatorHelper<DatePickerField
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return DatePickerFieldDefinition.CODE;
+        return DatePickerFieldDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

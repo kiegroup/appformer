@@ -17,13 +17,13 @@
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
-import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.AbstractInputCreatorHelper;
-import org.kie.workbench.common.forms.model.impl.basic.slider.SliderBase;
 
-public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.slider.definition.SliderBaseDefinition;
+
+public class SliderHelper extends AbstractInputCreatorHelper<SliderBaseDefinition> {
 
     @Override
-    public String getInputWidget( SliderBase fieldDefinition ) {
+    public String getInputWidget( SliderBaseDefinition fieldDefinition ) {
         /*
             Patch class to avoid error descrived on: https://github.com/gwtproject/gwt/issues/9242
             TODO: change it when fixed
@@ -37,7 +37,7 @@ public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
     }
 
     @Override
-    public String getInputInitLiteral( SourceGenerationContext context, SliderBase field ) {
+    public String getInputInitLiteral( SourceGenerationContext context, SliderBaseDefinition field ) {
         return "new Slider( "
                 + field.getMin().doubleValue() + ", "
                 + field.getMax().doubleValue() + ", "
@@ -49,7 +49,7 @@ public class SliderHelper extends AbstractInputCreatorHelper<SliderBase> {
 
     @Override
     public String getSupportedFieldTypeCode() {
-        return SliderBase.CODE;
+        return SliderBaseDefinition.FIELD_TYPE.getTypeName();
     }
 
     @Override

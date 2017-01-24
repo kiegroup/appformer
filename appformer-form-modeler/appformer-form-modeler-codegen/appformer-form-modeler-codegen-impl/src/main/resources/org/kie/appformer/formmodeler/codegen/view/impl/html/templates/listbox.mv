@@ -1,7 +1,7 @@
             <div id="@{field.name}_form_group" class="form-group">
                 <label class="control-label" for="@{field.name}">@{field.label}</label>
                 <select class="form-control" id="@{field.name}"
-                    @if{field.readonly}
+                    @if{field.readOnly}
                         disabled="disabled"
                     @end{}>
                     <option></option>

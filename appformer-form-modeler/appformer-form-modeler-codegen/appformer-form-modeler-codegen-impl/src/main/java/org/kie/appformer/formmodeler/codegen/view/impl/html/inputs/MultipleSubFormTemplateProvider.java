@@ -19,12 +19,9 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.multipleSubform.definition.MultipleSubFormFieldDefinition;
 import org.kie.workbench.common.forms.service.FieldManager;
 
-/**
- * @author Pere Fernandez <pefernan@redhat.com>
- */
 @Dependent
 public class MultipleSubFormTemplateProvider extends AbstractTemplateProvider {
 
@@ -35,7 +32,7 @@ public class MultipleSubFormTemplateProvider extends AbstractTemplateProvider {
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { MultipleSubFormFieldDefinition.CODE };
+        return new String[] { MultipleSubFormFieldDefinition.FIELD_TYPE.getTypeName() };
     }
 
     @Override
