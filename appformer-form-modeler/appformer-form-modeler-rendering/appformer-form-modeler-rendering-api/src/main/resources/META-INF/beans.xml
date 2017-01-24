@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://xmlns.jcp.org/xml/ns/javaee" bean-discovery-mode="all">
   <scan>
-    <exclude name="org.livespark.formmodeler.rendering.client.**"/>
+    <exclude name="org.kie.appformer.formmodeler.rendering.client.**"/>
   </scan>
 </beans>

@@ -28,7 +28,7 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.kie.appformer.client.home.HomeProducer;
 import org.kie.appformer.client.resources.i18n.AppConstants;
-import org.kie.appformer.client.shared.AppReady;
+import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;

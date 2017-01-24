@@ -59,7 +59,22 @@
       </dependency>
       <dependency>
         <groupId>org.kie.appformer</groupId>
-        <artifactId>appformer-deployment</artifactId>
+        <artifactId>appformer-ala-wildfly-provider</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-provisioning-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-provisioning-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-provisioning-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

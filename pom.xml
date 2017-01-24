@@ -56,9 +56,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:git:git@github.com:droolsjbpm/livespark.git</connection>
-    <developerConnection>scm:git:git@github.com:droolsjbpm/livespark.git</developerConnection>
-    <url>https://github.com/droolsjbpm/livespark</url>
+    <connection>scm:git:git@github.com:droolsjbpm/appformer.git</connection>
+    <developerConnection>scm:git:git@github.com:droolsjbpm/appformer.git</developerConnection>
+    <url>https://github.com/droolsjbpm/appformer</url>
   </scm>
   <issueManagement>
     <system>jira</system>
@@ -70,7 +70,8 @@
     <module>appformer-deps</module>
     <module>appformer-flow</module>
     <module>appformer-form-modeler</module>
-    <module>appformer-deployment</module>
+    <module>appformer-ala-wildfly-provider</module>
+    <module>appformer-provisioning</module>
     <module>appformer-showcase</module>
   </modules>
 

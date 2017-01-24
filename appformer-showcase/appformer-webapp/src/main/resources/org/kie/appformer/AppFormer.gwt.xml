@@ -77,7 +77,8 @@
   <inherits name="org.kie.workbench.common.forms.data.modeller.FormDataModellerIntegrationClient"/>
 
   <!-- Start AppFormer Modules -->
-  <inherits name="org.kie.appformer.AppFormerDeployment"/>
+  <inherits name="org.kie.appformer.provisioning.AppFormerProvisioningAPI"/>
+  <inherits name="org.kie.appformer.provisioning.AppFormerProvisioningClient"/>
 
   <!-- Data sources management -->
   <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceAPI" />
@@ -93,7 +94,7 @@
   <!-- End AppFormer Modules -->
 
   <!-- Specify the application specific style sheet. -->
-  <stylesheet src='css/livespark.css'/>
+  <stylesheet src='css/appformer.css'/>
 
   <!-- Specify the paths for translatable code -->
   <source path='client'/>

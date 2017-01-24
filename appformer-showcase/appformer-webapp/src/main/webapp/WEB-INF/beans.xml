@@ -23,11 +23,11 @@
     <!-- Workbench -->
     <exclude name="org.kie.workbench.drools.client.**"/>
 
-    <!-- LiveSpark -->
-    <exclude name="org.livespark.client.**"/>
-    <exclude name="org.livespark.formmodeler.rendering.client.**"/>
-    <exclude name="org.livespark.formmodeler.renderer.client.**"/>
-    <exclude name="org.livespark.formmodeler.editor.client.**"/>
+    <!-- AppFormer -->
+    <exclude name="org.kie.appformer.client.**"/>
+    <exclude name="org.kie.appformer.formmodeler.rendering.client.**"/>
+    <exclude name="org.kie.appformer.formmodeler.renderer.client.**"/>
+    <exclude name="org.kie.appformer.formmodeler.editor.client.**"/>
 
   </scan>
 </beans>

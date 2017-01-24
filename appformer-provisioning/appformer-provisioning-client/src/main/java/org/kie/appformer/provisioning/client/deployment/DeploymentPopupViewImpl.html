@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright 2016 Red Hat, Inc. and/or its affiliates.
+  ~  
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~  
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~  
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<form>
+  <fieldset>
+
+    <label class="control-label" data-i18n-key="localServer" data-field="local-server-label" checked>Local Server:</label>
+    <input name="server-type" data-field="local-server-radio-input">
+
+    <span>&nbsp;&nbsp;</span>
+
+    <label class="control-label" data-i18n-key="remoteServer" data-field="remote-server-label">Remote Server:</label>
+    <input name="server-type" data-field="remote-server-radio-input">
+
+    <div data-field="remote-server-options" >
+      <div class="form-group">
+        <label class="control-label" data-i18n-key="host" data-field="host-label">Host:</label>
+        <input class="form-control" data-field="host-text-input"/>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label" data-i18n-key="port" data-field="port-label">Port:</label>
+        <input class="form-control" data-field="port-text-input"/>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label" data-i18n-key="managementPort" data-field="management-port-label">Management Port:</label>
+        <input class="form-control" data-field="management-port-text-input"/>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label" data-i18n-key="managementUser" data-field="management-user-label">Management User:</label>
+        <div class="form-control" data-field="management-user-text-input"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label" data-i18n-key="managementPassword" data-field="management-password-label">Management Password:</label>
+        <div class="form-control" data-field="management-password-text-input"></div>
+      </div>
+
+      <button class="btn btn-default" type="button" data-field="test-connection-button" data-i18n-key="testConnection">TestConnection:</button>
+
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" data-i18n-key="dataSource"></label>
+      <div class="form-control" data-field="datasource-selector"></div>
+    </div>
+
+  </fieldset>
+</form>
