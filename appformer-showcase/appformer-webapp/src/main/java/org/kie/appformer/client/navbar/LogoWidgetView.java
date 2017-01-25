@@ -33,8 +33,7 @@ import org.kie.appformer.client.resources.i18n.AppConstants;
  * The Logo banner for the application
  */
 public class LogoWidgetView
-        extends Composite
-        implements LogoWidgetPresenter.View {
+        extends Composite {
 
     private SimplePanel container = new SimplePanel();
 
