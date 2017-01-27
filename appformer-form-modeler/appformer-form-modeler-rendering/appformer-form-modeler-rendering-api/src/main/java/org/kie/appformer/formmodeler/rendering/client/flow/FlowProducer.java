@@ -135,6 +135,7 @@ public abstract class FlowProducer<MODEL,
                                                                                           commandType,
                                                                                           listViewType ),
                                            () -> listView( false, false, false ) );
+        /*
         descriptorRegistry.addDisplayer( descriptorFactory.createDisplayerDescriptor( "Main", isElementType ),
                                          () -> new Displayer<IsElement>() {
 
@@ -149,6 +150,7 @@ public abstract class FlowProducer<MODEL,
                                                 uiComponent.onHide();
                                             }
         } );
+        */
     }
 
     public FORM_MODEL newFormModel() {
