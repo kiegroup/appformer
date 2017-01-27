@@ -276,6 +276,7 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
                 put( "port", params.get( "port" ) );
                 put( "management-port", params.get( "management-port" ) );
                 put( "kie-data-source", params.get( "kie-data-source" ) );
+                put( "jndi-data-source", params.get( "jndi-data-source" ) );
             }
         };
         executor.execute( wildflyInput, pipe, System.out::println, pipelineEventListener );
