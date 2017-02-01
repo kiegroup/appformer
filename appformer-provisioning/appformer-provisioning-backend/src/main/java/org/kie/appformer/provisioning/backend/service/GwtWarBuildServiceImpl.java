@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -55,10 +54,8 @@ import org.guvnor.m2repo.backend.server.ExtendedM2RepoService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
-import org.kie.appformer.ala.wildfly.executor.AppFormerProvisioningHelper;
-import org.kie.appformer.provisioning.service.TestConnectionResult;
-import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.appformer.provisioning.service.GwtWarBuildService;
+import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
 import org.kie.workbench.common.services.backend.builder.LRUBuilderCache;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -87,8 +84,6 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
 
     private PipelineExecutor executor;
 
-    private AppFormerProvisioningHelper provisioningHelper;
-
     // For proxying
     public GwtWarBuildServiceImpl() {
     }
@@ -105,8 +100,7 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
                                    final RepositoryService repositoryService, final Event< AppReady > appReadyEvent,
                                    final SourceRegistry sourceRegistry,
                                    final RuntimeRegistry runtimeRegistry, final PipelineRegistry pipelineRegistry,
-                                   final CDIPipelineEventListener pipelineEventListener,
-                                   final AppFormerProvisioningHelper provisioningHelper ) {
+                                   final CDIPipelineEventListener pipelineEventListener ) {
         super( pomService, m2RepoService, projectService, repositoryResolver, projectRepositoriesService, cache, handlers );
         this.configExecutors = configExecutors;
         this.repositoryService = repositoryService;
@@ -115,7 +109,6 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
         this.pipelineRegistry = pipelineRegistry;
         this.sourceRegistry = sourceRegistry;
         this.pipelineEventListener = pipelineEventListener;
-        this.provisioningHelper = provisioningHelper;
     }
 
     @Resource
@@ -160,25 +153,6 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
     @Override
     public BuildResults buildAndDeployProvisioningMode( Project project, Map<String, String> params ) {
         return buildAndDeployProvisioningWithPipeline( project, params );
-    }
-
-    @Override
-    public TestConnectionResult testConnection( String host,
-                                                int port,
-                                                int managementPort,
-                                                String managementUser,
-                                                String managementPassword ) {
-        TestConnectionResult result = new TestConnectionResult(  );
-        try {
-            String message = provisioningHelper.testManagementConnection( host,
-                    managementPort, managementUser, managementPassword, "ManagementRealm" );
-            result.setManagementConnectionError( false );
-            result.setManagementConnectionMessage( message );
-        } catch ( Exception e ) {
-            result.setManagementConnectionError( true );
-            result.setManagementConnectionMessage( e.getMessage() );
-        }
-        return result;
     }
 
     public BuildResults buildAndDeployWithPipeline( final Project project ) {
@@ -251,16 +225,7 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
         final Path repoPath = PathFactory.newPath( "repo", rootPath.toURI().substring( 0, rootPath.toURI().indexOf( rootPath.getFileName() ) ) );
         final Repository repository = repositoryService.getRepository( repoPath );
 
-        if ( params.get( "provider-name" ) == null ) {
-            params.put( "provider-name", "wildfly-" + UUID.randomUUID().toString() );
-        } else if ( "local".equals( params.get( "provider-name" ) ) ) {
-            WildflyServerOptions localServer = getLocalServerOptions();
-            params.put( "wildfly-user", localServer.getUser() );
-            params.put( "wildfly-password", localServer.getPassword() );
-            params.put( "host", localServer.getHost() );
-            params.put( "port", String.valueOf( localServer.getPort() ) );
-            params.put( "management-port", String.valueOf( localServer.getManagementPort() ) );
-        }
+        params.putIfAbsent( "provider-name", "wildfly-" + UUID.randomUUID( ).toString( ) );
 
         final Pipeline pipe = pipelineRegistry.getPipelineByName( "wildfly pipeline" );
 
@@ -275,12 +240,13 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
                 put( "host", params.get( "host" ) );
                 put( "port", params.get( "port" ) );
                 put( "management-port", params.get( "management-port" ) );
+                put( "wildfly-realm", params.get( "wildfly-realm" ) );
                 put( "kie-data-source", params.get( "kie-data-source" ) );
+                put( "kie-data-source-deployment-id", params.get( "kie-data-source-deployment-id" ) );
                 put( "jndi-data-source", params.get( "jndi-data-source" ) );
             }
         };
         executor.execute( wildflyInput, pipe, System.out::println, pipelineEventListener );
-
         return results;
     }
 
@@ -343,107 +309,4 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
         final String url = "http://" + get.getEndpoint().getHost() + ":" + get.getEndpoint().getPort() + "/" + get.getEndpoint().getContext();
         appReadyEvent.fire( new AppReady( url ) );
     }
-
-
-    private WildflyServerOptions getLocalServerOptions() {
-        WildflyServerOptions options = new WildflyServerOptions( "localhost",
-                8080, 9990, "testadmin", "testadmin", "ManagementRealm" );
-
-        String value;
-
-        if ( ( value = System.getProperties().getProperty( "jboss.http.port" ) ) != null ) {
-            try {
-                options.setPort( Integer.parseInt( value ) );
-            } catch ( Exception e ) {
-                //default port has already been set, ignore this uncommon error.
-            }
-        }
-
-        if ( ( value = System.getProperties().getProperty( "jboss.management.http.port" ) ) != null ) {
-            try {
-                options.setManagementPort( Integer.parseInt( value ) );
-            } catch ( Exception e ) {
-                //default port has already been set, ignore this uncommon error.
-            }
-        }
-        return options;
-    }
-
-    private class WildflyServerOptions {
-
-        private String host;
-
-        private int port;
-
-        private int managementPort;
-
-        private String user;
-
-        private String password;
-
-        private String realm;
-
-        public WildflyServerOptions( String host,
-                                     int port,
-                                     int managementPort,
-                                     String user,
-                                     String password,
-                                     String realm ) {
-            this.host = host;
-            this.port = port;
-            this.managementPort = managementPort;
-            this.user = user;
-            this.password = password;
-            this.realm = realm;
-        }
-
-        public String getHost( ) {
-            return host;
-        }
-
-        public void setHost( String host ) {
-            this.host = host;
-        }
-
-        public int getPort( ) {
-            return port;
-        }
-
-        public void setPort( int port ) {
-            this.port = port;
-        }
-
-        public int getManagementPort( ) {
-            return managementPort;
-        }
-
-        public void setManagementPort( int managementPort ) {
-            this.managementPort = managementPort;
-        }
-
-        public String getUser( ) {
-            return user;
-        }
-
-        public void setUser( String user ) {
-            this.user = user;
-        }
-
-        public String getPassword( ) {
-            return password;
-        }
-
-        public void setPassword( String password ) {
-            this.password = password;
-        }
-
-        public String getRealm( ) {
-            return realm;
-        }
-
-        public void setRealm( String realm ) {
-            this.realm = realm;
-        }
-    }
-
 }

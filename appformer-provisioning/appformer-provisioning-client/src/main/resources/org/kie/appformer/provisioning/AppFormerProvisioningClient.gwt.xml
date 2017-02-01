@@ -8,6 +8,7 @@
   <inherits name="org.jboss.errai.common.ErraiCommon"/>
 
   <inherits name="org.uberfire.ext.widgets.common.UberfireWidgetsCommons" />
+  <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore" />
 
   <inherits name="org.kie.workbench.common.screens.datasource.KieWorkbenchDataSourceAPI" />
   <inherits name="org.kie.appformer.provisioning.AppFormerProvisioningAPI"/>

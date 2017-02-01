@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.project.model.Project;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.jboss.errai.common.client.api.Caller;
-import org.kie.appformer.provisioning.client.deployment.DeploymentPopup;
+import org.kie.appformer.provisioning.client.wizard.ProvisioningWizard;
 import org.kie.appformer.provisioning.service.GwtWarBuildService;
 import org.kie.workbench.common.screens.datasource.management.client.editor.datasource.selector.DataSourceSelector;
 import org.kie.workbench.common.screens.projecteditor.client.editor.extension.BuildOptionExtension;
@@ -44,7 +44,7 @@ public class ProvisioningDeploymentExtension implements BuildOptionExtension {
     private DataSourceSelector dataSourceSelector;
 
     @Inject
-    private DeploymentPopup deploymentPopup;
+    private ProvisioningWizard provisioningWizard;
 
     @Override
     public Collection<Widget> getBuildOptions( Project project ) {
@@ -61,7 +61,7 @@ public class ProvisioningDeploymentExtension implements BuildOptionExtension {
         return new ClickHandler( ) {
             @Override
             public void onClick( ClickEvent event ) {
-                deploymentPopup.show( project );
+                provisioningWizard.start( project );
             }
         };
     }

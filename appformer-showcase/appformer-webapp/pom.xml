@@ -1520,7 +1520,6 @@
 
               <!-- AppFormer -->
               <compileSourcesArtifact>org.kie.appformer:appformer-form-modeler-rendering-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.kie.appformer:appformer-form-modeler-dynamic-renderer-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.appformer:appformer-provisioning-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.appformer:appformer-provisioning-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.appformer:appformer-flow-api</compileSourcesArtifact>
