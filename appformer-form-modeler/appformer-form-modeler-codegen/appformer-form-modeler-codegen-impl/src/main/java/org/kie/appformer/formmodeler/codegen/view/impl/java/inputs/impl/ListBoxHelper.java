@@ -101,7 +101,7 @@ public class ListBoxHelper<T extends SelectorOption> extends AbstractInputCreato
                 .setProtected()
                 .setBody( body.toString() );
 
-        final MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
+        final MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD );
         body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
         body.append( initListMethodName ).append( "();" );
         beforeDisplayMethod.setBody( body.toString() );

@@ -65,8 +65,8 @@ public abstract class FormView<MODEL, FORM_MODEL extends FormModel> implements I
 
     @PostConstruct
     private void init() {
-        getModel().initModel();
         initForm();
+        getModel().initModel();
         beforeDisplay();
     }
 

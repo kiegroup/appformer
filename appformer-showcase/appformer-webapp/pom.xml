@@ -1280,6 +1280,7 @@
     <dependency>
       <groupId>org.kie.appformer</groupId>
       <artifactId>appformer-provisioning-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- End AppFormer Modules -->
