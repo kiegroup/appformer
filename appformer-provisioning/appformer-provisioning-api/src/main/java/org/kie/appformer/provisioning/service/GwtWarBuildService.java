@@ -29,10 +29,4 @@ public interface GwtWarBuildService {
 
     BuildResults buildAndDeployProvisioningMode( Project project, Map<String, String> params );
 
-    TestConnectionResult testConnection( String host,
-                                         int port,
-                                         int managementPort,
-                                         String managementUser,
-                                         String managementPassword );
-
 }

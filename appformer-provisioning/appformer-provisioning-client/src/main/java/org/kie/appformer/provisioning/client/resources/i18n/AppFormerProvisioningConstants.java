@@ -21,17 +21,53 @@ import org.jboss.errai.ui.shared.api.annotations.TranslationKey;
 public interface AppFormerProvisioningConstants {
 
     @TranslationKey( defaultValue = "" )
-    String DeploymentPopup_TestConnectionSuccessfulMessage = "DeploymentPopup.TestConnectionSuccessfulMessage";
+    String ProvisioningWizard_title = "ProvisioningWizard.title";
 
     @TranslationKey( defaultValue = "" )
-    String DeploymentPopup_TestConnectionFailMessage = "DeploymentPopup.TestConnectionFailMessage";
+    String ProvisioningWizard_provisioningStartedMessage = "ProvisioningWizard.provisioningStartedMessage";
 
     @TranslationKey( defaultValue = "" )
-    String DeploymentPopup_CompleteParametersMessage = "DeploymentPopup.CompleteParametersMessage";
+    String ConfigureServerPage_title = "ConfigureServerPage.title";
 
-    @TranslationKey( defaultValue = "")
-    String DeploymentPopup_PortNumberError = "DeploymentPopup.PortNumberError";
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_TestConnectionSuccessfulMessage = "ConfigureServerPage.TestConnectionSuccessfulMessage";
 
-    @TranslationKey( defaultValue = "")
-    String DeploymentPopup_ManagementPortNumberError = "DeploymentPopup.ManagementPortNumberError";
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_TestConnectionFailMessage = "ConfigureServerPage.TestConnectionFailMessage";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_CompleteParametersMessage = "ConfigureServerPage.CompleteParametersMessage";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_HostError = "ConfigureServerPage.HostError";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_PortNumberError = "ConfigureServerPage.PortNumberError";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ManagementPortNumberError = "ConfigureServerPage.ManagementPortNumberError";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ManagementUserError = "ConfigureServerPage.ManagementUserError";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ManagementPasswordError = "ConfigureServerPage.ManagementPasswordError";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ManagementRealmError = "ConfigureServerPage.ManagementRealmError";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ValidateConnectionMessage = "ConfigureServerPage.ValidateConnectionMessage";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ConnectionValidatedMessage = "ConfigureServerPage.ConnectionValidatedMessage";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureServerPage_ConnectionFailuresMessage = "ConfigureServerPage.ConnectionFailuresMessage";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureApplicationPage_title = "ConfigureApplicationPage.title";
+
+    @TranslationKey( defaultValue = "" )
+    String ConfigureApplicationPage_ExternalDataSourceDescriptionFormat = "ConfigureApplicationPage.ExternalDataSourceDescriptionFormat";
 }

@@ -30,22 +30,34 @@ public class AppFormerWildflyRuntimeExecConfig
 
     private String kieDataSource;
 
+    private String kieDataSourceDeploymentId;
+
+    private String realm;
+
     public AppFormerWildflyRuntimeExecConfig( ) {
     }
 
     public AppFormerWildflyRuntimeExecConfig( ProviderId providerId,
                                               String warPath,
                                               String jndiDataSource,
-                                              String kieDataSource ) {
+                                              String kieDataSource,
+                                              String kieDataSourceDeploymentId,
+                                              String realm ) {
         super( providerId, warPath );
         this.jndiDataSource = jndiDataSource;
         this.kieDataSource = kieDataSource;
+        this.kieDataSourceDeploymentId = kieDataSourceDeploymentId;
+        this.realm = realm;
     }
 
     @Override
     public WildflyRuntimeExecConfig asNewClone( WildflyRuntimeExecConfig origin ) {
-        return new AppFormerWildflyRuntimeExecConfig( origin.getProviderId(),
-                origin.getWarPath(), getJndiDataSource(), getKieDataSource() );
+        return new AppFormerWildflyRuntimeExecConfig( origin.getProviderId( ),
+                origin.getWarPath( ),
+                getJndiDataSource( ),
+                getKieDataSource( ),
+                getKieDataSourceDeploymentId( ),
+                getRealm() );
     }
 
     @Override
@@ -54,6 +66,8 @@ public class AppFormerWildflyRuntimeExecConfig
         if ( input != null ) {
             jndiDataSource = input.get( "jndi-data-source" );
             kieDataSource = input.get( "kie-data-source" );
+            kieDataSourceDeploymentId = input.get( "kie-data-source-deployment-id" );
+            realm = input.get( "wildfly-realm" );
         }
         super.setContext( context );
     }
@@ -64,5 +78,13 @@ public class AppFormerWildflyRuntimeExecConfig
 
     public String getKieDataSource( ) {
         return kieDataSource;
+    }
+
+    public String getKieDataSourceDeploymentId( ) {
+        return kieDataSourceDeploymentId;
+    }
+
+    public String getRealm( ) {
+        return realm;
     }
 }
