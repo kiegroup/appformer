@@ -87,6 +87,11 @@
         <artifactId>appformer-flow-client</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-flow-lang</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
