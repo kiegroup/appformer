@@ -16,7 +16,7 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.INIT_FORM_METHOD;
 
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -73,8 +73,8 @@ public class ObjectSelectorBoxHelper<T extends SelectorOption> extends AbstractI
         viewClass.addImport( WIDGET_CLASSNAME );
         viewClass.addImport( fieldDefinition.getStandaloneClassName() );
 
-        final MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
-        final StringBuffer body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
+        final MethodSource<JavaClassSource> initMethod = viewClass.getMethod( INIT_FORM_METHOD );
+        final StringBuffer body = new StringBuffer( initMethod.getBody() == null ? "" : initMethod.getBody() );
 
 
         body.append( fieldDefinition.getName() )
@@ -89,7 +89,7 @@ public class ObjectSelectorBoxHelper<T extends SelectorOption> extends AbstractI
                 .append( SourceGenerationContext.REST_SERVICE_SUFFIX )
                 .append( ".class ) );" );
 
-        beforeDisplayMethod.setBody( body.toString() );
+        initMethod.setBody( body.toString() );
 
     }
 

@@ -39,7 +39,7 @@ public class PictureHelper extends AbstractInputCreatorHelper<PictureFieldDefini
 
     @Override
     public void addCustomCode( PictureFieldDefinition field, SourceGenerationContext context, JavaClassSource viewClass ) {
-        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
+        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD );
         StringBuffer body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
 
         body.append( getWidgetInitialization( field ) );

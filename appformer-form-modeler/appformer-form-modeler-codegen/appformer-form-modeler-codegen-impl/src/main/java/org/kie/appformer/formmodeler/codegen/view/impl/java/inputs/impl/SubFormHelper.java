@@ -104,8 +104,7 @@ public class SubFormHelper extends AbstractNestedModelHelper<SubFormFieldDefinit
 
     private void amendValidateNestedModels(final SubFormFieldDefinition fieldDefinition, final SourceGenerationContext context, final JavaClassSource viewClass) {
 
-        final MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( DO_EXTRA_VALIDATIONS_METHOD,
-                boolean.class );
+        final MethodSource<JavaClassSource> updateNestedModelsMethod = viewClass.getMethod( DO_EXTRA_VALIDATIONS_METHOD );
         if ( updateNestedModelsMethod != null ) {
             String body = updateNestedModelsMethod.getBody();
 

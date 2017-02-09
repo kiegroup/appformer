@@ -107,7 +107,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGrou
                 .setProtected()
                 .setBody( body.toString() );
 
-        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD, void.class );
+        MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD );
         body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
         body.append( loadRadioValuessMethod ).append( "();" );
         beforeDisplayMethod.setBody( body.toString() );
