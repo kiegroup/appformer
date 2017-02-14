@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -35,17 +34,11 @@ import org.kie.appformer.flow.api.AppFlow;
 import org.kie.appformer.flow.api.AppFlowFactory;
 import org.kie.appformer.flow.api.Command;
 import org.kie.appformer.flow.api.CrudOperation;
-import org.kie.appformer.flow.api.Displayer;
 import org.kie.appformer.flow.api.Step;
 import org.kie.appformer.flow.api.UIComponent;
 import org.kie.appformer.flow.api.Unit;
-import org.kie.appformer.flow.api.descriptor.DescriptorFactory;
-import org.kie.appformer.flow.api.descriptor.conversion.DescriptorRegistry;
-import org.kie.appformer.flow.api.descriptor.type.TypeFactory;
-import org.kie.appformer.flow.api.descriptor.type.Type.ParameterizedType;
-import org.kie.appformer.flow.api.descriptor.type.Type.SimpleType;
-import org.kie.appformer.formmodeler.rendering.client.shared.FormModel;
 import org.kie.appformer.formmodeler.rendering.client.shared.AppFormerRestService;
+import org.kie.appformer.formmodeler.rendering.client.shared.FormModel;
 import org.kie.appformer.formmodeler.rendering.client.view.FormView;
 import org.kie.appformer.formmodeler.rendering.client.view.ListView;
 import org.kie.appformer.formmodeler.rendering.client.view.StandaloneFormWrapper;
@@ -80,78 +73,11 @@ public abstract class FlowProducer<MODEL,
     @Inject
     private ManagedInstance<ModalFormDisplayer> modalDisplayerProvider;
 
-    @Inject
-    private DescriptorFactory descriptorFactory;
-
-    @Inject
-    private DescriptorRegistry descriptorRegistry;
-
-    @Inject
-    private TypeFactory typeFactory;
-
     public abstract FORM_MODEL modelToFormModel( MODEL model );
     public abstract MODEL formModelToModel( FORM_MODEL formModel );
     public abstract MODEL newModel();
     public abstract Class<MODEL> getModelType();
     public abstract Class<FORM_MODEL> getFormModelType();
-
-    @PostConstruct
-    private void registerFlowParts() {
-        final SimpleType modelType = typeFactory.simpleType( getModelType() );
-        final SimpleType formModelType = typeFactory.simpleType( getFormModelType() );
-        final SimpleType unitType = typeFactory.simpleType( Unit.class );
-        final ParameterizedType modelDataProviderType = typeFactory.parameterizedType( typeFactory.genericType( FlowDataProvider.class, "T" ), modelType );
-        final ParameterizedType formModelOptionalType = typeFactory.parameterizedType( typeFactory.genericType( Optional.class, "T" ), formModelType );
-        final SimpleType isElementType = typeFactory.simpleType( IsElement.class );
-        final ParameterizedType commandType = typeFactory.parameterizedType( typeFactory.genericType( Command.class,
-                                                                                                "E",
-                                                                                                "T" ),
-                                                                       typeFactory.simpleType( CrudOperation.class ),
-                                                                       modelType );
-        final ParameterizedType listViewType = typeFactory.parameterizedType( typeFactory.genericType( ListView.class, "M", "F" ), modelType, formModelType );
-
-        descriptorRegistry.addStep( descriptorFactory.createStepDescriptor( "Save", modelType, modelType ), this::save );
-        descriptorRegistry.addStep( descriptorFactory.createStepDescriptor( "Update", modelType, modelType ), this::update );
-        descriptorRegistry.addStep( descriptorFactory.createStepDescriptor( "Delete", modelType, modelType ), this::delete );
-        descriptorRegistry.addStep( descriptorFactory.createStepDescriptor( "Load", unitType, modelDataProviderType ), this::load );
-        descriptorRegistry.addUIComponent( descriptorFactory.createUIComponentDescriptor( "StandaloneFormView",
-                                                                                          formModelType,
-                                                                                          formModelOptionalType,
-                                                                                          isElementType ),
-                                           this::standaloneFormView );
-        descriptorRegistry.addStep( descriptorFactory.createStepDescriptor( "Modal Form", formModelType, formModelOptionalType ), this::displayModalForm );
-        descriptorRegistry.addUIComponent( descriptorFactory.createUIComponentDescriptor( "Create and Edit ListView",
-                                                                                          modelDataProviderType,
-                                                                                          commandType,
-                                                                                          listViewType ),
-                                           () -> listView( true, true, true ) );
-        descriptorRegistry.addUIComponent( descriptorFactory.createUIComponentDescriptor( "Edit ListView",
-                                                                                          modelDataProviderType,
-                                                                                          commandType,
-                                                                                          listViewType ),
-                                           () -> listView( false, true, true ) );
-        descriptorRegistry.addUIComponent( descriptorFactory.createUIComponentDescriptor( "Read-only ListView",
-                                                                                          modelDataProviderType,
-                                                                                          commandType,
-                                                                                          listViewType ),
-                                           () -> listView( false, false, false ) );
-        /*
-        descriptorRegistry.addDisplayer( descriptorFactory.createDisplayerDescriptor( "Main", isElementType ),
-                                         () -> new Displayer<IsElement>() {
-
-                                            @Override
-                                            public void show( final UIComponent<?, ?, IsElement> uiComponent ) {
-                                                event.fire( uiComponent.asComponent() );
-                                            }
-
-                                            @Override
-                                            public void hide( final UIComponent<?, ?, IsElement> uiComponent ) {
-                                                removeFromParent( uiComponent.asComponent().getElement() );
-                                                uiComponent.onHide();
-                                            }
-        } );
-        */
-    }
 
     public FORM_MODEL newFormModel() {
         return modelToFormModel( newModel() );

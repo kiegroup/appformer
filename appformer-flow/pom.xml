@@ -12,5 +12,6 @@
   <modules>
    <module>appformer-flow-api</module>
    <module>appformer-flow-client</module>
+   <module>appformer-flow-lang</module>
   </modules>
 </project>
