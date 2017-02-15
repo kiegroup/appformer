@@ -13,5 +13,6 @@
    <module>appformer-flow-api</module>
    <module>appformer-flow-client</module>
    <module>appformer-flow-lang</module>
+   <module>appformer-stunner-flowset</module>
   </modules>
 </project>

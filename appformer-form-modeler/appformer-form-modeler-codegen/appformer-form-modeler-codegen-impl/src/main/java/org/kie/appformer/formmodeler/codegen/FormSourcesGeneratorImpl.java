@@ -18,6 +18,7 @@ package org.kie.appformer.formmodeler.codegen;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -27,7 +28,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Package;
-import org.kie.appformer.formmodeler.codegen.flow.FlowLangSourceGenerator;
 import org.kie.appformer.formmodeler.codegen.flow.FlowProducer;
 import org.kie.appformer.formmodeler.codegen.model.FormModel;
 import org.kie.appformer.formmodeler.codegen.rest.EntityService;
@@ -111,9 +111,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private JavaSourceGenerator flowProducerSourceGenerator;
 
     @Inject
-    private FlowLangSourceGenerator mainFlowGenerator;
-
-    @Inject
     private ErraiAppPropertiesGenerator serializableTypesGenerator;
 
     @Inject
@@ -158,9 +155,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         final String flowProducerSource = flowProducerSourceGenerator.generateJavaSource( context );
 
-        final String mainFlowSource = mainFlowGenerator.generateInitialFlowSource( context );
-
-        final String serializableTypesDeclaration = serializableTypesGenerator.generate( getSerializableTypeClassNames( project ) );
+        final String serializableTypesDeclaration = serializableTypesGenerator.generate( getSerializableTypeClassNames( project ),
+                                                                                         getExistingErraiAppPropertiesStringFromPath( resourcePath ) );
 
         if ( !allNonEmpty( resourcePath,
                 formModelSource,
@@ -173,7 +169,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                 restImplSource,
                 entityServiceSource,
                 flowProducerSource,
-                mainFlowSource,
                 serializableTypesDeclaration ) ) {
             log.warn( "Unable to generate the required form assets for Data Object: {}", resourcePath );
             return;
@@ -198,13 +193,20 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
             writeErraiAppProperties( serializableTypesDeclaration, project );
 
-            maybeWriteFlowSource( resourcePath, "Main", mainFlowSource, local );
-            maybeUpdateFlowSourceImports( resourcePath, "Main", local, context );
         } catch ( final Exception e ) {
             log.error( "It was not possible to generate form sources for file: " + resourcePath + " due to the following errors.", e );
         } finally {
             ioService.endBatch();
         }
+    }
+
+    private Optional<String> getExistingErraiAppPropertiesStringFromPath( final Path resourcePath ) {
+        final KieProject project = projectService.resolveProject( resourcePath );
+        final org.uberfire.java.nio.file.Path propertiesPath = Paths.convert( project.getRootPath() ).resolve( "src/main/resources/ErraiApp.properties" );
+        return Optional
+                .of( propertiesPath )
+                .filter( path -> ioService.exists( path ) )
+                .map( path -> ioService.readAllString( path ) );
     }
 
     @Override
@@ -352,40 +354,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         ioService.write( htmlPath,
                          htmlTemplate,
                          makeCommentedOption( "Added HTML Source for Form Template '" + dataObjectPath + "'" ) );
-    }
-
-    private void maybeWriteFlowSource( final Path dataObjectPath,
-                                       final String name,
-                                       final String flowFileTemplate,
-                                       final Package sourcePackage ) {
-        final org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getProjectRootPath() ).resolve( "src/main/resources" );
-        final org.uberfire.java.nio.file.Path flowPath = parentPath.resolve( name + ".flow" );
-
-        final boolean flowFileExists = ioService.exists( flowPath );
-
-        if ( !flowFileExists ) {
-            ioService.write( flowPath,
-                             flowFileTemplate,
-                             makeCommentedOption( "Added Flow Source for Form Template '" + dataObjectPath + "'" ) );
-        }
-    }
-
-    private void maybeUpdateFlowSourceImports( final Path dataObjectPath,
-                                               final String name,
-                                               final Package sourcePackage,
-                                               final SourceGenerationContext context ) {
-        final org.uberfire.java.nio.file.Path parentPath = Paths.convert( sourcePackage.getProjectRootPath() ).resolve( "src/main/resources" );
-        final org.uberfire.java.nio.file.Path flowPath = parentPath.resolve( name + ".flow" );
-
-        final String originalFlowSource = ioService.readAllString( flowPath );
-
-        mainFlowGenerator
-            .updateSource( context, originalFlowSource )
-            .ifPresent( newSrc -> {
-                ioService.write( flowPath,
-                                 newSrc,
-                                 makeCommentedOption( "Updated Flow Source imports for Form Template '" + dataObjectPath + "'" ) );
-            } );
     }
 
     private void writeJavaSource( final Path dataObjectPath,

@@ -1,0 +1,178 @@
+/*
+ * Copyright (C) 2016 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package org.kie.appformer.formmodeler.rendering.client.view;
+
+import static org.jboss.errai.common.client.dom.DOMUtil.removeAllElementChildren;
+import static org.kie.appformer.flow.api.FormOperation.CANCEL;
+import static org.kie.appformer.flow.api.FormOperation.NEXT;
+import static org.kie.appformer.flow.api.FormOperation.PREVIOUS;
+import static org.kie.appformer.flow.api.FormOperation.SUBMIT;
+
+import java.util.function.Consumer;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.jboss.errai.common.client.dom.Button;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.ui.client.local.api.IsElement;
+import org.jboss.errai.ui.shared.TemplateWidgetMapper;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.appformer.flow.api.Command;
+import org.kie.appformer.flow.api.FormOperation;
+import org.kie.appformer.flow.api.Sequenced;
+import org.kie.appformer.flow.api.UIComponent;
+import org.kie.appformer.formmodeler.rendering.client.shared.FormModel;
+import org.kie.workbench.common.forms.crud.client.component.formDisplay.IsFormView;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Widget;
+
+@Dependent
+@Templated
+public class FormStepWrapper<MODEL, FORM_MODEL extends FormModel<MODEL>, FORM_VIEW extends FormView<MODEL, FORM_MODEL>>
+    implements
+    IsElement,
+    IsFormView<FORM_MODEL>,
+    UIComponent<FORM_VIEW, Command<FormOperation, FORM_VIEW>, FormStepWrapper<MODEL, FORM_MODEL, FORM_VIEW>>,
+    Sequenced {
+
+    private final Consumer<Command<FormOperation, FORM_VIEW>> noOpCallback = o -> {};
+
+    private FORM_VIEW formView;
+
+    @Inject
+    @DataField
+    private Div container;
+
+    @Inject
+    @DataField
+    private Button next;
+
+    @Inject
+    @DataField
+    private Button prev;
+
+    @Inject
+    @DataField
+    private Button cancel;
+
+    private boolean start, end;
+
+    private Consumer<Command<FormOperation, FORM_VIEW>> callback = noOpCallback;
+
+    @Override
+    public void start( final FORM_VIEW formView,
+                       final Consumer<Command<FormOperation, FORM_VIEW>> callback ) {
+        this.callback = callback;
+        setFormView( formView );
+    }
+
+    @Override
+    public void onHide() {
+    }
+
+    @Override
+    public String getName() {
+        return "MultiStepFormPageWrapper";
+    }
+
+    @Override
+    public FormStepWrapper<MODEL, FORM_MODEL, FORM_VIEW> asComponent() {
+        return this;
+    }
+
+    public void setFormView( final FORM_VIEW formView ) {
+        this.formView = formView;
+        removeAllElementChildren( container );
+        container.appendChild( formView.getElement() );
+    }
+
+    @EventHandler("next")
+    public void onNextOrSubmit( final ClickEvent event ) {
+        if ( !isEnd() || formView.isValid() ) {
+            final Consumer<Command<FormOperation, FORM_VIEW>> callback = this.callback;
+            this.callback = noOpCallback;
+            callback.accept( new Command<>( getNextOperation(), formView ) );
+        }
+    }
+
+    @EventHandler("prev")
+    public void onPrevious( final ClickEvent event ) {
+        callback.accept( new Command<>( PREVIOUS, formView ) );
+    }
+
+    private FormOperation getNextOperation() {
+        return end ? SUBMIT : NEXT;
+    }
+
+    @EventHandler("cancel")
+    public void onCancel( final ClickEvent event ) {
+        final Consumer<Command<FormOperation, FORM_VIEW>> callback = this.callback;
+        this.callback = noOpCallback;
+        callback.accept( new Command<>( CANCEL, formView ) );
+    }
+
+    @Override
+    public void setModel( final FORM_MODEL model ) {
+        formView.setModel( model );
+    }
+
+    public FORM_VIEW getFormView() {
+        return formView;
+    }
+
+    @Override
+    public FORM_MODEL getModel() {
+        return formView.getModel();
+    }
+
+    @Override
+    public boolean isValid() {
+        return formView.isValid();
+    }
+
+    @Override
+    public Widget asWidget() {
+        return TemplateWidgetMapper.get( this );
+    }
+
+    @Override
+    public boolean isStart() {
+        return start;
+    }
+
+    @Override
+    public boolean isEnd() {
+        return end;
+    }
+
+    @Override
+    public void setStart() {
+        prev.getStyle().setProperty( "display", "none" );
+        start = true;
+    }
+
+    @Override
+    public void setEnd() {
+        next.setTextContent( "Finish" );
+        end = true;
+    }
+}

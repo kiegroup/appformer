@@ -92,6 +92,31 @@
         <artifactId>appformer-flow-lang</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-stunner-flowset-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-stunner-flowset-project-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-stunner-flowset-interpeter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-stunner-flowset-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-stunner-flowset-backend</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

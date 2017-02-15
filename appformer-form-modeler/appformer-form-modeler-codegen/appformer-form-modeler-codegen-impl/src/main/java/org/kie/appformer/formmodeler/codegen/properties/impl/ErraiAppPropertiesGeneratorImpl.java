@@ -18,42 +18,53 @@ package org.kie.appformer.formmodeler.codegen.properties.impl;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.kie.appformer.formmodeler.codegen.ErraiAppPropertiesGenerator;
 
 public class ErraiAppPropertiesGeneratorImpl implements ErraiAppPropertiesGenerator {
 
-    private static final String SECURITY_COOKIE_ENABLED = "errai.security.user_cookie_enabled=true";
-    private static final String CDI_ALTERNATIVES = "errai.ioc.enabled.alternatives=" +
-            "org.uberfire.security.impl.authz.RuntimeAuthorizationManager \\" +
-            "\norg.uberfire.client.workbench.WorkbenchServicesProxyClientImpl";
-
     private static final String MARHSALLING_DECLARATION_LHS = "errai.marshalling.serializableTypes=";
     private static final String BINDING_DECLARATION_LHS = "errai.ui.bindableTypes=";
 
-
+    private static final String GENERATED_COMMENT_START = "# Start generated bindable/serializable type declarations";
+    private static final String GENERATED_COMMENT_END = "# End generated bindable/serializable type declarations";
 
     @Override
-    public String generate( Collection<String> fullyQualifiedClassNames ) {
-        final StringBuilder builder = new StringBuilder();
+    public String generate( final Collection<String> fullyQualifiedClassNames, final Optional<String> previousProperties ) {
+        final StringBuilder builder = new StringBuilder( filterPrevious( previousProperties ) );
 
-        builder.append( SECURITY_COOKIE_ENABLED );
-
-        builder.append( "\n" );
-        builder.append( CDI_ALTERNATIVES );
-
-        builder.append( "\n\n" );
+        builder.append( GENERATED_COMMENT_START ).append( '\n' );
         generateDeclaration( fullyQualifiedClassNames, builder, MARHSALLING_DECLARATION_LHS );
         generateDeclaration( fullyQualifiedClassNames, builder, BINDING_DECLARATION_LHS );
+        builder.append( GENERATED_COMMENT_END ).append( '\n' );
 
         return builder.toString();
     }
 
-    private void generateDeclaration( Collection<String> fullyQualifiedClassNames, final StringBuilder builder, String declarationLhs  ) {
+    private String filterPrevious( final Optional<String> previousProperties ) {
+        return previousProperties
+                .map( previous -> {
+                    final int startIndex = previous.indexOf( GENERATED_COMMENT_START );
+                    final int endIndex = previous.indexOf( GENERATED_COMMENT_END );
+                    if ( startIndex != -1 && endIndex != -1 ) {
+                        return previous.substring( 0,
+                                                   startIndex )
+                               + previous.substring( endIndex + GENERATED_COMMENT_END.length(),
+                                                     previous.length() );
+                    }
+                    else {
+                        return previous;
+                    }
+                } )
+                .orElse( "" );
+    }
+
+    private void generateDeclaration( final Collection<String> fullyQualifiedClassNames, final StringBuilder builder, final String declarationLhs  ) {
         if ( fullyQualifiedClassNames.size() > 0 ) {
             builder.append( declarationLhs );
 
-            Iterator<String> iter = fullyQualifiedClassNames.iterator();
+            final Iterator<String> iter = fullyQualifiedClassNames.iterator();
             do {
                 builder.append( iter.next() );
                 if ( iter.hasNext() ) {

@@ -82,6 +82,9 @@ public interface AppFlowFactory {
      * @return A flow consisting of constant value. Executing the returned flow immediately returns the given constant.
      */
     default <OUTPUT> AppFlow<Unit, OUTPUT> buildFromConstant( final OUTPUT constant ) {
+        if ( constant == null ) {
+            throw new NullPointerException( "Null values not permitted in flows." );
+        }
         return buildFromFunction( u -> constant );
     }
 

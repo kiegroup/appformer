@@ -15,13 +15,27 @@
  */
 
 
-package org.kie.appformer.formmodeler.codegen.flow;
+package org.kie.appformer.flowset.interpeter.util;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
+import org.kie.appformer.flow.api.Displayer;
+import org.kie.appformer.flow.api.UIComponent;
 
-public interface FlowLangSourceGenerator {
-    String generateInitialFlowSource( SourceGenerationContext context );
-    Optional<String> updateSource( SourceGenerationContext context, String original );
+public class TestDisplayer<C> implements Displayer<C> {
+
+    public List<C> shown = new ArrayList<>();
+    public List<C> hidden = new ArrayList<>();
+
+    @Override
+    public void show( final UIComponent<?, ?, C> uiComponent ) {
+        shown.add( uiComponent.asComponent() );
+    }
+
+    @Override
+    public void hide( final UIComponent<?, ?, C> uiComponent ) {
+        hidden.add( uiComponent.asComponent() );
+    }
+
 }

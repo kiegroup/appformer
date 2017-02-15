@@ -17,6 +17,8 @@
 
 package org.kie.appformer.flow.api;
 
+import java.util.function.Function;
+
 /**
  * <p>
  * A convenience class for {@link Step Steps} that return a command and associated value. For
@@ -31,6 +33,10 @@ public class Command<E extends Enum<E>, T> {
     public Command(final E commandType, final T value) {
         this.commandType = commandType;
         this.value = value;
+    }
+
+    public <U> Command<E, U> map( final Function<T, U> f ) {
+        return new Command<>( commandType, f.apply( value ) );
     }
 
 }
