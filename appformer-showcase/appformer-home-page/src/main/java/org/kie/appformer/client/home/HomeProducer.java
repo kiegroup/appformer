@@ -80,8 +80,8 @@ public class HomeProducer {
         final SectionEntry s3 = ModelUtils.makeSectionEntry( constants.tasks() );
 
         s3.addChild( ModelUtils.makeSectionEntry( constants.Tasks_List(),
-                () -> placeManager.goTo( DATASET_TASKS ),
-                DATASET_TASKS, PERSPECTIVE ) );
+                () -> placeManager.goTo( TASKS ),
+                TASKS, PERSPECTIVE ) );
 
         model.addSection( s1 );
         model.addSection( s2 );
