@@ -37,13 +37,14 @@ public class AppFormerWildflyRuntimeExecConfig
     public AppFormerWildflyRuntimeExecConfig( ) {
     }
 
-    public AppFormerWildflyRuntimeExecConfig( ProviderId providerId,
-                                              String warPath,
-                                              String jndiDataSource,
-                                              String kieDataSource,
-                                              String kieDataSourceDeploymentId,
-                                              String realm ) {
-        super( providerId, warPath );
+    public AppFormerWildflyRuntimeExecConfig( final ProviderId providerId,
+                                              final String warPath,
+                                              final String redeployStrategy,
+                                              final String jndiDataSource,
+                                              final String kieDataSource,
+                                              final String kieDataSourceDeploymentId,
+                                              final String realm ) {
+        super( providerId, warPath, redeployStrategy );
         this.jndiDataSource = jndiDataSource;
         this.kieDataSource = kieDataSource;
         this.kieDataSourceDeploymentId = kieDataSourceDeploymentId;
@@ -51,9 +52,10 @@ public class AppFormerWildflyRuntimeExecConfig
     }
 
     @Override
-    public WildflyRuntimeExecConfig asNewClone( WildflyRuntimeExecConfig origin ) {
+    public WildflyRuntimeExecConfig asNewClone( final WildflyRuntimeExecConfig origin ) {
         return new AppFormerWildflyRuntimeExecConfig( origin.getProviderId( ),
                 origin.getWarPath( ),
+                getRedeployStrategy(),
                 getJndiDataSource( ),
                 getKieDataSource( ),
                 getKieDataSourceDeploymentId( ),
