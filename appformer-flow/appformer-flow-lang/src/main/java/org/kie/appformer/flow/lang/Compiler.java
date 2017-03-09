@@ -294,7 +294,7 @@ public class Compiler {
                         return ((AppFlow) fd.flow).withInput( input );
                     }
                  } )
-                .orElseThrow( () -> new RuntimeException( "Deferred binding of [" + assignment.assignedId + "] failed." ) ) );
+                .<RuntimeException>orElseThrow( () -> new RuntimeException( "Deferred binding of [" + assignment.assignedId + "] failed." ) ) );
         return deferredFlow;
     }
 

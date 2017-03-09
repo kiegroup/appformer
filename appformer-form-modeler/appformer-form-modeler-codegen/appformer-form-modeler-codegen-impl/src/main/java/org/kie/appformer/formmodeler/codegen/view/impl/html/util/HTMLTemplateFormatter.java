@@ -16,30 +16,23 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.html.util;
 
-import java.io.StringWriter;
-
 import javax.enterprise.context.Dependent;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.io.HTMLWriter;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Dependent
 public class HTMLTemplateFormatter {
-    private static transient Logger log = LoggerFactory.getLogger( HTMLTemplateFormatter.class );
 
-    public String formatHTMLCode( String htmlTemplate ) {
-        try {
-            Document document = DocumentHelper.parseText( htmlTemplate );
-            StringWriter sw = new StringWriter();
-            HTMLWriter writer = new HTMLWriter( sw );
-            writer.write( document );
-            return sw.toString();
-        } catch ( Exception e ) {
-            log.warn( "Error formatting html template: ", e );
-        }
-        return null;
+    private static transient Logger log = LoggerFactory.getLogger(HTMLTemplateFormatter.class);
+
+    public String formatHTMLCode(String htmlTemplate) {
+        Document document = Jsoup.parse(htmlTemplate,
+                                        "",
+                                        Parser.xmlParser());
+        return document.toString();
     }
 }
