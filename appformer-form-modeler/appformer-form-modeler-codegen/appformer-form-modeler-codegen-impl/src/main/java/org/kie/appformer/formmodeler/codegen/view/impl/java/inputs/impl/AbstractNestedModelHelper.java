@@ -31,7 +31,7 @@ public abstract class AbstractNestedModelHelper<F extends FieldDefinition> exten
 
     protected MethodSource<JavaClassSource> getUpdateNestedModelsMethod( final SourceGenerationContext context,
                                                                          final JavaClassSource viewClass ) {
-        MethodSource<JavaClassSource> method = viewClass.getMethod( UPDATE_NESTED_MODELS_METHOD );
+        MethodSource<JavaClassSource> method = viewClass.getMethod( UPDATE_NESTED_MODELS_METHOD, boolean.class.getName() );
 
         if ( method == null ) {
             method = viewClass.addMethod()
