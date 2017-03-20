@@ -18,6 +18,7 @@ package org.kie.appformer.client.deployment;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import org.guvnor.common.services.project.model.Project;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
@@ -54,7 +55,8 @@ public class DevelopmentDeploymentExtension implements BuildOptionExtension {
 
             @Override
             public void onClick( ClickEvent event ) {
-                buildCaller.call().buildAndDeployDevMode( project );
+                Window.alert("Temporary disabled");
+                //buildCaller.call().buildAndDeployDevMode( project );
             }
         };
     }
