@@ -177,6 +177,7 @@ public class AppSetup extends BaseAppSetup {
                 public Properties getProperties( ) {
                     final Properties result = new Properties( );
                     result.setProperty( "failIfNoTests", "false" );
+                    result.setProperty( "gwt.compiler.skip", "false" );
                     return result;
                 }
             };
@@ -225,7 +226,13 @@ public class AppSetup extends BaseAppSetup {
 
         final Stage<ProviderConfig, RuntimeConfig> appFormerRuntimeExec = config( "AppFormer Wildfly Runtime Exec", (Function<ProviderConfig, RuntimeConfig>) (s) ->  {
             logger.info("Executing function STAGE: AppFormer Widlfly Runtime Exec: " + s );
-            return new AppFormerWildflyRuntimeExecConfig(); }
+            return new AppFormerWildflyRuntimeExecConfig() {
+                @Override
+                public String getRedeployStrategy( ) {
+                    return "auto";
+                }
+            };
+            }
         );
 
         final Pipeline wildflyPipeline = PipelineFactory
