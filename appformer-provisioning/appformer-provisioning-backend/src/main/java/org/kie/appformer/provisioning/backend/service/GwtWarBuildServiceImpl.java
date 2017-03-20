@@ -44,20 +44,16 @@ import org.guvnor.ala.registry.SourceRegistry;
 import org.guvnor.ala.runtime.Runtime;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
-import org.guvnor.common.services.project.builder.service.PostBuildHandler;
 import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.DeploymentMode;
-import org.guvnor.common.services.project.service.POMService;
-import org.guvnor.common.services.project.service.ProjectRepositoriesService;
-import org.guvnor.common.services.project.service.ProjectRepositoryResolver;
-import org.guvnor.m2repo.backend.server.ExtendedM2RepoService;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.kie.appformer.provisioning.service.GwtWarBuildService;
 import org.kie.appformer.provisioning.shared.AppReady;
-import org.kie.workbench.common.services.backend.builder.BuildServiceImpl;
-import org.kie.workbench.common.services.backend.builder.LRUBuilderCache;
+import org.kie.workbench.common.services.backend.builder.core.LRUBuilderCache;
+import org.kie.workbench.common.services.backend.builder.service.BuildServiceHelper;
+import org.kie.workbench.common.services.backend.builder.service.BuildServiceImpl;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
@@ -89,19 +85,15 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
     }
 
     @Inject
-    public GwtWarBuildServiceImpl( final POMService pomService,
-                                   final ExtendedM2RepoService m2RepoService,
-                                   final KieProjectService projectService,
-                                   final ProjectRepositoryResolver repositoryResolver,
-                                   final ProjectRepositoriesService projectRepositoriesService,
+    public GwtWarBuildServiceImpl( final KieProjectService projectService,
+                                   final BuildServiceHelper buildServiceHelper,
                                    final LRUBuilderCache cache,
-                                   final Instance< PostBuildHandler > handlers,
                                    final Instance< ConfigExecutor > configExecutors,
                                    final RepositoryService repositoryService, final Event< AppReady > appReadyEvent,
                                    final SourceRegistry sourceRegistry,
                                    final RuntimeRegistry runtimeRegistry, final PipelineRegistry pipelineRegistry,
                                    final CDIPipelineEventListener pipelineEventListener ) {
-        super( pomService, m2RepoService, projectService, repositoryResolver, projectRepositoriesService, cache, handlers );
+        super(projectService, buildServiceHelper, cache);
         this.configExecutors = configExecutors;
         this.repositoryService = repositoryService;
         this.appReadyEvent = appReadyEvent;
