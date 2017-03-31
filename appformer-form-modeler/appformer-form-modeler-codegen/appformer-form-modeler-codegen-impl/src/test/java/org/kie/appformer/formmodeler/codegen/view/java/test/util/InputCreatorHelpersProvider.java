@@ -23,6 +23,8 @@ import java.util.List;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.CheckBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.DatePickerHelper;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.DecimalBoxHelper;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.IntegerBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.PictureHelper;
@@ -41,6 +43,8 @@ public class InputCreatorHelpersProvider {
         helpers.add(new DatePickerHelper());
         helpers.add(new SliderHelper());
         helpers.add(new TextAreaHelper());
+        helpers.add(new IntegerBoxHelper());
+        helpers.add(new DecimalBoxHelper());
 
         return helpers;
     }
