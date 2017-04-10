@@ -7,6 +7,7 @@
 
   <inherits name="org.jboss.errai.enterprise.CDI"/>
   <inherits name="org.jboss.errai.validation.Validation"/>
+  <inherits name="org.jboss.errai.databinding.DataBinding"/>
 
   <!-- Uberfire dependencies -->
   <inherits name="org.uberfire.UberfireClientAll"/>
@@ -75,6 +76,13 @@
   <inherits name="org.kie.workbench.common.forms.dynamic.DynamicFormsClient"/>
   <inherits name="org.kie.workbench.common.forms.editor.FormModelerEditorClient"/>
   <inherits name="org.kie.workbench.common.forms.data.modeller.FormDataModellerIntegrationClient"/>
+
+  <!-- Stunner. -->
+  <inherits name="org.kie.workbench.common.stunner.project.StunnerProjectClient"/>
+  <inherits name="org.kie.workbench.common.stunner.client.StunnerWidgets"/>
+  <inherits name="org.kie.workbench.common.stunner.svg.StunnerSvgClient"/>
+  <inherits name="org.kie.appformer.flowset.FlowSetProjectAPI"/>
+  <inherits name="org.kie.appformer.flowset.FlowSet"/>
 
   <!-- Start AppFormer Modules -->
   <inherits name="org.kie.appformer.provisioning.AppFormerProvisioningAPI"/>

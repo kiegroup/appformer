@@ -17,9 +17,10 @@
 package org.kie.appformer.formmodeler.codegen;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface ErraiAppPropertiesGenerator {
 
-    public String generate( Collection<String> fullyQualifiedClassNames );
+    public String generate( Collection<String> fullyQualifiedClassNames, Optional<String> previousProperties );
 
 }

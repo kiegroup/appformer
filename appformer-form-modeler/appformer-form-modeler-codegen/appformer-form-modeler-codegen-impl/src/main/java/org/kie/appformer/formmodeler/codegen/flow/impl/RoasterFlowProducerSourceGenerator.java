@@ -29,6 +29,8 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.appformer.flow.api.Command;
+import org.kie.appformer.flow.api.FormOperation;
 import org.kie.appformer.flow.api.Unit;
 import org.kie.appformer.formmodeler.codegen.JavaSourceGenerator;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
@@ -57,6 +59,8 @@ public class RoasterFlowProducerSourceGenerator implements JavaSourceGenerator {
         producerClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getRestServiceName() );
         producerClass.addImport( Unit.class.getName() );
         producerClass.addImport( Optional.class.getName() );
+        producerClass.addImport( Command.class.getName() );
+        producerClass.addImport( FormOperation.class.getName() );
     }
 
     private static void setTypeSignature( final JavaClassSource producerClass, final SourceGenerationContext context ) {
@@ -113,13 +117,13 @@ public class RoasterFlowProducerSourceGenerator implements JavaSourceGenerator {
         Arrays
         .asList(
                 new MethodDef( "create",
-                               "org.kie.appformer.flow.api.AppFlow<Unit, Optional<$FORM_MODEL$>>" ),
+                               "org.kie.appformer.flow.api.AppFlow<Unit,Command<FormOperation,$FORM_MODEL$>>" ),
                 new MethodDef( "crud",
-                               "org.kie.appformer.flow.api.AppFlow<Unit, Unit>" ),
+                               "org.kie.appformer.flow.api.AppFlow<Unit,Unit>" ),
                 new MethodDef( "createAndReview",
-                               "org.kie.appformer.flow.api.AppFlow<Unit, Unit>" ),
+                               "org.kie.appformer.flow.api.AppFlow<Unit,Unit>" ),
                 new MethodDef( "view",
-                               "org.kie.appformer.flow.api.AppFlow<Unit, Unit>" )
+                               "org.kie.appformer.flow.api.AppFlow<Unit,Unit>" )
                 )
         .stream()
         .map( def -> new MethodDef( def.name, def.returnType

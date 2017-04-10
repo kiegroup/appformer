@@ -18,8 +18,9 @@
 package org.kie.appformer.formmodeler.rendering.client.view;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.removeAllElementChildren;
+import static org.kie.appformer.flow.api.FormOperation.CANCEL;
+import static org.kie.appformer.flow.api.FormOperation.SUBMIT;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.enterprise.context.Dependent;
@@ -32,6 +33,8 @@ import org.jboss.errai.ui.shared.TemplateWidgetMapper;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.kie.appformer.flow.api.Command;
+import org.kie.appformer.flow.api.FormOperation;
 import org.kie.appformer.flow.api.UIComponent;
 import org.kie.appformer.formmodeler.rendering.client.shared.FormModel;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.IsFormView;
@@ -42,9 +45,12 @@ import com.google.gwt.user.client.ui.Widget;
 @Dependent
 @Templated
 public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel<MODEL>, FORM_VIEW extends FormView<MODEL, FORM_MODEL>>
-    implements IsElement, IsFormView<FORM_MODEL>, UIComponent<FORM_VIEW, Optional<FORM_VIEW>, StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW>> {
+    implements
+    IsElement,
+    IsFormView<FORM_MODEL>,
+    UIComponent<FORM_VIEW, Command<FormOperation, FORM_VIEW>, StandaloneFormWrapper<MODEL, FORM_MODEL, FORM_VIEW>> {
 
-    private final Consumer<Optional<FORM_VIEW>> noOpCallback = o -> {};
+    private final Consumer<Command<FormOperation, FORM_VIEW>> noOpCallback = o -> {};
 
     private FORM_VIEW formView;
 
@@ -60,11 +66,11 @@ public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel<MODEL>, F
     @DataField
     private Button cancel;
 
-    private Consumer<Optional<FORM_VIEW>> callback = noOpCallback;
+    private Consumer<Command<FormOperation, FORM_VIEW>> callback = noOpCallback;
 
     @Override
     public void start( final FORM_VIEW formView,
-                       final Consumer<Optional<FORM_VIEW>> callback ) {
+                       final Consumer<Command<FormOperation, FORM_VIEW>> callback ) {
         this.callback = callback;
         setFormView( formView );
         formView.pauseBinding();
@@ -94,18 +100,18 @@ public class StandaloneFormWrapper<MODEL, FORM_MODEL extends FormModel<MODEL>, F
     public void onAccept( final ClickEvent event ) {
         if ( formView.isValid() ) {
             formView.resumeBinding( true );
-            final Consumer<Optional<FORM_VIEW>> callback = this.callback;
+            final Consumer<Command<FormOperation, FORM_VIEW>> callback = this.callback;
             this.callback = noOpCallback;
-            callback.accept( Optional.of( formView ) );
+            callback.accept( new Command<>( SUBMIT, formView ) );
         }
     }
 
     @EventHandler("cancel")
     public void onCancel( final ClickEvent event ) {
         formView.resumeBinding( false );
-        final Consumer<Optional<FORM_VIEW>> callback = this.callback;
+        final Consumer<Command<FormOperation, FORM_VIEW>> callback = this.callback;
         this.callback = noOpCallback;
-        callback.accept( Optional.empty() );
+        callback.accept( new Command<>( CANCEL, formView ) );
     }
 
     @Override
