@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -64,36 +65,45 @@ import org.uberfire.workbench.events.ResourceChange;
 @Service
 public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBuildService {
 
-    private RepositoryService repositoryService;
+    private final RepositoryService repositoryService;
 
-    private Event<AppReady> appReadyEvent;
+    private final Event<AppReady> appReadyEvent;
 
-    private Instance<ConfigExecutor> configExecutors;
+    private final Instance<ConfigExecutor> configExecutors;
 
-    private RuntimeRegistry runtimeRegistry;
+    private final RuntimeRegistry runtimeRegistry;
 
-    private SourceRegistry sourceRegistry;
+    private final SourceRegistry sourceRegistry;
 
-    private PipelineRegistry pipelineRegistry;
+    private final PipelineRegistry pipelineRegistry;
 
-    private CDIPipelineEventListener pipelineEventListener;
+    private final CDIPipelineEventListener pipelineEventListener;
 
     private PipelineExecutor executor;
 
     // For proxying
     public GwtWarBuildServiceImpl() {
+        this.configExecutors = null;
+        this.repositoryService = null;
+        this.appReadyEvent = null;
+        this.runtimeRegistry = null;
+        this.pipelineRegistry = null;
+        this.sourceRegistry = null;
+        this.pipelineEventListener = null;
     }
 
     @Inject
     public GwtWarBuildServiceImpl( final KieProjectService projectService,
                                    final BuildServiceHelper buildServiceHelper,
                                    final LRUBuilderCache cache,
-                                   final Instance< ConfigExecutor > configExecutors,
-                                   final RepositoryService repositoryService, final Event< AppReady > appReadyEvent,
+                                   final Instance<ConfigExecutor> configExecutors,
+                                   final RepositoryService repositoryService,
+                                   final Event<AppReady> appReadyEvent,
                                    final SourceRegistry sourceRegistry,
-                                   final RuntimeRegistry runtimeRegistry, final PipelineRegistry pipelineRegistry,
+                                   final RuntimeRegistry runtimeRegistry,
+                                   final PipelineRegistry pipelineRegistry,
                                    final CDIPipelineEventListener pipelineEventListener ) {
-        super(projectService, buildServiceHelper, cache);
+        super( projectService, buildServiceHelper, cache );
         this.configExecutors = configExecutors;
         this.repositoryService = repositoryService;
         this.appReadyEvent = appReadyEvent;
@@ -143,7 +153,7 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
     }
 
     @Override
-    public BuildResults buildAndDeployProvisioningMode( Project project, Map<String, String> params ) {
+    public BuildResults buildAndDeployProvisioningMode( final Project project, final Map<String, String> params ) {
         return buildAndDeployProvisioningWithPipeline( project, params );
     }
 
@@ -211,7 +221,7 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
         return results;
     }
 
-    public BuildResults buildAndDeployProvisioningWithPipeline( final Project project, Map<String, String> params ) {
+    public BuildResults buildAndDeployProvisioningWithPipeline( final Project project, final Map<String, String> params ) {
         final BuildResults results = new BuildResults( project.getPom().getGav() );
         final Path rootPath = project.getRootPath();
         final Path repoPath = PathFactory.newPath( "repo", rootPath.toURI().substring( 0, rootPath.toURI().indexOf( rootPath.getFileName() ) ) );
