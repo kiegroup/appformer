@@ -25,7 +25,7 @@ import org.kie.appformer.formmodeler.codegen.FormSourcesGenerator;
 import org.kie.appformer.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
 import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
 import org.kie.workbench.common.forms.data.modeller.service.impl.DataModellerFieldGenerator;
-import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
+import org.kie.workbench.common.forms.editor.service.shared.VFSFormFinderService;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EmbedsForm;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EntityRelationField;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.TableColumnMeta;
@@ -42,7 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
 
 public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator {
-    private static transient Logger log = LoggerFactory.getLogger( DataModellerFormGeneratorImpl.class );
+
+    private static transient Logger log = LoggerFactory.getLogger(DataModellerFormGeneratorImpl.class);
 
     @Inject
     protected DataModelerService dataModelerService;
@@ -63,63 +64,78 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
     protected VFSFormFinderService vfsFormFinderService;
 
     @Override
-    public void generateFormForDataObject( DataObject dataObject, Path path ) {
+    public void generateFormForDataObject(DataObject dataObject,
+                                          Path path) {
 
-        if (dataObject.getProperties().isEmpty()) return;
-
-        String modelName = WordUtils.uncapitalize( dataObject.getName() );
-
-        DataObjectFormModel model = new DataObjectFormModel( modelName, dataObject.getClassName() );
-
-        FormDefinition form = new FormDefinition( model );
-
-        form.setId( dataObject.getClassName() );
-
-        form.setName( dataObject.getName() );
-
-        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(modelName, dataObject);
-
-        for (FieldDefinition field : availabeFields ) {
-            if (field instanceof EmbedsForm) {
-                if ( !loadEmbeddedFormConfig( field, path ) ) continue;
-            }
-            form.getFields().add( field );
+        if (dataObject.getProperties().isEmpty()) {
+            return;
         }
 
-        if (form.getFields().isEmpty()) return;
+        String modelName = WordUtils.uncapitalize(dataObject.getName());
 
-        formSourcesGenerator.generateEntityFormSources(form, path);
+        DataObjectFormModel model = new DataObjectFormModel(modelName,
+                                                            dataObject.getClassName());
 
+        FormDefinition form = new FormDefinition(model);
+
+        form.setId(dataObject.getClassName());
+
+        form.setName(dataObject.getName());
+
+        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(modelName,
+                                                                                      dataObject);
+
+        for (FieldDefinition field : availabeFields) {
+            if (field instanceof EmbedsForm) {
+                if (!loadEmbeddedFormConfig(field,
+                                            path)) {
+                    continue;
+                }
+            }
+            form.getFields().add(field);
+        }
+
+        if (form.getFields().isEmpty()) {
+            return;
+        }
+
+        formSourcesGenerator.generateEntityFormSources(form,
+                                                       path);
     }
 
-    protected boolean loadEmbeddedFormConfig ( FieldDefinition field, Path path ) {
-        if ( !(field instanceof EmbedsForm) ) return false;
-
-        List<FormDefinition> subForms = vfsFormFinderService.findFormsForType( field.getStandaloneClassName(), path );
-
-        if ( subForms == null || subForms.isEmpty() ) {
+    protected boolean loadEmbeddedFormConfig(FieldDefinition field,
+                                             Path path) {
+        if (!(field instanceof EmbedsForm)) {
             return false;
         }
 
-        if ( field instanceof  MultipleSubFormFieldDefinition ) {
+        List<FormDefinition> subForms = vfsFormFinderService.findFormsForType(field.getStandaloneClassName(),
+                                                                              path);
+
+        if (subForms == null || subForms.isEmpty()) {
+            return false;
+        }
+
+        if (field instanceof MultipleSubFormFieldDefinition) {
             MultipleSubFormFieldDefinition multipleSubFormFieldDefinition = (MultipleSubFormFieldDefinition) field;
-            FormDefinition form = subForms.get( 0 );
-            multipleSubFormFieldDefinition.setCreationForm( form.getId() );
-            multipleSubFormFieldDefinition.setEditionForm( form.getId() );
+            FormDefinition form = subForms.get(0);
+            multipleSubFormFieldDefinition.setCreationForm(form.getId());
+            multipleSubFormFieldDefinition.setEditionForm(form.getId());
 
             List<TableColumnMeta> columnMetas = new ArrayList<>();
-            for ( FieldDefinition nestedField : form.getFields() ) {
-                if ( nestedField instanceof EntityRelationField ) {
+            for (FieldDefinition nestedField : form.getFields()) {
+                if (nestedField instanceof EntityRelationField) {
                     continue;
                 }
-                TableColumnMeta meta = new TableColumnMeta( nestedField.getLabel(), nestedField.getBinding() );
-                columnMetas.add( meta );
+                TableColumnMeta meta = new TableColumnMeta(nestedField.getLabel(),
+                                                           nestedField.getBinding());
+                columnMetas.add(meta);
             }
 
-            multipleSubFormFieldDefinition.setColumnMetas( columnMetas );
+            multipleSubFormFieldDefinition.setColumnMetas(columnMetas);
         } else {
             SubFormFieldDefinition subFormField = (SubFormFieldDefinition) field;
-            subFormField.setNestedForm( subForms.get( 0 ).getId() );
+            subFormField.setNestedForm(subForms.get(0).getId());
         }
 
         return true;
