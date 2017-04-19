@@ -25,23 +25,17 @@ import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.appformer.formmodeler.codegen.FormSourcesGenerator;
-import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
-import org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil;
 import org.kie.workbench.common.forms.editor.backend.service.impl.FormEditorServiceImpl;
 import org.kie.workbench.common.forms.editor.model.FormModelerContent;
-import org.kie.workbench.common.forms.editor.service.FormCreatorService;
-import org.kie.workbench.common.forms.editor.service.VFSFormFinderService;
+import org.kie.workbench.common.forms.editor.service.backend.FormModelHandlerManager;
+import org.kie.workbench.common.forms.editor.service.shared.VFSFormFinderService;
 import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.FieldManager;
-import org.kie.workbench.common.forms.service.FormModelHandlerManager;
-import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
-import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.ResourceOpenedEvent;
-
 
 @Service
 @ApplicationScoped
@@ -51,38 +45,42 @@ public class AppFormerFormEditorServiceImpl extends FormEditorServiceImpl {
     protected FormSourcesGenerator formSourcesGenerator;
 
     @Inject
-    public AppFormerFormEditorServiceImpl( @Named( "ioStrategy" ) IOService ioService,
-                                           User identity,
-                                           SessionInfo sessionInfo,
-                                           Event<ResourceOpenedEvent> resourceOpenedEvent,
-                                           FieldManager fieldManager,
-                                           FormModelHandlerManager modelHandlerManager,
-                                           KieProjectService projectService,
-                                           FormDefinitionSerializer formDefinitionSerializer,
-                                           FormCreatorService formCreatorService,
-                                           VFSFormFinderService vfsFormFinderService,
-                                           FormSourcesGenerator formSourcesGenerator ) {
-        super( ioService,
-               identity,
-               sessionInfo,
-               resourceOpenedEvent,
-               fieldManager,
-               modelHandlerManager,
-               projectService,
-               formDefinitionSerializer,
-               formCreatorService,
-               vfsFormFinderService );
+    public AppFormerFormEditorServiceImpl(@Named("ioStrategy") IOService ioService,
+                                          User identity,
+                                          SessionInfo sessionInfo,
+                                          Event<ResourceOpenedEvent> resourceOpenedEvent,
+                                          FieldManager fieldManager,
+                                          FormModelHandlerManager modelHandlerManager,
+                                          KieProjectService projectService,
+                                          FormDefinitionSerializer formDefinitionSerializer,
+                                          VFSFormFinderService vfsFormFinderService,
+                                          FormSourcesGenerator formSourcesGenerator) {
+        super(ioService,
+              identity,
+              sessionInfo,
+              resourceOpenedEvent,
+              fieldManager,
+              modelHandlerManager,
+              projectService,
+              formDefinitionSerializer,
+              vfsFormFinderService);
 
         this.formSourcesGenerator = formSourcesGenerator;
     }
 
-
     @Override
-    public Path save( Path path, FormModelerContent content, Metadata metadata, String comment ) {
+    public Path save(Path path,
+                     FormModelerContent content,
+                     Metadata metadata,
+                     String comment) {
 
-        Path result = super.save( path, content, metadata, comment );
+        Path result = super.save(path,
+                                 content,
+                                 metadata,
+                                 comment);
 
-        formSourcesGenerator.generateFormSources( content.getDefinition(), path );
+        formSourcesGenerator.generateFormSources(content.getDefinition(),
+                                                 path);
 
         return result;
     }
