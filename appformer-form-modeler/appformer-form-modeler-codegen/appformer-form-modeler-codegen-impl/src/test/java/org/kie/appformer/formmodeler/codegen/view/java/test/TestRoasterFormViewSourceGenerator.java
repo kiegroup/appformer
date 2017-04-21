@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.appformer.formmodeler.codegen.view.impl.inputs.mock;
+package org.kie.appformer.formmodeler.codegen.view.java.test;
 
 import javax.enterprise.inject.Instance;
 
@@ -23,13 +23,13 @@ import org.kie.appformer.formmodeler.codegen.view.impl.java.RoasterFormViewSourc
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 
-public class MockRoasterFormViewSourceGenerator extends RoasterFormViewSourceGenerator {
+public class TestRoasterFormViewSourceGenerator extends RoasterFormViewSourceGenerator {
 
     protected JavaClassSource classSource;
 
-    public MockRoasterFormViewSourceGenerator( JavaClassSource classSource,
-                                                   Instance<InputCreatorHelper<? extends FieldDefinition>> creatorInstances ) {
-        super( creatorInstances );
+    public TestRoasterFormViewSourceGenerator(JavaClassSource classSource,
+                                              Instance<InputCreatorHelper<? extends FieldDefinition>> creatorInstances) {
+        super(creatorInstances);
         init();
         this.classSource = classSource;
     }
@@ -39,7 +39,7 @@ public class MockRoasterFormViewSourceGenerator extends RoasterFormViewSourceGen
         return classSource;
     }
 
-    public InputCreatorHelper getHelperForField( FieldDefinition fieldDefinition ) {
-        return creatorHelpers.get( fieldDefinition.getFieldType().getTypeName() );
+    public InputCreatorHelper getHelperForField(FieldDefinition fieldDefinition) {
+        return creatorHelpers.get(fieldDefinition.getFieldType().getTypeName());
     }
 }

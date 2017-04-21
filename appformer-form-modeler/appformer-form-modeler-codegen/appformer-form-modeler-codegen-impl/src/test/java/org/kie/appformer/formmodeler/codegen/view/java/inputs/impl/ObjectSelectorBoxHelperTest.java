@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-package org.kie.appformer.formmodeler.codegen.view.impl.inputs.impl;
+package org.kie.appformer.formmodeler.codegen.view.java.inputs.impl;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.runner.RunWith;
-import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper;
+import org.kie.appformer.formmodeler.codegen.view.java.inputs.AbstractInputHelperTest;
+import org.kie.appformer.formmodeler.codegen.view.java.test.util.InputCreatorHelpersProvider;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith( MockitoJUnitRunner.class )
+import static org.junit.Assert.assertNotNull;
+
+@RunWith(MockitoJUnitRunner.class)
 public class ObjectSelectorBoxHelperTest extends AbstractInputHelperTest {
 
     @Override
-    protected void runFieldTests( FieldDefinition field, InputCreatorHelper helper ) {
-        super.runFieldTests( field, helper );
+    protected void runFieldTests(FieldDefinition field,
+                                 InputCreatorHelper helper) {
+        super.runFieldTests(field,
+                            helper);
 
-        assertNotNull( "Selector must have a mask field!",
-                       classSource.getField( field.getName() + ObjectSelectorBoxHelper.FIELD_MASK_SUFFIX ) );
-
-
+        assertNotNull("Selector must have a mask field!",
+                      classSource.getField(field.getName() + ObjectSelectorBoxHelper.FIELD_MASK_SUFFIX));
     }
 
     @Override
@@ -45,15 +48,15 @@ public class ObjectSelectorBoxHelperTest extends AbstractInputHelperTest {
 
         ObjectSelectorFieldDefinition selector = new ObjectSelectorFieldDefinition();
 
-        selector.setMask( "{street}, {num}" );
+        selector.setMask("{street}, {num}");
 
-        selector.setStandaloneClassName( "org.test.Address" );
+        selector.setStandaloneClassName("org.test.Address");
 
-        return Arrays.asList( initFieldDefinition( selector ) );
+        return Arrays.asList(initFieldDefinition(selector));
     }
 
     @Override
     protected List<InputCreatorHelper> getInputHelpersToTest() {
-        return Arrays.asList( new ObjectSelectorBoxHelper() );
+        return InputCreatorHelpersProvider.getObjectSelectorHelpers();
     }
 }
