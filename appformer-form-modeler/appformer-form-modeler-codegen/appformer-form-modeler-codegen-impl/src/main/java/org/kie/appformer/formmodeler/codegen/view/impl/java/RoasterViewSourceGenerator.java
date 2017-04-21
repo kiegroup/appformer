@@ -20,6 +20,7 @@ import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.ER
 import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.ERRAI_DATAFIELD;
 import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.JAVA_LANG_OVERRIDE;
 import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.READONLY_PARAM;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.SET_READONLY_METHOD;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,7 +86,7 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
 
         for ( final FieldDefinition fieldDefinition : context.getFormDefinition().getFields() ) {
 
-            if ((fieldDefinition.isAnnotatedId() && !displaysId()) || isBanned( fieldDefinition ))
+            if (isBanned( fieldDefinition ))
                 continue;
 
             final InputCreatorHelper helper = creatorHelpers.get( fieldDefinition.getFieldType().getTypeName() );
@@ -115,9 +116,8 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
             property.removeAccessor();
             property.removeMutator();
 
-            if ( !fieldDefinition.isAnnotatedId() ) {
-                readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
-            }
+            readOnlyMethodSrc.append( helper.getReadonlyMethod( fieldDefinition.getName(), READONLY_PARAM ) );
+
             if ( helper instanceof RequiresExtraFields ) {
                 readOnlyMethodSrc.append( ( (RequiresExtraFields) helper ).getExtraReadOnlyCode( fieldDefinition, READONLY_PARAM) );
             }
@@ -125,7 +125,7 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
 
         if ( isEditable() ) {
             final MethodSource<JavaClassSource> readonlyMethod = viewClass.addMethod()
-                    .setName( "setReadOnly" )
+                    .setName( SET_READONLY_METHOD )
                     .setBody( readOnlyMethodSrc.toString() )
                     .setPublic()
                     .setReturnTypeVoid();
@@ -169,9 +169,5 @@ public abstract class RoasterViewSourceGenerator implements JavaSourceGenerator 
 
     private String getPackageName( final SourceGenerationContext context ) {
         return context.getLocalPackage().getPackageName();
-    }
-
-    protected boolean displaysId() {
-        return true;
     }
 }

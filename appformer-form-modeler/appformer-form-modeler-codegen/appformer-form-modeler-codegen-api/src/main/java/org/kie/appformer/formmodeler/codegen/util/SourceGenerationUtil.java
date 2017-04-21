@@ -86,4 +86,5 @@ public interface SourceGenerationUtil {
     public static final String BEFORE_DISPLAY_METHOD = "beforeDisplay";
     public static final String DO_EXTRA_VALIDATIONS_METHOD = "doExtraValidations";
     public static final String SET_MODEL_METHOD = "setModel";
+    public static final String SET_READONLY_METHOD = "setReadOnly";
 }
