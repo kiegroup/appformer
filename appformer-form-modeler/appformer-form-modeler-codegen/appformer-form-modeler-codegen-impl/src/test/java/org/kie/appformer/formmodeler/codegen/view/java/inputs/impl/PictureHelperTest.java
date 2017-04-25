@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.appformer.formmodeler.codegen.view.impl.inputs.impl;
-
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.*;
+package org.kie.appformer.formmodeler.codegen.view.java.inputs.impl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,49 +22,57 @@ import java.util.List;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.junit.runner.RunWith;
-import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.PictureHelper;
+import org.kie.appformer.formmodeler.codegen.view.java.inputs.AbstractInputHelperTest;
+import org.kie.appformer.formmodeler.codegen.view.java.test.util.InputCreatorHelpersProvider;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureFieldDefinition;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureSize;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith( MockitoJUnitRunner.class )
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
+
+@RunWith(MockitoJUnitRunner.class)
 public class PictureHelperTest extends AbstractInputHelperTest {
 
     @Override
-    protected void runFieldTests( FieldDefinition field, InputCreatorHelper helper ) {
-        super.runFieldTests( field, helper );
+    protected void runFieldTests(FieldDefinition field,
+                                 InputCreatorHelper helper) {
+        super.runFieldTests(field,
+                            helper);
 
-        MethodSource<JavaClassSource> beforeDisplayMethod = classSource.getMethod( BEFORE_DISPLAY_METHOD );
+        MethodSource<JavaClassSource> beforeDisplayMethod = classSource.getMethod(BEFORE_DISPLAY_METHOD);
 
-        assertNotNull( "Class must have a '" + BEFORE_DISPLAY_METHOD + "'", beforeDisplayMethod );
+        assertNotNull("Class must have a '" + BEFORE_DISPLAY_METHOD + "'",
+                      beforeDisplayMethod);
 
         PictureHelper pictureHelper = (PictureHelper) helper;
 
         String methodBody = beforeDisplayMethod.getBody();
 
-        String initialization = removeEmptySpaces( pictureHelper.getWidgetInitialization( (PictureFieldDefinition) field ) );
+        String initialization = removeEmptySpaces(pictureHelper.getWidgetInitialization((PictureFieldDefinition) field));
 
-        assertTrue( methodBody.contains( initialization ) );
+        assertTrue(methodBody.contains(initialization));
     }
 
     @Override
     protected List<FieldDefinition> getFieldsToTest() {
 
         PictureFieldDefinition picture1 = new PictureFieldDefinition();
-        picture1.setSize( PictureSize.SMALL );
+        picture1.setSize(PictureSize.SMALL);
 
         PictureFieldDefinition picture2 = new PictureFieldDefinition();
-        picture1.setSize( PictureSize.MEDIUM );
+        picture1.setSize(PictureSize.MEDIUM);
 
-        return Arrays.asList( initFieldDefinition( picture1 ),
-                initFieldDefinition( picture2 ) );
+        return Arrays.asList(initFieldDefinition(picture1),
+                             initFieldDefinition(picture2));
     }
 
     @Override
     protected List<InputCreatorHelper> getInputHelpersToTest() {
-        return Arrays.asList( new PictureHelper() );
+        return InputCreatorHelpersProvider.getPictureHelpers();
     }
 }
