@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 
 import org.guvnor.ala.config.Config;
@@ -29,6 +30,7 @@ import org.guvnor.ala.registry.RuntimeRegistry;
 import org.guvnor.ala.wildfly.access.WildflyAccessInterface;
 import org.guvnor.ala.wildfly.access.WildflyAppState;
 import org.guvnor.ala.wildfly.config.WildflyRuntimeConfiguration;
+import org.guvnor.ala.wildfly.config.WildflyRuntimeExecConfig;
 import org.guvnor.ala.wildfly.executor.WildflyRuntimeExecExecutor;
 import org.guvnor.ala.wildfly.model.WildflyProvider;
 import org.guvnor.ala.wildfly.model.WildflyRuntime;
@@ -39,8 +41,9 @@ import org.kie.workbench.common.screens.datasource.management.model.DriverDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AppFormerWildflyRuntimeExecExecutor
-        extends WildflyRuntimeExecExecutor< AppFormerWildflyRuntimeExecConfig > {
+@Specializes
+public class AppFormerWildflyRuntimeExecExecutor<T extends WildflyRuntimeConfiguration>
+        extends WildflyRuntimeExecExecutor<T> {
 
     private static final Logger logger = LoggerFactory.getLogger( AppFormerWildflyRuntimeExecExecutor.class );
 
@@ -61,38 +64,42 @@ public class AppFormerWildflyRuntimeExecExecutor
     }
 
     @Override
-    public Optional< WildflyRuntime > apply( AppFormerWildflyRuntimeExecConfig runtimeConfig ) {
+    public Optional< WildflyRuntime > apply( final WildflyRuntimeConfiguration runtimeConfig ) {
+        if ( runtimeConfig instanceof  AppFormerWildflyRuntimeExecConfig ) {
+            logger.info("Starting executor");
+            AppFormerWildflyRuntimeExecConfig appFormerRuntimeConfig = (AppFormerWildflyRuntimeExecConfig) runtimeConfig;
+            final Optional< WildflyProvider > optional = runtimeRegistry.getProvider(appFormerRuntimeConfig.getProviderId(),
+                                                                                     WildflyProvider.class);
+            WildflyProvider wildflyProvider = optional.get();
 
-        logger.info( "Starting executor" );
-        final Optional< WildflyProvider > optional = runtimeRegistry.getProvider( runtimeConfig.getProviderId( ), WildflyProvider.class );
-        WildflyProvider wildflyProvider = optional.get( );
+            logger.info("jndi-data-source: " + appFormerRuntimeConfig.getJndiDataSource());
+            logger.info("kie-data-source: " + appFormerRuntimeConfig.getKieDataSource());
+            logger.info("kie-data-source-deployment-id: " + appFormerRuntimeConfig.getKieDataSourceDeploymentId());
+            logger.info("providerId: " + wildflyProvider.getId());
+            logger.info("hostId: " + wildflyProvider.getHostId());
+            logger.info("port: " + wildflyProvider.getPort());
+            logger.info("managementPort: " + wildflyProvider.getManagementPort());
+            logger.info("user: " + wildflyProvider.getUser());
+            logger.info("password: " + (wildflyProvider.getPassword() != null ? "******" : null));
 
-        logger.info( "jndi-data-source: " + runtimeConfig.getJndiDataSource( ) );
-        logger.info( "kie-data-source: " + runtimeConfig.getKieDataSource( ) );
-        logger.info( "kie-data-source-deployment-id: " + runtimeConfig.getKieDataSourceDeploymentId( ) );
-        logger.info( "providerId: " + wildflyProvider.getId( ) );
-        logger.info( "hostId: " + wildflyProvider.getHostId( ) );
-        logger.info( "port: " + wildflyProvider.getPort( ) );
-        logger.info( "managementPort: " + wildflyProvider.getManagementPort( ) );
-        logger.info( "user: " + wildflyProvider.getUser( ) );
-        logger.info( "password: " + ( wildflyProvider.getPassword( ) != null ? "******" : null ) );
-
-        Path warPath = Paths.get( runtimeConfig.getWarPath( ) );
-        if ( runtimeConfig.getKieDataSource( ) != null || runtimeConfig.getJndiDataSource( ) != null ) {
-            boolean hasPersistence = false;
-            try {
-                hasPersistence = provisioningHelper.hasPersistenceSettings( warPath );
-            } catch ( Exception e ) {
-                //un-common case, let the provisioning continue.
-                logger.warn( "It was not possible to establish if the persistence is configured for current application: " + warPath, e );
-            }
-            if ( !hasPersistence ) {
-                logger.warn( "Persistence configuration was not found for current application: " + warPath );
-            } else {
-                prepareForProvisioning( runtimeConfig, wildflyProvider );
+            Path warPath = Paths.get(appFormerRuntimeConfig.getWarPath());
+            if (appFormerRuntimeConfig.getKieDataSource() != null || appFormerRuntimeConfig.getJndiDataSource() != null) {
+                boolean hasPersistence = false;
+                try {
+                    hasPersistence = provisioningHelper.hasPersistenceSettings(warPath);
+                } catch (Exception e) {
+                    //un-common case, let the provisioning continue.
+                    logger.warn("It was not possible to establish if the persistence is configured for current application: " + warPath,
+                                e);
+                }
+                if (!hasPersistence) {
+                    logger.warn("Persistence configuration was not found for current application: " + warPath);
+                } else {
+                    prepareForProvisioning(appFormerRuntimeConfig,
+                                           wildflyProvider);
+                }
             }
         }
-
         Optional< WildflyRuntime > result = super.apply( ( WildflyRuntimeConfiguration ) runtimeConfig );
         logger.info( "Executor finished, wildflyRuntime: " + result.get( ) );
         return result;
@@ -215,7 +222,7 @@ public class AppFormerWildflyRuntimeExecExecutor
 
     @Override
     public Class< ? extends Config > executeFor( ) {
-        return AppFormerWildflyRuntimeExecConfig.class;
+        return WildflyRuntimeExecConfig.class;
     }
 
 }
