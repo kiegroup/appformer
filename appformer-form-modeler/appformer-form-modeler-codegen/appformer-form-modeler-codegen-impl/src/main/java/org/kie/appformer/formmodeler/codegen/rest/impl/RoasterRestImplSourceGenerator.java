@@ -16,8 +16,6 @@
 
 package org.kie.appformer.formmodeler.codegen.rest.impl;
 
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.*;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -26,9 +24,8 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.rest.RestImpl;
-import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.IsJavaModel;
+
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.EJB_STATELESS;
 
 
 @ApplicationScoped

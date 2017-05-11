@@ -18,7 +18,6 @@ package org.kie.appformer.formmodeler.codegen;
 
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.IsJavaModel;
 import org.kie.workbench.common.forms.model.JavaModel;
 
 public interface JavaSourceGenerator {
