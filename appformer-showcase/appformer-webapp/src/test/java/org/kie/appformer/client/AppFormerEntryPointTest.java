@@ -39,7 +39,6 @@ import org.kie.appformer.client.home.HomeProducer;
 import org.kie.appformer.client.resources.i18n.AppConstants;
 import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
-import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
 import org.kie.workbench.common.workbench.client.authz.PermissionTreeSetup;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.mockito.ArgumentCaptor;
@@ -65,10 +64,6 @@ public class AppFormerEntryPointTest {
     @Mock
     private AppConfigService appConfigService;
     private CallerMock<AppConfigService> appConfigServiceCallerMock;
-
-    @Mock
-    private PlaceManagerActivityService pmas;
-    private CallerMock<PlaceManagerActivityService> pmasCallerMock;
 
     @Mock
     private ActivityBeansCache activityBeansCache;
@@ -105,8 +100,6 @@ public class AppFormerEntryPointTest {
 
     @Before
     public void setup() {
-        doNothing().when( pmas ).initActivities( anyList() );
-
         doReturn( Boolean.TRUE ).when( socialConfigurationService ).isSocialEnable();
         doAnswer( invocationOnMock -> {
             ( (Command) invocationOnMock.getArguments()[ 0 ] ).execute();
@@ -115,10 +108,8 @@ public class AppFormerEntryPointTest {
 
         appConfigServiceCallerMock = new CallerMock<>( appConfigService );
         socialConfigurationServiceCallerMock = new CallerMock<>( socialConfigurationService );
-        pmasCallerMock = new CallerMock<>( pmas );
 
         entryPoint = spy( new AppFormerEntryPoint( appConfigServiceCallerMock,
-                                                            pmasCallerMock,
                                                             activityBeansCache,
                                                             homeProducer,
                                                             socialConfigurationServiceCallerMock,
