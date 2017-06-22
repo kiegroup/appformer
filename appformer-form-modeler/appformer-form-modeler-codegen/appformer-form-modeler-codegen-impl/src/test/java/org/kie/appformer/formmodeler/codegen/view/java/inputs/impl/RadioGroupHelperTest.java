@@ -30,8 +30,7 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.r
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper.INLINE_RADIO_NAME;
 import static org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper.LOAD_RADIO_GROUP_VALUES;
 import static org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.RadioGroupHelper.NESTED_RADIO_SUFFIX;
@@ -78,20 +77,18 @@ public class RadioGroupHelperTest extends AbstractInputHelperTest {
 
         StringRadioGroupFieldDefinition radioGroup = new StringRadioGroupFieldDefinition();
         radioGroup.getOptions().add(new StringSelectorOption("op1",
-                                                             "op1",
-                                                             true));
+                                                             "op1"));
         radioGroup.getOptions().add(new StringSelectorOption("op2",
-                                                             "op2",
-                                                             false));
+                                                             "op2"));
+        radioGroup.setDefaultValue("op1");
 
         StringRadioGroupFieldDefinition inlineRadioGroup = new StringRadioGroupFieldDefinition();
         inlineRadioGroup.setInline(Boolean.TRUE);
         inlineRadioGroup.getOptions().add(new StringSelectorOption("op1",
-                                                                   "op1",
-                                                                   true));
+                                                                   "op1"));
         inlineRadioGroup.getOptions().add(new StringSelectorOption("op2",
-                                                                   "op2",
-                                                                   false));
+                                                                   "op2"));
+        inlineRadioGroup.setDefaultValue("op1");
 
         return Arrays.asList(initFieldDefinition(radioGroup),
                              initFieldDefinition(inlineRadioGroup));

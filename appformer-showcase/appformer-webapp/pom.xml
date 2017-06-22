@@ -899,6 +899,10 @@
       <artifactId>uberfire-js</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-maven-support</artifactId>
+    </dependency>
 
     <!-- Uberfire Docks extension -->
     <dependency>
@@ -1476,6 +1480,7 @@
               <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
 
               <!-- UberFire Extensions -->
+              <compileSourcesArtifact>org.uberfire:uberfire-maven-support</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-commons-editor-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>

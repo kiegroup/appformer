@@ -16,7 +16,7 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.*;
+import java.util.Optional;
 
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -28,8 +28,16 @@ import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresExtraFields;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.SelectorOption;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.definition.ListBoxBaseDefinition;
 
-public class ListBoxHelper<T extends SelectorOption> extends AbstractInputCreatorHelper<ListBoxBaseDefinition<T>>
-        implements RequiresCustomCode<ListBoxBaseDefinition<T>>, RequiresExtraFields<ListBoxBaseDefinition<T>> {
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.IS_NEW_MODEL_METHOD_CALL;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_HASHMAP_CLASSNAME;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_HASHMAP_NAME;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_MAP_CLASSNAME;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.JAVA_UTIL_MAP_NAME;
+
+public class ListBoxHelper<OPTIONS extends SelectorOption<TYPE>, TYPE> extends AbstractInputCreatorHelper<ListBoxBaseDefinition<OPTIONS, TYPE>>
+        implements RequiresCustomCode<ListBoxBaseDefinition<OPTIONS, TYPE>>,
+                   RequiresExtraFields<ListBoxBaseDefinition<OPTIONS, TYPE>> {
 
     public static final String LOAD_LIST_VALUES_METHOD_NAME = "loadListValues_";
     public static final String LISTBOX_RENDERER_SUFFIX = "_ListValueRenderer";
@@ -47,86 +55,92 @@ public class ListBoxHelper<T extends SelectorOption> extends AbstractInputCreato
     }
 
     @Override
-    public String getInputWidget( final ListBoxBaseDefinition fieldDefinition ) {
+    public String getInputWidget(final ListBoxBaseDefinition fieldDefinition) {
         return "org.gwtbootstrap3.client.ui.ValueListBox";
     }
 
     @Override
-    public String getInputInitLiteral( final SourceGenerationContext context, final ListBoxBaseDefinition fieldDefinition ) {
+    public String getInputInitLiteral(final SourceGenerationContext context,
+                                      final ListBoxBaseDefinition fieldDefinition) {
         return "new ValueListBox<String>( " + fieldDefinition.getName() + LISTBOX_RENDERER_SUFFIX + " );";
     }
 
     @Override
-    public void addCustomCode( final ListBoxBaseDefinition<T> fieldDefinition, final SourceGenerationContext context, final JavaClassSource viewClass ) {
+    public void addCustomCode(final ListBoxBaseDefinition<OPTIONS, TYPE> fieldDefinition,
+                              final SourceGenerationContext context,
+                              final JavaClassSource viewClass) {
 
-        viewClass.addImport( JAVA_UTIL_MAP_CLASSNAME );
-        viewClass.addImport( JAVA_UTIL_HASHMAP_CLASSNAME );
+        viewClass.addImport(JAVA_UTIL_MAP_CLASSNAME);
+        viewClass.addImport(JAVA_UTIL_HASHMAP_CLASSNAME);
 
         StringBuffer body = new StringBuffer();
 
-        body.append( JAVA_UTIL_MAP_NAME )
-                .append( "<String, String> values = new " )
-                .append( JAVA_UTIL_HASHMAP_NAME )
-                .append( "<String, String>();" );
+        body.append(JAVA_UTIL_MAP_NAME)
+                .append("<String, String> values = new ")
+                .append(JAVA_UTIL_HASHMAP_NAME)
+                .append("<String, String>();");
 
-        String defaultValue = null;
-        for ( final T option : fieldDefinition.getOptions() ) {
-            body.append( "values.put( \"" )
-                    .append( option.getValue() )
-                    .append( "\", \"" )
-                    .append( option.getText() )
-                    .append( "\" );" );
-            if ( option.isDefaultValue() ) defaultValue = option.getValue().toString();
+        Optional<Object> defaultValue = Optional.ofNullable(fieldDefinition.getDefaultValue());
+
+        for (final OPTIONS option : fieldDefinition.getOptions()) {
+            body.append("values.put( \"")
+                    .append(option.getValue())
+                    .append("\", \"")
+                    .append(option.getText())
+                    .append("\" );");
         }
 
-        if ( defaultValue != null ) {
-            body.append( "if (" ).append( IS_NEW_MODEL_METHOD_CALL).append( ") {" );
-            body.append( fieldDefinition.getName() )
-                    .append( ".setValue( \"" )
-                    .append( defaultValue )
-                    .append( "\", true );" );
-            body.append( "}" );
+        if (defaultValue.isPresent()) {
+            body.append("if (").append(IS_NEW_MODEL_METHOD_CALL).append(") {");
+            body.append(fieldDefinition.getName())
+                    .append(".setValue( \"")
+                    .append(defaultValue.get().toString())
+                    .append("\", true );");
+            body.append("}");
         }
-        body.append( fieldDefinition.getName() )
-                .append( LISTBOX_RENDERER_SUFFIX )
-                .append( ".setValues( values );" );
-        body.append( fieldDefinition.getName() )
-                .append( ".setAcceptableValues( values.keySet() );" );
+        body.append(fieldDefinition.getName())
+                .append(LISTBOX_RENDERER_SUFFIX)
+                .append(".setValues( values );");
+        body.append(fieldDefinition.getName())
+                .append(".setAcceptableValues( values.keySet() );");
 
         final String initListMethodName = LOAD_LIST_VALUES_METHOD_NAME + fieldDefinition.getName();
 
         viewClass.addMethod()
-                .setName( initListMethodName )
+                .setName(initListMethodName)
                 .setReturnTypeVoid()
                 .setProtected()
-                .setBody( body.toString() );
+                .setBody(body.toString());
 
-        final MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod( BEFORE_DISPLAY_METHOD );
-        body = new StringBuffer( beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody() );
-        body.append( initListMethodName ).append( "();" );
-        beforeDisplayMethod.setBody( body.toString() );
+        final MethodSource<JavaClassSource> beforeDisplayMethod = viewClass.getMethod(BEFORE_DISPLAY_METHOD);
+        body = new StringBuffer(beforeDisplayMethod.getBody() == null ? "" : beforeDisplayMethod.getBody());
+        body.append(initListMethodName).append("();");
+        beforeDisplayMethod.setBody(body.toString());
     }
 
     @Override
-    public String getReadonlyMethod( final String fieldName, final String readonlyParam ) {
+    public String getReadonlyMethod(final String fieldName,
+                                    final String readonlyParam) {
         return fieldName + ".setEnabled( !" + readonlyParam + " );";
     }
 
     @Override
-    public String getExtraReadOnlyCode( final ListBoxBaseDefinition fieldDefinition, final String readonlyParam ) {
+    public String getExtraReadOnlyCode(final ListBoxBaseDefinition fieldDefinition,
+                                       final String readonlyParam) {
         return "";
     }
 
     @Override
-    public void addExtraFields( final JavaClassSource viewClass,
-                                final ListBoxBaseDefinition fieldDefinition,
-                                final SourceGenerationContext context ) {
-        viewClass.addImport( LISTBOX_STRING_RENDERER_CLASSNAME );
-        final PropertySource<JavaClassSource> property = viewClass.addProperty( LISTBOX_STRING_RENDERER_NAME, fieldDefinition.getName() + LISTBOX_RENDERER_SUFFIX );
+    public void addExtraFields(final JavaClassSource viewClass,
+                               final ListBoxBaseDefinition fieldDefinition,
+                               final SourceGenerationContext context) {
+        viewClass.addImport(LISTBOX_STRING_RENDERER_CLASSNAME);
+        final PropertySource<JavaClassSource> property = viewClass.addProperty(LISTBOX_STRING_RENDERER_NAME,
+                                                                               fieldDefinition.getName() + LISTBOX_RENDERER_SUFFIX);
 
         final FieldSource<JavaClassSource> field = property.getField();
         field.setPrivate();
-        field.setLiteralInitializer( "new " + LISTBOX_STRING_RENDERER_NAME + "();" );
+        field.setLiteralInitializer("new " + LISTBOX_STRING_RENDERER_NAME + "();");
 
         property.removeAccessor();
         property.removeMutator();

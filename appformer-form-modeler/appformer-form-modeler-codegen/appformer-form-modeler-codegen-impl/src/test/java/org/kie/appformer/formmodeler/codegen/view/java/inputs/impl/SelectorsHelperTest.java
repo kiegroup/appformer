@@ -25,14 +25,14 @@ import org.junit.runner.RunWith;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.java.inputs.AbstractInputHelperTest;
 import org.kie.appformer.formmodeler.codegen.view.java.test.util.InputCreatorHelpersProvider;
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.DefaultSelectorOption;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.EnumSelectorOption;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.StringSelectorOption;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.definition.EnumListBoxFieldDefinition;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.definition.StringListBoxFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
 import static org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper.LISTBOX_RENDERER_SUFFIX;
 import static org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.ListBoxHelper.LOAD_LIST_VALUES_METHOD_NAME;
@@ -66,19 +66,18 @@ public class SelectorsHelperTest extends AbstractInputHelperTest {
         StringListBoxFieldDefinition stringListBox = new StringListBoxFieldDefinition();
 
         stringListBox.getOptions().add(new StringSelectorOption("op1",
-                                                                "op1",
-                                                                true));
+                                                                "op1"));
         stringListBox.getOptions().add(new StringSelectorOption("op2",
-                                                                "op2",
-                                                                false));
+                                                                "op2"));
+
+        stringListBox.setDefaultValue("op1");
 
         EnumListBoxFieldDefinition enumListBox = new EnumListBoxFieldDefinition();
-        enumListBox.getOptions().add(new DefaultSelectorOption(TestEnum.VAL1,
-                                                               "Val1",
-                                                               true));
-        enumListBox.getOptions().add(new DefaultSelectorOption(TestEnum.VAL2,
-                                                               "Val2",
-                                                               false));
+        enumListBox.getOptions().add(new EnumSelectorOption(TestEnum.VAL1,
+                                                            "Val1"));
+        enumListBox.getOptions().add(new EnumSelectorOption(TestEnum.VAL2,
+                                                            "Val2"));
+        enumListBox.setDefaultValue(TestEnum.VAL1);
 
         return Arrays.asList(initFieldDefinition(stringListBox),
                              initFieldDefinition(enumListBox));

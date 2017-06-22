@@ -16,7 +16,7 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.*;
+import java.util.Optional;
 
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
@@ -27,6 +27,12 @@ import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresExtraFields;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.SelectorOption;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.radioGroup.definition.StringRadioGroupFieldDefinition;
+
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.GWT_DOM_CLASSNAME;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.GWT_SAFE_HTML_UTILS_CLASSNAME;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.GWT_SAFE_HTML_UTILS_FROM_TRUSTED_SOURCE;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.IS_NEW_MODEL_METHOD_CALL;
 
 public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGroupFieldDefinition> implements
         RequiresCustomCode<StringRadioGroupFieldDefinition>, RequiresExtraFields<StringRadioGroupFieldDefinition> {
@@ -67,7 +73,7 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGrou
 
         StringBuffer body = new StringBuffer();
 
-        String defaultValue = null;
+        Optional<Object> defaultValue = Optional.ofNullable(fieldDefinition.getDefaultValue());
 
         for ( int i = 0; i < fieldDefinition.getOptions().size(); i++ ) {
 
@@ -84,17 +90,13 @@ public class RadioGroupHelper extends AbstractInputCreatorHelper<StringRadioGrou
                     .append( ".add(" )
                     .append( inputName )
                     .append( ");" );
-
-            if ( option.isDefaultValue() ) {
-                defaultValue = option.getValue().toString();
-            }
         }
 
-        if ( defaultValue != null ) {
+        if ( defaultValue.isPresent() ) {
             body.append( "if (" ).append( IS_NEW_MODEL_METHOD_CALL).append( ") {" );
             body.append( fieldDefinition.getName() )
                     .append( ".setValue( \"" )
-                    .append( defaultValue )
+                    .append( defaultValue.get().toString() )
                     .append( "\", true );" );
             body.append( "}" );
         }
