@@ -5,7 +5,6 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSService;
@@ -67,10 +66,6 @@ public class TextEditorPresenter {
     @PostConstruct
     public void setup() {
         view.init(this);
-    }
-
-    @AfterInitialization
-    public void init() {
         buildMenus();
     }
 

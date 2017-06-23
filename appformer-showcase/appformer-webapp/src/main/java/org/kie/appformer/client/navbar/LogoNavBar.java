@@ -16,9 +16,10 @@
 
 package org.kie.appformer.client.navbar;
 
+import javax.annotation.PostConstruct;
+
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.workbench.Header;
@@ -40,7 +41,7 @@ public class LogoNavBar implements Header {
     @DataField
     Div header;
 
-    @AfterInitialization
+    @PostConstruct
     public void setup(){
         DOMUtil.appendWidgetToElement( header, logo.asWidget() );
     }

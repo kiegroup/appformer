@@ -31,7 +31,6 @@ import org.kie.appformer.client.resources.i18n.AppConstants;
 import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
-import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
 import org.kie.workbench.common.workbench.client.authz.PermissionTreeSetup;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
@@ -73,7 +72,6 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
 
     @Inject
     public AppFormerEntryPoint( Caller<AppConfigService> appConfigService,
-                                Caller<PlaceManagerActivityService> pmas,
                                 ActivityBeansCache activityBeansCache,
                                 HomeProducer homeProducer,
                                 Caller<SocialConfigurationService> socialConfigurationService,
@@ -84,7 +82,7 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
                                 Workbench workbench,
                                 PlaceManager placeManager,
                                 PermissionTreeSetup permissionTreeSetup ) {
-        super( appConfigService, pmas, activityBeansCache );
+        super( appConfigService, activityBeansCache );
         this.homeProducer = homeProducer;
         this.socialConfigurationService = socialConfigurationService;
         this.menusHelper = menusHelper;
