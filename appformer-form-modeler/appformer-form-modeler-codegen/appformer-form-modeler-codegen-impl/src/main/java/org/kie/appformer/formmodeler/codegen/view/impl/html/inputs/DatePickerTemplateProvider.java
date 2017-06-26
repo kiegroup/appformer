@@ -20,23 +20,23 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.definition.DatePickerFieldDefinition;
-import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.shared.FieldManager;
 
 @Dependent
 public class DatePickerTemplateProvider extends AbstractTemplateProvider {
 
     @Inject
-    public DatePickerTemplateProvider( final FieldManager fieldManager ) {
-        super( fieldManager );
+    public DatePickerTemplateProvider(final FieldManager fieldManager) {
+        super(fieldManager);
     }
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { DatePickerFieldDefinition.FIELD_TYPE.getTypeName() };
+        return new String[]{DatePickerFieldDefinition.FIELD_TYPE.getTypeName()};
     }
 
     @Override
-    protected String getTemplateForFieldTypeCode( final String fieldCode ) {
+    protected String getTemplateForFieldTypeCode(final String fieldCode) {
         return "/org/kie/appformer/formmodeler/codegen/view/impl/html/templates/datebox.mv";
     }
 }

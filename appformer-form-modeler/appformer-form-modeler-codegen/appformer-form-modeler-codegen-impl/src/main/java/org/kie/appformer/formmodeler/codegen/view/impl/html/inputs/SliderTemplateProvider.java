@@ -20,23 +20,23 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.slider.definition.SliderBaseDefinition;
-import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.shared.FieldManager;
 
 @Dependent
 public class SliderTemplateProvider extends AbstractTemplateProvider {
 
     @Inject
-    public SliderTemplateProvider( final FieldManager fieldManager ) {
-        super( fieldManager );
+    public SliderTemplateProvider(final FieldManager fieldManager) {
+        super(fieldManager);
     }
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[]{ SliderBaseDefinition.FIELD_TYPE.getTypeName() };
+        return new String[]{SliderBaseDefinition.FIELD_TYPE.getTypeName()};
     }
 
     @Override
-    protected String getTemplateForFieldTypeCode( final String fieldCode ) {
+    protected String getTemplateForFieldTypeCode(final String fieldCode) {
         return "/org/kie/appformer/formmodeler/codegen/view/impl/html/templates/slider.mv";
     }
 }

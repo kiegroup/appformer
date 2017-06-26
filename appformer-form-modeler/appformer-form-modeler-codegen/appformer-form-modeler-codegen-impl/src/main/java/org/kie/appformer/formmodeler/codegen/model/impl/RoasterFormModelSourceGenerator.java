@@ -32,7 +32,7 @@ import org.kie.appformer.formmodeler.codegen.JavaSourceGenerator;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.model.FormModel;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.JavaModel;
+import org.kie.workbench.common.forms.model.JavaFormModel;
 
 @FormModel
 @ApplicationScoped
@@ -92,7 +92,7 @@ public class RoasterFormModelSourceGenerator implements JavaSourceGenerator {
 
         checkFormDefinition( form );
 
-        final JavaModel model = (JavaModel) context.getFormDefinition().getModel();
+        final JavaFormModel model = (JavaFormModel) context.getFormDefinition().getModel();
 
         final FieldSource<JavaClassSource> modelField = modelClass.addProperty( model.getType(),
                                                                                 form.getModel().getName() ).getField();

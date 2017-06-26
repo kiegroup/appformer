@@ -20,23 +20,23 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.image.definition.PictureFieldDefinition;
-import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.shared.FieldManager;
 
 @Dependent
 public class PictureTemplateProvider extends AbstractTemplateProvider {
 
     @Inject
-    public PictureTemplateProvider( final FieldManager fieldManager ) {
-        super( fieldManager );
+    public PictureTemplateProvider(final FieldManager fieldManager) {
+        super(fieldManager);
     }
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[]{ PictureFieldDefinition.FIELD_TYPE.getTypeName() };
+        return new String[]{PictureFieldDefinition.FIELD_TYPE.getTypeName()};
     }
 
     @Override
-    protected String getTemplateForFieldTypeCode( final String fieldCode ) {
+    protected String getTemplateForFieldTypeCode(final String fieldCode) {
         return "/org/kie/appformer/formmodeler/codegen/view/impl/html/templates/picture.mv";
     }
 }

@@ -20,11 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.kie.appformer.formmodeler.codegen.FormSourcesGenerator;
 import org.kie.appformer.formmodeler.codegen.services.datamodeller.DataModellerFormGenerator;
 import org.kie.workbench.common.forms.data.modeller.model.DataObjectFormModel;
-import org.kie.workbench.common.forms.data.modeller.service.impl.DataModellerFieldGenerator;
+import org.kie.workbench.common.forms.data.modeller.service.impl.DataObjectFormModelHandler;
 import org.kie.workbench.common.forms.editor.service.shared.VFSFormFinderService;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EmbedsForm;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EntityRelationField;
@@ -33,7 +32,7 @@ import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.multipl
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
@@ -45,36 +44,43 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
     private static transient Logger log = LoggerFactory.getLogger(DataModellerFormGeneratorImpl.class);
 
-    @Inject
     protected DataModelerService dataModelerService;
 
-    @Inject
     protected KieProjectService projectService;
 
-    @Inject
     protected FieldManager fieldManager;
 
-    @Inject
     protected FormSourcesGenerator formSourcesGenerator;
 
-    @Inject
-    protected DataModellerFieldGenerator fieldGenerator;
+    protected DataObjectFormModelHandler formModelHandler;
 
-    @Inject
     protected VFSFormFinderService vfsFormFinderService;
 
+    @Inject
+    public DataModellerFormGeneratorImpl(DataModelerService dataModelerService,
+                                         KieProjectService projectService,
+                                         FieldManager fieldManager,
+                                         FormSourcesGenerator formSourcesGenerator,
+                                         DataObjectFormModelHandler formModelHandler,
+                                         VFSFormFinderService vfsFormFinderService) {
+        this.dataModelerService = dataModelerService;
+        this.projectService = projectService;
+        this.fieldManager = fieldManager;
+        this.formSourcesGenerator = formSourcesGenerator;
+        this.formModelHandler = formModelHandler;
+        this.vfsFormFinderService = vfsFormFinderService;
+    }
+
     @Override
-    public void generateFormForDataObject(DataObject dataObject,
+    public FormDefinition generateFormForDataObject(DataObject dataObject,
                                           Path path) {
 
         if (dataObject.getProperties().isEmpty()) {
-            return;
+            return null;
         }
 
-        String modelName = WordUtils.uncapitalize(dataObject.getName());
-
-        DataObjectFormModel model = new DataObjectFormModel(modelName,
-                                                            dataObject.getClassName());
+        DataObjectFormModel model = formModelHandler.createFormModel(dataObject,
+                                                                     path);
 
         FormDefinition form = new FormDefinition(model);
 
@@ -82,25 +88,24 @@ public class DataModellerFormGeneratorImpl implements DataModellerFormGenerator 
 
         form.setName(dataObject.getName());
 
-        List<FieldDefinition> availabeFields = fieldGenerator.getFieldsFromDataObject(modelName,
-                                                                                      dataObject);
+        formModelHandler.init(model,
+                              path);
 
-        for (FieldDefinition field : availabeFields) {
+
+        formModelHandler.getAllFormModelFields().forEach(field -> {
             if (field instanceof EmbedsForm) {
                 if (!loadEmbeddedFormConfig(field,
                                             path)) {
-                    continue;
+                    return;
                 }
             }
             form.getFields().add(field);
-        }
-
-        if (form.getFields().isEmpty()) {
-            return;
-        }
+        });
 
         formSourcesGenerator.generateEntityFormSources(form,
                                                        path);
+
+        return form;
     }
 
     protected boolean loadEmbeddedFormConfig(FieldDefinition field,
