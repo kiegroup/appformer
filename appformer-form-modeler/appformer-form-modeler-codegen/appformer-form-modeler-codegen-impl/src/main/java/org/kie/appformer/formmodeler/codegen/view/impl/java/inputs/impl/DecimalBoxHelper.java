@@ -16,9 +16,6 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.AbstractNumberBoxHelper;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.decimalBox.definition.DecimalBoxFieldDefinition;
 
@@ -38,22 +35,5 @@ public class DecimalBoxHelper extends AbstractNumberBoxHelper<DecimalBoxFieldDef
     public String getReadonlyMethod(String fieldName,
                                     String readonlyParam) {
         return fieldName + ".setEnabled( !" + readonlyParam + ");";
-    }
-
-    @Override
-    public String getConverterClassName(DecimalBoxFieldDefinition field) {
-
-        HashMap<String, String> converterMap = new HashMap<>();
-
-        String pkgPrefix = "org.kie.workbench.common.forms.common.rendering.client.widgets.decimalBox.converters.";
-
-        converterMap.put(Float.class.getCanonicalName(),
-                         pkgPrefix + "FloatToDoubleConverter");
-        converterMap.put(Double.class.getCanonicalName(),
-                         "");
-        converterMap.put(BigDecimal.class.getCanonicalName(),
-                         pkgPrefix + "BigDecimalToDoubleConverter");
-
-        return converterMap.get(field.getStandaloneClassName());
     }
 }
