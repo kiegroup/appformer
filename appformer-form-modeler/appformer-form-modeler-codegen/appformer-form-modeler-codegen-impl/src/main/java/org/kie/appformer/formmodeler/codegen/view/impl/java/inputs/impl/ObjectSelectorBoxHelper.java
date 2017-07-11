@@ -16,21 +16,21 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.INIT_FORM_METHOD;
-
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.jboss.forge.roaster.model.source.PropertySource;
+import org.kie.appformer.form.modeler.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.RequiresExtraFields;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.SelectorOption;
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
+
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.INIT_FORM_METHOD;
 
 public class ObjectSelectorBoxHelper<T extends SelectorOption> extends AbstractInputCreatorHelper<ObjectSelectorFieldDefinition>
-        implements RequiresExtraFields<ObjectSelectorFieldDefinition>, RequiresCustomCode<ObjectSelectorFieldDefinition> {
-
+        implements RequiresExtraFields<ObjectSelectorFieldDefinition>,
+                   RequiresCustomCode<ObjectSelectorFieldDefinition> {
 
     public static final String FIELD_MASK_SUFFIX = "_fieldMask";
 
@@ -44,82 +44,84 @@ public class ObjectSelectorBoxHelper<T extends SelectorOption> extends AbstractI
     }
 
     @Override
-    public String getInputWidget( final ObjectSelectorFieldDefinition fieldDefinition ) {
-        return getClassName( WIDGET_CLASSNAME ) + "<" + getClassName( fieldDefinition.getStandaloneClassName() ) + ">";
+    public String getInputWidget(final ObjectSelectorFieldDefinition fieldDefinition) {
+        return getClassName(WIDGET_CLASSNAME) + "<" + getClassName(fieldDefinition.getStandaloneClassName()) + ">";
     }
 
-    protected boolean isEvaluableMask( final String mask ) {
-        final int countOpeners = org.apache.commons.lang3.StringUtils.countMatches( mask, "{" );
+    protected boolean isEvaluableMask(final String mask) {
+        final int countOpeners = org.apache.commons.lang3.StringUtils.countMatches(mask,
+                                                                                   "{");
 
-        final int countClosers = org.apache.commons.lang3.StringUtils.countMatches( mask, "}" );
+        final int countClosers = org.apache.commons.lang3.StringUtils.countMatches(mask,
+                                                                                   "}");
 
         return countOpeners != 0 && countOpeners == countClosers;
     }
 
-    protected String getMaskFieldName( final ObjectSelectorFieldDefinition fieldDefinition ) {
+    protected String getMaskFieldName(final ObjectSelectorFieldDefinition fieldDefinition) {
         return fieldDefinition.getName() + FIELD_MASK_SUFFIX;
     }
 
     @Override
-    public void addCustomCode( final ObjectSelectorFieldDefinition fieldDefinition,
-                               final SourceGenerationContext context,
-                               final JavaClassSource viewClass ) {
+    public void addCustomCode(final ObjectSelectorFieldDefinition fieldDefinition,
+                              final SourceGenerationContext context,
+                              final JavaClassSource viewClass) {
 
-        if ( !isEvaluableMask( fieldDefinition.getMask() ) ) {
-            throw new IllegalArgumentException( "Unsupported mask format" );
+        if (!isEvaluableMask(fieldDefinition.getMask())) {
+            throw new IllegalArgumentException("Unsupported mask format");
         }
 
-        viewClass.addImport( DATASET_CLASSNAME );
-        viewClass.addImport( WIDGET_CLASSNAME );
-        viewClass.addImport( fieldDefinition.getStandaloneClassName() );
+        viewClass.addImport(DATASET_CLASSNAME);
+        viewClass.addImport(WIDGET_CLASSNAME);
+        viewClass.addImport(fieldDefinition.getStandaloneClassName());
 
-        final MethodSource<JavaClassSource> initMethod = viewClass.getMethod( INIT_FORM_METHOD );
-        final StringBuffer body = new StringBuffer( initMethod.getBody() == null ? "" : initMethod.getBody() );
+        final MethodSource<JavaClassSource> initMethod = viewClass.getMethod(INIT_FORM_METHOD);
+        final StringBuffer body = new StringBuffer(initMethod.getBody() == null ? "" : initMethod.getBody());
 
+        body.append(fieldDefinition.getName())
+                .append(".init( ")
+                .append(getMaskFieldName(fieldDefinition))
+                .append(", new ")
+                .append(getClassName(DATASET_CLASSNAME))
+                .append("( ")
+                .append(getMaskFieldName(fieldDefinition))
+                .append(", ")
+                .append(getClassName(fieldDefinition.getStandaloneClassName()))
+                .append(SourceGenerationContext.REST_SERVICE_SUFFIX)
+                .append(".class ) );");
 
-        body.append( fieldDefinition.getName() )
-                .append( ".init( " )
-                .append( getMaskFieldName( fieldDefinition ) )
-                .append( ", new " )
-                .append( getClassName( DATASET_CLASSNAME ) )
-                .append( "( " )
-                .append( getMaskFieldName( fieldDefinition ) )
-                .append( ", " )
-                .append( getClassName( fieldDefinition.getStandaloneClassName() ) )
-                .append( SourceGenerationContext.REST_SERVICE_SUFFIX )
-                .append( ".class ) );" );
-
-        initMethod.setBody( body.toString() );
-
+        initMethod.setBody(body.toString());
     }
 
     @Override
-    public void addExtraFields( final JavaClassSource viewClass,
-                                final ObjectSelectorFieldDefinition fieldDefinition,
-                                final SourceGenerationContext context ) {
+    public void addExtraFields(final JavaClassSource viewClass,
+                               final ObjectSelectorFieldDefinition fieldDefinition,
+                               final SourceGenerationContext context) {
 
-        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + getClassName( fieldDefinition.getStandaloneClassName() ) + context.REST_SERVICE_SUFFIX );
+        viewClass.addImport(context.getSharedPackage().getPackageName() + "." + getClassName(fieldDefinition.getStandaloneClassName()) + context.REST_SERVICE_SUFFIX);
 
-        final PropertySource<JavaClassSource> property = viewClass.addProperty( String.class.getName(), getMaskFieldName( fieldDefinition ) );
+        final PropertySource<JavaClassSource> property = viewClass.addProperty(String.class.getName(),
+                                                                               getMaskFieldName(fieldDefinition));
 
         final FieldSource<JavaClassSource> field = property.getField();
         field.setPrivate();
-        field.setFinal( true );
-        field.setLiteralInitializer( "\"" + fieldDefinition.getMask() + "\";" );
+        field.setFinal(true);
+        field.setLiteralInitializer("\"" + fieldDefinition.getMask() + "\";");
 
         property.removeAccessor();
         property.removeMutator();
     }
 
     @Override
-    public String getExtraReadOnlyCode( final ObjectSelectorFieldDefinition fieldDefinition, final String readonlyParam ) {
+    public String getExtraReadOnlyCode(final ObjectSelectorFieldDefinition fieldDefinition,
+                                       final String readonlyParam) {
         return "";
     }
 
-    private String getClassName( final String qualifiedClassName ) {
-        if ( qualifiedClassName == null || qualifiedClassName.isEmpty() || qualifiedClassName.indexOf( "." ) == -1) {
+    private String getClassName(final String qualifiedClassName) {
+        if (qualifiedClassName == null || qualifiedClassName.isEmpty() || qualifiedClassName.indexOf(".") == -1) {
             return "";
         }
-        return qualifiedClassName.substring( qualifiedClassName.lastIndexOf( "." ) + 1 );
+        return qualifiedClassName.substring(qualifiedClassName.lastIndexOf(".") + 1);
     }
 }

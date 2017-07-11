@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
+import org.kie.appformer.form.modeler.fields.shared.fieldTypes.relations.objectSelector.definition.ObjectSelectorFieldDefinition;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
 
 @Dependent
