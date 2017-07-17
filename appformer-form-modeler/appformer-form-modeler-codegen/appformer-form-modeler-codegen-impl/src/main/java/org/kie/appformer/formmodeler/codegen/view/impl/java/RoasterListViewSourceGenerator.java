@@ -39,7 +39,7 @@ import org.kie.appformer.formmodeler.codegen.view.impl.java.tableColumns.ColumnM
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.EntityRelationField;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.JavaModel;
+import org.kie.workbench.common.forms.model.JavaFormModel;
 
 @ListView
 @ApplicationScoped
@@ -112,7 +112,7 @@ public class RoasterListViewSourceGenerator implements JavaSourceGenerator {
                 .setBody( body.toString() )
                 .setPublic();
 
-        createFormModel.addParameter( ( (JavaModel) form.getModel() ).getType(), modelName );
+        createFormModel.addParameter( ( (JavaFormModel) form.getModel() ).getType(), modelName );
         createFormModel.addAnnotation( Override.class );
     }
 

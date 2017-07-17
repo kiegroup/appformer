@@ -19,7 +19,7 @@ package org.kie.appformer.formmodeler.codegen.view.impl.html.inputs;
 import javax.inject.Inject;
 
 import org.kie.appformer.formmodeler.codegen.view.impl.html.InputTemplateProvider;
-import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 
@@ -28,23 +28,22 @@ public abstract class AbstractTemplateProvider implements InputTemplateProvider 
     protected FieldManager fieldManager;
 
     @Inject
-    public AbstractTemplateProvider( FieldManager fieldManager ) {
+    public AbstractTemplateProvider(FieldManager fieldManager) {
         this.fieldManager = fieldManager;
     }
 
     @Override
-    public void registerTemplates( TemplateRegistry registry ) {
-        for ( String typeName : getSupportedFieldCodes() ) {
-            if ( typeName != null && fieldManager.getDefinitionByFieldTypeName( typeName ) != null ) {
-                registry.addNamedTemplate( typeName,
-                        TemplateCompiler.compileTemplate(
-                                getClass().getResourceAsStream( getTemplateForFieldTypeCode( typeName ) ) ) );
+    public void registerTemplates(TemplateRegistry registry) {
+        for (String typeName : getSupportedFieldCodes()) {
+            if (typeName != null && fieldManager.getDefinitionByFieldTypeName(typeName) != null) {
+                registry.addNamedTemplate(typeName,
+                                          TemplateCompiler.compileTemplate(
+                                                  getClass().getResourceAsStream(getTemplateForFieldTypeCode(typeName))));
             }
         }
     }
 
     protected abstract String[] getSupportedFieldCodes();
 
-    protected abstract String getTemplateForFieldTypeCode( String fieldCode );
-
+    protected abstract String getTemplateForFieldTypeCode(String fieldCode);
 }

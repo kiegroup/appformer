@@ -23,7 +23,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.JavaModel;
+import org.kie.workbench.common.forms.model.JavaFormModel;
 
 public class ConstructorGenerator {
 
@@ -37,13 +37,13 @@ public class ConstructorGenerator {
     public void addFormModelConstructor( final SourceGenerationContext context,
                                          final JavaClassSource modelClass ) {
         final FormModel model = context.getFormDefinition().getModel();
-        if ( model != null && model instanceof JavaModel ) {
+        if ( model != null && model instanceof JavaFormModel ) {
             final MethodSource<JavaClassSource> constructor = modelClass.addMethod()
                     .setConstructor( true )
                     .setPublic();
             final StringBuffer source = new StringBuffer();
 
-            constructor.addParameter( ( (JavaModel) model ).getType(),
+            constructor.addParameter( ( (JavaFormModel) model ).getType(),
                                       model.getName() )
                     .addAnnotation( ERRAI_MAPS_TO )
                     .setStringValue( model.getName() );

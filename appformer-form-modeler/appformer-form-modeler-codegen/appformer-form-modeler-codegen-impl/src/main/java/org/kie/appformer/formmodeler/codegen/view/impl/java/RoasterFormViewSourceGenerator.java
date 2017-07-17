@@ -38,7 +38,7 @@ import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.view.FormView;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.workbench.common.forms.model.FieldDefinition;
-import org.kie.workbench.common.forms.model.JavaModel;
+import org.kie.workbench.common.forms.model.JavaFormModel;
 
 @FormView
 @ApplicationScoped
@@ -93,7 +93,7 @@ public class RoasterFormViewSourceGenerator extends RoasterViewSourceGenerator {
         viewClass.addImport( JAVA_UTIL_ARRAYLIST_CLASSNAME );
         viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
 
-        final JavaModel model = (JavaModel) context.getFormDefinition().getModel();
+        final JavaFormModel model = (JavaFormModel) context.getFormDefinition().getModel();
 
         viewClass.addImport( model.getType() );
 

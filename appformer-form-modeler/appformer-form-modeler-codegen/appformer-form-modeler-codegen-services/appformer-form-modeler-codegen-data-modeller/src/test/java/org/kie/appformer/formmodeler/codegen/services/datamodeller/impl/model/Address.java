@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 JBoss Inc
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package org.kie.appformer.formmodeler.codegen.services.datamodeller;
+package org.kie.appformer.formmodeler.codegen.services.datamodeller.impl.model;
 
-import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.services.datamodeller.core.DataObject;
-import org.uberfire.backend.vfs.Path;
+public class Address {
 
-/**
- * Generates {@link FormDefinition} for Data Objects
- */
-public interface DataModellerFormGenerator {
-    public FormDefinition generateFormForDataObject(DataObject dataObject, Path path);
 }

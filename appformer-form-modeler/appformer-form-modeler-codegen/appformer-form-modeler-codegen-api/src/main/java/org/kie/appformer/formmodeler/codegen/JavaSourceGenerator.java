@@ -18,19 +18,20 @@ package org.kie.appformer.formmodeler.codegen;
 
 import org.kie.workbench.common.forms.model.FormDefinition;
 import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.JavaModel;
+import org.kie.workbench.common.forms.model.JavaFormModel;
 
 public interface JavaSourceGenerator {
-    public String generateJavaSource( SourceGenerationContext context );
 
-    default void checkFormDefinition( final FormDefinition form ) {
+    public String generateJavaSource(SourceGenerationContext context);
+
+    default void checkFormDefinition(final FormDefinition form) {
         final FormModel model = form.getModel();
 
-        if ( model == null ) {
-            throw new UnsupportedOperationException( "Cannot generate RestService for an empty model." );
+        if (model == null) {
+            throw new UnsupportedOperationException("Cannot generate RestService for an empty model.");
         }
-        if ( !( model instanceof JavaModel ) ) {
-            throw new UnsupportedOperationException( "Cannot generate RestService for a model which is not Java." );
+        if (!(model instanceof JavaFormModel)) {
+            throw new UnsupportedOperationException("Cannot generate RestService for a model which is not Java.");
         }
     }
 }

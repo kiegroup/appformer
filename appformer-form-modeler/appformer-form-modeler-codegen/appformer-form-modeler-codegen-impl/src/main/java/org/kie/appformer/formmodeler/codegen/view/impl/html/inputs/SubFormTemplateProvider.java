@@ -20,7 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.relations.subForm.definition.SubFormFieldDefinition;
-import org.kie.workbench.common.forms.service.FieldManager;
+import org.kie.workbench.common.forms.service.shared.FieldManager;
 
 /**
  * @author Pere Fernandez <pefernan@redhat.com>
@@ -29,17 +29,17 @@ import org.kie.workbench.common.forms.service.FieldManager;
 public class SubFormTemplateProvider extends AbstractTemplateProvider {
 
     @Inject
-    public SubFormTemplateProvider( final FieldManager fieldManager ) {
-        super( fieldManager );
+    public SubFormTemplateProvider(final FieldManager fieldManager) {
+        super(fieldManager);
     }
 
     @Override
     protected String[] getSupportedFieldCodes() {
-        return new String[] { SubFormFieldDefinition.FIELD_TYPE.getTypeName() };
+        return new String[]{SubFormFieldDefinition.FIELD_TYPE.getTypeName()};
     }
 
     @Override
-    protected String getTemplateForFieldTypeCode( final String fieldCode ) {
+    protected String getTemplateForFieldTypeCode(final String fieldCode) {
         return "/org/kie/appformer/formmodeler/codegen/view/impl/html/templates/subform.mv";
     }
 }

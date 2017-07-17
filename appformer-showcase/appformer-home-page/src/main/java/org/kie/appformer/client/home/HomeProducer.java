@@ -59,10 +59,6 @@ public class HomeProducer {
                 () -> placeManager.goTo( AUTHORING ),
                 AUTHORING, PERSPECTIVE ) );
 
-        s1.addChild( ModelUtils.makeSectionEntry( constants.contributors(),
-                () -> placeManager.goTo( CONTRIBUTORS ),
-                CONTRIBUTORS, PERSPECTIVE ) );
-
         s1.addChild( ModelUtils.makeSectionEntry( constants.artifactRepository(),
                 () -> placeManager.goTo( GUVNOR_M2REPO ),
                 GUVNOR_M2REPO, PERSPECTIVE ) );
