@@ -16,9 +16,25 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs;
 
+import org.jboss.errai.databinding.client.api.Converter;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.util.SourceGenerationValueConvertersFactory;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 
+/**
+ * Specifies that the form widget for a {@link FieldDefinition} might require a {@link Converter} on the generated
+ * {@link Bound} annotation
+ * @param <F> Any class extending FieldDefinition
+ */
 public interface RequiresValueConverter<F extends FieldDefinition> {
 
-    String getConverterClassName(F field);
+    /**
+     * Retrieves the right {@link Converter} for the given {@link FieldDefinition}
+     * @param field a {@link FieldDefinition}
+     * @return a String containing the ClassName of the {@link Converter} to use on the {@link Bound} annotation or
+     * null if it is not required.
+     */
+    default String getConverterClassName(F field) {
+        return SourceGenerationValueConvertersFactory.getConverterClassName(field);
+    }
 }

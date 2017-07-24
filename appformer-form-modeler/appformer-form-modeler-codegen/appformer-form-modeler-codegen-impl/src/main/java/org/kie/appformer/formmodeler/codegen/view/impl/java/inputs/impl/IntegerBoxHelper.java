@@ -16,9 +16,6 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
-import java.math.BigInteger;
-import java.util.HashMap;
-
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.AbstractNumberBoxHelper;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.integerBox.definition.IntegerBoxFieldDefinition;
 
@@ -38,26 +35,5 @@ public class IntegerBoxHelper extends AbstractNumberBoxHelper<IntegerBoxFieldDef
     public String getReadonlyMethod(String fieldName,
                                     String readonlyParam) {
         return fieldName + ".setEnabled( !" + readonlyParam + ");";
-    }
-
-    @Override
-    public String getConverterClassName(IntegerBoxFieldDefinition field) {
-
-        HashMap<String, String> converterMap = new HashMap<>();
-
-        String pkgPrefix = "org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.converters.";
-
-        converterMap.put(Byte.class.getCanonicalName(),
-                         pkgPrefix + "ByteToLongConverter");
-        converterMap.put(Short.class.getCanonicalName(),
-                         pkgPrefix + "ShortToLongConverter");
-        converterMap.put(Integer.class.getCanonicalName(),
-                         pkgPrefix + "IntegerToLongConverter");
-        converterMap.put(Long.class.getCanonicalName(),
-                         "");
-        converterMap.put(BigInteger.class.getCanonicalName(),
-                         pkgPrefix + "BigIntegerToLongConverter");
-
-        return converterMap.get(field.getStandaloneClassName());
     }
 }

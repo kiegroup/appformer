@@ -16,9 +16,10 @@
 
 package org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl;
 
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.RequiresValueConverter;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.definition.TextBoxBaseDefinition;
 
-public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBaseDefinition> {
+public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBaseDefinition> implements RequiresValueConverter<TextBoxBaseDefinition> {
 
     @Override
     public String getSupportedFieldTypeCode() {
@@ -26,7 +27,7 @@ public class TextBoxHelper extends AbstractInputCreatorHelper<TextBoxBaseDefinit
     }
 
     @Override
-    public String getInputWidget( TextBoxBaseDefinition fieldDefinition ) {
+    public String getInputWidget(TextBoxBaseDefinition fieldDefinition) {
         return "org.gwtbootstrap3.client.ui.TextBox";
     }
 }

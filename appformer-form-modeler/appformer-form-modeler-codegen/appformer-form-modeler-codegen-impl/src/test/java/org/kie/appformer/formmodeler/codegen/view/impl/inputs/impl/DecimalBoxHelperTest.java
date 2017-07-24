@@ -17,47 +17,23 @@
 package org.kie.appformer.formmodeler.codegen.view.impl.inputs.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.DecimalBoxHelper;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.util.SourceGenerationValueConvertersFactory;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.decimalBox.definition.DecimalBoxFieldDefinition;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.decimalBox.type.DecimalBoxFieldType;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DecimalBoxHelperTest {
+public class DecimalBoxHelperTest extends AbstractValueConverterAwareInputCreatorHelperTest<DecimalBoxHelper, DecimalBoxFieldDefinition> {
 
     private static final String INPUT_WIDGET_CLASS_NAME = "org.kie.workbench.common.forms.common.rendering.client.widgets.decimalBox.DecimalBox";
-    DecimalBoxHelper helper;
-
-    @Mock
-    DecimalBoxFieldDefinition mockFieldDefinition;
-
-    @Before
-    public void initHelper() {
-        helper = new DecimalBoxHelper();
-    }
-
-    @Test
-    public void testGetSupportedFieldTypeCode() {
-        String expectedTypeCode = DecimalBoxFieldDefinition.FIELD_TYPE.getTypeName();
-        String actualTypeCode = helper.getSupportedFieldTypeCode();
-        assertEquals(actualTypeCode,
-                     expectedTypeCode);
-    }
-
-    @Test
-    public void testGetInputWidget() {
-        String expectedInputWidget = INPUT_WIDGET_CLASS_NAME;
-        String actualInputWidget = helper.getInputWidget(null);
-        assertEquals(actualInputWidget,
-                     expectedInputWidget);
-    }
 
     @Test
     public void testGetReadOnlyMethod() {
@@ -68,7 +44,6 @@ public class DecimalBoxHelperTest {
                                                        readOnlyParam);
 
         String expectedString = fieldName + ".setEnabled( !" + readOnlyParam + ");";
-        ;
 
         assertEquals(actualString,
                      expectedString);
@@ -76,22 +51,36 @@ public class DecimalBoxHelperTest {
 
     @Test
     public void testGetConverterClassNameFloat() {
-        testGetConverterClassName(Float.class);
+        testGetConverterClassName(Float.class,
+                                  SourceGenerationValueConvertersFactory.FLOAT_TO_DOUBLE_CONVERTER);
     }
 
     @Test
     public void testGetConverterClassNameBigDecimal() {
-        testGetConverterClassName(BigDecimal.class);
+        testGetConverterClassName(BigDecimal.class,
+                                  SourceGenerationValueConvertersFactory.BIG_DECIMAL_TO_DOUBLE_CONVERTER);
     }
 
-    protected void testGetConverterClassName(Class fieldClass) {
+    @Override
+    DecimalBoxHelper getHelper() {
+        return new DecimalBoxHelper();
+    }
 
-        Mockito.when(mockFieldDefinition.getStandaloneClassName()).thenReturn(fieldClass.getCanonicalName());
-        String actualConverter = helper.getConverterClassName(mockFieldDefinition);
-        String prefix = "org.kie.workbench.common.forms.common.rendering.client.widgets.decimalBox.converters.";
-        String expectedConverter = prefix + fieldClass.getSimpleName() + "ToDoubleConverter";
+    @Override
+    List<String> getOldConverterClassNames() {
+        List oldConverterNames = new ArrayList<>();
+        oldConverterNames.add("org.kie.workbench.common.forms.common.rendering.client.widgets.decimalBox.converters.FloatToDoubleValueConverter");
+        oldConverterNames.add("org.kie.workbench.common.forms.common.rendering.client.widgets.decimalBox.converters.BigDecimalToDoubleValueConverter");
+        return oldConverterNames;
+    }
 
-        assertEquals(actualConverter,
-                     expectedConverter);
+    @Override
+    String getFieldTypeName() {
+        return DecimalBoxFieldType.NAME;
+    }
+
+    @Override
+    String getInputWidget() {
+        return INPUT_WIDGET_CLASS_NAME;
     }
 }

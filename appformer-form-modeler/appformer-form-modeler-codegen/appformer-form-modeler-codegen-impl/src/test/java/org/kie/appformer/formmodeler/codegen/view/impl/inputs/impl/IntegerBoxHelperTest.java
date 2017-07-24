@@ -17,59 +17,32 @@
 package org.kie.appformer.formmodeler.codegen.view.impl.inputs.impl;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.IntegerBoxHelper;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.util.SourceGenerationValueConvertersFactory;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.integerBox.definition.IntegerBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.integerBox.type.IntegerBoxFieldType;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
 @RunWith(MockitoJUnitRunner.class)
-public class IntegerBoxHelperTest {
+public class IntegerBoxHelperTest extends AbstractValueConverterAwareInputCreatorHelperTest<IntegerBoxHelper, IntegerBoxFieldDefinition> {
 
     private static final String INPUT_WIDGET_CLASS_NAME = "org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.IntegerBox";
-    IntegerBoxHelper helper;
-
-    @Mock
-    IntegerBoxFieldDefinition mockFieldDefinition;
-
-    @Before
-    public void initHelper() {
-        helper = new IntegerBoxHelper();
-    }
-
-    @Test
-    public void testGetSupportedFieldTypeCode() {
-        String expectedTypeCode = IntegerBoxFieldDefinition.FIELD_TYPE.getTypeName();
-        String actualTypeCode = helper.getSupportedFieldTypeCode();
-        assertEquals(actualTypeCode,
-                     expectedTypeCode);
-    }
-
-    @Test
-    public void testGetInputWidget() {
-        String expectedInputWidget = INPUT_WIDGET_CLASS_NAME;
-        String actualInputWidget = helper.getInputWidget(null);
-        assertEquals(actualInputWidget,
-                     expectedInputWidget);
-    }
 
     @Test
     public void testGetReadOnlyMethod() {
-
         String fieldName = "testFieldName";
         String readOnlyParam = "readOnly";
         String actualString = helper.getReadonlyMethod(fieldName,
                                                        readOnlyParam);
 
         String expectedString = fieldName + ".setEnabled( !" + readOnlyParam + ");";
-        ;
 
         assertEquals(actualString,
                      expectedString);
@@ -77,32 +50,50 @@ public class IntegerBoxHelperTest {
 
     @Test
     public void testGetConverterClassNameByte() {
-        testGetConverterClassName(Byte.class);
+        testGetConverterClassName(Byte.class,
+                                  SourceGenerationValueConvertersFactory.BYTE_TO_LONG_CONVERTER);
     }
 
     @Test
     public void testGetConverterClassNameShort() {
-        testGetConverterClassName(Short.class);
+        testGetConverterClassName(Short.class,
+                                  SourceGenerationValueConvertersFactory.SHORT_TO_LONG_CONVERTER);
     }
 
     @Test
     public void testGetConverterClassNameInteger() {
-        testGetConverterClassName(Integer.class);
+        testGetConverterClassName(Integer.class,
+                                  SourceGenerationValueConvertersFactory.INTEGER_TO_LONG_CONVERTER);
     }
 
     @Test
     public void testGetConverterClassNameBigInteger() {
-        testGetConverterClassName(BigInteger.class);
+        testGetConverterClassName(BigInteger.class,
+                                  SourceGenerationValueConvertersFactory.BIG_INTEGER_TO_LONG_CONVERTER);
     }
 
-    protected void testGetConverterClassName(Class fieldClass) {
+    @Override
+    IntegerBoxHelper getHelper() {
+        return new IntegerBoxHelper();
+    }
 
-        Mockito.when(mockFieldDefinition.getStandaloneClassName()).thenReturn(fieldClass.getCanonicalName());
-        String actualConverter = helper.getConverterClassName(mockFieldDefinition);
-        String prefix = "org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.converters.";
-        String expectedConverter = prefix + fieldClass.getSimpleName() + "ToLongConverter";
+    @Override
+    List<String> getOldConverterClassNames() {
+        List oldConverterNames = new ArrayList<>();
+        oldConverterNames.add("org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.converters.BigInteger");
+        oldConverterNames.add("org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.converters.ByteToLongConverter");
+        oldConverterNames.add("org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.converters.IntegerToLongConverter");
+        oldConverterNames.add("org.kie.workbench.common.forms.common.rendering.client.widgets.integerBox.converters.ShortToLongConverter");
+        return oldConverterNames;
+    }
 
-        assertEquals(actualConverter,
-                     expectedConverter);
+    @Override
+    String getFieldTypeName() {
+        return IntegerBoxFieldType.NAME;
+    }
+
+    @Override
+    String getInputWidget() {
+        return INPUT_WIDGET_CLASS_NAME;
     }
 }
