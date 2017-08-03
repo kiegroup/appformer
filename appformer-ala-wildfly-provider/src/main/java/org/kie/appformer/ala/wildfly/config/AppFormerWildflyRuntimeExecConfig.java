@@ -44,7 +44,7 @@ public class AppFormerWildflyRuntimeExecConfig
                                               final String kieDataSource,
                                               final String kieDataSourceDeploymentId,
                                               final String realm ) {
-        super( providerId, warPath, redeployStrategy );
+        super( null, providerId, warPath, redeployStrategy );
         this.jndiDataSource = jndiDataSource;
         this.kieDataSource = kieDataSource;
         this.kieDataSourceDeploymentId = kieDataSourceDeploymentId;

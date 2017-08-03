@@ -16,26 +16,15 @@
 
 package org.kie.appformer.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.shared.config.AppConfigService;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kie.appformer.client.home.HomeProducer;
 import org.kie.appformer.client.resources.i18n.AppConstants;
 import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
@@ -56,7 +45,10 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import com.google.gwtmockito.GwtMockitoTestRunner;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class AppFormerEntryPointTest {
@@ -67,9 +59,6 @@ public class AppFormerEntryPointTest {
 
     @Mock
     private ActivityBeansCache activityBeansCache;
-
-    @Mock
-    private HomeProducer homeProducer;
 
     @Mock
     private SocialConfigurationService socialConfigurationService;
@@ -100,89 +89,94 @@ public class AppFormerEntryPointTest {
 
     @Before
     public void setup() {
-        doReturn( Boolean.TRUE ).when( socialConfigurationService ).isSocialEnable();
-        doAnswer( invocationOnMock -> {
-            ( (Command) invocationOnMock.getArguments()[ 0 ] ).execute();
+        doReturn(Boolean.TRUE).when(socialConfigurationService).isSocialEnable();
+        doAnswer(invocationOnMock -> {
+            ((Command) invocationOnMock.getArguments()[0]).execute();
             return null;
-        } ).when( userSystemManager ).waitForInitialization( any( Command.class ) );
+        }).when(userSystemManager).waitForInitialization(any(Command.class));
 
-        appConfigServiceCallerMock = new CallerMock<>( appConfigService );
-        socialConfigurationServiceCallerMock = new CallerMock<>( socialConfigurationService );
+        appConfigServiceCallerMock = new CallerMock<>(appConfigService);
+        socialConfigurationServiceCallerMock = new CallerMock<>(socialConfigurationService);
 
-        entryPoint = spy( new AppFormerEntryPoint( appConfigServiceCallerMock,
-                                                            activityBeansCache,
-                                                            homeProducer,
-                                                            socialConfigurationServiceCallerMock,
-                                                            menusHelper,
-                                                            userSystemManager,
-                                                            menuBar,
-                                                            iocManager,
-                                                            workbench,
-                                                            placeManager,
-                                                            permissionTreeSetup ) );
+        entryPoint = spy(new AppFormerEntryPoint(appConfigServiceCallerMock,
+                                                 activityBeansCache,
+                                                 socialConfigurationServiceCallerMock,
+                                                 menusHelper,
+                                                 userSystemManager,
+                                                 menuBar,
+                                                 iocManager,
+                                                 workbench,
+                                                 placeManager,
+                                                 permissionTreeSetup));
         mockMenuHelper();
         mockConstants();
-        IocTestingUtils.mockIocManager( iocManager );
+        IocTestingUtils.mockIocManager(iocManager);
 
-        doNothing().when( entryPoint ).hideLoadingPopup();
+        doNothing().when(entryPoint).hideLoadingPopup();
     }
 
     @Test
     public void initTest() {
         entryPoint.init();
 
-        verify( workbench ).addStartupBlocker( AppFormerEntryPoint.class );
-        verify( homeProducer ).init();
+        verify(workbench).addStartupBlocker(AppFormerEntryPoint.class);
     }
 
     @Test
     public void onAppReady() {
-        entryPoint.onAppReady( new AppReady( "url" ) );
+        entryPoint.onAppReady(new AppReady("url"));
 
-        verify( placeManager ).goTo( any( PlaceRequest.class ) );
+        verify(placeManager).goTo(any(PlaceRequest.class));
     }
 
     @Test
     public void setupMenuTest() {
         entryPoint.setupMenu();
 
-        final ArgumentCaptor<Menus> menusCaptor = ArgumentCaptor.forClass( Menus.class );
-        verify( menuBar ).addMenus( menusCaptor.capture() );
+        final ArgumentCaptor<Menus> menusCaptor = ArgumentCaptor.forClass(Menus.class);
+        verify(menuBar).addMenus(menusCaptor.capture());
 
         final Menus menus = menusCaptor.getValue();
 
-        assertEquals( 5, menus.getItems().size() );
+        assertEquals(5,
+                     menus.getItems().size());
 
-        assertEquals( entryPoint.constants.home(), menus.getItems().get( 0 ).getCaption() );
-        assertEquals( entryPoint.constants.authoring(), menus.getItems().get( 1 ).getCaption() );
-        assertEquals( entryPoint.constants.deploy(), menus.getItems().get( 2 ).getCaption() );
-        assertEquals( entryPoint.constants.extensions(), menus.getItems().get( 3 ).getCaption() );
+        assertEquals(entryPoint.constants.home(),
+                     menus.getItems().get(0).getCaption());
+        assertEquals(entryPoint.constants.authoring(),
+                     menus.getItems().get(1).getCaption());
+        assertEquals(entryPoint.constants.deploy(),
+                     menus.getItems().get(2).getCaption());
+        assertEquals(entryPoint.constants.extensions(),
+                     menus.getItems().get(3).getCaption());
 
-        verify( menusHelper ).addRolesMenuItems();
-        verify( menusHelper ).addWorkbenchConfigurationMenuItem();
-        verify( menusHelper ).addUtilitiesMenuItems();
+        verify(menusHelper).addRolesMenuItems();
+        verify(menusHelper).addWorkbenchConfigurationMenuItem();
+        verify(menusHelper).addUtilitiesMenuItems();
 
-        verify( workbench ).removeStartupBlocker( AppFormerEntryPoint.class );
+        verify(workbench).removeStartupBlocker(AppFormerEntryPoint.class);
     }
 
     @Test
     public void getDeploymentViewsTest() {
         final List<? extends MenuItem> deploymentMenuItems = entryPoint.getDeploymentViews();
 
-        assertEquals( 1, deploymentMenuItems.size() );
-        assertEquals( entryPoint.constants.ruleDeployments(), deploymentMenuItems.get( 0 ).getCaption() );
+        assertEquals(1,
+                     deploymentMenuItems.size());
+        assertEquals(entryPoint.constants.ruleDeployments(),
+                     deploymentMenuItems.get(0).getCaption());
     }
 
     private void mockMenuHelper() {
         final ArrayList<MenuItem> menuItems = new ArrayList<>();
-        menuItems.add( mock( MenuItem.class ) );
-        doReturn( menuItems ).when( menusHelper ).getHomeViews( anyBoolean() );
-        doReturn( menuItems ).when( menusHelper ).getAuthoringViews();
-        doReturn( menuItems ).when( menusHelper ).getExtensionsViews();
+        menuItems.add(mock(MenuItem.class));
+        doReturn(menuItems).when(menusHelper).getHomeViews(anyBoolean());
+        doReturn(menuItems).when(menusHelper).getAuthoringViews();
+        doReturn(menuItems).when(menusHelper).getExtensionsViews();
     }
 
     private void mockConstants() {
-        entryPoint.constants = mock( AppConstants.class, new ConstantsAnswerMock() );
+        entryPoint.constants = mock(AppConstants.class,
+                                    new ConstantsAnswerMock());
     }
-
 }

@@ -16,77 +16,56 @@
 package org.kie.appformer.client.home;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-
-import org.kie.appformer.client.resources.i18n.HomePageCommunityConstants;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.kie.appformer.client.resources.i18n.HomeConstants;
 import org.kie.workbench.common.screens.home.model.HomeModel;
+import org.kie.workbench.common.screens.home.model.HomeModelProvider;
 import org.kie.workbench.common.screens.home.model.ModelUtils;
-import org.kie.workbench.common.screens.home.model.SectionEntry;
 import org.uberfire.client.mvp.PlaceManager;
 
-import static org.uberfire.workbench.model.ActivityResourceType.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.BUSINESS_DASHBOARDS;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.LIBRARY;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.SERVER_MANAGEMENT;
+import static org.uberfire.workbench.model.ActivityResourceType.PERSPECTIVE;
 
 /**
  * Producer method for the Home Page content
  */
 @ApplicationScoped
-public class HomeProducer {
-
-    private HomePageCommunityConstants constants = HomePageCommunityConstants.INSTANCE;
-
-    private HomeModel model;
+public class HomeProducer implements HomeModelProvider {
 
     @Inject
     private PlaceManager placeManager;
 
-    public void init() {
-        final String url = GWT.getModuleBaseURL();
-        model = new HomeModel( constants.homeTheKnowledgeLifeCycle() );
-        model.addCarouselEntry( ModelUtils.makeCarouselEntry( constants.homeAuthor(),
-                                                              constants.homeAuthorCaption(),
-                                                              url + "/images/HandHome.jpg" ) );
-        model.addCarouselEntry( ModelUtils.makeCarouselEntry( constants.homeDeploy(),
-                                                              constants.homeDeployCaption(),
-                                                              url + "/images/HandHome.jpg" ) );
+    @Inject
+    private TranslationService translationService;
 
-        final SectionEntry s1 = ModelUtils.makeSectionEntry( constants.authoring() );
+    public HomeModel get() {
+        final HomeModel model = new HomeModel(translationService.format(HomeConstants.Heading),
+                                              translationService.format(HomeConstants.SubHeading),
+                                              "images/home_bg.jpg");
 
-        s1.addChild( ModelUtils.makeSectionEntry( constants.project_authoring(),
-                () -> placeManager.goTo( AUTHORING ),
-                AUTHORING, PERSPECTIVE ) );
+        model.addShortcut(ModelUtils.makeShortcut("pficon-blueprint",
+                                                  translationService.format(HomeConstants.Design),
+                                                  translationService.format(HomeConstants.DesignDescription),
+                                                  () -> placeManager.goTo(LIBRARY),
+                                                  LIBRARY,
+                                                  PERSPECTIVE));
+        model.addShortcut(ModelUtils.makeShortcut("pficon-build",
+                                                  translationService.format(HomeConstants.DevOps),
+                                                  translationService.format(HomeConstants.DevOpsDescription),
+                                                  () -> placeManager.goTo(SERVER_MANAGEMENT),
+                                                  SERVER_MANAGEMENT,
+                                                  PERSPECTIVE));
+        model.addShortcut(ModelUtils.makeShortcut("pficon-trend-up",
+                                                  translationService.format(HomeConstants.Track),
+                                                  translationService.format(HomeConstants.TrackDescription),
+                                                  () -> placeManager.goTo(BUSINESS_DASHBOARDS),
+                                                  BUSINESS_DASHBOARDS,
+                                                  PERSPECTIVE));
 
-        s1.addChild( ModelUtils.makeSectionEntry( constants.artifactRepository(),
-                () -> placeManager.goTo( GUVNOR_M2REPO ),
-                GUVNOR_M2REPO, PERSPECTIVE ) );
-
-        s1.addChild( ModelUtils.makeSectionEntry( constants.administration(),
-                () -> placeManager.goTo( ADMINISTRATION ),
-                ADMINISTRATION, PERSPECTIVE ) );
-
-        final SectionEntry s2 = ModelUtils.makeSectionEntry( constants.deploy() );
-
-        s2.addChild( ModelUtils.makeSectionEntry( constants.ruleDeployments(),
-                () -> placeManager.goTo( SERVER_MANAGEMENT ),
-                SERVER_MANAGEMENT, PERSPECTIVE ) );
-
-        final SectionEntry s3 = ModelUtils.makeSectionEntry( constants.tasks() );
-
-        s3.addChild( ModelUtils.makeSectionEntry( constants.Tasks_List(),
-                () -> placeManager.goTo( TASKS ),
-                TASKS, PERSPECTIVE ) );
-
-        model.addSection( s1 );
-        model.addSection( s2 );
-        model.addSection( s3 );
-    }
-
-    @Produces
-    public HomeModel getModel() {
         return model;
     }
-
 }
