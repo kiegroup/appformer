@@ -26,6 +26,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.kie.appformer.client.home.HomeProducer;
 import org.kie.appformer.client.resources.i18n.AppConstants;
 import org.kie.appformer.provisioning.shared.AppReady;
@@ -52,8 +53,6 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected AppConstants constants = AppConstants.INSTANCE;
 
-    protected HomeProducer homeProducer;
-
     protected Caller<SocialConfigurationService> socialConfigurationService;
 
     protected DefaultWorkbenchFeaturesMenusHelper menusHelper;
@@ -73,7 +72,6 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
     @Inject
     public AppFormerEntryPoint( Caller<AppConfigService> appConfigService,
                                 ActivityBeansCache activityBeansCache,
-                                HomeProducer homeProducer,
                                 Caller<SocialConfigurationService> socialConfigurationService,
                                 DefaultWorkbenchFeaturesMenusHelper menusHelper,
                                 ClientUserSystemManager userSystemManager,
@@ -83,7 +81,6 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
                                 PlaceManager placeManager,
                                 PermissionTreeSetup permissionTreeSetup ) {
         super( appConfigService, activityBeansCache );
-        this.homeProducer = homeProducer;
         this.socialConfigurationService = socialConfigurationService;
         this.menusHelper = menusHelper;
         this.userSystemManager = userSystemManager;
@@ -97,7 +94,6 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
     @PostConstruct
     public void init() {
         workbench.addStartupBlocker( AppFormerEntryPoint.class );
-        homeProducer.init();
         permissionTreeSetup.configureTree();
     }
 

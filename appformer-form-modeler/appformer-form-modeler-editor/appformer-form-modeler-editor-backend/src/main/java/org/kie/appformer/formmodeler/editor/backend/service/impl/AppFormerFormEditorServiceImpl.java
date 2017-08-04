@@ -21,6 +21,7 @@ import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -54,16 +55,17 @@ public class AppFormerFormEditorServiceImpl extends FormEditorServiceImpl {
                                           KieProjectService projectService,
                                           FormDefinitionSerializer formDefinitionSerializer,
                                           VFSFormFinderService vfsFormFinderService,
+                                          CommentedOptionFactory commentedOptionFactory,
                                           FormSourcesGenerator formSourcesGenerator) {
         super(ioService,
-              identity,
               sessionInfo,
               resourceOpenedEvent,
               fieldManager,
               modelHandlerManager,
               projectService,
               formDefinitionSerializer,
-              vfsFormFinderService);
+              vfsFormFinderService,
+              commentedOptionFactory);
 
         this.formSourcesGenerator = formSourcesGenerator;
     }
