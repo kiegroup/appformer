@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -93,17 +93,19 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
     }
 
     @Inject
-    public GwtWarBuildServiceImpl( final KieProjectService projectService,
-                                   final BuildServiceHelper buildServiceHelper,
-                                   final LRUBuilderCache cache,
-                                   final Instance<ConfigExecutor> configExecutors,
-                                   final RepositoryService repositoryService,
-                                   final Event<AppReady> appReadyEvent,
-                                   final SourceRegistry sourceRegistry,
-                                   final RuntimeRegistry runtimeRegistry,
-                                   final PipelineRegistry pipelineRegistry,
-                                   final CDIPipelineEventListener pipelineEventListener ) {
-        super( projectService, buildServiceHelper, cache );
+    public GwtWarBuildServiceImpl(final KieProjectService projectService,
+                                  final BuildServiceHelper buildServiceHelper,
+                                  final LRUBuilderCache cache,
+                                  final Instance<ConfigExecutor> configExecutors,
+                                  final RepositoryService repositoryService,
+                                  final Event<AppReady> appReadyEvent,
+                                  final SourceRegistry sourceRegistry,
+                                  final RuntimeRegistry runtimeRegistry,
+                                  final PipelineRegistry pipelineRegistry,
+                                  final CDIPipelineEventListener pipelineEventListener) {
+        super(projectService,
+              buildServiceHelper,
+              cache);
         this.configExecutors = configExecutors;
         this.repositoryService = repositoryService;
         this.appReadyEvent = appReadyEvent;
@@ -120,195 +122,269 @@ public class GwtWarBuildServiceImpl extends BuildServiceImpl implements GwtWarBu
     private void setup() {
         final Iterator<ConfigExecutor> iterator = configExecutors.iterator();
         final Collection<ConfigExecutor> configs = new ArrayList<>();
-        while ( iterator.hasNext() ) {
+        while (iterator.hasNext()) {
             final ConfigExecutor configExecutor = iterator.next();
-            configs.add( configExecutor );
+            configs.add(configExecutor);
         }
-        executor = new PipelineExecutor( configs );
+        executor = new PipelineExecutor(configs);
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project ) {
-        return buildAndDeploy( project, false, DeploymentMode.VALIDATED );
+    public BuildResults buildAndDeploy(final Project project) {
+        return buildAndDeploy(project,
+                              false,
+                              DeploymentMode.VALIDATED);
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project, final DeploymentMode mode ) {
-        return buildAndDeploy( project, false, mode );
+    public BuildResults buildAndDeploy(final Project project,
+                                       final DeploymentMode mode) {
+        return buildAndDeploy(project,
+                              false,
+                              mode);
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project, final boolean suppressHandlers ) {
-        return buildAndDeploy( project, suppressHandlers, DeploymentMode.VALIDATED );
+    public BuildResults buildAndDeploy(final Project project,
+                                       final boolean suppressHandlers) {
+        return buildAndDeploy(project,
+                              suppressHandlers,
+                              DeploymentMode.VALIDATED);
     }
 
     @Override
-    public BuildResults buildAndDeploy( final Project project, final boolean suppressHandlers, final DeploymentMode mode ) {
-        return buildAndDeployWithPipeline( project );
+    public BuildResults buildAndDeploy(final Project project,
+                                       final boolean suppressHandlers,
+                                       final DeploymentMode mode) {
+        return buildAndDeployWithPipeline(project);
     }
 
     @Override
-    public BuildResults buildAndDeployDevMode( final Project project ) {
+    public BuildResults buildAndDeployDevMode(final Project project) {
         return buildAndDeploySDMWithPipeline(project);
     }
 
     @Override
-    public BuildResults buildAndDeployProvisioningMode( final Project project, final Map<String, String> params ) {
-        return buildAndDeployProvisioningWithPipeline( project, params );
+    public BuildResults buildAndDeployProvisioningMode(final Project project,
+                                                       final Map<String, String> params) {
+        return buildAndDeployProvisioningWithPipeline(project,
+                                                      params);
     }
 
-    public BuildResults buildAndDeployWithPipeline( final Project project ) {
-        final BuildResults results = new BuildResults( project.getPom().getGav() );
+    public BuildResults buildAndDeployWithPipeline(final Project project) {
+        final BuildResults results = new BuildResults(project.getPom().getGav());
         final Path rootPath = project.getRootPath();
-        final Path repoPath = PathFactory.newPath( "repo", rootPath.toURI().substring( 0, rootPath.toURI().indexOf( rootPath.getFileName() ) ) );
-        final Repository repository = repositoryService.getRepository( repoPath );
+        final Path repoPath = PathFactory.newPath("repo",
+                                                  rootPath.toURI().substring(0,
+                                                                             rootPath.toURI().indexOf(rootPath.getFileName())));
+        final Repository repository = repositoryService.getRepository(repoPath);
 
-        final Pipeline pipe = pipelineRegistry.getPipelineByName( "wildfly pipeline" );
+        final Pipeline pipe = pipelineRegistry.getPipelineByName("wildfly pipeline");
 
         final Input wildflyInput = new Input() {
             {
-                put( "repo-name", repository.getAlias() );
-                put( "branch", repository.getDefaultBranch() );
-                put( "project-dir", project.getProjectName() );
-                put( "provider-name", "local" );
-                put( "wildfly-user", "testadmin" );
-                put( "wildfly-password", "testadmin" );
-                put( "bindAddress", "localhost" );
-                put( "host", "localhost" );
-                put( "port", "8888" );
-                put( "management-port", "9990" );
+                put("repo-name",
+                    repository.getAlias());
+                put("branch",
+                    repository.getDefaultBranch());
+                put("project-dir",
+                    project.getProjectName());
+                put("provider-name",
+                    "local");
+                put("wildfly-user",
+                    "testadmin");
+                put("wildfly-password",
+                    "testadmin");
+                put("bindAddress",
+                    "localhost");
+                put("host",
+                    "localhost");
+                put("port",
+                    "8888");
+                put("management-port",
+                    "9990");
             }
         };
-        executor.execute( wildflyInput, pipe, System.out::println, pipelineEventListener );
+        executor.execute(wildflyInput,
+                         pipe,
+                         System.out::println,
+                         pipelineEventListener);
 
         return results;
     }
 
-    public BuildResults buildAndDeploySDMWithPipeline( final Project project ) {
-        final BuildResults results = new BuildResults( project.getPom().getGav() );
+    public BuildResults buildAndDeploySDMWithPipeline(final Project project) {
+        final BuildResults results = new BuildResults(project.getPom().getGav());
         final Path rootPath = project.getRootPath();
-        final Path repoPath = PathFactory.newPath( "repo", rootPath.toURI().substring( 0, rootPath.toURI().indexOf( rootPath.getFileName() ) ) );
-        final Repository repository = repositoryService.getRepository( repoPath );
+        final Path repoPath = PathFactory.newPath("repo",
+                                                  rootPath.toURI().substring(0,
+                                                                             rootPath.toURI().indexOf(rootPath.getFileName())));
+        final Repository repository = repositoryService.getRepository(repoPath);
 
-
-        final Pipeline pipe = pipelineRegistry.getPipelineByName( "wildfly sdm pipeline" );
+        final Pipeline pipe = pipelineRegistry.getPipelineByName("wildfly sdm pipeline");
 
         final Input wildflyInput = new Input() {
             {
 
-                put( "repo-name", repository.getAlias() );
-                put( "branch", repository.getDefaultBranch() );
-                put( "project-dir", project.getProjectName() );
-                put( "provider-name", "local" );
-                put( "wildfly-user", "testadmin" );
-                put( "wildfly-password", "testadmin" );
-                put( "bindAddress", "localhost" );
-                put( "host", "localhost" );
-                put( "port", "8888" );
-                put( "management-port", "9990" );
-
+                put("repo-name",
+                    repository.getAlias());
+                put("branch",
+                    repository.getDefaultBranch());
+                put("project-dir",
+                    project.getProjectName());
+                put("provider-name",
+                    "local");
+                put("wildfly-user",
+                    "testadmin");
+                put("wildfly-password",
+                    "testadmin");
+                put("bindAddress",
+                    "localhost");
+                put("host",
+                    "localhost");
+                put("port",
+                    "8888");
+                put("management-port",
+                    "9990");
             }
         };
-        final org.guvnor.ala.build.Project projectByName = sourceRegistry.getProjectByName(project.getProjectName());
+        Optional<org.guvnor.ala.source.Repository> repo = sourceRegistry.getAllRepositories()
+                .stream()
+                .filter(r -> r.getName().equals(repository.getAlias()))
+                .findFirst();
 
-        if (projectByName != null) {
-            wildflyInput.put("project-temp-dir", projectByName.getTempDir());
+        if (repo.isPresent()) {
+            final Optional<org.guvnor.ala.build.Project> projectByName = sourceRegistry.getAllProjects(repo.get())
+                    .stream()
+                    .filter( p -> p.getName().equals(project.getProjectName()))
+                    .findFirst();
+            if (projectByName.isPresent()) {
+                wildflyInput.put("project-temp-dir",
+                                 projectByName.get().getTempDir());
+            }
         }
 
-
-        executor.execute( wildflyInput, pipe, System.out::println, pipelineEventListener );
+        executor.execute(wildflyInput,
+                         pipe,
+                         System.out::println,
+                         pipelineEventListener);
 
         return results;
     }
 
-    public BuildResults buildAndDeployProvisioningWithPipeline( final Project project, final Map<String, String> params ) {
-        final BuildResults results = new BuildResults( project.getPom().getGav() );
+    public BuildResults buildAndDeployProvisioningWithPipeline(final Project project,
+                                                               final Map<String, String> params) {
+        final BuildResults results = new BuildResults(project.getPom().getGav());
         final Path rootPath = project.getRootPath();
-        final Path repoPath = PathFactory.newPath( "repo", rootPath.toURI().substring( 0, rootPath.toURI().indexOf( rootPath.getFileName() ) ) );
-        final Repository repository = repositoryService.getRepository( repoPath );
+        final Path repoPath = PathFactory.newPath("repo",
+                                                  rootPath.toURI().substring(0,
+                                                                             rootPath.toURI().indexOf(rootPath.getFileName())));
+        final Repository repository = repositoryService.getRepository(repoPath);
 
-        params.putIfAbsent( "provider-name", "wildfly-" + UUID.randomUUID( ).toString( ) );
+        params.putIfAbsent("provider-name",
+                           "wildfly-" + UUID.randomUUID().toString());
 
-        final Pipeline pipe = pipelineRegistry.getPipelineByName( "wildfly pipeline" );
+        final Pipeline pipe = pipelineRegistry.getPipelineByName("wildfly pipeline");
 
         final Input wildflyInput = new Input() {
             {
-                put( "repo-name", repository.getAlias() );
-                put( "branch", repository.getDefaultBranch() );
-                put( "project-dir", project.getProjectName() );
-                put( "provider-name", params.get( "provider-name" ) );
-                put( "wildfly-user", params.get( "wildfly-user" ) );
-                put( "wildfly-password", params.get( "wildfly-password" ) );
-                put( "host", params.get( "host" ) );
-                put( "port", params.get( "port" ) );
-                put( "management-port", params.get( "management-port" ) );
-                put( "wildfly-realm", params.get( "wildfly-realm" ) );
-                put( "kie-data-source", params.get( "kie-data-source" ) );
-                put( "kie-data-source-deployment-id", params.get( "kie-data-source-deployment-id" ) );
-                put( "jndi-data-source", params.get( "jndi-data-source" ) );
+                put("repo-name",
+                    repository.getAlias());
+                put("branch",
+                    repository.getDefaultBranch());
+                put("project-dir",
+                    project.getProjectName());
+                put("provider-name",
+                    params.get("provider-name"));
+                put("wildfly-user",
+                    params.get("wildfly-user"));
+                put("wildfly-password",
+                    params.get("wildfly-password"));
+                put("host",
+                    params.get("host"));
+                put("port",
+                    params.get("port"));
+                put("management-port",
+                    params.get("management-port"));
+                put("wildfly-realm",
+                    params.get("wildfly-realm"));
+                put("kie-data-source",
+                    params.get("kie-data-source"));
+                put("kie-data-source-deployment-id",
+                    params.get("kie-data-source-deployment-id"));
+                put("jndi-data-source",
+                    params.get("jndi-data-source"));
             }
         };
-        executor.execute( wildflyInput, pipe, System.out::println, pipelineEventListener );
+        executor.execute(wildflyInput,
+                         pipe,
+                         System.out::println,
+                         pipelineEventListener);
         return results;
     }
 
     @Override
-    public IncrementalBuildResults addPackageResource( final Path resource ) {
-        if ( isNotAppFormerGeneratedJavaSource( resource ) ) {
-            return super.addPackageResource( resource );
+    public IncrementalBuildResults addPackageResource(final Path resource) {
+        if (isNotAppFormerGeneratedJavaSource(resource)) {
+            return super.addPackageResource(resource);
         } else {
             return new IncrementalBuildResults();
         }
     }
 
     @Override
-    public IncrementalBuildResults updatePackageResource( final Path resource ) {
-        if ( isNotAppFormerGeneratedJavaSource( resource ) ) {
-            return super.updatePackageResource( resource );
+    public IncrementalBuildResults updatePackageResource(final Path resource) {
+        if (isNotAppFormerGeneratedJavaSource(resource)) {
+            return super.updatePackageResource(resource);
         } else {
             return new IncrementalBuildResults();
         }
     }
 
     @Override
-    public IncrementalBuildResults applyBatchResourceChanges( final Project project,
-            final Map<Path, Collection<ResourceChange>> changes ) {
+    public IncrementalBuildResults applyBatchResourceChanges(final Project project,
+                                                             final Map<Path, Collection<ResourceChange>> changes) {
         final Map<Path, Collection<ResourceChange>> nonGeneratedFileChanges
                 = changes.entrySet()
                 .stream()
-                .filter( e -> isNotAppFormerGeneratedJavaSource( e.getKey() ) )
-                .collect( Collectors.toMap( e -> e.getKey(), e -> e.getValue() ) );
+                .filter(e -> isNotAppFormerGeneratedJavaSource(e.getKey()))
+                .collect(Collectors.toMap(e -> e.getKey(),
+                                          e -> e.getValue()));
 
-        if ( nonGeneratedFileChanges.isEmpty() ) {
+        if (nonGeneratedFileChanges.isEmpty()) {
             return new IncrementalBuildResults();
         } else {
-            return super.applyBatchResourceChanges( project, nonGeneratedFileChanges );
+            return super.applyBatchResourceChanges(project,
+                                                   nonGeneratedFileChanges);
         }
     }
 
     @Override
-    public IncrementalBuildResults deletePackageResource( final Path resource ) {
-        if ( isNotAppFormerGeneratedJavaSource( resource ) ) {
-            return super.deletePackageResource( resource );
+    public IncrementalBuildResults deletePackageResource(final Path resource) {
+        if (isNotAppFormerGeneratedJavaSource(resource)) {
+            return super.deletePackageResource(resource);
         } else {
             return new IncrementalBuildResults();
         }
     }
 
-    private boolean isNotAppFormerGeneratedJavaSource( final Path resource ) {
+    private boolean isNotAppFormerGeneratedJavaSource(final Path resource) {
         final String fileName = resource.getFileName();
-        return !( fileName.endsWith( "FormModel.java" )
-                || fileName.endsWith( "FormView.java" )
-                || fileName.endsWith( "ListView.java" )
-                || fileName.endsWith( "RestService.java" )
-                || fileName.endsWith( "EntityService.java" )
-                || fileName.endsWith( "RestServiceImpl.java" ) );
+        return !(fileName.endsWith("FormModel.java")
+                || fileName.endsWith("FormView.java")
+                || fileName.endsWith("ListView.java")
+                || fileName.endsWith("RestService.java")
+                || fileName.endsWith("EntityService.java")
+                || fileName.endsWith("RestServiceImpl.java"));
     }
 
-    public void buildFinished( @Observes final AfterPipelineExecutionEvent e ) {
-        final List<org.guvnor.ala.runtime.Runtime> allRuntimes = runtimeRegistry.getRuntimes( 0, 10, "", true );
-        final Runtime get = allRuntimes.get( 0 );
+    public void buildFinished(@Observes final AfterPipelineExecutionEvent e) {
+        final List<org.guvnor.ala.runtime.Runtime> allRuntimes = runtimeRegistry.getRuntimes(0,
+                                                                                             10,
+                                                                                             "",
+                                                                                             true);
+        final Runtime get = allRuntimes.get(0);
         final String url = "http://" + get.getEndpoint().getHost() + ":" + get.getEndpoint().getPort() + "/" + get.getEndpoint().getContext();
-        appReadyEvent.fire( new AppReady( url ) );
+        appReadyEvent.fire(new AppReady(url));
     }
 }

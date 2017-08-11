@@ -89,10 +89,6 @@
     </dependency>
     <dependency>
         <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-ala-registry-local</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.guvnor</groupId>
         <artifactId>guvnor-ala-wildfly-provider</artifactId>
     </dependency>
 
