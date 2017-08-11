@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.guvnor.ala.config.Config;
 import org.guvnor.ala.exceptions.ProvisioningException;
 import org.guvnor.ala.registry.RuntimeRegistry;
+import org.guvnor.ala.runtime.RuntimeState;
 import org.guvnor.ala.wildfly.access.WildflyAccessInterface;
 import org.guvnor.ala.wildfly.access.WildflyAppState;
 import org.guvnor.ala.wildfly.config.WildflyRuntimeConfiguration;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class AppFormerWildflyRuntimeExecExecutor<T extends WildflyRuntimeConfiguration>
         extends WildflyRuntimeExecExecutor<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger( AppFormerWildflyRuntimeExecExecutor.class );
+    private static final Logger logger = LoggerFactory.getLogger(AppFormerWildflyRuntimeExecExecutor.class);
 
     private RuntimeRegistry runtimeRegistry;
 
@@ -54,33 +55,34 @@ public class AppFormerWildflyRuntimeExecExecutor<T extends WildflyRuntimeConfigu
     private AppFormerProvisioningHelper provisioningHelper;
 
     @Inject
-    public AppFormerWildflyRuntimeExecExecutor( final RuntimeRegistry runtimeRegistry,
-                                                final WildflyAccessInterface wildfly,
-                                                final AppFormerProvisioningHelper provisioningHelper ) {
-        super( runtimeRegistry, wildfly );
+    public AppFormerWildflyRuntimeExecExecutor(final RuntimeRegistry runtimeRegistry,
+                                               final WildflyAccessInterface wildfly,
+                                               final AppFormerProvisioningHelper provisioningHelper) {
+        super(runtimeRegistry,
+              wildfly);
         this.runtimeRegistry = runtimeRegistry;
         this.wildfly = wildfly;
         this.provisioningHelper = provisioningHelper;
     }
 
     @Override
-    public Optional< WildflyRuntime > apply( final WildflyRuntimeConfiguration runtimeConfig ) {
-        if ( runtimeConfig instanceof  AppFormerWildflyRuntimeExecConfig ) {
+    public Optional<WildflyRuntime> apply(final WildflyRuntimeConfiguration runtimeConfig) {
+        if (runtimeConfig instanceof AppFormerWildflyRuntimeExecConfig) {
             logger.info("Starting executor");
             AppFormerWildflyRuntimeExecConfig appFormerRuntimeConfig = (AppFormerWildflyRuntimeExecConfig) runtimeConfig;
-            final Optional< WildflyProvider > optional = runtimeRegistry.getProvider(appFormerRuntimeConfig.getProviderId(),
-                                                                                     WildflyProvider.class);
+            final Optional<WildflyProvider> optional = runtimeRegistry.getProvider(appFormerRuntimeConfig.getProviderId(),
+                                                                                   WildflyProvider.class);
             WildflyProvider wildflyProvider = optional.get();
 
             logger.info("jndi-data-source: " + appFormerRuntimeConfig.getJndiDataSource());
             logger.info("kie-data-source: " + appFormerRuntimeConfig.getKieDataSource());
             logger.info("kie-data-source-deployment-id: " + appFormerRuntimeConfig.getKieDataSourceDeploymentId());
             logger.info("providerId: " + wildflyProvider.getId());
-            logger.info("hostId: " + wildflyProvider.getHostId());
-            logger.info("port: " + wildflyProvider.getPort());
-            logger.info("managementPort: " + wildflyProvider.getManagementPort());
-            logger.info("user: " + wildflyProvider.getUser());
-            logger.info("password: " + (wildflyProvider.getPassword() != null ? "******" : null));
+            logger.info("hostId: " + wildflyProvider.getConfig().getHost());
+            logger.info("port: " + wildflyProvider.getConfig().getPort());
+            logger.info("managementPort: " + wildflyProvider.getConfig().getManagementPort());
+            logger.info("user: " + wildflyProvider.getConfig().getUser());
+            logger.info("password: " + (wildflyProvider.getConfig().getPassword() != null ? "******" : null));
 
             Path warPath = Paths.get(appFormerRuntimeConfig.getWarPath());
             if (appFormerRuntimeConfig.getKieDataSource() != null || appFormerRuntimeConfig.getJndiDataSource() != null) {
@@ -100,129 +102,176 @@ public class AppFormerWildflyRuntimeExecExecutor<T extends WildflyRuntimeConfigu
                 }
             }
         }
-        Optional< WildflyRuntime > result = super.apply( ( WildflyRuntimeConfiguration ) runtimeConfig );
-        logger.info( "Executor finished, wildflyRuntime: " + result.get( ) );
+        Optional<WildflyRuntime> result = super.apply((WildflyRuntimeConfiguration) runtimeConfig);
+        logger.info("Executor finished, wildflyRuntime: " + result.get());
         return result;
     }
 
-    private void prepareForProvisioning( AppFormerWildflyRuntimeExecConfig runtimeConfig, WildflyProvider wildflyProvider ) {
-        Path warPath = Paths.get( runtimeConfig.getWarPath( ) );
-        String warName = warPath.getFileName( ).toString( );
+    private void prepareForProvisioning(AppFormerWildflyRuntimeExecConfig runtimeConfig,
+                                        WildflyProvider wildflyProvider) {
+        Path warPath = Paths.get(runtimeConfig.getWarPath());
+        String warName = warPath.getFileName().toString();
 
-        WildflyAppState appState = wildfly.getWildflyClient( wildflyProvider ).getAppState( warName );
-        if ( "Running".equals( appState.getState( ) ) && runtimeConfig.getRedeployStrategy( ).equals( "auto" ) ) {
+        WildflyAppState appState = wildfly.getWildflyClient(wildflyProvider).getAppState(warName);
+        if (RuntimeState.RUNNING.equals(appState.getState()) && runtimeConfig.getRedeployStrategy().equals("auto")) {
             //the application is already deployed and re-deployment was selected.
             try {
-                wildfly.getWildflyClient( wildflyProvider ).undeploy( warName );
-                unDeployDataSources( runtimeConfig, wildflyProvider, warName );
-                unDeployDrivers( runtimeConfig, wildflyProvider, warName );
-            } catch ( Exception e ) {
+                wildfly.getWildflyClient(wildflyProvider).undeploy(warName);
+                unDeployDataSources(runtimeConfig,
+                                    wildflyProvider,
+                                    warName);
+                unDeployDrivers(runtimeConfig,
+                                wildflyProvider,
+                                warName);
+            } catch (Exception e) {
                 String msg = "An error was produced during application un-deployment: " + warPath;
-                logger.error( msg, e );
-                throw new ProvisioningException( msg, e );
+                logger.error(msg,
+                             e);
+                throw new ProvisioningException(msg,
+                                                e);
             }
         }
 
         String targetDataSource;
-        if ( runtimeConfig.getKieDataSource( ) == null ) {
-            targetDataSource = runtimeConfig.getJndiDataSource( );
+        if (runtimeConfig.getKieDataSource() == null) {
+            targetDataSource = runtimeConfig.getJndiDataSource();
         } else {
             // the wildlfyProvider must also provide a realm.
             String realm = runtimeConfig.getRealm();
-            int port = Integer.parseInt( wildflyProvider.getManagementPort( ) );
+            int port = Integer.parseInt(wildflyProvider.getConfig().getManagementPort());
 
             boolean deploy;
             try {
-                deploy = runtimeConfig.getKieDataSourceDeploymentId( ) != null &&
-                        provisioningHelper.findWildflyDataSource( wildflyProvider.getHostId( ),
-                                port,
-                                wildflyProvider.getUser( ),
-                                wildflyProvider.getPassword( ),
-                                realm,
-                                runtimeConfig.getKieDataSourceDeploymentId( ) ) == null;
-
-            } catch ( Exception e ) {
-                throw new ProvisioningException( "It was not possible to verify data source availability on target server.", e );
+                deploy = runtimeConfig.getKieDataSourceDeploymentId() != null &&
+                        provisioningHelper.findWildflyDataSource(wildflyProvider.getConfig().getHost(),
+                                                                 port,
+                                                                 wildflyProvider.getConfig().getUser(),
+                                                                 wildflyProvider.getConfig().getPassword(),
+                                                                 realm,
+                                                                 runtimeConfig.getKieDataSourceDeploymentId()) == null;
+            } catch (Exception e) {
+                throw new ProvisioningException("It was not possible to verify data source availability on target server.",
+                                                e);
             }
 
-            if ( !deploy ) {
-                targetDataSource = runtimeConfig.getJndiDataSource( );
+            if (!deploy) {
+                targetDataSource = runtimeConfig.getJndiDataSource();
             } else {
-                DataSourceDef dataSourceDef = provisioningHelper.findDataSourceDef( runtimeConfig.getKieDataSource( ) );
+                DataSourceDef dataSourceDef = provisioningHelper.findDataSourceDef(runtimeConfig.getKieDataSource());
                 DriverDef driverDef;
-                if ( dataSourceDef == null ) {
-                    throw new ProvisioningException( "Data source definition was not found for data source: " + runtimeConfig.getKieDataSource( ) );
+                if (dataSourceDef == null) {
+                    throw new ProvisioningException("Data source definition was not found for data source: " + runtimeConfig.getKieDataSource());
                 }
-                driverDef = provisioningHelper.findDriverDef( dataSourceDef.getDriverUuid( ) );
-                if ( driverDef == null ) {
-                    throw new ProvisioningException( "Driver definition was not found for driver: " + dataSourceDef.getDriverUuid( ) );
+                driverDef = provisioningHelper.findDriverDef(dataSourceDef.getDriverUuid());
+                if (driverDef == null) {
+                    throw new ProvisioningException("Driver definition was not found for driver: " + dataSourceDef.getDriverUuid());
                 }
 
-                String randomSufix = UUID.randomUUID( ).toString( );
-                String appName = warPath.getFileName( ).toString( );
-                String driverDeploymentId = appName + "_driver_" + driverDef.getUuid( ) + "_" + randomSufix;
+                String randomSufix = UUID.randomUUID().toString();
+                String appName = warPath.getFileName().toString();
+                String driverDeploymentId = appName + "_driver_" + driverDef.getUuid() + "_" + randomSufix;
                 try {
-                    driverDeploymentId = provisioningHelper.deployDriver( wildflyProvider.getHostId( ),
-                            port, wildflyProvider.getUser( ), wildflyProvider.getPassword( ), realm, driverDef, driverDeploymentId );
-                } catch ( Exception e ) {
+                    driverDeploymentId = provisioningHelper.deployDriver(wildflyProvider.getConfig().getHost(),
+                                                                         port,
+                                                                         wildflyProvider.getConfig().getUser(),
+                                                                         wildflyProvider.getConfig().getPassword(),
+                                                                         realm,
+                                                                         driverDef,
+                                                                         driverDeploymentId);
+                } catch (Exception e) {
                     final String msg = "It was not possible to provision driver: " + driverDef + " for application: " + warPath;
-                    logger.error( msg, e );
-                    throw new ProvisioningException( msg, e );
+                    logger.error(msg,
+                                 e);
+                    throw new ProvisioningException(msg,
+                                                    e);
                 }
 
-                String dataSourceDeploymentId = appName + "_datasource_" + dataSourceDef.getUuid( ) + "_" + randomSufix;
+                String dataSourceDeploymentId = appName + "_datasource_" + dataSourceDef.getUuid() + "_" + randomSufix;
                 targetDataSource = "java:jboss/appformer/datasources/" + appName + "_" + randomSufix;
                 try {
-                    provisioningHelper.deployDataSource( wildflyProvider.getHostId( ), port,
-                            wildflyProvider.getUser( ), wildflyProvider.getPassword( ), realm, dataSourceDef,
-                            dataSourceDeploymentId, targetDataSource, driverDeploymentId );
-                } catch ( Exception e ) {
+                    provisioningHelper.deployDataSource(wildflyProvider.getConfig().getHost(),
+                                                        port,
+                                                        wildflyProvider.getConfig().getUser(),
+                                                        wildflyProvider.getConfig().getPassword(),
+                                                        realm,
+                                                        dataSourceDef,
+                                                        dataSourceDeploymentId,
+                                                        targetDataSource,
+                                                        driverDeploymentId);
+                } catch (Exception e) {
                     final String msg = "It was not possible to provision data source: " + dataSourceDef + " for application: " + warPath;
-                    logger.error( msg, e );
-                    throw new ProvisioningException( msg, e );
+                    logger.error(msg,
+                                 e);
+                    throw new ProvisioningException(msg,
+                                                    e);
                 }
             }
         }
-        updatePersistenceSettings( warPath, targetDataSource );
+        updatePersistenceSettings(warPath,
+                                  targetDataSource);
     }
 
-    private void updatePersistenceSettings( Path warPath, String targetDataSource ) {
+    private void updatePersistenceSettings(Path warPath,
+                                           String targetDataSource) {
         try {
-            provisioningHelper.updatePersistenceSettings( warPath, targetDataSource );
-        } catch ( Exception e ) {
+            provisioningHelper.updatePersistenceSettings(warPath,
+                                                         targetDataSource);
+        } catch (Exception e) {
             final String msg = "It was not possible to update persistence configuration for application: " + warPath;
-            logger.error( msg, e );
-            throw new ProvisioningException( msg, e );
+            logger.error(msg,
+                         e);
+            throw new ProvisioningException(msg,
+                                            e);
         }
     }
 
-    private void unDeployDrivers( AppFormerWildflyRuntimeExecConfig runtimeConfig, WildflyProvider wildflyProvider, String warName ) throws Exception {
-        int port = Integer.parseInt( wildflyProvider.getManagementPort( ) );
+    private void unDeployDrivers(AppFormerWildflyRuntimeExecConfig runtimeConfig,
+                                 WildflyProvider wildflyProvider,
+                                 String warName) throws Exception {
+        int port = Integer.parseInt(wildflyProvider.getConfig().getManagementPort());
         String realm = runtimeConfig.getRealm();
         String appDriverPrefix = warName + "_driver_";
-        Collection< String > appDrivers = provisioningHelper.findWildflyDeployments( wildflyProvider.getHostId( ),
-                port, wildflyProvider.getUser( ), wildflyProvider.getPassword( ), realm, appDriverPrefix );
+        Collection<String> appDrivers = provisioningHelper.findWildflyDeployments(wildflyProvider.getConfig().getHost(),
+                                                                                  port,
+                                                                                  wildflyProvider.getConfig().getUser(),
+                                                                                  wildflyProvider.getConfig().getPassword(),
+                                                                                  realm,
+                                                                                  appDriverPrefix);
 
-        for ( String deploymentId : appDrivers ) {
-            provisioningHelper.unDeployDriver( wildflyProvider.getHostId( ),
-                    port, wildflyProvider.getUser( ), wildflyProvider.getPassword( ), realm, deploymentId );
+        for (String deploymentId : appDrivers) {
+            provisioningHelper.unDeployDriver(wildflyProvider.getConfig().getHost(),
+                                              port,
+                                              wildflyProvider.getConfig().getUser(),
+                                              wildflyProvider.getConfig().getPassword(),
+                                              realm,
+                                              deploymentId);
         }
     }
 
-    private void unDeployDataSources( AppFormerWildflyRuntimeExecConfig runtimeConfig, WildflyProvider wildflyProvider, String warName ) throws Exception {
-        int port = Integer.parseInt( wildflyProvider.getManagementPort( ) );
+    private void unDeployDataSources(AppFormerWildflyRuntimeExecConfig runtimeConfig,
+                                     WildflyProvider wildflyProvider,
+                                     String warName) throws Exception {
+        int port = Integer.parseInt(wildflyProvider.getConfig().getManagementPort());
         String realm = runtimeConfig.getRealm();
-        Collection< WildflyDataSourceDef > currentDataSources = provisioningHelper.findWildflyDataSources(
-                wildflyProvider.getHostId( ), port, wildflyProvider.getUser( ), wildflyProvider.getPassword( ), realm, warName );
-        for ( WildflyDataSourceDef dataSourceDef : currentDataSources ) {
-            provisioningHelper.unDeployDataSource( wildflyProvider.getHostId( ),
-                    port, wildflyProvider.getUser( ), wildflyProvider.getPassword( ), realm, dataSourceDef.getName( ) );
+        Collection<WildflyDataSourceDef> currentDataSources = provisioningHelper.findWildflyDataSources(
+                wildflyProvider.getConfig().getHost(),
+                port,
+                wildflyProvider.getConfig().getUser(),
+                wildflyProvider.getConfig().getPassword(),
+                realm,
+                warName);
+        for (WildflyDataSourceDef dataSourceDef : currentDataSources) {
+            provisioningHelper.unDeployDataSource(wildflyProvider.getConfig().getHost(),
+                                                  port,
+                                                  wildflyProvider.getConfig().getUser(),
+                                                  wildflyProvider.getConfig().getPassword(),
+                                                  realm,
+                                                  dataSourceDef.getName());
         }
     }
 
     @Override
-    public Class< ? extends Config > executeFor( ) {
+    public Class<? extends Config> executeFor() {
         return WildflyRuntimeExecConfig.class;
     }
-
 }
