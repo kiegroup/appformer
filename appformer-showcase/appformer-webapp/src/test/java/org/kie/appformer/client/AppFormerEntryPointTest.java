@@ -138,7 +138,7 @@ public class AppFormerEntryPointTest {
 
         final Menus menus = menusCaptor.getValue();
 
-        assertEquals(5,
+        assertEquals(4,
                      menus.getItems().size());
 
         assertEquals(entryPoint.constants.home(),

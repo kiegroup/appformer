@@ -34,6 +34,7 @@ import org.kie.workbench.common.forms.serialization.FormDefinitionSerializer;
 import org.kie.workbench.common.forms.service.shared.FieldManager;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.editor.commons.service.DeleteService;
 import org.uberfire.io.IOService;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.ResourceOpenedEvent;
@@ -47,7 +48,6 @@ public class AppFormerFormEditorServiceImpl extends FormEditorServiceImpl {
 
     @Inject
     public AppFormerFormEditorServiceImpl(@Named("ioStrategy") IOService ioService,
-                                          User identity,
                                           SessionInfo sessionInfo,
                                           Event<ResourceOpenedEvent> resourceOpenedEvent,
                                           FieldManager fieldManager,
@@ -55,6 +55,7 @@ public class AppFormerFormEditorServiceImpl extends FormEditorServiceImpl {
                                           KieProjectService projectService,
                                           FormDefinitionSerializer formDefinitionSerializer,
                                           VFSFormFinderService vfsFormFinderService,
+                                          DeleteService deleteService,
                                           CommentedOptionFactory commentedOptionFactory,
                                           FormSourcesGenerator formSourcesGenerator) {
         super(ioService,
@@ -65,6 +66,7 @@ public class AppFormerFormEditorServiceImpl extends FormEditorServiceImpl {
               projectService,
               formDefinitionSerializer,
               vfsFormFinderService,
+              deleteService,
               commentedOptionFactory);
 
         this.formSourcesGenerator = formSourcesGenerator;

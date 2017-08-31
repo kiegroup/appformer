@@ -26,11 +26,8 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.jboss.errai.ui.shared.api.annotations.Bundle;
-import org.kie.appformer.client.home.HomeProducer;
 import org.kie.appformer.client.resources.i18n.AppConstants;
 import org.kie.appformer.provisioning.shared.AppReady;
-import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
 import org.kie.workbench.common.workbench.client.authz.PermissionTreeSetup;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
@@ -46,7 +43,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.SERVER_MANAGEMENT;
 
 @EntryPoint
 public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
@@ -70,17 +67,18 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
     protected PermissionTreeSetup permissionTreeSetup;
 
     @Inject
-    public AppFormerEntryPoint( Caller<AppConfigService> appConfigService,
-                                ActivityBeansCache activityBeansCache,
-                                Caller<SocialConfigurationService> socialConfigurationService,
-                                DefaultWorkbenchFeaturesMenusHelper menusHelper,
-                                ClientUserSystemManager userSystemManager,
-                                WorkbenchMenuBarPresenter menuBar,
-                                SyncBeanManager iocManager,
-                                Workbench workbench,
-                                PlaceManager placeManager,
-                                PermissionTreeSetup permissionTreeSetup ) {
-        super( appConfigService, activityBeansCache );
+    public AppFormerEntryPoint(Caller<AppConfigService> appConfigService,
+                               ActivityBeansCache activityBeansCache,
+                               Caller<SocialConfigurationService> socialConfigurationService,
+                               DefaultWorkbenchFeaturesMenusHelper menusHelper,
+                               ClientUserSystemManager userSystemManager,
+                               WorkbenchMenuBarPresenter menuBar,
+                               SyncBeanManager iocManager,
+                               Workbench workbench,
+                               PlaceManager placeManager,
+                               PermissionTreeSetup permissionTreeSetup) {
+        super(appConfigService,
+              activityBeansCache);
         this.socialConfigurationService = socialConfigurationService;
         this.menusHelper = menusHelper;
         this.userSystemManager = userSystemManager;
@@ -93,54 +91,52 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
 
     @PostConstruct
     public void init() {
-        workbench.addStartupBlocker( AppFormerEntryPoint.class );
+        workbench.addStartupBlocker(AppFormerEntryPoint.class);
         permissionTreeSetup.configureTree();
     }
 
-    protected void onAppReady( @Observes AppReady appReady ) {
-        PlaceRequest request = new DefaultPlaceRequest( "app" );
-        request.addParameter( "url", appReady.getUrl() );
-        placeManager.goTo( request );
+    protected void onAppReady(@Observes AppReady appReady) {
+        PlaceRequest request = new DefaultPlaceRequest("app");
+        request.addParameter("url",
+                             appReady.getUrl());
+        placeManager.goTo(request);
     }
 
     @Override
     protected void setupMenu() {
 
         // Social services.
-        socialConfigurationService.call( new RemoteCallback<Boolean>() {
-            public void callback( final Boolean socialEnabled ) {
+        socialConfigurationService.call(new RemoteCallback<Boolean>() {
+            public void callback(final Boolean socialEnabled) {
 
                 // Wait for user management services to be initialized, if any.
-                userSystemManager.waitForInitialization( () -> {
+                userSystemManager.waitForInitialization(() -> {
 
                     final Menus menus =
-                            MenuFactory.newTopLevelMenu( constants.home() ).withItems( menusHelper.getHomeViews( socialEnabled ) ).endMenu()
-                                    .newTopLevelMenu( constants.authoring() ).withItems( menusHelper.getAuthoringViews() ).endMenu()
-                                    .newTopLevelMenu( constants.deploy() ).withItems( getDeploymentViews() ).endMenu()
-                                    .newTopLevelMenu( constants.extensions() ).withItems( menusHelper.getExtensionsViews() ).endMenu()
-                                    .newTopLevelCustomMenu( iocManager.lookupBean( SearchMenuBuilder.class ).getInstance() ).endMenu()
+                            MenuFactory.newTopLevelMenu(constants.home()).withItems(menusHelper.getHomeViews(socialEnabled)).endMenu()
+                                    .newTopLevelMenu(constants.authoring()).withItems(menusHelper.getAuthoringViews()).endMenu()
+                                    .newTopLevelMenu(constants.deploy()).withItems(getDeploymentViews()).endMenu()
+                                    .newTopLevelMenu(constants.extensions()).withItems(menusHelper.getExtensionsViews()).endMenu()
                                     .build();
 
-                    menuBar.addMenus( menus );
+                    menuBar.addMenus(menus);
 
                     menusHelper.addRolesMenuItems();
                     menusHelper.addWorkbenchConfigurationMenuItem();
                     menusHelper.addUtilitiesMenuItems();
 
-                    workbench.removeStartupBlocker( AppFormerEntryPoint.class );
-
-                } );
-
+                    workbench.removeStartupBlocker(AppFormerEntryPoint.class);
+                });
             }
-        } ).isSocialEnable();
+        }).isSocialEnable();
     }
 
     protected List<MenuItem> getDeploymentViews() {
-        final List<MenuItem> result = new ArrayList<>( 1 );
+        final List<MenuItem> result = new ArrayList<>(1);
 
-        result.add( MenuFactory.newSimpleItem( constants.ruleDeployments() )
-                                    .perspective( SERVER_MANAGEMENT )
-                                    .endMenu().build().getItems().get( 0 ) );
+        result.add(MenuFactory.newSimpleItem(constants.ruleDeployments())
+                           .perspective(SERVER_MANAGEMENT)
+                           .endMenu().build().getItems().get(0));
 
         return result;
     }

@@ -15,15 +15,9 @@
  */
 package org.kie.appformer.client.perspectives;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
-import org.guvnor.m2repo.client.event.M2RepoSearchEvent;
 import org.kie.appformer.client.resources.i18n.AppConstants;
-import org.kie.workbench.common.widgets.client.search.ContextualSearch;
-import org.kie.workbench.common.widgets.client.search.SearchBehavior;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -41,23 +35,6 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 public class M2RepoPerspective {
 
     public static final String PERSPECTIVE_ID = "org.guvnor.m2repo.client.perspectives.GuvnorM2RepoPerspective";
-
-    @Inject
-    private ContextualSearch contextualSearch;
-
-    @Inject
-    private Event<M2RepoSearchEvent> searchEvents;
-
-    @PostConstruct
-    private void init() {
-        contextualSearch.setPerspectiveSearchBehavior(PERSPECTIVE_ID, new SearchBehavior() {
-            @Override
-            public void execute(String searchFilter) {
-                searchEvents.fire(new M2RepoSearchEvent(searchFilter));
-            }
-
-        });
-    }
 
     @Perspective
     public PerspectiveDefinition getPerspective() {
