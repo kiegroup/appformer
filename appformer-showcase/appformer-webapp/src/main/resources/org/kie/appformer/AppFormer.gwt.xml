@@ -75,6 +75,9 @@
   <inherits name="org.kie.workbench.common.forms.editor.FormModelerEditorClient"/>
   <inherits name="org.kie.workbench.common.forms.data.modeller.FormDataModellerIntegrationClient"/>
 
+  <!-- Form Modeler Fields -->
+  <inherits name="org.kie.appformer.form.modeler.fields.FormModelerFieldsClient"/>
+
   <!-- Start AppFormer Modules -->
   <inherits name="org.kie.appformer.provisioning.AppFormerProvisioningAPI"/>
   <inherits name="org.kie.appformer.provisioning.AppFormerProvisioningClient"/>

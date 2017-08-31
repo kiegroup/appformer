@@ -156,7 +156,7 @@
     </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -1250,6 +1250,17 @@
       <artifactId>appformer-form-modeler-codegen-data-modeller</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.kie.appformer</groupId>
+      <artifactId>appformer-form-modeler-fields-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.appformer</groupId>
+      <artifactId>appformer-form-modeler-fields-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Required to correctly build AppFormer apps -->
     <dependency>
       <groupId>org.kie.appformer</groupId>
@@ -1535,6 +1546,8 @@
               <compileSourcesArtifact>org.kie.appformer:appformer-flow-api</compileSourcesArtifact>
               <!-- FIXME We shouldn't have to depend on this but do because of the StandaloneFormWrapper -->
               <compileSourcesArtifact>org.kie.appformer:appformer-flow-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.appformer:appformer-form-modeler-fields-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.appformer:appformer-form-modeler-fields-client</compileSourcesArtifact>
 
               <!-- Data sources management -->
               <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-datasource-mgmt-api</compileSourcesArtifact>

@@ -142,12 +142,17 @@
 
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
-      <artifactId>kie-wb-common-forms-fields</artifactId>
+      <artifactId>kie-wb-common-forms-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-dynamic-forms-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.appformer</groupId>
+      <artifactId>appformer-form-modeler-fields-api</artifactId>
     </dependency>
 
     <!-- test -->

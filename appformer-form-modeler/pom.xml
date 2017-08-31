@@ -19,6 +19,7 @@
     <module>appformer-form-modeler-codegen</module>
     <module>appformer-form-modeler-rendering</module>
     <module>appformer-form-modeler-editor</module>
+    <module>appformer-form-modeler-fields</module>
   </modules>
 
 </project>

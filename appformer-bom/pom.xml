@@ -59,6 +59,16 @@
       </dependency>
       <dependency>
         <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-form-modeler-fields-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
+        <artifactId>appformer-form-modeler-fields-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.appformer</groupId>
         <artifactId>appformer-ala-wildfly-provider</artifactId>
         <version>${project.version}</version>
       </dependency>
