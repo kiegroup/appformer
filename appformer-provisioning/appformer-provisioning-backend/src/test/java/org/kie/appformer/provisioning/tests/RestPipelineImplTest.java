@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.arquillian.cube.CubeController;
@@ -39,16 +38,10 @@ import org.guvnor.ala.build.maven.executor.MavenBuildExecConfigExecutor;
 import org.guvnor.ala.build.maven.executor.MavenProjectConfigExecutor;
 import org.guvnor.ala.build.maven.executor.gwt.GWTCodeServerMavenExecConfigExecutor;
 import org.guvnor.ala.build.maven.executor.gwt.GWTCodeServerPortLeaserImpl;
-import org.guvnor.ala.config.BinaryConfig;
-import org.guvnor.ala.config.BuildConfig;
-import org.guvnor.ala.config.ProjectConfig;
-import org.guvnor.ala.config.ProviderConfig;
-import org.guvnor.ala.config.RuntimeConfig;
-import org.guvnor.ala.config.SourceConfig;
 import org.guvnor.ala.pipeline.Input;
 import org.guvnor.ala.pipeline.Pipeline;
+import org.guvnor.ala.pipeline.PipelineConfigStage;
 import org.guvnor.ala.pipeline.PipelineFactory;
-import org.guvnor.ala.pipeline.Stage;
 import org.guvnor.ala.pipeline.execution.PipelineExecutor;
 import org.guvnor.ala.registry.BuildRegistry;
 import org.guvnor.ala.registry.SourceRegistry;
@@ -79,7 +72,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static java.util.Arrays.asList;
-import static org.guvnor.ala.pipeline.StageUtil.config;
 import static org.junit.Assert.*;
 
 /**
@@ -125,33 +117,34 @@ public class RestPipelineImplTest {
         final InMemoryRuntimeRegistry runtimeRegistry = new InMemoryRuntimeRegistry();
         final WildflyAccessInterface wildflyAccessInterface = new WildflyAccessInterfaceImpl();
 
-        final Stage<Input, SourceConfig> sourceConfig = config("Git Source",
-                                                               (Function<Input, SourceConfig>) (s) -> new GitConfig() {
-                                                               });
-        final Stage<SourceConfig, ProjectConfig> projectConfig = config("Maven Project",
-                                                                        (Function<SourceConfig, ProjectConfig>) (s) -> new MavenProjectConfig() {
-                                                                        });
-        final Stage<ProjectConfig, BuildConfig> buildConfig = config("Maven Build Config",
-                                                                     (Function<ProjectConfig, BuildConfig>) (s) -> new MavenBuildConfig() {
-                                                                     });
-
-        final Stage<BuildConfig, BinaryConfig> buildExec = config("Maven Build",
-                                                                  (Function<BuildConfig, BinaryConfig>) (s) -> new MavenBuildExecConfig() {
-                                                                  });
-        final Stage<BinaryConfig, ProviderConfig> providerConfig = config("Wildfly Provider Config",
-                                                                          (Function<BinaryConfig, ProviderConfig>) (s) -> new WildflyProviderConfig() {
+        final PipelineConfigStage sourceConfig = new PipelineConfigStage("Git Source",
+                                                                         new GitConfig() {
+                                                                         });
+        final PipelineConfigStage projectConfig = new PipelineConfigStage("Maven Project",
+                                                                          new MavenProjectConfig() {
                                                                           });
+        final PipelineConfigStage buildConfig = new PipelineConfigStage("Maven Build Config",
+                                                                        new MavenBuildConfig() {
+                                                                        });
 
-        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config("Wildfly Runtime Exec",
-                                                                        (s) -> new ContextAwareWildflyRuntimeExecConfig());
+        final PipelineConfigStage buildExec = new PipelineConfigStage("Maven Build",
+                                                                      new MavenBuildExecConfig() {
+                                                                      });
+        final PipelineConfigStage providerConfig = new PipelineConfigStage("Wildfly Provider Config",
+                                                                           new WildflyProviderConfig() {
+                                                                           });
+
+        final PipelineConfigStage runtimeExec = new PipelineConfigStage("Wildfly Runtime Exec",
+                                                                        new ContextAwareWildflyRuntimeExecConfig());
 
         final Pipeline pipe = PipelineFactory
-                .startFrom(sourceConfig)
-                .andThen(projectConfig)
-                .andThen(buildConfig)
-                .andThen(buildExec)
-                .andThen(providerConfig)
-                .andThen(runtimeExec).buildAs("my pipe");
+                .newBuilder()
+                .addConfigStage(sourceConfig)
+                .addConfigStage(projectConfig)
+                .addConfigStage(buildConfig)
+                .addConfigStage(buildExec)
+                .addConfigStage(providerConfig)
+                .addConfigStage(runtimeExec).buildAs("my pipe");
         final WildflyRuntimeExecExecutor wildflyRuntimeExecExecutor = new WildflyRuntimeExecExecutor(runtimeRegistry,
                                                                                                      wildflyAccessInterface);
         final PipelineExecutor executor = new PipelineExecutor(asList(new GitConfigExecutor(sourceRegistry),
@@ -259,57 +252,58 @@ public class RestPipelineImplTest {
         final WildflyAccessInterface wildflyAccessInterface = new WildflyAccessInterfaceImpl();
         final GWTCodeServerPortLeaserImpl leaser = new GWTCodeServerPortLeaserImpl();
 
-        final Stage<Input, SourceConfig> sourceConfig = config("Git Source",
-                                                               (Function<Input, SourceConfig>) (s) -> new GitConfig() {
-                                                               });
-        final Stage<SourceConfig, ProjectConfig> projectConfig = config("Maven Project",
-                                                                        (Function<SourceConfig, ProjectConfig>) (s) -> new MavenProjectConfig() {
+        final PipelineConfigStage sourceConfig = new PipelineConfigStage("Git Source",
+                                                                         new GitConfig() {
+                                                                         });
+        final PipelineConfigStage projectConfig = new PipelineConfigStage("Maven Project",
+                                                                          new MavenProjectConfig() {
+                                                                          });
+        final PipelineConfigStage buildConfig = new PipelineConfigStage("Maven Build Config",
+                                                                        new MavenBuildConfig() {
+                                                                            @Override
+                                                                            public List<String> getGoals() {
+                                                                                final List<String> result = new ArrayList<>();
+                                                                                result.add("package");
+
+                                                                                return result;
+                                                                            }
+
+                                                                            @Override
+                                                                            public Properties getProperties() {
+                                                                                final Properties result = new Properties();
+                                                                                result.setProperty("failIfNoTests",
+                                                                                                   "false");
+                                                                                result.setProperty("gwt.compiler.skip",
+                                                                                                   "true");
+                                                                                return result;
+                                                                            }
                                                                         });
-        final Stage<ProjectConfig, BuildConfig> buildConfig = config("Maven Build Config",
-                                                                     (Function<ProjectConfig, BuildConfig>) (s) -> new MavenBuildConfig() {
-                                                                         @Override
-                                                                         public List<String> getGoals() {
-                                                                             final List<String> result = new ArrayList<>();
-                                                                             result.add("package");
 
-                                                                             return result;
-                                                                         }
+        final PipelineConfigStage codeServerExec = new PipelineConfigStage("Start Code Server",
+                                                                           new GWTCodeServerMavenExecConfig() {
 
-                                                                         @Override
-                                                                         public Properties getProperties() {
-                                                                             final Properties result = new Properties();
-                                                                             result.setProperty("failIfNoTests",
-                                                                                                "false");
-                                                                             result.setProperty("gwt.compiler.skip",
-                                                                                                "true");
-                                                                             return result;
-                                                                         }
-                                                                     });
+                                                                           });
 
-        final Stage<BuildConfig, BuildConfig> codeServerExec = config("Start Code Server",
-                                                                      (Function<BuildConfig, BuildConfig>) (s) -> new GWTCodeServerMavenExecConfig() {
-
+        final PipelineConfigStage buildExec = new PipelineConfigStage("Maven Build",
+                                                                      new MavenBuildExecConfig() {
                                                                       });
 
-        final Stage<BuildConfig, BinaryConfig> buildExec = config("Maven Build",
-                                                                  (Function<BuildConfig, BinaryConfig>) (s) -> new MavenBuildExecConfig() {
-                                                                  });
+        final PipelineConfigStage providerConfig = new PipelineConfigStage("Wildfly Provider Config",
+                                                                           new WildflyProviderConfig() {
+                                                                           });
 
-        final Stage<BinaryConfig, ProviderConfig> providerConfig = config("Wildfly Provider Config",
-                                                                          (Function<BinaryConfig, ProviderConfig>) (s) -> new WildflyProviderConfig() {
-                                                                          });
-
-        final Stage<ProviderConfig, RuntimeConfig> runtimeExec = config("Wildfly Runtime Exec",
-                                                                        (s) -> new ContextAwareWildflyRuntimeExecConfig());
+        final PipelineConfigStage runtimeExec = new PipelineConfigStage("Wildfly Runtime Exec",
+                                                                        new ContextAwareWildflyRuntimeExecConfig());
 
         final Pipeline pipeCodeServer = PipelineFactory
-                .startFrom(sourceConfig)
-                .andThen(projectConfig)
-                .andThen(buildConfig)
-                .andThen(codeServerExec)
-                .andThen(buildExec)
-                .andThen(providerConfig)
-                .andThen(runtimeExec).buildAs("my pipe");
+                .newBuilder()
+                .addConfigStage(sourceConfig)
+                .addConfigStage(projectConfig)
+                .addConfigStage(buildConfig)
+                .addConfigStage(codeServerExec)
+                .addConfigStage(buildExec)
+                .addConfigStage(providerConfig)
+                .addConfigStage(runtimeExec).buildAs("my pipe");
         final WildflyRuntimeExecExecutor wildflyRuntimeExecExecutor = new WildflyRuntimeExecExecutor(runtimeRegistry,
                                                                                                      wildflyAccessInterface);
         final PipelineExecutor executor = new PipelineExecutor(asList(new GitConfigExecutor(sourceRegistry),
