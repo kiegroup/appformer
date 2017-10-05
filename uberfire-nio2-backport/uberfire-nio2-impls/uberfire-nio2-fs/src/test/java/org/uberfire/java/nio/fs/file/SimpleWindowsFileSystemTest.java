@@ -52,6 +52,15 @@ public class SimpleWindowsFileSystemTest {
         assertThat(fileSystem.getPath("c:\\path\\to\\file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
                                                                                                               "c:\\path\\to\\file.txt",
                                                                                                               false));
+        assertThat(fileSystem.getPath("/c:/path/to/file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                                            "/c:/path/to/file.txt",
+                                                                                                            false));
+        assertThat(fileSystem.getPath("c:\\path\\to\\")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                                      "c:\\path\\to",
+                                                                                                      false));
+        assertThat(fileSystem.getPath("/c:/path/to/")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                                    "/c:/path/to",
+                                                                                                    false));
         assertThat(fileSystem.getPath("c:\\path\\to\\file.txt",
                                       null)).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
                                                                                           "c:\\path\\to\\file.txt",
@@ -61,6 +70,26 @@ public class SimpleWindowsFileSystemTest {
                                       "file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
                                                                                                 "c:\\path\\to\\file.txt",
                                                                                                 false));
+        assertThat(fileSystem.getPath("c:\\path\\",
+                                      "to",
+                                      "file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                                "c:\\path\\to\\file.txt",
+                                                                                                false));
+        assertThat(fileSystem.getPath("/c:/path",
+                                      "to",
+                                      "file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                                "/c:/path/to/file.txt",
+                                                                                                false));
+        assertThat(fileSystem.getPath("/c:/path/",
+                                      "to",
+                                      "file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                                "/c:/path/to/file.txt",
+                                                                                                false));
+        assertThat(fileSystem.getPath("/",
+                                      "c:",
+                                      "path")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                            "/c:/path",
+                                                                                            false));
 
         try {
             fileSystem.close();
