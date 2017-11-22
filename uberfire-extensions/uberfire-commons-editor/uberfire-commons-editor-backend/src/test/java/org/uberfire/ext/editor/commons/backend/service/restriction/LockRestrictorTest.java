@@ -16,7 +16,6 @@
 
 package org.uberfire.ext.editor.commons.backend.service.restriction;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.jboss.errai.security.shared.api.identity.User;
@@ -25,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.VFSLockService;
 import org.uberfire.backend.vfs.impl.LockInfo;
@@ -69,9 +68,6 @@ public class LockRestrictorTest {
         when(lockService.retrieveLockInfo(any())).thenReturn(lockInfo);
         when(identity.getIdentifier()).thenReturn("456");
         when(lockInfo.lockedBy()).thenReturn("123");
-        when(lockService.retrieveLockInfos(path,
-                                           true)).thenReturn(Arrays.asList(lockInfo));
-        when(lockInfos.isEmpty()).thenReturn(true);
 
         PathOperationRestriction result = lockRestrictor.hasRestriction(path);
         assertNotNull(result);
@@ -82,9 +78,6 @@ public class LockRestrictorTest {
     public void lockedFilesShouldCauseRestriction() {
         when(lockInfo.isLocked()).thenReturn(false);
         when(lockService.retrieveLockInfo(any())).thenReturn(lockInfo);
-        when(identity.getIdentifier()).thenReturn("123");
-        when(lockInfo.lockedBy()).thenReturn("123");
-        when(lockInfos.size()).thenReturn(1);
         when(lockService.retrieveLockInfos(path,
                                            true)).thenReturn(lockInfos);
         when(lockInfos.isEmpty()).thenReturn(false);
@@ -98,8 +91,6 @@ public class LockRestrictorTest {
     public void noLockShouldNotCauseRestriction() {
         when(lockInfo.isLocked()).thenReturn(false);
         when(lockService.retrieveLockInfo(any())).thenReturn(lockInfo);
-        when(identity.getIdentifier()).thenReturn("456");
-        when(lockInfo.lockedBy()).thenReturn("123");
         when(lockService.retrieveLockInfos(path,
                                            true)).thenReturn(lockInfos);
         when(lockInfos.isEmpty()).thenReturn(true);
@@ -126,8 +117,6 @@ public class LockRestrictorTest {
     public void emptyRestrictionListShouldNotCauseRestriction() {
         when(lockInfo.isLocked()).thenReturn(false);
         when(lockService.retrieveLockInfo(any())).thenReturn(lockInfo);
-        when(identity.getIdentifier()).thenReturn("123");
-        when(lockInfo.lockedBy()).thenReturn("456");
         when(lockInfos.isEmpty()).thenReturn(true);
         when(lockService.retrieveLockInfos(path,
                                            true)).thenReturn(lockInfos);

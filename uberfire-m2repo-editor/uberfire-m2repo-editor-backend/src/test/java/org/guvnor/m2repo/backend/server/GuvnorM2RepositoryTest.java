@@ -50,6 +50,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -172,28 +173,20 @@ public class GuvnorM2RepositoryTest {
 
         verify(repositorySystem,
                times(1)).deploy(any(RepositorySystemSession.class),
-                                argThat(new BaseMatcher<DeployRequest>() {
+                                argThat(new ArgumentMatcher<DeployRequest>() {
 
                                     @Override
-                                    public void describeTo(Description description) {
-                                    }
-
-                                    @Override
-                                    public boolean matches(Object item) {
+                                    public boolean matches(DeployRequest item) {
                                         DeployRequest request = (DeployRequest) item;
                                         return "global-m2-repo".equals(request.getRepository().getId());
                                     }
                                 }));
         verify(repositorySystem,
                times(1)).deploy(any(RepositorySystemSession.class),
-                                argThat(new BaseMatcher<DeployRequest>() {
+                                argThat(new ArgumentMatcher<DeployRequest>() {
 
                                     @Override
-                                    public void describeTo(Description description) {
-                                    }
-
-                                    @Override
-                                    public boolean matches(Object item) {
+                                    public boolean matches(DeployRequest item) {
                                         DeployRequest request = (DeployRequest) item;
                                         String string = "example.project.http";
                                         RemoteRepository repo = request.getRepository();

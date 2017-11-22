@@ -71,7 +71,7 @@ public class PerspectivesExplorerTest {
     @Before
     public void setUp() {
         doAnswer(invocationOnMock -> {
-            ParameterizedCommand<Collection<Plugin>> callback = invocationOnMock.getArgumentAt(0, ParameterizedCommand.class);
+            ParameterizedCommand<Collection<Plugin>> callback = invocationOnMock.getArgument(0);
             callback.execute(pluginList);
             return null;
         }).when(perspectivePluginManagerM).getPerspectivePlugins(any());

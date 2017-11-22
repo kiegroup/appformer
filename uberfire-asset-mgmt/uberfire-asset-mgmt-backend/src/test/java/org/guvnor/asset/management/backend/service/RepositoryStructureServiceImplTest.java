@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 
@@ -131,7 +131,6 @@ public class RepositoryStructureServiceImplTest {
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
         when(repository.getAlias()).thenReturn("alias");
-        when(repository.getRoot()).thenReturn(repositoryRootPath);
 
         when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(new HashSet<MavenRepositoryMetadata>() {
             {
@@ -170,14 +169,6 @@ public class RepositoryStructureServiceImplTest {
         when(repository.getAlias()).thenReturn("alias");
         when(repository.getRoot()).thenReturn(repositoryRootPath);
 
-        when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(new HashSet<MavenRepositoryMetadata>() {
-            {
-                add(new MavenRepositoryMetadata("local-id",
-                                                "local-url",
-                                                MavenRepositorySource.LOCAL));
-            }
-        });
-
         try {
             service.initRepositoryStructure(gav,
                                             repository,
@@ -215,7 +206,6 @@ public class RepositoryStructureServiceImplTest {
         final POM pom = new POM(gav);
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
-        when(repository.getAlias()).thenReturn("alias");
         when(repository.getDefaultBranch()).thenReturn("master");
         when(repository.getBranchRoot("master")).thenReturn(repositoryRootPath);
 
@@ -253,12 +243,9 @@ public class RepositoryStructureServiceImplTest {
         final POM pom = new POM(gav);
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
-        when(repository.getAlias()).thenReturn("alias");
-        when(repository.getRoot()).thenReturn(repositoryRootPath);
 
         final Project project = mock(Project.class);
         final Path pomPath = mock(Path.class);
-        when(project.getPomXMLPath()).thenReturn(pomPath);
 
         when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(new HashSet<MavenRepositoryMetadata>() {
             {
@@ -267,17 +254,6 @@ public class RepositoryStructureServiceImplTest {
                                                 MavenRepositorySource.LOCAL));
             }
         });
-
-        final GAVAlreadyExistsException gae = new GAVAlreadyExistsException(pom.getGav(),
-                                                                            new HashSet<MavenRepositoryMetadata>() {{
-                                                                                add(new MavenRepositoryMetadata("local-id",
-                                                                                                                "local-url",
-                                                                                                                MavenRepositorySource.LOCAL));
-                                                                            }});
-        doThrow(gae).when(projectService).newProject(eq(repositoryRootPath),
-                                                     eq(pom),
-                                                     eq("baseUrl"),
-                                                     eq(DeploymentMode.VALIDATED));
 
         try {
             service.initRepositoryStructure(pom,
@@ -307,7 +283,6 @@ public class RepositoryStructureServiceImplTest {
         final POM pom = new POM(gav);
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
-        when(repository.getAlias()).thenReturn("alias");
         when(repository.getDefaultBranch()).thenReturn("master");
         when(repository.getBranchRoot("master")).thenReturn(repositoryRootPath);
 
@@ -315,24 +290,6 @@ public class RepositoryStructureServiceImplTest {
         final Path pomPath = mock(Path.class);
         when(project.getPomXMLPath()).thenReturn(pomPath);
 
-        when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(new HashSet<MavenRepositoryMetadata>() {
-            {
-                add(new MavenRepositoryMetadata("local-id",
-                                                "local-url",
-                                                MavenRepositorySource.LOCAL));
-            }
-        });
-
-        final GAVAlreadyExistsException gae = new GAVAlreadyExistsException(pom.getGav(),
-                                                                            new HashSet<MavenRepositoryMetadata>() {{
-                                                                                add(new MavenRepositoryMetadata("local-id",
-                                                                                                                "local-url",
-                                                                                                                MavenRepositorySource.LOCAL));
-                                                                            }});
-        doThrow(gae).when(projectService).newProject(eq(repositoryRootPath),
-                                                     eq(pom),
-                                                     eq("baseUrl"),
-                                                     eq(DeploymentMode.VALIDATED));
         when(projectService.newProject(eq(repositoryRootPath),
                                        eq(pom),
                                        eq("baseUrl"),
@@ -366,7 +323,6 @@ public class RepositoryStructureServiceImplTest {
         final POM pom = new POM(gav);
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
-        when(repository.getAlias()).thenReturn("alias");
         when(repository.getRoot()).thenReturn(repositoryRootPath);
 
         when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(Collections.<MavenRepositoryMetadata>emptySet());
@@ -406,8 +362,6 @@ public class RepositoryStructureServiceImplTest {
         final POM pom = new POM(gav);
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
-        when(repository.getAlias()).thenReturn("alias");
-        when(repository.getRoot()).thenReturn(repositoryRootPath);
 
         when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(new HashSet<MavenRepositoryMetadata>() {
             {
@@ -446,16 +400,7 @@ public class RepositoryStructureServiceImplTest {
         final POM pom = new POM(gav);
         final Repository repository = mock(Repository.class);
         final Path repositoryRootPath = mock(Path.class);
-        when(repository.getAlias()).thenReturn("alias");
         when(repository.getRoot()).thenReturn(repositoryRootPath);
-
-        when(repositoryResolver.getRepositoriesResolvingArtifact(eq(gav))).thenReturn(new HashSet<MavenRepositoryMetadata>() {
-            {
-                add(new MavenRepositoryMetadata("local-id",
-                                                "local-url",
-                                                MavenRepositorySource.LOCAL));
-            }
-        });
 
         try {
             service.initRepositoryStructure(pom,

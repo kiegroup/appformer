@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.security.Resource;
 import org.uberfire.security.authz.AuthorizationManager;

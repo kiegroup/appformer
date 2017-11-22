@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.MergeCopyOption;
@@ -72,10 +72,8 @@ public class PullRequestServiceTest {
                                                   configuredRepositories);
 
         doAnswer(invocationOnMock -> {
-            String key = invocationOnMock.getArgumentAt(0,
-                                                        String.class);
-            GitMetadataImpl metadata = invocationOnMock.getArgumentAt(1,
-                                                                      GitMetadataImpl.class);
+            String key = invocationOnMock.getArgument(0);
+            GitMetadataImpl metadata = invocationOnMock.getArgument(1);
             metadatas.put(key,
                           metadata);
             return null;
@@ -83,14 +81,12 @@ public class PullRequestServiceTest {
                                any());
 
         doAnswer(invocationOnMock -> {
-            String key = invocationOnMock.getArgumentAt(0,
-                                                        String.class);
+            String key = invocationOnMock.getArgument(0);
             return metadatas.get(key);
         }).when(storage).read(anyString());
 
         doAnswer(invocationOnMock -> {
-            String key = invocationOnMock.getArgumentAt(0,
-                                                        String.class);
+            String key = invocationOnMock.getArgument(0);
             return metadatas.remove(key);
         }).when(storage).delete(anyString());
 

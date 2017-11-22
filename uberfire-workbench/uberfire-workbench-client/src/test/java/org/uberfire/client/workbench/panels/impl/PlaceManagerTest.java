@@ -39,14 +39,13 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.AbstractPopupActivity;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.client.mvp.BookmarkableUrlHelper;
 import org.uberfire.client.mvp.ContextActivity;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
@@ -142,6 +141,8 @@ public class PlaceManagerTest {
     WorkbenchLayout workbenchLayout;
     @Mock
     LayoutSelection layoutSelection;
+    @Mock
+    PanelDefinition panelMock;
     /**
      * This is the thing we're testing. Weeee!
      */
@@ -177,14 +178,14 @@ public class PlaceManagerTest {
                                                                                              true));
 
         // every test starts in Kansas, with no side effect interactions recorded
-        when(activityManager.getActivities(kansas)).thenReturn(singleton((Activity) kansasActivity));
+        when(activityManager.getActivities(kansas)).thenReturn(singleton(kansasActivity));
         setupPanelManagerMock();
 
         when(kansasActivity.isType(ActivityResourceType.SCREEN.name())).thenReturn(true);
         when(kansasActivity.isDynamic()).thenReturn(false);
 
         placeManager.goTo(kansas,
-                          (PanelDefinition) null);
+                          mock(PanelDefinition.class));
         resetInjectedMocks();
         reset(kansasActivity);
 
@@ -193,8 +194,8 @@ public class PlaceManagerTest {
         when(kansasActivity.preferredHeight()).thenReturn(456);
 
         when(placeHistoryHandler.getPerspectiveFromPlace(any()))
-                .thenAnswer(i -> i.getArgumentAt(0,
-                                                 PlaceRequest.class));
+                .thenAnswer(i -> i.getArgument(0));
+
         // arrange for the mock PerspectiveManager to invoke the doWhenFinished callbacks
         doAnswer(new Answer<Void>() {
             @SuppressWarnings({"rawtypes", "unchecked"})
@@ -250,6 +251,13 @@ public class PlaceManagerTest {
                                             any(Integer.class),
                                             any(Integer.class),
                                             any(Integer.class)))
+                .thenAnswer(new Answer<PanelDefinition>() {
+                    @Override
+                    public PanelDefinition answer(InvocationOnMock invocation) throws Throwable {
+                        return (PanelDefinition) invocation.getArguments()[0];
+                    }
+                });
+        when(panelManager.addWorkbenchPanel(any(PanelDefinition.class),any(PanelDefinition.class), any(Position.class)))
                 .thenAnswer(new Answer<PanelDefinition>() {
                     @Override
                     public PanelDefinition answer(InvocationOnMock invocation) throws Throwable {
@@ -319,12 +327,13 @@ public class PlaceManagerTest {
         when(ozActivity.preferredHeight()).thenReturn(-1);
         when(activityManager.getActivities(oz)).thenReturn(singleton((Activity) ozActivity));
 
+
         placeManager.goTo(oz,
-                          (PanelDefinition) null);
+                          panelMock);
 
         verifyActivityLaunchSideEffects(oz,
                                         ozActivity,
-                                        null);
+                                        panelMock);
     }
 
     @Test
@@ -383,11 +392,11 @@ public class PlaceManagerTest {
         when(activityManager.getActivities(yellowBrickRoad)).thenReturn(singleton((Activity) ozActivity));
 
         placeManager.goTo(yellowBrickRoad,
-                          (PanelDefinition) null);
+                          panelMock);
 
         verifyActivityLaunchSideEffects(yellowBrickRoad,
                                         ozActivity,
-                                        null);
+                                        panelMock);
 
         // special contract just for path-type place requests (subject to preference)
         verify(yellowBrickRoad.getPath(),
@@ -589,7 +598,7 @@ public class PlaceManagerTest {
         when(emeraldCityActivity.isType(ActivityResourceType.SCREEN.name())).thenReturn(true);
 
         placeManager.goTo(emeraldCityPlace,
-                          (PanelDefinition) null);
+                          panelMock);
 
         // verify perspective changed to oz
         verify(perspectiveManager).savePerspectiveState(any(Command.class));
@@ -608,7 +617,7 @@ public class PlaceManagerTest {
         // and the workbench activity should have launched (after the perspective change)
         verifyActivityLaunchSideEffects(emeraldCityPlace,
                                         emeraldCityActivity,
-                                        null);
+                                        panelMock);
     }
 
     @Test
@@ -711,7 +720,7 @@ public class PlaceManagerTest {
         when(lollipopGuildActivity.isType(ActivityResourceType.SPLASH.name())).thenReturn(true);
 
         placeManager.goTo(oz,
-                          (PanelDefinition) null);
+                          panelMock);
 
         assertTrue(placeManager.getActiveSplashScreens().contains(lollipopGuildActivity));
         verify(lollipopGuildActivity,
@@ -735,7 +744,7 @@ public class PlaceManagerTest {
         when(ozActivity.isType(ActivityResourceType.SCREEN.name())).thenReturn(true);
 
         placeManager.goTo(oz,
-                          (PanelDefinition) null);
+                          panelMock);
         placeManager.closePlace(oz);
 
         assertTrue(placeManager.getActiveSplashScreens().isEmpty());
@@ -1247,7 +1256,7 @@ public class PlaceManagerTest {
 
         verifyActivityLaunchSideEffects(yellowBrickRoad,
                                         ozActivity,
-                                        null);
+                                        panelMock);
 
         final ResourceTypeDefinition resourceType = mock(ResourceTypeDefinition.class);
         when(resourceType.accept(path)).thenReturn(true);

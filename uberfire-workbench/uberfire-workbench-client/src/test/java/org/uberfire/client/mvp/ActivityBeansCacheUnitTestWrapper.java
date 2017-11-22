@@ -44,7 +44,6 @@ public class ActivityBeansCacheUnitTestWrapper extends ActivityBeansCache {
         mockDef = mock(SyncBeanDef.class);
         idMock = "mockDef1";
         when(mockDef.getName()).thenReturn(idMock);
-        when(mockDef.getBeanClass()).thenReturn(this.getClass());
         availableActivities.add(mockDef);
     }
 

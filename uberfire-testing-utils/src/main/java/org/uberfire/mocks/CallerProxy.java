@@ -56,8 +56,9 @@ public class CallerProxy implements java.lang.reflect.InvocationHandler {
                               args);
         } catch (Exception e) {
             if (errorCallBack != null) {
-                errorCallBack.error(result,
-                                    e);
+                // we need the actual exception thrown during the method call, not the InvocationTargetException wrapper
+                errorCallBack.error("Generic error message",
+                                    e.getCause());
             }
             if (m.getReturnType().isPrimitive()) {
                 return Defaults.defaultValue(m.getReturnType());

@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.server.cdi.UberFireGeneralFactory;
 
@@ -60,7 +60,6 @@ public class UberFireGeneralFactoryTest {
 
     @Before
     public void setup() {
-        when(authService.getUser()).thenThrow(new AssertionError("Should not call authentication service"));
         when(threadMessage.getResource(QueueSession.class,
                                        "Session")).thenReturn(threadQueueSession);
         when(threadQueueSession.getSessionId()).thenReturn(sessionUser.getIdentifier());
@@ -80,9 +79,6 @@ public class UberFireGeneralFactoryTest {
 
     @Test
     public void returnAuthenticatedUserInSessionThread() throws Exception {
-        when(userInstance.isAmbiguous()).thenReturn(false);
-        when(userInstance.isUnsatisfied()).thenReturn(false);
-        when(userInstance.get()).thenReturn(defaultUser);
         reset(authService);
         when(authService.getUser()).thenReturn(sessionUser);
         RpcContext.set(threadMessage);
@@ -96,7 +92,6 @@ public class UberFireGeneralFactoryTest {
     public void throwIllegalStateExceptionOutsideOfSessionThreadWithoutDefaultUser() throws Exception {
         when(userInstance.isAmbiguous()).thenReturn(false);
         when(userInstance.isUnsatisfied()).thenReturn(true);
-        when(userInstance.get()).thenReturn(defaultUser);
 
         factory.getSessionInfo(authService);
     }

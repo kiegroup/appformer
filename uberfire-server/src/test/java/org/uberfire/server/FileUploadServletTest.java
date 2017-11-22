@@ -27,11 +27,12 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.server.util.FileServletUtil;
@@ -69,6 +70,11 @@ public class FileUploadServletTest {
 
     @InjectMocks
     private FileUploadServlet uploadServlet;
+
+    @Before
+    public void setup() {
+        when(ioService.get(any())).thenReturn(mock(Path.class));
+    }
 
     /**
      * Tests the uploading of a file given the following parameters:
@@ -170,6 +176,7 @@ public class FileUploadServletTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
         when(response.getWriter()).thenReturn(printWriter);
+
 
         //FileUploadServlet uploadServlet = new FileUploadServlet();
         uploadServlet.doPost(request,
