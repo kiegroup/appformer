@@ -35,6 +35,7 @@ public class SimpleWindowsFileSystemTest {
 
     final FileSystemProvider fsProvider = mock(FileSystemProvider.class);
     final File[] roots = new File[]{new File("c:\\"), new File("a:\\")};
+    final File[] singleRoot = new File[] {new File("c:\\")};
 
     @Test
     public void simpleTests() {
@@ -137,7 +138,8 @@ public class SimpleWindowsFileSystemTest {
 
     @Test(expected = NoSuchElementException.class)
     public void invalidElementFromRootIterator() {
-        final Iterator<Path> iterator = new SimpleWindowsFileSystem(fsProvider,
+        final Iterator<Path> iterator = new SimpleWindowsFileSystem(singleRoot,
+                                                                    fsProvider,
                                                                     "c:\\").getRootDirectories().iterator();
         try {
             iterator.next();
@@ -155,7 +157,8 @@ public class SimpleWindowsFileSystemTest {
 
     @Test(expected = NoSuchElementException.class)
     public void invalidElementFromFStoreIterator() {
-        final Iterator<FileStore> iterator = new SimpleWindowsFileSystem(fsProvider,
+        final Iterator<FileStore> iterator = new SimpleWindowsFileSystem(singleRoot,
+                                                                         fsProvider,
                                                                          "c:\\").getFileStores().iterator();
         try {
             iterator.next();
