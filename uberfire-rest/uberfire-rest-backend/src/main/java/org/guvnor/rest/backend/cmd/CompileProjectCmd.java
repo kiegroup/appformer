@@ -42,12 +42,10 @@ public class CompileProjectCmd extends AbstractJobCommand {
         JobResult result = null;
         try {
             result = helper.compileProject(jobRequest.getJobId(),
-                                           jobRequest.getRepositoryName(),
                                            jobRequest.getProjectName());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
-            logger.debug("-----compileProject--- , repositoryName: {}, project name: {} [{}]",
-                         jobRequest.getRepositoryName(),
+            logger.debug("-----compileProject--- , project name: {} [{}]",
                          jobRequest.getProjectName(),
                          status);
         }

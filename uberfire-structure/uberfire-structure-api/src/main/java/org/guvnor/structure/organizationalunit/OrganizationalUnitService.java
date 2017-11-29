@@ -16,6 +16,7 @@
 package org.guvnor.structure.organizationalunit;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.guvnor.structure.repositories.Repository;
 import org.jboss.errai.bus.server.annotations.Remote;
@@ -74,6 +75,8 @@ public interface OrganizationalUnitService {
     void removeOrganizationalUnit(final String name);
 
     OrganizationalUnit getParentOrganizationalUnit(final Repository repository);
+
+    List<OrganizationalUnit> getOrganizationalUnits(final Repository repository);
 
     String getSanitizedDefaultGroupId(final String proposedGroupId);
 

@@ -22,8 +22,10 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.guvnor.common.services.project.client.security.ProjectController;
+import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.structure.client.resources.i18n.CommonConstants;
-import org.guvnor.structure.client.security.RepositoryController;
 import org.guvnor.structure.repositories.PublicURI;
 import org.guvnor.structure.repositories.RepositoryInfo;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
@@ -49,10 +51,11 @@ public class RepositoryEditorPresenter {
 
     private View view;
     private Caller<RepositoryService> repositoryService;
+    private Caller<WorkspaceProjectService> projectService;
     private Caller<RepositoryServiceEditor> repositoryServiceEditor;
     private Event<NotificationEvent> notification;
     private PlaceManager placeManager;
-    private RepositoryController repositoryController;
+    private ProjectController projectController;
 
     private String alias = null;
     private Path root = null;
@@ -79,16 +82,18 @@ public class RepositoryEditorPresenter {
     @Inject
     public RepositoryEditorPresenter(final View view,
                                      final Caller<RepositoryService> repositoryService,
+                                     final Caller<WorkspaceProjectService> projectService,
                                      final Caller<RepositoryServiceEditor> repositoryServiceEditor,
                                      final Event<NotificationEvent> notification,
                                      final PlaceManager placeManager,
-                                     final RepositoryController repositoryController) {
+                                     final ProjectController projectController) {
         this.view = view;
         this.repositoryService = repositoryService;
+        this.projectService = projectService;
         this.repositoryServiceEditor = repositoryServiceEditor;
         this.notification = notification;
         this.placeManager = placeManager;
-        this.repositoryController = repositoryController;
+        this.projectController = projectController;
     }
 
     @OnStartup
@@ -99,13 +104,22 @@ public class RepositoryEditorPresenter {
         repositoryService.call(new RemoteCallback<RepositoryInfo>() {
             @Override
             public void callback(final RepositoryInfo repo) {
-                root = repo.getRoot();
-                view.setRepositoryInfo(repo.getAlias(),
-                                       repo.getOwner(),
-                                       !repositoryController.canUpdateRepository(repo.getId()),
-                                       repo.getPublicURIs(),
-                                       CoreConstants.INSTANCE.Empty(),
-                                       repo.getInitialVersionList());
+
+                projectService.call(
+                        new RemoteCallback<WorkspaceProject>() {
+                            @Override
+                            public void callback(final WorkspaceProject workspaceProject) {
+                                root = repo.getRoot();
+                                view.setRepositoryInfo(repo.getAlias(),
+                                                       repo.getOwner(),
+                                                       !projectController.canUpdateProject(workspaceProject),
+                                                       repo.getPublicURIs(),
+                                                       CoreConstants.INSTANCE.Empty(),
+                                                       repo.getInitialVersionList());
+                            }
+                        }
+
+                ).resolveProjectByRepositoryAlias(repo.getAlias());
             }
         }).getRepositoryInfo(alias);
     }

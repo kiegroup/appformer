@@ -30,6 +30,7 @@ import org.guvnor.structure.repositories.PullRequestAlreadyExistsException;
 import org.guvnor.structure.repositories.PullRequestService;
 import org.guvnor.structure.repositories.PullRequestStatus;
 import org.guvnor.structure.repositories.RepositoryNotFoundException;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.impl.GitMetadataImpl;
 import org.guvnor.structure.repositories.impl.PullRequestImpl;
 import org.junit.Before;
@@ -59,9 +60,6 @@ public class PullRequestServiceTest {
     private ObjectStorage storage;
     private Map<String, GitMetadataImpl> metadatas;
 
-    @Mock
-    private ConfiguredRepositories configuredRepositories;
-
     @Before
     public void setUp() throws Exception {
         metadatas = new HashMap<>();
@@ -69,7 +67,7 @@ public class PullRequestServiceTest {
 
         this.service = new PullRequestServiceImpl(metadataStore,
                                                   ioService,
-                                                  configuredRepositories);
+                                                  mock(RepositoryService.class));
 
         doAnswer(invocationOnMock -> {
             String key = invocationOnMock.getArgumentAt(0,

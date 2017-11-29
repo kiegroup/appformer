@@ -17,6 +17,7 @@
 package org.guvnor.structure.organizationalunit;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.guvnor.structure.repositories.Repository;
 import org.jboss.errai.common.client.api.Caller;
@@ -192,6 +193,13 @@ public class OrganizationalUnitServiceCallerMock
         @Override
         public OrganizationalUnit getParentOrganizationalUnit(Repository repository) {
             OrganizationalUnit result = organizationalUnitService.getParentOrganizationalUnit(repository);
+            remoteCallback.callback(result);
+            return result;
+        }
+
+        @Override
+        public List<OrganizationalUnit> getOrganizationalUnits(Repository repository) {
+            List<OrganizationalUnit> result = organizationalUnitService.getOrganizationalUnits(repository);
             remoteCallback.callback(result);
             return result;
         }

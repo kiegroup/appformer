@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -35,6 +34,7 @@ import org.guvnor.structure.repositories.PullRequestService;
 import org.guvnor.structure.repositories.PullRequestStatus;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryNotFoundException;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.impl.GitMetadataImpl;
 import org.guvnor.structure.repositories.impl.PullRequestImpl;
 import org.slf4j.Logger;
@@ -46,25 +46,25 @@ import org.uberfire.java.nio.file.Path;
 
 import static java.lang.Integer.min;
 import static java.util.stream.Collectors.toMap;
-import static org.uberfire.backend.server.util.Paths.convert;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotEmpty;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.backend.server.util.Paths.convert;
 
 public class PullRequestServiceImpl implements PullRequestService {
 
     private final GitMetadataStore metadataStore;
     private final IOService ioService;
-    private final ConfiguredRepositories configuredRepositories;
+    private RepositoryService repositoryService;
 
     private Logger logger = LoggerFactory.getLogger(PullRequestServiceImpl.class);
 
     @Inject
-    public PullRequestServiceImpl(GitMetadataStore metadataStore,
-                                  @Named("ioStrategy") IOService ioService,
-                                  ConfiguredRepositories configuredRepositories) {
+    public PullRequestServiceImpl(final GitMetadataStore metadataStore,
+                                  final @Named("ioStrategy") IOService ioService,
+                                  final RepositoryService repositoryService) {
         this.metadataStore = metadataStore;
         this.ioService = ioService;
-        this.configuredRepositories = configuredRepositories;
+        this.repositoryService = repositoryService;
     }
 
     @Override
@@ -283,12 +283,12 @@ public class PullRequestServiceImpl implements PullRequestService {
     @Override
     public List<FileDiff> diff(final PullRequest pullRequest) {
 
-        final Repository repository = configuredRepositories.getRepositoryByRepositoryAlias(pullRequest.getTargetRepository());
+        final Repository repository = repositoryService.getRepository(pullRequest.getTargetRepository());
         this.createHiddenBranch(pullRequest);
         String diff = String.format("diff:%s,%s",
                                     pullRequest.getTargetBranch(),
                                     this.buildHiddenBranchName(pullRequest));
-        final List<FileDiff> diffs = (List<FileDiff>) this.ioService.readAttributes(convert(repository.getRoot()),
+        final List<FileDiff> diffs = (List<FileDiff>) this.ioService.readAttributes(convert(repository.getBranch(pullRequest.getSourceBranch()).get().getPath()),
                                                                                     diff);
         this.deleteHiddenBranch(pullRequest);
         return diffs;

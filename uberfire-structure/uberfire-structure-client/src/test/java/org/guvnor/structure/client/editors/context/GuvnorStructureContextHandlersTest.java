@@ -16,6 +16,9 @@
 
 package org.guvnor.structure.client.editors.context;
 
+import java.util.HashMap;
+
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.NewRepositoryEvent;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
 import org.guvnor.structure.repositories.RepositoryService;
@@ -25,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.mocks.CallerMock;
 
 import static org.junit.Assert.*;
@@ -72,6 +76,11 @@ public class GuvnorStructureContextHandlersTest {
         context.addGuvnorStructureContextChangeHandler(handler);
 
         final GitRepository newRepository = new GitRepository();
+        final HashMap<String, Branch> branches = new HashMap<>();
+        branches.put("master",
+                     new Branch("master",
+                                mock(Path.class)));
+        newRepository.setBranches(branches);
 
         context.onNewRepository(new NewRepositoryEvent(newRepository));
 

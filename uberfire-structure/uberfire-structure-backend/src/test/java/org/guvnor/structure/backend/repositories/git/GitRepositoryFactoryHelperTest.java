@@ -145,7 +145,7 @@ public class GitRepositoryFactoryHelperTest {
 
         assertEquals(3,
                      repository.getBranches().size());
-        assertTrue(repository.getRoot().toURI().contains("master"));
+        assertTrue(repository.getDefaultBranch().get().getPath().toURI().contains("master"));
     }
 
     private Path createPath(String uri) {
