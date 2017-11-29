@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-showcase</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>7.6.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-client-webapp</artifactId>
@@ -90,6 +90,11 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-preferences-client</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
     </dependency>
 
     <dependency>

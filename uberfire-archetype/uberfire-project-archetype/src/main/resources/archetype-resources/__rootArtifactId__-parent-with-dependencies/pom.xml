@@ -97,8 +97,8 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.uberfire</groupId>
-        <artifactId>uberfire-bom</artifactId>
+        <groupId>org.appformer</groupId>
+        <artifactId>appformer-bom</artifactId>
         <type>pom</type>
         <version>\${version.org.uberfire}</version>
         <scope>import</scope>
@@ -119,8 +119,8 @@
         <!-- Using \${uberfire.version} instead of \${project.version} enables easier way to create hot fixes
              (one-off patches). This pom is a parent for all uberfire modules, so when version is changed in
              one of them, the \${project.version} property changes too and therefore also required version of
-             uberfire-bom. Usage of  this property makes it possible to change version of the (sub)module
-             and still use the original version of uberfire-bom. -->
+             appformer-bom. Usage of  this property makes it possible to change version of the (sub)module
+             and still use the original version of appformer-bom. -->
         <version>\${version}</version>
         <scope>import</scope>
       </dependency>
