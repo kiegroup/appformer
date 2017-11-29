@@ -26,7 +26,7 @@ public class CreateOrganizationalUnitRequest extends JobRequest {
     private String owner;
     private String defaultGroupId;
     private String description;
-    private List<String> repositories;
+    private List<String> projects;
 
     public String getOrganizationalUnitName() {
         return organizationalUnitName;
@@ -60,11 +60,11 @@ public class CreateOrganizationalUnitRequest extends JobRequest {
         this.description = description;
     }
 
-    public List<String> getRepositories() {
-        return repositories;
+    public List<String> getProjects() {
+        return projects;
     }
 
-    public void setRepositories(List<String> repositories) {
-        this.repositories = repositories;
+    public void setProjects(List<String> projects) {
+        this.projects = projects;
     }
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -30,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.annotations.Customizable;
 import org.uberfire.backend.server.io.object.ObjectStorage;
+import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.file.FileVisitResult;
@@ -44,6 +44,7 @@ import org.uberfire.preferences.shared.impl.PreferenceScopeResolutionStrategyInf
 import org.uberfire.preferences.shared.impl.PreferenceScopedValue;
 import org.uberfire.preferences.shared.impl.exception.InvalidPreferenceScopeException;
 import org.uberfire.rpc.SessionInfo;
+import org.uberfire.spaces.SpacesAPI;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 import static org.uberfire.java.nio.file.Files.walkFileTree;
@@ -54,6 +55,9 @@ public class PreferenceStorageImpl implements PreferenceStorage {
     public static final String FILE_FORMAT = ".preferences";
     public static final int FILE_FORMAT_SIZE = FILE_FORMAT.length();
     private static final Logger logger = LoggerFactory.getLogger(PreferenceStorageImpl.class);
+
+    private SpacesAPIImpl spaces;
+
     private IOService ioService;
 
     private SessionInfo sessionInfo;
@@ -72,18 +76,21 @@ public class PreferenceStorageImpl implements PreferenceStorage {
                                  final SessionInfo sessionInfo,
                                  @Customizable final PreferenceScopeTypes scopeTypes,
                                  final PreferenceScopeFactory scopeFactory,
-                                 final ObjectStorage objectStorage) {
+                                 final ObjectStorage objectStorage,
+                                 final SpacesAPIImpl spaces) {
         this.ioService = ioService;
         this.sessionInfo = sessionInfo;
         this.scopeTypes = scopeTypes;
         this.scopeFactory = scopeFactory;
         this.objectStorage = objectStorage;
+        this.spaces = spaces;
     }
 
     @PostConstruct
     public void init() {
-        final String rootPath = "git://preferences";
-        objectStorage.init(rootPath);
+        objectStorage.init(spaces.resolveFileSystemURI(SpacesAPI.Scheme.GIT,
+                                                       SpacesAPI.DEFAULT_SPACE,
+                                                       "preferences"));
     }
 
     @Override

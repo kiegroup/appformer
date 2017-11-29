@@ -17,10 +17,8 @@ package org.uberfire.backend.server.authz;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -29,6 +27,7 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.authz.AuthorizationPolicyStorage;
+import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.base.options.CommentedOption;
@@ -41,6 +40,7 @@ import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.security.authz.AuthorizationPolicy;
 import org.uberfire.security.authz.PermissionManager;
 import org.uberfire.security.impl.authz.AuthorizationPolicyBuilder;
+import org.uberfire.spaces.SpacesAPI;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 import static org.uberfire.java.nio.file.Files.walkFileTree;
@@ -54,6 +54,7 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
     private Logger logger = LoggerFactory.getLogger(AuthorizationPolicyVfsStorage.class);
 
     private PermissionManager permissionManager;
+    private SpacesAPIImpl spaces;
     private IOService ioService;
     private FileSystem fileSystem;
     private Path root;
@@ -63,9 +64,11 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
 
     @Inject
     public AuthorizationPolicyVfsStorage(@Named("configIO") IOService ioService,
-                                         PermissionManager permissionManager) {
+                                         PermissionManager permissionManager,
+                                         SpacesAPIImpl spaces) {
         this.ioService = ioService;
         this.permissionManager = permissionManager;
+        this.spaces = spaces;
     }
 
     @PostConstruct
@@ -89,7 +92,9 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
 
     public void initFileSystem() {
         try {
-            fileSystem = ioService.newFileSystem(URI.create("default://security"),
+            fileSystem = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.DEFAULT,
+                                                                             SpacesAPI.DEFAULT_SPACE,
+                                                                             "security"),
                                                  new HashMap<String, Object>() {{
                                                      put("init",
                                                          Boolean.TRUE);
@@ -97,7 +102,9 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
                                                          Boolean.TRUE);
                                                  }});
         } catch (FileSystemAlreadyExistsException e) {
-            fileSystem = ioService.getFileSystem(URI.create("default://security"));
+            fileSystem = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.DEFAULT,
+                                                                             SpacesAPI.DEFAULT_SPACE,
+                                                                             "security"));
         }
         this.root = fileSystem.getRootDirectories().iterator().next();
     }

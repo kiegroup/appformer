@@ -20,15 +20,15 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class InstallProjectRequest extends JobRequest {
 
-    private String repositoryName;
+    private String organizationalUnitName;
     private String projectName;
 
-    public String getRepositoryName() {
-        return repositoryName;
+    public String getOrganizationalUnitName() {
+        return organizationalUnitName;
     }
 
-    public void setRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
+    public void setOrganizationalUnitName(String organizationalUnitName) {
+        this.organizationalUnitName = organizationalUnitName;
     }
 
     public String getProjectName() {
