@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-# Updates the version for all Uberfire modules
+# Updates the version for all appformer modules
 
 initializeWorkingDirAndScriptDir() {
     # Set working directory and remove all symbolic links
@@ -26,7 +26,7 @@ mvnVersionsSet() {
 }
 
 initializeWorkingDirAndScriptDir
-uberfireTopLevelDir="$scriptDir/../.."
+appformerTopLevelDir="$scriptDir/../.."
 
 if [ $# != 1 ] ; then
     echo
@@ -42,11 +42,11 @@ newVersion=$1
 
 startDateTime=`date +%s`
 
-cd $uberfireTopLevelDir
+cd $appformerTopLevelDir
 mvnVersionsSet $newVersion
 
 # fix leftovers not covered by the first run
-cd $uberfireTopLevelDir/uberfire-bom
+cd $appformerTopLevelDir/uberfire-bom
 mvnVersionsSet $newVersion
 
 endDateTime=`date +%s`
