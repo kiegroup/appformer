@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
@@ -122,8 +122,6 @@ public class WorkbenchMegaMenuStandalonePresenterTest {
         final String perspectiveId = "perspectiveId";
         final String label = "perspectiveLabel";
         final Menus menus = MenuFactory.newSimpleItem(label).perspective(perspectiveId).endMenu().build();
-        when(authzManager.authorize(menus.getItems().get(0),
-                                    identity)).thenReturn(true);
 
         presenter.addMenus(menus);
 
@@ -146,7 +144,6 @@ public class WorkbenchMegaMenuStandalonePresenterTest {
         final PerspectiveActivity activity = mock(PerspectiveActivity.class);
         final PlaceRequest placeRequest = mock(PlaceRequest.class);
 
-        when(activity.getIdentifier()).thenReturn(perspectiveId);
         when(activity.getMenus()).thenReturn(contextMenus);
         when(activity.isType(ActivityResourceType.PERSPECTIVE.name())).thenReturn(true);
         when(authzManager.authorize(contextMenus.getItems().get(0),

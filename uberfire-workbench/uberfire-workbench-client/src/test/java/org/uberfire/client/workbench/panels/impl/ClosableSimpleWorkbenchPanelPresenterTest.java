@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.panels.DockingWorkbenchPanelView;
@@ -88,7 +88,6 @@ public class ClosableSimpleWorkbenchPanelPresenterTest extends AbstractDockingWo
         when(singlePartPanelHelper.hasNoParts()).thenReturn(false);
 
         WorkbenchPartPresenter part2 = mock(WorkbenchPartPresenter.class);
-        when(part2.getDefinition()).thenReturn(mock(PartDefinition.class));
 
         presenter.addPart(part2);
 

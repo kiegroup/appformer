@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.java.nio.base.FileSystemId;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
@@ -91,13 +91,9 @@ public class IOServiceSecuritySetupTest {
         final FileSystem mockfs = mock(FileSystem.class);
         final FileSystem mockedFSId = mock(FileSystem.class,
                                            withSettings().extraInterfaces(FileSystemId.class));
-        when(((FileSystemId) mockedFSId).id()).thenReturn("mockFS");
         final Path rootPath = mock(Path.class);
         when(rootPath.toUri()).thenReturn(URI.create("/"));
         when(mockfs.getRootDirectories()).thenReturn(Arrays.asList(rootPath));
-        when(mockedFSId.getRootDirectories()).thenReturn(Arrays.asList(rootPath));
-
-        when(rootPath.getFileSystem()).thenReturn(mockedFSId);
 
         assertTrue(mockFsp.authorizer.authorize(mockfs,
                                                 user));
@@ -137,7 +133,6 @@ public class IOServiceSecuritySetupTest {
         final Path rootPath = mock(Path.class);
         when(rootPath.toUri()).thenReturn(URI.create("/"));
         when(mockfs.getRootDirectories()).thenReturn(Arrays.asList(rootPath));
-        when(mockedFSId.getRootDirectories()).thenReturn(Arrays.asList(rootPath));
         when(rootPath.getFileSystem()).thenReturn(mockedFSId);
 
         FileSystemUser fileSystemUser = installedAuthenticator.authenticate("fake",

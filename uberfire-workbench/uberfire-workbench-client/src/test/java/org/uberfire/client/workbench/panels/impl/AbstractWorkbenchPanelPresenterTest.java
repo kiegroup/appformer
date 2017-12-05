@@ -72,11 +72,7 @@ public abstract class AbstractWorkbenchPanelPresenterTest {
 
     @Before
     public void setUp() {
-        when(mockPerspectiveManager.getLivePerspectiveDefinition()).thenReturn(panelManagerPerspectiveDefinition);
         panelManagerPerspectiveDefinition.setContextDefinition(perspectiveContextDefinition);
-        when(mockActivityManager.getActivity(ContextActivity.class,
-                                             perspectiveContextDefinition.getPlace())).thenReturn(perspectiveContextActivity);
-        when(mockPartView.getPresenter()).thenReturn(mockPartPresenter);
         when(mockPartPresenter.getDefinition()).thenReturn(partPresenterPartDefinition);
     }
 

@@ -24,7 +24,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 
@@ -99,7 +99,7 @@ public class CallerMockTest {
 
     @Test
     public void callerSampleCallBackPrimitiveTypeTest() throws SampleException {
-        when(sampleTarget.targetPrimitiveType()).thenThrow(SampleException.class);
+        when(sampleTarget.targetPrimitiveType()).thenThrow(SampleRuntimeException.class);
 
         callerMock = new CallerMock<SampleTarget>(sampleTarget);
         callerSample = new CallerSampleClient(callerMock,
@@ -110,7 +110,7 @@ public class CallerMockTest {
 
         verify(sampleTarget).targetPrimitiveType();
         verify(errorCallBack).error(anyString(),
-                                    any(SampleException.class));
+                                    any(SampleRuntimeException.class));
         verify(successCallBack,
                never()).callback(anyString());
     }
@@ -201,6 +201,10 @@ public class CallerMockTest {
     }
 
     private class SampleException extends Exception {
+
+    }
+
+    private class SampleRuntimeException extends RuntimeException {
 
     }
 }
