@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-parent</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>7.6.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -31,6 +31,10 @@
 
   <name>Uberfire Commons</name>
   <description>Collection of reusable (not depending on any other UberFire module) components for Uberfire.</description>
+
+  <properties>
+    <java.module.name>org.uberfire.commons</java.module.name>
+  </properties>
 
   <dependencies>
 
