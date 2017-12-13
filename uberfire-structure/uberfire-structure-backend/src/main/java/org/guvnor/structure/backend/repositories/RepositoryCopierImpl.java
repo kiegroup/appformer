@@ -143,6 +143,9 @@ public class RepositoryCopierImpl
                     Files.copy(path,
                                resolve,
                                StandardCopyOption.REPLACE_EXISTING);
+
+
+
                 } catch (FileAlreadyExistsException x) {
                     //Swallow
                     x.printStackTrace();
@@ -175,7 +178,9 @@ public class RepositoryCopierImpl
                 Files.copy(src,
                            tgt,
                            StandardCopyOption.REPLACE_EXISTING);
-            } catch (FileAlreadyExistsException x) {
+//            } catch (FileAlreadyExistsException x) {
+            } catch (Exception x) {
+                x.printStackTrace();
                 //Swallow
             }
             return FileVisitResult.CONTINUE;
