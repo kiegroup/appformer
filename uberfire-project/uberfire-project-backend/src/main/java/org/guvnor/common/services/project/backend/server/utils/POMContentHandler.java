@@ -134,6 +134,7 @@ public class POMContentHandler {
         POM pomModel = new POM(
                 model.getName(),
                 model.getDescription(),
+                model.getUrl(),
                 new GAV(
                         (model.getGroupId() == null ? model.getParent().getGroupId() : model.getGroupId()),
                         (model.getArtifactId() == null ? model.getParent().getArtifactId() : model.getArtifactId()),

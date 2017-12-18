@@ -45,6 +45,7 @@ public class POMContentHandlerTest {
         gav.setVersion("0.0.1");
         final POM pom = new POM("name",
                                 "description",
+                                "url",
                                 gav);
         final String xml = handler.toString(pom);
 
