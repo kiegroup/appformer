@@ -39,14 +39,14 @@ class VersionServiceCallerMock
     }
 
     @Override
-    public VersionService call(RemoteCallback<?> remoteCallback) {
+    public <S> VersionService call(RemoteCallback<S> remoteCallback) {
         service.setCallback(remoteCallback);
         return service;
     }
 
     @Override
-    public VersionService call(RemoteCallback<?> remoteCallback,
-                               ErrorCallback<?> errorCallback) {
+    public <S, E> VersionService call(RemoteCallback<S> remoteCallback,
+                               ErrorCallback<E> errorCallback) {
         service.setCallback(remoteCallback);
         return service;
     }

@@ -51,6 +51,7 @@ public class POMContentHandler {
         model.setDescription(pom.getDescription());
         model.setArtifactId(pom.getGav().getArtifactId());
         model.setModelVersion(pom.getModelVersion());
+        model.setUrl(pom.getUrl());
 
         model.setGroupId(pom.getGav().getGroupId());
         model.setVersion(pom.getGav().getVersion());

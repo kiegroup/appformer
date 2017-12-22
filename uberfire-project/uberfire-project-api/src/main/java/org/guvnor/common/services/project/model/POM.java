@@ -211,6 +211,8 @@ public class POM {
         result = ~~result;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = ~~result;
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = ~~result;
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = ~~result;
         result = 31 * result + (packaging != null ? packaging.hashCode() : 0);
