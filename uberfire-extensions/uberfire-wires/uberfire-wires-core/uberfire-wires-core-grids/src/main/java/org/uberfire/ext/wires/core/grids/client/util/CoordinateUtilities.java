@@ -17,6 +17,7 @@ package org.uberfire.ext.wires.core.grids.client.util;
 
 import com.ait.lienzo.client.core.event.INodeXYEvent;
 import com.ait.lienzo.client.core.shape.Group;
+import com.ait.lienzo.client.core.shape.Viewport;
 import com.ait.lienzo.client.core.types.Point2D;
 import com.ait.lienzo.client.core.types.Transform;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
@@ -40,9 +41,13 @@ public class CoordinateUtilities {
      */
     public static Point2D convertDOMToGridCoordinate(final GridWidget view,
                                                      final Point2D point) {
-        Transform transform = view.getViewport().getTransform();
+        Viewport viewport = view.getViewport();
+        Transform transform = viewport != null ? viewport.getTransform() : null;
         if (transform == null) {
-            view.getViewport().setTransform(transform = new Transform());
+            transform = new Transform();
+        }
+        if (viewport != null) {
+            view.getViewport().setTransform(transform);
         }
 
         transform = transform.copy().getInverse();
@@ -50,7 +55,8 @@ public class CoordinateUtilities {
                                       point.getY());
         transform.transform(p,
                             p);
-        return p.add(view.getLocation().mul(-1.0));
+        return p.add(new Point2D(view.getAbsoluteX(),
+                                 view.getAbsoluteY()).mul(-1.0));
     }
 
     /**
@@ -82,7 +88,7 @@ public class CoordinateUtilities {
             offsetY = offsetY - row.getHeight();
             uiRowIndex++;
         }
-        if (uiRowIndex < 0 || uiRowIndex > gridModel.getRowCount() - 1) {
+        if (uiRowIndex > gridModel.getRowCount() - 1) {
             return null;
         }
 
