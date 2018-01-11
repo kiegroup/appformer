@@ -47,14 +47,14 @@ public class RepositoryServiceCallerMock
     }
 
     @Override
-    public <S> RepositoryService call(RemoteCallback<S> remoteCallback) {
+    public RepositoryService call(RemoteCallback<?> remoteCallback) {
         return call(remoteCallback,
                     null);
     }
 
     @Override
-    public <S, E> RepositoryService call(RemoteCallback<S> remoteCallback,
-                                  ErrorCallback<E> errorCallback) {
+    public RepositoryService call(RemoteCallback<?> remoteCallback,
+                                  ErrorCallback<?> errorCallback) {
         this.remoteCallback = remoteCallback;
         return repositoryServiceWrapper;
     }

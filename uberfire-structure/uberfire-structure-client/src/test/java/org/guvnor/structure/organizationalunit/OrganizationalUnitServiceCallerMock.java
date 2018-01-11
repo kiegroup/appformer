@@ -51,14 +51,14 @@ public class OrganizationalUnitServiceCallerMock
     }
 
     @Override
-    public <S> OrganizationalUnitService call(RemoteCallback<S> remoteCallback) {
+    public OrganizationalUnitService call(RemoteCallback<?> remoteCallback) {
         return call(remoteCallback,
                     null);
     }
 
     @Override
-    public <S, E> OrganizationalUnitService call(RemoteCallback<S> remoteCallback,
-                                          ErrorCallback<E> errorCallback) {
+    public OrganizationalUnitService call(RemoteCallback<?> remoteCallback,
+                                          ErrorCallback<?> errorCallback) {
         this.remoteCallback = remoteCallback;
         return organizationalUnitServiceWrapper;
     }

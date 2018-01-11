@@ -41,7 +41,7 @@ public class CallerMock<T> implements Caller<T> {
     }
 
     @Override
-    public <S> T call(RemoteCallback<S> remoteCallback) {
+    public T call(RemoteCallback<?> remoteCallback) {
         final CallerProxy localProxy = ((CallerProxy) Proxy.getInvocationHandler(callerProxy));
         localProxy.setSuccessCallBack((RemoteCallback<Object>) remoteCallback);
         localProxy.setErrorCallBack(null);
@@ -49,8 +49,8 @@ public class CallerMock<T> implements Caller<T> {
     }
 
     @Override
-    public <S, E> T call(RemoteCallback<S> remoteCallback,
-                  ErrorCallback<E> errorCallback) {
+    public T call(RemoteCallback<?> remoteCallback,
+                  ErrorCallback<?> errorCallback) {
         final CallerProxy localProxy = ((CallerProxy) Proxy.getInvocationHandler(callerProxy));
         localProxy.setSuccessCallBack((RemoteCallback<Object>) remoteCallback);
         localProxy.setErrorCallBack((ErrorCallback<Object>) errorCallback);

@@ -193,14 +193,14 @@ public class VersionHistoryPresenterTest {
         }
 
         @Override
-        public <S> VersionService call(RemoteCallback<S> remoteCallback) {
+        public VersionService call(RemoteCallback<?> remoteCallback) {
             callback = remoteCallback;
             return service;
         }
 
         @Override
-        public <S, E> VersionService call(RemoteCallback<S> remoteCallback,
-                                   ErrorCallback<E> errorCallback) {
+        public VersionService call(RemoteCallback<?> remoteCallback,
+                                   ErrorCallback<?> errorCallback) {
             callback = remoteCallback;
             return service;
         }
