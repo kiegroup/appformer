@@ -197,7 +197,6 @@ public class SyncPromisesTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testReduceLazilyChainingWithNoInterruptions() {
 
         final AtomicInteger sum = new AtomicInteger(0);
