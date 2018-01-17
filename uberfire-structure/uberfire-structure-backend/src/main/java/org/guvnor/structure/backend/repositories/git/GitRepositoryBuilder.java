@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.PublicURI;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.impl.DefaultPublicURI;
@@ -29,7 +30,6 @@ import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigItem;
 import org.guvnor.structure.server.config.PasswordService;
 import org.guvnor.structure.server.config.SecureConfigItem;
-import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
@@ -92,12 +92,9 @@ public class GitRepositoryBuilder {
     }
 
     private void setBranches(final FileSystem fileSystem) {
-        final Map<String, Path> branches = getBranches(fileSystem);
+        final Map<String, Branch> branches = getBranches(fileSystem);
 
         repo.setBranches(branches);
-
-        repo.setRoot(getDefaultRoot(fileSystem,
-                                    branches));
     }
 
     private void addEnvironmentParameters(final Collection<ConfigItem> items) {
@@ -110,17 +107,6 @@ public class GitRepositoryBuilder {
                                              item.getValue());
             }
         }
-    }
-
-    private org.uberfire.backend.vfs.Path getDefaultRoot(final FileSystem fileSystem,
-                                                         final Map<String, org.uberfire.backend.vfs.Path> branches) {
-        org.uberfire.backend.vfs.Path defaultRoot;
-        if (branches.containsKey("master")) {
-            defaultRoot = branches.get("master");
-        } else {
-            defaultRoot = convert(fileSystem.getRootDirectories().iterator().next());
-        }
-        return defaultRoot;
     }
 
     private FileSystem createFileSystem(final GitRepository repo) {
@@ -159,12 +145,13 @@ public class GitRepositoryBuilder {
      * @param fs
      * @return
      */
-    private Map<String, org.uberfire.backend.vfs.Path> getBranches(final FileSystem fs) {
-        Map<String, org.uberfire.backend.vfs.Path> branches = new HashMap<String, org.uberfire.backend.vfs.Path>();
+    private Map<String, Branch> getBranches(final FileSystem fs) {
+        final Map<String, Branch> branches = new HashMap<>();
         for (final org.uberfire.java.nio.file.Path path : fs.getRootDirectories()) {
-            String gitBranch = getBranchName(path);
-            branches.put(gitBranch,
-                         convert(path));
+            final String branchName = getBranchName(path);
+            branches.put(branchName,
+                         new Branch(branchName,
+                                    convert(path)));
         }
         return branches;
     }

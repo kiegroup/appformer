@@ -56,10 +56,6 @@ public interface RepositoryService {
                                 final String alias,
                                 final RepositoryEnvironmentConfigurations configurations) throws RepositoryAlreadyExistsException;
 
-    Repository createRepository(final String scheme,
-                                final String alias,
-                                final RepositoryEnvironmentConfigurations configurations) throws RepositoryAlreadyExistsException;
-
     String normalizeRepositoryName(final String name);
 
     boolean validateRepositoryName(final String name);
@@ -71,7 +67,4 @@ public interface RepositoryService {
                      final String group);
 
     void removeRepository(final String alias);
-
-    Repository updateRepositoryConfiguration(final Repository repository,
-                                             final RepositoryEnvironmentConfigurations repositoryConfigurationonfig);
 }

@@ -42,12 +42,10 @@ public class DeleteProjectCmd extends AbstractJobCommand {
         JobResult result = null;
         try {
             result = helper.deleteProject(jobRequest.getJobId(),
-                                          jobRequest.getRepositoryName(),
                                           jobRequest.getProjectName());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
-            logger.debug("-----deleteProject--- , repositoryName: {}, project : {} [{}]",
-                         jobRequest.getRepositoryName(),
+            logger.debug("-----deleteProject--- , project : {} [{}]",
                          jobRequest.getProjectName(),
                          status);
         }

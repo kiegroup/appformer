@@ -23,13 +23,13 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class OrganizationalUnit extends UpdateOrganizationalUnit {
 
-    private List<String> repositories;
+    private List<String> projects;
 
-    public List<String> getRepositories() {
-        return repositories;
+    public List<String> getProjects() {
+        return projects;
     }
 
-    public void setRepositories(List<String> repositories) {
-        this.repositories = repositories;
+    public void setProjects(List<String> projects) {
+        this.projects = projects;
     }
 }

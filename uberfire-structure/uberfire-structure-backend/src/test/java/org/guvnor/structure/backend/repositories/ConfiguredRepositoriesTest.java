@@ -19,7 +19,7 @@ package org.guvnor.structure.backend.repositories;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.guvnor.structure.repositories.NewBranchEvent;
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.guvnor.structure.server.config.ConfigGroup;
@@ -65,7 +65,7 @@ public class ConfiguredRepositoriesTest {
                                                             repositoryFactory,
                                                             SystemRepository.SYSTEM_REPO);
 
-        configuredRepositories.loadRepositories();
+        configuredRepositories.reloadRepositories();
     }
 
     private ConfigGroup addRepository(final String alias,
@@ -73,13 +73,14 @@ public class ConfiguredRepositoriesTest {
         final ConfigGroup configGroup = new ConfigGroup();
         final GitRepository repository = new GitRepository(alias);
 
-        final HashMap<String, Path> branchMap = new HashMap<>();
+        final HashMap<String, Branch> branchMap = new HashMap<>();
+
         for (String branch : branches) {
             branchMap.put(branch,
-                          mock(Path.class));
+                          new Branch(branch,
+                                     mock(Path.class)));
         }
         repository.setBranches(branchMap);
-        repository.setRoot(branchMap.get("master"));
 
         when(repositoryFactory.newRepository(configGroup)).thenReturn(repository);
 
@@ -97,7 +98,7 @@ public class ConfiguredRepositoriesTest {
         final Repository single = configuredRepositories.getRepositoryByRepositoryAlias("single");
         assertEquals(1,
                      single.getBranches().size());
-        assertNotNull(single.getBranchRoot("master"));
+        assertNotNull(single.getBranch("master"));
     }
 
     @Test
@@ -105,14 +106,14 @@ public class ConfiguredRepositoriesTest {
         final Repository single = configuredRepositories.getRepositoryByRepositoryAlias("multibranch");
         assertEquals(3,
                      single.getBranches().size());
-        assertNotNull(single.getBranchRoot("master"));
-        assertNotNull(single.getBranchRoot("dev"));
-        assertNotNull(single.getBranchRoot("release"));
+        assertNotNull(single.getBranch("master"));
+        assertNotNull(single.getBranch("dev"));
+        assertNotNull(single.getBranch("release"));
     }
 
     @Test
     public void testRemoveSingle() throws Exception {
-        final Path root = configuredRepositories.getRepositoryByRepositoryAlias("single").getRoot();
+        final Path root = configuredRepositories.getRepositoryByRepositoryAlias("single").getDefaultBranch().get().getPath();
 
         assertNotNull(configuredRepositories.getRepositoryByRootPath(root));
 
@@ -125,36 +126,14 @@ public class ConfiguredRepositoriesTest {
 
     @Test
     public void testRemoveMultiBranch() throws Exception {
-        final Path devRoot = configuredRepositories.getRepositoryByRepositoryAlias("multibranch").getBranchRoot("dev");
+        final Branch devBranch = configuredRepositories.getRepositoryByRepositoryAlias("multibranch").getBranch("dev").get();
 
-        assertNotNull(configuredRepositories.getRepositoryByRootPath(devRoot));
+        assertNotNull(configuredRepositories.getRepositoryByRootPath(devBranch.getPath()));
 
         assertNotNull(configuredRepositories.remove("multibranch"));
 
         assertFalse(configuredRepositories.containsAlias("multibranch"));
 
-        assertNull(configuredRepositories.getRepositoryByRootPath(devRoot));
-    }
-
-    @Test
-    public void testNewBranch() throws Exception {
-        final Path branchPath = mock(Path.class);
-        final NewBranchEvent changedEvent = new NewBranchEvent("single",
-                                                               "mybranch",
-                                                               branchPath,
-                                                               System.currentTimeMillis());
-        configuredRepositories.onNewBranch(changedEvent);
-
-        // Root for both is the default root
-        assertEquals(configuredRepositories.getRepositoryByRepositoryAlias("single").getRoot(),
-                     configuredRepositories.getRepositoryByRootPath(branchPath).getRoot());
-
-        final Repository single = configuredRepositories.getRepositoryByRepositoryAlias("single");
-
-        assertEquals(2,
-                     single.getBranches().size());
-
-        assertEquals(branchPath,
-                     single.getBranchRoot("mybranch"));
+        assertNull(configuredRepositories.getRepositoryByRootPath(devBranch.getPath()));
     }
 }

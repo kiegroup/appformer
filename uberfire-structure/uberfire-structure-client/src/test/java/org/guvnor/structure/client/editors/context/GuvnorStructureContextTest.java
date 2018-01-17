@@ -17,9 +17,11 @@
 package org.guvnor.structure.client.editors.context;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.NewRepositoryEvent;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
@@ -29,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.mocks.CallerMock;
 
@@ -144,8 +147,12 @@ public class GuvnorStructureContextTest {
     public void testReLoadPicksUpRemovedBranch() throws Exception {
 
         // This deletes master branch
-        when(repositories.get(0).getBranches()).thenReturn(Arrays.asList("dev"));
-        when(repositories.get(0).getDefaultBranch()).thenReturn("dev");
+        final List<Branch> branchList = new ArrayList<>();
+        final Branch devBranch = new Branch("dev",
+                                            mock(Path.class));
+        branchList.add(devBranch);
+        when(repositories.get(0).getBranches()).thenReturn(branchList);
+        when(repositories.get(0).getDefaultBranch()).thenReturn(Optional.of(devBranch));
 
         context.getRepositories(callback);
 

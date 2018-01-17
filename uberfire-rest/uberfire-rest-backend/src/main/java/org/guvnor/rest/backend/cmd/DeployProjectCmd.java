@@ -42,12 +42,10 @@ public class DeployProjectCmd extends AbstractJobCommand {
         JobResult result = null;
         try {
             result = helper.deployProject(jobRequest.getJobId(),
-                                          jobRequest.getRepositoryName(),
                                           jobRequest.getProjectName());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
-            logger.debug("-----deployProject--- , repositoryName: {}, project name: {} [{}]",
-                         jobRequest.getRepositoryName(),
+            logger.debug("-----deployProject--- , project name: {} [{}]",
                          jobRequest.getProjectName(),
                          status);
         }

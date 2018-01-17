@@ -17,15 +17,19 @@ package org.guvnor.rest.backend;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import javax.enterprise.event.Event;
 
-import org.guvnor.common.services.project.model.Project;
-import org.guvnor.common.services.project.service.ProjectService;
+import org.guvnor.common.services.project.model.Module;
+import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.common.services.project.service.ModuleService;
+import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.common.services.shared.test.Failure;
 import org.guvnor.common.services.shared.test.TestResultMessage;
 import org.guvnor.common.services.shared.test.TestService;
 import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.junit.Before;
@@ -57,17 +61,21 @@ public class JobRequestHelperTest {
     @Mock
     private RepositoryService repositoryService;
     @Mock
-    private ProjectService<MyProject> projectService;
+    private ModuleService<MyModule> moduleService;
+    @Mock
+    private WorkspaceProjectService workspaceProjectService;
+    @Mock
+    private WorkspaceProject workspaceProject;
 
     @Before
     public void setUp() throws Exception {
+        when(workspaceProjectService.resolveProject("project")).thenReturn(workspaceProject);
         when(repositoryService.getRepository("repositoryAlias")).thenReturn(repository);
     }
 
     @Test
     public void resourceDoesNotExist() throws Exception {
         final JobResult jobResult = helper.testProject(null,
-                                                       "repositoryAlias",
                                                        null);
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -75,16 +83,19 @@ public class JobRequestHelperTest {
 
     @Test
     public void projectDoesNotExist() throws Exception {
-        when(repository.getDefaultBranch()).thenReturn("master");
 
-        Path path = mock(Path.class);
+        final Path path = mock(Path.class);
         when(path.getFileName()).thenReturn("");
         when(path.toURI()).thenReturn("file://project/");
 
-        when(repository.getBranchRoot("master")).thenReturn(path);
+        final Branch masterBranch = new Branch("master",
+                                               path);
+
+        when(repository.getDefaultBranch()).thenReturn(Optional.of(masterBranch));
+
+        when(repository.getBranch("master")).thenReturn(Optional.of(masterBranch));
 
         final JobResult jobResult = helper.testProject(null,
-                                                       "repositoryAlias",
                                                        "project");
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -120,7 +131,6 @@ public class JobRequestHelperTest {
     private void thenExpectMessageWithStatus(final TestResultMessage message,
                                              final JobStatus status) {
         final JobResult jobResult = helper.testProject(null,
-                                                       "repositoryAlias",
                                                        "project");
 
         verify(testService).runAllTests(eq("JobRequestHelper"),
@@ -134,18 +144,10 @@ public class JobRequestHelperTest {
     }
 
     private void whenProjectExists() {
-        when(repository.getDefaultBranch()).thenReturn("master");
-
-        Path path = mock(Path.class);
-        when(path.getFileName()).thenReturn("");
-        when(path.toURI()).thenReturn("file://project/");
-
-        when(repository.getBranchRoot("master")).thenReturn(path);
-
-        when(projectService.resolveProject(any(Path.class))).thenReturn(mock(MyProject.class));
+        when(workspaceProject.getMainModule()).thenReturn(mock(MyModule.class));
     }
 
-    class MyProject extends Project {
+    class MyModule extends Module {
 
     }
 }

@@ -144,17 +144,6 @@ public class RepositoryServiceCallerMock
         }
 
         @Override
-        public Repository createRepository(final String scheme,
-                                           final String alias,
-                                           final RepositoryEnvironmentConfigurations configuration) throws RepositoryAlreadyExistsException {
-            Repository result = repositoryService.createRepository(scheme,
-                                                                   alias,
-                                                                   configuration);
-            remoteCallback.callback(result);
-            return result;
-        }
-
-        @Override
         public String normalizeRepositoryName(String name) {
             String result = repositoryService.normalizeRepositoryName(name);
             remoteCallback.callback(result);
@@ -185,15 +174,6 @@ public class RepositoryServiceCallerMock
         @Override
         public void removeRepository(String alias) {
             repositoryService.removeRepository(alias);
-        }
-
-        @Override
-        public Repository updateRepositoryConfiguration(final Repository repository,
-                                                        final RepositoryEnvironmentConfigurations config) {
-            Repository result = repositoryService.updateRepositoryConfiguration(repository,
-                                                                                config);
-            remoteCallback.callback(result);
-            return result;
         }
     }
 }

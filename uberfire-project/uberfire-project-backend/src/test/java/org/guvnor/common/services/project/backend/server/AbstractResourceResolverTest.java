@@ -22,12 +22,10 @@ import javax.enterprise.inject.Instance;
 
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.Package;
-import org.guvnor.common.services.project.model.Project;
 import org.guvnor.common.services.project.service.POMService;
-import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
-import org.guvnor.structure.server.config.ConfigurationService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,50 +44,35 @@ import static org.mockito.Mockito.*;
 public class AbstractResourceResolverTest {
 
     protected static final int PROJECT_RESOURCE_PATH_RESOLVERS_SIZE = 5;
-
-    @Mock
-    protected IOService ioService;
-
-    @Mock
-    protected POMService pomService;
-
-    @Mock
-    protected ConfigurationService configurationService;
-
-    @Mock
-    protected CommentedOptionFactory commentedOptionFactory;
-
-    @Mock
-    protected BackwardCompatibleUtil backward;
-
-    @Mock
-    protected Instance<ProjectResourcePathResolver> resourcePathResolversInstance;
-
-    protected ResourceResolver resourceResolver;
-
-    protected List<ProjectResourcePathResolver> projectResourcePathResolvers = new ArrayList<>();
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    @Mock
+    protected IOService ioService;
+    @Mock
+    protected POMService pomService;
+    @Mock
+    protected CommentedOptionFactory commentedOptionFactory;
+    @Mock
+    protected Instance<ModuleResourcePathResolver> resourcePathResolversInstance;
+    protected ResourceResolver resourceResolver;
+    protected List<ModuleResourcePathResolver> projectResourcePathResolvers = new ArrayList<>();
 
     @Before
     public void setUp() {
-        initProjectResourcePathResolvers(PROJECT_RESOURCE_PATH_RESOLVERS_SIZE);
+        initModuleResourcePathResolvers(PROJECT_RESOURCE_PATH_RESOLVERS_SIZE);
         when(resourcePathResolversInstance.iterator()).thenReturn(projectResourcePathResolvers.iterator());
 
         resourceResolver = spy(new ResourceResolver(ioService,
                                                     pomService,
-                                                    configurationService,
                                                     commentedOptionFactory,
-                                                    backward,
                                                     resourcePathResolversInstance) {
             @Override
-            public Project resolveProject(Path resource) {
+            public Module resolveModule(Path resource) {
                 return null;
             }
 
             @Override
-            public Project simpleProjectInstance(org.uberfire.java.nio.file.Path nioProjectRootPath) {
+            public Module simpleModuleInstance(org.uberfire.java.nio.file.Path nioModuleRootPath) {
                 return null;
             }
         });
@@ -102,18 +85,18 @@ public class AbstractResourceResolverTest {
         Path defaultPath = mock(Path.class);
 
         // pick one of the configured resolvers as the one that accepts the given resource type.
-        ProjectResourcePathResolver blessedProjectResourcePathResolver = projectResourcePathResolvers.get(3);
-        when(blessedProjectResourcePathResolver.accept(resourceType)).thenReturn(true);
-        when(blessedProjectResourcePathResolver.resolveDefaultPath(pkg)).thenReturn(defaultPath);
+        ModuleResourcePathResolver blessedModuleResourcePathResolver = projectResourcePathResolvers.get(3);
+        when(blessedModuleResourcePathResolver.accept(resourceType)).thenReturn(true);
+        when(blessedModuleResourcePathResolver.resolveDefaultPath(pkg)).thenReturn(defaultPath);
 
         assertEquals(defaultPath,
                      resourceResolver.resolveDefaultPath(pkg,
                                                          resourceType));
 
-        verify(blessedProjectResourcePathResolver,
+        verify(blessedModuleResourcePathResolver,
                times(1)).resolveDefaultPath(pkg);
         projectResourcePathResolvers.forEach(projectResourcePathResolver -> {
-            if (projectResourcePathResolver != blessedProjectResourcePathResolver) {
+            if (projectResourcePathResolver != blessedModuleResourcePathResolver) {
                 verify(projectResourcePathResolver,
                        never()).resolveDefaultPath(any(Package.class));
             }
@@ -124,9 +107,9 @@ public class AbstractResourceResolverTest {
     public void resolveDefaultPathWithErrors() {
         Package pkg = mock(Package.class);
         String resourceType = "any";
-        // if none of the configured ProjectResourcePathResolvers accepts the resourceType, and exception must have been
+        // if none of the configured ModuleResourcePathResolvers accepts the resourceType, and exception must have been
         // thrown.
-        expectedException.expectMessage("No ProjectResourcePathResolver has been defined for resourceType: " + resourceType);
+        expectedException.expectMessage("No ModuleResourcePathResolver has been defined for resourceType: " + resourceType);
         resourceResolver.resolveDefaultPath(pkg,
                                             resourceType);
     }
@@ -143,7 +126,7 @@ public class AbstractResourceResolverTest {
 
     @Test
     public void getDefaultWorkspacePathTest() {
-        final Project project = mock(Project.class);
+        final Module project = mock(Module.class);
 
         final POM pom = mock(POM.class);
         doReturn(pom).when(project).getPom();
@@ -168,9 +151,9 @@ public class AbstractResourceResolverTest {
                      packagePath.toURI());
     }
 
-    private void initProjectResourcePathResolvers(int size) {
+    private void initModuleResourcePathResolvers(int size) {
         for (int i = 0; i < size; i++) {
-            projectResourcePathResolvers.add(mock(ProjectResourcePathResolver.class));
+            projectResourcePathResolvers.add(mock(ModuleResourcePathResolver.class));
         }
     }
 }

@@ -17,6 +17,7 @@ package org.guvnor.structure.backend.organizationalunit;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -423,13 +424,33 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
 
     @Override
     public OrganizationalUnit getParentOrganizationalUnit(final Repository repository) {
-        for (OrganizationalUnit organizationalUnit : registeredOrganizationalUnits.values()) {
-            if (organizationalUnit.getRepositories() != null &&
-                    organizationalUnit.getRepositories().contains(repository)) {
-                return organizationalUnit;
+        for (final OrganizationalUnit organizationalUnit : registeredOrganizationalUnits.values()) {
+            if (organizationalUnit.getRepositories() != null) {
+                for (final Repository ouRepository : organizationalUnit.getRepositories()) {
+                    if (ouRepository.getAlias().equals(repository.getAlias())) {
+                        return organizationalUnit;
+                    }
+                }
             }
         }
         return null;
+    }
+
+    @Override
+    public List<OrganizationalUnit> getOrganizationalUnits(Repository repository) {
+        final ArrayList<OrganizationalUnit> result = new ArrayList<>();
+
+        for (final OrganizationalUnit organizationalUnit : registeredOrganizationalUnits.values()) {
+            if (organizationalUnit.getRepositories() != null) {
+                for (final Repository ouRepository : organizationalUnit.getRepositories()) {
+                    if (ouRepository.getAlias().equals(repository.getAlias())) {
+                        result.add(organizationalUnit);
+                    }
+                }
+            }
+        }
+
+        return Collections.unmodifiableList(result);
     }
 
     @Override

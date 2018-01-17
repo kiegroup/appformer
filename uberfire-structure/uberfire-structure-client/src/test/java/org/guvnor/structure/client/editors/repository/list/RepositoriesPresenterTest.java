@@ -22,7 +22,7 @@ import java.util.Collection;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.structure.client.editors.context.GuvnorStructureContext;
 import org.guvnor.structure.client.editors.context.GuvnorStructureContextChangeHandler;
-import org.guvnor.structure.client.security.RepositoryController;
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.NewBranchEvent;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
@@ -53,9 +53,6 @@ public class RepositoriesPresenterTest {
     private RepositoryService repositoryService;
 
     @Mock
-    private RepositoryController repositoryController;
-
-    @Mock
     private EventSourceMock<NotificationEvent> notification;
 
     private GuvnorStructureContext guvnorStructureContext;
@@ -65,10 +62,10 @@ public class RepositoriesPresenterTest {
     @Mock
     private Path branchPath;
 
-    private Repository r1 = createRepository("r1");
-    private Repository r2 = createRepository("r2");
-    private Repository r3 = createRepository("r3");
-    private Repository r4 = createRepository("r4");
+    private Repository r1;
+    private Repository r2;
+    private Repository r3;
+    private Repository r4;
 
     @Mock
     private RepositoryItemView itemView1;
@@ -92,13 +89,16 @@ public class RepositoriesPresenterTest {
 
     @Before
     public void init() {
+        this.r1 = createRepository("r1");
+        this.r2 = createRepository("r2");
+        this.r3 = createRepository("r3");
+        this.r4 = createRepository("r4");
+
         repositories = new ArrayList<>();
 
         repositories.add(r1);
         repositories.add(r2);
         repositories.add(r3);
-
-        when(repositoryController.canReadRepository(any())).thenReturn(true);
 
         this.guvnorStructureContext = new GuvnorStructureContext(new CallerMock<RepositoryService>(
                 repositoryService)) {
@@ -138,20 +138,18 @@ public class RepositoriesPresenterTest {
                                              "master");
 
         presenter = new RepositoriesPresenter(view,
-                                              guvnorStructureContext,
-                                              new CallerMock<>(repositoryService),
-                                              repositoryController);
+                                              guvnorStructureContext);
 
         when(repositoryService.getRepositories()).thenReturn(repositories);
 
         when(view.addRepository(r1,
-                                r1.getDefaultBranch())).thenReturn(itemPresenter1);
+                                "master")).thenReturn(itemPresenter1);
         when(view.addRepository(r2,
-                                r2.getDefaultBranch())).thenReturn(itemPresenter2);
+                                "master")).thenReturn(itemPresenter2);
         when(view.addRepository(r3,
-                                r3.getDefaultBranch())).thenReturn(itemPresenter3);
+                                "master")).thenReturn(itemPresenter3);
         when(view.addRepository(r4,
-                                r4.getDefaultBranch())).thenReturn(itemPresenter4);
+                                "master")).thenReturn(itemPresenter4);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -176,59 +174,29 @@ public class RepositoriesPresenterTest {
     }
 
     @Test
-    public void removeIfExistsTest() {
-        when(view.confirmDeleteRepository(r1)).thenReturn(true);
-        when(view.confirmDeleteRepository(r3)).thenReturn(false);
-
-        presenter.onStartup();
-
-        presenter.removeRepository(r1);
-        presenter.removeRepository(r3);
-
-        verify(repositoryService).removeRepository("r1");
-        verify(repositoryService,
-               never()).removeRepository("r2");
-        verify(repositoryService,
-               never()).removeRepository("r3");
-    }
-
-    @Test
-    public void addAndRemoveTest() {
-        when(view.confirmDeleteRepository(r4)).thenReturn(true);
-        presenter.onStartup();
-
-        presenter.onNewRepositoryAdded(r4);
-        presenter.removeRepository(r4);
-        presenter.onRepositoryDeleted(r4);
-
-        verify(repositoryService).removeRepository("r4");
-    }
-
-    @Test
     public void testNewBranchTest() {
+
+        final GuvnorStructureContextChangeHandler handler = mock(GuvnorStructureContextChangeHandler.class);
+
+        guvnorStructureContext.addGuvnorStructureContextChangeHandler(handler);
 
         presenter.onStartup();
 
         //Emulates the master branch was selected for the given repository prior the new branch was created.
         when(itemView1.getSelectedBranch()).thenReturn("master");
 
-        //Emulates the context receiving the new branch event for a branch created in r1.
-        guvnorStructureContext.onNewBranch(new NewBranchEvent("r1",
-                                                              "theNewBranch",
-                                                              branchPath,
-                                                              System.currentTimeMillis()));
+        final Branch theNewBranch = new Branch("theNewBranch",
+                                               branchPath);
 
-        //Verify that the view was properly populated including the new branch.
-        //one time at initialization + one time when the new branch was loaded.
-        verify(itemView1,
-               times(2)).addBranch("master");
-        //only one invocation when the new branch was loaded.
-        verify(itemView1).addBranch("theNewBranch");
-        //one time during initialization + one time when the new branch was loaded
-        verify(itemView1,
-               times(2)).setSelectedBranch("master");
-        //the new branch should have been added to the repository.
-        assertTrue(r1.getBranches().contains("theNewBranch"));
+        ((GitRepository) r1).addBranch(theNewBranch);
+
+        //Emulates the context receiving the new branch event for a branch created in r1.
+        guvnorStructureContext.onNewBranch(new NewBranchEvent(r1,
+                                                              "theNewBranch"));
+
+        verify(handler).onNewBranchAdded("r1",
+                                         "theNewBranch",
+                                         branchPath);
     }
 
     private RepositoryItemPresenter createItemPresenter(RepositoryItemView itemView,
@@ -238,7 +206,6 @@ public class RepositoriesPresenterTest {
         //reproduces the initialization of the RepositoryItems performed by the view.
         RepositoryItemPresenter itemPresenter = new RepositoryItemPresenter(itemView,
                                                                             guvnorStructureContext,
-                                                                            repositoryController,
                                                                             notification);
         itemPresenter.setRepository(repository,
                                     branch);
@@ -247,8 +214,8 @@ public class RepositoriesPresenterTest {
 
     private Repository createRepository(String alias) {
         GitRepository repository = new GitRepository(alias);
-        repository.addBranch("master",
-                             branchPath);
+        repository.addBranch(new Branch("master",
+                                        branchPath));
         return repository;
     }
 }
