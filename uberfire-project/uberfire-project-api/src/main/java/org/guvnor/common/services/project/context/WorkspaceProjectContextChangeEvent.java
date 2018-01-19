@@ -19,12 +19,18 @@ import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
+import org.jboss.errai.common.client.api.annotations.LocalEvent;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
- * An event raised when the Project Context changes
+ * <p>An event raised when the Project Context changes.
+ *
+ * <p>This must be {@link LocalEvent @LocalEvent} because it should not be
+ * observed on the server when fired from the client, but it is {@link Portable @Portable} because
+ * it is used as a return type from some RPC methods.
  */
 @Portable
+@LocalEvent
 public class WorkspaceProjectContextChangeEvent {
 
     private final OrganizationalUnit ou;
