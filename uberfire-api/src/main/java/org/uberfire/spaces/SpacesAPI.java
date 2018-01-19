@@ -1,6 +1,9 @@
 package org.uberfire.spaces;
 
+import java.net.URI;
 import java.util.Optional;
+
+import com.google.gwt.core.shared.GwtIncompatible;
 
 public interface SpacesAPI {
 
@@ -14,6 +17,11 @@ public interface SpacesAPI {
         String uri = scheme + "://" + space.getName() + "/" + fsName;
         return uri;
     }
+
+    @GwtIncompatible
+    public URI resolveFileSystemURI(Scheme scheme,
+                                    Space space,
+                                    String fsName);
 
     static String sanitizeFileSystemName(final String fileSystemName) {
         // Only [A-Za-z0-9_\-.] are valid so strip everything else out

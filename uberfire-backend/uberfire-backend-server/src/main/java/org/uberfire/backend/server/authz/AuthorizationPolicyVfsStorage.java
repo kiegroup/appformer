@@ -15,10 +15,14 @@
  */
 package org.uberfire.backend.server.authz;
 
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.java.nio.file.Files.walkFileTree;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -42,9 +46,6 @@ import org.uberfire.security.authz.PermissionManager;
 import org.uberfire.security.impl.authz.AuthorizationPolicyBuilder;
 import org.uberfire.spaces.SpacesAPI;
 
-import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
-import static org.uberfire.java.nio.file.Files.walkFileTree;
-
 /**
  * An implementation that stores the authorization policy in property files.
  */
@@ -54,7 +55,7 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
     private Logger logger = LoggerFactory.getLogger(AuthorizationPolicyVfsStorage.class);
 
     private PermissionManager permissionManager;
-    private SpacesAPIImpl spaces;
+    private SpacesAPI spaces;
     private IOService ioService;
     private FileSystem fileSystem;
     private Path root;
@@ -65,7 +66,7 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
     @Inject
     public AuthorizationPolicyVfsStorage(@Named("configIO") IOService ioService,
                                          PermissionManager permissionManager,
-                                         SpacesAPIImpl spaces) {
+                                         SpacesAPI spaces) {
         this.ioService = ioService;
         this.permissionManager = permissionManager;
         this.spaces = spaces;

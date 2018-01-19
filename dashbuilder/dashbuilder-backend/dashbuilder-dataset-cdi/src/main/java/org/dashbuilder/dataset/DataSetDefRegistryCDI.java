@@ -71,7 +71,7 @@ public class DataSetDefRegistryCDI extends DataSetDefRegistryImpl implements CSV
     public static final String DATASET_EXT = ".dset";
     public static final String CSV_EXT = ".csv";
 
-    protected SpacesAPIImpl spacesAPI;
+    protected SpacesAPI spacesAPI;
     protected int maxCsvLength;
     protected IOService ioService;
     protected ExceptionManager exceptionManager;
@@ -93,7 +93,7 @@ public class DataSetDefRegistryCDI extends DataSetDefRegistryImpl implements CSV
                                  @Named("ioStrategy") IOService ioService,
                                  DataSetProviderRegistryCDI dataSetProviderRegistry,
                                  SchedulerCDI scheduler,
-                                 SpacesAPIImpl spacesAPI,
+                                 SpacesAPI spacesAPI,
                                  ExceptionManager exceptionManager,
                                  Event<DataSetDefModifiedEvent> dataSetDefModifiedEvent,
                                  Event<DataSetDefRegisteredEvent> dataSetDefRegisteredEvent,
@@ -124,20 +124,24 @@ public class DataSetDefRegistryCDI extends DataSetDefRegistryImpl implements CSV
         return DataSetCore.get().getDataSetDefJSONMarshaller();
     }
 
+    @Override
     protected void onDataSetDefStale(DataSetDef def) {
         dataSetStaleEvent.fire(new DataSetStaleEvent(def));
     }
 
+    @Override
     protected void onDataSetDefModified(DataSetDef olDef,
                                         DataSetDef newDef) {
         dataSetDefModifiedEvent.fire(new DataSetDefModifiedEvent(olDef,
                                                                  newDef));
     }
 
+    @Override
     protected void onDataSetDefRegistered(DataSetDef newDef) {
         dataSetDefRegisteredEvent.fire(new DataSetDefRegisteredEvent(newDef));
     }
 
+    @Override
     protected void onDataSetDefRemoved(DataSetDef oldDef) {
         dataSetDefRemovedEvent.fire(new DataSetDefRemovedEvent(oldDef));
     }
@@ -271,7 +275,7 @@ public class DataSetDefRegistryCDI extends DataSetDefRegistryImpl implements CSV
     }
 
     public Collection<DataSetDef> listDataSetDefs() {
-        final Collection<DataSetDef> result = new ArrayList<DataSetDef>();
+        final Collection<DataSetDef> result = new ArrayList<>();
 
         if (ioService.exists(root)) {
             walkFileTree(checkNotNull("root",

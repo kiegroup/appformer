@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -47,7 +48,6 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.commons.lifecycle.PriorityDisposableRegistry;
 import org.uberfire.commons.services.cdi.Startable;
@@ -69,6 +69,7 @@ import org.uberfire.java.nio.file.PatternSyntaxException;
 import org.uberfire.java.nio.file.WatchService;
 import org.uberfire.java.nio.file.attribute.UserPrincipalLookupService;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
+import org.uberfire.spaces.SpacesAPI;
 
 public class SystemConfigProducer implements Extension {
 
@@ -79,8 +80,8 @@ public class SystemConfigProducer implements Extension {
     private static final String START_METHOD = System.getProperty("org.uberfire.start.method",
                                                                   "cdi");
 
-    private final List<OrderedBean> startupEagerBeans = new LinkedList<OrderedBean>();
-    private final List<OrderedBean> startupBootstrapBeans = new LinkedList<OrderedBean>();
+    private final List<OrderedBean> startupEagerBeans = new LinkedList<>();
+    private final List<OrderedBean> startupBootstrapBeans = new LinkedList<>();
     private final Comparator<OrderedBean> priorityComparator = (o1, o2) -> o1.priority - o2.priority;
     private boolean systemFSNotExists = true;
     private boolean pluginsFSNotExists = true;
@@ -285,7 +286,7 @@ public class SystemConfigProducer implements Extension {
                                                                         IOService.class,
                                                                         _ctx);
 
-                final SpacesAPIImpl spaces = getSpaces(bm);
+                final SpacesAPI spaces = getSpaces(bm);
                 FileSystem fs;
                 try {
                     //@Question porcelli: this should be default right?
@@ -299,8 +300,8 @@ public class SystemConfigProducer implements Extension {
                                                          Boolean.TRUE);
                                                  }});
                 } catch (FileSystemAlreadyExistsException e) {
-                    fs = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.GIT,
-                                                                             SpacesAPIImpl.DEFAULT_SPACE,
+                    fs = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPI.Scheme.GIT,
+                                                                             SpacesAPI.DEFAULT_SPACE,
                                                                              fsName));
                 }
 
@@ -325,12 +326,12 @@ public class SystemConfigProducer implements Extension {
         };
     }
 
-    SpacesAPIImpl getSpaces(BeanManager bm) {
-        final Bean<SpacesAPIImpl> spacesBean = (Bean<SpacesAPIImpl>) bm.getBeans(SpacesAPIImpl.class).iterator().next();
-        final CreationalContext<SpacesAPIImpl> spacesCtx = bm.createCreationalContext(spacesBean);
-        return (SpacesAPIImpl) bm.getReference(spacesBean,
-                                                                     SpacesAPIImpl.class,
-                                                                     spacesCtx);
+    SpacesAPI getSpaces(BeanManager bm) {
+        final Bean<SpacesAPI> spacesBean = (Bean<SpacesAPI>) bm.getBeans(SpacesAPI.class).iterator().next();
+        final CreationalContext<SpacesAPI> spacesCtx = bm.createCreationalContext(spacesBean);
+        return (SpacesAPI) bm.getReference(spacesBean,
+                                           SpacesAPI.class,
+                                           spacesCtx);
     }
 
     private void buildIOStrategy(final AfterBeanDiscovery abd,

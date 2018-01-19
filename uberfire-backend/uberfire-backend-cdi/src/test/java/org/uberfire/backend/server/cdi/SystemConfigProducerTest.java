@@ -16,10 +16,18 @@
 
 package org.uberfire.backend.server.cdi;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -33,11 +41,7 @@ import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.commons.lifecycle.PriorityDisposableRegistry;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileSystem;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import org.uberfire.spaces.SpacesAPI;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SystemConfigProducerTest {
@@ -53,7 +57,7 @@ public class SystemConfigProducerTest {
     public void setUp() throws Exception {
         producer = new SystemConfigProducer() {
             @Override
-            SpacesAPIImpl getSpaces(BeanManager bm) {
+            SpacesAPI getSpaces(BeanManager bm) {
                 return new SpacesAPIImpl();
             }
         };

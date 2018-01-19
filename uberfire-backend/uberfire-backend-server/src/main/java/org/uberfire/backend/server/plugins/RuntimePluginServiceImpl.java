@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.PostConstruct;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
@@ -35,13 +35,13 @@ import org.uberfire.backend.plugin.RuntimePlugin;
 import org.uberfire.backend.plugin.RuntimePluginProcessor;
 import org.uberfire.backend.plugin.RuntimePluginService;
 import org.uberfire.backend.server.plugins.processors.HTMLPluginProcessor;
-import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
 import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
+import org.uberfire.spaces.SpacesAPI;
 
 @Service
 @ApplicationScoped
@@ -58,7 +58,7 @@ public class RuntimePluginServiceImpl implements RuntimePluginService {
     HTMLPluginProcessor htmlPluginProcessor;
 
     @Inject
-    SpacesAPIImpl spaces;
+    SpacesAPI spaces;
 
     @Override
     public Collection<String> listFrameworksContent() {
@@ -111,7 +111,7 @@ public class RuntimePluginServiceImpl implements RuntimePluginService {
                                 " because getRealPath() is returning null. (This app is probably deployed in an unexploded .war)");
             return Collections.emptyList();
         }
-        final Collection<String> result = new ArrayList<String>();
+        final Collection<String> result = new ArrayList<>();
 
         final Path pluginsRootPath = Paths.get(URI.create("file://" + realPath));
 

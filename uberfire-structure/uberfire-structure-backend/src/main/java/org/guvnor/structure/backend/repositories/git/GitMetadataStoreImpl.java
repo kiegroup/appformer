@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -28,9 +29,8 @@ import org.guvnor.structure.repositories.GitMetadataStore;
 import org.guvnor.structure.repositories.impl.GitMetadataImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.backend.server.io.object.ObjectStorage;
-import org.uberfire.backend.server.spaces.SpacesAPIImpl;
+import org.uberfire.spaces.SpacesAPI;
 
 public class GitMetadataStoreImpl implements GitMetadataStore {
 
@@ -39,11 +39,11 @@ public class GitMetadataStoreImpl implements GitMetadataStore {
 
     private URI metadataFS;
     private ObjectStorage storage;
-    private SpacesAPIImpl spaces;
+    private SpacesAPI spaces;
 
     @Inject
     public GitMetadataStoreImpl(ObjectStorage storage,
-                                SpacesAPIImpl spaces) {
+                                SpacesAPI spaces) {
         this.storage = storage;
         this.spaces = spaces;
     }
