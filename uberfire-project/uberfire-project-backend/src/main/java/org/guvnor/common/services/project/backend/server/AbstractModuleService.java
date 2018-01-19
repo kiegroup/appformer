@@ -16,7 +16,10 @@
 
 package org.guvnor.common.services.project.backend.server;
 
+import static org.guvnor.common.services.project.utils.ModuleResourcePaths.POM_PATH;
+
 import java.util.Set;
+
 import javax.enterprise.event.Event;
 
 import org.guvnor.common.services.backend.config.SafeSessionInfo;
@@ -39,8 +42,6 @@ import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import org.uberfire.java.nio.file.StandardDeleteOption;
 import org.uberfire.rpc.SessionInfo;
-
-import static org.guvnor.common.services.project.utils.ModuleResourcePaths.POM_PATH;
 
 public abstract class AbstractModuleService<T extends Module>
         implements ModuleServiceCore<T>,
@@ -85,12 +86,8 @@ public abstract class AbstractModuleService<T extends Module>
 
     @Override
     public Set<Module> getAllModules(final Branch branch) {
-        return getModules(branch);
-    }
-
-    public Set<Module> getModules(final Branch branch) {
         return moduleFinder.find(resourceResolver,
-                                 branch);
+         branch);
     }
 
     @Override
@@ -145,12 +142,12 @@ public abstract class AbstractModuleService<T extends Module>
                                 content,
                                 null,
                                 comment);
-            } catch (final Exception e) {
-                throw e;
-            } finally {
                 final Module newModule = resourceResolver.resolveModule(Paths.convert(newModulePath));
                 renameModuleEvent.fire(new RenameModuleEvent(oldModule,
                                                              newModule));
+            } catch (final Exception e) {
+                throw e;
+            } finally {
                 ioService.endBatch();
             }
 
