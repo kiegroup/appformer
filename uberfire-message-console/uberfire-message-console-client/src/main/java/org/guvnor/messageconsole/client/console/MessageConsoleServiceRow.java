@@ -16,6 +16,8 @@
 
 package org.guvnor.messageconsole.client.console;
 
+import java.util.Comparator;
+
 import org.guvnor.common.services.shared.message.Level;
 import org.guvnor.messageconsole.events.SystemMessage;
 import org.uberfire.backend.vfs.Path;
@@ -23,11 +25,26 @@ import org.uberfire.paging.AbstractPageRow;
 
 public class MessageConsoleServiceRow extends AbstractPageRow {
 
-    String sessionId;
+    private static int COUNTER = 0;
 
-    String userId;
+    private final long sequence;
 
-    SystemMessage message;
+    private String sessionId;
+
+    private String userId;
+
+    private SystemMessage message;
+
+    static final Comparator<MessageConsoleServiceRow> DESC_ORDER = (o1, o2) -> {
+        final long sequence1 = o1.sequence;
+        final long sequence2 = o2.sequence;
+        if (sequence1 < sequence2) {
+            return 1;
+        } else if (sequence1 > sequence2) {
+            return -1;
+        }
+        return 0;
+    };
 
     public MessageConsoleServiceRow(String sessionId,
                                     String userId,
@@ -35,6 +52,7 @@ public class MessageConsoleServiceRow extends AbstractPageRow {
         this.sessionId = sessionId;
         this.userId = userId;
         this.message = message;
+        this.sequence = COUNTER++;
     }
 
     public String getSessionId() {
@@ -91,5 +109,15 @@ public class MessageConsoleServiceRow extends AbstractPageRow {
 
     public String getMessageText() {
         return getMessage() != null ? getMessage().getText() : null;
+    }
+
+    //This is required for Unit Testing
+    static void resetSequence() {
+        COUNTER = 0;
+    }
+
+    //This is required for Unit Testing
+    long getSequence() {
+        return sequence;
     }
 }
