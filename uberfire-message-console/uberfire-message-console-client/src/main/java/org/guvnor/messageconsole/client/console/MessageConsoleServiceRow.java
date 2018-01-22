@@ -35,16 +35,9 @@ public class MessageConsoleServiceRow extends AbstractPageRow {
 
     private SystemMessage message;
 
-    static final Comparator<MessageConsoleServiceRow> DESC_ORDER = (o1, o2) -> {
-        final long sequence1 = o1.sequence;
-        final long sequence2 = o2.sequence;
-        if (sequence1 < sequence2) {
-            return 1;
-        } else if (sequence1 > sequence2) {
-            return -1;
-        }
-        return 0;
-    };
+    static final Comparator<MessageConsoleServiceRow> NATURAL_ORDER = Comparator.comparingLong(row -> row.sequence);
+
+    static final Comparator<MessageConsoleServiceRow> DESC_ORDER = NATURAL_ORDER.reversed();
 
     public MessageConsoleServiceRow(String sessionId,
                                     String userId,
