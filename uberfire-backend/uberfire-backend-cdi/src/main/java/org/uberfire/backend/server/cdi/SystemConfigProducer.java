@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
@@ -289,10 +288,9 @@ public class SystemConfigProducer implements Extension {
                 final SpacesAPI spaces = getSpaces(bm);
                 FileSystem fs;
                 try {
-                    //@Question porcelli: this should be default right?
-                    fs = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.GIT,
-                                                                                SpacesAPI.DEFAULT_SPACE,
-                                                                                fsName),
+                    fs = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPI.Scheme.GIT,
+                                                                             SpacesAPI.DEFAULT_SPACE,
+                                                                             fsName),
                                                  new HashMap<String, Object>() {{
                                                      put("init",
                                                          Boolean.TRUE);

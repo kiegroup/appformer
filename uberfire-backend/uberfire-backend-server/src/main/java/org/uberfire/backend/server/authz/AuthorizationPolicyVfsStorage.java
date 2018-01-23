@@ -93,7 +93,7 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
 
     public void initFileSystem() {
         try {
-            fileSystem = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.DEFAULT,
+            fileSystem = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPI.Scheme.DEFAULT,
                                                                              SpacesAPI.DEFAULT_SPACE,
                                                                              "security"),
                                                  new HashMap<String, Object>() {{
@@ -103,7 +103,7 @@ public class AuthorizationPolicyVfsStorage implements AuthorizationPolicyStorage
                                                          Boolean.TRUE);
                                                  }});
         } catch (FileSystemAlreadyExistsException e) {
-            fileSystem = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.DEFAULT,
+            fileSystem = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPI.Scheme.DEFAULT,
                                                                              SpacesAPI.DEFAULT_SPACE,
                                                                              "security"));
         }
