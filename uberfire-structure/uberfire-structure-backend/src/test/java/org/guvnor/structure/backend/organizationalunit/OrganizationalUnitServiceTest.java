@@ -90,6 +90,9 @@ public class OrganizationalUnitServiceTest {
     @Mock
     private SessionInfo sessionInfo;
 
+    @Mock
+    private RepositoryService repoService;
+
     private OrganizationalUnitServiceImpl organizationalUnitService;
 
     @Before
@@ -101,6 +104,7 @@ public class OrganizationalUnitServiceTest {
         organizationalUnitService = new OrganizationalUnitServiceImpl(configurationService,
                                                                       configurationFactory,
                                                                       organizationalUnitFactory,
+                                                                      repoService,
                                                                       backward,
                                                                       newOrganizationalUnitEvent,
                                                                       removeOrganizationalUnitEvent,

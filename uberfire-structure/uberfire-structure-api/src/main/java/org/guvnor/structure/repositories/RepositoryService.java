@@ -17,6 +17,7 @@ package org.guvnor.structure.repositories;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.jboss.errai.bus.server.annotations.Remote;
@@ -86,4 +87,6 @@ public interface RepositoryService {
                      final String group);
 
     void removeRepository(final Space space, final String alias);
+
+    void removeRepositories(final Space space, final Set<String> aliases);
 }

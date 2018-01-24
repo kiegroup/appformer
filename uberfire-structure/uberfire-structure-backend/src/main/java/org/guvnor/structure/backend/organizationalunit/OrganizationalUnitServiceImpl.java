@@ -41,6 +41,7 @@ import org.guvnor.structure.organizationalunit.RepoRemovedFromOrganizationalUnit
 import org.guvnor.structure.organizationalunit.UpdatedOrganizationalUnitEvent;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryEnvironmentUpdatedEvent;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigItem;
 import org.guvnor.structure.server.config.ConfigType;
@@ -83,10 +84,13 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
 
     private SpacesAPI spaces;
 
+    private RepositoryService repositoryService;
+
     @Inject
     public OrganizationalUnitServiceImpl(final ConfigurationService configurationService,
                                          final ConfigurationFactory configurationFactory,
                                          final OrganizationalUnitFactory organizationalUnitFactory,
+                                         final RepositoryService repositoryService,
                                          final BackwardCompatibleUtil backward,
                                          final Event<NewOrganizationalUnitEvent> newOrganizationalUnitEvent,
                                          final Event<RemoveOrganizationalUnitEvent> removeOrganizationalUnitEvent,
@@ -99,6 +103,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         this.configurationService = configurationService;
         this.configurationFactory = configurationFactory;
         this.organizationalUnitFactory = organizationalUnitFactory;
+        this.repositoryService = repositoryService;
         this.backward = backward;
         this.newOrganizationalUnitEvent = newOrganizationalUnitEvent;
         this.removeOrganizationalUnitEvent = removeOrganizationalUnitEvent;
@@ -424,15 +429,17 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         final ConfigGroup thisGroupConfig = findGroupConfig(groupName);
 
         if (thisGroupConfig != null) {
-            OrganizationalUnit ou = null;
+            OrganizationalUnit removedOu = null;
             try {
                 configurationService.startBatch();
+                final OrganizationalUnit originalOu = getOrganizationalUnit(groupName);
+                repositoryService.removeRepositories(originalOu.getSpace(), originalOu.getRepositories().stream().map(repo -> repo.getAlias()).collect(Collectors.toSet()));
                 configurationService.removeConfiguration(thisGroupConfig);
-                ou = registeredOrganizationalUnits.remove(groupName);
+                removedOu = registeredOrganizationalUnits.remove(groupName);
             } finally {
                 configurationService.endBatch();
-                if (ou != null) {
-                    removeOrganizationalUnitEvent.fire(new RemoveOrganizationalUnitEvent(ou,
+                if (removedOu != null) {
+                    removeOrganizationalUnitEvent.fire(new RemoveOrganizationalUnitEvent(removedOu,
                                                                                          getUserInfo(sessionInfo)));
                 }
             }

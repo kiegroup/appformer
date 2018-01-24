@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -295,36 +297,63 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         try {
             configurationService.startBatch();
-            if (thisRepositoryConfig != null) {
-                configurationService.removeConfiguration(thisRepositoryConfig);
-            }
-
-            final Repository repo = configuredRepositories.remove(space,
-                                                                  alias);
-            if (repo != null) {
-                repositoryRemovedEvent.fire(new RepositoryRemovedEvent(repo));
-
-                Branch defaultBranch = repo.getDefaultBranch().orElseThrow(() -> new IllegalStateException("Repository should have at least one branch."));
-                ioService.delete(convert(defaultBranch.getPath()).getFileSystem().getPath(null));
-            }
-
-            //Remove reference to Repository from Organizational Units
-            final Collection<OrganizationalUnit> organizationalUnits = organizationalUnitService.getAllOrganizationalUnits();
-            for (OrganizationalUnit ou : organizationalUnits) {
-                for (Repository repository : ou.getRepositories()) {
-                    if (repository.getAlias().equals(alias)) {
-                        organizationalUnitService.removeRepository(ou,
-                                                                   repository);
-                        metadataStore.delete(alias);
-                    }
-                }
-            }
+            OrganizationalUnit orgUnit = Optional
+                                                 .ofNullable(organizationalUnitService.getOrganizationalUnit(space.getName()))
+                                                 .orElseThrow(() -> new IllegalArgumentException(String
+                                                                                                       .format("The given space [%s] does not correspond to any known organizational unit.",
+                                                                                                               space.getName())));
+            doRemoveRepository(orgUnit, alias, thisRepositoryConfig);
         } catch (final Exception e) {
             logger.error("Error during remove repository",
                          e);
             throw new RuntimeException(e);
         } finally {
             configurationService.endBatch();
+        }
+    }
+
+    @Override
+    public void removeRepositories(Space space, Set<String> aliases) {
+        try {
+            configurationService.startBatch();
+            OrganizationalUnit orgUnit = Optional
+                    .ofNullable(organizationalUnitService.getOrganizationalUnit(space.getName()))
+                    .orElseThrow(() -> new IllegalArgumentException(String
+                                                                    .format("The given space [%s] does not correspond to any known organizational unit.",
+                                                                            space.getName())));
+
+            for (final String alias : aliases) {
+                doRemoveRepository(orgUnit, alias, findRepositoryConfig(alias));
+            }
+        } catch (final Exception e) {
+            logger.error("Error while removing repositories",
+                         e);
+            throw new RuntimeException(e);
+        } finally {
+            configurationService.endBatch();
+        }
+    }
+
+    private void doRemoveRepository(OrganizationalUnit orgUnit, String alias, final ConfigGroup thisRepositoryConfig) throws Exception {
+        if (thisRepositoryConfig != null) {
+            configurationService.removeConfiguration(thisRepositoryConfig);
+        }
+
+        final Repository repo = configuredRepositories.remove(orgUnit.getSpace(),
+                                                              alias);
+        if (repo != null) {
+            repositoryRemovedEvent.fire(new RepositoryRemovedEvent(repo));
+
+            Branch defaultBranch = repo.getDefaultBranch().orElseThrow(() -> new IllegalStateException("Repository should have at least one branch."));
+            ioService.delete(convert(defaultBranch.getPath()).getFileSystem().getPath(null));
+        }
+
+        //Remove reference to Repository from Organizational Units
+        for (Repository repository : orgUnit.getRepositories()) {
+            if (repository.getAlias().equals(alias)) {
+                organizationalUnitService.removeRepository(orgUnit, repository);
+                metadataStore.delete(alias);
+            }
         }
     }
 

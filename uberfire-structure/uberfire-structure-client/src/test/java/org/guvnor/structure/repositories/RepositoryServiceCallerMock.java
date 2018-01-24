@@ -18,6 +18,7 @@ package org.guvnor.structure.repositories;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.jboss.errai.common.client.api.Caller;
@@ -195,6 +196,11 @@ public class RepositoryServiceCallerMock
         @Override
         public void removeRepository(Space space, String alias) {
             repositoryService.removeRepository(space, alias);
+        }
+
+        @Override
+        public void removeRepositories(Space space, Set<String> aliases) {
+            repositoryService.removeRepositories(space, aliases);
         }
     }
 }
