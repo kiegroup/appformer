@@ -17,6 +17,8 @@ package org.guvnor.common.services.project.client.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -81,36 +83,36 @@ public class WorkspaceProjectContext {
         }
     }
 
-    public Path getActiveRepositoryRoot() {
-        return activeWorkspaceProject.getBranch().getPath();
+    public Optional<Path> getActiveRepositoryRoot() {
+        return getActiveWorkspaceProject().map(proj -> proj.getBranch()).map(branch -> branch.getPath());
     }
 
     protected void setActiveOrganizationalUnit(final OrganizationalUnit activeOrganizationalUnit) {
         this.activeOrganizationalUnit = activeOrganizationalUnit;
     }
 
-    public OrganizationalUnit getActiveOrganizationalUnit() {
-        return this.activeOrganizationalUnit;
+    public Optional<OrganizationalUnit> getActiveOrganizationalUnit() {
+        return Optional.ofNullable(this.activeOrganizationalUnit);
     }
 
     protected void setActiveWorkspaceProject(final WorkspaceProject activeWorkspaceProject) {
         this.activeWorkspaceProject = activeWorkspaceProject;
     }
 
-    public WorkspaceProject getActiveWorkspaceProject() {
-        return this.activeWorkspaceProject;
+    public Optional<WorkspaceProject> getActiveWorkspaceProject() {
+        return Optional.ofNullable(this.activeWorkspaceProject);
     }
 
-    public Module getActiveModule() {
-        return this.activeModule;
+    public Optional<Module> getActiveModule() {
+        return Optional.ofNullable(this.activeModule);
     }
 
     protected void setActiveModule(final Module activeModule) {
         this.activeModule = activeModule;
     }
 
-    public Package getActivePackage() {
-        return this.activePackage;
+    public Optional<Package> getActivePackage() {
+        return Optional.ofNullable(this.activePackage);
     }
 
     protected void setActivePackage(final Package activePackage) {

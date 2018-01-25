@@ -84,7 +84,7 @@ public class GuvnorStructureContextTest {
 
         OrganizationalUnit ou = mock(OrganizationalUnit.class);
         when(ou.getName()).thenReturn("space");
-        when(projContext.getActiveOrganizationalUnit()).thenReturn(ou);
+        when(projContext.getActiveOrganizationalUnit()).thenReturn(Optional.of(ou));
 
         when(repositoryService.getRepositories(eq(new Space("space")))).thenReturn(repositories);
 

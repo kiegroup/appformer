@@ -18,6 +18,7 @@ package org.guvnor.organizationalunit.manager.client.editor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -106,7 +107,7 @@ public class OrganizationalUnitManagerPresenterTest {
         when(organizationalUnitController.canDeleteOrgUnit(organizationalUnitA)).thenReturn(true);
         when(organizationalUnitA.getRepositories()).thenReturn(Collections.EMPTY_LIST);
 
-        when(projContext.getActiveOrganizationalUnit()).thenReturn(mockOU);
+        when(projContext.getActiveOrganizationalUnit()).thenReturn(Optional.of(mockOU));
 
         presenter.loadOrganizationalUnits();
     }

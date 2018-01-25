@@ -18,6 +18,7 @@ package org.guvnor.structure.client.editors.repository.edit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
@@ -109,7 +110,7 @@ public class MavenRepositoryEditorPresenterTest {
                                                    any(VersionRecord.class))).thenReturn(repositoryHistory);
         OrganizationalUnit ou = mock(OrganizationalUnit.class);
         when(ou.getName()).thenReturn("owner");
-        when(context.getActiveOrganizationalUnit()).thenReturn(ou);
+        when(context.getActiveOrganizationalUnit()).thenReturn(Optional.of(ou));
 
         //Each test needs the Presenter to be initialised
         place.addParameter("alias",

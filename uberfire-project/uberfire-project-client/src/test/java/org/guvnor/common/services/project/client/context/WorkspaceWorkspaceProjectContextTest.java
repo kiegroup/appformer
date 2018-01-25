@@ -16,6 +16,8 @@
 
 package org.guvnor.common.services.project.client.context;
 
+import java.util.Optional;
+
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.context.ProjectContextChangeHandle;
 import org.guvnor.common.services.project.context.WorkspaceProjectContextChangeEvent;
@@ -74,7 +76,7 @@ public class WorkspaceWorkspaceProjectContextTest {
                                                                           devRoot),
                                                                mock(Module.class)));
 
-        assertEquals(devRoot,
+        assertEquals(Optional.of(devRoot),
                      context.getActiveRepositoryRoot());
     }
 
@@ -96,9 +98,9 @@ public class WorkspaceWorkspaceProjectContextTest {
         final RepositoryRemovedEvent repositoryRemovedEvent = new RepositoryRemovedEvent(repository);
         context.onRepositoryRemoved(repositoryRemovedEvent);
 
-        assertEquals(organizationalUnit,
+        assertEquals(Optional.of(organizationalUnit),
                      context.getActiveOrganizationalUnit());
-        assertNull(context.getActiveWorkspaceProject());
+        assertFalse(context.getActiveWorkspaceProject().isPresent());
     }
 
     @Test
@@ -110,9 +112,9 @@ public class WorkspaceWorkspaceProjectContextTest {
 
         context.onRepositoryRemoved(new RepositoryRemovedEvent(new GitRepository()));
 
-        assertEquals(organizationalUnit,
+        assertEquals(Optional.of(organizationalUnit),
                      context.getActiveOrganizationalUnit());
-        assertNull(context.getActiveWorkspaceProject());
+        assertFalse(context.getActiveWorkspaceProject().isPresent());
     }
 
     @Test
@@ -132,7 +134,7 @@ public class WorkspaceWorkspaceProjectContextTest {
 
         context.onRepositoryRemoved(repositoryRemovedEvent);
 
-        assertEquals(activeWorkspaceProject,
+        assertEquals(Optional.of(activeWorkspaceProject),
                      context.getActiveWorkspaceProject());
     }
 
@@ -168,13 +170,13 @@ public class WorkspaceWorkspaceProjectContextTest {
                                                                                newModule,
                                                                                newPackage));
 
-        assertEquals(newOrganizationalUnit,
+        assertEquals(Optional.of(newOrganizationalUnit),
                      context.getActiveOrganizationalUnit());
-        assertEquals(newWorkspaceProject,
+        assertEquals(Optional.of(newWorkspaceProject),
                      context.getActiveWorkspaceProject());
-        assertEquals(newModule,
+        assertEquals(Optional.of(newModule),
                      context.getActiveModule());
-        assertEquals(newPackage,
+        assertEquals(Optional.of(newPackage),
                      context.getActivePackage());
         verify(changeHandler).onChange();
     }

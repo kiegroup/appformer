@@ -15,9 +15,14 @@
  */
 package org.guvnor.organizationalunit.manager.client.editor;
 
+import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_CREATE;
+import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_DELETE;
+import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_READ;
+import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_TYPE;
+import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_UPDATE;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -52,12 +57,6 @@ import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.security.annotations.ResourceCheck;
 import org.uberfire.spaces.Space;
-
-import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_CREATE;
-import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_DELETE;
-import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_READ;
-import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_TYPE;
-import static org.guvnor.structure.client.security.OrganizationalUnitController.ORG_UNIT_UPDATE;
 
 @ApplicationScoped
 //The identifier has been preserved from kie-wb-common so existing .niogit System repositories are not broken
@@ -133,11 +132,10 @@ public class OrganizationalUnitManagerPresenterImpl implements OrganizationalUni
         view.setEditOrganizationalUnitEnabled(false);
         view.setDeleteOrganizationalUnitEnabled(false);
 
-        Space space = Optional
-        .ofNullable(context.getActiveOrganizationalUnit())
-        .map(ou -> ou.getName())
-        .map(spaceName -> new Space(spaceName))
-        .orElseThrow(() -> new IllegalStateException("Cannot load repositories without active organziational unit."));
+        Space space = context.getActiveOrganizationalUnit()
+                             .map(ou -> ou.getName())
+                             .map(spaceName -> new Space(spaceName))
+                             .orElseThrow(() -> new IllegalStateException("Cannot load repositories without active organziational unit."));
 
         repositoryService.call(new RemoteCallback<Collection<Repository>>() {
                                    @Override

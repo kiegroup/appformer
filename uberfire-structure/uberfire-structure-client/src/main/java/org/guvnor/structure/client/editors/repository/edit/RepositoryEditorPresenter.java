@@ -17,7 +17,6 @@
 package org.guvnor.structure.client.editors.repository.edit;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -107,8 +106,7 @@ public class RepositoryEditorPresenter {
     public void onStartup(final PlaceRequest place) {
         this.place = place;
         this.alias = place.getParameters().get("alias");
-        String ouName = Optional
-                               .ofNullable(context.getActiveOrganizationalUnit())
+        String ouName = context.getActiveOrganizationalUnit()
                                .map(ou -> ou.getName())
                                .orElseThrow(() -> new IllegalStateException("Cannot lookup repository [" + alias + "] without active organizational unit."));
 
@@ -146,8 +144,7 @@ public class RepositoryEditorPresenter {
     }
 
     void onLoadMoreHistory(final int lastIndex) {
-        String ouName = Optional
-                                .ofNullable(context.getActiveOrganizationalUnit())
+        String ouName = context.getActiveOrganizationalUnit()
                                 .map(ou -> ou.getName())
                                 .orElseThrow(() -> new IllegalStateException("Cannot lookup repository [" + alias + "] without active organizational unit."));
         repositoryService.call(new RemoteCallback<List<VersionRecord>>() {

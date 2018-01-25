@@ -18,6 +18,7 @@ package org.guvnor.structure.client.editors.repository.list;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
@@ -111,7 +112,7 @@ public class RepositoriesPresenterTest {
 
         OrganizationalUnit ou = mock(OrganizationalUnit.class);
         when(ou.getName()).thenReturn("space");
-        when(projContext.getActiveOrganizationalUnit()).thenReturn(ou);
+        when(projContext.getActiveOrganizationalUnit()).thenReturn(Optional.of(ou));
 
         repositories = new ArrayList<>();
 

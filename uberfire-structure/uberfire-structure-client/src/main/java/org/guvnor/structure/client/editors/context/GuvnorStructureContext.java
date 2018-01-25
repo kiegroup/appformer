@@ -60,10 +60,9 @@ public class GuvnorStructureContext {
     }
 
     public void getRepositories(final Callback<Collection<Repository>> callback) {
-        String ouName = Optional
-        .ofNullable(context.getActiveOrganizationalUnit())
-        .map(ou -> ou.getName())
-        .orElseThrow(() -> new IllegalStateException("Cannot lookup repositories without active organizational unit."));
+        String ouName = context.getActiveOrganizationalUnit()
+                               .map(ou -> ou.getName())
+                               .orElseThrow(() -> new IllegalStateException("Cannot lookup repositories without active organizational unit."));
         repositoryService.call(new RemoteCallback<Collection<Repository>>() {
             @Override
             public void callback(final Collection<Repository> response) {
