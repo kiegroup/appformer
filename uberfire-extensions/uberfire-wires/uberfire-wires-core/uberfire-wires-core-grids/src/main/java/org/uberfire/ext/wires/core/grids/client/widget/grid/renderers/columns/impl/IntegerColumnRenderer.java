@@ -27,7 +27,7 @@ public class IntegerColumnRenderer extends BaseGridColumnRenderer<Integer> {
     @Override
     public Group renderCell(final GridCell<Integer> cell,
                             final GridBodyCellRenderContext context) {
-        if (cell == null || cell.getValue() == null) {
+        if (cell == null || cell.getValue() == null || cell.getValue().getValue() == null) {
             return null;
         }
 

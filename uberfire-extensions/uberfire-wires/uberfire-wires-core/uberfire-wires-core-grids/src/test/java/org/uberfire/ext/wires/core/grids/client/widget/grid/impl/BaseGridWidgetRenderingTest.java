@@ -37,6 +37,7 @@ import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridData;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridRow;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseHeaderMetaData;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyRenderContext;
+import org.uberfire.ext.wires.core.grids.client.widget.context.GridBoundaryRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridHeaderRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.multiple.impl.CheckBoxDOMElementFactory;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.columns.BooleanDOMElementColumn;
@@ -47,7 +48,14 @@ import org.uberfire.ext.wires.core.grids.client.widget.layer.GridSelectionManage
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.DefaultGridLayer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.pinning.GridPinnedModeManager;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(LienzoMockitoTestRunner.class)
 public class BaseGridWidgetRenderingTest {
@@ -85,6 +93,9 @@ public class BaseGridWidgetRenderingTest {
     private Group body;
 
     @Mock
+    private Group selections;
+
+    @Mock
     private Group boundary;
 
     private BaseGridWidget gridWidget;
@@ -113,6 +124,7 @@ public class BaseGridWidgetRenderingTest {
         mockCanvas();
         mockHeader();
         mockBody();
+        mockSelections();
         mockBoundary();
     }
 
@@ -124,27 +136,34 @@ public class BaseGridWidgetRenderingTest {
 
     @SuppressWarnings("unchecked")
     private void mockHeader() {
+        when(header.asNode()).thenReturn(mock(Node.class));
         when(renderer.renderHeader(any(GridData.class),
                                    any(GridHeaderRenderContext.class),
                                    eq(rendererHelper),
-                                   any(BaseGridRendererHelper.RenderingInformation.class))).thenReturn(header);
-        when(header.asNode()).thenReturn(mock(Node.class));
+                                   any(BaseGridRendererHelper.RenderingInformation.class))).thenReturn(Collections.singletonList((parent) -> parent.add(header)));
     }
 
     @SuppressWarnings("unchecked")
     private void mockBody() {
+        when(body.asNode()).thenReturn(mock(Node.class));
         when(renderer.renderBody(any(GridData.class),
                                  any(GridBodyRenderContext.class),
                                  eq(rendererHelper),
-                                 any(BaseGridRendererHelper.RenderingInformation.class))).thenReturn(body);
-        when(body.asNode()).thenReturn(mock(Node.class));
+                                 any(BaseGridRendererHelper.RenderingInformation.class))).thenReturn(Collections.singletonList((parent) -> parent.add(body)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mockSelections() {
+        when(selections.asNode()).thenReturn(mock(Node.class));
+        when(renderer.renderSelectedCells(any(GridData.class),
+                                          any(GridBodyRenderContext.class),
+                                          eq(rendererHelper))).thenReturn((parent) -> parent.add(selections));
     }
 
     @SuppressWarnings("unchecked")
     private void mockBoundary() {
-        when(renderer.renderGridBoundary(any(Double.class),
-                                         any(Double.class))).thenReturn(boundary);
         when(boundary.asNode()).thenReturn(mock(Node.class));
+        when(renderer.renderGridBoundary(any(GridBoundaryRenderContext.class))).thenReturn((parent) -> parent.add(boundary));
     }
 
     @Test

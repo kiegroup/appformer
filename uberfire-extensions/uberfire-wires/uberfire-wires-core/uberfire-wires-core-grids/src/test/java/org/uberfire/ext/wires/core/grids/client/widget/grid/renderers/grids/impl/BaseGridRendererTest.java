@@ -18,6 +18,7 @@ package org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.imp
 import java.util.Collections;
 import java.util.List;
 
+import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.test.LienzoMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.html.Text;
@@ -39,8 +40,14 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.Sele
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.GridRendererTheme;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.BlueTheme;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @WithClassesToStub({Text.class})
 @RunWith(LienzoMockitoTestRunner.class)
@@ -128,7 +135,7 @@ public class BaseGridRendererTest {
 
         renderer.renderSelectedCells(model,
                                      context,
-                                     rendererHelper);
+                                     rendererHelper).execute(mock(Group.class));
 
         verify(renderer,
                times(1)).renderSelectedRange(eq(model),
