@@ -15,13 +15,11 @@
 */
 package org.guvnor.rest.backend;
 
-import static org.guvnor.rest.backend.PermissionConstants.REST_PROJECT_ROLE;
-import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.security.RolesAllowed;
@@ -46,10 +44,10 @@ import javax.ws.rs.core.Variant;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
-import org.guvnor.rest.client.AddProjectToOrganizationalUnitRequest;
-import org.guvnor.rest.client.CloneRepositoryRequest;
+import org.guvnor.rest.client.AddProjectToSpaceRequest;
+import org.guvnor.rest.client.CloneProjectJobRequest;
+import org.guvnor.rest.client.CloneProjectRequest;
 import org.guvnor.rest.client.CompileProjectRequest;
-import org.guvnor.rest.client.CreateOrganizationalUnitRequest;
 import org.guvnor.rest.client.CreateProjectRequest;
 import org.guvnor.rest.client.DeleteProjectRequest;
 import org.guvnor.rest.client.DeployProjectRequest;
@@ -57,20 +55,27 @@ import org.guvnor.rest.client.InstallProjectRequest;
 import org.guvnor.rest.client.JobRequest;
 import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
-import org.guvnor.rest.client.OrganizationalUnit;
 import org.guvnor.rest.client.ProjectRequest;
 import org.guvnor.rest.client.ProjectResponse;
 import org.guvnor.rest.client.RemoveOrganizationalUnitRequest;
 import org.guvnor.rest.client.RemoveProjectFromOrganizationalUnitRequest;
-import org.guvnor.rest.client.RepositoryRequest;
+import org.guvnor.rest.client.Space;
+import org.guvnor.rest.client.SpaceRequest;
 import org.guvnor.rest.client.TestProjectRequest;
 import org.guvnor.rest.client.UpdateOrganizationalUnit;
 import org.guvnor.rest.client.UpdateOrganizationalUnitRequest;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
+import org.guvnor.structure.repositories.Branch;
+import org.guvnor.structure.repositories.Repository;
+import org.kie.soup.commons.validation.PortablePreconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.spaces.SpacesAPI;
+
+import static org.guvnor.rest.backend.PermissionConstants.REST_PROJECT_ROLE;
+import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
 
 /**
  * REST services
@@ -150,56 +155,79 @@ public class ProjectResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/repositories")
+    @Path("/spaces/{spaceName}/projects")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response cloneRepository(RepositoryRequest repository) {
-        logger.debug("-----cloneRepository--- , repository name: {}",
-                     repository.getName());
+    public Response cloneProject(CloneProjectRequest cloneProjectRequest) {
+        logger.debug("-----cloneProject--- , CloneProjectRequest name: {}",
+                     cloneProjectRequest.getName());
 
-        String id = newId();
-        CloneRepositoryRequest jobRequest = new CloneRepositoryRequest();
+        final String id = newId();
+        final CloneProjectJobRequest jobRequest = new CloneProjectJobRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setRepository(repository);
+        jobRequest.setCloneProjectRequest(cloneProjectRequest);
         addAcceptedJobResult(id);
+
+        jobRequestObserver.cloneProjectRequest(jobRequest);
+
         return createAcceptedStatusResponse(jobRequest);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}/projects")
+    @Path("/spaces/{spaceName}/projects")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response createProject(
-            @PathParam("organizationalUnitName") String organizationalUnitName,
+            @PathParam("spaceName") String spaceName,
             ProjectRequest project) {
-        logger.debug("-----createProject--- , organizationalUnitName: {} , project name: {}",
-                     organizationalUnitName,
+        logger.debug("-----createProject--- , spaceName: {} , project name: {}",
+                     spaceName,
                      project.getName());
 
         String id = newId();
         CreateProjectRequest jobRequest = new CreateProjectRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setOrganizationalUnitName(organizationalUnitName);
+        jobRequest.setOrganizationalUnitName(spaceName);
         jobRequest.setProjectName(project.getName());
         jobRequest.setProjectGroupId(project.getGroupId());
         jobRequest.setProjectVersion(project.getVersion());
         jobRequest.setDescription(project.getDescription());
         addAcceptedJobResult(id);
 
+        jobRequestObserver.createProjectRequest(jobRequest);
+
         return createAcceptedStatusResponse(jobRequest);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}/projects")
+    @Path("/spaces/{spaceName}/projects")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Collection<ProjectResponse> getProjects(@PathParam("organizationalUnitName") String organizationalUnitName) {
-        logger.info("-----getProjects--- , organizationalUnitName: {}",
-                    organizationalUnitName);
+    public Collection<ProjectResponse> getProjects(@PathParam("spaceName") String spaceName) {
+        logger.info("-----getProjects--- , spaceName: {}",
+                    spaceName);
+        org.guvnor.structure.organizationalunit.OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
 
-        return Collections.emptyList();
+        if (organizationalUnit == null) {
+            throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(organizationalUnit).build());
+        }
+
+        Collection<WorkspaceProject> projects = workspaceProjectService.getAllWorkspaceProjects(organizationalUnit);
+
+        List<ProjectResponse> projectRequests = new ArrayList<ProjectResponse>(projects.size());
+        for (WorkspaceProject project : projects) {
+            ProjectResponse projectReq = new ProjectResponse();
+            GAV projectGAV = project.getMainModule().getPom().getGav();
+            projectReq.setGroupId(projectGAV.getGroupId());
+            projectReq.setVersion(projectGAV.getVersion());
+            projectReq.setName(project.getName());
+            projectReq.setDescription(project.getMainModule().getPom().getDescription());
+            projectRequests.add(projectReq);
+        }
+
+        return projectRequests;
     }
 
     @GET
@@ -214,7 +242,7 @@ public class ProjectResource {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{spaceName}/{projectName}")
+    @Path("/spaces/{spaceName}/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response deleteProject(
             @PathParam("spaceName") String spaceName,
@@ -269,21 +297,26 @@ public class ProjectResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}/projects/{projectName}/maven/install")
+    @Path("/spaces/{spaceName}/projects/{projectName}/maven/install")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response installProject(
-            @PathParam("organizationalUnitName") String organizationalUnitName,
+            @PathParam("spaceName") String spaceName,
             @PathParam("projectName") String projectName) {
         logger.debug("-----installProject--- , project name: {}",
                      projectName);
+
+        PortablePreconditions.checkNotNull("spaceName", spaceName);
+        PortablePreconditions.checkNotNull("projectName", projectName);
 
         String id = newId();
         InstallProjectRequest jobRequest = new InstallProjectRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setOrganizationalUnitName(organizationalUnitName);
+        jobRequest.setSpaceName(spaceName);
         jobRequest.setProjectName(projectName);
         addAcceptedJobResult(id);
+
+        jobRequestObserver.installProjectRequest(jobRequest);
 
         return createAcceptedStatusResponse(jobRequest);
     }
@@ -312,7 +345,7 @@ public class ProjectResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{spaceName}/{projectName}/maven/deploy")
+    @Path("/spaces/{spaceName}/projects/{projectName}/maven/deploy")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response deployProject(
             @PathParam("spaceName") String spaceName,
@@ -328,24 +361,47 @@ public class ProjectResource {
         jobRequest.setSpaceName(spaceName);
         addAcceptedJobResult(id);
 
+        jobRequestObserver.deployProjectRequest(jobRequest);
+
         return createAcceptedStatusResponse(jobRequest);
     }
 
+    @Inject
+    private SpacesAPI spacesAPI;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits")
+    @Path("/spaces")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Collection<OrganizationalUnit> getOrganizationalUnits() {
-        logger.debug("-----getOrganizationalUnits--- ");
+    public Collection<Space> getSpaces() {
+        logger.debug("-----getSpaces--- ");
 
-        return Collections.emptyList();
+        final List<Space> spaces = new ArrayList<Space>();
+        for (OrganizationalUnit ou : organizationalUnitService.getOrganizationalUnits()) {
+            final Space space = new Space();
+            space.setName(ou.getName());
+            space.setOwner(ou.getOwner());
+            space.setDefaultGroupId(ou.getDefaultGroupId());
+            final List<String> repoNames = new ArrayList<String>();
+            for (final Repository r : ou.getRepositories()) {
+                final Optional<Branch> defaultBranch = r.getDefaultBranch();
+                if (defaultBranch.isPresent()) {
+                    final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(defaultBranch.get().getPath());
+                    repoNames.add(workspaceProject.getName());
+                }
+            }
+            space.setProjects(repoNames);
+            spaces.add(space);
+        }
+
+        return spaces;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/organizationalunits/{organizationalUnitName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public OrganizationalUnit getOrganizationalUnit(@PathParam("organizationalUnitName") String organizationalUnitName) {
+    public Space getOrganizationalUnit(@PathParam("organizationalUnitName") String organizationalUnitName) {
         logger.debug("-----getOrganizationalUnit ---, OrganizationalUnit name: {}",
                      organizationalUnitName);
 
@@ -355,23 +411,25 @@ public class ProjectResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits")
+    @Path("/spaces")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response createOrganizationalUnit(OrganizationalUnit organizationalUnit) {
-        logger.debug("-----createOrganizationalUnit--- , OrganizationalUnit name: {}, OrganizationalUnit owner: {}, Default group id : {}",
-                     organizationalUnit.getName(),
-                     organizationalUnit.getOwner(),
-                     organizationalUnit.getDefaultGroupId());
+    public Response createSpace(Space space) {
+        logger.debug("-----createSpace--- , Space name: {}, Space owner: {}, Default group id : {}",
+                     space.getName(),
+                     space.getOwner(),
+                     space.getDefaultGroupId());
 
         String id = newId();
-        CreateOrganizationalUnitRequest jobRequest = new CreateOrganizationalUnitRequest();
+        SpaceRequest jobRequest = new SpaceRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setOrganizationalUnitName(organizationalUnit.getName());
-        jobRequest.setOwner(organizationalUnit.getOwner());
-        jobRequest.setDefaultGroupId(organizationalUnit.getDefaultGroupId());
-        jobRequest.setProjects(organizationalUnit.getProjects());
+        jobRequest.setSpaceName(space.getName());
+        jobRequest.setOwner(space.getOwner());
+        jobRequest.setDefaultGroupId(space.getDefaultGroupId());
+        jobRequest.setProjects(space.getProjects());
         addAcceptedJobResult(id);
+
+        jobRequestObserver.createOrganizationalUnitRequest(jobRequest);
 
         return createAcceptedStatusResponse(jobRequest);
     }
@@ -408,21 +466,23 @@ public class ProjectResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}/projects/{projectName}")
+    @Path("/spaces/{spaceName}/projects/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response addRepositoryToOrganizationalUnit(@PathParam("organizationalUnitName") String organizationalUnitName,
-                                                      @PathParam("projectName") String projectName) {
-        logger.debug("-----addRepositoryToOrganizationalUnit--- , OrganizationalUnit name: {}, Project name: {}",
-                     organizationalUnitName,
+    public Response addProjectToSpace(@PathParam("spaceName") String spaceName,
+                                      @PathParam("projectName") String projectName) {
+        logger.debug("-----addProjectToSpace--- , Space name: {}, Project name: {}",
+                     spaceName,
                      projectName);
 
-        String id = newId();
-        AddProjectToOrganizationalUnitRequest jobRequest = new AddProjectToOrganizationalUnitRequest();
+        final String id = newId();
+        final AddProjectToSpaceRequest jobRequest = new AddProjectToSpaceRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setOrganizationalUnitName(organizationalUnitName);
+        jobRequest.setSpaceName(spaceName);
         jobRequest.setProjectName(projectName);
         addAcceptedJobResult(id);
+
+        jobRequestObserver.addProjectToSpace(jobRequest);
 
         return createAcceptedStatusResponse(jobRequest);
     }
@@ -450,18 +510,20 @@ public class ProjectResource {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}")
+    @Path("/spaces/{spaceName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response deleteOrganizationalUnit(@PathParam("organizationalUnitName") String organizationalUnitName) {
-        logger.debug("-----deleteOrganizationalUnit--- , OrganizationalUnit name: {}",
-                     organizationalUnitName);
+    public Response deleteSpace(@PathParam("spaceName") String spaceName) {
+        logger.debug("-----deleteSpace--- , Space name: {}",
+                     spaceName);
 
-        String id = newId();
-        RemoveOrganizationalUnitRequest jobRequest = new RemoveOrganizationalUnitRequest();
+        final String id = newId();
+        final RemoveOrganizationalUnitRequest jobRequest = new RemoveOrganizationalUnitRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setOrganizationalUnitName(organizationalUnitName);
+        jobRequest.setSpaceName(spaceName);
         addAcceptedJobResult(id);
+
+        jobRequestObserver.removeOrganizationalUnitRequest(jobRequest);
 
         return createAcceptedStatusResponse(jobRequest);
     }

@@ -19,13 +19,13 @@ package org.guvnor.rest.client;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class RepositoryRequest extends Entity {
+public class CloneProjectRequest extends Entity {
 
     private String userName;
     private String password;
     private String requestType;
     private String gitURL;
-    private String organizationalUnitName;
+    private String spaceName;
 
     public String getUserName() {
         return userName;
@@ -59,11 +59,11 @@ public class RepositoryRequest extends Entity {
         this.gitURL = gitURL;
     }
 
-    public String getOrganizationalUnitName() {
-        return organizationalUnitName;
+    public String getSpaceName() {
+        return spaceName;
     }
 
-    public void setOrganizationalUnitName(String organizationalUnitName) {
-        this.organizationalUnitName = organizationalUnitName;
+    public void setSpaceName(String spaceName) {
+        this.spaceName = spaceName;
     }
 }

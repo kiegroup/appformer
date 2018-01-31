@@ -20,20 +20,20 @@ import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class CreateOrganizationalUnitRequest extends JobRequest {
+public class SpaceRequest extends JobRequest {
 
-    private String organizationalUnitName;
+    private String spaceName;
     private String owner;
     private String defaultGroupId;
     private String description;
     private List<String> projects;
 
-    public String getOrganizationalUnitName() {
-        return organizationalUnitName;
+    public String getSpaceName() {
+        return spaceName;
     }
 
-    public void setOrganizationalUnitName(String organizationalUnitName) {
-        this.organizationalUnitName = organizationalUnitName;
+    public void setSpaceName(String spaceName) {
+        this.spaceName = spaceName;
     }
 
     public String getOwner() {

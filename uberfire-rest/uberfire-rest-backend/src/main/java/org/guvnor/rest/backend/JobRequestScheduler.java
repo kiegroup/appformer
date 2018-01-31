@@ -34,10 +34,10 @@ import org.guvnor.rest.backend.cmd.RemoveOrgUnitCmd;
 import org.guvnor.rest.backend.cmd.RemoveProjectFromOrgUnitCmd;
 import org.guvnor.rest.backend.cmd.TestProjectCmd;
 import org.guvnor.rest.backend.cmd.UpdateOrgUnitCmd;
-import org.guvnor.rest.client.AddProjectToOrganizationalUnitRequest;
-import org.guvnor.rest.client.CloneRepositoryRequest;
+import org.guvnor.rest.client.AddProjectToSpaceRequest;
+import org.guvnor.rest.client.CloneProjectJobRequest;
 import org.guvnor.rest.client.CompileProjectRequest;
-import org.guvnor.rest.client.CreateOrganizationalUnitRequest;
+import org.guvnor.rest.client.SpaceRequest;
 import org.guvnor.rest.client.CreateProjectRequest;
 import org.guvnor.rest.client.DeleteProjectRequest;
 import org.guvnor.rest.client.DeployProjectRequest;
@@ -81,12 +81,12 @@ public class JobRequestScheduler {
         this.jobRequestHelper = jobRequestHelper;
     }
 
-    public void cloneRepositoryRequest(final CloneRepositoryRequest jobRequest) {
+    public void cloneProjectRequest(final CloneProjectJobRequest jobRequest) {
         final Map<String, Object> params = getContext(jobRequest);
         params.put("Repository",
-                   jobRequest.getRepository().getName());
+                   jobRequest.getCloneProjectRequest().getName());
         params.put("Operation",
-                   "cloneRepository");
+                   "cloneProject");
 
         scheduleJob(jobRequest,
                     new CloneRepositoryCmd(jobRequestHelper,
@@ -174,7 +174,7 @@ public class JobRequestScheduler {
                                          params));
     }
 
-    public void createOrganizationalUnitRequest(final CreateOrganizationalUnitRequest jobRequest) {
+    public void createOrganizationalUnitRequest(final SpaceRequest jobRequest) {
         final Map<String, Object> params = getContext(jobRequest);
         params.put("Operation",
                    "createOrgUnit");
@@ -196,7 +196,7 @@ public class JobRequestScheduler {
                                          params));
     }
 
-    public void addProjectToOrganizationalUnitRequest(final AddProjectToOrganizationalUnitRequest jobRequest) {
+    public void addProjectToSpace(final AddProjectToSpaceRequest jobRequest) {
         final Map<String, Object> params = getContext(jobRequest);
         params.put("Project",
                    jobRequest.getProjectName());

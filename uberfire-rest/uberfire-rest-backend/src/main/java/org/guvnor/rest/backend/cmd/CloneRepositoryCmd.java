@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.guvnor.rest.backend.JobRequestHelper;
 import org.guvnor.rest.backend.JobResultManager;
-import org.guvnor.rest.client.CloneRepositoryRequest;
+import org.guvnor.rest.client.CloneProjectJobRequest;
 import org.guvnor.rest.client.JobRequest;
 import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
@@ -37,16 +37,16 @@ public class CloneRepositoryCmd extends AbstractJobCommand {
     @Override
     public JobResult internalExecute(JobRequest request) throws Exception {
         JobRequestHelper helper = getHelper();
-        CloneRepositoryRequest jobRequest = (CloneRepositoryRequest) request;
+        CloneProjectJobRequest jobRequest = (CloneProjectJobRequest) request;
 
         JobResult result = null;
         try {
-            result = helper.cloneRepository(jobRequest.getJobId(),
-                                            jobRequest.getRepository());
+            result = helper.cloneProject(jobRequest.getJobId(),
+                                         jobRequest.getCloneProjectRequest());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
-            logger.debug("----cloneRepository--- , repository name: {} [{}]",
-                         jobRequest.getRepository().getName(),
+            logger.debug("----cloneProject--- , repository name: {} [{}]",
+                         jobRequest.getCloneProjectRequest().getName(),
                          status);
         }
         return result;

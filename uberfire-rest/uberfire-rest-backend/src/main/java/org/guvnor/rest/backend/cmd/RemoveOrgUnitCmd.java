@@ -42,11 +42,11 @@ public class RemoveOrgUnitCmd extends AbstractJobCommand {
         JobResult result = null;
         try {
             result = helper.removeOrganizationalUnit(jobRequest.getJobId(),
-                                                     jobRequest.getOrganizationalUnitName());
+                                                     jobRequest.getSpaceName());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
             logger.debug("-----removeOrganizationalUnit--- , OrganizationalUnit name: {}",
-                         jobRequest.getOrganizationalUnitName(),
+                         jobRequest.getSpaceName(),
                          status);
         }
         return result;

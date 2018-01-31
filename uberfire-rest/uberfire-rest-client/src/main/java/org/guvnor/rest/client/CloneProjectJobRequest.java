@@ -18,24 +18,15 @@ package org.guvnor.rest.client;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class AddProjectToOrganizationalUnitRequest extends JobRequest {
+public class CloneProjectJobRequest extends JobRequest {
 
-    private String organizationalUnitName;
-    private String projectName;
+    private CloneProjectRequest cloneProjectRequest;
 
-    public String getOrganizationalUnitName() {
-        return organizationalUnitName;
+    public CloneProjectRequest getCloneProjectRequest() {
+        return cloneProjectRequest;
     }
 
-    public void setOrganizationalUnitName(String organizationalUnitName) {
-        this.organizationalUnitName = organizationalUnitName;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setCloneProjectRequest(CloneProjectRequest cloneProjectRequest) {
+        this.cloneProjectRequest = cloneProjectRequest;
     }
 }

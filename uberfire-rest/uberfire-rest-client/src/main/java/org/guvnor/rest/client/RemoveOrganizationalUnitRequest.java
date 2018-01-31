@@ -22,17 +22,17 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class RemoveOrganizationalUnitRequest extends JobRequest {
 
-    private String organizationalUnitName;
+    private String spaceName;
     private String owner;
     private String description;
     private List<String> repositories;
 
-    public String getOrganizationalUnitName() {
-        return organizationalUnitName;
+    public String getSpaceName() {
+        return spaceName;
     }
 
-    public void setOrganizationalUnitName(String organizationalUnitName) {
-        this.organizationalUnitName = organizationalUnitName;
+    public void setSpaceName(String spaceName) {
+        this.spaceName = spaceName;
     }
 
     public String getOwner() {

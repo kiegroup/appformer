@@ -39,15 +39,16 @@ import org.guvnor.common.services.project.service.ModuleService;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.common.services.shared.test.TestResultMessage;
 import org.guvnor.common.services.shared.test.TestService;
+import org.guvnor.rest.client.CloneProjectRequest;
 import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
-import org.guvnor.rest.client.RepositoryRequest;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
 import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
+import org.kie.soup.commons.validation.PortablePreconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -91,8 +92,8 @@ public class JobRequestHelper {
     @Inject
     private TestService testService;
 
-    public JobResult cloneRepository(final String jobId,
-                                     final RepositoryRequest repository) {
+    public JobResult cloneProject(final String jobId,
+                                  final CloneProjectRequest repository) {
         JobResult result = new JobResult();
         result.setJobId(jobId);
 
@@ -104,8 +105,8 @@ public class JobRequestHelper {
 
         final String scheme = "git";
 
-        String orgUnitName = repository.getOrganizationalUnitName();
-        OrganizationalUnit orgUnit = organizationalUnitService.getOrganizationalUnit(repository.getOrganizationalUnitName());
+        String orgUnitName = repository.getSpaceName();
+        OrganizationalUnit orgUnit = organizationalUnitService.getOrganizationalUnit(repository.getSpaceName());
         if (orgUnit == null) {
             // double check, this is also checked at input
             result.setStatus(JobStatus.BAD_REQUEST);
@@ -275,22 +276,31 @@ public class JobRequestHelper {
     }
 
     public JobResult installProject(final String jobId,
-                                    final String organizationalUnitName,
+                                    final String spaceName,
                                     final String projectName) {
+
+        PortablePreconditions.checkNotNull("jobId", jobId);
+        PortablePreconditions.checkNotNull("spaceName", spaceName);
+        PortablePreconditions.checkNotNull("projectName", projectName);
+
         JobResult result = new JobResult();
         result.setJobId(jobId);
 
-        final OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(organizationalUnitName);
+        final Space space = spacesAPI.getSpace(spaceName);
 
-        if (organizationalUnit == null) {
+        if (space == null) {
             result.setStatus(JobStatus.RESOURCE_NOT_EXIST);
-            result.setResult("Organizational Unit [" + organizationalUnitName + "] does not exist");
+            result.setResult("Space [" + spaceName + "] does not exist");
             return result;
         } else {
-            final WorkspaceProject workspaceProject = workspaceProjectService.newProject(organizationalUnit,
-                                                                                         new POM(new GAV(organizationalUnit.getDefaultGroupId(),
-                                                                                                         projectName,
-                                                                                                         "1.0.0")));
+            final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space,
+                                                                                             projectName);
+            if (workspaceProject == null) {
+                result.setStatus(JobStatus.RESOURCE_NOT_EXIST);
+                result.setResult("Project [" + projectName + "] does not exist");
+                return result;
+            }
+            
             final Module module = workspaceProject.getMainModule();
 
             if (module == null) {

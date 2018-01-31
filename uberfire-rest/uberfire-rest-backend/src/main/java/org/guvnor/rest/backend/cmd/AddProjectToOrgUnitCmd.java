@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.guvnor.rest.backend.JobRequestHelper;
 import org.guvnor.rest.backend.JobResultManager;
-import org.guvnor.rest.client.AddProjectToOrganizationalUnitRequest;
+import org.guvnor.rest.client.AddProjectToSpaceRequest;
 import org.guvnor.rest.client.JobRequest;
 import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
@@ -37,17 +37,17 @@ public class AddProjectToOrgUnitCmd extends AbstractJobCommand {
     @Override
     public JobResult internalExecute(final JobRequest request) throws Exception {
         JobRequestHelper helper = getHelper();
-        AddProjectToOrganizationalUnitRequest jobRequest = (AddProjectToOrganizationalUnitRequest) request;
+        AddProjectToSpaceRequest jobRequest = (AddProjectToSpaceRequest) request;
 
         JobResult result = null;
         try {
             result = helper.addRepositoryToOrganizationalUnit(jobRequest.getJobId(),
-                                                              jobRequest.getOrganizationalUnitName(),
+                                                              jobRequest.getSpaceName(),
                                                               jobRequest.getProjectName());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
             logger.debug("-----addProjectToOrganizationalUnit--- , OrganizationalUnit name: {}, project name: {} [{}]",
-                         jobRequest.getOrganizationalUnitName(),
+                         jobRequest.getSpaceName(),
                          jobRequest.getProjectName(),
                          status);
         }
