@@ -25,7 +25,6 @@ public class CloneProjectRequest extends Entity {
     private String password;
     private String requestType;
     private String gitURL;
-    private String spaceName;
 
     public String getUserName() {
         return userName;
@@ -59,11 +58,4 @@ public class CloneProjectRequest extends Entity {
         this.gitURL = gitURL;
     }
 
-    public String getSpaceName() {
-        return spaceName;
-    }
-
-    public void setSpaceName(String spaceName) {
-        this.spaceName = spaceName;
-    }
 }

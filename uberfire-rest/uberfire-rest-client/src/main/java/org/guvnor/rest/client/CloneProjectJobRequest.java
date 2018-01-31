@@ -21,6 +21,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 public class CloneProjectJobRequest extends JobRequest {
 
     private CloneProjectRequest cloneProjectRequest;
+    private String spaceName;
 
     public CloneProjectRequest getCloneProjectRequest() {
         return cloneProjectRequest;
@@ -28,5 +29,13 @@ public class CloneProjectJobRequest extends JobRequest {
 
     public void setCloneProjectRequest(CloneProjectRequest cloneProjectRequest) {
         this.cloneProjectRequest = cloneProjectRequest;
+    }
+
+    public void setSpaceName(String spaceName) {
+        this.spaceName = spaceName;
+    }
+
+    public String getSpaceName() {
+        return spaceName;
     }
 }

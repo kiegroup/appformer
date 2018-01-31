@@ -42,6 +42,7 @@ public class CloneRepositoryCmd extends AbstractJobCommand {
         JobResult result = null;
         try {
             result = helper.cloneProject(jobRequest.getJobId(),
+                                         jobRequest.getSpaceName(),
                                          jobRequest.getCloneProjectRequest());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;

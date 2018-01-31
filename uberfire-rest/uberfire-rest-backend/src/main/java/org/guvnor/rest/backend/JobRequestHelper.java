@@ -93,6 +93,7 @@ public class JobRequestHelper {
     private TestService testService;
 
     public JobResult cloneProject(final String jobId,
+                                  final String spaceName,
                                   final CloneProjectRequest repository) {
         JobResult result = new JobResult();
         result.setJobId(jobId);
@@ -105,12 +106,11 @@ public class JobRequestHelper {
 
         final String scheme = "git";
 
-        String orgUnitName = repository.getSpaceName();
-        OrganizationalUnit orgUnit = organizationalUnitService.getOrganizationalUnit(repository.getSpaceName());
+        OrganizationalUnit orgUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
         if (orgUnit == null) {
             // double check, this is also checked at input
             result.setStatus(JobStatus.BAD_REQUEST);
-            result.setResult("Organizational unit '" + orgUnitName + "' does not exist!");
+            result.setResult("Space '" + spaceName + "' does not exist!");
             return result;
         }
 
@@ -478,7 +478,7 @@ public class JobRequestHelper {
         String _defaultGroupId = null;
         if (defaultGroupId == null || defaultGroupId.trim().isEmpty()) {
             _defaultGroupId = organizationalUnitService.getSanitizedDefaultGroupId(organizationalUnitName);
-            logger.warn("No default group id was provided, reverting to the organizational unit name");
+            logger.warn("No default group id was provided, reverting to the space unit name");
         } else {
             if (!organizationalUnitService.isValidGroupId(defaultGroupId)) {
                 result.setStatus(JobStatus.BAD_REQUEST);
@@ -547,7 +547,7 @@ public class JobRequestHelper {
         String _defaultGroupId = null;
         if (defaultGroupId == null || defaultGroupId.trim().isEmpty()) {
             _defaultGroupId = organizationalUnitService.getSanitizedDefaultGroupId(organizationalUnitName);
-            logger.warn("No default group id was provided, reverting to the organizational unit name");
+            logger.warn("No default group id was provided, reverting to the space unit name");
         } else {
             if (!organizationalUnitService.isValidGroupId(defaultGroupId)) {
                 result.setStatus(JobStatus.BAD_REQUEST);

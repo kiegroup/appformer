@@ -155,9 +155,10 @@ public class ProjectResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/spaces/{spaceName}/projects")
+    @Path("/spaces/{spaceName}/git/clone")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response cloneProject(CloneProjectRequest cloneProjectRequest) {
+    public Response cloneProject(@PathParam("spaceName") String spaceName,
+                                 CloneProjectRequest cloneProjectRequest) {
         logger.debug("-----cloneProject--- , CloneProjectRequest name: {}",
                      cloneProjectRequest.getName());
 
@@ -165,6 +166,7 @@ public class ProjectResource {
         final CloneProjectJobRequest jobRequest = new CloneProjectJobRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
+        jobRequest.setSpaceName(spaceName);
         jobRequest.setCloneProjectRequest(cloneProjectRequest);
         addAcceptedJobResult(id);
 
