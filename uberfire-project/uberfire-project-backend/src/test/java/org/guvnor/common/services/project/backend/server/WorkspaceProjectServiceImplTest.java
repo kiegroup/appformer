@@ -181,6 +181,18 @@ public class WorkspaceProjectServiceImplTest {
     }
 
     @Test
+    public void getAllProjectsWithName() throws Exception {
+        final Collection<WorkspaceProject> allWorkspaceProjects = workspaceProjectService.getAllWorkspaceProjectsByName(ou1,
+                                                                                                                        "repository-with-same-alias");
+
+        assertContains(repository2,
+                       allWorkspaceProjects);
+
+        assertEquals(1,
+                     allWorkspaceProjects.size());
+    }
+
+    @Test
     public void noProjects() throws Exception {
         final OrganizationalUnit organizationalUnit = mock(OrganizationalUnit.class);
         doReturn("myOU").when(organizationalUnit).getName();

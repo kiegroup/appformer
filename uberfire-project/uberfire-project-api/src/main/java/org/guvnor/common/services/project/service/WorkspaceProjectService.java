@@ -34,6 +34,9 @@ public interface WorkspaceProjectService {
 
     Collection<WorkspaceProject> getAllWorkspaceProjects(final OrganizationalUnit organizationalUnit);
 
+    Collection<WorkspaceProject> getAllWorkspaceProjectsByName(final OrganizationalUnit organizationalUnit,
+                                                               final String name);
+
     WorkspaceProject newProject(final OrganizationalUnit organizationalUnit,
                                 final POM pom);
 

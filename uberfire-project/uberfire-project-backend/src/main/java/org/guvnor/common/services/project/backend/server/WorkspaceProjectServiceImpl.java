@@ -81,6 +81,13 @@ public class WorkspaceProjectServiceImpl
 
     @Override
     public Collection<WorkspaceProject> getAllWorkspaceProjects(final OrganizationalUnit organizationalUnit) {
+        return getAllWorkspaceProjectsByName(organizationalUnit,
+                                             null);
+    }
+
+    @Override
+    public Collection<WorkspaceProject> getAllWorkspaceProjectsByName(final OrganizationalUnit organizationalUnit,
+                                                                      final String name) {
         final List<WorkspaceProject> result = new ArrayList<>();
 
         Space space = spaces.getSpace(organizationalUnit.getName());
@@ -90,10 +97,13 @@ public class WorkspaceProjectServiceImpl
                                    repository)
                     && repository.getDefaultBranch().isPresent()) {
 
-                result.add(new WorkspaceProject(organizationalUnit,
-                                                repository,
-                                                repository.getDefaultBranch().get(),
-                                                moduleService.resolveModule(repository.getDefaultBranch().get().getPath())));
+                final WorkspaceProject project = new WorkspaceProject(organizationalUnit,
+                                                                      repository,
+                                                                      repository.getDefaultBranch().get(),
+                                                                      moduleService.resolveModule(repository.getDefaultBranch().get().getPath()));
+                if (name == null || name.equals(project.getName())) {
+                    result.add(project);
+                }
             }
         }
 
