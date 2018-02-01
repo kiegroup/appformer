@@ -57,8 +57,8 @@ import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
 import org.guvnor.rest.client.ProjectRequest;
 import org.guvnor.rest.client.ProjectResponse;
-import org.guvnor.rest.client.RemoveOrganizationalUnitRequest;
 import org.guvnor.rest.client.RemoveProjectFromOrganizationalUnitRequest;
+import org.guvnor.rest.client.RemoveSpaceRequest;
 import org.guvnor.rest.client.Space;
 import org.guvnor.rest.client.SpaceRequest;
 import org.guvnor.rest.client.TestProjectRequest;
@@ -102,6 +102,10 @@ public class ProjectResource {
     private JobRequestScheduler jobRequestObserver;
     @Inject
     private JobResultManager jobManager;
+
+    @Inject
+    private SpacesAPI spacesAPI;
+
     private AtomicLong counter = new AtomicLong(0);
 
     private void addAcceptedJobResult(String jobId) {
@@ -244,7 +248,7 @@ public class ProjectResource {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/spaces/{spaceName}/{projectName}")
+    @Path("/spaces/{spaceName}/projects/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response deleteProject(
             @PathParam("spaceName") String spaceName,
@@ -265,7 +269,7 @@ public class ProjectResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{spaceName}/{projectName}")
+    @Path("/spaces/{spaceName}/projects/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public ProjectResponse getProject(@PathParam("spaceName") String spaceName, @PathParam("projectName") String projectName) {
         logger.debug("-----getProject---, project name: {}",
@@ -278,7 +282,7 @@ public class ProjectResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{spaceName}/{projectName}/maven/compile")
+    @Path("/spaces/{spaceName}/projects/{projectName}/maven/compile")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response compileProject(
             @PathParam("spaceName") String spaceName,
@@ -326,7 +330,7 @@ public class ProjectResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{spaceName}/{projectName}/maven/test")
+    @Path("/spaces/{spaceName}/projects/{projectName}/maven/test")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response testProject(
             @PathParam("spaceName") String spaceName,
@@ -368,9 +372,6 @@ public class ProjectResource {
         return createAcceptedStatusResponse(jobRequest);
     }
 
-    @Inject
-    private SpacesAPI spacesAPI;
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/spaces")
@@ -401,11 +402,11 @@ public class ProjectResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}")
+    @Path("/spaces/{spaceName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Space getOrganizationalUnit(@PathParam("organizationalUnitName") String organizationalUnitName) {
+    public Space getOrganizationalUnit(@PathParam("spaceName") String spaceName) {
         logger.debug("-----getOrganizationalUnit ---, OrganizationalUnit name: {}",
-                     organizationalUnitName);
+                     spaceName);
 
         return null;
     }
@@ -439,9 +440,9 @@ public class ProjectResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}/")
+    @Path("/spaces/{spaceName}/")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response updateOrganizationalUnit(@PathParam("organizationalUnitName") String orgUnitName,
+    public Response updateOrganizationalUnit(@PathParam("spaceName") String orgUnitName,
                                              UpdateOrganizationalUnit organizationalUnit) {
 
         // use name in url if post entity name is null
@@ -449,7 +450,7 @@ public class ProjectResource {
             organizationalUnit.setName(orgUnitName);
         }
 
-        logger.debug("-----updateOrganizationalUnit--- , OrganizationalUnit name: {}, OrganizationalUnit owner: {}, Default group id : {}",
+        logger.debug("-----updateOrganizationalUnit--- , OrganizationalUnit name: {}, Space owner: {}, Default group id : {}",
                      organizationalUnit.getName(),
                      organizationalUnit.getOwner(),
                      organizationalUnit.getDefaultGroupId());
@@ -491,19 +492,19 @@ public class ProjectResource {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/organizationalunits/{organizationalUnitName}/projects/{projectName}")
+    @Path("/spaces/{spaceName}/projects/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public Response removeRepositoryFromOrganizationalUnit(@PathParam("organizationalUnitName") String organizationalUnitName,
-                                                           @PathParam("projectName") String projectName) {
-        logger.debug("-----removeRepositoryFromOrganizationalUnit--- , OrganizationalUnit name: {}, Repository name: {}",
-                     organizationalUnitName,
+    public Response removeRepositoryFromSpace(@PathParam("spaceName") String spaceName,
+                                              @PathParam("projectName") String projectName) {
+        logger.debug("-----removeRepositoryFromSpace--- , Space name: {}, Repository name: {}",
+                     spaceName,
                      projectName);
 
         String id = newId();
         RemoveProjectFromOrganizationalUnitRequest jobRequest = new RemoveProjectFromOrganizationalUnitRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
-        jobRequest.setOrganizationalUnitName(organizationalUnitName);
+        jobRequest.setOrganizationalUnitName(spaceName);
         jobRequest.setProjectName(projectName);
         addAcceptedJobResult(id);
 
@@ -519,13 +520,13 @@ public class ProjectResource {
                      spaceName);
 
         final String id = newId();
-        final RemoveOrganizationalUnitRequest jobRequest = new RemoveOrganizationalUnitRequest();
+        final RemoveSpaceRequest jobRequest = new RemoveSpaceRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
         jobRequest.setSpaceName(spaceName);
         addAcceptedJobResult(id);
 
-        jobRequestObserver.removeOrganizationalUnitRequest(jobRequest);
+        jobRequestObserver.removeSpaceRequest(jobRequest);
 
         return createAcceptedStatusResponse(jobRequest);
     }

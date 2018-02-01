@@ -20,7 +20,7 @@ import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class RemoveOrganizationalUnitRequest extends JobRequest {
+public class RemoveSpaceRequest extends JobRequest {
 
     private String spaceName;
     private String owner;

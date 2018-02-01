@@ -44,7 +44,7 @@ import org.guvnor.rest.client.DeployProjectRequest;
 import org.guvnor.rest.client.InstallProjectRequest;
 import org.guvnor.rest.client.JobRequest;
 import org.guvnor.rest.client.JobStatus;
-import org.guvnor.rest.client.RemoveOrganizationalUnitRequest;
+import org.guvnor.rest.client.RemoveSpaceRequest;
 import org.guvnor.rest.client.RemoveProjectFromOrganizationalUnitRequest;
 import org.guvnor.rest.client.TestProjectRequest;
 import org.guvnor.rest.client.UpdateOrganizationalUnitRequest;
@@ -222,7 +222,7 @@ public class JobRequestScheduler {
                                                     params));
     }
 
-    public void removeOrganizationalUnitRequest(final RemoveOrganizationalUnitRequest jobRequest) {
+    public void removeSpaceRequest(final RemoveSpaceRequest jobRequest) {
         final Map<String, Object> params = getContext(jobRequest);
         params.put("Operation",
                    "removeOrgUnit");
