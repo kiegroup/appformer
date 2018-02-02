@@ -64,7 +64,7 @@ public class ColumnRenderingStrategyFlattened {
             //- horizontal
             final MultiPath bodyGrid = theme.getBodyGridLine();
             for (int rowIndex = minVisibleRowIndex; rowIndex <= maxVisibleRowIndex; rowIndex++) {
-                if(rowIndex==0) {
+                if (rowIndex == 0) {
                     continue;
                 }
                 final double y = visibleRowOffsets.get(rowIndex - minVisibleRowIndex) - visibleRowOffsets.get(0);
