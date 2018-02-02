@@ -18,7 +18,6 @@ package org.uberfire.ext.wires.core.grids.client.widget.grid.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import com.ait.lienzo.client.core.Context2D;
 import com.ait.lienzo.client.core.shape.Group;
@@ -31,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.uberfire.ext.wires.core.grids.client.model.Bounds;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridData;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridRow;
@@ -56,11 +54,11 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils.ROW_HEIGHT;
+import static org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils.makeRenderingInformation;
 
 @RunWith(LienzoMockitoTestRunner.class)
 public class BaseGridWidgetRenderingTest {
-
-    private static final double ROW_HEIGHT = 20.0;
 
     @Mock
     private Viewport viewport;
@@ -168,9 +166,10 @@ public class BaseGridWidgetRenderingTest {
 
     @Test
     public void renderingWithDOMElementColumnsAndRows() {
-        final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(new ArrayList<Double>() {{
-            add(ROW_HEIGHT);
-        }});
+        final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model,
+                                                                                        new ArrayList<Double>() {{
+                                                                                            add(ROW_HEIGHT);
+                                                                                        }});
         when(rendererHelper.getRenderingInformation()).thenReturn(ri);
 
         final BooleanDOMElementColumn column = spy(new BooleanDOMElementColumn(new BaseHeaderMetaData("col1"),
@@ -202,7 +201,8 @@ public class BaseGridWidgetRenderingTest {
 
     @Test
     public void renderingWithDOMElementColumnsAndWithoutRows() {
-        final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(Collections.emptyList());
+        final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model,
+                                                                                        Collections.emptyList());
         when(rendererHelper.getRenderingInformation()).thenReturn(ri);
 
         final BooleanDOMElementColumn column = spy(new BooleanDOMElementColumn(new BaseHeaderMetaData("col1"),
@@ -229,28 +229,5 @@ public class BaseGridWidgetRenderingTest {
         verify(gridWidget,
                never()).drawBody(any(BaseGridRendererHelper.RenderingInformation.class),
                                  any(Boolean.class));
-    }
-
-    private BaseGridRendererHelper.RenderingInformation makeRenderingInformation(final List<Double> rowOffsets) {
-        return new BaseGridRendererHelper.RenderingInformation(mock(Bounds.class),
-                                                               model.getColumns(),
-                                                               new BaseGridRendererHelper.RenderingBlockInformation(model.getColumns(),
-                                                                                                                    0.0,
-                                                                                                                    0.0,
-                                                                                                                    0.0,
-                                                                                                                    100),
-                                                               new BaseGridRendererHelper.RenderingBlockInformation(Collections.emptyList(),
-                                                                                                                    0.0,
-                                                                                                                    0.0,
-                                                                                                                    0.0,
-                                                                                                                    0.0),
-                                                               0,
-                                                               rowOffsets.size() - 1,
-                                                               rowOffsets,
-                                                               false,
-                                                               false,
-                                                               0,
-                                                               2,
-                                                               0);
     }
 }
