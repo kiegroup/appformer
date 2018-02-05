@@ -24,6 +24,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.user.client.Event;
@@ -208,6 +209,11 @@ public class LiveSearchDropDownView extends Composite
     void onSearchChanged(KeyUpEvent event) {
         String pattern = searchInput.getValue();
         presenter.search(pattern);
+    }
+
+    @EventHandler("searchInput")
+    void onSearchKeyDown(KeyDownEvent event) {
+        event.stopPropagation();
     }
 
     @EventHandler("searchInput")
