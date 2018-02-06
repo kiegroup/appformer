@@ -25,6 +25,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 import static org.guvnor.structure.repositories.EnvironmentParameters.INIT;
 import static org.guvnor.structure.repositories.EnvironmentParameters.MANAGED;
+import static org.guvnor.structure.repositories.EnvironmentParameters.MIRROR;
 import static org.guvnor.structure.repositories.EnvironmentParameters.ORIGIN;
 import static org.guvnor.structure.repositories.EnvironmentParameters.PASSWORD;
 import static org.guvnor.structure.repositories.EnvironmentParameters.USER_NAME;
@@ -93,5 +94,10 @@ public class RepositoryEnvironmentConfigurations {
 
     public Object getOrigin() {
         return configurationMap.get(ORIGIN);
+    }
+
+    public void setMirror(boolean value) {
+        configurationMap.put(MIRROR,
+                             value);
     }
 }
