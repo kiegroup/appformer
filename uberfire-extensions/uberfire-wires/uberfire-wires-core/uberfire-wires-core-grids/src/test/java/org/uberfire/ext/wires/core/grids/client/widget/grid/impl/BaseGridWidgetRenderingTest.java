@@ -16,7 +16,6 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.grid.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import com.ait.lienzo.client.core.Context2D;
@@ -167,9 +166,7 @@ public class BaseGridWidgetRenderingTest {
     @Test
     public void renderingWithDOMElementColumnsAndRows() {
         final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model,
-                                                                                        new ArrayList<Double>() {{
-                                                                                            add(ROW_HEIGHT);
-                                                                                        }});
+                                                                                        Collections.singletonList(0d));
         when(rendererHelper.getRenderingInformation()).thenReturn(ri);
 
         final BooleanDOMElementColumn column = spy(new BooleanDOMElementColumn(new BaseHeaderMetaData("col1"),

@@ -131,7 +131,7 @@ public class BaseGridRendererTest {
         final double WIDTH = 100.0;
         final double HEIGHT = 200.0;
         final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model,
-                                                                                        Arrays.asList(ROW_HEIGHT, ROW_HEIGHT * 2, ROW_HEIGHT * 3));
+                                                                                        Arrays.asList(0d, ROW_HEIGHT, ROW_HEIGHT * 2));
 
         final RendererCommand command = renderer.renderSelector(WIDTH,
                                                                 HEIGHT,
@@ -180,7 +180,7 @@ public class BaseGridRendererTest {
     @SuppressWarnings("unchecked")
     public void checkRenderHeader() {
         final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model,
-                                                                                        Arrays.asList(ROW_HEIGHT, ROW_HEIGHT * 2, ROW_HEIGHT * 3));
+                                                                                        Arrays.asList(0d, ROW_HEIGHT, ROW_HEIGHT * 2));
         final GridHeaderRenderContext context = mock(GridHeaderRenderContext.class);
         doReturn(model.getColumns()).when(context).getAllColumns();
         doReturn(model.getColumns()).when(context).getBlockColumns();
@@ -229,7 +229,7 @@ public class BaseGridRendererTest {
     @Test
     public void checkRenderBody() {
         final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model,
-                                                                                        Arrays.asList(ROW_HEIGHT, ROW_HEIGHT * 2, ROW_HEIGHT * 3));
+                                                                                        Arrays.asList(0d, ROW_HEIGHT, ROW_HEIGHT * 2));
         final GridBodyRenderContext context = mock(GridBodyRenderContext.class);
         doReturn(0).when(context).getMinVisibleRowIndex();
         doReturn(model.getRowCount() - 1).when(context).getMaxVisibleRowIndex();
@@ -260,7 +260,7 @@ public class BaseGridRendererTest {
 
         assertRenderedRectangle(rectangleCaptor.getValue(),
                                 column.getWidth(),
-                                ri.getVisibleRowOffsets().get(2));
+                                ri.getVisibleRowOffsets().get(2) + ROW_HEIGHT);
     }
 
     @Test

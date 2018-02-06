@@ -29,7 +29,9 @@ public class BaseGridWidgetRenderingTestUtils {
 
     public static final double ROW_HEIGHT = 20.0;
 
-    public static final double HEADER_HEIGHT = 20.0;
+    public static final int HEADER_ROW_COUNT = 2;
+
+    public static final double HEADER_HEIGHT = ROW_HEIGHT * HEADER_ROW_COUNT;
 
     public static RenderingInformation makeRenderingInformation(final GridData model,
                                                                 final List<Double> rowOffsets) {
@@ -51,7 +53,7 @@ public class BaseGridWidgetRenderingTestUtils {
                                         false,
                                         false,
                                         HEADER_HEIGHT,
-                                        2,
+                                        HEADER_ROW_COUNT,
                                         0);
     }
 }

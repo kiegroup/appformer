@@ -40,6 +40,8 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.Gri
 
 public class ColumnRenderingStrategyMerged {
 
+    private static final int LOOP_THRESHOLD = 1000;
+
     public List<GridRenderer.RendererCommand> render(final GridColumn<?> column,
                                                      final GridBodyColumnRenderContext context,
                                                      final BaseGridRendererHelper rendererHelper,
@@ -110,8 +112,13 @@ public class ColumnRenderingStrategyMerged {
             int iterations = 0;
             for (int rowIndex = minVisibleRowIndex; rowIndex <= maxVisibleRowIndex; rowIndex++) {
 
+                // This is a defensive programming to prevent this loop from never ending.
+                // The check should never be satisfied however, especially in early development, this loop sometimes became
+                // infinite. All known issue are resolved however the check remains as a safety precaution. Without the check
+                // the Workbench could appear to "lock up" - if the infinite loop scenario reoccurred. With the check,
+                // at worst, the grid will be incorrectly rendered.
                 iterations++;
-                if (iterations > 1000) {
+                if (iterations > LOOP_THRESHOLD) {
                     break;
                 }
 
