@@ -1220,6 +1220,54 @@ public class GridCellSelectionsTest extends BaseGridTest {
     }
 
     @Test
+    public void testSelectCellThenAppendColumn() {
+        final GridData data = new BaseGridData();
+        final GridColumn<String> gc1 = new MockMergableGridColumn<String>("col1",
+                                                                          100);
+        data.appendColumn(gc1);
+
+        data.appendRow(new BaseGridRow());
+        data.appendRow(new BaseGridRow());
+
+        for (int rowIndex = 0; rowIndex < data.getRowCount(); rowIndex++) {
+            data.setCell(rowIndex,
+                         0,
+                         new BaseGridCellValue<String>("(0, 0)"));
+        }
+
+        assertGridIndexes(data,
+                          new boolean[]{true, true},
+                          new boolean[]{false, false},
+                          new Expected[][]{
+                                  {build(true,
+                                         2,
+                                         "(0, 0)")},
+                                  {build(true,
+                                         0,
+                                         "(0, 0)")}
+                          });
+
+        data.selectCell(0,
+                        0);
+        assertEquals(2,
+                     data.getSelectedCells().size());
+
+        data.appendColumn(new MockMergableGridColumn<String>("col1",
+                                                             100));
+
+        assertTrue(data.getSelectedCells().contains(new GridData.SelectedCell(0,
+                                                                              0)));
+        assertTrue(data.getSelectedCells().contains(new GridData.SelectedCell(1,
+                                                                              0)));
+        assertFalse(data.getSelectedCells().contains(new GridData.SelectedCell(0,
+                                                                               1)));
+        assertFalse(data.getSelectedCells().contains(new GridData.SelectedCell(1,
+                                                                               1)));
+        assertEquals(2,
+                     data.getSelectedCells().size());
+    }
+
+    @Test
     public void testSelectCellInsertColumn() {
         final GridData data = new BaseGridData();
         final GridColumn<String> gc1 = new MockMergableGridColumn<String>("col1",
