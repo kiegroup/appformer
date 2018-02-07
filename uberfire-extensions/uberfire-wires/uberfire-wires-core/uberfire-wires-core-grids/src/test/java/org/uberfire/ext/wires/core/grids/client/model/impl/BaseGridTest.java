@@ -35,8 +35,16 @@ public abstract class BaseGridTest {
 
     protected GridColumn<String>[] gridColumns;
 
+    // true by default
+    private boolean isMerged = true;
+
+    protected void constructGridData(final boolean isMerged, final int columnCount, final int rowCount) {
+        this.isMerged = isMerged;
+        constructGridData(columnCount, rowCount);
+    }
+
     protected void constructGridData(final int columnCount, final int rowCount) {
-        gridData = new BaseGridData();
+        gridData = new BaseGridData(isMerged);
 
         gridColumns = new GridColumn[columnCount];
         for (int i = 0; i < columnCount; i++) {
