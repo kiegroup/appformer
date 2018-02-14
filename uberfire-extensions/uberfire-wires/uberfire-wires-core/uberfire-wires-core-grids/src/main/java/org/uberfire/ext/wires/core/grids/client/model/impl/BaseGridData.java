@@ -364,7 +364,7 @@ public class BaseGridData implements GridData {
                          final Supplier<GridCell<?>> cellSupplier) {
         return doSetCell(rowIndex,
                          columnIndex,
-                         (p) -> cellSupplier.get());
+                         (pair) -> cellSupplier.get());
     }
 
     @Override
@@ -374,8 +374,8 @@ public class BaseGridData implements GridData {
                               final GridCellValue<?> value) {
         return doSetCell(rowIndex,
                          columnIndex,
-                         (p) -> {
-                             final Optional<BaseGridCell> cell = Optional.ofNullable((BaseGridCell) getCell(p.getK1(), p.getK2()));
+                         (pair) -> {
+                             final Optional<BaseGridCell> cell = Optional.ofNullable((BaseGridCell) getCell(pair.getK1(), pair.getK2()));
                              final BaseGridCell c = cell.orElse(new BaseGridCell<>(value));
                              c.setValue(value);
                              return c;
@@ -397,7 +397,7 @@ public class BaseGridData implements GridData {
         //If we're not merged just set the value of a single cell
         if (!isMerged) {
             ((BaseGridRow) rows.get(rowIndex)).setCell(_columnIndex,
-                                                       cellSupplier.apply(new Pair<>(rowIndex, columnIndex)));
+                                                       cellSupplier.apply(Pair.newPair(rowIndex, columnIndex)));
             return new Range(rowIndex);
         }
 
@@ -413,7 +413,7 @@ public class BaseGridData implements GridData {
         for (int i = minRowIndex; i <= maxRowIndex; i++) {
             final GridRow row = rows.get(i);
             ((BaseGridRow) row).setCell(_columnIndex,
-                                        cellSupplier.apply(new Pair<>(i, columnIndex)));
+                                        cellSupplier.apply(Pair.newPair(i, columnIndex)));
         }
 
         indexManager.onSetCell(range,

@@ -168,7 +168,7 @@ public interface GridData {
                   final Supplier<GridCell<?>> cellSupplier);
 
     /**
-     * Sets a cell at the specified physical coordinate.
+     * Sets a cell value at the specified physical coordinate.
      * @param rowIndex
      * @param columnIndex
      * @param value
