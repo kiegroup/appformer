@@ -60,26 +60,27 @@ public class BaseGridWidget extends Group implements GridWidget {
 
     protected final SelectionsTransformer bodyTransformer;
     protected final SelectionsTransformer floatingColumnsTransformer;
-
     protected final BaseGridRendererHelper rendererHelper;
-
     protected final Queue<Pair<Group, List<GridRenderer.RendererCommand>>> renderQueue = new ArrayDeque<>();
 
     //These are final as a reference is held by the ISelectionsTransformers
     protected final List<GridColumn<?>> allColumns = new ArrayList<GridColumn<?>>();
     protected final List<GridColumn<?>> bodyColumns = new ArrayList<GridColumn<?>>();
     protected final List<GridColumn<?>> floatingColumns = new ArrayList<GridColumn<?>>();
-    private final CellSelectionManager cellSelectionManager;
+
     protected GridData model;
     protected GridRenderer renderer;
     protected Group header = null;
     protected Group floatingHeader = null;
     protected Group body = null;
-    protected Group floatingBody = null;
     protected Group bodySelections = null;
-    protected Group floatingSelections = null;
+    protected Group floatingBody = null;
+    protected Group floatingBodySelections = null;
+    protected BaseGridRendererHelper.RenderingInformation renderingInformation;
+
     private Group selection = null;
     private boolean isSelected = false;
+    private final CellSelectionManager cellSelectionManager;
 
     public BaseGridWidget(final GridData model,
                           final GridSelectionManager selectionManager,
@@ -207,11 +208,10 @@ public class BaseGridWidget extends Group implements GridWidget {
     @Override
     public void select() {
         isSelected = true;
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         if (renderingInformation == null) {
             return;
         }
-        assertSelectionWidget(renderingInformation);
+        assertSelectionWidget();
         add(selection);
     }
 
@@ -228,7 +228,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         return isSelected;
     }
 
-    private void assertSelectionWidget(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
+    private void assertSelectionWidget() {
         this.selection = new Group();
         addCommandToRenderQueue(selection,
                                 renderer.renderSelector(getWidth(),
@@ -250,13 +250,8 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected void drawWithoutTransforms(Context2D context,
                                          double alpha,
                                          BoundingBox bb) {
-        body = null;
-        header = null;
-        floatingBody = null;
-        floatingHeader = null;
-        bodySelections = null;
-        floatingSelections = null;
-        if ((context.isSelection()) && (false == isListening())) {
+        final boolean isSelectionLayer = context.isSelection();
+        if (isSelectionLayer && (false == isListening())) {
             return;
         }
         alpha = alpha * getAttributes().getAlpha();
@@ -264,118 +259,26 @@ public class BaseGridWidget extends Group implements GridWidget {
         if (alpha <= 0) {
             return;
         }
-
         if (model.getColumns().isEmpty()) {
             return;
         }
 
         //Clear existing content
         this.removeAll();
-        this.allColumns.clear();
-        this.bodyColumns.clear();
-        this.floatingColumns.clear();
-        this.renderQueue.clear();
 
-        //If there's no RenderingInformation the GridWidget is not visible
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
-        if (renderingInformation == null) {
-            destroyDOMElementResources();
-            return;
-        }
-
-        final int minVisibleRowIndex = renderingInformation.getMinVisibleRowIndex();
-        final int maxVisibleRowIndex = renderingInformation.getMaxVisibleRowIndex();
-        final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
-        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
-        final List<GridColumn<?>> allColumns = renderingInformation.getAllColumns();
-        final List<GridColumn<?>> bodyColumns = bodyBlockInformation.getColumns();
-        final List<GridColumn<?>> floatingColumns = floatingBlockInformation.getColumns();
-        final boolean isSelectionLayer = context.isSelection();
-
-        this.allColumns.addAll(allColumns);
-        this.bodyColumns.addAll(bodyColumns);
-        this.floatingColumns.addAll(floatingColumns);
-
-        //Signal columns to attach or detach rendering support
         if (!isSelectionLayer) {
-            for (GridColumn<?> column : model.getColumns()) {
-                if (bodyColumns.contains(column) || floatingColumns.contains(column)) {
-                    if (column instanceof HasMultipleDOMElementResources) {
-                        ((HasMultipleDOMElementResources) column).initialiseResources();
-                    }
-                } else if (column instanceof HasDOMElementResources) {
-                    ((HasDOMElementResources) column).destroyResources();
-                }
+            //If there's no RenderingInformation the GridWidget is not visible
+            this.renderingInformation = prepare();
+            if (renderingInformation == null) {
+                destroyDOMElementResources();
+                return;
             }
+            makeRenderingCommands();
         }
 
-        //Draw if required
-        if (this.bodyColumns.size() > 0) {
-            drawHeader(renderingInformation,
-                       isSelectionLayer);
+        layerRenderGroups();
 
-            if (model.getRowCount() > 0) {
-                drawBody(renderingInformation,
-                         isSelectionLayer);
-            }
-
-            //The order these are added ensures the parts overlap correctly
-            if (body != null) {
-                add(body);
-
-                    if (!isSelectionLayer) {
-                        bodySelections = new Group();
-                        bodySelections.setX(body.getX()).setY(body.getY());
-                        add(bodySelections);
-                }
-            }
-            if (header != null) {
-                add(header);
-            }
-
-            if (floatingBody != null) {
-                add(floatingBody);
-
-                    if (!isSelectionLayer) {
-                        floatingSelections = new Group();
-                        floatingSelections.setX(floatingBody.getX()).setY(floatingBody.getY());
-                        add(floatingSelections);
-                }
-            }
-            if (floatingHeader != null) {
-                add(floatingHeader);
-            }
-
-            if (bodySelections != null) {
-                addCommandToRenderQueue(bodySelections,
-                                        renderSelectedRanges(bodyColumns,
-                                                             bodyBlockInformation.getX(),
-                                                             minVisibleRowIndex,
-                                                             maxVisibleRowIndex,
-                                                             bodyTransformer,
-                                                             renderingInformation));
-            }
-            if (floatingSelections != null) {
-                addCommandToRenderQueue(floatingSelections,
-                                        renderSelectedRanges(floatingColumns,
-                                                             floatingBlockInformation.getX(),
-                                                             minVisibleRowIndex,
-                                                             maxVisibleRowIndex,
-                                                             floatingColumnsTransformer,
-                                                             renderingInformation));
-            }
-
-            addCommandToRenderQueue(this,
-                                    renderGridBoundary(renderingInformation));
-
-            //Include selection indicator if required
-            if (isSelected) {
-                assertSelectionWidget(renderingInformation);
-                add(selection);
-            }
-
-            executeRenderQueueCommands();
-        }
+        executeRenderQueueCommands(isSelectionLayer);
 
         //Signal columns to free any unused resources
         if (!isSelectionLayer) {
@@ -397,11 +300,119 @@ public class BaseGridWidget extends Group implements GridWidget {
                                     bb);
     }
 
+    BaseGridRendererHelper.RenderingInformation prepare() {
+        this.body = null;
+        this.header = null;
+        this.floatingBody = null;
+        this.floatingHeader = null;
+        this.bodySelections = null;
+        this.floatingBodySelections = null;
+        this.allColumns.clear();
+        this.bodyColumns.clear();
+        this.floatingColumns.clear();
+        this.renderQueue.clear();
+
+        //If there's no RenderingInformation the GridWidget is not visible
+        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
+        if (renderingInformation == null) {
+            return null;
+        }
+
+        final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
+        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
+        final List<GridColumn<?>> allColumns = renderingInformation.getAllColumns();
+        final List<GridColumn<?>> bodyColumns = bodyBlockInformation.getColumns();
+        final List<GridColumn<?>> floatingColumns = floatingBlockInformation.getColumns();
+
+        this.allColumns.addAll(allColumns);
+        this.bodyColumns.addAll(bodyColumns);
+        this.floatingColumns.addAll(floatingColumns);
+
+        return renderingInformation;
+    }
+
     void destroyDOMElementResources() {
         for (GridColumn<?> column : model.getColumns()) {
             if (column.getColumnRenderer() instanceof HasDOMElementResources) {
                 ((HasDOMElementResources) column.getColumnRenderer()).destroyResources();
             }
+        }
+    }
+
+    void makeRenderingCommands() {
+        //Signal columns to attach or detach rendering support
+        for (GridColumn<?> column : model.getColumns()) {
+            if (bodyColumns.contains(column) || floatingColumns.contains(column)) {
+                if (column instanceof HasMultipleDOMElementResources) {
+                    ((HasMultipleDOMElementResources) column).initialiseResources();
+                }
+            } else if (column instanceof HasDOMElementResources) {
+                ((HasDOMElementResources) column).destroyResources();
+            }
+        }
+
+        //Draw if required
+        if (this.bodyColumns.size() > 0) {
+            drawHeader(renderingInformation);
+
+            if (model.getRowCount() > 0) {
+                drawBody(renderingInformation);
+            }
+        }
+
+        final int minVisibleRowIndex = renderingInformation.getMinVisibleRowIndex();
+        final int maxVisibleRowIndex = renderingInformation.getMaxVisibleRowIndex();
+        final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
+        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
+
+        if (bodySelections != null) {
+            addCommandToRenderQueue(bodySelections,
+                                    renderSelectedRanges(bodyColumns,
+                                                         bodyBlockInformation.getX(),
+                                                         minVisibleRowIndex,
+                                                         maxVisibleRowIndex,
+                                                         bodyTransformer,
+                                                         renderingInformation));
+        }
+        if (floatingBodySelections != null) {
+            addCommandToRenderQueue(floatingBodySelections,
+                                    renderSelectedRanges(floatingColumns,
+                                                         floatingBlockInformation.getX(),
+                                                         minVisibleRowIndex,
+                                                         maxVisibleRowIndex,
+                                                         floatingColumnsTransformer,
+                                                         renderingInformation));
+        }
+
+        addCommandToRenderQueue(this,
+                                renderGridBoundary(renderingInformation));
+
+        if (isSelected) {
+            assertSelectionWidget();
+        }
+    }
+
+    void layerRenderGroups() {
+        //The order these are added ensures the parts overlap correctly
+        if (body != null) {
+            add(body);
+            add(bodySelections);
+        }
+        if (header != null) {
+            add(header);
+        }
+
+        if (floatingBody != null) {
+            add(floatingBody);
+            add(floatingBodySelections);
+        }
+        if (floatingHeader != null) {
+            add(floatingHeader);
+        }
+
+        //Include selection indicator if required
+        if (isSelected) {
+            add(selection);
         }
     }
 
@@ -417,8 +428,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         return super.setVisible(visible);
     }
 
-    protected void drawHeader(final BaseGridRendererHelper.RenderingInformation renderingInformation,
-                              final boolean isSelectionLayer) {
+    protected void drawHeader(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         final List<GridColumn<?>> allColumns = renderingInformation.getAllColumns();
         final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
@@ -440,7 +450,6 @@ public class BaseGridWidget extends Group implements GridWidget {
             addCommandsToRenderQueue(header,
                                      renderGridHeaderWidget(allColumns,
                                                             bodyColumns,
-                                                            isSelectionLayer,
                                                             renderingInformation));
 
             if (addFloatingHeader) {
@@ -454,14 +463,12 @@ public class BaseGridWidget extends Group implements GridWidget {
                 addCommandsToRenderQueue(floatingHeader,
                                          renderGridHeaderWidget(floatingColumns,
                                                                 floatingColumns,
-                                                                isSelectionLayer,
                                                                 renderingInformation));
             }
         }
     }
 
-    protected void drawBody(final BaseGridRendererHelper.RenderingInformation renderingInformation,
-                            final boolean isSelectionLayer) {
+    protected void drawBody(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
         final List<GridColumn<?>> bodyColumns = bodyBlockInformation.getColumns();
@@ -477,26 +484,29 @@ public class BaseGridWidget extends Group implements GridWidget {
 
         body = new Group();
         body.setX(bodyX).setY(bodyY);
+        bodySelections = new Group();
+        bodySelections.setX(bodyX).setY(bodyY);
+
         addCommandsToRenderQueue(body,
                                  renderGridBodyWidget(bodyColumns,
                                                       bodyBlockInformation.getX(),
                                                       minVisibleRowIndex,
                                                       maxVisibleRowIndex,
-                                                      isSelectionLayer,
                                                       bodyTransformer,
                                                       renderingInformation));
 
         //Render floating columns
         if (floatingColumns.size() > 0) {
             floatingBody = new Group();
-            floatingBody.setX(floatingBodyX);
-            floatingBody.setY(floatingBodyY);
+            floatingBody.setX(floatingBodyX).setY(floatingBodyY);
+            floatingBodySelections = new Group();
+            floatingBodySelections.setX(floatingBodyX).setY(floatingBodyY);
+
             addCommandsToRenderQueue(floatingBody,
                                      renderGridBodyWidget(floatingColumns,
                                                           floatingBlockInformation.getX(),
                                                           minVisibleRowIndex,
                                                           maxVisibleRowIndex,
-                                                          isSelectionLayer,
                                                           floatingColumnsTransformer,
                                                           renderingInformation));
         }
@@ -512,23 +522,32 @@ public class BaseGridWidget extends Group implements GridWidget {
         renderQueue.add(new Pair<>(parent, commands));
     }
 
-    protected void executeRenderQueueCommands() {
-        renderQueue.stream().forEach(p -> p.getK2().forEach(c -> c.execute(p.getK1())));
+    protected void executeRenderQueueCommands(final boolean isSelectionLayer) {
+        renderQueue.stream()
+                .forEach(p -> p.getK2()
+                        .forEach(c -> c.execute(new GridRenderer.GridRendererContext() {
+                            @Override
+                            public Group getGroup() {
+                                return p.getK1();
+                            }
+
+                            @Override
+                            public boolean isSelectionLayer() {
+                                return isSelectionLayer;
+                            }
+                        })));
     }
 
     /**
      * Render the Widget's Header and append to this Group.
      * @param allColumns All columns in the model.
      * @param blockColumns The columns to render for a block.
-     * @param isSelectionLayer Is the SelectionLayer being rendered.
      */
     protected List<GridRenderer.RendererCommand> renderGridHeaderWidget(final List<GridColumn<?>> allColumns,
                                                                         final List<GridColumn<?>> blockColumns,
-                                                                        final boolean isSelectionLayer,
                                                                         final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         final GridHeaderRenderContext context = new GridHeaderRenderContext(allColumns,
-                                                                            blockColumns,
-                                                                            isSelectionLayer);
+                                                                            blockColumns);
         return renderer.renderHeader(model,
                                      context,
                                      rendererHelper,
@@ -541,14 +560,12 @@ public class BaseGridWidget extends Group implements GridWidget {
      * @param absoluteColumnOffsetX Absolute offset from Grid's X co-ordinate to render first column in block.
      * @param minVisibleRowIndex The index of the first visible row.
      * @param maxVisibleRowIndex The index of the last visible row.
-     * @param isSelectionLayer Is the SelectionLayer being rendered.
      * @param transformer SelectionTransformer in operation.
      */
     protected List<GridRenderer.RendererCommand> renderGridBodyWidget(final List<GridColumn<?>> blockColumns,
                                                                       final double absoluteColumnOffsetX,
                                                                       final int minVisibleRowIndex,
                                                                       final int maxVisibleRowIndex,
-                                                                      final boolean isSelectionLayer,
                                                                       final SelectionsTransformer transformer,
                                                                       final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
@@ -565,7 +582,6 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                                         minVisibleRowIndex,
                                                                         maxVisibleRowIndex,
                                                                         blockColumns,
-                                                                        isSelectionLayer,
                                                                         getViewport().getTransform(),
                                                                         renderer,
                                                                         transformer);
@@ -642,7 +658,6 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                                         minVisibleRowIndex,
                                                                         maxVisibleRowIndex,
                                                                         blockColumns,
-                                                                        false,
                                                                         getViewport().getTransform(),
                                                                         renderer,
                                                                         transformer);
