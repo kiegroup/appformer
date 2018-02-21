@@ -30,6 +30,7 @@ public class POM {
     private GAV gav;
     private String name;
     private String description;
+    private String url;
 
     private String packaging;
 
@@ -47,15 +48,18 @@ public class POM {
     public POM(final GAV gav) {
         this(null,
              null,
+             null,
              gav);
     }
 
     public POM(final String name,
                final String description,
+               final String url,
                final GAV gav) {
         super();
         this.name = name;
         this.description = description;
+        this.url = url;
         this.gav = gav;
     }
 
@@ -110,6 +114,14 @@ public class POM {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public GAV getParent() {
@@ -198,6 +210,8 @@ public class POM {
         result = 31 * result + (gav != null ? gav.hashCode() : 0);
         result = ~~result;
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (url != null ? url.hashCode() : 0);
         result = ~~result;
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = ~~result;
