@@ -65,9 +65,9 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected final Queue<Pair<Group, List<GridRenderer.RendererCommand>>> renderQueue = new ArrayDeque<>();
 
     //These are final as a reference is held by the ISelectionsTransformers
-    protected final List<GridColumn<?>> allColumns = new ArrayList<GridColumn<?>>();
-    protected final List<GridColumn<?>> bodyColumns = new ArrayList<GridColumn<?>>();
-    protected final List<GridColumn<?>> floatingColumns = new ArrayList<GridColumn<?>>();
+    protected final List<GridColumn<?>> allColumns = new ArrayList<>();
+    protected final List<GridColumn<?>> bodyColumns = new ArrayList<>();
+    protected final List<GridColumn<?>> floatingColumns = new ArrayList<>();
 
     protected GridData model;
     protected GridRenderer renderer;
@@ -77,6 +77,7 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected Group bodySelections = null;
     protected Group floatingBody = null;
     protected Group floatingBodySelections = null;
+    protected Group boundary = null;
     protected BaseGridRendererHelper.RenderingInformation renderingInformation;
 
     private Group selection = null;
@@ -303,6 +304,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         this.floatingHeader = null;
         this.bodySelections = null;
         this.floatingBodySelections = null;
+        this.boundary = null;
         this.allColumns.clear();
         this.bodyColumns.clear();
         this.floatingColumns.clear();
@@ -348,7 +350,10 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
 
         //Draw if required
-        if (this.bodyColumns.size() > 0) {
+        if (bodyColumns.size() > 0) {
+
+            boundary = new Group();
+
             drawHeader(renderingInformation);
 
             if (model.getRowCount() > 0) {
@@ -379,10 +384,10 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          floatingColumnsTransformer,
                                                          renderingInformation));
         }
-
-        addCommandToRenderQueue(this,
-                                renderGridBoundary(renderingInformation));
-
+        if (boundary != null) {
+            addCommandToRenderQueue(boundary,
+                                    renderGridBoundary(renderingInformation));
+        }
         if (isSelected) {
             assertSelectionWidget();
         }
@@ -410,6 +415,10 @@ public class BaseGridWidget extends Group implements GridWidget {
             add(floatingHeader);
         }
 
+        if (boundary != null) {
+            add(boundary);
+        }
+
         //Include selection indicator if required
         if (isSelected) {
             add(selection);
@@ -432,8 +441,6 @@ public class BaseGridWidget extends Group implements GridWidget {
         final List<GridColumn<?>> allColumns = renderingInformation.getAllColumns();
         final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
-        final List<GridColumn<?>> bodyColumns = bodyBlockInformation.getColumns();
-        final List<GridColumn<?>> floatingColumns = floatingBlockInformation.getColumns();
 
         final double headerX = bodyBlockInformation.getX();
         final double headerY = bodyBlockInformation.getHeaderY();
@@ -474,8 +481,6 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected void drawBody(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
-        final List<GridColumn<?>> bodyColumns = bodyBlockInformation.getColumns();
-        final List<GridColumn<?>> floatingColumns = floatingBlockInformation.getColumns();
 
         final double bodyX = bodyBlockInformation.getX();
         final double bodyY = bodyBlockInformation.getBodyY();
@@ -607,8 +612,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final BaseGridRendererHelper.RenderingBlockInformation bodyBlockInformation = renderingInformation.getBodyBlockInformation();
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
-        final List<GridColumn<?>> bodyColumns = bodyBlockInformation.getColumns();
-        final List<GridColumn<?>> floatingColumns = floatingBlockInformation.getColumns();
+
         if (body != null || header != null) {
             allColumns.addAll(bodyColumns);
             x = bodyBlockInformation.getX();
