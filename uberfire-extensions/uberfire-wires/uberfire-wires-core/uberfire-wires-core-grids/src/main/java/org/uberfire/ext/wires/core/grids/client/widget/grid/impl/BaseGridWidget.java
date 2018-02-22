@@ -65,15 +65,9 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected final Queue<Pair<Group, List<GridRenderer.RendererCommand>>> renderQueue = new ArrayDeque<>();
 
     //These are final as a reference is held by the ISelectionsTransformers
-<<<<<<< HEAD
     protected final List<GridColumn<?>> allColumns = new ArrayList<>();
     protected final List<GridColumn<?>> bodyColumns = new ArrayList<>();
     protected final List<GridColumn<?>> floatingColumns = new ArrayList<>();
-=======
-    protected final List<GridColumn<?>> allColumns = new ArrayList<GridColumn<?>>();
-    protected final List<GridColumn<?>> bodyColumns = new ArrayList<GridColumn<?>>();
-    protected final List<GridColumn<?>> floatingColumns = new ArrayList<GridColumn<?>>();
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
 
     protected GridData model;
     protected GridRenderer renderer;
@@ -83,10 +77,7 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected Group bodySelections = null;
     protected Group floatingBody = null;
     protected Group floatingBodySelections = null;
-<<<<<<< HEAD
     protected Group boundary = null;
-=======
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
     protected BaseGridRendererHelper.RenderingInformation renderingInformation;
 
     private Group selection = null;
@@ -293,24 +284,11 @@ public class BaseGridWidget extends Group implements GridWidget {
 
         //Signal columns to free any unused resources
         if (!isSelectionLayer) {
-<<<<<<< HEAD
             Stream.concat(bodyColumns.stream(),
                           floatingColumns.stream())
                     .filter(column -> column instanceof HasMultipleDOMElementResources)
                     .map(column -> (HasMultipleDOMElementResources) column)
                     .forEach(HasMultipleDOMElementResources::freeUnusedResources);
-=======
-            for (GridColumn<?> column : bodyColumns) {
-                if (column instanceof HasMultipleDOMElementResources) {
-                    ((HasMultipleDOMElementResources) column).freeUnusedResources();
-                }
-            }
-            for (GridColumn<?> column : floatingColumns) {
-                if (column instanceof HasMultipleDOMElementResources) {
-                    ((HasMultipleDOMElementResources) column).freeUnusedResources();
-                }
-            }
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         }
 
         //Then render to the canvas
@@ -319,21 +297,14 @@ public class BaseGridWidget extends Group implements GridWidget {
                                     bb);
     }
 
-<<<<<<< HEAD
     private BaseGridRendererHelper.RenderingInformation prepare() {
-=======
-    BaseGridRendererHelper.RenderingInformation prepare() {
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         this.body = null;
         this.header = null;
         this.floatingBody = null;
         this.floatingHeader = null;
         this.bodySelections = null;
         this.floatingBodySelections = null;
-<<<<<<< HEAD
         this.boundary = null;
-=======
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         this.allColumns.clear();
         this.bodyColumns.clear();
         this.floatingColumns.clear();
@@ -358,11 +329,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         return renderingInformation;
     }
 
-<<<<<<< HEAD
     private void destroyDOMElementResources() {
-=======
-    void destroyDOMElementResources() {
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         for (GridColumn<?> column : model.getColumns()) {
             if (column.getColumnRenderer() instanceof HasDOMElementResources) {
                 ((HasDOMElementResources) column.getColumnRenderer()).destroyResources();
@@ -370,11 +337,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
     }
 
-<<<<<<< HEAD
     private void makeRenderingCommands() {
-=======
-    void makeRenderingCommands() {
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         //Signal columns to attach or detach rendering support
         for (GridColumn<?> column : model.getColumns()) {
             if (bodyColumns.contains(column) || floatingColumns.contains(column)) {
@@ -387,18 +350,12 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
 
         //Draw if required
-<<<<<<< HEAD
         if (bodyColumns.size() > 0) {
 
             boundary = new Group();
 
             drawHeader(renderingInformation);
 
-=======
-        if (this.bodyColumns.size() > 0) {
-            drawHeader(renderingInformation);
-
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
             if (model.getRowCount() > 0) {
                 drawBody(renderingInformation);
             }
@@ -427,7 +384,7 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          floatingColumnsTransformer,
                                                          renderingInformation));
         }
-<<<<<<< HEAD
+
         if (boundary != null) {
             addCommandToRenderQueue(boundary,
                                     renderGridBoundary(renderingInformation));
@@ -447,18 +404,8 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
         if (header != null) {
             add(header);
-=======
-
-        addCommandToRenderQueue(this,
-                                renderGridBoundary(renderingInformation));
-
-        if (isSelected) {
-            assertSelectionWidget();
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         }
-    }
 
-<<<<<<< HEAD
         if (floatingBody != null) {
             add(floatingBody);
         }
@@ -471,24 +418,6 @@ public class BaseGridWidget extends Group implements GridWidget {
 
         if (boundary != null) {
             add(boundary);
-=======
-    void layerRenderGroups() {
-        //The order these are added ensures the parts overlap correctly
-        if (body != null) {
-            add(body);
-            add(bodySelections);
-        }
-        if (header != null) {
-            add(header);
-        }
-
-        if (floatingBody != null) {
-            add(floatingBody);
-            add(floatingBodySelections);
-        }
-        if (floatingHeader != null) {
-            add(floatingHeader);
->>>>>>> DROOLS-2332: [DMN Editor] Performance poor for lots of nested tables
         }
 
         //Include selection indicator if required
