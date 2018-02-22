@@ -384,7 +384,6 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          floatingColumnsTransformer,
                                                          renderingInformation));
         }
-
         if (boundary != null) {
             addCommandToRenderQueue(boundary,
                                     renderGridBoundary(renderingInformation));
