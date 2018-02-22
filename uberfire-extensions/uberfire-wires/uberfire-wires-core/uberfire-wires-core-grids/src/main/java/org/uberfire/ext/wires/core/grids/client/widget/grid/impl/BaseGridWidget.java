@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Stream;
 
 import com.ait.lienzo.client.core.Context2D;
 import com.ait.lienzo.client.core.event.NodeMouseClickEvent;
@@ -282,16 +283,11 @@ public class BaseGridWidget extends Group implements GridWidget {
 
         //Signal columns to free any unused resources
         if (!isSelectionLayer) {
-            for (GridColumn<?> column : bodyColumns) {
-                if (column instanceof HasMultipleDOMElementResources) {
-                    ((HasMultipleDOMElementResources) column).freeUnusedResources();
-                }
-            }
-            for (GridColumn<?> column : floatingColumns) {
-                if (column instanceof HasMultipleDOMElementResources) {
-                    ((HasMultipleDOMElementResources) column).freeUnusedResources();
-                }
-            }
+            Stream.concat(bodyColumns.stream(),
+                          floatingColumns.stream())
+                    .filter(column -> column instanceof HasMultipleDOMElementResources)
+                    .map(column -> (HasMultipleDOMElementResources) column)
+                    .forEach(HasMultipleDOMElementResources::freeUnusedResources);
         }
 
         //Then render to the canvas
@@ -300,7 +296,7 @@ public class BaseGridWidget extends Group implements GridWidget {
                                     bb);
     }
 
-    BaseGridRendererHelper.RenderingInformation prepare() {
+    private BaseGridRendererHelper.RenderingInformation prepare() {
         this.body = null;
         this.header = null;
         this.floatingBody = null;
@@ -331,7 +327,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         return renderingInformation;
     }
 
-    void destroyDOMElementResources() {
+    private void destroyDOMElementResources() {
         for (GridColumn<?> column : model.getColumns()) {
             if (column.getColumnRenderer() instanceof HasDOMElementResources) {
                 ((HasDOMElementResources) column.getColumnRenderer()).destroyResources();
@@ -339,7 +335,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
     }
 
-    void makeRenderingCommands() {
+    private void makeRenderingCommands() {
         //Signal columns to attach or detach rendering support
         for (GridColumn<?> column : model.getColumns()) {
             if (bodyColumns.contains(column) || floatingColumns.contains(column)) {
@@ -392,10 +388,12 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
     }
 
-    void layerRenderGroups() {
+    private void layerRenderGroups() {
         //The order these are added ensures the parts overlap correctly
         if (body != null) {
             add(body);
+        }
+        if (bodySelections != null) {
             add(bodySelections);
         }
         if (header != null) {
@@ -404,6 +402,8 @@ public class BaseGridWidget extends Group implements GridWidget {
 
         if (floatingBody != null) {
             add(floatingBody);
+        }
+        if (floatingBodySelections != null) {
             add(floatingBodySelections);
         }
         if (floatingHeader != null) {
@@ -445,18 +445,21 @@ public class BaseGridWidget extends Group implements GridWidget {
         final boolean addFloatingHeader = renderingInformation.isFloatingHeader();
 
         if (addFixedHeader || addFloatingHeader) {
-            header = new Group();
-            header.setX(headerX);
-            addCommandsToRenderQueue(header,
-                                     renderGridHeaderWidget(allColumns,
-                                                            bodyColumns,
-                                                            renderingInformation));
+            //Render header for body columns, if required
+            if (bodyColumns.size() > 0) {
+                header = new Group();
+                header.setX(headerX);
+                addCommandsToRenderQueue(header,
+                                         renderGridHeaderWidget(allColumns,
+                                                                bodyColumns,
+                                                                renderingInformation));
 
-            if (addFloatingHeader) {
-                header.setY(headerY);
+                if (addFloatingHeader) {
+                    header.setY(headerY);
+                }
             }
 
-            //Draw floating header columns if required
+            //Render header for floating columns, if required
             if (floatingColumns.size() > 0) {
                 floatingHeader = new Group();
                 floatingHeader.setX(floatingHeaderX).setY(floatingHeaderY);
@@ -482,20 +485,23 @@ public class BaseGridWidget extends Group implements GridWidget {
         final int minVisibleRowIndex = renderingInformation.getMinVisibleRowIndex();
         final int maxVisibleRowIndex = renderingInformation.getMaxVisibleRowIndex();
 
-        body = new Group();
-        body.setX(bodyX).setY(bodyY);
-        bodySelections = new Group();
-        bodySelections.setX(bodyX).setY(bodyY);
+        //Render body columns, if required
+        if (bodyColumns.size() > 0) {
+            body = new Group();
+            body.setX(bodyX).setY(bodyY);
+            bodySelections = new Group();
+            bodySelections.setX(bodyX).setY(bodyY);
 
-        addCommandsToRenderQueue(body,
-                                 renderGridBodyWidget(bodyColumns,
-                                                      bodyBlockInformation.getX(),
-                                                      minVisibleRowIndex,
-                                                      maxVisibleRowIndex,
-                                                      bodyTransformer,
-                                                      renderingInformation));
+            addCommandsToRenderQueue(body,
+                                     renderGridBodyWidget(bodyColumns,
+                                                          bodyBlockInformation.getX(),
+                                                          minVisibleRowIndex,
+                                                          maxVisibleRowIndex,
+                                                          bodyTransformer,
+                                                          renderingInformation));
+        }
 
-        //Render floating columns
+        //Render floating columns, if required
         if (floatingColumns.size() > 0) {
             floatingBody = new Group();
             floatingBody.setX(floatingBodyX).setY(floatingBodyY);
