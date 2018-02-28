@@ -526,9 +526,9 @@ public class BaseCellSelectionManagerTest {
     public void startEditingCellPointCoordinateWithinGridBounds() {
         final ArgumentCaptor<GridBodyCellRenderContext> contextArgumentCaptor = ArgumentCaptor.forClass(GridBodyCellRenderContext.class);
         final ArgumentCaptor<GridBodyCellEditContext> editContextArgumentCaptor = ArgumentCaptor.forClass(GridBodyCellEditContext.class);
+        final Point2D editedAtPoint = new Point2D(150, 42);
 
-        cellSelectionManager.startEditingCell(new Point2D(150,
-                                                          42));
+        cellSelectionManager.startEditingCell(editedAtPoint);
 
         verify(col2,
                times(1)).edit(any(GridCell.class),
@@ -547,12 +547,8 @@ public class BaseCellSelectionManagerTest {
 
         final GridBodyCellEditContext editContext = editContextArgumentCaptor.getValue();
         assertTrue(editContext.getRelativeLocation().isPresent());
-        assertEquals(150,
-                     editContext.getRelativeLocation().get().getX(),
-                     0.0);
-        assertEquals(42,
-                     editContext.getRelativeLocation().get().getY(),
-                     0.0);
+        assertEquals(editedAtPoint,
+                     editContext.getRelativeLocation().get());
     }
 
     @Test

@@ -227,17 +227,17 @@ public class BaseCellSelectionManager implements CellSelectionManager {
     }
 
     @Override
-    public boolean startEditingCell(final Point2D ap) {
+    public boolean startEditingCell(final Point2D rp) {
         //Get row information
         final Integer uiRowIndex = CoordinateUtilities.getUiRowIndex(gridWidget,
-                                                                     ap.getY());
+                                                                     rp.getY());
         if (uiRowIndex == null) {
             return false;
         }
 
         //Get column information
         final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
-        final BaseGridRendererHelper.ColumnInformation ci = rendererHelper.getColumnInformation(ap.getX());
+        final BaseGridRendererHelper.ColumnInformation ci = rendererHelper.getColumnInformation(rp.getX());
         final GridColumn<?> column = ci.getColumn();
         if (column == null) {
             return false;
@@ -245,7 +245,7 @@ public class BaseCellSelectionManager implements CellSelectionManager {
 
         return edit(uiRowIndex,
                     ci,
-                    Optional.of(ap));
+                    Optional.of(rp));
     }
 
     @Override
@@ -305,7 +305,7 @@ public class BaseCellSelectionManager implements CellSelectionManager {
 
     private boolean edit(final int uiRowIndex,
                          final BaseGridRendererHelper.ColumnInformation ci,
-                         final Optional<Point2D> relativeLocation) {
+                         final Optional<Point2D> rp) {
         final GridColumn<?> column = ci.getColumn();
         final int uiColumnIndex = ci.getUiColumnIndex();
         final double offsetX = ci.getOffsetX();
@@ -345,7 +345,7 @@ public class BaseCellSelectionManager implements CellSelectionManager {
                                                                             floatingBlockInformation.getColumns().contains(column),
                                                                             gridWidget.getViewport().getTransform(),
                                                                             renderer,
-                                                                            relativeLocation);
+                                                                            rp);
 
         doEdit(context);
 
