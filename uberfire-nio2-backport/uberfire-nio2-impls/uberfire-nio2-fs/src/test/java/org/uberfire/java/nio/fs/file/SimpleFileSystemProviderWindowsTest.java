@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.uberfire.java.nio.base.GeneralPathImpl;
 import org.uberfire.java.nio.file.Path;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.uberfire.java.nio.fs.file.SimpleFileSystemProvider.OSType.WINDOWS;
 
 public class SimpleFileSystemProviderWindowsTest {

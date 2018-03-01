@@ -26,12 +26,12 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.fest.assertions.data.Index;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.data.Index.atIndex;
 import static org.uberfire.java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static org.uberfire.java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -61,32 +61,32 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void newBufferedReaderNoSuchFileException() throws IOException {
+    public void newBufferedReaderNoSuchFileException() {
         Files.newBufferedReader(Paths.get("/some/file/here"),
                                 Charset.defaultCharset());
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void newBufferedReaderNoSuchFileException2() throws IOException {
+    public void newBufferedReaderNoSuchFileException2() {
         Files.newBufferedReader(newTempDir(),
                                 Charset.defaultCharset());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void newBufferedReaderNull1() throws IOException {
+    public void newBufferedReaderNull1() {
         Files.newBufferedReader(null,
                                 Charset.defaultCharset());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void newBufferedReaderNull2() throws IOException {
+    public void newBufferedReaderNull2() {
         Files.newBufferedReader(Files.createTempFile("foo",
                                                      "bar"),
                                 null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void newBufferedReaderNull3() throws IOException {
+    public void newBufferedReaderNull3() {
         Files.newBufferedReader(null,
                                 null);
     }
@@ -113,19 +113,19 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void newBufferedWriterNull1() throws IOException {
+    public void newBufferedWriterNull1() {
         Files.newBufferedWriter(null,
                                 Charset.defaultCharset());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void newBufferedWriterNull2() throws IOException {
+    public void newBufferedWriterNull2() {
         Files.newBufferedWriter(newTempDir().resolve("some"),
                                 null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void newBufferedWriterNull3() throws IOException {
+    public void newBufferedWriterNull3() {
         Files.newBufferedWriter(null,
                                 null);
     }
@@ -205,14 +205,14 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyIn2PathNull1() throws IOException {
+    public void copyIn2PathNull1() {
         Files.copy((InputStream) null,
                    newTempDir().resolve("my_new_file.txt"),
                    REPLACE_EXISTING);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyIn2PathNull2() throws IOException {
+    public void copyIn2PathNull2() {
         Files.copy(Files.newInputStream(Files.createTempFile("foo",
                                                              "bar")),
                    null,
@@ -220,7 +220,7 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyIn2PathNull3() throws IOException {
+    public void copyIn2PathNull3() {
         Files.copy(Files.newInputStream(Files.createTempFile("foo",
                                                              "bar")),
                    newTempDir().resolve("my_new_file.txt"),
@@ -228,7 +228,7 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyIn2PathNull4() throws IOException {
+    public void copyIn2PathNull4() {
         Files.copy(Files.newInputStream(Files.createTempFile("foo",
                                                              "bar")),
                    newTempDir().resolve("my_new_file.txt"),
@@ -236,7 +236,7 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void copyIn2PathInvalidOption() throws IOException {
+    public void copyIn2PathInvalidOption() {
         Files.copy(Files.newInputStream(Files.createTempFile("foo",
                                                              "bar")),
                    newTempDir().resolve("my_new_file.txt"),
@@ -282,14 +282,14 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyPath2OutNull2() throws IOException {
+    public void copyPath2OutNull2() {
         Files.copy(Files.createTempFile("foo",
                                         "bar"),
                    null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyPath2OutInvalidOption() throws IOException {
+    public void copyPath2OutInvalidOption() {
         Files.copy(null,
                    null);
     }
@@ -322,17 +322,17 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAllBytesFileNotExists() throws IOException {
+    public void readAllBytesFileNotExists() {
         Files.readAllBytes(newTempDir().resolve("file.big"));
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAllBytesDir() throws IOException {
+    public void readAllBytesDir() {
         Files.readAllBytes(newTempDir());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAllBytesNull() throws IOException {
+    public void readAllBytesNull() {
         Files.readAllBytes(null);
     }
 
@@ -347,8 +347,8 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
 
         final List<String> result = Files.readAllLines(dir.resolve("myfile.txt"),
                                                        Charset.defaultCharset());
-        assertThat(result).isNotEmpty().hasSize(1).contains("content",
-                                                            Index.atIndex(0));
+        assertThat(result).hasSize(1)
+                .contains("content", atIndex(0));
 
         final BufferedWriter writer2 = Files.newBufferedWriter(dir.resolve("myfile2.txt"),
                                                                Charset.defaultCharset());
@@ -358,42 +358,39 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
 
         final List<String> result2 = Files.readAllLines(dir.resolve("myfile2.txt"),
                                                         Charset.defaultCharset());
-        assertThat(result2).isNotEmpty().hasSize(3)
-                .contains("content",
-                          Index.atIndex(0))
-                .contains("newFile",
-                          Index.atIndex(1))
-                .contains("line",
-                          Index.atIndex(2));
+        assertThat(result2).hasSize(3)
+                .contains("content", atIndex(0))
+                .contains("newFile", atIndex(1))
+                .contains("line", atIndex(2));
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAllLinesFileNotExists() throws IOException {
+    public void readAllLinesFileNotExists() {
         Files.readAllLines(newTempDir().resolve("file.big"),
                            Charset.defaultCharset());
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAllLinesDir() throws IOException {
+    public void readAllLinesDir() {
         Files.readAllLines(newTempDir(),
                            Charset.defaultCharset());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAllLinesNull1() throws IOException {
+    public void readAllLinesNull1() {
         Files.readAllLines(null,
                            Charset.defaultCharset());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAllLinesNull2() throws IOException {
+    public void readAllLinesNull2() {
         Files.readAllLines(Files.createTempFile(null,
                                                 null),
                            null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAllLinesNull3() throws IOException {
+    public void readAllLinesNull3() {
         Files.readAllLines(null,
                            null);
     }
@@ -445,11 +442,9 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
 
         final List<String> result = Files.readAllLines(dir.resolve("file.txt"),
                                                        Charset.defaultCharset());
-        assertThat(result).isNotEmpty().hasSize(2)
-                .contains("some",
-                          Index.atIndex(0))
-                .contains("value",
-                          Index.atIndex(1));
+        assertThat(result).hasSize(2)
+                .contains("some", atIndex(0))
+                .contains("value", atIndex(1));
     }
 
     @Test(expected = org.uberfire.java.nio.IOException.class)

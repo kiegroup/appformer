@@ -29,8 +29,8 @@ import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributeView;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.uberfire.java.nio.file.AccessMode.EXECUTE;
 import static org.uberfire.java.nio.file.AccessMode.READ;
 import static org.uberfire.java.nio.file.AccessMode.WRITE;

@@ -30,9 +30,9 @@ import org.uberfire.java.nio.channels.SeekableByteChannel;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributeView;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.java.nio.fs.file.SimpleFileSystemProvider;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class FilesTest extends AbstractBaseTest {
 
@@ -733,27 +733,27 @@ public class FilesTest extends AbstractBaseTest {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
-        assertThat(Files.readAttributes(path,
-                                        "*")).isNotNull().hasSize(9);
-        assertThat(Files.readAttributes(path,
-                                        "basic:*")).isNotNull().hasSize(9);
-        assertThat(Files.readAttributes(path,
-                                        "basic:isRegularFile")).isNotNull().hasSize(1);
-        assertThat(Files.readAttributes(path,
-                                        "basic:isRegularFile,isDirectory")).isNotNull().hasSize(2);
-        assertThat(Files.readAttributes(path,
-                                        "basic:isRegularFile,isDirectory,someThing")).isNotNull().hasSize(2);
-        assertThat(Files.readAttributes(path,
-                                        "basic:someThing")).isNotNull().hasSize(0);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "*")).hasSize(9);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "basic:*")).hasSize(9);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "basic:isRegularFile")).hasSize(1);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "basic:isRegularFile,isDirectory")).hasSize(2);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "basic:isRegularFile,isDirectory,someThing")).hasSize(2);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "basic:someThing")).hasSize(0);
 
-        assertThat(Files.readAttributes(path,
-                                        "isRegularFile")).isNotNull().hasSize(1);
-        assertThat(Files.readAttributes(path,
-                                        "isRegularFile,isDirectory")).isNotNull().hasSize(2);
-        assertThat(Files.readAttributes(path,
-                                        "isRegularFile,isDirectory,someThing")).isNotNull().hasSize(2);
-        assertThat(Files.readAttributes(path,
-                                        "someThing")).isNotNull().hasSize(0);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "isRegularFile")).hasSize(1);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "isRegularFile,isDirectory")).hasSize(2);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "isRegularFile,isDirectory,someThing")).hasSize(2);
+        Assertions.assertThat(Files.readAttributes(path,
+                                        "someThing")).hasSize(0);
 
         try {
             Files.readAttributes(path,

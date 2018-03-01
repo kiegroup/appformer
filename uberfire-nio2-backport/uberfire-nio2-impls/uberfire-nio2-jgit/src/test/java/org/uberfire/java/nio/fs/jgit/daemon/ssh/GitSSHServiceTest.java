@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.uberfire.commons.concurrent.ExecutorServiceProducer;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 

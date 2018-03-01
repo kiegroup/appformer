@@ -27,7 +27,7 @@ import org.uberfire.java.nio.file.attribute.FileAttributeView;
 import org.uberfire.java.nio.file.attribute.FileStoreAttributeView;
 import org.uberfire.java.nio.file.attribute.FileTime;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimpleUnixFileStoreTest {
 

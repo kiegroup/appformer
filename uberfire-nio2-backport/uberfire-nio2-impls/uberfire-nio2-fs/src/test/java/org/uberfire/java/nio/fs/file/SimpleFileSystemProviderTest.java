@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.io.FileUtils;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +42,8 @@ import org.uberfire.java.nio.file.NotDirectoryException;
 import org.uberfire.java.nio.file.NotLinkException;
 import org.uberfire.java.nio.file.Path;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.uberfire.java.nio.file.StandardDeleteOption.NON_EMPTY_DIRECTORIES;
 
 public class SimpleFileSystemProviderTest {
@@ -74,7 +75,7 @@ public class SimpleFileSystemProviderTest {
 
         final Path path = fsProvider.getPath(uri);
 
-        assertThat(path).isNotNull();
+        AssertionsForClassTypes.assertThat(path).isNotNull();
         assertThat(path.isAbsolute()).isTrue();
         assertThat(path.getFileSystem()).isEqualTo(fsProvider.getFileSystem(uri));
         assertThat(path.getFileSystem().provider()).isEqualTo(fsProvider);

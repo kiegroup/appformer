@@ -72,12 +72,13 @@ import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 import org.uberfire.java.nio.fs.jgit.util.model.PathInfo;
 import org.uberfire.java.nio.fs.jgit.util.model.PathType;
 
+import org.assertj.core.api.AssertionsForClassTypes;
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
-import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.uberfire.java.nio.file.StandardDeleteOption.NON_EMPTY_DIRECTORIES;
@@ -254,13 +255,13 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
         for (final Path root : fs.getRootDirectories()) {
             if (root.toAbsolutePath().toUri().toString().contains("upstream")) {
                 assertThat(provider.newDirectoryStream(root,
-                                                       null)).isNotEmpty().hasSize(2);
+                                                       null)).hasSize(2);
             } else if (root.toAbsolutePath().toUri().toString().contains("origin")) {
                 assertThat(provider.newDirectoryStream(root,
-                                                       null)).isNotEmpty().hasSize(1);
+                                                       null)).hasSize(1);
             } else {
                 assertThat(provider.newDirectoryStream(root,
-                                                       null)).isNotEmpty().hasSize(2);
+                                                       null)).hasSize(2);
             }
         }
 
@@ -487,7 +488,7 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
 
         final Path path = provider.getPath(URI.create("git://master@new-get-repo-name/home"));
 
-        assertThat(path).isNotNull();
+        AssertionsForClassTypes.assertThat(path).isNotNull();
         assertThat(path.getRoot().toString()).isEqualTo("/");
         Path root = path.getRoot();
         Path path1 = root.toRealPath();
@@ -495,7 +496,7 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
         assertThat(path.toString()).isEqualTo("/home");
 
         final Path pathRelative = provider.getPath(URI.create("git://master@new-get-repo-name/:home"));
-        assertThat(pathRelative).isNotNull();
+        AssertionsForClassTypes.assertThat(pathRelative).isNotNull();
         assertThat(pathRelative.toRealPath().toUri().toString()).isEqualTo("git://master@new-get-repo-name/:home");
         assertThat(pathRelative.getRoot().toString()).isEqualTo("");
         assertThat(pathRelative.toString()).isEqualTo("home");
@@ -522,12 +523,12 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
 
         final Path path = provider.getPath(URI.create("git://origin/master@new-complex-get-repo-name/home"));
 
-        assertThat(path).isNotNull();
+        AssertionsForClassTypes.assertThat(path).isNotNull();
         assertThat(path.getRoot().toString()).isEqualTo("/");
         assertThat(path.toString()).isEqualTo("/home");
 
         final Path pathRelative = provider.getPath(URI.create("git://origin/master@new-complex-get-repo-name/:home"));
-        assertThat(pathRelative).isNotNull();
+        AssertionsForClassTypes.assertThat(pathRelative).isNotNull();
         assertThat(pathRelative.getRoot().toString()).isEqualTo("");
         assertThat(pathRelative.toString()).isEqualTo("home");
     }
@@ -541,18 +542,18 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
 
         final Path path1 = provider.getPath(URI.create("git://new-complex-get-repo-name/composed/home"));
 
-        assertThat(path1).isNotNull();
+        AssertionsForClassTypes.assertThat(path1).isNotNull();
         assertThat(path1.getRoot().toString()).isEqualTo("/");
         assertThat(path1.toString()).isEqualTo("/home");
 
         final Path path = provider.getPath(URI.create("git://origin/master@new-complex-get-repo-name/composed/home"));
 
-        assertThat(path).isNotNull();
+        AssertionsForClassTypes.assertThat(path).isNotNull();
         assertThat(path.getRoot().toString()).isEqualTo("/");
         assertThat(path.toString()).isEqualTo("/home");
 
         final Path pathRelative = provider.getPath(URI.create("git://origin/master@new-complex-get-repo-name/composed/:home"));
-        assertThat(pathRelative).isNotNull();
+        AssertionsForClassTypes.assertThat(pathRelative).isNotNull();
         assertThat(pathRelative.getRoot().toString()).isEqualTo("");
         assertThat(pathRelative.toString()).isEqualTo("home");
     }

@@ -25,7 +25,7 @@ import org.uberfire.java.nio.file.OpenOption;
 import org.uberfire.java.nio.file.Path;
 
 import static java.util.Collections.emptySet;
-import static org.fest.assertions.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
 public class JGitFileSystemImplProviderUnsupportedOpTest extends AbstractTestInfra {
 

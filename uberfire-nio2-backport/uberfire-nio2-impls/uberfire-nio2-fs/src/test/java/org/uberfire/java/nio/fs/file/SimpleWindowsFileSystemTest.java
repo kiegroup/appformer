@@ -26,9 +26,9 @@ import org.uberfire.java.nio.file.FileStore;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import  org.assertj.core.api.Assertions;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class SimpleWindowsFileSystemTest {
@@ -48,7 +48,7 @@ public class SimpleWindowsFileSystemTest {
         assertThat(fileSystem.isReadOnly()).isFalse();
         assertThat(fileSystem.getSeparator()).isEqualTo("\\");
         assertThat(fileSystem.provider()).isEqualTo(fsProvider);
-        assertThat(fileSystem.supportedFileAttributeViews()).isNotEmpty().hasSize(1).contains("basic");
+        Assertions.assertThat(fileSystem.supportedFileAttributeViews()).hasSize(1).contains("basic");
 
         assertThat(fileSystem.getPath("c:\\path\\to\\file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
                                                                                                               "c:\\path\\to\\file.txt",
@@ -98,10 +98,10 @@ public class SimpleWindowsFileSystemTest {
         } catch (UnsupportedOperationException ex) {
         }
 
-        assertThat(fileSystem.getFileStores()).isNotNull().hasSize(2);
+        Assertions.assertThat(fileSystem.getFileStores()).hasSize(2);
         assertThat(fileSystem.getFileStores().iterator().next().name()).isEqualTo("c:\\");
 
-        assertThat(fileSystem.getRootDirectories()).isNotNull().hasSize(2);
+        Assertions.assertThat(fileSystem.getRootDirectories()).hasSize(2);
         assertThat(fileSystem.getRootDirectories().iterator().next().toString()).isEqualTo("c:\\");
         assertThat(fileSystem.getRootDirectories().iterator().next().isAbsolute()).isTrue();
     }

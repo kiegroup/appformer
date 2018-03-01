@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.uberfire.java.nio.fs.file.BaseSimpleFileSystem;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileSystemsTest {
 
@@ -34,8 +34,8 @@ public class FileSystemsTest {
 
     @Test
     public void testGetFileSystemByURI() {
-        assertThat(FileSystems.getFileSystem(URI.create("default:///"))).isNotNull().isInstanceOf(BaseSimpleFileSystem.class);
-        assertThat(FileSystems.getFileSystem(URI.create("file:///"))).isNotNull().isInstanceOf(BaseSimpleFileSystem.class);
+        assertThat(FileSystems.getFileSystem(URI.create("default:///"))).isInstanceOf(BaseSimpleFileSystem.class);
+        assertThat(FileSystems.getFileSystem(URI.create("file:///"))).isInstanceOf(BaseSimpleFileSystem.class);
     }
 
     @Test(expected = IllegalArgumentException.class)

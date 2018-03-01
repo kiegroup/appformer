@@ -40,8 +40,8 @@ import org.uberfire.java.nio.fs.jgit.util.commands.GetRef;
 import org.uberfire.java.nio.fs.jgit.util.commands.Squash;
 import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.fest.assertions.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.uberfire.java.nio.fs.jgit.util.model.PathType.DIRECTORY;
 import static org.uberfire.java.nio.fs.jgit.util.model.PathType.FILE;
 import static org.uberfire.java.nio.fs.jgit.util.model.PathType.NOT_FOUND;
