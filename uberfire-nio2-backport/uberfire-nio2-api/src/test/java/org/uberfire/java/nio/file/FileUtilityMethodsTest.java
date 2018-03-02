@@ -24,12 +24,14 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.data.Index.atIndex;
 import static org.uberfire.java.nio.file.LinkOption.NOFOLLOW_LINKS;
@@ -41,11 +43,10 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
     public void newBufferedReader() throws IOException {
         final Path dir = newTempDir();
 
-        final OutputStream out = Files.newOutputStream(dir.resolve("file.txt"));
-        assertThat(out).isNotNull();
-
-        out.write("content".getBytes());
-        out.close();
+        try (final OutputStream out = Files.newOutputStream(dir.resolve("file.txt"))) {
+            assertThat(out).isNotNull();
+            out.write("content".getBytes());
+        }
 
         final BufferedReader reader = Files.newBufferedReader(dir.resolve("file.txt"),
                                                               Charset.defaultCharset());
@@ -56,256 +57,288 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
         try {
             reader.read();
             fail("can't read closed stream");
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
         }
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void newBufferedReaderNoSuchFileException() {
-        Files.newBufferedReader(Paths.get("/some/file/here"),
-                                Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.newBufferedReader(Paths.get("/some/file/here"),
+                                                         Charset.defaultCharset()))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void newBufferedReaderNoSuchFileException2() {
-        Files.newBufferedReader(newTempDir(),
-                                Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.newBufferedReader(newTempDir(),
+                                                         Charset.defaultCharset()))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBufferedReaderNull1() {
-        Files.newBufferedReader(null,
-                                Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.newBufferedReader(null,
+                                                         Charset.defaultCharset()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBufferedReaderNull2() {
-        Files.newBufferedReader(Files.createTempFile("foo",
-                                                     "bar"),
-                                null);
+        assertThatThrownBy(() -> Files.newBufferedReader(Files.createTempFile("foo",
+                                                                              "bar"),
+                                                         null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'cs' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBufferedReaderNull3() {
-        Files.newBufferedReader(null,
-                                null);
+        assertThatThrownBy(() -> Files.newBufferedReader(null,
+                                                         null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
     public void newBufferedWriter() throws IOException {
         final Path dir = newTempDir();
-        final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(writer).isNotNull();
-        writer.write("content");
-        writer.close();
+        try (final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(writer).isNotNull();
+            writer.write("content");
+        }
 
-        final BufferedReader reader = Files.newBufferedReader(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(reader).isNotNull();
-        assertThat(reader.readLine()).isNotNull().isEqualTo("content");
-        assertThat(reader.readLine()).isNull();
-        reader.close();
+        try (final BufferedReader reader = Files.newBufferedReader(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(reader).isNotNull();
+            assertThat(reader.readLine()).isNotNull().isEqualTo("content");
+            assertThat(reader.readLine()).isNull();
+        }
 
         Files.newBufferedWriter(Files.createTempFile(null,
                                                      null),
                                 Charset.defaultCharset());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBufferedWriterNull1() {
-        Files.newBufferedWriter(null,
-                                Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.newBufferedWriter(null,
+                                                         Charset.defaultCharset()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBufferedWriterNull2() {
-        Files.newBufferedWriter(newTempDir().resolve("some"),
-                                null);
+        assertThatThrownBy(() -> Files.newBufferedWriter(newTempDir().resolve("some"),
+                                                         null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'cs' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void newBufferedWriterNull3() {
-        Files.newBufferedWriter(null,
-                                null);
+        assertThatThrownBy(() -> Files.newBufferedWriter(null,
+                                                         null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
     public void copyIn2Path() throws IOException {
         final Path dir = newTempDir();
-        final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(writer).isNotNull();
-        writer.write("content");
-        writer.close();
+        try (final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(writer).isNotNull();
+            writer.write("content");
+        }
 
-        final InputStream is = Files.newInputStream(dir.resolve("myfile.txt"));
-        Files.copy(is,
-                   dir.resolve("my_new_file.txt"));
-        is.close();
+        try (final InputStream is = Files.newInputStream(dir.resolve("myfile.txt"))) {
+            Files.copy(is,
+                       dir.resolve("my_new_file.txt"));
+        }
 
-        final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(reader).isNotNull();
-        assertThat(reader.readLine()).isNotNull().isEqualTo("content");
-        assertThat(reader.readLine()).isNull();
-        reader.close();
+        try (final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(reader).isNotNull();
+            assertThat(reader.readLine()).isNotNull().isEqualTo("content");
+            assertThat(reader.readLine()).isNull();
+        }
     }
 
     @Test
     public void copyIn2PathReplaceExisting() throws IOException {
         final Path dir = newTempDir();
-        final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(writer).isNotNull();
-        writer.write("content");
-        writer.close();
+        try (final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(writer).isNotNull();
+            writer.write("content");
+        }
 
-        final BufferedWriter writer2 = Files.newBufferedWriter(dir.resolve("my_new_file.txt"),
-                                                               Charset.defaultCharset());
-        assertThat(writer2).isNotNull();
-        writer2.write("empty_content");
-        writer2.close();
+        try (final BufferedWriter writer2 = Files.newBufferedWriter(dir.resolve("my_new_file.txt"),
+                                                                    Charset.defaultCharset())) {
+            assertThat(writer2).isNotNull();
+            writer2.write("empty_content");
+        }
 
-        final InputStream is = Files.newInputStream(dir.resolve("myfile.txt"));
-        Files.copy(is,
-                   dir.resolve("my_new_file.txt"),
-                   REPLACE_EXISTING);
-        is.close();
+        try (final InputStream is = Files.newInputStream(dir.resolve("myfile.txt"))) {
+            Files.copy(is,
+                       dir.resolve("my_new_file.txt"),
+                       REPLACE_EXISTING);
+        }
 
-        final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(reader).isNotNull();
-        assertThat(reader.readLine()).isNotNull().isEqualTo("content");
-        assertThat(reader.readLine()).isNull();
-        reader.close();
+        try (final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(reader).isNotNull();
+            assertThat(reader.readLine()).isNotNull().isEqualTo("content");
+            assertThat(reader.readLine()).isNull();
+        }
     }
 
     @Test
     public void copyIn2PathReplaceExistingNotExists() throws IOException {
         final Path dir = newTempDir();
-        final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(writer).isNotNull();
-        writer.write("content");
-        writer.close();
+        try (final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(writer).isNotNull();
+            writer.write("content");
+        }
 
-        final InputStream is = Files.newInputStream(dir.resolve("myfile.txt"));
-        Files.copy(is,
-                   dir.resolve("my_new_file.txt"),
-                   REPLACE_EXISTING);
-        is.close();
+        try (final InputStream is = Files.newInputStream(dir.resolve("myfile.txt"))) {
+            Files.copy(is,
+                       dir.resolve("my_new_file.txt"),
+                       REPLACE_EXISTING);
+        }
 
-        final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(reader).isNotNull();
-        assertThat(reader.readLine()).isNotNull().isEqualTo("content");
-        assertThat(reader.readLine()).isNull();
-        reader.close();
+        try (final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(reader).isNotNull();
+            assertThat(reader.readLine()).isEqualTo("content");
+            assertThat(reader.readLine()).isNull();
+        }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyIn2PathNull1() {
-        Files.copy((InputStream) null,
-                   newTempDir().resolve("my_new_file.txt"),
-                   REPLACE_EXISTING);
+        assertThatThrownBy(() -> Files.copy((InputStream) null,
+                                            newTempDir().resolve("my_new_file.txt"),
+                                            REPLACE_EXISTING))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'in' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyIn2PathNull2() {
-        Files.copy(Files.newInputStream(Files.createTempFile("foo",
-                                                             "bar")),
-                   null,
-                   REPLACE_EXISTING);
+        assertThatThrownBy(() -> Files.copy(Files.newInputStream(Files.createTempFile("foo",
+                                                                                      "bar")),
+                                            null,
+                                            REPLACE_EXISTING))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'target' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyIn2PathNull3() {
-        Files.copy(Files.newInputStream(Files.createTempFile("foo",
-                                                             "bar")),
-                   newTempDir().resolve("my_new_file.txt"),
-                   null);
+        assertThatThrownBy(() -> Files.copy(Files.newInputStream(Files.createTempFile("foo",
+                                                                                      "bar")),
+                                            newTempDir().resolve("my_new_file.txt"),
+                                            null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'options' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyIn2PathNull4() {
-        Files.copy(Files.newInputStream(Files.createTempFile("foo",
-                                                             "bar")),
-                   newTempDir().resolve("my_new_file.txt"),
-                   new CopyOption[]{null});
+        assertThatThrownBy(() -> Files.copy(Files.newInputStream(Files.createTempFile("foo",
+                                                                                      "bar")),
+                                            newTempDir().resolve("my_new_file.txt"),
+                                            new CopyOption[]{null}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'opt' should be not null!");
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void copyIn2PathInvalidOption() {
-        Files.copy(Files.newInputStream(Files.createTempFile("foo",
-                                                             "bar")),
-                   newTempDir().resolve("my_new_file.txt"),
-                   NOFOLLOW_LINKS);
+        assertThatThrownBy(() -> Files.copy(Files.newInputStream(Files.createTempFile("foo",
+                                                                                      "bar")),
+                                            newTempDir().resolve("my_new_file.txt"),
+                                            NOFOLLOW_LINKS))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("NOFOLLOW_LINKS not supported");
     }
 
     @Test
     public void copyPath2Out() throws IOException {
         final Path dir = newTempDir();
-        final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(writer).isNotNull();
-        writer.write("content");
-        writer.close();
+        try (final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(writer).isNotNull();
+            writer.write("content");
+        }
 
-        final OutputStream os = Files.newOutputStream(dir.resolve("my_new_file.txt"));
-        Files.copy(dir.resolve("myfile.txt"),
-                   os);
-        os.close();
+        try (final OutputStream os = Files.newOutputStream(dir.resolve("my_new_file.txt"))) {
+            Files.copy(dir.resolve("myfile.txt"), os);
+        }
 
-        final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(reader).isNotNull();
-        assertThat(reader.readLine()).isNotNull().isEqualTo("content");
-        assertThat(reader.readLine()).isNull();
-        reader.close();
-    }
-
-    @Test(expected = NoSuchFileException.class)
-    public void copyPath2OutNotExists() throws IOException {
-        try (OutputStream os = Files.newOutputStream(newTempDir().resolve("my_new_file.txt"))) {
-            Files.copy(newTempDir().resolve("myfile.txt"),
-                       os);
+        try (final BufferedReader reader = Files.newBufferedReader(dir.resolve("my_new_file.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(reader).isNotNull();
+            assertThat(reader.readLine()).isNotNull().isEqualTo("content");
+            assertThat(reader.readLine()).isNull();
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void copyPath2OutNull1() throws IOException {
-        try (OutputStream os = Files.newOutputStream(newTempDir().resolve("my_new_file.txt"))) {
-            Files.copy(null,
-                       os);
-        }
+    @Test
+    public void copyPath2OutNotExists() {
+        assertThatThrownBy(() -> {
+            try (OutputStream os = Files.newOutputStream(newTempDir().resolve("my_new_file.txt"))) {
+                Files.copy(newTempDir().resolve("myfile.txt"), os);
+            }
+        }).isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    public void copyPath2OutNull1() {
+        assertThatThrownBy(() -> {
+            try (OutputStream os = Files.newOutputStream(newTempDir().resolve("my_new_file.txt"))) {
+                Files.copy(null, os);
+            }
+        })
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'source' should be not null!");
+    }
+
+    @Test
     public void copyPath2OutNull2() {
-        Files.copy(Files.createTempFile("foo",
-                                        "bar"),
-                   null);
+        assertThatThrownBy(() -> Files.copy(Files.createTempFile("foo",
+                                                                 "bar"),
+                                            null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'out' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void copyPath2OutInvalidOption() {
-        Files.copy(null,
-                   null);
+        assertThatThrownBy(() -> Files.copy(null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'source' should be not null!");
     }
 
     @Test
     public void readAllBytes() throws IOException {
         final Path dir = newTempDir();
-        final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
-                                                              Charset.defaultCharset());
-        assertThat(writer).isNotNull();
-        writer.write("content");
-        writer.close();
+        try (final BufferedWriter writer = Files.newBufferedWriter(dir.resolve("myfile.txt"),
+                                                                   Charset.defaultCharset())) {
+            assertThat(writer).isNotNull();
+            writer.write("content");
+        }
 
         final byte[] result = Files.readAllBytes(dir.resolve("myfile.txt"));
 
-        assertThat(result).isNotEmpty().hasSize("content".getBytes().length).isEqualTo("content".getBytes());
+        assertThat(result)
+                .hasSize("content".getBytes().length)
+                .isEqualTo("content".getBytes());
     }
 
     @Test(expected = OutOfMemoryError.class)
@@ -321,19 +354,23 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
         Files.readAllBytes(file);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void readAllBytesFileNotExists() {
-        Files.readAllBytes(newTempDir().resolve("file.big"));
+        assertThatThrownBy(() -> Files.readAllBytes(newTempDir().resolve("file.big")))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void readAllBytesDir() {
-        Files.readAllBytes(newTempDir());
+        assertThatThrownBy(() -> Files.readAllBytes(newTempDir()))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAllBytesNull() {
-        Files.readAllBytes(null);
+        assertThatThrownBy(() -> Files.readAllBytes(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
@@ -364,77 +401,94 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
                 .contains("line", atIndex(2));
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void readAllLinesFileNotExists() {
-        Files.readAllLines(newTempDir().resolve("file.big"),
-                           Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.readAllLines(newTempDir().resolve("file.big"),
+                                                    Charset.defaultCharset()))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void readAllLinesDir() {
-        Files.readAllLines(newTempDir(),
-                           Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.readAllLines(newTempDir(),
+                                                    Charset.defaultCharset()))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAllLinesNull1() {
-        Files.readAllLines(null,
-                           Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.readAllLines(null,
+                                                    Charset.defaultCharset()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAllLinesNull2() {
-        Files.readAllLines(Files.createTempFile(null,
-                                                null),
-                           null);
+        assertThatThrownBy(() -> Files.readAllLines(Files.createTempFile(null,
+                                                                         null),
+                                                    null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'cs' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAllLinesNull3() {
-        Files.readAllLines(null,
-                           null);
+        assertThatThrownBy(() -> Files.readAllLines(null,
+                                                    null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
     public void write() {
         final Path dir = newTempDir();
 
-        Files.write(dir.resolve("file.txt"),
+        Path file = dir.resolve("file.txt");
+        Files.write(file,
                     "content".getBytes());
-        assertThat(Files.readAllBytes(dir.resolve("file.txt"))).hasSize("content".getBytes().length).isEqualTo("content".getBytes());
+
+        assertThat(Files.readAllBytes(file))
+                .hasSize("content".getBytes().length)
+                .isEqualTo("content".getBytes());
     }
 
-    @Test(expected = org.uberfire.java.nio.IOException.class)
+    @Test
     public void writeDir() {
-        Files.write(newTempDir(),
-                    "content".getBytes());
+        assertThatThrownBy(() -> Files.write(newTempDir(),
+                                             "content".getBytes()))
+                .isInstanceOf(org.uberfire.java.nio.IOException.class)
+                .hasMessage("Could not open output stream.");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeNull1() {
-        Files.write(newTempDir().resolve("file.txt"),
-                    null);
+        assertThatThrownBy(() -> Files.write(newTempDir().resolve("file.txt"),
+                                             null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'bytes' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeNull2() {
-        Files.write(null,
-                    "".getBytes());
+        assertThatThrownBy(() -> Files.write(null,
+                                             "".getBytes()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeNull3() {
-        Files.write(null,
-                    null);
+        assertThatThrownBy(() -> Files.write(null,
+                                             null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
     public void writeLines() {
         final Path dir = newTempDir();
-        final List<String> content = new ArrayList<String>() {{
-            add("some");
-            add("value");
-        }};
+        final List<String> content = Arrays.asList("some", "value");
 
         Files.write(dir.resolve("file.txt"),
                     content,
@@ -447,46 +501,50 @@ public class FileUtilityMethodsTest extends AbstractBaseTest {
                 .contains("value", atIndex(1));
     }
 
-    @Test(expected = org.uberfire.java.nio.IOException.class)
+    @Test
     public void writeLinesDir() {
-        final List<String> content = new ArrayList<String>() {{
-            add("some");
-            add("value");
-        }};
-
-        Files.write(newTempDir(),
-                    content,
-                    Charset.defaultCharset());
+        final List<String> content = Arrays.asList("some", "value");
+        assertThatThrownBy(() -> Files.write(newTempDir(),
+                                             content,
+                                             Charset.defaultCharset()))
+                .isInstanceOf(org.uberfire.java.nio.IOException.class)
+                .hasMessage("Could not open output stream.");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeLinesNull1() {
-        Files.write(newTempDir().resolve("file.txt"),
-                    null,
-                    Charset.defaultCharset());
+        assertThatThrownBy(() -> Files.write(newTempDir().resolve("file.txt"),
+                                             null,
+                                             Charset.defaultCharset()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'lines' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeLinesNull2() {
-        final List<String> content = new ArrayList<String>();
-        Files.write(null,
-                    content,
-                    Charset.defaultCharset());
+        final List<String> content = new ArrayList<>();
+        assertThatThrownBy(() -> Files.write(null,
+                                             content,
+                                             Charset.defaultCharset()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeLinesNull4() {
-        final List<String> content = new ArrayList<String>();
-        Files.write(newTempDir().resolve("file.txt"),
-                    content,
-                    null);
+        final List<String> content = new ArrayList<>();
+        assertThatThrownBy(() -> Files.write(newTempDir().resolve("file.txt"),
+                                             content,
+                                             null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'cs' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void writeLinesNull5() {
-        final List<String> content = new ArrayList<String>();
-        Files.write(null,
-                    null,
-                    null);
+        assertThatThrownBy(() -> Files.write(null,
+                                             null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 }

@@ -44,7 +44,7 @@ public class JGitFileSystemImplProviderMigrationTest extends AbstractTestInfra {
 
         provider.getFileSystem(newUri);
         assertThat(new File(provider.getGitRepoContainerDir(),
-                            "test/old" + ".git").exists()).isTrue();
+                            "test/old" + ".git")).exists();
         assertThat(provider.getFileSystem(newUri)).isNotNull();
     }
 }

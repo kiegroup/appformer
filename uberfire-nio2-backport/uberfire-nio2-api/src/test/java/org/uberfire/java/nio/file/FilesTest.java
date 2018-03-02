@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashSet;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assume;
 import org.junit.Test;
 import org.uberfire.java.nio.base.BasicFileAttributesImpl;
@@ -30,8 +31,8 @@ import org.uberfire.java.nio.channels.SeekableByteChannel;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributeView;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.java.nio.fs.file.SimpleFileSystemProvider;
-import org.assertj.core.api.Assertions;
-import static org.assertj.core.api.Assertions.fail;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class FilesTest extends AbstractBaseTest {
@@ -40,26 +41,25 @@ public class FilesTest extends AbstractBaseTest {
     public void newIOStreams() throws IOException {
         final Path dir = newTempDir();
 
-        final OutputStream out = Files.newOutputStream(dir.resolve("file.txt"));
-        assertThat(out).isNotNull();
-
-        out.write("content".getBytes());
-        out.close();
-
-        final InputStream in = Files.newInputStream(dir.resolve("file.txt"));
-
-        assertThat(in).isNotNull();
-
-        final StringBuilder sb = new StringBuilder();
-        while (true) {
-            int i = in.read();
-            if (i == -1) {
-                break;
-            }
-            sb.append((char) i);
+        try (final OutputStream out = Files.newOutputStream(dir.resolve("file.txt"))) {
+            assertThat(out).isNotNull();
+            out.write("content".getBytes());
         }
-        in.close();
-        assertThat(sb.toString()).isEqualTo("content");
+
+        try (final InputStream in = Files.newInputStream(dir.resolve("file.txt"))) {
+
+            assertThat(in).isNotNull();
+
+            final StringBuilder sb = new StringBuilder();
+            while (true) {
+                int i = in.read();
+                if (i == -1) {
+                    break;
+                }
+                sb.append((char) i);
+            }
+            assertThat(sb.toString()).isEqualTo("content");
+        }
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -91,14 +91,14 @@ public class FilesTest extends AbstractBaseTest {
 
     @Test
     public void newByteChannel() throws IOException {
-        final SeekableByteChannel sbc = Files.newByteChannel(newTempDir().resolve("file.temp.txt"),
-                                                             new HashSet<OpenOption>());
-        assertThat(sbc).isNotNull();
-        sbc.close();
+        try (final SeekableByteChannel sbc = Files.newByteChannel(newTempDir().resolve("file.temp.txt"),
+                                                                  new HashSet<>())) {
+            assertThat(sbc).isNotNull();
+        }
 
-        final SeekableByteChannel sbc2 = Files.newByteChannel(newTempDir().resolve("file.temp2.txt"));
-        assertThat(sbc2).isNotNull();
-        sbc2.close();
+        try (final SeekableByteChannel sbc2 = Files.newByteChannel(newTempDir().resolve("file.temp2.txt"))) {
+            assertThat(sbc2).isNotNull();
+        }
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -113,11 +113,11 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void createFile() throws IOException {
+    public void createFile() {
         final Path path = Files.createFile(newTempDir().resolve("file.temp.txt"));
 
         assertThat(path).isNotNull();
-        assertThat(path.toFile().exists()).isTrue();
+        assertThat(path.toFile()).exists();
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -138,14 +138,13 @@ public class FilesTest extends AbstractBaseTest {
         final Path dir = Files.createDirectory(path.resolve("myNewDir"));
 
         assertThat(dir).isNotNull();
-        assertThat(dir.toFile().exists()).isTrue();
-        assertThat(dir.toFile().isDirectory()).isTrue();
+        assertThat(dir.toFile()).exists();
+        assertThat(dir.toFile()).isDirectory();
 
         final Path file = Files.createFile(dir.resolve("new.file.txt"));
         assertThat(file).isNotNull();
-        assertThat(file.toFile().exists()).isTrue();
-        assertThat(file.toFile().isDirectory()).isFalse();
-        assertThat(file.toFile().isFile()).isTrue();
+        assertThat(file.toFile()).exists();
+        assertThat(file.toFile()).isFile();
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -165,14 +164,13 @@ public class FilesTest extends AbstractBaseTest {
         final Path dir = Files.createDirectories(path.resolve("myNewDir/mysubDir1/mysubDir2"));
 
         assertThat(dir).isNotNull();
-        assertThat(dir.toFile().exists()).isTrue();
-        assertThat(dir.toFile().isDirectory()).isTrue();
+        assertThat(dir.toFile()).exists();
+        assertThat(dir.toFile()).isDirectory();
 
         final Path file = Files.createFile(dir.resolve("new.file.txt"));
         assertThat(file).isNotNull();
-        assertThat(file.toFile().exists()).isTrue();
-        assertThat(file.toFile().isDirectory()).isFalse();
-        assertThat(file.toFile().isFile()).isTrue();
+        assertThat(file.toFile()).exists();
+        assertThat(file.toFile()).isFile();
     }
 
     @Test(expected = FileAlreadyExistsException.class)
@@ -190,22 +188,22 @@ public class FilesTest extends AbstractBaseTest {
         final Path path = Files.createFile(newTempDir().resolve("file.temp.txt"));
 
         assertThat(path).isNotNull();
-        assertThat(path.toFile().exists()).isTrue();
+        assertThat(path.toFile()).exists();
 
         Files.delete(path);
 
         assertThat(path).isNotNull();
-        assertThat(path.toFile().exists()).isFalse();
+        assertThat(path.toFile()).doesNotExist();
 
         final Path dir = newTempDir();
 
         assertThat(dir).isNotNull();
-        assertThat(dir.toFile().exists()).isTrue();
+        assertThat(dir.toFile()).exists();
 
         Files.delete(dir);
 
         assertThat(dir).isNotNull();
-        assertThat(dir.toFile().exists()).isFalse();
+        assertThat(dir.toFile()).doesNotExist();
     }
 
     @Test(expected = DirectoryNotEmptyException.class)
@@ -231,22 +229,22 @@ public class FilesTest extends AbstractBaseTest {
         final Path path = Files.createFile(newTempDir().resolve("file.temp.txt"));
 
         assertThat(path).isNotNull();
-        assertThat(path.toFile().exists()).isTrue();
+        assertThat(path.toFile()).exists();
 
         assertThat(Files.deleteIfExists(path)).isTrue();
 
         assertThat(path).isNotNull();
-        assertThat(path.toFile().exists()).isFalse();
+        assertThat(path.toFile()).doesNotExist();
 
         final Path dir = newTempDir();
 
         assertThat(dir).isNotNull();
-        assertThat(dir.toFile().exists()).isTrue();
+        assertThat(dir.toFile()).exists();
 
         assertThat(Files.deleteIfExists(dir)).isTrue();
 
         assertThat(dir).isNotNull();
-        assertThat(dir.toFile().exists()).isFalse();
+        assertThat(dir.toFile()).doesNotExist();
 
         assertThat(Files.deleteIfExists(newTempDir().resolve("file.temp.txt"))).isFalse();
     }
@@ -270,42 +268,42 @@ public class FilesTest extends AbstractBaseTest {
                                                    null);
         assertThat(tempFile).isNotNull();
         assertThat(tempFile.getFileName().toString()).endsWith("tmp");
-        assertThat(tempFile.toFile().exists()).isTrue();
+        assertThat(tempFile.toFile()).exists();
 
         final Path tempFile2 = Files.createTempFile("",
                                                     "");
         assertThat(tempFile2).isNotNull();
         assertThat(tempFile2.getFileName().toString()).endsWith("tmp");
-        assertThat(tempFile2.toFile().exists()).isTrue();
+        assertThat(tempFile2.toFile()).exists();
 
         final Path tempFile3 = Files.createTempFile("foo",
                                                     "bar");
         assertThat(tempFile3).isNotNull();
-        assertThat(tempFile3.toFile().exists()).isTrue();
+        assertThat(tempFile3.toFile()).exists();
         assertThat(tempFile3.getFileName().toString()).startsWith("foo").endsWith(".bar");
 
         final Path tempFile4 = Files.createTempFile("",
                                                     "bar");
         assertThat(tempFile4).isNotNull();
-        assertThat(tempFile4.toFile().exists()).isTrue();
+        assertThat(tempFile4.toFile()).exists();
         assertThat(tempFile4.getFileName().toString()).endsWith(".bar");
 
         final Path tempFile5 = Files.createTempFile("",
                                                     ".bar");
         assertThat(tempFile5).isNotNull();
-        assertThat(tempFile5.toFile().exists()).isTrue();
+        assertThat(tempFile5.toFile()).exists();
         assertThat(tempFile5.getFileName().toString()).endsWith(".bar");
 
         final Path tempFile6 = Files.createTempFile("",
                                                     "bar.temp");
         assertThat(tempFile6).isNotNull();
-        assertThat(tempFile6.toFile().exists()).isTrue();
+        assertThat(tempFile6.toFile()).exists();
         assertThat(tempFile6.getFileName().toString()).endsWith(".bar.temp");
 
         final Path tempFile7 = Files.createTempFile("",
                                                     ".bar.temp");
         assertThat(tempFile7).isNotNull();
-        assertThat(tempFile7.toFile().exists()).isTrue();
+        assertThat(tempFile7.toFile()).exists();
         assertThat(tempFile7.getFileName().toString()).endsWith(".bar.temp");
     }
 
@@ -313,7 +311,7 @@ public class FilesTest extends AbstractBaseTest {
     public void createTempFileInsideDir() {
         final Path dir = newTempDir();
 
-        assertThat(dir.toFile().list()).isNotNull().isEmpty();
+        assertThat(dir.toFile().list()).isEmpty();
 
         final Path tempFile = Files.createTempFile(dir,
                                                    null,
@@ -321,9 +319,9 @@ public class FilesTest extends AbstractBaseTest {
 
         assertThat(tempFile).isNotNull();
         assertThat(tempFile.getFileName().toString()).endsWith("tmp");
-        assertThat(tempFile.toFile().exists()).isTrue();
+        assertThat(tempFile.toFile()).exists();
 
-        assertThat(dir.toFile().list()).isNotNull().isNotEmpty();
+        assertThat(dir.toFile().list()).isNotEmpty();
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -344,35 +342,35 @@ public class FilesTest extends AbstractBaseTest {
     public void createTempDirectory() {
         final Path tempFile = Files.createTempDirectory(null);
         assertThat(tempFile).isNotNull();
-        assertThat(tempFile.toFile().exists()).isTrue();
-        assertThat(tempFile.toFile().isDirectory()).isTrue();
+        assertThat(tempFile.toFile()).exists();
+        assertThat(tempFile.toFile()).isDirectory();
 
         final Path tempFile2 = Files.createTempDirectory("");
         assertThat(tempFile2).isNotNull();
-        assertThat(tempFile2.toFile().exists()).isTrue();
-        assertThat(tempFile2.toFile().isDirectory()).isTrue();
+        assertThat(tempFile2.toFile()).exists();
+        assertThat(tempFile2.toFile()).isDirectory();
 
         final Path tempFile3 = Files.createTempDirectory("foo");
         assertThat(tempFile3).isNotNull();
-        assertThat(tempFile3.toFile().exists()).isTrue();
+        assertThat(tempFile3.toFile()).exists();
         assertThat(tempFile3.getFileName().toString()).startsWith("foo");
-        assertThat(tempFile3.toFile().isDirectory()).isTrue();
+        assertThat(tempFile3.toFile()).isDirectory();
     }
 
     @Test
     public void createTempDirectoryInsideDir() {
         final Path dir = newTempDir();
 
-        assertThat(dir.toFile().list()).isNotNull().isEmpty();
+        assertThat(dir.toFile().list()).isEmpty();
 
         final Path tempFile = Files.createTempDirectory(dir,
                                                         null);
 
         assertThat(tempFile).isNotNull();
-        assertThat(tempFile.toFile().exists()).isTrue();
-        assertThat(tempFile.toFile().isDirectory()).isTrue();
+        assertThat(tempFile.toFile()).exists();
+        assertThat(tempFile.toFile()).isDirectory();
 
-        assertThat(dir.toFile().list()).isNotNull().isNotEmpty();
+        assertThat(dir.toFile().list()).isNotEmpty();
     }
 
     @Test(expected = NoSuchFileException.class)
@@ -392,14 +390,14 @@ public class FilesTest extends AbstractBaseTest {
         final Path source = newTempDir();
         final Path dest = newDirToClean();
 
-        assertThat(source.toFile().exists()).isTrue();
-        assertThat(dest.toFile().exists()).isFalse();
+        assertThat(source.toFile()).exists();
+        assertThat(dest.toFile()).doesNotExist();
 
         Files.copy(source,
                    dest);
 
-        assertThat(dest.toFile().exists()).isTrue();
-        assertThat(source.toFile().exists()).isTrue();
+        assertThat(dest.toFile()).exists();
+        assertThat(source.toFile()).exists();
     }
 
     @Test(expected = DirectoryNotEmptyException.class)
@@ -421,15 +419,15 @@ public class FilesTest extends AbstractBaseTest {
         final Path source = dir.resolve("temp.txt");
         final Path dest = dir.resolve("result.txt");
 
-        final OutputStream stream = Files.newOutputStream(source);
-        stream.write('a');
-        stream.close();
+        try (final OutputStream stream = Files.newOutputStream(source)) {
+            stream.write('a');
+        }
 
         Files.copy(source,
                    dest);
 
-        assertThat(dest.toFile().exists()).isTrue();
-        assertThat(source.toFile().exists()).isTrue();
+        assertThat(dest.toFile()).exists();
+        assertThat(source.toFile()).exists();
         assertThat(dest.toFile().length()).isEqualTo(source.toFile().length());
     }
 
@@ -439,55 +437,42 @@ public class FilesTest extends AbstractBaseTest {
         final Path dest = newTempDir().resolve("other");
 
         final Path sourceFile = source.resolve("file.txt");
-        final OutputStream stream = Files.newOutputStream(sourceFile);
-        stream.write('a');
-        stream.close();
-
-        try {
-            Files.copy(source,
-                       dest);
-            fail("source isn't empty");
-        } catch (Exception ex) {
+        try (final OutputStream stream = Files.newOutputStream(sourceFile)) {
+            stream.write('a');
         }
+
+        assertThatThrownBy(() -> Files.copy(source, dest))
+                .isInstanceOf(DirectoryNotEmptyException.class);
 
         sourceFile.toFile().delete();
         Files.copy(source,
                    dest);
 
-        try {
-            Files.copy(source,
-                       dest);
-            fail("dest already exists");
-        } catch (Exception ex) {
-        }
+        assertThatThrownBy(() -> Files.copy(source, dest))
+                .isInstanceOf(FileAlreadyExistsException.class);
 
         dest.toFile().delete();
         source.toFile().delete();
 
-        try {
-            Files.copy(source,
-                       dest);
-            fail("source doesn't exists");
-        } catch (Exception ex) {
-
-        } finally {
-        }
+        assertThatThrownBy(() -> Files.copy(source, dest))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Condition 'source must exist' is invalid!");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyNull1() throws IOException {
+    public void copyNull1() {
         Files.copy(newTempDir(),
                    (Path) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyNull2() throws IOException {
+    public void copyNull2() {
         Files.copy((Path) null,
                    Paths.get("/temp"));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void copyNull3() throws IOException {
+    public void copyNull3() {
         Files.copy((Path) null,
                    (Path) null);
     }
@@ -500,8 +485,8 @@ public class FilesTest extends AbstractBaseTest {
         Files.move(source,
                    dest);
 
-        assertThat(source.toFile().exists()).isFalse();
-        assertThat(dest.toFile().exists()).isTrue();
+        assertThat(source.toFile()).doesNotExist();
+        assertThat(dest.toFile()).exists();
     }
 
     @Test
@@ -509,16 +494,16 @@ public class FilesTest extends AbstractBaseTest {
         final Path dir = newTempDir();
         final Path source = dir.resolve("fileSource.txt");
         final Path dest = dir.resolve("fileDest.txt");
-        final OutputStream stream = Files.newOutputStream(source);
-        stream.write('a');
-        stream.close();
+        try (final OutputStream stream = Files.newOutputStream(source)) {
+            stream.write('a');
+        }
 
         long lenght = source.toFile().length();
         Files.move(source,
                    dest);
 
-        assertThat(dest.toFile().exists()).isTrue();
-        assertThat(source.toFile().exists()).isFalse();
+        assertThat(dest.toFile()).exists();
+        assertThat(source.toFile()).doesNotExist();
         assertThat(dest.toFile().length()).isEqualTo(lenght);
     }
 
@@ -528,55 +513,42 @@ public class FilesTest extends AbstractBaseTest {
         final Path dest = newTempDir().resolve("other");
 
         final Path sourceFile = source.resolve("file.txt");
-        final OutputStream stream = Files.newOutputStream(sourceFile);
-        stream.write('a');
-        stream.close();
-
-        try {
-            Files.move(source,
-                       dest);
-            fail("source isn't empty");
-        } catch (Exception ex) {
+        try (final OutputStream stream = Files.newOutputStream(sourceFile)) {
+            stream.write('a');
         }
+
+        assertThatThrownBy(() -> Files.move(source, dest))
+                .isInstanceOf(DirectoryNotEmptyException.class);
 
         sourceFile.toFile().delete();
         Files.copy(source,
                    dest);
 
-        try {
-            Files.move(source,
-                       dest);
-            fail("dest already exists");
-        } catch (Exception ex) {
-        }
+        assertThatThrownBy(() -> Files.move(source, dest))
+                .isInstanceOf(FileAlreadyExistsException.class);
 
         dest.toFile().delete();
         source.toFile().delete();
 
-        try {
-            Files.move(source,
-                       dest);
-            fail("source doesn't exists");
-        } catch (Exception ex) {
-
-        } finally {
-        }
+        assertThatThrownBy(() -> Files.move(source, dest))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Condition 'source must exist' is invalid!");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveNull1() throws IOException {
+    public void moveNull1() {
         Files.move(newTempDir(),
                    null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveNull2() throws IOException {
+    public void moveNull2() {
         Files.move(null,
                    newTempDir());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveNull3() throws IOException {
+    public void moveNull3() {
         Files.move(null,
                    null);
     }
@@ -594,7 +566,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void getFileAttributeViewGeneral() throws IOException {
+    public void getFileAttributeViewGeneral() {
         final Path path = Files.createTempFile(null,
                                                null);
 
@@ -610,7 +582,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void getFileAttributeViewBasic() throws IOException {
+    public void getFileAttributeViewBasic() {
         final Path path = Files.createTempFile(null,
                                                null);
 
@@ -626,7 +598,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void getFileAttributeViewInvalidView() throws IOException {
+    public void getFileAttributeViewInvalidView() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -635,7 +607,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void getFileAttributeViewNoSuchFileException() throws IOException {
+    public void getFileAttributeViewNoSuchFileException() {
         final Path path = Paths.get("/path/to/file.txt");
 
         Files.getFileAttributeView(path,
@@ -643,26 +615,26 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getFileAttributeViewNull1() throws IOException {
+    public void getFileAttributeViewNull1() {
         Files.getFileAttributeView(null,
                                    MyAttrsView.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getFileAttributeViewNull2() throws IOException {
+    public void getFileAttributeViewNull2() {
         final Path path = Paths.get("/path/to/file.txt");
         Files.getFileAttributeView(path,
                                    null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getFileAttributeViewNull3() throws IOException {
+    public void getFileAttributeViewNull3() {
         Files.getFileAttributeView(null,
                                    null);
     }
 
     @Test
-    public void readAttributesGeneral() throws IOException {
+    public void readAttributesGeneral() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -677,7 +649,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void readAttributesBasic() throws IOException {
+    public void readAttributesBasic() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -693,7 +665,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAttributesNonExistentFile() throws IOException {
+    public void readAttributesNonExistentFile() {
         final Path path = Paths.get("/path/to/file.txt");
 
         Files.readAttributes(path,
@@ -701,7 +673,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void readAttributesInvalid() throws IOException {
+    public void readAttributesInvalid() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -710,74 +682,70 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesNull1() throws IOException {
+    public void readAttributesNull1() {
         Files.readAttributes(null,
                              MyAttrs.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesNull2() throws IOException {
+    public void readAttributesNull2() {
         final Path path = Paths.get("/path/to/file.txt");
         Files.readAttributes(path,
                              (Class<MyAttrs>) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesNull3() throws IOException {
+    public void readAttributesNull3() {
         Files.readAttributes(null,
                              (Class<MyAttrs>) null);
     }
 
     @Test
-    public void readAttributesMap() throws IOException {
+    public void readAttributesMap() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
         Assertions.assertThat(Files.readAttributes(path,
-                                        "*")).hasSize(9);
+                                                   "*")).hasSize(9);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "basic:*")).hasSize(9);
+                                                   "basic:*")).hasSize(9);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "basic:isRegularFile")).hasSize(1);
+                                                   "basic:isRegularFile")).hasSize(1);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "basic:isRegularFile,isDirectory")).hasSize(2);
+                                                   "basic:isRegularFile,isDirectory")).hasSize(2);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "basic:isRegularFile,isDirectory,someThing")).hasSize(2);
+                                                   "basic:isRegularFile,isDirectory,someThing")).hasSize(2);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "basic:someThing")).hasSize(0);
+                                                   "basic:someThing")).hasSize(0);
 
         Assertions.assertThat(Files.readAttributes(path,
-                                        "isRegularFile")).hasSize(1);
+                                                   "isRegularFile")).hasSize(1);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "isRegularFile,isDirectory")).hasSize(2);
+                                                   "isRegularFile,isDirectory")).hasSize(2);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "isRegularFile,isDirectory,someThing")).hasSize(2);
+                                                   "isRegularFile,isDirectory,someThing")).hasSize(2);
         Assertions.assertThat(Files.readAttributes(path,
-                                        "someThing")).hasSize(0);
+                                                   "someThing")).hasSize(0);
 
-        try {
-            Files.readAttributes(path,
-                                 ":someThing");
-            fail("undefined view");
-        } catch (IllegalArgumentException ex) {
-        }
+        assertThatThrownBy(() -> Files.readAttributes(path,
+                                                      ":someThing"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(":someThing");
 
-        try {
-            Files.readAttributes(path,
-                                 "advanced:isRegularFile");
-            fail("undefined view");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThatThrownBy(() -> Files.readAttributes(path,
+                                                      "advanced:isRegularFile"))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("View 'advanced' not available");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesMapNull1() throws IOException {
+    public void readAttributesMapNull1() {
         Files.readAttributes(null,
                              "*");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesMapNull2() throws IOException {
+    public void readAttributesMapNull2() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -786,13 +754,13 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesMapNull3() throws IOException {
+    public void readAttributesMapNull3() {
         Files.readAttributes(null,
                              (String) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesMapEmpty() throws IOException {
+    public void readAttributesMapEmpty() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -801,7 +769,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAttributesMapNoSuchFileException() throws IOException {
+    public void readAttributesMapNoSuchFileException() {
         final Path path = Paths.get("/path/to/file.txt");
 
         Files.readAttributes(path,
@@ -809,7 +777,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeNull1() throws IOException {
+    public void setAttributeNull1() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -819,21 +787,21 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeNull2() throws IOException {
+    public void setAttributeNull2() {
         Files.setAttribute(null,
                            "some",
                            null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeNull3() throws IOException {
+    public void setAttributeNull3() {
         Files.setAttribute(null,
                            null,
                            null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeEmpty() throws IOException {
+    public void setAttributeEmpty() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -843,7 +811,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void setAttributeInvalidAttr() throws IOException {
+    public void setAttributeInvalidAttr() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -853,7 +821,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
-    public void setAttributeInvalidView() throws IOException {
+    public void setAttributeInvalidView() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -863,7 +831,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeInvalidView2() throws IOException {
+    public void setAttributeInvalidView2() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -873,7 +841,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NotImplementedException.class)
-    public void setAttributeNotImpl() throws IOException {
+    public void setAttributeNotImpl() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -883,7 +851,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void readAttribute() throws IOException {
+    public void readAttribute() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -899,7 +867,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributeInvalid() throws IOException {
+    public void readAttributeInvalid() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -908,7 +876,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributeInvalid2() throws IOException {
+    public void readAttributeInvalid2() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -917,7 +885,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAttributeInvalid3() throws IOException {
+    public void readAttributeInvalid3() {
         final Path path = Paths.get("/path/to/file.txt");
 
         Files.getAttribute(path,
@@ -925,7 +893,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test
-    public void getLastModifiedTime() throws IOException {
+    public void getLastModifiedTime() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -933,19 +901,19 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void getLastModifiedTimeNoSuchFileException() throws IOException {
+    public void getLastModifiedTimeNoSuchFileException() {
         final Path path = Paths.get("/path/to/file");
 
         Files.getLastModifiedTime(path);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getLastModifiedTimeNull() throws IOException {
+    public void getLastModifiedTimeNull() {
         Files.getLastModifiedTime(null);
     }
 
     @Test(expected = NotImplementedException.class)
-    public void setLastModifiedTime() throws IOException {
+    public void setLastModifiedTime() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -954,7 +922,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void setLastModifiedTimeNoSuchFileException() throws IOException {
+    public void setLastModifiedTimeNoSuchFileException() {
         final Path path = Paths.get("/path/to/file");
 
         Files.setLastModifiedTime(path,
@@ -962,13 +930,13 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setLastModifiedTimeNull() throws IOException {
+    public void setLastModifiedTimeNull() {
         Files.setLastModifiedTime(null,
                                   null);
     }
 
     @Test(expected = NotImplementedException.class)
-    public void setLastModifiedTimeNull2() throws IOException {
+    public void setLastModifiedTimeNull2() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
         Files.setLastModifiedTime(path,
@@ -980,30 +948,30 @@ public class FilesTest extends AbstractBaseTest {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
-        assertThat(Files.size(path)).isNotNull().isEqualTo(0L);
+        assertThat(Files.size(path)).isEqualTo(0L);
 
         final Path sourceFile = newTempDir().resolve("file.txt");
         final OutputStream stream = Files.newOutputStream(sourceFile);
         stream.write('a');
         stream.close();
 
-        assertThat(Files.size(sourceFile)).isNotNull().isEqualTo(1L);
+        assertThat(Files.size(sourceFile)).isEqualTo(1L);
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void sizeNoSuchFileException() throws IOException {
+    public void sizeNoSuchFileException() {
         final Path path = Paths.get("/path/to/file");
 
         Files.size(path);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void sizeNull() throws IOException {
+    public void sizeNull() {
         Files.size(null);
     }
 
     @Test
-    public void exists() throws IOException {
+    public void exists() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1013,12 +981,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void existsNull() throws IOException {
+    public void existsNull() {
         Files.exists(null);
     }
 
     @Test
-    public void notExists() throws IOException {
+    public void notExists() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1029,12 +997,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void notExistsNull() throws IOException {
+    public void notExistsNull() {
         Files.notExists(null);
     }
 
     @Test
-    public void isSameFile() throws IOException {
+    public void isSameFile() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1057,7 +1025,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isSameFileNull1() throws IOException {
+    public void isSameFileNull1() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1066,7 +1034,7 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isSameFileNull2() throws IOException {
+    public void isSameFileNull2() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1075,13 +1043,13 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isSameFileNull3() throws IOException {
+    public void isSameFileNull3() {
         Files.isSameFile(null,
                          null);
     }
 
     @Test
-    public void isHidden() throws IOException {
+    public void isHidden() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1091,12 +1059,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isHiddenNull() throws IOException {
+    public void isHiddenNull() {
         Files.isHidden(null);
     }
 
     @Test
-    public void isReadable() throws IOException {
+    public void isReadable() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1106,12 +1074,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isReadableNull() throws IOException {
+    public void isReadableNull() {
         Files.isReadable(null);
     }
 
     @Test
-    public void isWritable() throws IOException {
+    public void isWritable() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1121,12 +1089,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isWritableNull() throws IOException {
+    public void isWritableNull() {
         Files.isWritable(null);
     }
 
     @Test
-    public void isExecutable() throws IOException {
+    public void isExecutable() {
         Assume.assumeFalse(SimpleFileSystemProvider.OSType.currentOS().equals(SimpleFileSystemProvider.OSType.WINDOWS));
 
         final Path path = Files.createTempFile("foo",
@@ -1138,12 +1106,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isExecutableNull() throws IOException {
+    public void isExecutableNull() {
         Files.isExecutable(null);
     }
 
     @Test
-    public void isSymbolicLink() throws IOException {
+    public void isSymbolicLink() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1153,12 +1121,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isSymbolicLinkNull() throws IOException {
+    public void isSymbolicLinkNull() {
         Files.isSymbolicLink(null);
     }
 
     @Test
-    public void isDirectory() throws IOException {
+    public void isDirectory() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1168,12 +1136,12 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isDirectoryNull() throws IOException {
+    public void isDirectoryNull() {
         Files.isSymbolicLink(null);
     }
 
     @Test
-    public void isRegularFile() throws IOException {
+    public void isRegularFile() {
         final Path path = Files.createTempFile("foo",
                                                "bar");
 
@@ -1183,15 +1151,15 @@ public class FilesTest extends AbstractBaseTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void isRegularFileNull() throws IOException {
+    public void isRegularFileNull() {
         Files.isRegularFile(null);
     }
 
-    private static interface MyAttrsView extends BasicFileAttributeView {
+    private interface MyAttrsView extends BasicFileAttributeView {
 
     }
 
-    private static interface MyAttrs extends BasicFileAttributes {
+    private interface MyAttrs extends BasicFileAttributes {
 
     }
 }

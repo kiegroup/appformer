@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -72,15 +73,16 @@ import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 import org.uberfire.java.nio.fs.jgit.util.model.PathInfo;
 import org.uberfire.java.nio.fs.jgit.util.model.PathType;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.uberfire.java.nio.file.StandardDeleteOption.NON_EMPTY_DIRECTORIES;
 
 public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
@@ -101,7 +103,7 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
 
     @Test
     @Ignore
-    public void testDaemob() throws InterruptedException {
+    public void testDaemob() {
         final URI newRepo = URI.create("git://repo-name");
 
         final Map<String, ?> env = new HashMap<String, Object>() {{
@@ -112,8 +114,7 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
         FileSystem fs = provider.newFileSystem(newRepo,
                                                env);
 
-        WatchService ws = null;
-        ws = fs.newWatchService();
+        WatchService ws = fs.newWatchService();
         final Path path = fs.getRootDirectories().iterator().next();
         path.register(ws,
                       StandardWatchEventKind.ENTRY_CREATE,
@@ -1063,7 +1064,7 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
     }
 
     @Test
-    public void testCreateDirectory() throws Exception {
+    public void testCreateDirectory()  {
         final URI newRepo = URI.create("git://xcreatedir-test-repo");
         provider.newFileSystem(newRepo,
                                EMPTY_ENV);

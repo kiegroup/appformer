@@ -42,8 +42,9 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class JGitForkTest extends AbstractTestInfra {
 
-    public static final String TARGET_GIT = "target/target";
-    public static final String SOURCE_GIT = "source/source";
+    private static final String
+            TARGET_GIT = "target/target",
+            SOURCE_GIT = "source/source";
     private static Logger logger = LoggerFactory.getLogger(JGitForkTest.class);
 
     @Test
@@ -158,7 +159,7 @@ public class JGitForkTest extends AbstractTestInfra {
     }
 
     @Test
-    public void testToForkWrongSource() throws IOException, GitAPIException {
+    public void testToForkWrongSource() throws IOException {
         final File parentFolder = createTempDirectory();
 
         try {
@@ -206,7 +207,7 @@ public class JGitForkTest extends AbstractTestInfra {
     }
 
     @Test(expected = FileSystemAlreadyExistsException.class)
-    public void testForkRepositoryThatAlreadyExists() throws GitAPIException {
+    public void testForkRepositoryThatAlreadyExists() {
 
         String SOURCE = "testforkA/source";
         String TARGET = "testforkB/target";

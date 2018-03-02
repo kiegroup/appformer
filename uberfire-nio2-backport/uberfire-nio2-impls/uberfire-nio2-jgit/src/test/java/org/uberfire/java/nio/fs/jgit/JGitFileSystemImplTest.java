@@ -432,7 +432,7 @@ public class JGitFileSystemImplTest extends AbstractTestInfra {
     }
 
     @Test
-    public void lockShouldSupportMultiplieInnerLocksForTheSameThreadTest() throws IOException, GitAPIException {
+    public void lockShouldSupportMultipleInnerLocksForTheSameThreadTest() throws IOException, GitAPIException {
         final JGitFileSystemProvider fsProvider = mock(JGitFileSystemProvider.class);
 
         final Git git = setupGit();

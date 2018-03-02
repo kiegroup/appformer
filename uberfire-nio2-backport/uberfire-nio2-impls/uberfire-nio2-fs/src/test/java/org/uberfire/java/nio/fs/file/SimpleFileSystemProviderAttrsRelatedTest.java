@@ -24,13 +24,14 @@ import org.junit.Test;
 import org.uberfire.java.nio.base.BasicFileAttributesImpl;
 import org.uberfire.java.nio.base.GeneralPathImpl;
 import org.uberfire.java.nio.base.NotImplementedException;
+import org.uberfire.java.nio.file.AccessDeniedException;
 import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributeView;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.uberfire.java.nio.file.AccessMode.EXECUTE;
 import static org.uberfire.java.nio.file.AccessMode.READ;
 import static org.uberfire.java.nio.file.AccessMode.WRITE;
@@ -68,100 +69,53 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
                                                  "/path/to/file.txt",
                                                  false);
 
-        try {
-            fsProvider.checkAccess(path,
-                                   WRITE);
-            fail("can't have write access on non existent file");
-        } catch (Exception ex) {
-        }
+        assertThatThrownBy(() -> fsProvider.checkAccess(path, WRITE))
+                .isInstanceOf(NoSuchFileException.class);
 
-        try {
-            fsProvider.checkAccess(path,
-                                   READ);
-            fail("can't have read access on non existent file");
-        } catch (Exception ex) {
-        }
+        assertThatThrownBy(() -> fsProvider.checkAccess(path, READ))
+                .isInstanceOf(NoSuchFileException.class);
 
-        try {
-            fsProvider.checkAccess(path,
-                                   EXECUTE);
-            fail("can't have execute access on non existent file");
-        } catch (Exception ex) {
-        }
+        assertThatThrownBy(() -> fsProvider.checkAccess(path, EXECUTE))
+                .isInstanceOf(NoSuchFileException.class);
 
         final File tempFile = File.createTempFile("foo",
                                                   "bar");
         final Path path2 = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                        tempFile);
 
-        try {
-            fsProvider.checkAccess(path2,
-                                   WRITE);
-        } catch (Exception ex) {
-            fail("write access should be ok");
-        }
+        fsProvider.checkAccess(path2, WRITE);
 
-        tempFile.setWritable(false);
+        assertThat(tempFile.setWritable(false)).isTrue();
 
-        try {
-            fsProvider.checkAccess(path2,
-                                   WRITE);
-            fail("can't have write access on file");
-        } catch (Exception ex) {
-        }
+        assertThatThrownBy(() -> fsProvider.checkAccess(path2, WRITE))
+                .isInstanceOf(AccessDeniedException.class);
 
-        tempFile.setWritable(true);
+        assertThat(tempFile.setWritable(true)).isTrue();
 
-        try {
-            fsProvider.checkAccess(path2,
-                                   READ);
-        } catch (Exception ex) {
-            fail("read access should be ok");
-        }
+        fsProvider.checkAccess(path2, READ);
 
-        tempFile.setReadable(false);
+        assertThat(tempFile.setReadable(false)).isTrue();
 
         if (SimpleFileSystemProvider.OSType.currentOS().equals(SimpleFileSystemProvider.OSType.UNIX_LIKE)) {
-            try {
-                fsProvider.checkAccess(path2,
-                                       READ);
-                fail("can't have read access on file");
-            } catch (Exception ex) {
-            }
+            assertThatThrownBy(() -> fsProvider.checkAccess(path2, READ))
+                    .isInstanceOf(AccessDeniedException.class);
         }
 
-        tempFile.setReadable(true);
+        assertThat(tempFile.setReadable(true)).isTrue();
 
         if (SimpleFileSystemProvider.OSType.currentOS().equals(SimpleFileSystemProvider.OSType.UNIX_LIKE)) {
-            try {
-                fsProvider.checkAccess(path2,
-                                       EXECUTE);
-                fail("can't have execute access on file");
-            } catch (Exception ex) {
-            }
+            assertThatThrownBy(() -> fsProvider.checkAccess(path2, EXECUTE))
+                    .isInstanceOf(AccessDeniedException.class);
         }
 
-        tempFile.setExecutable(true);
+        assertThat(tempFile.setExecutable(true)).isTrue();
 
-        try {
-            fsProvider.checkAccess(path2,
-                                   EXECUTE);
-        } catch (Exception ex) {
-            fail("execute access should be ok");
-        }
-
-        try {
-            fsProvider.checkAccess(path2,
-                                   READ,
-                                   WRITE,
-                                   EXECUTE);
-        } catch (Exception ex) {
-            fail("all access should be ok");
-        }
+        fsProvider.checkAccess(path2, EXECUTE);
+        fsProvider.checkAccess(path2, READ, WRITE, EXECUTE);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void checkAccessNull1() throws IOException {
+    public void checkAccessNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.checkAccess(null,
@@ -169,7 +123,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void checkAccessNull2() throws IOException {
+    public void checkAccessNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
                                                  "/path/to/file.txt",
@@ -180,7 +134,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void checkAccessNull3() throws IOException {
+    public void checkAccessNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.checkAccess(null,
@@ -272,7 +226,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getFileAttributeViewNull1() throws IOException {
+    public void getFileAttributeViewNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.getFileAttributeView(null,
@@ -280,7 +234,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getFileAttributeViewNull2() throws IOException {
+    public void getFileAttributeViewNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
@@ -291,7 +245,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getFileAttributeViewNull3() throws IOException {
+    public void getFileAttributeViewNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.getFileAttributeView(null,
@@ -338,7 +292,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = NoSuchFileException.class)
-    public void readAttributesNonExistentFile() throws IOException {
+    public void readAttributesNonExistentFile() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
@@ -363,7 +317,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesNull1() throws IOException {
+    public void readAttributesNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.readAttributes(null,
@@ -371,7 +325,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesNull2() throws IOException {
+    public void readAttributesNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
@@ -382,7 +336,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesNull3() throws IOException {
+    public void readAttributesNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.readAttributes(null,
@@ -420,23 +374,17 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         assertThat(fsProvider.readAttributes(path,
                                              "someThing")).isNotNull().hasSize(0);
 
-        try {
-            fsProvider.readAttributes(path,
-                                      ":someThing");
-            fail("undefined view");
-        } catch (IllegalArgumentException ex) {
-        }
+        assertThatThrownBy(() -> fsProvider.readAttributes(path, ":someThing"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(":someThing");
 
-        try {
-            fsProvider.readAttributes(path,
-                                      "advanced:isRegularFile");
-            fail("undefined view");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThatThrownBy(() -> fsProvider.readAttributes(path, "advanced:isRegularFile"))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("View 'advanced' not available");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesMapNull1() throws IOException {
+    public void readAttributesMapNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.readAttributes(null,
@@ -457,7 +405,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void readAttributesMapNull3() throws IOException {
+    public void readAttributesMapNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.readAttributes(null,
@@ -492,7 +440,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeNull2() throws IOException {
+    public void setAttributeNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.setAttribute(null,
@@ -501,7 +449,7 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setAttributeNull3() throws IOException {
+    public void setAttributeNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         fsProvider.setAttribute(null,
@@ -579,11 +527,11 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
                                 null);
     }
 
-    private static interface MyAttrsView extends BasicFileAttributeView {
+    private interface MyAttrsView extends BasicFileAttributeView {
 
     }
 
-    private static interface MyAttrs extends BasicFileAttributes {
+    private interface MyAttrs extends BasicFileAttributes {
 
     }
 }

@@ -57,7 +57,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
 
     /*
      * This test make 5 commits and then squah the last 4 into a single commit
-    */
+     */
     @Test
     public void testSquash4Of5Commits() throws IOException, GitAPIException {
 
@@ -259,7 +259,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
     /*
      * This test also perform 5 commits and squash the last 4 into a single commit
      *  but now the changes are in different paths
-    */
+     */
     @Test
     public void testSquashCommitsWithDifferentPaths() throws IOException, GitAPIException {
 
@@ -363,20 +363,5 @@ public class JGitSquashingTest extends AbstractTestInfra {
         }
 
         assertThat(commitsCount).isEqualTo(2);
-    }
-
-    private void createAddAndCommitFile(GitImpl git,
-                                        String file) throws GitAPIException, IOException {
-        File myfile = new File(git.getRepository().getDirectory().getParent(),
-                               file);
-        myfile.createNewFile();
-
-        git._add()
-                .addFilepattern(file)
-                .call();
-
-        git._commit()
-                .setMessage("Added " + file)
-                .call();
     }
 }

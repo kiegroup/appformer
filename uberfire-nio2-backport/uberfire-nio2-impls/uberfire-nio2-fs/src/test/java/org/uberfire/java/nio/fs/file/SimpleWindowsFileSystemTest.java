@@ -20,22 +20,24 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.uberfire.java.nio.base.GeneralPathImpl;
 import org.uberfire.java.nio.file.FileStore;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
-import  org.assertj.core.api.Assertions;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class SimpleWindowsFileSystemTest {
 
     final FileSystemProvider fsProvider = mock(FileSystemProvider.class);
     final File[] roots = new File[]{new File("c:\\"), new File("a:\\")};
-    final File[] singleRoot = new File[] {new File("c:\\")};
+    final File[] singleRoot = new File[]{new File("c:\\")};
 
     @Test
     public void simpleTests() {
@@ -92,11 +94,8 @@ public class SimpleWindowsFileSystemTest {
                                                                                             "/c:/path",
                                                                                             false));
 
-        try {
-            fileSystem.close();
-            fail("can't close this fileSystem");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThatThrownBy(() -> fileSystem.close())
+                .isInstanceOf(UnsupportedOperationException.class);
 
         Assertions.assertThat(fileSystem.getFileStores()).hasSize(2);
         assertThat(fileSystem.getFileStores().iterator().next().name()).isEqualTo("c:\\");

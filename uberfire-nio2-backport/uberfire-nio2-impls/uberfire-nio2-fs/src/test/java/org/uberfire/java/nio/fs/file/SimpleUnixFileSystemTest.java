@@ -29,6 +29,7 @@ import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -48,30 +49,27 @@ public class SimpleUnixFileSystemTest {
         assertThat(fileSystem.provider()).isEqualTo(fsProvider);
         Assertions.assertThat(fileSystem.supportedFileAttributeViews()).hasSize(1).contains("basic");
 
-        assertThat(fileSystem.getPath("/path/to/file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
-                                                                                                         "/path/to/file.txt",
-                                                                                                         false));
+        assertThat(fileSystem.getPath("/path/to/file.txt")).isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                             "/path/to/file.txt",
+                                                                                             false));
         assertThat(fileSystem.getPath("/path/to/file.txt",
-                                      null)).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
-                                                                                          "/path/to/file.txt",
-                                                                                          false));
+                                      null)).isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                              "/path/to/file.txt",
+                                                                              false));
         assertThat(fileSystem.getPath("/path",
                                       "to",
-                                      "file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
-                                                                                                "/path/to/file.txt",
-                                                                                                false));
+                                      "file.txt")).isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                    "/path/to/file.txt",
+                                                                                    false));
         assertThat(fileSystem.getPath("/",
                                       "path",
                                       "to",
-                                      "file.txt")).isNotNull().isEqualTo(GeneralPathImpl.create(fileSystem,
-                                                                                                "/path/to/file.txt",
-                                                                                                false));
+                                      "file.txt")).isEqualTo(GeneralPathImpl.create(fileSystem,
+                                                                                    "/path/to/file.txt",
+                                                                                    false));
 
-        try {
-            fileSystem.close();
-            fail("can't close this fileSystem");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThatThrownBy(() -> fileSystem.close())
+                .isInstanceOf(UnsupportedOperationException.class);
 
         Assertions.assertThat(fileSystem.getFileStores()).hasSize(1);
         assertThat(fileSystem.getFileStores().iterator().next().name()).isEqualTo("/");
@@ -95,8 +93,6 @@ public class SimpleUnixFileSystemTest {
         final URL childUrl = this.getClass().getResource("/Folder");
         final Path childNioPath = fs.getPath(childUrl.toURI());
         final Path childParentNioPath = childNioPath.getParent();
-
-        System.out.println(parentNioPath);
 
         assertThat(parentNioPath).isEqualTo(childParentNioPath);
     }
