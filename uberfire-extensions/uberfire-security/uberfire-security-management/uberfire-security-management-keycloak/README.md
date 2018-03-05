@@ -5,7 +5,7 @@ Introduction
 ------------
 The classes in this package contain the user and group manager provider implementation for JBoss KeyCloak.              
 
-There are existing two implementation for this provider:           
+There are two implementation for this provider:           
 
 **Based on username/password credentials**                
 
