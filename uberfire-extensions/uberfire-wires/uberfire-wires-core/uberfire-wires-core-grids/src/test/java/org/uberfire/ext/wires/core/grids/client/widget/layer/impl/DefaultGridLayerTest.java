@@ -372,6 +372,26 @@ public class DefaultGridLayerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    public void testRegisterAndAddAsPrimitiveSameInstanceMultipleTimesTwo() {
+        final GridWidget gridWidget1 = mock(GridWidget.class);
+        final GridWidget gridWidget2 = mock(GridWidget.class);
+        when(gridWidget1.asNode()).thenReturn(mock(Node.class));
+        when(gridWidget1.getModel()).thenReturn(new BaseGridData());
+        when(gridWidget2.asNode()).thenReturn(mock(Node.class));
+        when(gridWidget2.getModel()).thenReturn(new BaseGridData());
+
+        gridLayer.add(gridWidget1);
+        gridLayer.add(gridWidget2);
+        gridLayer.register(gridWidget1);
+        gridLayer.register(gridWidget2);
+
+        final Set<GridWidget> gridWidgets = gridLayer.getGridWidgets();
+        assertThat(gridWidgets.size()).isEqualTo(2);
+        assertThat(gridWidgets).containsExactly(gridWidget1, gridWidget2);
+    }
+
+    @Test
     public void testDeregister() {
         final GridWidget gridWidget1 = mock(GridWidget.class);
         final GridWidget gridWidget2 = mock(GridWidget.class);
