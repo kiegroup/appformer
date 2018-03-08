@@ -55,11 +55,13 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         assertThat(fsProvider.isHidden(path2)).isEqualTo(tempFile.isHidden());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void isHiddenNull() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.isHidden(null);
+        assertThatThrownBy(() -> fsProvider.isHidden(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
@@ -114,34 +116,37 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         fsProvider.checkAccess(path2, READ, WRITE, EXECUTE);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void checkAccessNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.checkAccess(null,
-                               null);
+        assertThatThrownBy(() -> fsProvider.checkAccess(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void checkAccessNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
                                                  "/path/to/file.txt",
                                                  false);
 
-        fsProvider.checkAccess(path,
-                               null);
+        assertThatThrownBy(() -> fsProvider.checkAccess(path, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'modes' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void checkAccessNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.checkAccess(null,
-                               READ);
+        assertThatThrownBy(() -> fsProvider.checkAccess(null, READ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void checkAccessNull4() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
         final File tempFile = File.createTempFile("foo",
@@ -149,9 +154,9 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.checkAccess(path,
-                               null,
-                               READ);
+        assertThatThrownBy(() -> fsProvider.checkAccess(path, null, READ))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'mode' should be not null!");
     }
 
     @Test
@@ -165,11 +170,13 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         assertThat(fsProvider.getFileSystem(path.toUri()).getFileStores()).isNotNull().contains(fsProvider.getFileStore(path));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getFileStoreNull() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.getFileStore(null);
+        assertThatThrownBy(() -> fsProvider.getFileStore(null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
@@ -225,31 +232,35 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
                                                    MyAttrsView.class)).isNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getFileAttributeViewNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.getFileAttributeView(null,
-                                        MyAttrsView.class);
+        assertThatThrownBy(() -> fsProvider.getFileAttributeView(null, MyAttrsView.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getFileAttributeViewNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
                                                  "/path/to/file.txt",
                                                  false);
-        fsProvider.getFileAttributeView(path,
-                                        null);
+
+        assertThatThrownBy(() -> fsProvider.getFileAttributeView(path, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'type' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getFileAttributeViewNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.getFileAttributeView(null,
-                                        null);
+        assertThatThrownBy(() -> fsProvider.getFileAttributeView(null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
@@ -291,16 +302,16 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         assertThat(attrs.size()).isEqualTo(0L);
     }
 
-    @Test(expected = NoSuchFileException.class)
+    @Test
     public void readAttributesNonExistentFile() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
                                                  "/path/to/file.txt",
                                                  false);
-
-        fsProvider.readAttributes(path,
-                                  BasicFileAttributes.class);
+        assertThatThrownBy(() -> fsProvider.readAttributes(path,
+                                                           BasicFileAttributes.class))
+                .isInstanceOf(NoSuchFileException.class);
     }
 
     @Test
@@ -316,31 +327,38 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
                                              MyAttrs.class)).isNull();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.readAttributes(null,
-                                  MyAttrs.class);
+        assertThatThrownBy(() -> fsProvider.readAttributes(null,
+                                                           MyAttrs.class))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
                                                  "/path/to/file.txt",
                                                  false);
-        fsProvider.readAttributes(path,
-                                  (Class<MyAttrs>) null);
+
+        assertThatThrownBy(() -> fsProvider.readAttributes(path,
+                                                           (Class<MyAttrs>) null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'type' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.readAttributes(null,
-                                  (Class<MyAttrs>) null);
+        assertThatThrownBy(() -> fsProvider.readAttributes(null,
+                                                           (Class<MyAttrs>) null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
     @Test
@@ -383,15 +401,16 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
                 .hasMessage("View 'advanced' not available");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesMapNull1() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.readAttributes(null,
-                                  "*");
+        assertThatThrownBy(() -> fsProvider.readAttributes(null, "*"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesMapNull2() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -400,19 +419,21 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.readAttributes(path,
-                                  (String) null);
+        assertThatThrownBy(() -> fsProvider.readAttributes(path, (String) null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'attributes' should be filled!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesMapNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.readAttributes(null,
-                                  (String) null);
+        assertThatThrownBy(() -> fsProvider.readAttributes(null, (String) null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void readAttributesMapEmpty() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -421,11 +442,12 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.readAttributes(path,
-                                  "");
+        assertThatThrownBy(() -> fsProvider.readAttributes(path, ""))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'attributes' should be filled!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setAttributeNull1() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -434,30 +456,30 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.setAttribute(path,
-                                null,
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(path, null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'attributes' should be filled!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setAttributeNull2() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.setAttribute(null,
-                                "some",
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(null, "some", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setAttributeNull3() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
-        fsProvider.setAttribute(null,
-                                null,
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(null, null, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'path' should be not null!");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setAttributeEmpty() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -465,13 +487,12 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
                                                   "bar");
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
-
-        fsProvider.setAttribute(path,
-                                "",
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(path, "", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Parameter named 'attributes' should be filled!");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void setAttributeInvalidAttr() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -480,12 +501,12 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.setAttribute(path,
-                                "myattr",
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(path, "myattr", null))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Condition 'invalid attribute' is invalid!");
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void setAttributeInvalidView() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -494,12 +515,12 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.setAttribute(path,
-                                "advanced:isRegularFile",
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(path, "advanced:isRegularFile", null))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessage("View 'advanced' not available");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setAttributeInvalidView2() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -508,12 +529,12 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.setAttribute(path,
-                                ":isRegularFile",
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(path, ":isRegularFile", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(":isRegularFile");
     }
 
-    @Test(expected = NotImplementedException.class)
+    @Test
     public void setAttributeNotImpl() throws IOException {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
@@ -522,9 +543,8 @@ public class SimpleFileSystemProviderAttrsRelatedTest {
         final Path path = GeneralPathImpl.newFromFile(fsProvider.getFileSystem(URI.create("file:///")),
                                                       tempFile);
 
-        fsProvider.setAttribute(path,
-                                "isRegularFile",
-                                null);
+        assertThatThrownBy(() -> fsProvider.setAttribute(path, "isRegularFile", null))
+                .isInstanceOf(NotImplementedException.class);
     }
 
     private interface MyAttrsView extends BasicFileAttributeView {
