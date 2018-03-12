@@ -216,17 +216,16 @@ public class DataSetDefEditorPresenter extends BaseEditor {
     }
 
     @Override
-    protected Command onValidate() {
-        return () -> {
-            workflow.flush();
-            if (!workflow.hasErrors()) {
-                notification.fire(new NotificationEvent(DataSetAuthoringConstants.INSTANCE.validationOk(),
-                                                        SUCCESS));
-            } else {
-                notification.fire(new NotificationEvent(DataSetAuthoringConstants.INSTANCE.validationFailed(),
-                                                        ERROR));
-            }
-        };
+    protected void onValidate(final Command callFinished) {
+        workflow.flush();
+        if (!workflow.hasErrors()) {
+            notification.fire(new NotificationEvent(DataSetAuthoringConstants.INSTANCE.validationOk(),
+                                                    SUCCESS));
+        } else {
+            notification.fire(new NotificationEvent(DataSetAuthoringConstants.INSTANCE.validationFailed(),
+                                                    ERROR));
+        }
+        callFinished.execute();
     }
 
     @Override
