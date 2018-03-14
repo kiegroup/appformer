@@ -28,14 +28,14 @@ import org.uberfire.ext.metadata.model.KObject;
  */
 public class BatchIndexEvent {
 
-    private final List<KObject> indexed;
+    private final List<IndexEvent> events;
 
-    public BatchIndexEvent(List<KObject> indexed) {
-        this.indexed = indexed;
+    public BatchIndexEvent(List<IndexEvent> events) {
+        this.events = events;
     }
 
-    public List<KObject> getIndexed() {
-        return indexed;
+    public List<IndexEvent> getIndexEvents() {
+        return events;
     }
 
 }

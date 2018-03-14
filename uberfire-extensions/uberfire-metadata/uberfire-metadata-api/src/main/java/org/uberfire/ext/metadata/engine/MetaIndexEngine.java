@@ -42,8 +42,6 @@ public interface MetaIndexEngine extends PriorityDisposable {
 
     void delete(final KObjectKey objectKey);
 
-    void delete(final KObjectKey... objectsKey);
-
     void commit(final KCluster cluster);
 
     void abort(final KCluster cluster);
