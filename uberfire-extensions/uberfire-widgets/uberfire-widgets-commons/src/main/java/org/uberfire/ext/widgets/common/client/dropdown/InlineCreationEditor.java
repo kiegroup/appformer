@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package org.uberfire.ext.widgets.common.client.dropdown.noItems;
+package org.uberfire.ext.widgets.common.client.dropdown;
 
-import javax.inject.Inject;
+import org.jboss.errai.common.client.api.IsElement;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.ParameterizedCommand;
 
-import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.ui.client.local.api.IsElement;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+public interface InlineCreationEditor<TYPE> extends EntryCreationEditor<TYPE>, IsElement{
 
-@Templated
-public class NoItemsComponentViewImpl implements NoItemsComponentView,
-                                                 IsElement {
-    @Inject
-    @DataField
-    private Span message;
+    void init(ParameterizedCommand<LiveSearchEntry<TYPE>> okCommand, Command cancelCommand);
 
-    @Override
-    public void setMessage(String msg) {
-        message.setTextContent(msg);
-    }
+    void clear();
 }

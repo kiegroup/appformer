@@ -14,24 +14,30 @@
  * limitations under the License.
  */
 
-package org.uberfire.ext.widgets.common.client.dropdown.noItems;
+package org.uberfire.ext.widgets.common.client.dropdown.footer;
 
-import javax.inject.Inject;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.uberfire.client.mvp.UberElement;
 
-import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.ui.client.local.api.IsElement;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
+public interface LiveSearchFooterView extends UberElement<LiveSearchFooterView.Presenter> {
 
-@Templated
-public class NoItemsComponentViewImpl implements NoItemsComponentView,
-                                                 IsElement {
-    @Inject
-    @DataField
-    private Span message;
+    void showReset(boolean show);
 
-    @Override
-    public void setMessage(String msg) {
-        message.setTextContent(msg);
+    void showAddNewEntry(boolean show);
+
+    void show(HTMLElement element);
+
+    void restore();
+
+    void setResetLabel(String resetLabel);
+
+    void setNewEntryLabel(String newEntryLabel);
+
+    interface Presenter {
+
+        void onNewEntryPressed();
+
+        void onResetPressed();
     }
+
 }

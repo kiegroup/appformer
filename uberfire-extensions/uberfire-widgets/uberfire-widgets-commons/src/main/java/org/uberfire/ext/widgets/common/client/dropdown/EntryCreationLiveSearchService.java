@@ -14,24 +14,9 @@
  * limitations under the License.
  */
 
-package org.uberfire.ext.widgets.common.client.dropdown.noItems;
+package org.uberfire.ext.widgets.common.client.dropdown;
 
-import javax.inject.Inject;
+public interface EntryCreationLiveSearchService<TYPE, EDITOR extends EntryCreationEditor<TYPE>> extends LiveSearchService<TYPE> {
 
-import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.ui.client.local.api.IsElement;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
-
-@Templated
-public class NoItemsComponentViewImpl implements NoItemsComponentView,
-                                                 IsElement {
-    @Inject
-    @DataField
-    private Span message;
-
-    @Override
-    public void setMessage(String msg) {
-        message.setTextContent(msg);
-    }
+    EDITOR getEditor();
 }
