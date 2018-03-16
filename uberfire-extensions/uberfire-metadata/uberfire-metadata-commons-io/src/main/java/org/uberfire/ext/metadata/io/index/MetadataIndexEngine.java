@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +34,7 @@ import org.uberfire.ext.metadata.event.IndexEvent;
 import org.uberfire.ext.metadata.event.IndexEvent.DeletedEvent;
 import org.uberfire.ext.metadata.event.IndexEvent.NewlyIndexedEvent;
 import org.uberfire.ext.metadata.event.IndexEvent.RenamedEvent;
+import org.uberfire.ext.metadata.io.util.MultiIndexerLock;
 import org.uberfire.ext.metadata.metamodel.MetaModelBuilder;
 import org.uberfire.ext.metadata.model.KCluster;
 import org.uberfire.ext.metadata.model.KObject;
@@ -49,16 +49,13 @@ public class MetadataIndexEngine implements MetaIndexEngine {
     private final MetaModelBuilder metaModelBuilder;
     private Logger logger = LoggerFactory.getLogger(MetadataIndexEngine.class);
     private final IndexProvider provider;
-    private final Map<KCluster, ReentrantLock> batchLocks = new ConcurrentHashMap<>();
+    private final Map<KCluster, MultiIndexerLock> batchLocks = new ConcurrentHashMap<>();
     private final ThreadLocal<Map<KCluster, List<IndexEvent>>> batchSets = ThreadLocal.withInitial(() -> new HashMap<>());
     private final Collection<Runnable> beforeDispose = new ArrayList<>();
-    private final Consumer<List<IndexEvent>> kObectBatchObserver;
 
     public MetadataIndexEngine(IndexProvider provider,
-                               MetaModelStore metaModelStore,
-                               Consumer<List<IndexEvent>> kObectBatchObserver) {
+                               MetaModelStore metaModelStore) {
         this.provider = provider;
-        this.kObectBatchObserver = kObectBatchObserver;
         this.metaModelBuilder = new MetaModelBuilder(metaModelStore);
         PriorityDisposableRegistry.register(this);
     }
@@ -73,14 +70,14 @@ public class MetadataIndexEngine implements MetaIndexEngine {
     }
 
     @Override
-    public boolean isIndexReady(KCluster cluster) {
-        final ReentrantLock lock;
-        return !provider.isFreshIndex(cluster) && (lock = batchLocks.get(cluster)) != null && !lock.isLocked();
+    public boolean isIndexReady(KCluster cluster, String indexerId) {
+        final MultiIndexerLock lock;
+        return !provider.isFreshIndex(cluster) && (lock = batchLocks.get(cluster)) != null && !lock.isLockedBy(indexerId);
     }
 
     @Override
     public void prepareBatch(KCluster cluster) {
-        batchLocks.putIfAbsent(cluster, new ReentrantLock());
+        batchLocks.putIfAbsent(cluster, new MultiIndexerLock(new ReentrantLock()));
     }
 
     @Override
@@ -190,9 +187,9 @@ public class MetadataIndexEngine implements MetaIndexEngine {
     }
 
     @Override
-    public void commit(KCluster cluster) {
+    public void commit(KCluster cluster, String indexerId) {
         prepareBatch(cluster);
-        ReentrantLock lock = batchLocks.get(cluster);
+        MultiIndexerLock lock = batchLocks.get(cluster);
         List<IndexEvent> batchSet = batchSets.get().get(cluster);
 
         try {
@@ -204,7 +201,7 @@ public class MetadataIndexEngine implements MetaIndexEngine {
             else if (batchSet.isEmpty()) {
                 removeThreadLocalBatchState(cluster);
             } else {
-                doCommit(cluster, batchSet, lock);
+                doCommit(cluster, batchSet, lock, indexerId);
             }
         } catch (Throwable t) {
             abort(cluster);
@@ -212,14 +209,13 @@ public class MetadataIndexEngine implements MetaIndexEngine {
         }
     }
 
-    private void doCommit(KCluster cluster, List<IndexEvent> batchSet, ReentrantLock lock) {
+    private void doCommit(KCluster cluster, List<IndexEvent> batchSet, MultiIndexerLock lock, String indexerId) {
         try {
-            lock.lock();
+            lock.lock(indexerId);
             batchSet.forEach(this::doAction);
             removeThreadLocalBatchState(cluster);
-            kObectBatchObserver.accept(batchSet);
         } finally {
-            lock.unlock();
+            lock.unlock(indexerId);
         }
     }
 

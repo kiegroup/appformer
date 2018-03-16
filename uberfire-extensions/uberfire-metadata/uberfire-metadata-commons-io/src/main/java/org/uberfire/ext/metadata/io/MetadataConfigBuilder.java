@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.enterprise.event.Event;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -41,7 +39,6 @@ import org.uberfire.ext.metadata.backend.lucene.index.directory.DirectoryFactory
 import org.uberfire.ext.metadata.backend.lucene.index.directory.DirectoryType;
 import org.uberfire.ext.metadata.backend.lucene.provider.LuceneIndexProvider;
 import org.uberfire.ext.metadata.engine.MetaModelStore;
-import org.uberfire.ext.metadata.event.BatchIndexEvent;
 import org.uberfire.ext.metadata.event.IndexEvent;
 import org.uberfire.ext.metadata.io.analyzer.KiePerFieldAnalyzerWrapper;
 import org.uberfire.ext.metadata.io.index.MetadataIndexEngine;
@@ -61,7 +58,6 @@ public class MetadataConfigBuilder {
     private Analyzer analyzer;
     private CustomAnalyzerWrapperFactory customAnalyzerWrapperFactory;
     private Map<String, Analyzer> analyzers;
-    private Consumer<List<IndexEvent>> batchIndexObserver;
     private final String metadataIndex;
 
     public MetadataConfigBuilder() {
@@ -122,11 +118,6 @@ public class MetadataConfigBuilder {
         return this;
     }
 
-    public MetadataConfigBuilder useCDIBatchIndexObserver(Event<BatchIndexEvent> event) {
-        withCDIBatchIndexObserver(event);
-        return this;
-    }
-
     public MetadataConfig build() {
         if (metaModelStore == null) {
             withoutMemoryMetaModel();
@@ -143,17 +134,13 @@ public class MetadataConfigBuilder {
         if (analyzer == null) {
             withDefaultAnalyzer();
         }
-        if (batchIndexObserver == null) {
-            withNopBatchIndexObserver();
-        }
 
         if (this.metadataIndex.toLowerCase().equals(ELASTIC)) {
             ElasticSearchIndexProvider indexProvider = new ElasticSearchIndexProvider(this.metaModelStore,
                                                                                       ElasticSearchContext.getInstance(),
                                                                                       analyzer);
             return new ElasticSearchConfig(new MetadataIndexEngine(indexProvider,
-                                                                   metaModelStore,
-                                                                   batchIndexObserver),
+                                                                   metaModelStore),
                                            metaModelStore,
                                            indexProvider,
                                            analyzer);
@@ -167,18 +154,9 @@ public class MetadataConfigBuilder {
                                     fieldFactory,
                                     indexManager,
                                     new MetadataIndexEngine(indexProvider,
-                                                            metaModelStore,
-                                                            batchIndexObserver),
+                                                            metaModelStore),
                                     analyzer);
         }
-    }
-
-    public void withNopBatchIndexObserver() {
-        batchIndexObserver = NOP_OBSERVER;
-    }
-
-    public void withCDIBatchIndexObserver(Event<BatchIndexEvent> event) {
-        batchIndexObserver = batch -> event.fire(new BatchIndexEvent(batch));
     }
 
     public void withDefaultDirectory() {

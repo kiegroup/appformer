@@ -16,8 +16,6 @@
 package org.uberfire.ext.metadata.io.common;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.ext.metadata.backend.lucene.model.KClusterImpl;
 import org.uberfire.ext.metadata.engine.MetaModelStore;
-import org.uberfire.ext.metadata.event.IndexEvent;
 import org.uberfire.ext.metadata.io.index.MetadataIndexEngine;
 import org.uberfire.ext.metadata.model.KCluster;
 import org.uberfire.ext.metadata.model.KObject;
@@ -51,9 +48,6 @@ public class MetadataIndexEngineBatchTest {
     @Mock
     private MetaModelStore metaModelStore;
 
-    @Mock
-    private Consumer<List<IndexEvent>> kObectBatchObserver;
-
     private KCluster cluster;
 
     private KObject kObject;
@@ -75,7 +69,7 @@ public class MetadataIndexEngineBatchTest {
                                         "java",
                                         cluster.getClusterId(),
                                         "segment");
-        indexEngine = new MetadataIndexEngine(provider, metaModelStore, kObectBatchObserver);
+        indexEngine = new MetadataIndexEngine(provider, metaModelStore);
     }
 
 
@@ -91,7 +85,7 @@ public class MetadataIndexEngineBatchTest {
     public void indexCalledWhenBatchCommitted() throws Exception {
         indexDeferredInBatchMode();
 
-        indexEngine.commit(cluster);
+        indexEngine.commit(cluster, "test-indexer");
         verify(provider).index(same(kObject));
     }
 
@@ -115,7 +109,7 @@ public class MetadataIndexEngineBatchTest {
     public void renameCalledWhenBatchCommitted() throws Exception {
         renameDeferredInBatchMode();
 
-        indexEngine.commit(cluster);
+        indexEngine.commit(cluster, "test-indexer");
         verify(provider).rename(any(), any(), same(kObject));
     }
 
@@ -139,7 +133,7 @@ public class MetadataIndexEngineBatchTest {
     public void deleteCalledWhenBatchCommitted() throws Exception {
         deleteDeferredInBatchMode();
 
-        indexEngine.commit(cluster);
+        indexEngine.commit(cluster, "test-indexer");
         verify(provider).delete(kObjectKey.getClusterId(), kObjectKey.getId());
     }
 
