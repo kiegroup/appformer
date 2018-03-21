@@ -18,18 +18,19 @@ package org.uberfire.java.nio.fs.jgit.util.commands;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.java.nio.fs.jgit.util.GitImpl;
 
 public class SyncRemote {
 
+    private static final Character SEPARATOR = '/';
     private final GitImpl git;
     private final Pair<String, String> remote;
 
@@ -39,7 +40,7 @@ public class SyncRemote {
         this.remote = remote;
     }
 
-    public Optional execute() throws InvalidRemoteException {
+    public void execute() {
         try {
             final List<Ref> branches = git._branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 
@@ -47,40 +48,62 @@ public class SyncRemote {
             final Set<String> localBranches = new HashSet<>();
 
             for (final Ref branch : branches) {
-                final String branchName = branch.getName().substring(branch.getName().lastIndexOf("/") + 1);
-                if (branch.getName().startsWith("refs/remotes/" + remote.getK1())) {
-                    remoteBranches.add(branchName);
-                } else {
-                    localBranches.add(branchName);
+                final String branchName = getBranchName(branch);
+                if (!branchName.equals(Constants.HEAD)) {
+                    if (isRemote(branch)) {
+                        remoteBranches.add(branchName);
+                    } else {
+                        localBranches.add(branchName);
+                    }
                 }
             }
 
-            for (final String localBranch : localBranches) {
-                if (remoteBranches.contains(localBranch)) {
-                    git._branchCreate()
-                            .setName(localBranch)
-                            .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
-                            .setStartPoint(remote.getK1() + "/" + localBranch)
-                            .setForce(true)
-                            .call();
-                }
-            }
-
+            createLocalBranches(remoteBranches,
+                                localBranches);
             remoteBranches.removeAll(localBranches);
 
-            for (final String branch : remoteBranches) {
-                git._branchCreate()
-                        .setName(branch)
-                        .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
-                        .setStartPoint(remote.getK1() + "/" + branch)
-                        .setForce(true)
-                        .call();
-            }
-            return null;
-        } catch (final InvalidRemoteException e) {
-            throw e;
+            createRemoteBranches(remoteBranches);
         } catch (final Exception ex) {
-            throw new RuntimeException(ex);
+            throw new SyncRemoteException(ex);
+        }
+    }
+
+    private void createRemoteBranches(final Set<String> remoteBranches) throws GitAPIException {
+        for (final String branch : remoteBranches) {
+            createBranch(branch);
+        }
+    }
+
+    private void createLocalBranches(final Set<String> remoteBranches,
+                                     final Set<String> localBranches) throws GitAPIException {
+        for (final String localBranch : localBranches) {
+            if (remoteBranches.contains(localBranch)) {
+                createBranch(localBranch);
+            }
+        }
+    }
+
+    protected String getBranchName(final Ref branch) {
+        return branch.getName().substring(branch.getName().lastIndexOf(SEPARATOR) + 1);
+    }
+
+    protected boolean isRemote(final Ref branch) {
+        return branch.getName().startsWith(Constants.R_REMOTES);
+    }
+
+    protected void createBranch(final String branchName) throws GitAPIException {
+        git._branchCreate()
+                .setName(branchName)
+                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
+                .setStartPoint(remote.getK1() + SEPARATOR + branchName)
+                .setForce(true)
+                .call();
+    }
+
+    private class SyncRemoteException extends RuntimeException {
+
+        public SyncRemoteException(Exception ex) {
+            super(ex);
         }
     }
 }
