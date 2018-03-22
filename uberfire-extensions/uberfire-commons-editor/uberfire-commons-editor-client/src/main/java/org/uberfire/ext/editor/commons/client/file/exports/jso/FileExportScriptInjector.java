@@ -18,7 +18,6 @@ package org.uberfire.ext.editor.commons.client.file.exports.jso;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -39,7 +38,6 @@ public class FileExportScriptInjector {
     public static final String NS = "org.uberfire.ext.editor.commons.client.file.exports.jso.";
     public static final String NS_SEPARATOR = ".";
     public static final String JS_OBJ_SUFFIX = " || {};";
-    private static Logger LOGGER = Logger.getLogger(FileExportScriptInjector.class.getName());
 
     private final Consumer<String> scriptInjector;
 
