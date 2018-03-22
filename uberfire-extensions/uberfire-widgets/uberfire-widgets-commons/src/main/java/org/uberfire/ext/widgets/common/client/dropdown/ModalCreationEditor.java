@@ -21,5 +21,5 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 public interface ModalCreationEditor<TYPE> extends EntryCreationEditor<TYPE> {
 
-    void show(ParameterizedCommand<LiveSearchEntry<TYPE>> okCommand, Command cancelCommand);
+    void show();
 }

@@ -16,6 +16,11 @@
 
 package org.uberfire.ext.widgets.common.client.dropdown;
 
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.ParameterizedCommand;
+
 public interface EntryCreationEditor<TYPE> {
+
+    void init(ParameterizedCommand<LiveSearchEntry<TYPE>> okCommand, Command cancelCommand);
 
 }

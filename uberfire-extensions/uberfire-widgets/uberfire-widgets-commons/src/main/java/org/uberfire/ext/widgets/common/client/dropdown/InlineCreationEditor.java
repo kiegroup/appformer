@@ -22,7 +22,5 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 public interface InlineCreationEditor<TYPE> extends EntryCreationEditor<TYPE>, IsElement{
 
-    void init(ParameterizedCommand<LiveSearchEntry<TYPE>> okCommand, Command cancelCommand);
-
     void clear();
 }

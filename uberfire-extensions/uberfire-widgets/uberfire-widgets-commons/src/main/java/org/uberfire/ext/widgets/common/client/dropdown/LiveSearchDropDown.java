@@ -28,7 +28,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.ext.widgets.common.client.dropdown.footer.LiveSearchFooter;
 import org.uberfire.mvp.Command;
 
 @Dependent
@@ -121,7 +120,9 @@ public class LiveSearchDropDown<TYPE> implements IsWidget {
                 inlineEditor.init(this::addNewItem, view::restoreFooter);
                 onAddItemPressed = () -> view.showNewItemEditor(inlineEditor);
             } else if (creationService.getEditor() instanceof ModalCreationEditor) {
-                onAddItemPressed = () -> ((ModalCreationEditor<TYPE>) editor).show(this::addNewItem, view::restoreFooter);
+                ModalCreationEditor<TYPE> modalEditor = (ModalCreationEditor<TYPE>) editor;
+                modalEditor.init(this::addNewItem, () -> {});
+                onAddItemPressed = () -> modalEditor.show();
             }
         } else {
             view.setNewInstanceEnabled(false);
