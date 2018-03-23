@@ -45,7 +45,7 @@ public class PriorityDropDown implements IsWidget {
 
         @Override
         public void searchEntry(String key, LiveSearchCallback<String> callback) {
-            LiveSearchResults results = new LiveSearchResults(priorityItemList).sortByKey();
+            LiveSearchResults results = new LiveSearchResults(1);
             if(priorityItemList.contains(key)) {
                 results.add(key);
             }
