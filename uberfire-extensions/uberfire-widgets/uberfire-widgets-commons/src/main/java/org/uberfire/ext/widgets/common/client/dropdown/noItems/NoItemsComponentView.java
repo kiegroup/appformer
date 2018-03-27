@@ -22,4 +22,7 @@ public interface NoItemsComponentView extends IsElement {
 
     void setMessage(String message);
 
+    void hide();
+
+    void show();
 }

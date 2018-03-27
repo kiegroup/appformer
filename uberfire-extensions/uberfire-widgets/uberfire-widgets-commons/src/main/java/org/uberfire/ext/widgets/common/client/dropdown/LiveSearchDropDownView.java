@@ -84,7 +84,8 @@ public class LiveSearchDropDownView<TYPE> extends Composite
     private LiveSearchFooter liveSearchFooter;
 
     @Inject
-    private NoItemsComponent noItemsComponent;
+    @DataField
+    private NoItemsComponent noItems;
 
     private boolean resetEnabled = true;
     private boolean newItemEnabled = true;
@@ -165,13 +166,14 @@ public class LiveSearchDropDownView<TYPE> extends Composite
     @Override
     public void clearItems() {
         DOMUtil.removeAllChildren(dropDownMenu);
+        noItems.hide();
     }
 
     @Override
     public void noItems(String msg) {
         DOMUtil.removeAllChildren(dropDownMenu);
-        noItemsComponent.setMessage(msg);
-        dropDownMenu.appendChild(noItemsComponent.getElement());
+        noItems.setMessage(msg);
+        noItems.show();
     }
 
     @Override

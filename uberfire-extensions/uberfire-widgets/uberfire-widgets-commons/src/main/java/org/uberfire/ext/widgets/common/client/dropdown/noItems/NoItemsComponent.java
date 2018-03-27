@@ -31,8 +31,6 @@ public class NoItemsComponent implements IsElement {
     @Inject
     public NoItemsComponent(NoItemsComponentView view) {
         this.view = view;
-
-        view.setMessage(CommonConstants.INSTANCE.liveSearchNotFoundMessage());
     }
 
     public void setMessage(String message) {
@@ -41,6 +39,14 @@ public class NoItemsComponent implements IsElement {
         }
 
         view.setMessage(message);
+    }
+
+    public void show() {
+        view.show();
+    }
+
+    public void hide() {
+        view.hide();
     }
 
     @Override

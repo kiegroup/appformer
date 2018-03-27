@@ -18,6 +18,7 @@ package org.uberfire.ext.widgets.common.client.dropdown.noItems;
 
 import javax.inject.Inject;
 
+import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -28,10 +29,24 @@ public class NoItemsComponentViewImpl implements NoItemsComponentView,
                                                  IsElement {
     @Inject
     @DataField
+    private Div container;
+
+    @Inject
+    @DataField
     private Span message;
 
     @Override
     public void setMessage(String msg) {
         message.setTextContent(msg);
+    }
+
+    @Override
+    public void hide() {
+        container.setHidden(true);
+    }
+
+    @Override
+    public void show() {
+        container.setHidden(false);
     }
 }
