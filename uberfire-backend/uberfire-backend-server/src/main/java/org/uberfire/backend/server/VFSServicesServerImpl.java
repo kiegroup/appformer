@@ -72,7 +72,7 @@ public class VFSServicesServerImpl implements VFSService {
                                                     final DirectoryStream.Filter<Path> filter)
             throws IllegalArgumentException, NotDirectoryException, IOException {
         final Iterator<org.uberfire.java.nio.file.Path> content = ioService.newDirectoryStream(Paths.convert(dir),
-                                                                                               null).iterator();
+                                                                                               path -> filter.accept(Paths.convert(path))).iterator();
 
         return newDirectoryStream(content);
     }
