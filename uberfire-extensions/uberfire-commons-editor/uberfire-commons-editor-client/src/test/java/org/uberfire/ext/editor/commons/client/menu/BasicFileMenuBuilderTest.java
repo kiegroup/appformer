@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.UpdatedLockStatusEvent;
+import org.uberfire.ext.editor.commons.client.event.DeleteFileEvent;
 import org.uberfire.ext.editor.commons.client.file.popups.CopyPopUpPresenter;
 import org.uberfire.ext.editor.commons.client.file.popups.DeletePopUpPresenter;
 import org.uberfire.ext.editor.commons.client.file.popups.RenamePopUpPresenter;
@@ -63,6 +64,9 @@ public class BasicFileMenuBuilderTest {
     private EventSourceMock<NotificationEvent> notification;
 
     @Mock
+    private EventSourceMock<DeleteFileEvent> deleteFileEvent;
+
+    @Mock
     private BusyIndicatorView busyIndicatorView;
 
     @Mock
@@ -96,6 +100,7 @@ public class BasicFileMenuBuilderTest {
                                                renamePopUpPresenter,
                                                busyIndicatorView,
                                                notification,
+                                               deleteFileEvent,
                                                restoreVersionCommandProvider);
         deleteCaller = new CallerMock<>(deleteService);
         renameCaller = new CallerMock<>(renameService);

@@ -31,6 +31,7 @@ import org.kie.soup.commons.validation.PortablePreconditions;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.UpdatedLockStatusEvent;
 import org.uberfire.commons.data.Pair;
+import org.uberfire.ext.editor.commons.client.event.DeleteFileEvent;
 import org.uberfire.ext.editor.commons.client.file.CommandWithFileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.FileNameAndCommitMessage;
 import org.uberfire.ext.editor.commons.client.file.popups.CopyPopUpPresenter;
@@ -75,6 +76,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     private List<MenuItem> topLevelMenus = new ArrayList<MenuItem>();
     private List<MenuItem> menuItemsSyncedWithLockState = new ArrayList<MenuItem>();
     private LockSyncMenuStateHelper lockSyncMenuStateHelper = new BasicFileMenuBuilder.BasicLockSyncMenuStateHelper();
+    private Event<DeleteFileEvent> deleteAssetEvent;
 
     @Inject
     public BasicFileMenuBuilderImpl(final DeletePopUpPresenter deletePopUpPresenter,
@@ -82,12 +84,14 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                                     final RenamePopUpPresenter renamePopUpPresenter,
                                     final BusyIndicatorView busyIndicatorView,
                                     final Event<NotificationEvent> notification,
+                                    final Event<DeleteFileEvent> deleteAssetEvent,
                                     final RestoreVersionCommandProvider restoreVersionCommandProvider) {
         this.deletePopUpPresenter = deletePopUpPresenter;
         this.copyPopUpPresenter = copyPopUpPresenter;
         this.renamePopUpPresenter = renamePopUpPresenter;
         this.busyIndicatorView = busyIndicatorView;
         this.notification = notification;
+        this.deleteAssetEvent = deleteAssetEvent;
         this.restoreVersionCommandProvider = restoreVersionCommandProvider;
     }
 
@@ -119,7 +123,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             deletePopUpPresenter.show(validator,
                                       (String comment) -> {
                                           busyIndicatorView.showBusyIndicator(CommonConstants.INSTANCE.Deleting());
-                                          deleteCaller.call(getDeleteSuccessCallback(),
+                                          deleteCaller.call(getDeleteSuccessCallback(path),
                                                             new HasBusyIndicatorDefaultErrorCallback(busyIndicatorView)).delete(path,
                                                                                                                                 comment);
                                       });
@@ -143,16 +147,17 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             deletePopUpPresenter.show(validator,
                                       (String comment) -> {
                                           busyIndicatorView.showBusyIndicator(CommonConstants.INSTANCE.Deleting());
-                                          deleteCaller.call(getDeleteSuccessCallback(),
+                                          deleteCaller.call(getDeleteSuccessCallback(provider.getPath()),
                                                             new HasBusyIndicatorDefaultErrorCallback(busyIndicatorView)).delete(path,
                                                                                                                                 comment);
                                       });
         });
     }
 
-    private RemoteCallback<Void> getDeleteSuccessCallback() {
+    private RemoteCallback<Void> getDeleteSuccessCallback(Path path) {
         return (Void v) -> {
             busyIndicatorView.hideBusyIndicator();
+            deleteAssetEvent.fire(new DeleteFileEvent(path));
             notification.fire(new NotificationEvent(CommonConstants.INSTANCE.ItemDeletedSuccessfully()));
         };
     }
