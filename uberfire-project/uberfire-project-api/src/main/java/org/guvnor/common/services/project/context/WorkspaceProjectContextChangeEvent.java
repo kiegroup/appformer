@@ -26,7 +26,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * <p>An event raised when the Project Context changes.
- *
+ * <p>
  * <p>This must be {@link LocalEvent @LocalEvent} because it should not be
  * observed on the server when fired from the client, but it is {@link Portable @Portable} because
  * it is used as a return type from some RPC methods.
@@ -39,12 +39,14 @@ public class WorkspaceProjectContextChangeEvent {
     private final WorkspaceProject workspaceProject;
     private final Module module;
     private final Package pkg;
+    private final boolean requiresRefresh;
 
     public WorkspaceProjectContextChangeEvent() {
         ou = null;
         workspaceProject = null;
         module = null;
         pkg = null;
+        requiresRefresh = true;
     }
 
     public WorkspaceProjectContextChangeEvent(final OrganizationalUnit ou) {
@@ -52,6 +54,7 @@ public class WorkspaceProjectContextChangeEvent {
         this.workspaceProject = null;
         this.module = null;
         this.pkg = null;
+        this.requiresRefresh = true;
     }
 
     public WorkspaceProjectContextChangeEvent(final WorkspaceProject workspaceProject) {
@@ -69,10 +72,21 @@ public class WorkspaceProjectContextChangeEvent {
     public WorkspaceProjectContextChangeEvent(final WorkspaceProject workspaceProject,
                                               final Module module,
                                               final Package pkg) {
+        this(workspaceProject,
+             module,
+             pkg,
+             true);
+    }
+
+    public WorkspaceProjectContextChangeEvent(final WorkspaceProject workspaceProject,
+                                              final Module module,
+                                              final Package pkg,
+                                              final boolean requiresRefresh) {
         this.ou = workspaceProject != null ? workspaceProject.getOrganizationalUnit() : null;
         this.workspaceProject = workspaceProject;
         this.module = module;
         this.pkg = pkg;
+        this.requiresRefresh = requiresRefresh;
     }
 
     public OrganizationalUnit getOrganizationalUnit() {
@@ -99,6 +113,7 @@ public class WorkspaceProjectContextChangeEvent {
         result = prime * result + ((ou == null) ? 0 : ou.hashCode());
         result = prime * result + ((pkg == null) ? 0 : pkg.hashCode());
         result = prime * result + ((workspaceProject == null) ? 0 : workspaceProject.hashCode());
+        result = prime * result + (requiresRefresh ? 1 : 0);
         return result;
     }
 
@@ -110,15 +125,25 @@ public class WorkspaceProjectContextChangeEvent {
             return false;
         } else {
             WorkspaceProjectContextChangeEvent other = (WorkspaceProjectContextChangeEvent) obj;
-            return Objects.equals(module, other.module)
-                    && Objects.equals(ou, other.ou)
-                    && Objects.equals(pkg, other.pkg)
-                    && Objects.equals(workspaceProject, other.workspaceProject);
+            return Objects.equals(module,
+                                  other.module)
+                    && Objects.equals(ou,
+                                      other.ou)
+                    && Objects.equals(pkg,
+                                      other.pkg)
+                    && Objects.equals(workspaceProject,
+                                      other.workspaceProject)
+                    && Objects.equals(requiresRefresh,
+                                      other.requiresRefresh);
         }
     }
 
     @Override
     public String toString() {
         return "WorkspaceProjectContextChangeEvent [ou=" + ou + ", workspaceProject=" + workspaceProject + ", module=" + module + ", pkg=" + pkg + "]";
+    }
+
+    public boolean requiresRefresh() {
+        return requiresRefresh;
     }
 }
