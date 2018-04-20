@@ -31,6 +31,7 @@ import org.guvnor.common.services.project.service.ModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.ResourceAddedEvent;
 import org.uberfire.workbench.events.ResourceBatchChangesEvent;
@@ -174,8 +175,12 @@ public class ResourceChangeObserver {
             return false;
         }
         for (ResourceChangeObservableFile observableFile : observableFiles) {
-            if (observableFile.accept(path)) {
-                return true;
+            try {
+                if (observableFile.accept(path)) {
+                    return true;
+                }
+            } catch (NoSuchFileException e) {
+                return false;
             }
         }
         return false;
