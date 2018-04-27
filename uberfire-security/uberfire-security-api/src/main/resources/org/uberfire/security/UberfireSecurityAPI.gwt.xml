@@ -23,6 +23,7 @@
   <inherits name="javax.enterprise.Support"/>
 
   <source path='annotations'/>
+  <source path='exceptions'/>
   <source path='auth'/>
   <source path='authz'/>
   <source path='crypt'/>
