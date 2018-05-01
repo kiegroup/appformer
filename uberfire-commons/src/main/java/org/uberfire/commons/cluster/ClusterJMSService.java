@@ -19,22 +19,25 @@ package org.uberfire.commons.cluster;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.Consumer;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import javax.naming.InitialContext;
 
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.commons.cluster.context.ClusterContextProperties;
+import org.uberfire.commons.cluster.context.LocalClusterContextProperties;
+import org.uberfire.commons.cluster.context.RemoteClusterContextProperties;
 
 public class ClusterJMSService implements ClusterService {
 
@@ -50,15 +53,18 @@ public class ClusterJMSService implements ClusterService {
 
     @Override
     public void connect() {
-        String jmsURL = clusterParameters.getJmsURL();
         String jmsUserName = clusterParameters.getJmsUserName();
         String jmsPassword = clusterParameters.getJmsPassword();
-        ConnectionFactory factory = createConnectionFactory(jmsURL,
-                                                            jmsUserName,
-                                                            jmsPassword);
+        String jmsConnectionFactoryJndiName = clusterParameters.getJmsConnectionFactoryJndiName();
+
+        ClusterContextProperties clusterContextProperties = getClusterContextProperties();
+        Properties environment = clusterContextProperties.getClusterContextEnvironment(clusterParameters);
 
         try {
-            connection = factory.createConnection();
+            InitialContext context = new InitialContext(environment);
+            ConnectionFactory connectionFactory = (ConnectionFactory) context.lookup(jmsConnectionFactoryJndiName);
+
+            connection = connectionFactory.createConnection(jmsUserName, jmsPassword);
             connection.setExceptionListener(new JMSExceptionListener());
             connection.start();
         } catch (Exception e) {
@@ -67,12 +73,14 @@ public class ClusterJMSService implements ClusterService {
         }
     }
 
-    ActiveMQConnectionFactory createConnectionFactory(String jmsURL,
-                                                      String jmsUserName,
-                                                      String jmsPassword) {
-        return new ActiveMQConnectionFactory(jmsURL,
-                                             jmsUserName,
-                                             jmsPassword);
+    ClusterContextProperties getClusterContextProperties() {
+        String providerUrl = clusterParameters.getProviderUrl();
+        if (providerUrl == null) {
+            // If context provider URL is not defined then return local context.
+            return new LocalClusterContextProperties();
+        } else {
+            return new RemoteClusterContextProperties();
+        }
     }
 
     private ClusterParameters loadParameters() {
