@@ -53,6 +53,9 @@ public class POMServiceImplCreateTest {
     @Mock
     MetadataService metadataService;
 
+    @Mock
+    PomEnhancer pomEnhancer;
+
     private POMServiceImpl service;
 
     @Inject
@@ -72,7 +75,8 @@ public class POMServiceImplCreateTest {
         service = new POMServiceImpl(ioServiceSpy,
                                      pomContentHandler,
                                      m2RepoService,
-                                     metadataService);
+                                     metadataService,
+                                     pomEnhancer);
     }
 
     @After

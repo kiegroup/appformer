@@ -15,10 +15,18 @@
 
 package org.guvnor.common.services.project.backend.server;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Repository;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.backend.util.CommentedOptionFactory;
@@ -30,11 +38,13 @@ import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.m2repo.service.M2RepoService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.uberfire.annotations.Customizable;
 import org.uberfire.backend.server.cdi.workspace.WorkspaceScoped;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
+import org.uberfire.java.nio.file.Files;
 
 @Service
 @WorkspaceScoped
@@ -45,6 +55,9 @@ public class POMServiceImpl
     private POMContentHandler pomContentHandler;
     private M2RepoService m2RepoService;
     private MetadataService metadataService;
+    private MavenXpp3Reader reader;
+    private MavenXpp3Writer writer;
+    private PomEnhancer pomEnhancer;
 
     @Inject
     private CommentedOptionFactory optionsFactory;
@@ -57,11 +70,15 @@ public class POMServiceImpl
     public POMServiceImpl(final @Named("ioStrategy") IOService ioService,
                           final POMContentHandler pomContentHandler,
                           final M2RepoService m2RepoService,
-                          final MetadataService metadataService) {
+                          final MetadataService metadataService,
+                          final @Customizable PomEnhancer pomEnhancer) {
         this.ioService = ioService;
         this.pomContentHandler = pomContentHandler;
         this.m2RepoService = m2RepoService;
         this.metadataService = metadataService;
+        reader = new MavenXpp3Reader();
+        writer = new MavenXpp3Writer();
+        this.pomEnhancer = pomEnhancer;
     }
 
     @Override
@@ -70,32 +87,55 @@ public class POMServiceImpl
                        final POM pomModel) {
         org.uberfire.java.nio.file.Path pathToPOMXML = null;
         try {
-            pomModel.addRepository(getRepository(repositoryWebBaseURL));
-
             final org.uberfire.java.nio.file.Path nioRoot = Paths.convert(projectRoot);
             pathToPOMXML = nioRoot.resolve("pom.xml");
-
             if (ioService.exists(pathToPOMXML)) {
                 throw new FileAlreadyExistsException(pathToPOMXML.toString());
             }
-            ioService.write(pathToPOMXML,
-                            pomContentHandler.toString(pomModel));
-
+            Model model = getUpdatedPom(pathToPOMXML, repositoryWebBaseURL);
+            write(model, pathToPOMXML, ioService);
             //Don't raise a NewResourceAdded event as this is handled at the Project level in ProjectServices
-
             return Paths.convert(pathToPOMXML);
         } catch (Exception e) {
             throw ExceptionUtilities.handleException(e);
         }
     }
 
-    private MavenRepository getRepository(final String baseURL) {
-        final MavenRepository mavenRepository = new MavenRepository();
-        mavenRepository.setId("guvnor-m2-repo");
-        mavenRepository.setName("Guvnor M2 Repo");
-        mavenRepository.setUrl(m2RepoService.getRepositoryURL(baseURL));
-        return mavenRepository;
+    /*  From PomEditor */
+
+    public Model getUpdatedPom(org.uberfire.java.nio.file.Path pathToPOMXML, String repositoryWebBaseURL) throws Exception{
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pathToPOMXML)));
+        model.getRepositories().add(getRepo(repositoryWebBaseURL));
+        return pomEnhancer.execute(model);
     }
+
+    private Repository getRepo(String repositoryWebBaseURL){
+        Repository repo = new Repository();
+        repo.setId("guvnor-m2-repo");
+        repo.setName("Guvnor M2 Repo");
+        repo.setUrl(m2RepoService.getRepositoryURL(repositoryWebBaseURL));
+        return  repo;
+    }
+
+    private boolean write(Model model, org.uberfire.java.nio.file.Path pathToPOMXML, IOService ioService) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            writer.write(baos, model);
+            ioService.write(pathToPOMXML, new String(baos.toByteArray(), StandardCharsets.UTF_8));
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            try {
+                baos.close();
+            } catch (IOException e) {
+                //suppressed
+            }
+        }
+    }
+
+    /*  End from PomEditor */
+
 
     @Override
     public POM load(final Path path) {
