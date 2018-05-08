@@ -53,7 +53,6 @@ public class POMServiceImplCreateTest {
     @Mock
     MetadataService metadataService;
 
-    @Mock
     PomEnhancer pomEnhancer;
 
     private POMServiceImpl service;
@@ -68,6 +67,7 @@ public class POMServiceImplCreateTest {
 
     @Before
     public void setUp() throws Exception {
+        pomEnhancer = new DefaultPomEnhancer();
         MockitoAnnotations.initMocks(this);
 
         ioServiceSpy = spy(ioService);

@@ -87,12 +87,14 @@ public class POMServiceImpl
                        final POM pomModel) {
         org.uberfire.java.nio.file.Path pathToPOMXML = null;
         try {
+            pomModel.addRepository(getRepository(repositoryWebBaseURL));
             final org.uberfire.java.nio.file.Path nioRoot = Paths.convert(projectRoot);
             pathToPOMXML = nioRoot.resolve("pom.xml");
+
             if (ioService.exists(pathToPOMXML)) {
                 throw new FileAlreadyExistsException(pathToPOMXML.toString());
             }
-            Model model = getUpdatedPom(pathToPOMXML, repositoryWebBaseURL);
+            final Model model = pomEnhancer.execute(pomContentHandler.convert(pomModel));
             write(model, pathToPOMXML, ioService);
             //Don't raise a NewResourceAdded event as this is handled at the Project level in ProjectServices
             return Paths.convert(pathToPOMXML);
@@ -101,20 +103,12 @@ public class POMServiceImpl
         }
     }
 
-    /*  From PomEditor */
-
-    public Model getUpdatedPom(org.uberfire.java.nio.file.Path pathToPOMXML, String repositoryWebBaseURL) throws Exception{
-        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(pathToPOMXML)));
-        model.getRepositories().add(getRepo(repositoryWebBaseURL));
-        return pomEnhancer.execute(model);
-    }
-
-    private Repository getRepo(String repositoryWebBaseURL){
-        Repository repo = new Repository();
-        repo.setId("guvnor-m2-repo");
-        repo.setName("Guvnor M2 Repo");
-        repo.setUrl(m2RepoService.getRepositoryURL(repositoryWebBaseURL));
-        return  repo;
+    private MavenRepository getRepository(final String baseURL) {
+        final MavenRepository mavenRepository = new MavenRepository();
+        mavenRepository.setId("guvnor-m2-repo");
+        mavenRepository.setName("Guvnor M2 Repo");
+        mavenRepository.setUrl(m2RepoService.getRepositoryURL(baseURL));
+        return mavenRepository;
     }
 
     private boolean write(Model model, org.uberfire.java.nio.file.Path pathToPOMXML, IOService ioService) {
@@ -134,7 +128,6 @@ public class POMServiceImpl
         }
     }
 
-    /*  End from PomEditor */
 
 
     @Override

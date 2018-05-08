@@ -15,12 +15,12 @@
 package org.guvnor.common.services.project.backend.server;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.uberfire.annotations.Customizable;
+import org.uberfire.annotations.FallbackImplementation;
 
 @ApplicationScoped
 public class PomEnhancerProvider {
@@ -29,6 +29,7 @@ public class PomEnhancerProvider {
     private Instance<PomEnhancer> pomEnhancer;
 
     @Inject
+    @FallbackImplementation
     private DefaultPomEnhancer defaultPomEnhancer;
 
     @Produces
