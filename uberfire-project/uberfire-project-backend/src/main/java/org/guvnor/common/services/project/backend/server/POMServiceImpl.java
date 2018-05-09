@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Repository;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -38,24 +37,25 @@ import org.guvnor.common.services.shared.metadata.MetadataService;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.m2repo.service.M2RepoService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.annotations.Customizable;
 import org.uberfire.backend.server.cdi.workspace.WorkspaceScoped;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
-import org.uberfire.java.nio.file.Files;
 
 @Service
 @WorkspaceScoped
 public class POMServiceImpl
         implements POMService {
 
+    private final Logger logger = LoggerFactory.getLogger(POMServiceImpl.class);
     private IOService ioService;
     private POMContentHandler pomContentHandler;
     private M2RepoService m2RepoService;
     private MetadataService metadataService;
-    private MavenXpp3Reader reader;
     private MavenXpp3Writer writer;
     private PomEnhancer pomEnhancer;
 
@@ -76,7 +76,6 @@ public class POMServiceImpl
         this.pomContentHandler = pomContentHandler;
         this.m2RepoService = m2RepoService;
         this.metadataService = metadataService;
-        reader = new MavenXpp3Reader();
         writer = new MavenXpp3Writer();
         this.pomEnhancer = pomEnhancer;
     }
@@ -111,25 +110,15 @@ public class POMServiceImpl
         return mavenRepository;
     }
 
-    private boolean write(Model model, org.uberfire.java.nio.file.Path pathToPOMXML, IOService ioService) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
+    private void write(Model model, org.uberfire.java.nio.file.Path pathToPOMXML, IOService ioService) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()){
             writer.write(baos, model);
             ioService.write(pathToPOMXML, new String(baos.toByteArray(), StandardCharsets.UTF_8));
-            return true;
         } catch (Exception e) {
-            return false;
-        } finally {
-            try {
-                baos.close();
-            } catch (IOException e) {
-                //suppressed
-            }
+            logger.error(e.getMessage(), e);
         }
     }
-
-
-
+    
     @Override
     public POM load(final Path path) {
         try {
