@@ -30,13 +30,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
-import org.uberfire.ext.wires.core.grids.client.model.impl.BaseHeaderMetaData;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyColumnRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBoundaryRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridHeaderColumnRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridHeaderRenderContext;
-import org.uberfire.ext.wires.core.grids.client.widget.grid.columns.StringPopupColumn;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer.RenderBodyGridBackgroundCommand;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer.RenderGridBoundaryCommand;
@@ -150,9 +148,7 @@ public class BaseGridRendererNonSelectionLayerTest extends BaseGridRendererTest 
 
     @Test
     public void checkSelectedCellsWithHiddenColumnMultipleColumnsFirstHidden() {
-        final GridColumn<String> column2 = new StringPopupColumn(new BaseHeaderMetaData("title"),
-                                                                 columnRenderer,
-                                                                 200.0);
+        final GridColumn<String> column2 = makeGridColumn(200.0);
         this.model.appendColumn(column2);
         this.column.setVisible(false);
         setupSelectionContext();
