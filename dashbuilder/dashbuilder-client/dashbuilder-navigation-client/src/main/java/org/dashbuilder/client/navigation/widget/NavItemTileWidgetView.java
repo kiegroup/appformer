@@ -55,7 +55,7 @@ public class NavItemTileWidgetView implements NavItemTileWidget.View, IsElement 
     @Override
     public void show(String name, String descr, ItemType type) {
         textSpan.setTextContent(name);
-        mainDiv.getStyle().setProperty("title", descr);
+        mainDiv.setTitle(descr);
 
         if (ItemType.GROUP == type) {
             mainDiv.setClassName("uf-navitem-tile-body uf-navitem-tile-group");
