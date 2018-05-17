@@ -1329,6 +1329,11 @@
         <version>${version.org.mariadb.jdbc}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>${version.org.freemarker}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
