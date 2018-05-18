@@ -19,11 +19,15 @@ package org.uberfire.mocks;
 import java.io.IOException;
 import java.net.URI;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
+import org.uberfire.java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
@@ -33,7 +37,7 @@ public class FileSystemTestingUtilsTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        fileSystemTestingUtils.setup();
+        fileSystemTestingUtils.setup(false, true);
     }
 
     @AfterClass
@@ -42,7 +46,7 @@ public class FileSystemTestingUtilsTest {
     }
 
     @Test
-    public void fsUtilsSanityCheck() throws IOException, InterruptedException {
+    public void fsUtilsSanityCheck() throws IOException, InterruptedException, GitAPIException {
         IOService ioService = fileSystemTestingUtils.getIoService();
         Path init = ioService.get(URI.create("git://amend-repo-test/init.file"));
         String expected = "setupFS!";
@@ -50,5 +54,13 @@ public class FileSystemTestingUtilsTest {
                         expected);
         assertEquals(expected,
                      ioService.readAllString(init));
+
+        //clone into a regular fs
+        Path tmpRootCloned = Files.createTempDirectory("cloned");
+        Path tmpCloned = Files.createDirectories(Paths.get(tmpRootCloned.toString(),
+                                                           ".clone"));
+        final Git cloned = Git.cloneRepository().setURI("git://localhost:9418/amend-repo-test").setBare(false).setDirectory(tmpCloned.toFile()).call();
+
+        assertNotNull(cloned);
     }
 }
