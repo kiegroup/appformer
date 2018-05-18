@@ -29,6 +29,7 @@ import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.api.FileSystemProviders;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 import org.uberfire.java.nio.fs.jgit.manager.JGitFileSystemsCache;
 
 public class FileSystemTestingUtils {
@@ -38,16 +39,23 @@ public class FileSystemTestingUtils {
     private IOService ioService;
 
     public void setup() throws IOException {
-        setup(true);
+        setup(true, false);
     }
 
-    public void setup(boolean initRepo) throws IOException {
+    public void setup(Boolean initRepo) throws IOException {
+        setup(initRepo, false);
+    }
+
+    public void setup(Boolean initRepo, Boolean initDaemon) throws IOException {
+        System.setProperty(JGitFileSystemProviderConfiguration.GIT_DAEMON_ENABLED,
+                           initDaemon.toString());
+        System.setProperty(JGitFileSystemProviderConfiguration.GIT_SSH_ENABLED,
+                           "false");
         ioService = new IOServiceDotFileImpl();
 
         createTempDirectory();
         setupJGitRepository("git://amend-repo-test",
-                            initRepo
-        );
+                            initRepo);
     }
 
     private void createTempDirectory()
