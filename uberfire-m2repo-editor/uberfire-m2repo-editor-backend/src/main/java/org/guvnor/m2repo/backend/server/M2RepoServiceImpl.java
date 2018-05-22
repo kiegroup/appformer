@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -232,20 +233,17 @@ public class M2RepoServiceImpl implements M2RepoService,
     }
 
     /**
-     * @param baseURL the base URL where Guvnor M2 repo is hosted in web container. return a Guvnor M2 repo
-     * URL point to local file system if baseURL is not available.
+     * URL point to local file system if URL property is not available.
      * @return String
      */
     @Override
-    public String getRepositoryURL(final String baseURL) {
-        if (baseURL == null || baseURL.isEmpty()) {
+    public String getRepositoryURL() {
+        final String urlProperty = System.getProperty(ArtifactRepositoryService.GLOBAL_M2_REPO_URL);
+
+        if (urlProperty == null || urlProperty.isEmpty()) {
             return repository.getRepositoryURL(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME);
         } else {
-            if (baseURL.endsWith("/")) {
-                return baseURL + "maven2/";
-            } else {
-                return baseURL + "/maven2/";
-            }
+            return urlProperty;
         }
     }
 
