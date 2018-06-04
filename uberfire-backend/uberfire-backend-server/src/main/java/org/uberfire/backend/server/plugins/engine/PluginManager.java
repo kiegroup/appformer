@@ -18,6 +18,9 @@ package org.uberfire.backend.server.plugins.engine;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +31,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.util.URIUtil;
 
 /**
  * Manages Uberfire Plugins which involves monitoring the plugins directory
@@ -88,7 +92,7 @@ public class PluginManager {
      * context root directory if not found.
      */
     String findPluginDeploymentDir(String contextRootDir) throws IOException {
-        final Collection<File> gwtFiles = FileUtils.listFiles(new File(contextRootDir),
+        final Collection<File> gwtFiles = FileUtils.listFiles(new File(encodePath(contextRootDir)),
                                                               new String[]{"nocache.js"},
                                                               true);
         if (!gwtFiles.isEmpty()) {
@@ -96,5 +100,18 @@ public class PluginManager {
             return gwtFile.getParentFile().getCanonicalPath();
         }
         return new File(contextRootDir).getCanonicalPath();
+    }
+
+    String encodePath(String contextRootDir) {
+        return URIUtil.decode(contextRootDir);
+    }
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String d = "/Users/ederign/labs/rh/appformer/uberfire-showcase/uberfire-webapp/src/main/web app";
+        String decodedPath = URLDecoder.decode(d, "UTF-8");
+        final Collection<File> gwtFiles = FileUtils.listFiles(new File(decodedPath),
+                                                              new String[]{"nocache.js"},
+                                                              true);
+        System.out.println(decodedPath);
     }
 }
