@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -186,6 +186,7 @@ public class PerspectiveEditorPresenter extends BaseEditor<LayoutTemplate, Defau
     public void initLayoutDragComponentGroups() {
         layoutDragComponentPalette.clear();
         scanPerspectiveDragGroups().stream()
+                .filter(PerspectiveEditorComponentGroupProvider::isEnabled)
                 .map(PerspectiveEditorComponentGroupProvider::getInstance)
                 .forEach(layoutDragComponentPalette::addDraggableGroup);
     }
