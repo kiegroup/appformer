@@ -188,11 +188,7 @@ public class Promises {
             return resolve();
         }
 
-        GWT.getUncaughtExceptionHandler().onUncaughtException(
-                new RuntimeException("Rejected object in Promise is not a Throwable but a " +
-                                             rejectedObject.getClass().getCanonicalName()));
-
-        return resolve();
+        return reject(rejectedObject);
     }
 
     public <T> Promise<T> resolve() {
