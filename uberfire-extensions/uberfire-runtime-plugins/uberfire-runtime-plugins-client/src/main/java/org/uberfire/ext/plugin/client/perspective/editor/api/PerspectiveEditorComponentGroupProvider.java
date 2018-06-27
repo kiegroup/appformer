@@ -43,6 +43,15 @@ public interface PerspectiveEditorComponentGroupProvider extends Comparable {
         return 0;
     }
 
+    /**
+     * Determines if the provider is enabled. Only enabled {@link PerspectiveEditorComponentGroupProvider} will
+     * provide the {@link LayoutDragComponentGroup} instance into the componentes palette.
+     * @return
+     */
+    default boolean isEnabled() {
+        return true;
+    }
+
     @Override
     default int compareTo(Object o) {
         if (this == o) {

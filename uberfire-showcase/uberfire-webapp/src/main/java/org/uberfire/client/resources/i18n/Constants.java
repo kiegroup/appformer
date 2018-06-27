@@ -37,4 +37,16 @@ public interface Constants
     String SignOut();
 
     String WelcomeUser();
+
+    String demo_feature();
+
+    String demo_feature_description();
+
+    String demo_feature2();
+
+    String demo_feature2_description();
+
+    String demo_feature3();
+
+    String demo_feature3_description();
 }

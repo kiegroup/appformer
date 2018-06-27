@@ -47,6 +47,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.uberfire.client.menu.CustomSplashHelp;
 import org.uberfire.client.menu.WorkbenchViewModeSwitcherMenuBuilder;
 import org.uberfire.client.mvp.ActivityManager;
@@ -84,6 +85,7 @@ import static org.uberfire.workbench.model.menu.MenuFactory.newTopLevelMenu;
  * GWT's Entry-point for Uberfire-showcase
  */
 @EntryPoint
+@Bundle("resources/i18n/Constants.properties")
 public class ShowcaseEntryPoint {
 
     private static final Set<String> menuItemsToRemove = Sets.newHashSet(
