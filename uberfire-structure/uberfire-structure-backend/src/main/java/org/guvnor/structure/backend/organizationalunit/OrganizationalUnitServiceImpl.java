@@ -15,6 +15,7 @@
 
 package org.guvnor.structure.backend.organizationalunit;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +48,8 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.structure.server.organizationalunit.OrganizationalUnitFactory;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.uberfire.commons.config.ConfigProperties;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
@@ -225,7 +228,19 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
             newOrganizationalUnit = organizationalUnitFactory.newOrganizationalUnit(groupConfig);
             registeredOrganizationalUnits.put(newOrganizationalUnit.getName(),
                                               newOrganizationalUnit);
-
+           
+            ConfigProperties configProperties= new ConfigProperties(System.getProperties());
+            JGitFileSystemProviderConfiguration jGitFileSystemProviderConfiguration =new JGitFileSystemProviderConfiguration();
+            jGitFileSystemProviderConfiguration.load(configProperties);
+            
+            StringBuilder sb= new StringBuilder()
+            		.append(jGitFileSystemProviderConfiguration.getGitReposParentDir().toPath().toString())
+            		.append("/")
+            		.append(newOrganizationalUnit.getName())
+            		.append("/");
+            File folder = new File(sb.toString());
+            folder.mkdirs();
+            
             return newOrganizationalUnit;
         } finally {
             configurationService.endBatch();
@@ -436,7 +451,17 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
                 final OrganizationalUnit originalOu = getOrganizationalUnit(groupName);
                 repositoryService.removeRepositories(originalOu.getSpace(), originalOu.getRepositories().stream().map(repo -> repo.getAlias()).collect(Collectors.toSet()));
                 configurationService.removeConfiguration(thisGroupConfig);
-                removedOu = registeredOrganizationalUnits.remove(groupName);
+                removedOu = registeredOrganizationalUnits.remove(groupName);                
+                ConfigProperties configProperties= new ConfigProperties(System.getProperties());
+                JGitFileSystemProviderConfiguration jGitFileSystemProviderConfiguration =new JGitFileSystemProviderConfiguration();
+                jGitFileSystemProviderConfiguration.load(configProperties);  
+                StringBuilder sb= new StringBuilder()
+                		.append(jGitFileSystemProviderConfiguration.getGitReposParentDir().toPath().toString())
+                		.append("/")
+                		.append(originalOu.getName());                		                
+                File folder = new File(sb.toString());
+                folder.delete();
+                
             } finally {
                 configurationService.endBatch();
                 if (removedOu != null) {
