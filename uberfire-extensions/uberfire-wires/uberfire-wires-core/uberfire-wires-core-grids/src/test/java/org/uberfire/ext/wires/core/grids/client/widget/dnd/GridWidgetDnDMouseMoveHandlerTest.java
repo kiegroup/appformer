@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import com.ait.lienzo.client.core.event.INodeXYEvent;
 import com.ait.lienzo.client.core.event.NodeMouseMoveEvent;
@@ -294,7 +292,7 @@ public class GridWidgetDnDMouseMoveHandlerTest {
     @Test
     public void findMovableGridWhenOverDragHandleWhenIsPinned() {
         doFindMovableGridWhenOverDragHandle(true,
-                                            (nothing) -> {
+                                            () -> {
                                                 verify(state,
                                                        never()).setActiveGridWidget(any(GridWidget.class));
                                                 verify(state,
@@ -308,7 +306,7 @@ public class GridWidgetDnDMouseMoveHandlerTest {
     @Test
     public void findMovableGridWhenOverDragHandleWhenNotPinned() {
         doFindMovableGridWhenOverDragHandle(false,
-                                            (nothing) -> {
+                                            () -> {
                                                 verify(state).setActiveGridWidget(eq(gridWidget));
                                                 verify(state).setOperation(eq(GridWidgetHandlersOperation.GRID_MOVE_PENDING));
                                                 assertEquals(gridWidget,
@@ -319,7 +317,7 @@ public class GridWidgetDnDMouseMoveHandlerTest {
     }
 
     private void doFindMovableGridWhenOverDragHandle(final boolean isPinned,
-                                                     final Consumer<Object> assertion) {
+                                                     final Runnable assertion) {
         state.setOperation(GridWidgetHandlersOperation.NONE);
         when(gridWidget.isVisible()).thenReturn(true);
         when(gridWidget.onDragHandle(any(INodeXYEvent.class))).thenReturn(true);
@@ -337,7 +335,7 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         verify(handler,
                times(1)).findGridColumn(eq(event));
 
-        assertion.accept(null);
+        assertion.run();
     }
 
     @Test
