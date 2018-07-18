@@ -66,7 +66,7 @@ public class BaseBounds implements Bounds {
     @Override
     public void setWidth(double width) {
         if (!(width >= 0)) {
-            throw new IllegalArgumentException("Width must be positive");
+            throw new IllegalStateException("Width must be positive");
         }
         this.width = width;
     }
@@ -79,7 +79,7 @@ public class BaseBounds implements Bounds {
     @Override
     public void setHeight(double height) {
         if (!(height >= 0)) {
-            throw new IllegalArgumentException("Height must be positive");
+            throw new IllegalStateException("Height must be positive");
         }
         this.height = height;
     }

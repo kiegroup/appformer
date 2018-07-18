@@ -273,7 +273,7 @@ public class BaseGridData implements GridData {
     @Override
     public void setHeaderRowCount(final int headerRowCount) {
         if (!(headerRowCount > 0)) {
-            throw new IllegalArgumentException("headerRowCount");
+            throw new IllegalStateException("headerRowCount");
         }
         this.headerRowCount = headerRowCount;
     }
