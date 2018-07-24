@@ -18,7 +18,7 @@
 package org.guvnor.common.services.project.backend.server.utils.configuration;
 
 /***
- * Used to order execution of implementations of the same interface in
+ * Used to order execution of implementations of the same interface
  */
 public interface Order {
 
