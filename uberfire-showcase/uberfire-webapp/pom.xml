@@ -362,7 +362,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <scope>provided</scope>
+      <!--<scope>provided</scope>-->
     </dependency>
 
     <!-- Uberfire Docks -->
@@ -529,7 +529,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
+            <id>unpack-wildfly</id>
             <phase>process-resources</phase>
             <goals>
               <goal>unpack</goal>
@@ -546,6 +546,27 @@
                 </artifactItem>
               </artifactItems>
               <skip>${gwt.compiler.skip}</skip>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-appformer-js</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.appformer</groupId>
+                  <artifactId>appformer-js</artifactId>
+                  <version>1.0.0-SNAPSHOT</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/appformer-js</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
           </execution>
         </executions>
@@ -579,6 +600,31 @@
             </fileset>
           </filesets>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-appformer-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/public/js</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/appformer-js/META-INF/resources/webjars/appformer-js/1.0.0-SNAPSHOT</directory>
+                  <includes>
+                    <include>core.bundle.js</include>
+                    <include>examples/examples.bundle.js</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
