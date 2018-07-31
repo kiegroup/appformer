@@ -612,7 +612,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.outputDirectory}/org/uberfire/public/js</outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/client/views/static</outputDirectory>
               <resources>
                 <resource>
                   <directory>${project.build.directory}/appformer-js/META-INF/resources/webjars/appformer-js/1.0.0-SNAPSHOT</directory>

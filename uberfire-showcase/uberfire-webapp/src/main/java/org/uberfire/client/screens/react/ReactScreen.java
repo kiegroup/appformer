@@ -16,17 +16,41 @@
 
 package org.uberfire.client.screens.react;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.TextResource;
+import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
+import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
 import static com.google.gwt.resources.client.ClientBundle.Source;
 
-//@WorkbenchScreen(identifier = "react-poc")
+@Dependent
+@WorkbenchScreen(identifier = "react-poc")
 public class ReactScreen {
 
-    public interface Js {
+    @Inject
+    private ReactScreenView reactScreenView;
 
-        @Source("org/uberfire/client/public/js/examples/examples.bundle.js")
+    @WorkbenchPartTitle
+    public String getTitle() {
+        return "React Screen";
+    }
+
+    @WorkbenchPartView
+    public IsElement getPartView() {
+        return reactScreenView;
+    }
+
+    public interface ReactJs extends ClientBundle {
+
+        ReactJs INSTANCE = GWT.create(ReactJs.class);
+
+        @Source("org/uberfire/client/views/static/examples/examples.bundle.js")
         TextResource reactExample();
     }
 }
