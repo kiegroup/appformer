@@ -22,7 +22,7 @@ package org.guvnor.common.services.project.backend.server.utils.configuration;
  * <p>
  *  COMPILER (jdt) jdt or javac
  *  SOURCE_VERSION  (1.8) configured with jvm source code version
- *  TARGET_VERSION  (1.8)configured with jvm target version
+ *  TARGET_VERSION  (1.8) configured with jvm target version
  *  <p>
  *  FAIL_ON_ERROR (false) configured with false to continue the build on the correct classes and skip the build of classes with errors
  *  MAVEN_COMPILER_PLUGIN_GROUP (org.apache.maven.plugins) configured with default maven compiler group to disabled it
