@@ -16,6 +16,7 @@
 
 package org.guvnor.structure.backend.organizationalunit;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +62,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.commons.config.ConfigProperties;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.security.Resource;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -218,6 +222,37 @@ public class OrganizationalUnitServiceTest {
         assertEquals(repos, event.getOrganizationalUnit().getRepositories());
 
     }
+    
+    @Test
+    public void createAndDeleteOrganizationalUnitWithCorrectDirectoryTest() {
+        List<String> contributors = new ArrayList<>();
+        contributors.add("admin");
+
+        setOUCreationPermission(true);
+
+        ConfigProperties configProperties= new ConfigProperties(System.getProperties());
+        JGitFileSystemProviderConfiguration jGitFileSystemProviderConfiguration =new JGitFileSystemProviderConfiguration();
+        jGitFileSystemProviderConfiguration.load(configProperties);
+        
+        final OrganizationalUnit ou = organizationalUnitService.createOrganizationalUnit("nameUI",
+                                                                                         "owner",
+                                                                                         "default.group.id",
+                                                                                         new ArrayList<>(),
+                                                                                         contributors);
+        StringBuilder sb= new StringBuilder()
+        		.append(jGitFileSystemProviderConfiguration.getGitReposParentDir().toPath().toString())
+        		.append("/")
+        		.append(ou.getSpace().getName())
+        		.append("/");       
+        final File file= new File(sb.toString());
+        
+        assertNotNull(ou);
+        assertTrue(file.exists());
+        assertTrue(file.delete());
+        
+        
+    }
+    
 
     private void setOUCreationPermission(final boolean hasPermission) {
         when(authorizationManager.authorize(eq(OrganizationalUnit.RESOURCE_TYPE),
