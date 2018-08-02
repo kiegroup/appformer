@@ -18,6 +18,7 @@ package org.uberfire.ext.metadata.backend.lucene.provider;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,14 +106,16 @@ public class LuceneIndexProvider implements IndexProvider {
     public void delete(String index,
                        String id) {
         final LuceneIndex luceneIndex = (LuceneIndex) indexManager.get(new KClusterImpl(index));
-        luceneIndex.deleteIfExists(id);
-        luceneIndex.commit();
+        if (luceneIndex != null) {
+            luceneIndex.deleteIfExists(id);
+            luceneIndex.commit();
+        }
     }
 
     @Override
     public List<KObject> findById(String index,
                                   String id) {
-        List<String> indices = Arrays.asList(index);
+        List<String> indices = Collections.singletonList(index);
         ScoreDoc[] docs = this.findRawByQuery(indices,
                                               new TermQuery(new Term("id",
                                                                      id)),
