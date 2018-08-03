@@ -16,6 +16,7 @@
 package org.uberfire.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -61,6 +62,7 @@ import org.uberfire.client.resources.AppResource;
 import org.uberfire.client.resources.i18n.Constants;
 import org.uberfire.client.screen.JSWorkbenchScreenActivity;
 import org.uberfire.client.screens.popup.SimplePopUp;
+import org.uberfire.client.screens.react.JsWorkbenchScreenActivity;
 import org.uberfire.client.views.pfly.PatternFlyEntryPoint;
 import org.uberfire.client.views.pfly.menu.MainBrand;
 import org.uberfire.client.views.pfly.menu.UserMenu;
@@ -139,7 +141,7 @@ public class ShowcaseEntryPoint {
         for (final IOCBeanDef<WorkbenchScreenActivity> _menuItem : IOC.getBeanManager().lookupBeans(WorkbenchScreenActivity.class)) {
             final String name;
             if (!_menuItem.getBeanClass().equals(PerspectiveEditorScreenActivity.class)) {
-                if (_menuItem.getBeanClass().equals(JSWorkbenchScreenActivity.class)) {
+                if (Arrays.asList(JSWorkbenchScreenActivity.class, JsWorkbenchScreenActivity.class).contains(_menuItem.getBeanClass())) {
                     name = _menuItem.getName();
                 } else {
                     name = IOC.getBeanManager().lookupBean(_menuItem.getBeanClass()).getName();
