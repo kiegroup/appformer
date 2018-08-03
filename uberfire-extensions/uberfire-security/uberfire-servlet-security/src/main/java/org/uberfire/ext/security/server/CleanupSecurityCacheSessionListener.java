@@ -17,19 +17,18 @@
 
 package org.uberfire.ext.security.server;
 
+import org.jboss.errai.security.shared.api.identity.User;
+import org.uberfire.security.authz.AuthorizationManager;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-
-import org.jboss.errai.security.shared.api.identity.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.uberfire.security.authz.AuthorizationManager;
-
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static org.jboss.errai.security.shared.api.identity.User.ANONYMOUS;
 
 /**
  * Releases locks on session end and clear authz related caches.
@@ -60,7 +59,7 @@ public class CleanupSecurityCacheSessionListener implements HttpSessionListener 
             return;
         }
         final User currentUser = (User) se.getSession().getAttribute(ServletSecurityAuthenticationService.USER_SESSION_ATTR_NAME);
-        if (currentUser != null && !currentUser.equals(User.ANONYMOUS)) {
+        if (!ANONYMOUS.equals(currentUser)) {
             for (AuthorizationManager authorizationManager : authorizationManagers) {
                 authorizationManager.invalidate(currentUser);
             }
