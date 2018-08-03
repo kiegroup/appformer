@@ -46,6 +46,7 @@ import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.menu.SplashScreenMenuPresenter;
 import org.uberfire.client.mvp.ActivityLifecycleError.LifecyclePhase;
+import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.client.workbench.LayoutSelection;
 import org.uberfire.client.workbench.PanelManager;
 import org.uberfire.client.workbench.WorkbenchLayout;
@@ -131,6 +132,8 @@ public class PlaceManagerImpl
     private WorkbenchLayout workbenchLayout;
     @Inject
     private LayoutSelection layoutSelection;
+    @Inject
+    private ExperimentalActivitiesAuthorizationManager activitiesAuthorizationManager;
 
     @PostConstruct
     public void initPlaceHistoryHandler() {
@@ -1013,11 +1016,11 @@ public class PlaceManagerImpl
      * process.
      */
     private void openPartsRecursively(PanelDefinition panel) {
+
         for (PartDefinition part : ensureIterable(panel.getParts())) {
-            final PlaceRequest place = part.getPlace().clone();
-            part.setPlace(place);
-            goTo(part,
-                 panel);
+            activitiesAuthorizationManager.securePart(panel, part);
+
+            goTo(part, panel);
         }
         for (PanelDefinition child : ensureIterable(panel.getChildren())) {
             openPartsRecursively(child);

@@ -49,4 +49,16 @@ public interface Constants
     String demo_feature3();
 
     String demo_feature3_description();
+
+    String experimental_perspective();
+
+    String experimental_perspective_description();
+
+    String experimental_screen1();
+
+    String experimental_screen1_description();
+
+    String experimental_screen2();
+
+    String experimental_screen2_description();
 }
