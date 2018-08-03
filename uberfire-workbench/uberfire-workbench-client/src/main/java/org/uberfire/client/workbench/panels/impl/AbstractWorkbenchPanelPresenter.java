@@ -18,8 +18,12 @@ package org.uberfire.client.workbench.panels.impl;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
@@ -29,6 +33,7 @@ import org.uberfire.client.workbench.pmgr.nswe.part.WorkbenchPartPresenterDefaul
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PartDefinition;
 import org.uberfire.workbench.model.Position;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 
 import static org.uberfire.debug.Debug.objectId;
 
@@ -112,7 +117,10 @@ public abstract class AbstractWorkbenchPanelPresenter<P extends AbstractWorkbenc
 
         // special case: when new perspectives are being built up based on definitions,
         // our definition will already say it contains the given part! We should not try to add it again.
-        if (!definition.getParts().contains(part.getDefinition())) {
+        Optional<PartDefinition> optional = definition.getParts().stream()
+                .filter(partDefinition -> partDefinition.equals(part.getDefinition()))
+                .findAny();
+        if (!optional.isPresent()) {
             definition.addPart(part.getDefinition());
         }
         getPanelView().addPart(part.getPartView());

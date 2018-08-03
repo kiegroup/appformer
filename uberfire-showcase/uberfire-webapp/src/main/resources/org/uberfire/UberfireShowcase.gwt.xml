@@ -30,8 +30,8 @@
   <inherits name="org.ext.uberfire.social.activities.SocialActivitiesClient"/>
 
   <!-- Experimental -->
-  <inherits name="org.uberfire.ext.experimental.UberfireExperimentalAPI"/>
-  <inherits name="org.uberfire.ext.experimental.UberfireExperimentalClient"/>
+  <inherits name="org.uberfire.experimental.UberfireExperimentalAPI"/>
+  <inherits name="org.uberfire.experimental.UberfireExperimentalClient"/>
 
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/uberfire-showcase.css'/>

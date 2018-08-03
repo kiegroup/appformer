@@ -375,17 +375,17 @@
     <!-- Uberfire Experimentals -->
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-experimental-extensions-api</artifactId>
+      <artifactId>uberfire-experimental-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-experimental-extensions-backend</artifactId>
+      <artifactId>uberfire-experimental-backend</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-experimental-extensions-client</artifactId>
+      <artifactId>uberfire-experimental-client</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -399,7 +399,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
-          <extraJvmArgs>-Xmx2G -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.ioc.jsinterop.support=true</extraJvmArgs>
+          <extraJvmArgs>-Xmx2G -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.ioc.jsinterop.support=true -Dappformer.experimental.features=true</extraJvmArgs>
           <strict>true</strict>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
@@ -449,8 +449,8 @@
             <compileSourcesArtifact>org.uberfire:uberfire-simple-docks-client</compileSourcesArtifact>
 
             <!-- Uberfire Experimentals -->
-            <compileSourcesArtifact>org.uberfire:uberfire-experimental-extensions-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-experimental-extensions-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-experimental-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-experimental-client</compileSourcesArtifact>
 
           </compileSourcesArtifacts>
         </configuration>

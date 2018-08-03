@@ -44,7 +44,6 @@
     <module>uberfire-layout-editor</module>
     <module>uberfire-simple-docks</module>
     <module>uberfire-social-activities</module>
-    <module>uberfire-experimental-extensions</module>
   </modules>
 
 </project>
