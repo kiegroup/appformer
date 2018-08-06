@@ -20,9 +20,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.TextResource;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -31,14 +35,20 @@ import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
+import org.uberfire.client.workbench.Workbench;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @EntryPoint
 public class ReactBridge {
 
+    @Inject
+    private Workbench workbench;
+
     @PostConstruct
     public void init() {
+
+        workbench.addStartupBlocker(ReactBridge.class);
 
         exposeBridgeRegistrar();
 
@@ -48,6 +58,8 @@ public class ReactBridge {
                     .setWindow(ScriptInjector.TOP_WINDOW)
                     .inject();
         }
+
+        workbench.removeStartupBlocker(ReactBridge.class);
     }
 
     private native void exposeBridgeRegistrar() /*-{
@@ -66,13 +78,14 @@ public class ReactBridge {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
         final JsNativeScreen newScreen = new JsNativeScreen((JavaScriptObject) jsObject);
-        final String screenId = newScreen.get("id");
+        final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen,
+                                                                                 beanManager.lookupBean(PlaceManager.class).getInstance());
 
         final SingletonBeanDef<JsWorkbenchScreenActivity, JsWorkbenchScreenActivity> activityBean = new SingletonBeanDef<>(
-                new JsWorkbenchScreenActivity(newScreen, beanManager.lookupBean(PlaceManager.class).getInstance()),
+                activity,
                 JsWorkbenchScreenActivity.class,
                 new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
-                screenId,
+                activity.getIdentifier(),
                 true,
                 WorkbenchScreenActivity.class,
                 Activity.class);
@@ -81,6 +94,14 @@ public class ReactBridge {
         beanManager.registerBeanTypeAlias(activityBean, WorkbenchScreenActivity.class);
         beanManager.registerBeanTypeAlias(activityBean, Activity.class);
 
-        activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(screenId).iterator().next());
+        activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
+    }
+
+    public static interface ReactJsExamplesBundle extends ClientBundle {
+
+        ReactJsExamplesBundle INSTANCE = GWT.create(ReactJsExamplesBundle.class);
+
+        @Source("org/uberfire/client/views/static/examples/examples.bundle.js")
+        TextResource source();
     }
 }

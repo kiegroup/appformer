@@ -47,42 +47,42 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     @Override
     public void onStartup(final PlaceRequest place) {
         this.place = place;
-        screen.run("on_startup", JSPlaceRequest.fromPlaceRequest(place));
+        screen.run("af_onStartup", JSPlaceRequest.fromPlaceRequest(place));
     }
 
     @Override
     public void onOpen() {
         Scheduler.get().scheduleDeferred(() -> {
-            screen.init();
-            screen.run("on_open");
+            screen.af_componentRoot();
+            screen.run("af_onOpen");
             placeManager.executeOnOpenCallbacks(place);
         });
     }
 
     @Override
     public void onClose() {
-        screen.run("on_close");
+        screen.run("af_onClose");
         placeManager.executeOnCloseCallbacks(place);
     }
 
     @Override
     public boolean onMayClose() {
-        return (boolean) screen.run("on_may_close");
+        return !screen.defines("af_onMayClose") || (boolean) screen.run("af_onMayClose");
     }
 
     @Override
     public void onShutdown() {
-        screen.run("on_shutdown");
+        screen.run("af_onShutdown");
     }
 
     @Override
     public void onFocus() {
-        screen.run("on_focus");
+        screen.run("af_onFocus");
     }
 
     @Override
     public void onLostFocus() {
-        screen.run("on_lost_focus");
+        screen.run("af_onLostFocus");
     }
 
     //
@@ -91,7 +91,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String getTitle() {
-        return screen.get("title");
+        return screen.get("af_componentTitle");
     }
 
     @Override
@@ -106,7 +106,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String getIdentifier() {
-        return screen.get("id");
+        return screen.get("af_componentId");
     }
 
     @Override
@@ -136,7 +136,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String contextId() {
-        return screen.get("contextId");
+        return screen.get("af_componentContextId");
     }
 
     @Override

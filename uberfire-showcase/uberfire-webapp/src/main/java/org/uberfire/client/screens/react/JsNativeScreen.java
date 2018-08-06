@@ -36,9 +36,9 @@ public class JsNativeScreen {
         return container;
     }
 
-    public native void init() /*-{
+    public native void af_componentRoot() /*-{
         $wnd.appformer.render(
-                this.@org.uberfire.client.screens.react.JsNativeScreen::self.init,
+                this.@org.uberfire.client.screens.react.JsNativeScreen::self.af_componentRoot,
                 this.@org.uberfire.client.screens.react.JsNativeScreen::container);
     }-*/;
 
@@ -59,5 +59,9 @@ public class JsNativeScreen {
     public native Object run(final String functionName, final Object arg1, final Object arg2) /*-{
         var f = this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName];
         return f && f(arg1, arg2);
+    }-*/;
+
+    public native boolean defines(final String property) /*-{
+        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[property] !== undefined;
     }-*/;
 }

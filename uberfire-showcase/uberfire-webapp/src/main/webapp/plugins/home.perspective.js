@@ -48,7 +48,7 @@ $registerPerspective({
                         parameters: {}
                     },
                     {
-                        place: "A-react-poc-native___examples2",
+                        place: "TodoListScreen",
                         parameters: {}
                     }
                 ]
