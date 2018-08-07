@@ -36,9 +36,9 @@ public class JsNativeScreen {
         return container;
     }
 
-    public native void af_componentRoot() /*-{
+    public native void render() /*-{
         $wnd.appformer.render(
-                this.@org.uberfire.client.screens.react.JsNativeScreen::self.af_componentRoot,
+                this.@org.uberfire.client.screens.react.JsNativeScreen::self.af_componentRoot(),
                 this.@org.uberfire.client.screens.react.JsNativeScreen::container);
     }-*/;
 
@@ -47,18 +47,15 @@ public class JsNativeScreen {
     }-*/;
 
     public native Object run(final String functionName) /*-{
-        var f = this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName];
-        f && f();
+        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName] && this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName]();
     }-*/;
 
     public native Object run(final String functionName, final Object arg1) /*-{
-        var f = this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName];
-        f && f(arg1);
+        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName] && this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName](arg1);
     }-*/;
 
     public native Object run(final String functionName, final Object arg1, final Object arg2) /*-{
-        var f = this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName];
-        return f && f(arg1, arg2);
+        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName] && this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName](arg1, arg2);
     }-*/;
 
     public native boolean defines(final String property) /*-{

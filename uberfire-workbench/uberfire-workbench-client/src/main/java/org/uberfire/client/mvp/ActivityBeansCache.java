@@ -112,6 +112,15 @@ public class ActivityBeansCache {
         }
 
         this.resourceTypeManagerCache.sortResourceActivitiesByPriority();
+
+
+        //FIXME: Scan all *-manifest.js files to index screens by their ids.
+        // **Check if this code runs after the startupBlockers were removed.
+        // Example:
+        // screen-11 => js-screens-1.js
+        // screen-12 => js-screens-1.js
+        // screen-3 => js-screens-3.js
+
     }
 
     private void addResourceActivity(SyncBeanDef<Activity> activityBean,
@@ -226,6 +235,10 @@ public class ActivityBeansCache {
      * was registered under.
      */
     public SyncBeanDef<Activity> getActivity(final String id) {
+        SyncBeanDef<Activity> activitySyncBeanDef = activitiesById.get(id);
+        if (activitySyncBeanDef == null) {
+            //TODO: Load JS file containing definition of screen with this id.
+        }
         return activitiesById.get(id);
     }
 

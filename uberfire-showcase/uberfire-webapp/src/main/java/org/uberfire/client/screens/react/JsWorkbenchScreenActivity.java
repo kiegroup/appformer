@@ -16,7 +16,6 @@
 
 package org.uberfire.client.screens.react;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.uberfire.client.jsapi.JSPlaceRequest;
@@ -52,11 +51,9 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public void onOpen() {
-        Scheduler.get().scheduleDeferred(() -> {
-            screen.af_componentRoot();
-            screen.run("af_onOpen");
-            placeManager.executeOnOpenCallbacks(place);
-        });
+        screen.render();
+        screen.run("af_onOpen");
+        placeManager.executeOnOpenCallbacks(place);
     }
 
     @Override

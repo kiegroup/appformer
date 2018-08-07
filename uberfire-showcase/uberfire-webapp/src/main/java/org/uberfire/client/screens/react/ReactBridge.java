@@ -52,18 +52,16 @@ public class ReactBridge {
 
         //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
-        if (!appformerJsIsAvailable()) {
 
-            ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
-                    .setWindow(ScriptInjector.TOP_WINDOW)
-                    .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
-                            .setWindow(ScriptInjector.TOP_WINDOW)
-                            .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.UberfireShowcase/core-screens/screens.bundle.js")
-                                    .setWindow(ScriptInjector.TOP_WINDOW)
-                                    .inject())
-                            .inject())
-                    .inject();
-        }
+        ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
+                .setWindow(ScriptInjector.TOP_WINDOW)
+                .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
+                        .setWindow(ScriptInjector.TOP_WINDOW)
+                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.UberfireShowcase/core-screens/screens.bundle.js")
+                                .setWindow(ScriptInjector.TOP_WINDOW)
+                                .inject())
+                        .inject())
+                .inject();
 
         workbench.removeStartupBlocker(ReactBridge.class);
     }
@@ -72,10 +70,6 @@ public class ReactBridge {
         $wnd.appformerBridge = {
             registerScreen: this.@org.uberfire.client.screens.react.ReactBridge::registerScreen(Ljava/lang/Object;)
         };
-    }-*/;
-
-    private native boolean appformerJsIsAvailable() /*-{
-        return $wnd.appformer !== undefined;
     }-*/;
 
     @SuppressWarnings("unchecked")
