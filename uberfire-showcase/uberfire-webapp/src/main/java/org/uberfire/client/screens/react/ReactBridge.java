@@ -22,11 +22,9 @@ import java.util.HashSet;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.TextResource;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -53,9 +51,17 @@ public class ReactBridge {
         exposeBridgeRegistrar();
 
         //FIXME: Not ideal to load scripts here. Make it lazy.
+        //FIXME: Load React from local instead of CDN.
         if (!appformerJsIsAvailable()) {
-            ScriptInjector.fromString(ReactJsExamplesBundle.INSTANCE.source().getText())
+
+            ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
                     .setWindow(ScriptInjector.TOP_WINDOW)
+                    .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
+                            .setWindow(ScriptInjector.TOP_WINDOW)
+                            .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.UberfireShowcase/core-screens/screens.bundle.js")
+                                    .setWindow(ScriptInjector.TOP_WINDOW)
+                                    .inject())
+                            .inject())
                     .inject();
         }
 
@@ -97,11 +103,16 @@ public class ReactBridge {
         activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
 
-    public static interface ReactJsExamplesBundle extends ClientBundle {
+    interface Success<T> extends Callback<T, Exception> {
 
-        ReactJsExamplesBundle INSTANCE = GWT.create(ReactJsExamplesBundle.class);
-
-        @Source("org/uberfire/client/views/static/examples/examples.bundle.js")
-        TextResource source();
+        @Override
+        default void onFailure(Exception o) {
+        }
     }
 }
+
+
+
+
+
+
