@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.screens.react;
+package org.appformer.jsbridge.client;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;

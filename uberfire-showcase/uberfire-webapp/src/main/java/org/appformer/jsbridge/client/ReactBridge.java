@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.screens.react;
+package org.appformer.jsbridge.client;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ public class ReactBridge {
 
         workbench.addStartupBlocker(ReactBridge.class);
 
-        exposeBridgeRegistrar();
+        exposeScreenRegistrar();
 
         //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
@@ -66,9 +66,9 @@ public class ReactBridge {
         workbench.removeStartupBlocker(ReactBridge.class);
     }
 
-    private native void exposeBridgeRegistrar() /*-{
+    private native void exposeScreenRegistrar() /*-{
         $wnd.appformerBridge = {
-            registerScreen: this.@org.uberfire.client.screens.react.ReactBridge::registerScreen(Ljava/lang/Object;)
+            registerScreen: this.@org.appformer.jsbridge.client.ReactBridge::registerScreen(Ljava/lang/Object;)
         };
     }-*/;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.screens.react;
+package org.appformer.jsbridge.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import elemental2.dom.DomGlobal;
@@ -38,27 +38,27 @@ public class JsNativeScreen {
 
     public native void render() /*-{
         $wnd.appformer.render(
-                this.@org.uberfire.client.screens.react.JsNativeScreen::self.af_componentRoot(),
-                this.@org.uberfire.client.screens.react.JsNativeScreen::container);
+                this.@org.appformer.jsbridge.client.JsNativeScreen::self.af_componentRoot(),
+                this.@org.appformer.jsbridge.client.JsNativeScreen::container);
     }-*/;
 
     public native String get(final String property)  /*-{
-        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[property];
+        return this.@org.appformer.jsbridge.client.JsNativeScreen::self[property];
     }-*/;
 
     public native Object run(final String functionName) /*-{
-        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName] && this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName]();
+        return this.@org.appformer.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.appformer.jsbridge.client.JsNativeScreen::self[functionName]();
     }-*/;
 
     public native Object run(final String functionName, final Object arg1) /*-{
-        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName] && this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName](arg1);
+        return this.@org.appformer.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.appformer.jsbridge.client.JsNativeScreen::self[functionName](arg1);
     }-*/;
 
     public native Object run(final String functionName, final Object arg1, final Object arg2) /*-{
-        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName] && this.@org.uberfire.client.screens.react.JsNativeScreen::self[functionName](arg1, arg2);
+        return this.@org.appformer.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.appformer.jsbridge.client.JsNativeScreen::self[functionName](arg1, arg2);
     }-*/;
 
     public native boolean defines(final String property) /*-{
-        return this.@org.uberfire.client.screens.react.JsNativeScreen::self[property] !== undefined;
+        return this.@org.appformer.jsbridge.client.JsNativeScreen::self[property] !== undefined;
     }-*/;
 }
