@@ -38,7 +38,7 @@ import org.uberfire.client.workbench.Workbench;
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @EntryPoint
-public class ReactBridge {
+public class AppFormerGwtBridge {
 
     @Inject
     private Workbench workbench;
@@ -46,7 +46,7 @@ public class ReactBridge {
     @PostConstruct
     public void init() {
 
-        workbench.addStartupBlocker(ReactBridge.class);
+        workbench.addStartupBlocker(AppFormerGwtBridge.class);
 
         exposeScreenRegistrar();
 
@@ -59,16 +59,16 @@ public class ReactBridge {
                         .setWindow(ScriptInjector.TOP_WINDOW)
                         .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.UberfireShowcase/core-screens/screens.bundle.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
+                                .setCallback((Success<Void>) i3 -> workbench.removeStartupBlocker(AppFormerGwtBridge.class))
                                 .inject())
                         .inject())
                 .inject();
-
-        workbench.removeStartupBlocker(ReactBridge.class);
     }
 
     private native void exposeScreenRegistrar() /*-{
-        $wnd.appformerBridge = {
-            registerScreen: this.@org.appformer.jsbridge.client.ReactBridge::registerScreen(Ljava/lang/Object;)
+        $wnd.appformerGwtBridge = {
+            registerScreen: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerScreen(Ljava/lang/Object;),
+            goTo: $wnd.$goToPlace //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
         };
     }-*/;
 
