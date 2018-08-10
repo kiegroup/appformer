@@ -16,6 +16,7 @@
 
 package org.appformer.jsbridge.client;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -25,6 +26,10 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
+import elemental2.dom.DomGlobal;
+import elemental2.promise.Promise;
+import org.jboss.errai.bus.client.ErraiBus;
+import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -68,9 +73,27 @@ public class AppFormerGwtBridge {
     private native void exposeScreenRegistrar() /*-{
         $wnd.appformerGwtBridge = {
             registerScreen: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerScreen(Ljava/lang/Object;),
-            goTo: $wnd.$goToPlace //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
+            goTo: $wnd.$goToPlace, //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
+            get: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::get(Ljava/lang/String;[Ljava/lang/Object;)
         };
     }-*/;
+
+    public Promise<Object> get(final String path, final Object[] params) {
+        return new Promise<>((res, rej) -> {
+
+            final String[] parts = path.split("\\|");
+            final String serviceFqcn = parts[0];
+            final String method = parts[1];
+            final Annotation[] qualifiers = {};
+
+            MessageBuilder.createCall()
+                    .call(serviceFqcn)
+                    .endpoint(method + ":", qualifiers, params)
+                    .respondTo(String.class, res::onInvoke)
+                    .errorsHandledBy((e, a) -> true)
+                    .sendNowWith(ErraiBus.get());
+        });
+    }
 
     @SuppressWarnings("unchecked")
     public void registerScreen(final Object jsObject) {
