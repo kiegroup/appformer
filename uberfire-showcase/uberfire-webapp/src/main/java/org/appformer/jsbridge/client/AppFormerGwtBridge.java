@@ -73,12 +73,13 @@ public class AppFormerGwtBridge {
     private native void exposeScreenRegistrar() /*-{
         $wnd.appformerGwtBridge = {
             registerScreen: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerScreen(Ljava/lang/Object;),
+            registerPerspective: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerPerspective(Ljava/lang/Object;),
             goTo: $wnd.$goToPlace, //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
-            get: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::get(Ljava/lang/String;[Ljava/lang/Object;)
+            RPC: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;)
         };
     }-*/;
 
-    public Promise<Object> get(final String path, final Object[] params) {
+    public Promise<Object> RPC(final String path, final Object[] params) {
         return new Promise<>((res, rej) -> {
 
             final String[] parts = path.split("\\|");
@@ -93,6 +94,12 @@ public class AppFormerGwtBridge {
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    public void registerPerspective(final Object jsObject) {
+        //TODO: Actually register perspectives
+        DomGlobal.console.info(jsObject + " registered as perspective.");
     }
 
     @SuppressWarnings("unchecked")
