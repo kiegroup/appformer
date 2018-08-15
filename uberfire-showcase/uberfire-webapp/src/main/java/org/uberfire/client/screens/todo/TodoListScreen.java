@@ -17,11 +17,14 @@
 package org.uberfire.client.screens.todo;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Observes;
 
 import com.google.gwt.user.client.Window;
+import elemental2.dom.DomGlobal;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.shared.TestEvent;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -37,6 +40,10 @@ public class TodoListScreen extends AbstractMarkdownScreen {
     @WorkbenchPartTitle
     public String getTitle() {
         return "Todo List";
+    }
+
+    public void observeTestEvent(final @Observes TestEvent testEvent) {
+        DomGlobal.console.info("Test event received on GWT component!");
     }
 
     @WorkbenchMenu

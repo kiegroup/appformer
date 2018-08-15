@@ -17,13 +17,19 @@
 package org.uberfire.backend.server.impl;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.uberfire.shared.MessageService;
+import org.uberfire.shared.TestEvent;
+import org.uberfire.shared.TestMessagesService;
 
 @Service
 @Dependent
-public class MessageServiceImpl implements MessageService {
+public class TestMessagesServiceImpl implements TestMessagesService {
+
+    @Inject
+    private Event<TestEvent> testEvent;
 
     @Override
     public void muteHello() {
@@ -38,5 +44,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public String hello(final String who) {
         return "Hello " + who + "! How are you?";
+    }
+
+    @Override
+    public String helloFromEvent() {
+        testEvent.fire(new TestEvent("foo"));
+        return "Event was sent. Hope you got that ;)";
     }
 }

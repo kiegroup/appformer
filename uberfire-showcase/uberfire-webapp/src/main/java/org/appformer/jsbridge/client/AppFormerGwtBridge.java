@@ -30,6 +30,8 @@ import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
+import org.jboss.errai.enterprise.client.cdi.AbstractCDIEventCallback;
+import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -53,7 +55,7 @@ public class AppFormerGwtBridge {
 
         workbench.addStartupBlocker(AppFormerGwtBridge.class);
 
-        exposeScreenRegistrar();
+        exposeBridge();
 
         //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
@@ -70,12 +72,13 @@ public class AppFormerGwtBridge {
                 .inject();
     }
 
-    private native void exposeScreenRegistrar() /*-{
+    private native void exposeBridge() /*-{
         $wnd.appformerGwtBridge = {
             registerScreen: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerScreen(Ljava/lang/Object;),
             registerPerspective: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerPerspective(Ljava/lang/Object;),
             goTo: $wnd.$goToPlace, //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
-            RPC: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;)
+            RPC: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;),
+            subscribe: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::subscribe(Ljava/lang/String;Ljava/lang/Object;)
         };
     }-*/;
 
@@ -90,7 +93,7 @@ public class AppFormerGwtBridge {
             MessageBuilder.createCall()
                     .call(serviceFqcn)
                     .endpoint(method + ":", qualifiers, params)
-                    .respondTo(String.class, res::onInvoke)
+                    .respondTo(Object.class, res::onInvoke)
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
         });
@@ -126,6 +129,30 @@ public class AppFormerGwtBridge {
 
         activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
+
+    public void subscribe(final String eventFqcn, final Object consumer) {
+
+        //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
+
+        //Subscribes to client-sent events.
+        CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
+            public void fireEvent(final Object event) {
+                AppFormerGwtBridge.callNative(consumer, event);
+            }
+
+            public String toString() {
+                return "JS Component subscription to " + eventFqcn;
+            }
+        });
+
+        //TODO: Handle local-only events
+        //Subscribes to server-sent events.
+        ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
+    }
+
+    public native static void callNative(Object func, Object arg) /*-{
+        func(arg);
+    }-*/;
 
     interface Success<T> extends Callback<T, Exception> {
 

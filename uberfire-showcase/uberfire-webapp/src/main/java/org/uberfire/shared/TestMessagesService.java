@@ -29,11 +29,13 @@ import org.jboss.errai.security.shared.api.identity.User;
  * an all roles must be present for access to be granted).
  */
 @Remote
-public interface MessageService {
+public interface TestMessagesService {
 
     void muteHello();
 
     String hello();
 
     String hello(final String who);
+
+    String helloFromEvent();
 }
