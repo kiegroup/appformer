@@ -30,12 +30,14 @@ import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
+import org.jboss.errai.config.rebind.EnvUtil;
 import org.jboss.errai.enterprise.client.cdi.AbstractCDIEventCallback;
 import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
+import org.jboss.errai.marshalling.rebind.util.MarshallingGenUtil;
 import org.uberfire.client.exporter.SingletonBeanDef;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -78,8 +80,7 @@ public class AppFormerGwtBridge {
             registerScreen: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerScreen(Ljava/lang/Object;),
             registerPerspective: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerPerspective(Ljava/lang/Object;),
             goTo: $wnd.$goToPlace, //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
-            RPC: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;),
-            subscribe: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::subscribe(Ljava/lang/String;Ljava/lang/Object;)
+            RPC: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;)
         };
     }-*/;
 
@@ -98,6 +99,8 @@ public class AppFormerGwtBridge {
         final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen,
                                                                                  beanManager.lookupBean(PlaceManager.class).getInstance());
 
+
+        //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
         final SingletonBeanDef<JsWorkbenchScreenActivity, JsWorkbenchScreenActivity> activityBean = new SingletonBeanDef<>(
                 activity,
                 JsWorkbenchScreenActivity.class,
@@ -106,6 +109,7 @@ public class AppFormerGwtBridge {
                 true,
                 WorkbenchScreenActivity.class,
                 Activity.class);
+
 
         beanManager.registerBean(activityBean);
         beanManager.registerBeanTypeAlias(activityBean, WorkbenchScreenActivity.class);
@@ -122,6 +126,8 @@ public class AppFormerGwtBridge {
             final String method = parts[1];
             final Annotation[] qualifiers = {};
 
+            //FIXME: Marshall/unmarshall is happening twice
+
             final Object[] args = Arrays.stream(params)
                     .map(json -> (String) json)
                     .map(json -> !json.startsWith("{") ? json : Marshalling.fromJSON(json))
@@ -130,34 +136,21 @@ public class AppFormerGwtBridge {
             MessageBuilder.createCall()
                     .call(serviceFqcn)
                     .endpoint(method + ":", qualifiers, args)
-                    .respondTo(Object.class, value -> res.onInvoke(AppFormerGwtBridge.parse(value == null ? null : Marshalling.toJSON(value))))
+                    .respondTo(Object.class, value -> {
+                        final String retJson = value == null ? null : Marshalling.toJSON(value);
+                        final Object ret = AppFormerGwtBridge.parse(retJson);
+                        res.onInvoke(ret);
+                    })
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
         });
-    }
-
-    public void subscribe(final String eventFqcn, final Object consumer) {
-
-        //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
-        //FIXME: Marshall/unmarshall is happening twice
-
-        //Subscribes to client-sent events.
-        CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
-            public void fireEvent(final Object event) {
-                AppFormerGwtBridge.callNative(consumer, Marshalling.toJSON(event));
-            }
-        });
-
-        //TODO: Handle local-only events
-        //Subscribes to server-sent events.
-        ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
     }
 
     public native static void callNative(final Object func, final Object arg) /*-{
         func(JSON.parse(arg));
     }-*/;
 
-    public native static String parse(final Object json) /*-{
+    public native static Object parse(final Object json) /*-{
         return JSON.parse(json);
     }-*/;
 

@@ -16,8 +16,20 @@
 
 package org.appformer.jsbridge.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.user.client.ui.IsWidget;
+import elemental2.core.JsObject;
+import elemental2.dom.DomGlobal;
+import jsinterop.base.Any;
+import jsinterop.base.Js;
+import org.jboss.errai.bus.client.ErraiBus;
+import org.jboss.errai.bus.client.api.Subscription;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jboss.errai.enterprise.client.cdi.AbstractCDIEventCallback;
+import org.jboss.errai.enterprise.client.cdi.api.CDI;
+import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.client.jsapi.JSPlaceRequest;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.PlaceManager;
@@ -31,12 +43,14 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     private PlaceRequest place;
     private JsNativeScreen screen;
+    private List<Subscription> subscriptions;
 
     public JsWorkbenchScreenActivity(final JsNativeScreen screen,
                                      final PlaceManager placeManager) {
 
         super(placeManager);
         this.screen = screen;
+        this.subscriptions = new ArrayList<>();
     }
 
     //
@@ -46,6 +60,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     @Override
     public void onStartup(final PlaceRequest place) {
         this.place = place;
+        this.registerSubscriptions();
         screen.run("af_onStartup", JSPlaceRequest.fromPlaceRequest(place));
     }
 
@@ -69,6 +84,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public void onShutdown() {
+        this.unsubscribeFromAllEvents();
         screen.run("af_onShutdown");
     }
 
@@ -83,13 +99,13 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     }
 
     //
-    //
-    // PROPERTIES
 
+    // PROPERTIES
     @Override
     public String getTitle() {
-        return screen.get("af_componentTitle");
+        return (String) screen.get("af_componentTitle");
     }
+    //
 
     @Override
     public Position getDefaultPosition() {
@@ -103,7 +119,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String getIdentifier() {
-        return screen.get("af_componentId");
+        return (String) screen.get("af_componentId");
     }
 
     @Override
@@ -133,7 +149,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String contextId() {
-        return screen.get("af_componentContextId");
+        return (String) screen.get("af_componentContextId");
     }
 
     @Override
@@ -144,5 +160,40 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     @Override
     public int preferredWidth() {
         return -1;
+    }
+
+    //
+
+    private void registerSubscriptions() {
+        DomGlobal.console.info("Registering event subscriptions for " + this.getIdentifier() + "...");
+        final JsObject subscriptions = (JsObject) this.screen.get("af_subscriptions");
+        for (final String eventFqcn : JsObject.keys(subscriptions)) {
+            if (subscriptions.hasOwnProperty(eventFqcn)) {
+                final Any jsObject = Js.uncheckedCast(subscriptions);
+                final Object callback = jsObject.asPropertyMap().get(eventFqcn);
+
+                //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
+                //FIXME: Marshall/unmarshall is happening twice
+
+                final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
+                    public void fireEvent(final Object event) {
+                        AppFormerGwtBridge.callNative(callback, Marshalling.toJSON(event));
+                    }
+                });
+
+                //Subscribes to client-sent events.
+                this.subscriptions.add(subscription);
+
+                //TODO: Handle local-only events
+                //Forwards server-sent events to the local subscription.
+                ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
+            }
+        }
+    }
+
+    private void unsubscribeFromAllEvents() {
+        DomGlobal.console.info("Removing event subscriptions for " + this.getIdentifier() + "...");
+        this.subscriptions.forEach(Subscription::remove);
+        this.subscriptions = new ArrayList<>();
     }
 }

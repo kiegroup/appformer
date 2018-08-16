@@ -42,7 +42,7 @@ public class JsNativeScreen {
                 this.@org.appformer.jsbridge.client.JsNativeScreen::container);
     }-*/;
 
-    public native String get(final String property)  /*-{
+    public native Object get(final String property)  /*-{
         return this.@org.appformer.jsbridge.client.JsNativeScreen::self[property];
     }-*/;
 
