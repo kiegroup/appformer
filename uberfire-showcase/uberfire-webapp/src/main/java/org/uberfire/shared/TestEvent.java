@@ -16,6 +16,9 @@
 
 package org.uberfire.shared;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -23,14 +26,30 @@ public class TestEvent {
 
     private String foo;
 
+//    private Map<String, TestEvent> testMap = new HashMap<String, TestEvent>() {{
+//        put("foo", new TestEvent("foo1", null));
+//        put("bar", new TestEvent("bar1", new TestEvent("bar2", null)));
+//    }};
+
+    private TestEvent child;
+
     public TestEvent() {
     }
 
-    public TestEvent(final String foo) {
+    public TestEvent(final String foo, final TestEvent child) {
         this.foo = foo;
+        this.child = child;
     }
 
     public String getFoo() {
         return foo;
     }
+
+    public TestEvent getChild() {
+        return child;
+    }
+
+//    public Map<String, TestEvent> getTestMap() {
+//        return testMap;
+//    }
 }

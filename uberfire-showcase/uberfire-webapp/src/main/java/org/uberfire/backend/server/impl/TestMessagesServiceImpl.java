@@ -48,7 +48,13 @@ public class TestMessagesServiceImpl implements TestMessagesService {
 
     @Override
     public String helloFromEvent() {
-        testEvent.fire(new TestEvent("foo"));
+        testEvent.fire(new TestEvent("hello1", new TestEvent("hello2", null)));
         return "Event was sent. Hope you got that ;)";
+    }
+
+    @Override
+    public TestEvent postTestEvent(final TestEvent testEvent) {
+        System.out.println("TestEvent received successfully!");
+        return testEvent;
     }
 }

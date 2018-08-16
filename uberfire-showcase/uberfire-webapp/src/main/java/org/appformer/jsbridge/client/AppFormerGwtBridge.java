@@ -35,6 +35,7 @@ import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.client.exporter.SingletonBeanDef;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -82,23 +83,6 @@ public class AppFormerGwtBridge {
         };
     }-*/;
 
-    public Promise<Object> RPC(final String path, final Object[] params) {
-        return new Promise<>((res, rej) -> {
-
-            final String[] parts = path.split("\\|");
-            final String serviceFqcn = parts[0];
-            final String method = parts[1];
-            final Annotation[] qualifiers = {};
-
-            MessageBuilder.createCall()
-                    .call(serviceFqcn)
-                    .endpoint(method + ":", qualifiers, params)
-                    .respondTo(Object.class, res::onInvoke)
-                    .errorsHandledBy((e, a) -> true)
-                    .sendNowWith(ErraiBus.get());
-        });
-    }
-
     @SuppressWarnings("unchecked")
     public void registerPerspective(final Object jsObject) {
         //TODO: Actually register perspectives
@@ -130,18 +114,37 @@ public class AppFormerGwtBridge {
         activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
 
+    public Promise<Object> RPC(final String path, final Object[] params) {
+        return new Promise<>((res, rej) -> {
+
+            final String[] parts = path.split("\\|");
+            final String serviceFqcn = parts[0];
+            final String method = parts[1];
+            final Annotation[] qualifiers = {};
+
+            final Object[] args = Arrays.stream(params)
+                    .map(json -> (String) json)
+                    .map(json -> !json.startsWith("{") ? json : Marshalling.fromJSON(json))
+                    .toArray();
+
+            MessageBuilder.createCall()
+                    .call(serviceFqcn)
+                    .endpoint(method + ":", qualifiers, args)
+                    .respondTo(Object.class, value -> res.onInvoke(AppFormerGwtBridge.parse(value == null ? null : Marshalling.toJSON(value))))
+                    .errorsHandledBy((e, a) -> true)
+                    .sendNowWith(ErraiBus.get());
+        });
+    }
+
     public void subscribe(final String eventFqcn, final Object consumer) {
 
         //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
+        //FIXME: Marshall/unmarshall is happening twice
 
         //Subscribes to client-sent events.
         CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
             public void fireEvent(final Object event) {
-                AppFormerGwtBridge.callNative(consumer, event);
-            }
-
-            public String toString() {
-                return "JS Component subscription to " + eventFqcn;
+                AppFormerGwtBridge.callNative(consumer, Marshalling.toJSON(event));
             }
         });
 
@@ -150,8 +153,12 @@ public class AppFormerGwtBridge {
         ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
     }
 
-    public native static void callNative(Object func, Object arg) /*-{
-        func(arg);
+    public native static void callNative(final Object func, final Object arg) /*-{
+        func(JSON.parse(arg));
+    }-*/;
+
+    public native static String parse(final Object json) /*-{
+        return JSON.parse(json);
     }-*/;
 
     interface Success<T> extends Callback<T, Exception> {

@@ -38,4 +38,6 @@ public interface TestMessagesService {
     String hello(final String who);
 
     String helloFromEvent();
+
+    TestEvent postTestEvent(final TestEvent testEvent);
 }
