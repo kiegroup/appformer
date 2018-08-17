@@ -59,15 +59,15 @@ $registerPerspective({
                 panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
                 parts: [
                     {
-                        place: "A-react-screen-id",
-                        parameters: {}
-                    },
-                    {
                         place: "SampleWorkbenchEditor",
                         parameters: {}
                     },
                     {
                         place: "YouTubeScreen",
+                        parameters: {}
+                    },
+                    {
+                        place: "A-react-screen",
                         parameters: {}
                     }
                 ]

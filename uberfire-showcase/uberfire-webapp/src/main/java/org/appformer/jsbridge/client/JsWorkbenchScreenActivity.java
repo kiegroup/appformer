@@ -98,14 +98,11 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         screen.run("af_onLostFocus");
     }
 
-    //
-
     // PROPERTIES
     @Override
     public String getTitle() {
         return (String) screen.get("af_componentTitle");
     }
-    //
 
     @Override
     public Position getDefaultPosition() {
@@ -163,6 +160,8 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     }
 
     //
+    //
+    //CDI Events Subscriptions
 
     private void registerSubscriptions() {
         DomGlobal.console.info("Registering event subscriptions for " + this.getIdentifier() + "...");

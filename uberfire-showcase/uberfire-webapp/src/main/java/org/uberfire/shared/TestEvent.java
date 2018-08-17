@@ -16,9 +16,6 @@
 
 package org.uberfire.shared;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
