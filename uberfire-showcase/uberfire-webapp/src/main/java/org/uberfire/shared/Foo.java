@@ -16,26 +16,15 @@
 
 package org.uberfire.shared;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class TestEvent {
+public class Foo {
 
-    public String bar;
+    public String foo;
 
-    public Foo foo;
-
-    public TestEvent child;
-
-    public TestEvent() {
+    public Foo() {
     }
 
-    public TestEvent(final String bar, final TestEvent child) {
-        this.bar = bar;
-        this.child = child;
-    }
 
 }

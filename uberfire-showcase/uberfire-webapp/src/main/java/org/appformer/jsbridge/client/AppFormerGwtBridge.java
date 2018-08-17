@@ -30,14 +30,10 @@ import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
-import org.jboss.errai.config.rebind.EnvUtil;
-import org.jboss.errai.enterprise.client.cdi.AbstractCDIEventCallback;
-import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
-import org.jboss.errai.marshalling.rebind.util.MarshallingGenUtil;
 import org.uberfire.client.exporter.SingletonBeanDef;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -99,7 +95,6 @@ public class AppFormerGwtBridge {
         final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen,
                                                                                  beanManager.lookupBean(PlaceManager.class).getInstance());
 
-
         //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
         final SingletonBeanDef<JsWorkbenchScreenActivity, JsWorkbenchScreenActivity> activityBean = new SingletonBeanDef<>(
                 activity,
@@ -109,7 +104,6 @@ public class AppFormerGwtBridge {
                 true,
                 WorkbenchScreenActivity.class,
                 Activity.class);
-
 
         beanManager.registerBean(activityBean);
         beanManager.registerBeanTypeAlias(activityBean, WorkbenchScreenActivity.class);
@@ -130,7 +124,17 @@ public class AppFormerGwtBridge {
 
             final Object[] args = Arrays.stream(params)
                     .map(json -> (String) json)
-                    .map(json -> !json.startsWith("{") ? json : Marshalling.fromJSON(json))
+                    .map(json -> {
+                        if (!json.startsWith("{")) {
+                            return json;
+                        }
+                        try {
+                            return Marshalling.fromJSON(json);
+                        } catch (final Exception e) {
+                            DomGlobal.console.info("Error converting JS obj to GWT obj");
+                            throw e;
+                        }
+                    })
                     .toArray();
 
             MessageBuilder.createCall()

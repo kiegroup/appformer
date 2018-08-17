@@ -18,19 +18,27 @@ package org.uberfire.client.screens.todo;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
 import elemental2.dom.DomGlobal;
+import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.shared.Foo;
 import org.uberfire.shared.TestEvent;
+import org.uberfire.shared.TestMessagesService;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
 @WorkbenchScreen(identifier = "TodoListScreen", preferredWidth = 400)
 public class TodoListScreen extends AbstractMarkdownScreen {
+
+    @Inject
+    private Caller<TestMessagesService> testMessagesService;
 
     @Override
     public String getMarkdownFileURI() {
@@ -44,6 +52,23 @@ public class TodoListScreen extends AbstractMarkdownScreen {
 
     public void observeTestEvent(final @Observes TestEvent testEvent) {
         DomGlobal.console.info("Test event received on GWT component!");
+    }
+
+    @OnOpen
+    public void onOpen() {
+        TestEvent testEvent = new TestEvent();
+        testEvent.bar = "bar-todolist";
+        testEvent.foo = new Foo();
+        testEvent.foo.foo = "foo-todolist";
+        testEvent.child = new TestEvent();
+        testEvent.child.bar = "bar2-todolist";
+        testEvent.child.child = null;
+        testEvent.child.foo = new Foo();
+        testEvent.child.foo.foo = "foo2-todolist";
+
+        testMessagesService.call(a -> {
+            DomGlobal.console.info(a);
+        }).postTestEvent(testEvent);
     }
 
     @WorkbenchMenu
