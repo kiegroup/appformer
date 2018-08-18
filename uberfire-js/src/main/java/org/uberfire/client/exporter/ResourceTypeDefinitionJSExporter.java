@@ -22,6 +22,7 @@ import java.util.HashSet;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.editor.type.JSClientResourceType;
@@ -47,12 +48,12 @@ public class ResourceTypeDefinitionJSExporter implements UberfireJSExporter {
             newNativeClientResourceType.build(obj);
             JSClientResourceType jsClientResourceType = new JSClientResourceType(newNativeClientResourceType,
                                                                                  category);
-            beanManager.registerBean(new SingletonBeanDef<ClientResourceType, JSClientResourceType>(jsClientResourceType,
-                                                                                                    ClientResourceType.class,
-                                                                                                    new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS)),
-                                                                                                    jsClientResourceType.getId(),
-                                                                                                    true,
-                                                                                                    JSClientResourceType.class));
+            beanManager.registerBean(new SingletonBeanDefinition<ClientResourceType, JSClientResourceType>(jsClientResourceType,
+                                                                                                           ClientResourceType.class,
+                                                                                                           new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS)),
+                                                                                                           jsClientResourceType.getId(),
+                                                                                                           true,
+                                                                                                           JSClientResourceType.class));
         }
     }
 

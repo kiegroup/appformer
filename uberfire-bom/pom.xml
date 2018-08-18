@@ -1780,6 +1780,20 @@
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
+
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>appformer-js-bridge</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>appformer-js-bridge</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -48,12 +49,12 @@ public class PerspectiveJSExporter implements UberfireJSExporter {
 
             final JSWorkbenchPerspectiveActivity activity = new JSWorkbenchPerspectiveActivity(newNativePerspective);
 
-            beanManager.registerBean(new SingletonBeanDef<PerspectiveActivity, JSWorkbenchPerspectiveActivity>(activity,
-                                                                                                               PerspectiveActivity.class,
-                                                                                                               new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS)),
-                                                                                                               newNativePerspective.getId(),
-                                                                                                               true,
-                                                                                                               JSWorkbenchPerspectiveActivity.class));
+            beanManager.registerBean(new SingletonBeanDefinition<PerspectiveActivity, JSWorkbenchPerspectiveActivity>(activity,
+                                                                                                                      PerspectiveActivity.class,
+                                                                                                                      new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS)),
+                                                                                                                      newNativePerspective.getId(),
+                                                                                                                      true,
+                                                                                                                      JSWorkbenchPerspectiveActivity.class));
 
             activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(newNativePerspective.getId()).iterator().next());
         }

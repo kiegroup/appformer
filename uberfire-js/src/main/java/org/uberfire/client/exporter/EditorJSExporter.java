@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.editor.JSEditorActivity;
@@ -79,13 +80,13 @@ public class EditorJSExporter implements UberfireJSExporter {
                                         placeManager);
 
         final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
-        final SingletonBeanDef<JSEditorActivity, JSEditorActivity> beanDef = new SingletonBeanDef<JSEditorActivity, JSEditorActivity>(activity,
-                                                                                                                                      JSEditorActivity.class,
-                                                                                                                                      qualifiers,
-                                                                                                                                      newNativeEditor.getId(),
-                                                                                                                                      true,
-                                                                                                                                      WorkbenchEditorActivity.class,
-                                                                                                                                      Activity.class);
+        final SingletonBeanDefinition<JSEditorActivity, JSEditorActivity> beanDef = new SingletonBeanDefinition<JSEditorActivity, JSEditorActivity>(activity,
+                                                                                                                                                    JSEditorActivity.class,
+                                                                                                                                                    qualifiers,
+                                                                                                                                                    newNativeEditor.getId(),
+                                                                                                                                                    true,
+                                                                                                                                                    WorkbenchEditorActivity.class,
+                                                                                                                                                    Activity.class);
         beanManager.registerBean(beanDef);
         beanManager.registerBeanTypeAlias(beanDef,
                                           WorkbenchEditorActivity.class);

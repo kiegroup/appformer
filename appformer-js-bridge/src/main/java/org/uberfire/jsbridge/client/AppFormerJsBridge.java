@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.appformer.jsbridge.client;
+package org.uberfire.jsbridge.client;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -34,7 +34,6 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
-import org.uberfire.client.exporter.SingletonBeanDef;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
@@ -44,7 +43,7 @@ import org.uberfire.client.workbench.Workbench;
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @EntryPoint
-public class AppFormerGwtBridge {
+public class AppFormerJsBridge {
 
     @Inject
     private Workbench workbench;
@@ -52,7 +51,7 @@ public class AppFormerGwtBridge {
     @PostConstruct
     public void init() {
 
-        workbench.addStartupBlocker(AppFormerGwtBridge.class);
+        workbench.addStartupBlocker(AppFormerJsBridge.class);
 
         exposeBridge();
 
@@ -63,20 +62,20 @@ public class AppFormerGwtBridge {
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.UberfireShowcase/core-screens/screens.bundle.js")
+                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.jsbridge.AppFormerJsBridge/core-screens/screens.bundle.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
-                                .setCallback((Success<Void>) i3 -> workbench.removeStartupBlocker(AppFormerGwtBridge.class))
+                                .setCallback((Success<Void>) i3 -> workbench.removeStartupBlocker(AppFormerJsBridge.class))
                                 .inject())
                         .inject())
                 .inject();
     }
 
-    private native void exposeBridge() /*-{
+    public native void exposeBridge() /*-{
         $wnd.appformerGwtBridge = {
-            registerScreen: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerScreen(Ljava/lang/Object;),
-            registerPerspective: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::registerPerspective(Ljava/lang/Object;),
+            registerScreen: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerScreen(Ljava/lang/Object;),
+            registerPerspective: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerPerspective(Ljava/lang/Object;),
             goTo: $wnd.$goToPlace, //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
-            RPC: this.@org.appformer.jsbridge.client.AppFormerGwtBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;)
+            RPC: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;)
         };
     }-*/;
 
@@ -96,7 +95,7 @@ public class AppFormerGwtBridge {
                                                                                  beanManager.lookupBean(PlaceManager.class).getInstance());
 
         //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
-        final SingletonBeanDef<JsWorkbenchScreenActivity, JsWorkbenchScreenActivity> activityBean = new SingletonBeanDef<>(
+        final SingletonBeanDefinition<JsWorkbenchScreenActivity, JsWorkbenchScreenActivity> activityBean = new SingletonBeanDefinition<>(
                 activity,
                 JsWorkbenchScreenActivity.class,
                 new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
@@ -113,6 +112,8 @@ public class AppFormerGwtBridge {
     }
 
     public Promise<Object> RPC(final String path, final Object[] params) {
+
+        //FIXME: Marshall/unmarshall is happening twice
         return new Promise<>((res, rej) -> {
 
             final String[] parts = path.split("\\|");
@@ -120,34 +121,33 @@ public class AppFormerGwtBridge {
             final String method = parts[1];
             final Annotation[] qualifiers = {};
 
-            //FIXME: Marshall/unmarshall is happening twice
-
-            final Object[] args = Arrays.stream(params)
-                    .map(json -> (String) json)
-                    .map(json -> {
-                        if (!json.startsWith("{")) {
-                            return json;
-                        }
-                        try {
-                            return Marshalling.fromJSON(json);
-                        } catch (final Exception e) {
-                            DomGlobal.console.info("Error converting JS obj to GWT obj");
-                            throw e;
-                        }
-                    })
-                    .toArray();
-
             MessageBuilder.createCall()
                     .call(serviceFqcn)
-                    .endpoint(method + ":", qualifiers, args)
-                    .respondTo(Object.class, value -> {
-                        final String retJson = value == null ? null : Marshalling.toJSON(value);
-                        final Object ret = AppFormerGwtBridge.parse(retJson);
-                        res.onInvoke(ret);
-                    })
+                    .endpoint(method + ":", qualifiers, Arrays.stream(params).map(this::jsToGwt).toArray())
+                    .respondTo(Object.class, value -> res.onInvoke(gwtToJs(value)))
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
         });
+    }
+
+    private Object jsToGwt(final Object object) {
+        final String json = (String) object;
+
+        if (!json.startsWith("{")) {
+            return json;
+        }
+
+        try {
+            return Marshalling.fromJSON(json);
+        } catch (final Exception e) {
+            DomGlobal.console.info("Error converting JS obj to GWT obj");
+            throw e;
+        }
+    }
+
+    private Object gwtToJs(final Object value) {
+        final String retJson = value == null ? null : Marshalling.toJSON(value);
+        return AppFormerJsBridge.parse(retJson);
     }
 
     public native static void callNative(final Object func, final Object arg) /*-{

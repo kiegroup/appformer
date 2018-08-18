@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.jsapi;
+package org.uberfire.jsbridge.client;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +25,13 @@ import com.google.gwt.json.client.JSONString;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-public class JSPlaceRequest extends JavaScriptObject {
+public class JsPlaceRequest extends JavaScriptObject {
 
-    protected JSPlaceRequest() {
+    protected JsPlaceRequest() {
     }
 
-    public static JSPlaceRequest fromPlaceRequest(PlaceRequest pr) {
-        JSPlaceRequest jspr = newInstance();
+    public static JsPlaceRequest fromPlaceRequest(PlaceRequest pr) {
+        JsPlaceRequest jspr = newInstance();
         jspr.setIdentifier(pr.getIdentifier());
         JSONObject rawParams = new JSONObject();
         for (String name : pr.getParameterNames()) {
@@ -42,7 +42,7 @@ public class JSPlaceRequest extends JavaScriptObject {
         return jspr;
     }
 
-    public static native JSPlaceRequest newInstance() /*-{
+    public static native JsPlaceRequest newInstance() /*-{
         return {identifier: '', params: {}};
     }-*/;
 

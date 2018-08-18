@@ -15,8 +15,6 @@
  */
 package org.dashbuilder.client.dashboard;
 
-import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
-
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,13 +24,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.dashbuilder.displayer.client.PerspectiveCoordinator;
 import org.dashbuilder.shared.dashboard.events.DashboardDeletedEvent;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ioc.client.container.SyncBeanManagerImpl;
-import org.uberfire.client.exporter.SingletonBeanDef;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -40,6 +38,8 @@ import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.PerspectiveDefinition;
+
+import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 /**
  * @deprecated Since version 0.7, dashboards are created from the Content Manager perspective. This class is
@@ -96,11 +96,11 @@ public class DashboardManager {
 
         SyncBeanManagerImpl beanManager = (SyncBeanManagerImpl) IOC.getBeanManager();
         final SyncBeanDef<PerspectiveActivity> beanDef =
-                new SingletonBeanDef<>(activity,
-                                       PerspectiveActivity.class,
-                                       new HashSet<Annotation>( Arrays.asList( DEFAULT_QUALIFIERS ) ),
-                                       id,
-                                       true );
+                new SingletonBeanDefinition<>(activity,
+                                            PerspectiveActivity.class,
+                                            new HashSet<Annotation>( Arrays.asList( DEFAULT_QUALIFIERS ) ),
+                                            id,
+                                            true );
         beanManager.registerBean( beanDef );
         activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(id).iterator().next());
         return activity;

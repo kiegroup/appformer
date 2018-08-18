@@ -439,13 +439,6 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-model</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.webjars.appformer</groupId>
-      <artifactId>appformer-js</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -478,6 +471,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-js</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:appformer-js-bridge</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-security-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-client-api</compileSourcesArtifact>

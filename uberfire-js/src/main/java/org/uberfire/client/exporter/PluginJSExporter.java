@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
@@ -77,8 +78,8 @@ public class PluginJSExporter implements UberfireJSExporter {
                                                  beanManager.lookupBean(PlaceManager.class).getInstance());
 
         final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
-        final SingletonBeanDef<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity> beanDef =
-                new SingletonBeanDef<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity>(activity,
+        final SingletonBeanDefinition<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity> beanDef =
+                new SingletonBeanDefinition<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity>(activity,
                                                                                            JSWorkbenchScreenActivity.class,
                                                                                            qualifiers,
                                                                                            newNativePlugin.getId(),

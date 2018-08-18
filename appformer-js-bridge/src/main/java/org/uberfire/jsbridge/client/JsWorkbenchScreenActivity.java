@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.appformer.jsbridge.client;
+package org.uberfire.jsbridge.client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,6 @@ import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jboss.errai.enterprise.client.cdi.AbstractCDIEventCallback;
 import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.marshalling.client.Marshalling;
-import org.uberfire.client.jsapi.JSPlaceRequest;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
@@ -61,7 +60,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     public void onStartup(final PlaceRequest place) {
         this.place = place;
         this.registerSubscriptions();
-        screen.run("af_onStartup", JSPlaceRequest.fromPlaceRequest(place));
+        screen.run("af_onStartup", JsPlaceRequest.fromPlaceRequest(place));
     }
 
     @Override
@@ -176,7 +175,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
                 final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
                     public void fireEvent(final Object event) {
-                        AppFormerGwtBridge.callNative(callback, Marshalling.toJSON(event));
+                        AppFormerJsBridge.callNative(callback, Marshalling.toJSON(event));
                     }
                 });
 

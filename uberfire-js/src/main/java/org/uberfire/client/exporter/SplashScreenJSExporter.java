@@ -23,6 +23,7 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
@@ -79,8 +80,8 @@ public class SplashScreenJSExporter implements UberfireJSExporter {
         activity = new JSSplashScreenActivity(newNativePlugin,
                                               splashView);
         final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
-        final SingletonBeanDef<JSSplashScreenActivity, JSSplashScreenActivity> beanDef =
-                new SingletonBeanDef<JSSplashScreenActivity, JSSplashScreenActivity>(activity,
+        final SingletonBeanDefinition<JSSplashScreenActivity, JSSplashScreenActivity> beanDef =
+                new SingletonBeanDefinition<JSSplashScreenActivity, JSSplashScreenActivity>(activity,
                                                                                      JSSplashScreenActivity.class,
                                                                                      qualifiers,
                                                                                      newNativePlugin.getId(),

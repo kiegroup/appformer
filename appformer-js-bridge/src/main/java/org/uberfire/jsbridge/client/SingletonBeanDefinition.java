@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.exporter;
+package org.uberfire.jsbridge.client;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.inject.Singleton;
 
 import org.jboss.errai.ioc.client.QualifierUtil;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 
-public class SingletonBeanDef<T, B extends T>
-        implements
-        SyncBeanDef<T> {
+public class SingletonBeanDefinition<T, B extends T> implements SyncBeanDef<T> {
 
     private final B instance;
     private final Class<T> type;
@@ -37,12 +36,12 @@ public class SingletonBeanDef<T, B extends T>
     private final boolean activated;
     private final Set<Class<?>> assignableTypes = new HashSet<>();
 
-    public SingletonBeanDef(final B instance,
-                            final Class<T> type,
-                            final Set<Annotation> qualifiers,
-                            final String name,
-                            final boolean activated,
-                            final Class<?>... otherAssignableTypes) {
+    public SingletonBeanDefinition(final B instance,
+                                   final Class<T> type,
+                                   final Set<Annotation> qualifiers,
+                                   final String name,
+                                   final boolean activated,
+                                   final Class<?>... otherAssignableTypes) {
         this.instance = instance;
         this.type = type;
         this.qualifiers = qualifiers;
@@ -79,17 +78,12 @@ public class SingletonBeanDef<T, B extends T>
 
     @Override
     public Set<Annotation> getQualifiers() {
-        if (qualifiers == null) {
-            return Collections.emptySet();
-        } else {
-            return qualifiers;
-        }
+        return qualifiers == null ? Collections.emptySet() : qualifiers;
     }
 
     @Override
     public boolean matches(final Set<Annotation> annotations) {
-        return QualifierUtil.matches(annotations,
-                                     getQualifiers());
+        return QualifierUtil.matches(annotations, getQualifiers());
     }
 
     @Override
