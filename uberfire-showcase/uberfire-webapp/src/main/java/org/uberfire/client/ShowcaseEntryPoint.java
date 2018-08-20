@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -37,7 +37,6 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
@@ -63,8 +62,6 @@ import org.uberfire.client.resources.AppResource;
 import org.uberfire.client.resources.i18n.Constants;
 import org.uberfire.client.screen.JSWorkbenchScreenActivity;
 import org.uberfire.client.screens.popup.SimplePopUp;
-import org.uberfire.jsbridge.client.AppFormerJsBridge;
-import org.uberfire.jsbridge.client.JsWorkbenchScreenActivity;
 import org.uberfire.client.views.pfly.PatternFlyEntryPoint;
 import org.uberfire.client.views.pfly.menu.MainBrand;
 import org.uberfire.client.views.pfly.menu.UserMenu;
@@ -82,6 +79,8 @@ import org.uberfire.ext.plugin.client.perspective.editor.generator.PerspectiveEd
 import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.PerspectiveEditorSettings;
 import org.uberfire.ext.preferences.client.admin.AdminPagePerspective;
 import org.uberfire.ext.preferences.client.central.PreferencesCentralPerspective;
+import org.uberfire.jsbridge.client.AppFormerJsBridge;
+import org.uberfire.jsbridge.client.JsWorkbenchScreenActivity;
 import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.events.PluginAddedEvent;
@@ -180,12 +179,13 @@ public class ShowcaseEntryPoint {
         hideLoadingPopup();
         GWT.log("PatternFly version: " + pflyEntryPoint.getPatternFlyVersion());
         GWT.log("Loaded MomentJS using locale: " + pflyEntryPoint.getMomentLocale());
+
         GWT.log("Exposing JS bridge");
         appFormerJsBridge.init("org.uberfire.UberfireShowcase");
-
     }
 
     private void setupMenu(@Observes final ApplicationReadyEvent event) {
+
         final PerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
         final Menus menus =

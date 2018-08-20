@@ -40,6 +40,7 @@ import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.workbench.Workbench;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
@@ -51,9 +52,6 @@ public class AppFormerJsBridge {
 
     @Inject
     private TranslationService translationService;
-
-    @Inject
-    private PlaceManager placeManager;
 
     public void init(final String gwtModuleName) {
 
@@ -86,9 +84,10 @@ public class AppFormerJsBridge {
         };
     }-*/;
 
-
     public void goTo(final String place) {
-        placeManager.goTo(place);
+        final SyncBeanManager beanManager = IOC.getBeanManager();
+        final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
+        placeManager.goTo(new DefaultPlaceRequest(place));
     }
 
     public String translate(final String key, final Object[] args) {
