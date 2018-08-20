@@ -173,6 +173,11 @@ public class JGitFileSystemProxy implements JGitFileSystem {
     }
 
     @Override
+    public boolean isInUse() {
+        return cachedSupplier.get().isInUse();
+    }
+
+    @Override
     public FileSystemProvider provider() {
         return cachedSupplier.get().provider();
     }

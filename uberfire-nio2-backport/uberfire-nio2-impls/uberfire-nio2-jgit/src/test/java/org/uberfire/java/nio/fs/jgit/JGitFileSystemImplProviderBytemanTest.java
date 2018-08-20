@@ -315,7 +315,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
         }
         Object isLocked = null;
         try {
-            Method method = lock.getClass().getMethod("isLocked");
+            Method method = lock.getClass().getMethod("isInUse");
             isLocked = method.invoke(lock);
         } catch (Exception e) {
             fail(e.getMessage());
