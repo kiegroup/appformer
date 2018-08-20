@@ -79,7 +79,7 @@ public class AppFormerJsBridge {
             registerScreen: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerScreen(Ljava/lang/Object;),
             registerPerspective: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerPerspective(Ljava/lang/Object;),
             goTo: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::goTo(Ljava/lang/String;),
-            RPC: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;),
+            rpc: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::rpc(Ljava/lang/String;[Ljava/lang/Object;),
             translate: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::translate(Ljava/lang/String;[Ljava/lang/Object;)
         };
     }-*/;
@@ -126,7 +126,7 @@ public class AppFormerJsBridge {
         activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
 
-    public Promise<Object> RPC(final String path, final Object[] params) {
+    public Promise<Object> rpc(final String path, final Object[] params) {
 
         //FIXME: Marshall/unmarshall is happening twice
         return new Promise<>((res, rej) -> {
