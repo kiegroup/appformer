@@ -37,6 +37,18 @@
     <errai.jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly.sdm}</errai.jboss.home>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>appformer-js-bridge</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
 
     <dependency>
@@ -438,6 +450,11 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-model</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars.appformer</groupId>
+      <artifactId>appformer-js</artifactId>
     </dependency>
   </dependencies>
 

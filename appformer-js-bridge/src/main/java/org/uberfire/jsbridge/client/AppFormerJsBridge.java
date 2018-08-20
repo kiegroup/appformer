@@ -19,8 +19,9 @@ package org.uberfire.jsbridge.client;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.Callback;
@@ -30,10 +31,10 @@ import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
-import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
@@ -42,14 +43,19 @@ import org.uberfire.client.workbench.Workbench;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-@EntryPoint
+@Dependent
 public class AppFormerJsBridge {
 
     @Inject
     private Workbench workbench;
 
-    @PostConstruct
-    public void init() {
+    @Inject
+    private TranslationService translationService;
+
+    @Inject
+    private PlaceManager placeManager;
+
+    public void init(final String gwtModuleName) {
 
         workbench.addStartupBlocker(AppFormerJsBridge.class);
 
@@ -62,7 +68,7 @@ public class AppFormerJsBridge {
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/org.uberfire.jsbridge.AppFormerJsBridge/core-screens/screens.bundle.js")
+                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/core-screens/screens.bundle.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
                                 .setCallback((Success<Void>) i3 -> workbench.removeStartupBlocker(AppFormerJsBridge.class))
                                 .inject())
@@ -70,14 +76,24 @@ public class AppFormerJsBridge {
                 .inject();
     }
 
-    public native void exposeBridge() /*-{
+    private native void exposeBridge() /*-{
         $wnd.appformerGwtBridge = {
             registerScreen: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerScreen(Ljava/lang/Object;),
             registerPerspective: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerPerspective(Ljava/lang/Object;),
-            goTo: $wnd.$goToPlace, //This window.$goToPlace method is bound in PlaceManagerJSExporter.publish()
-            RPC: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;)
+            goTo: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::goTo(Ljava/lang/String;),
+            RPC: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::RPC(Ljava/lang/String;[Ljava/lang/Object;),
+            translate: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::translate(Ljava/lang/String;[Ljava/lang/Object;)
         };
     }-*/;
+
+
+    public void goTo(final String place) {
+        placeManager.goTo(place);
+    }
+
+    public String translate(final String key, final Object[] args) {
+        return translationService != null ? translationService.format(key, args) : "GWT-Translated (" + key + ")";
+    }
 
     @SuppressWarnings("unchecked")
     public void registerPerspective(final Object jsObject) {
@@ -121,33 +137,33 @@ public class AppFormerJsBridge {
             final String method = parts[1];
             final Annotation[] qualifiers = {};
 
+            final Function<Object, Object> jsonToGwt = object -> {
+                final String json = (String) object;
+
+                if (!json.startsWith("{")) {
+                    return json;
+                }
+
+                try {
+                    return Marshalling.fromJSON(json);
+                } catch (final Exception e) {
+                    DomGlobal.console.info("Error converting JS obj to GWT obj");
+                    throw e;
+                }
+            };
+
+            final Function<Object, Object> gwtToJson = value -> {
+                final String retJson = value == null ? null : Marshalling.toJSON(value);
+                return AppFormerJsBridge.parse(retJson);
+            };
+
             MessageBuilder.createCall()
                     .call(serviceFqcn)
-                    .endpoint(method + ":", qualifiers, Arrays.stream(params).map(this::jsToGwt).toArray())
-                    .respondTo(Object.class, value -> res.onInvoke(gwtToJs(value)))
+                    .endpoint(method + ":", qualifiers, Arrays.stream(params).map(jsonToGwt).toArray())
+                    .respondTo(Object.class, value -> res.onInvoke(gwtToJson.apply(value)))
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
         });
-    }
-
-    private Object jsToGwt(final Object object) {
-        final String json = (String) object;
-
-        if (!json.startsWith("{")) {
-            return json;
-        }
-
-        try {
-            return Marshalling.fromJSON(json);
-        } catch (final Exception e) {
-            DomGlobal.console.info("Error converting JS obj to GWT obj");
-            throw e;
-        }
-    }
-
-    private Object gwtToJs(final Object value) {
-        final String retJson = value == null ? null : Marshalling.toJSON(value);
-        return AppFormerJsBridge.parse(retJson);
     }
 
     public native static void callNative(final Object func, final Object arg) /*-{

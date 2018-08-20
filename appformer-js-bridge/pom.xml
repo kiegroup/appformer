@@ -32,16 +32,12 @@
 
   <description>AppFormer JS Bridge</description>
 
-  <properties>
-    <appformer-js.version>1.0.0-SNAPSHOT</appformer-js.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.webjars.appformer</groupId>
         <artifactId>appformer-js</artifactId>
-        <version>${appformer-js.version}</version>
+        <version>1.0.0-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
