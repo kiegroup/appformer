@@ -53,9 +53,9 @@ public interface GridColumnRenderer<T> {
      */
     Group renderHeaderContent(final List<GridColumn.HeaderMetaData> headerMetaData,
                               final GridHeaderColumnRenderContext context,
-                                     final int headerRowIndex,
-                                     final double blockWidth,
-                                     final double rowHeight);
+                              final int headerRowIndex,
+                              final double blockWidth,
+                              final double rowHeight);
 
     /**
      * Renders the column.textual information to support rendering
