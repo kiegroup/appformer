@@ -476,6 +476,10 @@ public class JGitFileSystemImpl implements JGitFileSystem {
         lock.unlock();
     }
 
+    public JGitFileSystemLock getLock(){
+        return lock;
+    }
+
     @Override
     public void addPostponedWatchEvents(List<WatchEvent<?>> postponedWatchEvents) {
         this.postponedWatchEvents.addAll(postponedWatchEvents);
@@ -497,7 +501,7 @@ public class JGitFileSystemImpl implements JGitFileSystem {
     }
 
     @Override
-    public boolean isInUse() {
-        return lock.isInUse();
+    public boolean hasBeenInUse() {
+        return lock.hasBeenInUse();
     }
 }

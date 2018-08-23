@@ -51,7 +51,7 @@ public class JGitFileSystemsCacheDataStructure {
                 for (int i = this.size() - 1; (i >= 0 && (this.size() - i < maxIterations)); i--) {
                     Map.Entry<String, Supplier<JGitFileSystem>> entry = (Map.Entry) this.entrySet().toArray()[i];
                     JGitFileSystem targetFS = (JGitFileSystem) ((MemoizedFileSystemsSupplier) entry.getValue()).get();
-                    if (!targetFS.isInUse()) {
+                    if (!targetFS.hasBeenInUse()) {
                         itemsToRemove.add(entry.getKey());
                     }
                 }
@@ -68,7 +68,7 @@ public class JGitFileSystemsCacheDataStructure {
                 }
                 if (size() > config.getJgitFileSystemsInstancesCache()) {
                     JGitFileSystem targetFS = (JGitFileSystem) ((MemoizedFileSystemsSupplier) eldest.getValue()).get();
-                    if (targetFS.isInUse()) {
+                    if (targetFS.hasBeenInUse()) {
                         removeEldestEntryIterations++;
                         this.remove(eldest.getKey());
                         this.put((String) eldest.getKey(), (MemoizedFileSystemsSupplier) eldest.getValue());

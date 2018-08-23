@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -133,7 +134,7 @@ public class JGitFileSystemsManager {
     }
 
     JGitFileSystemLock createLock(Git git) {
-        return new JGitFileSystemLock(git, config.getJgitCacheEvictThreshold());
+        return new JGitFileSystemLock(git, config.getDefaultJgitCacheEvictThresholdTimeUnit(), config.getJgitCacheEvictThresholdDuration());
     }
 
     public void remove(String realFSKey) {

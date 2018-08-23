@@ -105,13 +105,13 @@ public class JGitFileSystemsCache {
             return memoizedSuppliers.size();
         }
 
-        public Set<String> fileSystemsCacheKeys() {
+        public Set<String> memoizedFileSystemsCacheKeys() {
             return memoizedSuppliers.keySet();
         }
 
         @Override
         public String toString() {
-            return "JGitFileSystemsCacheInfo{fileSystemsCacheSize[" + fileSystemsCacheSize() + "], fileSystemsCacheKeys[" + fileSystemsCacheKeys() + "]}";
+            return "JGitFileSystemsCacheInfo{fileSystemsCacheSize[" + fileSystemsCacheSize() + "], memoizedFileSystemsCacheKeys[" + memoizedFileSystemsCacheKeys() + "]}";
         }
     }
 }

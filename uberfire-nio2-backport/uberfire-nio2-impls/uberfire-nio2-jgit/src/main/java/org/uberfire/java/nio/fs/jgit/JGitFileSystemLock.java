@@ -24,6 +24,7 @@ import java.nio.channels.FileLock;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
@@ -38,13 +39,13 @@ public class JGitFileSystemLock {
     private FileLock physicalLock;
     private java.nio.file.Path lockFile;
     private FileChannel fileChannel;
-    private long lastAccess;
+    private long lastAccessMilliseconds;
     private long lastAccessThresholdMilliseconds;
 
-    public JGitFileSystemLock(Git git, long lastAccessThresholdMilliseconds) {
+    public JGitFileSystemLock(Git git, TimeUnit t, long duration) {
         URI repoURI = getRepoURI(git);
         this.lockFile = createLockInfra(repoURI);
-        this.lastAccessThresholdMilliseconds = lastAccessThresholdMilliseconds;
+        this.lastAccessThresholdMilliseconds = t.toMillis(duration);
     }
 
     URI getRepoURI(Git git) {
@@ -52,7 +53,7 @@ public class JGitFileSystemLock {
     }
 
     void registerAccess() {
-        lastAccess = System.currentTimeMillis();
+        lastAccessMilliseconds = System.currentTimeMillis();
     }
 
     public void lock() {
@@ -74,7 +75,7 @@ public class JGitFileSystemLock {
         }
     }
 
-    public boolean isInUse() {
+    public boolean hasBeenInUse() {
         if (recentlyAccessed()) {
             return true;
         }
@@ -82,7 +83,7 @@ public class JGitFileSystemLock {
     }
 
     private boolean recentlyAccessed() {
-        return (System.currentTimeMillis() - lastAccess) < lastAccessThresholdMilliseconds;
+        return (System.currentTimeMillis() - lastAccessMilliseconds) < lastAccessThresholdMilliseconds;
     }
 
     private boolean needToCreatePhysicalLock() {

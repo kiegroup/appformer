@@ -18,6 +18,7 @@ package org.uberfire.java.nio.fs.jgit;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -96,6 +97,7 @@ public class JGitFileSystemImplTest extends AbstractTestInfra {
 
     private JGitFileSystemLock createFSLock(Git git) {
         return new JGitFileSystemLock(git,
+                                      TimeUnit.MILLISECONDS,
                                       30_000L);
     }
 

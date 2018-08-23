@@ -17,6 +17,7 @@ package org.uberfire.java.nio.fs.jgit;
 
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +35,7 @@ public class JGitFileSystemLockTest {
         long lastAccessThreshold = Long.MAX_VALUE;
         JGitFileSystemLock lock = createLock(lastAccessThreshold);
         lock.registerAccess();
-        assertTrue(lock.isInUse());
+        assertTrue(lock.hasBeenInUse());
     }
 
     @Test
@@ -44,13 +45,14 @@ public class JGitFileSystemLockTest {
         lock.registerAccess();
 
         lock.lock.lock();
-        assertTrue(lock.isInUse());
+        assertTrue(lock.hasBeenInUse());
         lock.lock.unlock();
-        assertFalse(lock.isInUse());
+        assertFalse(lock.hasBeenInUse());
     }
 
     private JGitFileSystemLock createLock(long lastAccessThreshold) {
         return new JGitFileSystemLock(mock(Git.class),
+                                      TimeUnit.MILLISECONDS,
                                       lastAccessThreshold) {
             @Override
             URI getRepoURI(Git git) {
