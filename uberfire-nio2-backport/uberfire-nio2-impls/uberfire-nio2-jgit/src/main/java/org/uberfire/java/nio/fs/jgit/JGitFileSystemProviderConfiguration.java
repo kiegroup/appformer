@@ -17,11 +17,13 @@ package org.uberfire.java.nio.fs.jgit;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.config.ConfigProperties;
 
+import static java.util.stream.Collectors.joining;
 import static org.eclipse.jgit.lib.Constants.DEFAULT_REMOTE_NAME;
 
 public class JGitFileSystemProviderConfiguration {
@@ -236,6 +238,11 @@ public class JGitFileSystemProviderConfiguration {
         try {
             jgitCacheEvictThresholdTimeUnit = TimeUnit.valueOf(jgitCacheEvictThresoldTimeUnitProp.getValue());
         } catch (IllegalArgumentException e) {
+            String validValues = Stream.of(TimeUnit.values()).map(Enum::toString).collect(joining(","));
+            LOG.warn("Failed to parse TimeUnit from {}={}. Using default instead: {}",
+                     JGIT_CACHE_EVICT_THRESHOLD_TIME_UNIT,
+                     validValues,
+                     DEFAULT_JGIT_CACHE_EVICT_THRESHOLD_TIME_UNIT);
             jgitCacheEvictThresholdTimeUnit = DEFAULT_JGIT_CACHE_EVICT_THRESHOLD_TIME_UNIT;
         }
 
