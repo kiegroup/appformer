@@ -239,11 +239,14 @@ public class JGitFileSystemProviderConfiguration {
             jgitCacheEvictThresholdTimeUnit = TimeUnit.valueOf(jgitCacheEvictThresoldTimeUnitProp.getValue());
         } catch (IllegalArgumentException e) {
             String validValues = Stream.of(TimeUnit.values()).map(Enum::toString).collect(joining(","));
-            LOG.warn("Failed to parse TimeUnit from {}={}. Using default instead: {}",
+            LOG.warn("Failed to parse TimeUnit from {}={}. Valid values are {}. Using default instead: {}",
                      JGIT_CACHE_EVICT_THRESHOLD_TIME_UNIT,
+                     jgitCacheEvictThresholdTimeUnit,
                      validValues,
                      DEFAULT_JGIT_CACHE_EVICT_THRESHOLD_TIME_UNIT);
             jgitCacheEvictThresholdTimeUnit = DEFAULT_JGIT_CACHE_EVICT_THRESHOLD_TIME_UNIT;
+
+
         }
 
         daemonEnabled = enabledProp.getBooleanValue();
