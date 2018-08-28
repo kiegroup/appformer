@@ -66,7 +66,7 @@ public class AppFormerJsBridge {
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/core-screens/screens.bundle.js")
+                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase/showcase-components.bundle.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
                                 .setCallback((Success<Void>) i3 -> workbench.removeStartupBlocker(AppFormerJsBridge.class))
                                 .inject())
@@ -146,15 +146,14 @@ public class AppFormerJsBridge {
                 try {
                     return Marshalling.fromJSON(json);
                 } catch (final Exception e) {
-                    DomGlobal.console.info("Error converting JS obj to GWT obj");
+                    DomGlobal.console.info("Error converting JS obj to GWT obj", e);
                     throw e;
                 }
             };
 
-            final Function<Object, Object> gwtToJson = value -> {
-                final String retJson = value == null ? null : Marshalling.toJSON(value);
-                return AppFormerJsBridge.parse(retJson);
-            };
+            final Function<Object, Object> gwtToJson = value -> value == null
+                    ? null
+                    : Marshalling.toJSON(value);
 
             MessageBuilder.createCall()
                     .call(serviceFqcn)
@@ -167,10 +166,6 @@ public class AppFormerJsBridge {
 
     public native static void callNative(final Object func, final Object arg) /*-{
         func(JSON.parse(arg));
-    }-*/;
-
-    public native static Object parse(final Object json) /*-{
-        return JSON.parse(json);
     }-*/;
 
     interface Success<T> extends Callback<T, Exception> {
