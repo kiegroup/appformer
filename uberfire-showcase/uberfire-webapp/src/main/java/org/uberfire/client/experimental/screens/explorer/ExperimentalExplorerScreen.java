@@ -14,35 +14,31 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.screens.experimental;
+package org.uberfire.client.experimental.screens.explorer;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import elemental2.dom.HTMLElement;
-import elemental2.dom.HTMLHeadingElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
+import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
+import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.workbench.model.menu.MenuFactory;
+import org.uberfire.workbench.model.menu.Menus;
 
-@WorkbenchScreen(identifier = ExperimentalPerspectiveHeader.ID)
-public class ExperimentalPerspectiveHeader implements IsElement {
+@WorkbenchScreen(identifier = ExperimentalExplorerScreen.ID)
+@ExperimentalFeature(nameI18nKey = "experimental_asset_explorer", descriptionI18nKey = "experimental_asset_explorer_description")
+public class ExperimentalExplorerScreen implements IsElement {
 
-    public static final String ID = "Experimental.header";
+    public static final String ID = "Experimental Explorer";
 
-    private static final String TITLE = "Experimental Prespective";
+    private static final String TITLE = "Explorer";
 
     @Inject
-    @Named("h1")
-    private HTMLHeadingElement header;
-
-    @PostConstruct
-    public void init() {
-        header.textContent = TITLE;
-        header.style.textAlign = "center";
-    }
+    private ExperimentalExplorer explorer;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -54,8 +50,21 @@ public class ExperimentalPerspectiveHeader implements IsElement {
         return this;
     }
 
+    @WorkbenchMenu
+    public Menus getMenu() {
+        return MenuFactory.newTopLevelMenu("new")
+                .respondsWith(() -> explorer.createNew())
+                .endMenu()
+                .build();
+    }
+
     @Override
     public HTMLElement getElement() {
-        return header;
+        return explorer.getElement();
+    }
+
+    @OnOpen
+    public void onOpen() {
+        explorer.load();
     }
 }

@@ -91,15 +91,15 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
 
     @Test
     public void testAuthorizeActivities() {
-        assertTrue(authorizationManager.authorize(new TestExperimentalScreen1Activity(placeManager)));
+        assertTrue(authorizationManager.authorizeActivity(new TestExperimentalScreen1Activity(placeManager)));
 
         verify(registryService).isFeatureEnabled(FEATURE_1_ID);
 
-        assertFalse(authorizationManager.authorize(new TestExperimentalScreen2Activity(placeManager)));
+        assertFalse(authorizationManager.authorizeActivity(new TestExperimentalScreen2Activity(placeManager)));
 
         verify(registryService).isFeatureEnabled(FEATURE_2_ID);
 
-        assertTrue(authorizationManager.authorize(new TestNonExperimentalScreenActivity(placeManager)));
+        assertTrue(authorizationManager.authorizeActivity(new TestNonExperimentalScreenActivity(placeManager)));
 
         verify(registryService, times(2)).isFeatureEnabled(anyString());
     }
@@ -131,7 +131,7 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
 
         when(part.getPlace()).thenReturn(request);
 
-        authorizationManager.securePart(panel, part);
+        authorizationManager.securePart(part, panel);
 
         validation.accept(panel, part);
     }

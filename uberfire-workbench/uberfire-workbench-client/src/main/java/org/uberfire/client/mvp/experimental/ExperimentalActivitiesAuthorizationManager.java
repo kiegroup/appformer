@@ -17,6 +17,7 @@
 package org.uberfire.client.mvp.experimental;
 
 import org.uberfire.client.mvp.WorkbenchActivity;
+import org.uberfire.mvp.impl.ConditionalPlaceRequest;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PartDefinition;
 
@@ -32,15 +33,22 @@ public interface ExperimentalActivitiesAuthorizationManager {
 
     /**
      * Determines if the experimental framework enables rendering a given activity
-     * @param activity
+     * @param activity The activity to check
      * @return true or false depending on the settings.
      */
-    boolean authorize(Object activity);
+    boolean authorizeActivity(Object activity);
 
     /**
-     *
-     * @param panel
-     * @param part
+     * Determines if the experimental framework enables rendering a given Class
+     * @param activityClass The Class to check
+     * @return true or false depending on the settings.
      */
-    void securePart(PanelDefinition panel, PartDefinition part);
+    boolean authorizeActivityClass(Class<?> activityClass);
+
+    /**
+     * Checks if the {@link PartDefinition} place points to an experimental activity and replaces it to a {@link ConditionalPlaceRequest}
+     * @param part The {@link PartDefinition} to check
+     * @param panel The {@link PanelDefinition} that owns the plart
+     */
+    void securePart(PartDefinition part, PanelDefinition panel);
 }

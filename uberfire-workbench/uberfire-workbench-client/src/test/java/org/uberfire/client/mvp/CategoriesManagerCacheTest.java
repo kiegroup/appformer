@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
 import org.uberfire.client.workbench.type.ClientResourceType;
@@ -53,6 +54,9 @@ public class CategoriesManagerCacheTest {
 
     private CategoriesManagerCache categoriesManagerCache;
 
+    @Mock
+    private ExperimentalActivitiesAuthorizationManager experimentalActivitiesAuthorizationManager;
+
     private ResourceTypeManagerCache resourceTypeManagerCache;
 
     private ActivityBeansCache activityBeansCache;
@@ -66,7 +70,8 @@ public class CategoriesManagerCacheTest {
         activityBeansCache = new ActivityBeansCache(iocManager,
                                                     newPerspectiveEventEvent,
                                                     newWorkbenchScreenEvent,
-                                                    resourceTypeManagerCache);
+                                                    resourceTypeManagerCache,
+                                                    experimentalActivitiesAuthorizationManager);
     }
 
     @Test

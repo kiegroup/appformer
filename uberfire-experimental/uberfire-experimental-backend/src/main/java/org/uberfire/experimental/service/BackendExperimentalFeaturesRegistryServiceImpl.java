@@ -73,7 +73,7 @@ public class BackendExperimentalFeaturesRegistryServiceImpl implements Experimen
 
     private final SpacesAPI spaces;
 
-    private IOService ioService;
+    private final IOService ioService;
 
     private final ExperimentalFeatureDefRegistry defRegistry;
 

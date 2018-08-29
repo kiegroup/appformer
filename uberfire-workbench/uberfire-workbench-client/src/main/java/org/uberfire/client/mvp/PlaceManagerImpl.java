@@ -1018,7 +1018,7 @@ public class PlaceManagerImpl
     private void openPartsRecursively(PanelDefinition panel) {
 
         for (PartDefinition part : ensureIterable(panel.getParts())) {
-            activitiesAuthorizationManager.securePart(panel, part);
+            activitiesAuthorizationManager.securePart(part, panel);
 
             goTo(part, panel);
         }
