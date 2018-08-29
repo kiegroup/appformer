@@ -77,7 +77,7 @@ public class ActivityManagerActivatedByTest {
         when(authzManager.authorize(any(Resource.class),
                                     any(User.class))).thenReturn(true);
 
-        when(activitiesAuthorizationManager.authorize(anyObject())).thenReturn(true);
+        when(activitiesAuthorizationManager.authorizeActivity(anyObject())).thenReturn(true);
 
         activatedActivity = mock(Activity.class);
         when(activatedActivity.getIdentifier()).thenReturn("activated activity");

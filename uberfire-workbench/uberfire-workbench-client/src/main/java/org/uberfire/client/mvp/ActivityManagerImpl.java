@@ -247,7 +247,7 @@ public class ActivityManagerImpl implements ActivityManager {
                 continue;
             }
             final T instance = activityBean.getInstance();
-            if (!protectedAccess || authzManager.authorize(instance, identity) && activitiesAuthorizationManager.authorize(instance)) {
+            if (!protectedAccess || authzManager.authorize(instance, identity) && activitiesAuthorizationManager.authorizeActivity(instance)) {
                 activities.add(instance);
             } else {
                 // Since user does not have permission, destroy bean to avoid memory leak

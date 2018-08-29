@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.client.workbench.annotations.AssociatedResources;
 import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
@@ -80,6 +81,9 @@ public class ActivityBeansCacheActivatedByTest {
 
     private ResourceTypeManagerCache resourceTypeManagerCache;
 
+    @Mock
+    private ExperimentalActivitiesAuthorizationManager experimentalActivitiesAuthorizationManager;
+
     private ActiveSplashScreenActivity activeSplashScreenActivity;
     private SyncBeanDef activeSplashScreenActivityBean;
     private SyncBeanDef nonActiveSplashScreenActivityBean;
@@ -101,7 +105,8 @@ public class ActivityBeansCacheActivatedByTest {
         activityBeansCache = new ActivityBeansCache(iocManager,
                                                     newPerspectiveEventEvent,
                                                     newWorkbenchScreenEventEvent,
-                                                    resourceTypeManagerCache);
+                                                    resourceTypeManagerCache,
+                                                    experimentalActivitiesAuthorizationManager);
 
         activeSplashScreenActivity = mock(ActiveSplashScreenActivity.class);
         activeSplashScreenActivityBean = mockSplashScreenActivityBean(ActiveSplashScreenActivity.class,

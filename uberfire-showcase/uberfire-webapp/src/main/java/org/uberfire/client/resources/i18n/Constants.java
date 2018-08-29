@@ -38,27 +38,15 @@ public interface Constants
 
     String WelcomeUser();
 
-    String demo_feature();
-
-    String demo_feature_description();
-
-    String demo_feature2();
-
-    String demo_feature2_description();
-
-    String demo_feature3();
-
-    String demo_feature3_description();
-
     String experimental_perspective();
 
     String experimental_perspective_description();
 
-    String experimental_screen1();
+    String experimental_asset_explorer();
 
-    String experimental_screen1_description();
+    String experimental_asset_explorer_description();
 
-    String experimental_screen2();
+    String experimental_asset_editor();
 
-    String experimental_screen2_description();
+    String experimental_asset_editor_description();
 }

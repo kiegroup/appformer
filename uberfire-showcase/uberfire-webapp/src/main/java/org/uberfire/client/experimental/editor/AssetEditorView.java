@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package org.uberfire.shared;
+package org.uberfire.client.experimental.editor;
 
-import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
+import org.uberfire.ext.editor.commons.client.BaseEditorView;
 
-@ExperimentalFeature(nameI18nKey = "demo_feature", descriptionI18nKey = "demo_feature_description")
-public class DemoExperimentalFeature {
+public interface AssetEditorView extends BaseEditorView {
 
+    void showContent(String content);
+
+    String getContent();
+
+    void init(Presenter presenter);
+
+    interface Presenter {
+
+    }
 }

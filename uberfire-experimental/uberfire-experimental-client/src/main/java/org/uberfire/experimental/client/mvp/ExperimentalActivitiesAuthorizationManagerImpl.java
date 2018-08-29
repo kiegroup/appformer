@@ -71,12 +71,17 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
     }
 
     @Override
-    public boolean authorize(Object activity) {
-        return authorizeByClassName(activity.getClass().getName());
+    public boolean authorizeActivity(Object activity) {
+        return authorizeActivityClass(activity.getClass());
     }
 
     @Override
-    public void securePart(PanelDefinition panel, PartDefinition part) {
+    public boolean authorizeActivityClass(Class activityClass) {
+        return authorizeByClassName(activityClass.getName());
+    }
+
+    @Override
+    public void securePart(PartDefinition part, PanelDefinition panel) {
 
         final PlaceRequest request = part.getPlace();
         final String identifier = request.getIdentifier();

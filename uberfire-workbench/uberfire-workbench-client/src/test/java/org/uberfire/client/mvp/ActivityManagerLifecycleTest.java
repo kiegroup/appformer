@@ -106,7 +106,7 @@ public class ActivityManagerLifecycleTest {
         when(authzManager.authorize(any(Resource.class),
                                     eq(dorothy))).thenReturn(true);
 
-        when(activitiesAuthorizationManager.authorize(anyObject())).thenReturn(true);
+        when(activitiesAuthorizationManager.authorizeActivity(anyObject())).thenReturn(true);
     }
 
     @Test

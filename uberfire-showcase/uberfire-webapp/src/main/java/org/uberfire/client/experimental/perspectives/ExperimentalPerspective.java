@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.uberfire.client.perspectives;
+package org.uberfire.client.experimental.perspectives;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -21,11 +21,9 @@ import com.google.gwt.user.client.Window;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.screens.experimental.ExperimentalPerspectiveHeader;
-import org.uberfire.client.screens.experimental.ExperimentalScreen1;
-import org.uberfire.client.screens.experimental.ExperimentalScreen2;
+import org.uberfire.client.experimental.screens.ExperimentalPerspectiveHeader;
+import org.uberfire.client.experimental.screens.explorer.ExperimentalExplorerScreen;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
-import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
 import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
@@ -53,15 +51,12 @@ public class ExperimentalPerspective {
 
         perspective.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalPerspectiveHeader.ID)));
 
-        final PanelDefinition west = new PanelDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
-        west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalScreen1.ID)));
+        final PanelDefinition west = new PanelDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
+        west.setWidth(300);
+        west.setMinWidth(200);
+        west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalExplorerScreen.ID)));
 
         perspective.getRoot().insertChild(CompassPosition.WEST, west);
-
-        final PanelDefinition south = new PanelDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
-        south.addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalScreen2.ID)));
-
-        perspective.getRoot().insertChild(CompassPosition.SOUTH, south);
 
         return perspective;
     }

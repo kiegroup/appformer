@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.screens.experimental;
+package org.uberfire.client.experimental.screens;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -26,15 +26,13 @@ import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 
-@WorkbenchScreen(identifier = ExperimentalScreen2.ID)
-@ExperimentalFeature(nameI18nKey = "experimental_screen2", descriptionI18nKey = "experimental_screen2_description")
-public class ExperimentalScreen2 implements IsElement {
+@WorkbenchScreen(identifier = ExperimentalPerspectiveHeader.ID)
+public class ExperimentalPerspectiveHeader implements IsElement {
 
-    public static final String ID = "ExperimentalPerspectiveScreen2";
+    public static final String ID = "Experimental.header";
 
-    private static final String TITLE = "Second Experimental Screen";
+    private static final String TITLE = "Experimental Prespective";
 
     @Inject
     @Named("h1")

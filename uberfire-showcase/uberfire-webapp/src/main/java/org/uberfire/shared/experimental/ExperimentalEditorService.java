@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package org.uberfire.shared;
+package org.uberfire.shared.experimental;
 
-import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
+import java.util.List;
 
-@ExperimentalFeature(nameI18nKey = "demo_feature2", descriptionI18nKey = "demo_feature2_description")
-public class DemoExperimentalFeature2 {
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.editor.commons.service.support.SupportsDelete;
 
+@Remote
+public interface ExperimentalEditorService extends SupportsDelete {
+
+    List<Path> listAll();
+
+    Path create(String assetName);
+
+    String load(Path path);
+
+    void save(Path path, String content);
 }

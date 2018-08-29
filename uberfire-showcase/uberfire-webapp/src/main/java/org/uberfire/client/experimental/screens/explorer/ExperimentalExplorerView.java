@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package org.uberfire.shared;
+package org.uberfire.client.experimental.screens.explorer;
 
-import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
+import java.util.Optional;
 
-@ExperimentalFeature(nameI18nKey = "demo_feature3", descriptionI18nKey = "demo_feature3_description")
-public class DemoExperimentalFeature3 {
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.client.experimental.screens.explorer.asset.AssetDisplayer;
+import org.uberfire.client.mvp.UberElemental;
 
+public interface ExperimentalExplorerView extends UberElemental<ExperimentalExplorerView.Presenter> {
+
+    void show(AssetDisplayer asset);
+
+    void delete(AssetDisplayer asset);
+
+    void clean();
+
+    Optional<AssetDisplayer> findDisplayer(Path path);
+
+    interface Presenter {
+
+    }
 }
