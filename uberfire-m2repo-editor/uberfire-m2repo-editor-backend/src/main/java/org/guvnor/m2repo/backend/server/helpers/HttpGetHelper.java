@@ -41,15 +41,9 @@ public class HttpGetHelper {
     private static final int DEFAULT_BUFFER_SIZE = 10240;
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; //1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
-    private final String CTX_JARS = "CTX_JARS";
-
-    /*@Inject
-    private M2RepoService m2RepoService;*/
 
     @Inject
     private GuvnorM2Repository repository;
-
-    private Map<GAV, String> depsFromWar;
 
 
     public void handle(final HttpServletRequest request,
@@ -81,13 +75,7 @@ public class HttpGetHelper {
         File file = new File(mavenRootDir, requestedFile);
 
         if (!file.exists()) {
-            File fileFromWar = getFileFromWar(requestedFile, context);
-            if(fileFromWar == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                return;
-            }else{
-                file = fileFromWar;
-            }
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
 
         // Process the ETag
@@ -258,13 +246,6 @@ public class HttpGetHelper {
         }
     }
 
-    private File getFileFromWar(String dep, ServletContext context){
-        if(depsFromWar == null){
-            depsFromWar = (Map<GAV, String>) context.getAttribute(CTX_JARS);
-        }
-        String path =  depsFromWar.get(new GAV(dep));
-        return path != null ? new File(path) : null;
-    }
 
     private static boolean accepts(final String acceptHeader,
                                    final String toAccept) {

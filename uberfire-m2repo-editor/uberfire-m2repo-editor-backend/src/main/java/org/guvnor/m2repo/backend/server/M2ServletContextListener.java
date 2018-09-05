@@ -20,11 +20,11 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 import org.guvnor.common.services.project.model.GAV;
 import org.slf4j.Logger;
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * It reads all the jars present in the WEB-INF/lib
  * to create a Map with entries of GAV and path of the dependency
  * */
+@WebListener
 public class M2ServletContextListener implements ServletContextListener {
 
     private final String JAR_EXT = ".jar";
@@ -42,12 +43,16 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String CTX_JARS = "CTX_JARS";
     private Logger logger = LoggerFactory.getLogger(M2ServletContextListener.class);
 
+    @Inject
+    private GuvnorM2Repository repository;
+
+
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        logger.info("M2ServletContextListener contextInitialized");
         ServletContext ctx = servletContextEvent.getServletContext();
         String jarsPath = ctx.getRealPath(getJarsFolder());
-        ctx.setAttribute(CTX_JARS, searchJars(jarsPath));
+        deployJarFromWar(jarsPath, ctx);
+        logger.info("M2ServletContextListener contextInitialized");
     }
 
     @Override
@@ -61,19 +66,16 @@ public class M2ServletContextListener implements ServletContextListener {
         return sb.toString();
     }
 
-    public Map<GAV, String> searchJars(String path) {
-        Map<GAV, String> jars = new HashMap<>();
+    public void deployJarFromWar(String path, ServletContext ctx) {
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get("file://" + path))) {
-            GuvnorM2Repository guvnorM2Repository = new GuvnorM2Repository();
             for (Path p : ds) {
                 if (!Files.isDirectory(p) && p.endsWith(JAR_EXT)) {
-                    jars.put(guvnorM2Repository.loadGAVFromJar(p.toAbsolutePath().toString()), p.toAbsolutePath().toString());
+                    GAV gav = repository.loadGAVFromJar(p.toAbsolutePath().toString());
+                    repository.deployPom(ctx.getResourceAsStream(p.toAbsolutePath().toString()), gav);
                 }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        logger.info("M2ServletContextListener, prepared WarRepo with {} jars dependencies:", jars.size());
-        return jars;
     }
 }
