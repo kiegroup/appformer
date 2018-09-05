@@ -24,6 +24,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
@@ -31,6 +32,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.guvnor.m2repo.service.M2RepoService;
 
@@ -39,12 +41,16 @@ public class HttpGetHelper {
     private static final int DEFAULT_BUFFER_SIZE = 10240;
     private static final long DEFAULT_EXPIRE_TIME = 604800000L; //1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
+    private final String CTX_JARS = "CTX_JARS";
 
-    @Inject
-    private M2RepoService m2RepoService;
+    /*@Inject
+    private M2RepoService m2RepoService;*/
 
     @Inject
     private GuvnorM2Repository repository;
+
+    private Map<GAV, String> depsFromWar;
+
 
     public void handle(final HttpServletRequest request,
                        final HttpServletResponse response,
@@ -72,12 +78,16 @@ public class HttpGetHelper {
         }
 
         requestedFile = canonicalEntryPath.substring(canonicalDirPath.length());
-        final File file = new File(mavenRootDir,
-                                   requestedFile);
+        File file = new File(mavenRootDir, requestedFile);
 
         if (!file.exists()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
+            File fileFromWar = getFileFromWar(requestedFile, context);
+            if(fileFromWar == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }else{
+                file = fileFromWar;
+            }
         }
 
         // Process the ETag
@@ -116,11 +126,6 @@ public class HttpGetHelper {
             return;
         }
 
-        Range full = new Range(0,
-                               length - 1,
-                               length);
-        List<Range> ranges = new ArrayList<Range>();
-
         String contentType = context.getMimeType(fileName);
         boolean acceptsGzip = false;
         String disposition = "inline";
@@ -140,7 +145,31 @@ public class HttpGetHelper {
             disposition = accept != null && accepts(accept,
                                                     contentType) ? "inline" : "attachment";
         }
+        writeResponse(response,
+                      file,
+                      fileName,
+                      lastModified,
+                      eTag,
+                      length,
+                      contentType,
+                      acceptsGzip,
+                      disposition);
+    }
 
+    private void writeResponse(HttpServletResponse response,
+                               File file,
+                               String fileName,
+                               long lastModified,
+                               String eTag,
+                               long length,
+                               String contentType,
+                               boolean acceptsGzip,
+                               String disposition) throws IOException {
+
+        Range full = new Range(0,
+                               length - 1,
+                               length);
+        List<Range> ranges = new ArrayList<Range>();
         //Response.
         response.reset();
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
@@ -227,6 +256,14 @@ public class HttpGetHelper {
                 input.close();
             }
         }
+    }
+
+    private File getFileFromWar(String dep, ServletContext context){
+        if(depsFromWar == null){
+            depsFromWar = (Map<GAV, String>) context.getAttribute(CTX_JARS);
+        }
+        String path =  depsFromWar.get(new GAV(dep));
+        return path != null ? new File(path) : null;
     }
 
     private static boolean accepts(final String acceptHeader,
