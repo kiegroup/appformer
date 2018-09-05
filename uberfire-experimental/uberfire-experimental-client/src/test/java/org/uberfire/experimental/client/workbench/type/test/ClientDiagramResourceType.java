@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.definition.annotations;
+package org.uberfire.experimental.client.workbench.type.test;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.uberfire.client.workbench.type.ClientResourceType;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface ExperimentalFeature {
+public class ClientDiagramResourceType extends DiagramResourceType implements ClientResourceType {
 
-    Scope scope() default Scope.USER;
-
-    String group() default "";
-
-    String nameI18nKey() default "";
-
-    String descriptionI18nKey() default "";
-
-    enum Scope {
-        GLOBAL, USER
-    }
 }
-
