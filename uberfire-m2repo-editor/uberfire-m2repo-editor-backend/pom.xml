@@ -14,9 +14,6 @@
   <name>UberFire - M2_REPO Backend</name>
   <description>UberFire - M2_REPO Backend</description>
 
-  <!--<properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>-->
 
   <dependencies>
 
