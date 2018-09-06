@@ -29,7 +29,7 @@ import com.google.gwt.dom.client.Document;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
-import org.uberfire.experimental.client.disabled.DisabledFeatureActivity;
+import org.uberfire.experimental.client.disabled.screen.DisabledFeatureActivity;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.ConditionalPlaceRequest;
@@ -90,12 +90,15 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
             return;
         }
 
-        if (activityIdToExperimentalFeatureId.containsKey(identifier)) {
+        Optional<String> optional = Optional.ofNullable(activityIdToExperimentalFeatureId.get(identifier));
+
+        if (optional.isPresent()) {
             panel.removePart(part);
 
-            DefaultPlaceRequest disabledRequest = new DefaultPlaceRequest(getDisabledActivityId());
+            DefaultPlaceRequest disabledRequest = new DefaultPlaceRequest(DisabledFeatureActivity.ID);
 
-            disabledRequest.addParameter("id", uniqueIdSupplier.get());
+            disabledRequest.addParameter(DisabledFeatureActivity.ID_PARAM, uniqueIdSupplier.get());
+            disabledRequest.addParameter(DisabledFeatureActivity.FEATURE_ID_PARAM, optional.get());
 
             part.setPlace(new ConditionalPlaceRequest(identifier, request.getParameters()).when(placeRequest -> authorizeByActivityId(identifier)).orElse(disabledRequest));
         }
@@ -117,10 +120,6 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
 
     protected boolean authorize(final String experimentalFeatureId) {
         return experimentalFeaturesRegistryService.isFeatureEnabled(experimentalFeatureId);
-    }
-
-    protected String getDisabledActivityId() {
-        return DisabledFeatureActivity.ID;
     }
 
     private static String createUniqueId() {

@@ -21,19 +21,47 @@ import javax.inject.Inject;
 
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.kie.soup.commons.validation.PortablePreconditions;
+import org.uberfire.experimental.client.resources.i18n.UberfireExperimentalConstants;
+import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
+import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
 
 @Dependent
 public class DisabledFeatureComponent implements IsElement {
 
     private DisabledFeatureComponentView view;
 
+    private ExperimentalFeatureDefRegistry defRegistry;
+
+    private TranslationService translationService;
+
     @Inject
-    public DisabledFeatureComponent(DisabledFeatureComponentView view) {
+    public DisabledFeatureComponent(DisabledFeatureComponentView view, ExperimentalFeatureDefRegistry defRegistry, TranslationService translationService) {
         this.view = view;
+        this.defRegistry = defRegistry;
+        this.translationService = translationService;
     }
 
     @Override
     public HTMLElement getElement() {
         return view.getElement();
+    }
+
+    public void show(String featureId) {
+        ExperimentalFeatureDefinition feature = defRegistry.getFeatureById(featureId);
+
+        PortablePreconditions.checkNotNull("experimentalFeature", feature);
+
+        String featureName = translationService.getTranslation(feature.getNameKey());
+        String text;
+
+        if(feature.isGlobal()) {
+            text = translationService.format(UberfireExperimentalConstants.disabledGlobalExperimentalFeature, featureName);
+        } else {
+            text = translationService.format(UberfireExperimentalConstants.disabledExperimentalFeature, featureName);
+        }
+
+        view.show(text);
     }
 }

@@ -22,4 +22,13 @@ public interface UberfireExperimentalConstants {
 
     @TranslationKey(defaultValue = "")
     String experimentalFeaturesTitle = "ExperimentalFeaturesEditorScreenViewImpl.experimentalFeaturesTitle";
+
+    @TranslationKey(defaultValue = "")
+    String disabledExperimentalFeature = "DisabledExperimentalFeature";
+
+    @TranslationKey(defaultValue = "")
+    String disabledGlobalExperimentalFeature = "DisabledGlobalExperimentalFeature";
+
+    @TranslationKey(defaultValue = "")
+    String disabledFeatureTitle = "DisabledFeatureTitle";
 }
