@@ -14,7 +14,6 @@
   <name>UberFire - M2_REPO Backend</name>
   <description>UberFire - M2_REPO Backend</description>
 
-
   <dependencies>
 
     <dependency>
@@ -202,4 +201,5 @@
     </dependency>
 
   </dependencies>
+
 </project>

@@ -43,7 +43,7 @@ public class M2Servlet extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-                         final HttpServletResponse response) throws IOException {
+                         final HttpServletResponse response) throws ServletException, IOException {
         log.info("GET request received for " + request.getPathInfo());
         httpGetHelper.handle(request,
                              response,
