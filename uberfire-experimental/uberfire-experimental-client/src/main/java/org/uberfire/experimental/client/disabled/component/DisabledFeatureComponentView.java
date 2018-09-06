@@ -20,4 +20,5 @@ import org.jboss.errai.common.client.api.elemental2.IsElement;
 
 public interface DisabledFeatureComponentView extends IsElement {
 
+    void show(String text);
 }

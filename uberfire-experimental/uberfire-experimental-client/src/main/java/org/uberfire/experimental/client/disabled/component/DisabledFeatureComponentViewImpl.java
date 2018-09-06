@@ -16,12 +16,28 @@
 
 package org.uberfire.experimental.client.disabled.component;
 
+import javax.inject.Inject;
+
+import elemental2.dom.HTMLDivElement;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated
 public class DisabledFeatureComponentViewImpl implements DisabledFeatureComponentView,
                                                          IsElement {
 
+    @Inject
+    @DataField
+    private HTMLDivElement content;
 
+    @Inject
+    private Elemental2DomUtil util;
+
+    @Override
+    public void show(String text) {
+        util.removeAllElementChildren(content);
+        content.innerHTML = text;
+    }
 }

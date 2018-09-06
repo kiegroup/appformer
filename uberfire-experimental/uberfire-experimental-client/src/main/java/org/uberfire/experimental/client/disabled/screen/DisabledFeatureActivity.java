@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.disabled;
+package org.uberfire.experimental.client.disabled.screen;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -22,27 +22,40 @@ import javax.inject.Named;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.experimental.client.disabled.component.DisabledFeatureComponent;
+import org.uberfire.experimental.client.resources.i18n.UberfireExperimentalConstants;
 
 @Dependent
 @Named(DisabledFeatureActivity.ID)
 public class DisabledFeatureActivity extends AbstractWorkbenchScreenActivity {
 
-    public static final String ID = "appformer.experimental.disabledFeature";
+    public static final String ID = "appformer.experimental.disabledFeatureTitle";
+    public static final String ID_PARAM = "randomId";
+    public static final String FEATURE_ID_PARAM = "featureId";
 
     private DisabledFeatureComponent component;
+    private TranslationService translationService;
 
     @Inject
-    public DisabledFeatureActivity(PlaceManager placeManager, DisabledFeatureComponent component) {
+    public DisabledFeatureActivity(PlaceManager placeManager, DisabledFeatureComponent component, TranslationService translationService) {
         super(placeManager);
         this.component = component;
+        this.translationService = translationService;
+    }
+
+    @Override
+    public void onOpen() {
+        super.onOpen();
+
+        component.show(place.getParameter(FEATURE_ID_PARAM, null));
     }
 
     @Override
     public String getTitle() {
-        return "";
+        return translationService.getTranslation(UberfireExperimentalConstants.disabledFeatureTitle);
     }
 
     @Override
