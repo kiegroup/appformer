@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * It reads all the jars present in the WEB-INF/lib
  * to create a Map with entries of GAV and path of the dependency
- * */
+ */
 @WebListener
 public class M2ServletContextListener implements ServletContextListener {
 
@@ -69,11 +69,12 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String ARTIFACT_ID = "artifactId";
     private final String VERSION = "version";
     private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
-    private String MAVEN_META_INF = "META-INF"+ File.separator + "maven";
+    private String MAVEN_META_INF = "META-INF" + File.separator + "maven";
 
     private Logger logger = LoggerFactory.getLogger(M2ServletContextListener.class);
 
-    public M2ServletContextListener(){}
+    public M2ServletContextListener() {
+    }
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -84,12 +85,14 @@ public class M2ServletContextListener implements ServletContextListener {
         int jarsDeployed = deployJarsFromWar(jarsPath);
         long endTime = System.nanoTime();
         long totalTime = TimeUnit.NANOSECONDS.toSeconds(endTime - startTime);
-        logger.info("M2ServletContextListener contextInitialized deployed {} jars in {} sec ", jarsDeployed, totalTime);
+        logger.info("M2ServletContextListener contextInitialized deployed {} jars in {} sec ",
+                    jarsDeployed,
+                    totalTime);
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {}
-
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+    }
 
     private int deployJarsFromWar(String path) {
         int i = 0;
@@ -97,12 +100,14 @@ public class M2ServletContextListener implements ServletContextListener {
             RepositorySystemSession session = newSession(newRepositorySystem());
             for (Path p : ds) {
                 if (p.toString().endsWith(JAR_EXT)) {
-                    deployJar(p.toAbsolutePath().toString(), session);
+                    deployJar(p.toAbsolutePath().toString(),
+                              session);
                     i++;
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(),
+                         e);
         }
         return i;
     }
@@ -111,13 +116,16 @@ public class M2ServletContextListener implements ServletContextListener {
                          RepositorySystemSession session) {
         GAV gav = new GAV();
         Properties props = readZipFile(file);
-        if(!props.isEmpty()){
-            gav = new GAV(props.getProperty(GROUP_ID),props.getProperty(ARTIFACT_ID), props.getProperty(VERSION) );
-            deploy(gav, file, session);
+        if (!props.isEmpty()) {
+            gav = new GAV(props.getProperty(GROUP_ID),
+                          props.getProperty(ARTIFACT_ID),
+                          props.getProperty(VERSION));
+            deploy(gav,
+                   file,
+                   session);
         }
         return gav;
     }
-
 
     public Properties readZipFile(String zipFilePath) {
         try {
@@ -137,12 +145,16 @@ public class M2ServletContextListener implements ServletContextListener {
                 }
             }
         } catch (IOException e) {
-            logger.error("IOError :{}",e.getMessage(), e);
+            logger.error("IOError :{}",
+                         e.getMessage(),
+                         e);
         }
         return new Properties();
     }
 
-    public boolean  deploy(GAV gav, String jarFile, RepositorySystemSession session) {
+    public boolean deploy(GAV gav,
+                          String jarFile,
+                          RepositorySystemSession session) {
         Artifact jarArtifact = new DefaultArtifact(gav.getGroupId(),
                                                    gav.getArtifactId(),
                                                    JAR_ARTIFACT,
@@ -151,28 +163,33 @@ public class M2ServletContextListener implements ServletContextListener {
         try {
             final InstallRequest installRequest = new InstallRequest();
             installRequest.addArtifact(jarArtifact);
-            InstallResult result = Aether.getAether().getSystem().install(session, installRequest);
+            InstallResult result = Aether.getAether().getSystem().install(session,
+                                                                          installRequest);
             return result.getArtifacts().size() == 1;
         } catch (InstallationException e) {
-            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(),
+                         e);
         }
         return false;
     }
 
-    private RepositorySystemSession newSession( RepositorySystem system )
-    {
+    private RepositorySystemSession newSession(RepositorySystem system) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository( ArtifactRepositoryService.GLOBAL_M2_REPO_NAME );
-        session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
+        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME);
+        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
+                                                                           localRepo));
 
         return session;
     }
 
     private RepositorySystem newRepositorySystem() {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+        locator.addService(RepositoryConnectorFactory.class,
+                           BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class,
+                           FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class,
+                           HttpTransporterFactory.class);
         return locator.getService(RepositorySystem.class);
     }
 }
