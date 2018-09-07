@@ -56,6 +56,8 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String GROUP_ID = "groupId";
     private final String ARTIFACT_ID = "artifactId";
     private final String VERSION = "version";
+    private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
+    private String MAVEN_META_INF = "META-INF"+ File.separator + "maven";
 
     private Logger logger = LoggerFactory.getLogger(M2ServletContextListener.class);
 
@@ -65,7 +67,7 @@ public class M2ServletContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("M2ServletContextListener contextInitialized started");
         ServletContext ctx = servletContextEvent.getServletContext();
-        String jarsPath = ctx.getRealPath(getJarsFolder());
+        String jarsPath = ctx.getRealPath(JARS_FOLDER);
         long startTime = System.nanoTime();
         int jarsDeployed = deployJarsFromWar(jarsPath);
         long endTime = System.nanoTime();
@@ -76,11 +78,6 @@ public class M2ServletContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {}
 
-    private String getJarsFolder(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(File.separator).append(WEB_INF_FOLDER).append(File.separator).append(LIB_FOLDER).append(File.separator);
-        return sb.toString();
-    }
 
     private int deployJarsFromWar(String path) {
         int i = 0;
@@ -114,9 +111,8 @@ public class M2ServletContextListener implements ServletContextListener {
             Enumeration<? extends ZipEntry> e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = e.nextElement();
-                String begin = "META-INF"+ File.separator + "maven";
                 String end = "pom.properties";
-                if (!entry.isDirectory() && entry.getName().startsWith(begin) && entry.getName().endsWith(end)) {
+                if (!entry.isDirectory() && entry.getName().startsWith(MAVEN_META_INF) && entry.getName().endsWith(end)) {
                     BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
                     Properties props = new Properties();
                     props.load(bis);
