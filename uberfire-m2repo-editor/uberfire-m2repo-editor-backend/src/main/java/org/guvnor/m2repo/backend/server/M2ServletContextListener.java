@@ -22,6 +22,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -32,13 +34,29 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.appformer.maven.integration.Aether;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.installation.InstallRequest;
 import org.eclipse.aether.installation.InstallResult;
 import org.eclipse.aether.installation.InstallationException;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transport.file.FileTransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.transport.wagon.WagonProvider;
 import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,11 +155,28 @@ public class M2ServletContextListener implements ServletContextListener {
         try {
             final InstallRequest installRequest = new InstallRequest();
             installRequest.addArtifact(jarArtifact);
-            InstallResult result = Aether.getAether().getSystem().install(Aether.getAether().getSession(), installRequest);
+            InstallResult result = Aether.getAether().getSystem().install(newSession(newRepositorySystem()), installRequest);
             return result.getArtifacts().size() == 1;
         } catch (InstallationException e) {
             logger.error(e.getMessage(), e);
         }
         return false;
+    }
+
+    private RepositorySystemSession newSession( RepositorySystem system )
+    {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+        LocalRepository localRepo = new LocalRepository( ArtifactRepositoryService.GLOBAL_M2_REPO_NAME );
+        session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
+
+        return session;
+    }
+
+    private RepositorySystem newRepositorySystem() {
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+        return locator.getService(RepositorySystem.class);
     }
 }

@@ -17,14 +17,26 @@ package org.guvnor.m2repo.backend.server;
 
 import java.io.File;
 
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.appformer.maven.integration.Aether;
 
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.transport.file.FileTransporterFactory;
+import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.junit.After;
 import org.junit.Test;
 
@@ -40,7 +52,7 @@ public class M2ServletContextListenerTest {
     private void deleteArtifactIFPresent() throws ArtifactResolutionException {
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(getArtifact());
-        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(Aether.getAether().getSession(), artifactRequest);
+        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()), artifactRequest);
         if(!result.isMissing()){
             File artifactFile = result.getArtifact().getFile();
             assertThat(artifactFile.delete());
@@ -73,7 +85,7 @@ public class M2ServletContextListenerTest {
 
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(getArtifact());
-        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(Aether.getAether().getSession(), artifactRequest);
+        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()), artifactRequest);
         assertThat(result.isMissing()).isFalse();
         assertThat(result.isResolved()).isTrue();
     }
@@ -82,11 +94,28 @@ public class M2ServletContextListenerTest {
         try {
             ArtifactRequest artifactRequest = new ArtifactRequest();
             artifactRequest.setArtifact(getArtifact());
-            Aether.getAether().getSystem().resolveArtifact(Aether.getAether().getSession(),
+            Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()),
                                                                                    artifactRequest);
             return true;
         }catch (ArtifactResolutionException e){
             return false;
         }
+    }
+
+    private static RepositorySystemSession newSession(RepositorySystem system )
+    {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME );
+        session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
+
+        return session;
+    }
+
+    private static RepositorySystem newRepositorySystem() {
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+        return locator.getService(RepositorySystem.class);
     }
 }
