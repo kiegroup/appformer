@@ -19,7 +19,6 @@ import java.io.File;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.appformer.maven.integration.Aether;
-
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -44,22 +43,43 @@ import static org.assertj.core.api.Assertions.*;
 
 public class M2ServletContextListenerTest {
 
+    private static RepositorySystemSession newSession(RepositorySystem system) {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME);
+        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
+                                                                           localRepo));
+
+        return session;
+    }
+
+    private static RepositorySystem newRepositorySystem() {
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class,
+                           BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class,
+                           FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class,
+                           HttpTransporterFactory.class);
+        return locator.getService(RepositorySystem.class);
+    }
+
     @After
-    public void tearDown() throws Exception{
+    public void tearDown() throws Exception {
         deleteArtifactIFPresent();
     }
 
     private void deleteArtifactIFPresent() throws ArtifactResolutionException {
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(getArtifact());
-        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()), artifactRequest);
-        if(!result.isMissing()){
+        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()),
+                                                                               artifactRequest);
+        if (!result.isMissing()) {
             File artifactFile = result.getArtifact().getFile();
             assertThat(artifactFile.delete());
         }
     }
 
-    private Artifact getArtifact(){
+    private Artifact getArtifact() {
         Artifact jarArtifact = new DefaultArtifact("org.uberfire",
                                                    "uberfire-m2repo-editor-backend",
                                                    "jar",
@@ -67,55 +87,38 @@ public class M2ServletContextListenerTest {
         return jarArtifact;
     }
 
-
     @Test
     public void deployJarsFrowWar() throws Exception {
-        assertThat(checksIfArtifactIsPresent()).isFalse();
-
+        RepositorySystemSession session = newSession(newRepositorySystem());
+        assertThat(checksIfArtifactIsPresent(session)).isFalse();
 
         File file = new File("target/test-classes/org/guvnor/m2repo/backend/server/uberfire-m2repo-editor-backend-100-SNAPSHOT.jar");
         assertThat(file).exists();
 
         M2ServletContextListener listener = new M2ServletContextListener();
-        GAV deployed = listener.deployJar(file.getAbsolutePath());
+        GAV deployed = listener.deployJar(file.getAbsolutePath(),
+                                          session);
         assertThat(deployed.getGroupId()).isEqualTo("org.uberfire");
         assertThat(deployed.getArtifactId()).isEqualTo("uberfire-m2repo-editor-backend");
         assertThat(deployed.getVersion()).isEqualTo("100-SNAPSHOT");
 
-
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(getArtifact());
-        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()), artifactRequest);
+        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(session,
+                                                                               artifactRequest);
         assertThat(result.isMissing()).isFalse();
         assertThat(result.isResolved()).isTrue();
     }
 
-    private boolean checksIfArtifactIsPresent() {
+    private boolean checksIfArtifactIsPresent(RepositorySystemSession session) {
         try {
             ArtifactRequest artifactRequest = new ArtifactRequest();
             artifactRequest.setArtifact(getArtifact());
-            Aether.getAether().getSystem().resolveArtifact(newSession(newRepositorySystem()),
-                                                                                   artifactRequest);
+            Aether.getAether().getSystem().resolveArtifact(session,
+                                                           artifactRequest);
             return true;
-        }catch (ArtifactResolutionException e){
+        } catch (ArtifactResolutionException e) {
             return false;
         }
-    }
-
-    private static RepositorySystemSession newSession(RepositorySystem system )
-    {
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME );
-        session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
-
-        return session;
-    }
-
-    private static RepositorySystem newRepositorySystem() {
-        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-        return locator.getService(RepositorySystem.class);
     }
 }

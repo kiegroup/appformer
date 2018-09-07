@@ -22,8 +22,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -35,8 +33,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.appformer.maven.integration.Aether;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -49,12 +45,10 @@ import org.eclipse.aether.installation.InstallRequest;
 import org.eclipse.aether.installation.InstallResult;
 import org.eclipse.aether.installation.InstallationException;
 import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.eclipse.aether.transport.wagon.WagonProvider;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.slf4j.Logger;
@@ -100,9 +94,10 @@ public class M2ServletContextListener implements ServletContextListener {
     private int deployJarsFromWar(String path) {
         int i = 0;
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(path))) {
+            RepositorySystemSession session = newSession(newRepositorySystem());
             for (Path p : ds) {
                 if (p.toString().endsWith(JAR_EXT)) {
-                    deployJar(p.toAbsolutePath().toString());
+                    deployJar(p.toAbsolutePath().toString(), session);
                     i++;
                 }
             }
@@ -112,12 +107,13 @@ public class M2ServletContextListener implements ServletContextListener {
         return i;
     }
 
-    public GAV deployJar(String file) {
+    public GAV deployJar(String file,
+                         RepositorySystemSession session) {
         GAV gav = new GAV();
         Properties props = readZipFile(file);
         if(!props.isEmpty()){
             gav = new GAV(props.getProperty(GROUP_ID),props.getProperty(ARTIFACT_ID), props.getProperty(VERSION) );
-            deploy(gav, file);
+            deploy(gav, file, session);
         }
         return gav;
     }
@@ -146,7 +142,7 @@ public class M2ServletContextListener implements ServletContextListener {
         return new Properties();
     }
 
-    public boolean  deploy(GAV gav, String jarFile) {
+    public boolean  deploy(GAV gav, String jarFile, RepositorySystemSession session) {
         Artifact jarArtifact = new DefaultArtifact(gav.getGroupId(),
                                                    gav.getArtifactId(),
                                                    JAR_ARTIFACT,
@@ -155,7 +151,7 @@ public class M2ServletContextListener implements ServletContextListener {
         try {
             final InstallRequest installRequest = new InstallRequest();
             installRequest.addArtifact(jarArtifact);
-            InstallResult result = Aether.getAether().getSystem().install(newSession(newRepositorySystem()), installRequest);
+            InstallResult result = Aether.getAether().getSystem().install(session, installRequest);
             return result.getArtifacts().size() == 1;
         } catch (InstallationException e) {
             logger.error(e.getMessage(), e);
