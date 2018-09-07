@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.resources.i18n.PerspectiveEditorPaletteI18n;
 
@@ -28,6 +29,7 @@ import org.uberfire.ext.plugin.client.resources.i18n.PerspectiveEditorPaletteI18
  * {@link PerspectiveEditorComponentGroupProvider} holding all the available {@link PerspectiveEditorNavComponent} instances
  */
 @ApplicationScoped
+@ExperimentalFeature
 public class PerspectiveEditorNavGroupProvider implements PerspectiveEditorComponentGroupProvider {
 
     private SyncBeanManager beanManager;
@@ -45,7 +47,7 @@ public class PerspectiveEditorNavGroupProvider implements PerspectiveEditorCompo
     }
 
     @Override
-    public LayoutDragComponentGroup getInstance() {
+    public LayoutDragComponentGroup getComponentGroup() {
         LayoutDragComponentGroup group = new LayoutDragComponentGroup(getName());
         Collection<SyncBeanDef<PerspectiveEditorNavComponent>> beanDefs = beanManager.lookupBeans(PerspectiveEditorNavComponent.class);
         for (SyncBeanDef<PerspectiveEditorNavComponent> beanDef : beanDefs) {

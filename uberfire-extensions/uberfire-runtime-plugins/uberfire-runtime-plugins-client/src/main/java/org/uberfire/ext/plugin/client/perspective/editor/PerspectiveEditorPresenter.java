@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -53,6 +54,7 @@ import org.uberfire.ext.layout.editor.api.PerspectiveServices;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentPalette;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditorPlugin;
+import org.uberfire.ext.layout.editor.client.widgets.LayoutComponentPaletteGroupProvider;
 import org.uberfire.ext.plugin.client.perspective.editor.api.PerspectiveEditorComponentGroupProvider;
 import org.uberfire.ext.plugin.client.perspective.editor.components.popup.AddTag;
 import org.uberfire.ext.plugin.client.perspective.editor.events.PerspectiveEditorFocusEvent;
@@ -185,22 +187,18 @@ public class PerspectiveEditorPresenter extends BaseEditor<LayoutTemplate, Defau
 
     public void initLayoutDragComponentGroups() {
         layoutDragComponentPalette.clear();
-        scanPerspectiveDragGroups().stream()
-                .filter(PerspectiveEditorComponentGroupProvider::isEnabled)
-                .map(PerspectiveEditorComponentGroupProvider::getInstance)
-                .forEach(layoutDragComponentPalette::addDraggableGroup);
+        layoutDragComponentPalette.addDraggableGroups(scanPerspectiveDragGroups());
     }
 
-    private List<PerspectiveEditorComponentGroupProvider> scanPerspectiveDragGroups() {
-        List<PerspectiveEditorComponentGroupProvider> result = new ArrayList<>();
-        Collection<SyncBeanDef<PerspectiveEditorComponentGroupProvider>> beanDefs = beanManager.lookupBeans(PerspectiveEditorComponentGroupProvider.class);
-        for (SyncBeanDef<PerspectiveEditorComponentGroupProvider> beanDef : beanDefs) {
-            PerspectiveEditorComponentGroupProvider dragComponentGroup = beanDef.getInstance();
-            result.add(dragComponentGroup);
-        }
+    private Collection<LayoutComponentPaletteGroupProvider> scanPerspectiveDragGroups() {
+        List<PerspectiveEditorComponentGroupProvider> result = beanManager.lookupBeans(PerspectiveEditorComponentGroupProvider.class).stream()
+                .map(SyncBeanDef::getInstance)
+                .collect(Collectors.toList());
+
         // Sort the results
         Collections.sort(result);
-        return result;
+
+        return result.stream().collect(Collectors.toList());
     }
 
     @Override

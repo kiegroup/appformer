@@ -21,11 +21,13 @@ import org.dashbuilder.displayer.client.PerspectiveCoordinator;
 import org.dashbuilder.displayer.client.widgets.DisplayerViewer;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 @Dependent
+@ExperimentalFeature
 public class BarChartDragComponent extends DisplayerDragComponent {
 
     @Inject

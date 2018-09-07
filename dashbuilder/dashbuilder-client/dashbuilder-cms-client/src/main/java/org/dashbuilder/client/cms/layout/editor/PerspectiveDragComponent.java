@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.dashbuilder.client.cms.widget.PerspectiveWidget;
 import org.gwtbootstrap3.client.ui.Modal;
+import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.ext.layout.editor.client.api.HasModalConfiguration;
 import org.uberfire.ext.layout.editor.client.api.ModalConfigurationContext;
 import org.uberfire.ext.layout.editor.client.api.RenderingContext;
@@ -35,6 +36,7 @@ import static org.dashbuilder.navigation.layout.NavDragComponentSettings.*;
  * Runtime perspective drag component.
  */
 @Dependent
+@ExperimentalFeature
 public class PerspectiveDragComponent implements PerspectiveEditorCoreComponent, HasModalConfiguration {
 
     PerspectiveDragConfigModal perspectiveDragConfigModal;

@@ -16,6 +16,8 @@
 
 package org.uberfire.experimental.client.disabled.component;
 
+import java.util.Optional;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -53,7 +55,7 @@ public class DisabledFeatureComponent implements IsElement {
 
         PortablePreconditions.checkNotNull("experimentalFeature", feature);
 
-        String featureName = translationService.getTranslation(feature.getNameKey());
+        String featureName = Optional.ofNullable(translationService.getTranslation(feature.getNameKey())).orElse(featureId);
         String text;
 
         if(feature.isGlobal()) {
