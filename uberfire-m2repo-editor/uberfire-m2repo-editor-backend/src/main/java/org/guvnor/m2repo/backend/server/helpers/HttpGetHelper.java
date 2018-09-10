@@ -61,19 +61,12 @@ public class HttpGetHelper {
 
         String repositoryName = request.getParameter("repository");
 
-        //File traversal check:
-        final File mavenRootDir = new File(repository.getM2RepositoryRootDir(repositoryName));
-        final String canonicalDirPath = mavenRootDir.getCanonicalPath() + File.separator;
-        final String canonicalEntryPath = new File(mavenRootDir,
-                                                   requestedFile).getCanonicalPath();
-        if (!canonicalEntryPath.startsWith(canonicalDirPath)) {
+        HttpHelper helper = new HttpHelper();
+        File file = helper.getFile(repository.getM2RepositoryRootDir(repositoryName), requestedFile);
+        if(file == null){
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
-        requestedFile = canonicalEntryPath.substring(canonicalDirPath.length());
-        final File file = new File(mavenRootDir,
-                                   requestedFile);
 
         if (!file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
