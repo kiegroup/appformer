@@ -141,7 +141,7 @@ public class M2ServletContextListener implements ServletContextListener {
                     props.load(bis);
                     bis.close();
                     return props;
-                } else {
+                } else{
                     continue;
                 }
             }
@@ -178,10 +178,14 @@ public class M2ServletContextListener implements ServletContextListener {
         ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
         artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(artifactRepositoryPreference.getGlobalM2RepoDir());
+        String global = artifactRepositoryPreference.getGlobalM2RepoDir();
+        if(global == null){
+            global = "repositories" +File.separator +"kie" +File.separator +"global";
+            logger.info("using fallback {}",global);
+        }
+        LocalRepository localRepo = new LocalRepository(global);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
-
         return session;
     }
 
