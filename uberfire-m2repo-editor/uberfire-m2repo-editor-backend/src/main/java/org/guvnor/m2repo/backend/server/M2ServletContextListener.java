@@ -50,7 +50,7 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.guvnor.common.services.project.model.GAV;
-import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
+import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +68,7 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String GROUP_ID = "groupId";
     private final String ARTIFACT_ID = "artifactId";
     private final String VERSION = "version";
+    private final String POM_PROPERTIES = "pom.properties";
     private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
     private String MAVEN_META_INF = "META-INF" + File.separator + "maven";
 
@@ -133,7 +134,7 @@ public class M2ServletContextListener implements ServletContextListener {
             Enumeration<? extends ZipEntry> e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = e.nextElement();
-                String end = "pom.properties";
+                String end = POM_PROPERTIES;
                 if (!entry.isDirectory() && entry.getName().startsWith(MAVEN_META_INF) && entry.getName().endsWith(end)) {
                     BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
                     Properties props = new Properties();
@@ -174,8 +175,9 @@ public class M2ServletContextListener implements ServletContextListener {
     }
 
     private RepositorySystemSession newSession(RepositorySystem system) {
+        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME);
+        LocalRepository localRepo = new LocalRepository(artifactRepositoryPreference.getGlobalM2RepoDir());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
 

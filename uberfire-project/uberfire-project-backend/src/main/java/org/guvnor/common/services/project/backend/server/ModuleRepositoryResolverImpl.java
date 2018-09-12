@@ -69,6 +69,7 @@ import org.guvnor.common.services.project.preferences.GAVPreferences;
 import org.guvnor.common.services.project.service.ModuleRepositoryResolver;
 import org.guvnor.common.services.shared.preferences.GuvnorPreferenceScopes;
 import org.guvnor.common.services.shared.preferences.WorkbenchPreferenceScopeResolutionStrategies;
+import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,16 +148,16 @@ public class ModuleRepositoryResolverImpl
             final org.uberfire.java.nio.file.Path nioPomXMLPath = Paths.convert(pomXMLPath);
             final String pomXML = ioService.readAllString(nioPomXMLPath);
 
-            final InputStream pomStream = new ByteArrayInputStream(pomXML.getBytes(StandardCharsets.UTF_8));
-            //final MavenProject mavenProject = MavenProjectLoader.parseMavenPom(pomStream);
-            //final Aether aether = new Aether(mavenProject);
+            /*final InputStream pomStream = new ByteArrayInputStream(pomXML.getBytes(StandardCharsets.UTF_8));
+            final MavenProject mavenProject = MavenProjectLoader.parseMavenPom(pomStream);
+            final Aether aether = new Aether(mavenProject);
 
-            //final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);
+            final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);*/
 
             //Local Repository
             repositories.add(makeRepositoryMetaData( newSession(newRepositorySystem()).getLocalRepository(),
                                                     MavenRepositorySource.LOCAL));
-/*
+            /*
             if (remoteRepositories.isEmpty()) {
                 return repositories;
             }
@@ -183,9 +184,9 @@ public class ModuleRepositoryResolverImpl
     }
 
     private RepositorySystemSession newSession(RepositorySystem system) {
+        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        //LocalRepository localRepo = new LocalRepository(ArtifactRepositoryService.GLOBAL_M2_REPO_NAME);
-        LocalRepository localRepo = new LocalRepository("global-m2-repo");
+        LocalRepository localRepo = new LocalRepository(artifactRepositoryPreference.getGlobalM2RepoDir());
 
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
