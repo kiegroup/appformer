@@ -27,7 +27,7 @@ import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.EnvironmentParameters;
 import org.guvnor.structure.repositories.PublicURI;
 import org.guvnor.structure.repositories.Repository;
-import org.guvnor.structure.repositories.RepositoryExternalUpdate;
+import org.guvnor.structure.repositories.RepositoryExternalUpdateEvent;
 import org.guvnor.structure.repositories.impl.DefaultPublicURI;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.guvnor.structure.server.config.ConfigGroup;
@@ -38,8 +38,6 @@ import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.extensions.FileSystemHooks;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.spaces.SpacesAPI;
 
 import static org.uberfire.backend.server.util.Paths.convert;
@@ -49,13 +47,13 @@ public class GitRepositoryBuilder {
     private final IOService ioService;
     private final PasswordService secureService;
     private SpacesAPI spacesAPI;
-    private Event<RepositoryExternalUpdate> repositoryExternalUpdate;
+    private Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate;
     private GitRepository repo;
 
     public GitRepositoryBuilder(final IOService ioService,
                                 final PasswordService secureService,
                                 final SpacesAPI spacesAPI,
-                                Event<RepositoryExternalUpdate> repositoryExternalUpdate) {
+                                Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate) {
         this.ioService = ioService;
         this.secureService = secureService;
         this.spacesAPI = spacesAPI;
@@ -160,7 +158,7 @@ public class GitRepositoryBuilder {
     }
 
     private FileSystemHooks.FileSystemHook<String> externalUpdatedCallBack() {
-        return fsName -> repositoryExternalUpdate.fire(new RepositoryExternalUpdate(fsName, repo.getSpace()));
+        return fsName -> repositoryExternalUpdate.fire(new RepositoryExternalUpdateEvent(repo));
     }
 
     /**

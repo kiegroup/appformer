@@ -22,7 +22,7 @@ import javax.inject.Named;
 
 import org.guvnor.structure.repositories.EnvironmentParameters;
 import org.guvnor.structure.repositories.Repository;
-import org.guvnor.structure.repositories.RepositoryExternalUpdate;
+import org.guvnor.structure.repositories.RepositoryExternalUpdateEvent;
 import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigItem;
 import org.guvnor.structure.server.config.PasswordService;
@@ -42,7 +42,7 @@ public class GitRepositoryFactoryHelper implements RepositoryFactoryHelper {
 
     private SpacesAPI spacesAPI;
 
-    private Event<RepositoryExternalUpdate> repositoryExternalUpdate;
+    private Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate;
 
     @Inject
     private PasswordService secureService;
@@ -54,7 +54,7 @@ public class GitRepositoryFactoryHelper implements RepositoryFactoryHelper {
     public GitRepositoryFactoryHelper(@Named("ioStrategy") IOService indexedIOService,
                                       @Named("configIO") IOService notIndexedIOService,
                                       SpacesAPI spacesAPI,
-                                      Event<RepositoryExternalUpdate> repositoryExternalUpdate) {
+                                      Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate) {
         this.indexedIOService = indexedIOService;
         this.notIndexedIOService = notIndexedIOService;
         this.spacesAPI = spacesAPI;

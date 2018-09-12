@@ -19,24 +19,18 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.spaces.Space;
 
 @Portable
-public class RepositoryExternalUpdate {
+public class RepositoryExternalUpdateEvent {
 
-    private String fileSystemName;
-    private Space space;
+    private Repository repository;
 
-    public RepositoryExternalUpdate() {
+    public RepositoryExternalUpdateEvent() {
     }
 
-    public RepositoryExternalUpdate(String fileSystemName, Space space) {
-        this.fileSystemName = fileSystemName;
-        this.space = space;
+    public RepositoryExternalUpdateEvent(final Repository repository) {
+        this.repository = repository;
     }
 
-    public String getFileSystemName() {
-        return fileSystemName;
-    }
-
-    public Space getSpace() {
-        return space;
+    public Repository getRepository() {
+        return repository;
     }
 }
