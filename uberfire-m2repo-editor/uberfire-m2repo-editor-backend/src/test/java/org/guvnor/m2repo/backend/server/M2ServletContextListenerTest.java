@@ -35,7 +35,6 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.guvnor.common.services.project.model.GAV;
-import org.guvnor.m2repo.backend.server.repositories.ArtifactRepositoryService;
 import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
 import org.junit.After;
 import org.junit.Test;
