@@ -35,7 +35,6 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.guvnor.common.services.project.model.GAV;
-import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
 import org.junit.After;
 import org.junit.Test;
 
@@ -44,10 +43,8 @@ import static org.assertj.core.api.Assertions.*;
 public class M2ServletContextListenerTest {
 
     private static RepositorySystemSession newSession(RepositorySystem system) {
-        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
-        artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(artifactRepositoryPreference.getGlobalM2RepoDir());
+        LocalRepository localRepo = new LocalRepository(M2ServletContextListener.getGlobalRepoPath());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
 
@@ -106,18 +103,19 @@ public class M2ServletContextListenerTest {
 
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(getArtifact());
-        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(session, artifactRequest);
-
+        ArtifactResult result = Aether.getAether().getSystem().resolveArtifact(session,
+                                                                               artifactRequest);
 
         assertThat(result.isMissing()).isFalse();
         assertThat(result.isResolved()).isTrue();
         String absolutePath = result.getArtifact().getFile().toString();
-        String folder = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
+        String folder = absolutePath.substring(0,
+                                               absolutePath.lastIndexOf(File.separator));
         File remoteRepos = new File(folder + File.separator + "_remote.repositories");
         assertThat(remoteRepos.exists()).isTrue();
-        File metadata = new File(folder + File.separator +"maven-metadata-local.xml");
+        File metadata = new File(folder + File.separator + "maven-metadata-local.xml");
         assertThat(metadata.exists()).isTrue();
-        File pom = new File(folder + File.separator +"uberfire-m2repo-editor-backend-100-SNAPSHOT.pom");
+        File pom = new File(folder + File.separator + "uberfire-m2repo-editor-backend-100-SNAPSHOT.pom");
         assertThat(pom.exists()).isTrue();
     }
 
