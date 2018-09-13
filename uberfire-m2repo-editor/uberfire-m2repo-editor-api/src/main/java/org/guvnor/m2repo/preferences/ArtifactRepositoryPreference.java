@@ -17,6 +17,8 @@
 
 package org.guvnor.m2repo.preferences;
 
+import java.io.File;
+
 import org.uberfire.preferences.shared.PropertyFormType;
 import org.uberfire.preferences.shared.annotations.Property;
 import org.uberfire.preferences.shared.annotations.WorkbenchPreference;
@@ -42,6 +44,16 @@ public class ArtifactRepositoryPreference implements BasePreference<ArtifactRepo
 
     @Property(bundleKey = "ArtifactRepositoryPreference.DistributionManagementM2RepoDirEnabled", formType = PropertyFormType.BOOLEAN)
     private boolean distributionManagementM2RepoDirEnabled;
+
+    public static String getGlobalM2RepoDirWithFallback() {
+        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
+        artifactRepositoryPreference = artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
+        String global = artifactRepositoryPreference.getGlobalM2RepoDir();
+        if (global == null) {
+            global = "repositories" + File.separator + "kie" + File.separator + "global";
+        }
+        return global;
+    }
 
     @Override
     public ArtifactRepositoryPreference defaultValue(final ArtifactRepositoryPreference defaultValue) {

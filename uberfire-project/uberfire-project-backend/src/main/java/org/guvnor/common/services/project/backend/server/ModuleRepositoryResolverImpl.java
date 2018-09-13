@@ -182,21 +182,9 @@ public class ModuleRepositoryResolverImpl
         return repositories;
     }
 
-    private String getGlobalRepoPath() {
-        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
-        artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
-        String global = artifactRepositoryPreference.getGlobalM2RepoDir();
-        if (global == null) {
-            global = "repositories" + File.separator + "kie" + File.separator + "global";
-            log.info("using fallback {}",
-                     global);
-        }
-        return global;
-    }
-
     private RepositorySystemSession newSession(RepositorySystem system) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(getGlobalRepoPath());
+        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryPreference.getGlobalM2RepoDirWithFallback());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
         return session;

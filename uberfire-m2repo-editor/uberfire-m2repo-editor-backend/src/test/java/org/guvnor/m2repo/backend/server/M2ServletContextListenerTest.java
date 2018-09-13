@@ -35,6 +35,7 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
 import org.junit.After;
 import org.junit.Test;
 
@@ -44,7 +45,7 @@ public class M2ServletContextListenerTest {
 
     private static RepositorySystemSession newSession(RepositorySystem system) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(M2ServletContextListener.getGlobalRepoPath());
+        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryPreference.getGlobalM2RepoDirWithFallback());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
 
