@@ -19,7 +19,9 @@ package org.uberfire.jsbridge.client;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -42,6 +44,8 @@ import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.workbench.Workbench;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @Dependent
@@ -151,13 +155,15 @@ public class AppFormerJsBridge {
                 }
             };
 
-            final Function<Object, Object> gwtToJson = value -> value == null
-                    ? null
-                    : Marshalling.toJSON(value);
+            final Function<Object, Object> gwtToJson = value -> value != null
+                    ? Marshalling.toJSON(value)
+                    : null;
+
+            Object[] objects = stream(((String[]) params[0])).map(jsonToGwt).toArray();
 
             MessageBuilder.createCall()
                     .call(serviceFqcn)
-                    .endpoint(method + ":", qualifiers, Arrays.stream(params).map(jsonToGwt).toArray())
+                    .endpoint(method, qualifiers, objects)
                     .respondTo(Object.class, value -> res.onInvoke(gwtToJson.apply(value)))
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
