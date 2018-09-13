@@ -188,6 +188,7 @@ public class M2ServletContextListener implements ServletContextListener {
             pom = new SubArtifact(jarArtifact, null, "pom").setFile(target.toFile());
         } catch (Exception ex) {
             pom = null;
+            logger.error(ex.getMessage(), ex);
         }
 
         try {
