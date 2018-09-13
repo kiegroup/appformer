@@ -74,7 +74,6 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String GROUP_ID = "groupId";
     private final String ARTIFACT_ID = "artifactId";
     private final String VERSION = "version";
-    private final String POM_PROPERTIES = "pom.properties";
     private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
     private String MAVEN_META_INF = "META-INF" + File.separator + "maven";
     private final Path tempDir;
@@ -136,21 +135,21 @@ public class M2ServletContextListener implements ServletContextListener {
         return gav;
     }
 
-    public Properties readZipFile(String zipFilePath) {
+
+    private Properties readZipFile(String zipFilePath) {
         try {
             ZipFile zipFile = new ZipFile(zipFilePath);
             Enumeration<? extends ZipEntry> e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = e.nextElement();
-                String end = POM_PROPERTIES;
-                if (!entry.isDirectory() && entry.getName().startsWith(MAVEN_META_INF) && entry.getName().endsWith(end)) {
-                    BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry));
-                    Properties props = new Properties();
-                    props.load(bis);
-                    bis.close();
-                    return props;
-                } else {
-                    continue;
+                if (!entry.isDirectory()
+                        && entry.getName().startsWith(MAVEN_META_INF)
+                        && entry.getName().endsWith("pom.properties")) {
+                    try (BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(entry))) {
+                        Properties props = new Properties();
+                        props.load(bis);
+                        return props;
+                    }
                 }
             }
         } catch (IOException e) {
@@ -161,7 +160,7 @@ public class M2ServletContextListener implements ServletContextListener {
         return new Properties();
     }
 
-    public boolean deploy(final GAV gav,
+    public void deploy(final GAV gav,
                           final String jarPath,
                           final RepositorySystemSession session) {
         Artifact jarArtifact = new DefaultArtifact(gav.getGroupId(),
@@ -199,12 +198,10 @@ public class M2ServletContextListener implements ServletContextListener {
             }
             InstallResult result = Aether.getAether().getSystem().install(session,
                                                                           installRequest);
-            return result.getArtifacts().size() >= 1;
         } catch (InstallationException e) {
             logger.error(e.getMessage(),
                          e);
         }
-        return false;
     }
 
     private RepositorySystemSession newSession(RepositorySystem system) {

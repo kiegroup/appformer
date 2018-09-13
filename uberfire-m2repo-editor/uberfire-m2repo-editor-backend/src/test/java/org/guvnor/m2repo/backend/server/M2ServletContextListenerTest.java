@@ -77,7 +77,7 @@ public class M2ServletContextListenerTest {
                                                                                artifactRequest);
         if (!result.isMissing()) {
             File artifactFile = result.getArtifact().getFile();
-            assertThat(artifactFile.delete());
+            assertThat(artifactFile.delete()).isTrue();
         }
     }
 
