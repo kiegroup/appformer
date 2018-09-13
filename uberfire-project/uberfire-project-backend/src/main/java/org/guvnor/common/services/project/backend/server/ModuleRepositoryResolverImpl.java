@@ -17,30 +17,41 @@
 package org.guvnor.common.services.project.backend.server;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.maven.model.Model;
+
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.artifact.ProjectArtifact;
+
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.appformer.maven.integration.Aether;
+import org.appformer.maven.integration.MavenRepositoryConfiguration;
 import org.appformer.maven.integration.embedder.MavenEmbedder;
 import org.appformer.maven.integration.embedder.MavenProjectLoader;
 import org.appformer.maven.integration.embedder.MavenSettings;
-import org.eclipse.aether.artifact.Artifact;
+
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.ArtifactRepository;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.LocalRepository;
@@ -59,6 +70,7 @@ import org.guvnor.common.services.project.preferences.GAVPreferences;
 import org.guvnor.common.services.project.service.ModuleRepositoryResolver;
 import org.guvnor.common.services.shared.preferences.GuvnorPreferenceScopes;
 import org.guvnor.common.services.shared.preferences.WorkbenchPreferenceScopeResolutionStrategies;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +79,7 @@ import org.uberfire.backend.server.cdi.workspace.WorkspaceScoped;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+
 import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.preferences.shared.impl.PreferenceScopeResolutionStrategyInfo;
 
@@ -122,6 +135,80 @@ public class ModuleRepositoryResolverImpl
 
         return repositories;
     }
+/*
+Tweaked version
+    @Override
+    public Set<MavenRepositoryMetadata> getRemoteRepositoriesMetaData(final Module module) {
+        if (module == null) {
+            return Collections.emptySet();
+        }
+
+        final Set<MavenRepositoryMetadata> repositories = new HashSet<MavenRepositoryMetadata>();
+        org.uberfire.java.nio.file.Path tempFile = null;
+        try {
+            //Load Project's pom.xml
+            final Path pomXMLPath = module.getPomXMLPath();
+            final org.uberfire.java.nio.file.Path nioPomXMLPath = Paths.convert(pomXMLPath);
+            final String pomXML = ioService.readAllString(nioPomXMLPath);
+            tempFile = Files.createTempFile("pom", "xml");
+            Files.write(tempFile, pomXML.getBytes());
+            final MavenProject mavenProject = getMavenProjectWithLocalRepo(tempFile.toAbsolutePath().toString());
+
+
+            final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);
+
+            //Local Repository
+            ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
+            artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
+            ArtifactRepository localRepo = new LocalRepository(artifactRepositoryPreference.getGlobalM2RepoDir());
+            repositories.add(makeRepositoryMetaData(localRepo, MavenRepositorySource.LOCAL));
+
+            if (remoteRepositories.isEmpty()) {
+                return repositories;
+            }
+
+            for (Map.Entry<MavenRepositorySource, Collection<RemoteRepository>> e : remoteRepositories.entrySet()) {
+                repositories.addAll(makeRepositoriesMetaData(e.getValue(),
+                                                             e.getKey()));
+            }
+        } catch (IllegalArgumentException iae) {
+            log.error("Unable to get Remote Repositories for Project '%s'. Returning empty Collection. ",
+                      module.getModuleName(),
+                      iae);
+        } catch (NoSuchFileException nsfe) {
+            log.error("Unable to get Remote Repositories for Project '%s'. Returning empty Collection. ",
+                      module.getModuleName(),
+                      nsfe);
+        } catch (org.uberfire.java.nio.IOException ioe) {
+            log.error("Unable to get Remote Repositories for Project '%s'. Returning empty Collection. ",
+                      module.getModuleName(),
+                      ioe);
+        }finally {
+            if(tempFile != null) {
+                Files.deleteIfExists(tempFile);
+            }
+        }
+
+        return repositories;
+    }
+
+       private MavenProject getMavenProjectWithLocalRepo(String pomPath){
+        Model model = null;
+        FileReader reader = null;
+        MavenXpp3Reader mavenreader = new MavenXpp3Reader();
+        try {
+            reader = new FileReader(pomPath);
+            model = mavenreader.read(reader);
+            model.setPomFile(new File(pomPath));
+        }catch(Exception ex){
+            log.error(ex.getMessage(), ex);
+        }
+        MavenProject prj = new MavenProject(model);
+        org.apache.maven.artifact.Artifact  artifact = new ProjectArtifact(prj);
+        prj.setArtifact(artifact);
+        return prj;
+    }
+    */
 
     @Override
     public Set<MavenRepositoryMetadata> getRemoteRepositoriesMetaData(final Module module) {
@@ -170,6 +257,8 @@ public class ModuleRepositoryResolverImpl
 
         return repositories;
     }
+
+
 
     private Set<MavenRepositoryMetadata> makeRepositoriesMetaData(final Collection<? extends ArtifactRepository> repositories,
                                                                   final MavenRepositorySource source) {
@@ -373,8 +462,15 @@ public class ModuleRepositoryResolverImpl
     private Map<MavenRepositorySource, Collection<RemoteRepository>> getRemoteRepositories() {
         final Map<MavenRepositorySource, Collection<RemoteRepository>> repositories = new HashMap<MavenRepositorySource, Collection<RemoteRepository>>();
 
+        /* RemoteRepository central = new RemoteRepository.Builder( "central", "default", "https://repo.maven.apache.org/maven2" ).build();
+        Set<RemoteRepository> remotes = new HashSet<RemoteRepository>();
+        remotes.add(central);
+        repositories.put(MavenRepositorySource.PROJECT,remotes);*/
+
         //Settings.xml Repositories
         final Collection<RemoteRepository> settingsRepositories = new HashSet<RemoteRepository>(MavenSettings.getMavenRepositoryConfiguration().getRemoteRepositoriesForRequest());
+        RemoteRepository central = new RemoteRepository.Builder( "central", "default", "https://repo.maven.apache.org/maven2" ).build();
+        settingsRepositories.add(central);
         if (settingsRepositories != null) {
             repositories.put(MavenRepositorySource.SETTINGS,
                              settingsRepositories);
@@ -388,6 +484,16 @@ public class ModuleRepositoryResolverImpl
         final Map<MavenRepositorySource, Collection<RemoteRepository>> repositories = new HashMap<MavenRepositorySource, Collection<RemoteRepository>>();
         repositories.putAll(getRemoteRepositories());
 
+        MavenRepositoryConfiguration mavenConfig = new MavenRepositoryConfiguration(MavenSettings.getSettings());
+        Collection coll = mavenConfig.getArtifactRepositoriesForRequest();
+        List list;
+        if (coll instanceof List)
+            list = (List)coll;
+        else
+            list = new ArrayList(coll);
+
+
+        mavenProject.setRemoteArtifactRepositories(list);
         //Project's Repositories, includes those in setting.xml
         final Collection<RemoteRepository> projectRepositories = new HashSet<RemoteRepository>(mavenProject.getRemoteProjectRepositories());
         if (projectRepositories != null) {
@@ -395,18 +501,19 @@ public class ModuleRepositoryResolverImpl
             final Collection<RemoteRepository> settingsRepositories = repositories.get(MavenRepositorySource.SETTINGS);
             removeProjectRepositoriesThatAreInSettings(projectRepositories,
                                                        settingsRepositories);
+
             repositories.put(MavenRepositorySource.PROJECT,
                              projectRepositories);
         }
 
         //Project's <distributionManagement> Repositories
-        final org.apache.maven.artifact.repository.ArtifactRepository distributionManagementRepository = mavenProject.getDistributionManagementArtifactRepository();
+        /*final org.apache.maven.artifact.repository.ArtifactRepository distributionManagementRepository = mavenProject.getDistributionManagementArtifactRepository();
         if (distributionManagementRepository != null) {
             repositories.put(MavenRepositorySource.DISTRIBUTION_MANAGEMENT,
                              new HashSet<RemoteRepository>() {{
                                  add(convertToArtifactRepository(distributionManagementRepository));
                              }});
-        }
+        }*/
 
         return repositories;
     }
