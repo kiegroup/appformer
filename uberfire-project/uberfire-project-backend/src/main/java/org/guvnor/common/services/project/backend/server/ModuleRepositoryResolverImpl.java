@@ -37,11 +37,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Repository;
+
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ProjectArtifact;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.appformer.maven.integration.Aether;
@@ -70,7 +70,7 @@ import org.guvnor.common.services.project.preferences.GAVPreferences;
 import org.guvnor.common.services.project.service.ModuleRepositoryResolver;
 import org.guvnor.common.services.shared.preferences.GuvnorPreferenceScopes;
 import org.guvnor.common.services.shared.preferences.WorkbenchPreferenceScopeResolutionStrategies;
-import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
+
 import org.jboss.errai.bus.server.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ import org.uberfire.backend.server.cdi.workspace.WorkspaceScoped;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.Files;
+
 import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.preferences.shared.impl.PreferenceScopeResolutionStrategyInfo;
 
@@ -135,7 +135,8 @@ public class ModuleRepositoryResolverImpl
 
         return repositories;
     }
-
+/*
+Tweaked version
     @Override
     public Set<MavenRepositoryMetadata> getRemoteRepositoriesMetaData(final Module module) {
         if (module == null) {
@@ -153,10 +154,6 @@ public class ModuleRepositoryResolverImpl
             Files.write(tempFile, pomXML.getBytes());
             final MavenProject mavenProject = getMavenProjectWithLocalRepo(tempFile.toAbsolutePath().toString());
 
-            /*final InputStream pomStream = new ByteArrayInputStream(pomXML.getBytes(StandardCharsets.UTF_8));
-            final MavenProject mavenProject = MavenProjectLoader.parseMavenPom(pomStream);
-            final Aether aether = new Aether(mavenProject);
-*/
 
             final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);
 
@@ -195,7 +192,7 @@ public class ModuleRepositoryResolverImpl
         return repositories;
     }
 
-    private MavenProject getMavenProjectWithLocalRepo(String pomPath){
+       private MavenProject getMavenProjectWithLocalRepo(String pomPath){
         Model model = null;
         FileReader reader = null;
         MavenXpp3Reader mavenreader = new MavenXpp3Reader();
@@ -211,6 +208,57 @@ public class ModuleRepositoryResolverImpl
         prj.setArtifact(artifact);
         return prj;
     }
+    */
+
+    @Override
+    public Set<MavenRepositoryMetadata> getRemoteRepositoriesMetaData(final Module module) {
+        if (module == null) {
+            return Collections.emptySet();
+        }
+
+        final Set<MavenRepositoryMetadata> repositories = new HashSet<MavenRepositoryMetadata>();
+
+        try {
+            //Load Project's pom.xml
+            final Path pomXMLPath = module.getPomXMLPath();
+            final org.uberfire.java.nio.file.Path nioPomXMLPath = Paths.convert(pomXMLPath);
+            final String pomXML = ioService.readAllString(nioPomXMLPath);
+
+            final InputStream pomStream = new ByteArrayInputStream(pomXML.getBytes(StandardCharsets.UTF_8));
+            final MavenProject mavenProject = MavenProjectLoader.parseMavenPom(pomStream);
+            final Aether aether = new Aether(mavenProject);
+            final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);
+
+            //Local Repository
+            repositories.add(makeRepositoryMetaData(aether.getSession().getLocalRepository(),
+                                                    MavenRepositorySource.LOCAL));
+
+            if (remoteRepositories.isEmpty()) {
+                return repositories;
+            }
+
+            for (Map.Entry<MavenRepositorySource, Collection<RemoteRepository>> e : remoteRepositories.entrySet()) {
+                repositories.addAll(makeRepositoriesMetaData(e.getValue(),
+                                                             e.getKey()));
+            }
+        } catch (IllegalArgumentException iae) {
+            log.error("Unable to get Remote Repositories for Project '%s'. Returning empty Collection. ",
+                      module.getModuleName(),
+                      iae);
+        } catch (NoSuchFileException nsfe) {
+            log.error("Unable to get Remote Repositories for Project '%s'. Returning empty Collection. ",
+                      module.getModuleName(),
+                      nsfe);
+        } catch (org.uberfire.java.nio.IOException ioe) {
+            log.error("Unable to get Remote Repositories for Project '%s'. Returning empty Collection. ",
+                      module.getModuleName(),
+                      ioe);
+        }
+
+        return repositories;
+    }
+
+
 
     private Set<MavenRepositoryMetadata> makeRepositoriesMetaData(final Collection<? extends ArtifactRepository> repositories,
                                                                   final MavenRepositorySource source) {
