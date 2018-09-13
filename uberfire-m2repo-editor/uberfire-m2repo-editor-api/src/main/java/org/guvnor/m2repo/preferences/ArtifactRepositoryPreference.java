@@ -17,8 +17,6 @@
 
 package org.guvnor.m2repo.preferences;
 
-import java.io.File;
-
 import org.uberfire.preferences.shared.PropertyFormType;
 import org.uberfire.preferences.shared.annotations.Property;
 import org.uberfire.preferences.shared.annotations.WorkbenchPreference;
@@ -50,7 +48,7 @@ public class ArtifactRepositoryPreference implements BasePreference<ArtifactRepo
         artifactRepositoryPreference = artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
         String global = artifactRepositoryPreference.getGlobalM2RepoDir();
         if (global == null) {
-            global = "repositories" + File.separator + "kie" + File.separator + "global";
+            global = "repositories/kie/global";
         }
         return global;
     }
