@@ -151,12 +151,11 @@ public class ModuleRepositoryResolverImpl
 
             final InputStream pomStream = new ByteArrayInputStream(pomXML.getBytes(StandardCharsets.UTF_8));
             final MavenProject mavenProject = MavenProjectLoader.parseMavenPom(pomStream);
-            final Aether aether = new Aether(mavenProject);
             final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);
 
             //Local Repository
-            repositories.add(makeRepositoryMetaData( newSession(newRepositorySystem()).getLocalRepository(),
-                                                     MavenRepositorySource.LOCAL));
+            repositories.add(makeRepositoryMetaData(newSession(newRepositorySystem()).getLocalRepository(),
+                                                    MavenRepositorySource.LOCAL));
 
             if (remoteRepositories.isEmpty()) {
                 return repositories;
@@ -183,20 +182,26 @@ public class ModuleRepositoryResolverImpl
         return repositories;
     }
 
-    private RepositorySystemSession newSession(RepositorySystem system) {
+    private String getGlobalRepoPath() {
         ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
         artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
         String global = artifactRepositoryPreference.getGlobalM2RepoDir();
         if (global == null) {
             global = "repositories" + File.separator + "kie" + File.separator + "global";
-            log.info("using fallback {}", global);
+            log.info("using fallback {}",
+                     global);
         }
-        LocalRepository localRepo = new LocalRepository(global);
+        return global;
+    }
+
+    private RepositorySystemSession newSession(RepositorySystem system) {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+        LocalRepository localRepo = new LocalRepository(getGlobalRepoPath());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
         return session;
     }
+
     private RepositorySystem newRepositorySystem() {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
         locator.addService(RepositoryConnectorFactory.class,
@@ -274,7 +279,8 @@ public class ModuleRepositoryResolverImpl
                                                                          final Module module,
                                                                          final MavenRepositoryMetadata... filter) {
         GAVPreferences gavPreferences = gavPreferencesProvider.get();
-        final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo = scopeResolutionStrategies.getUserInfoFor(GuvnorPreferenceScopes.PROJECT, module.getEncodedIdentifier());
+        final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo = scopeResolutionStrategies.getUserInfoFor(GuvnorPreferenceScopes.PROJECT,
+                                                                                                                           module.getEncodedIdentifier());
         gavPreferences.load(scopeResolutionStrategyInfo);
         if (gavPreferences.isConflictingGAVCheckDisabled()) {
             return Collections.EMPTY_SET;

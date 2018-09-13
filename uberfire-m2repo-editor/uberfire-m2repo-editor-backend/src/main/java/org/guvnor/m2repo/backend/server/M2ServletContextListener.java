@@ -74,9 +74,9 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String GROUP_ID = "groupId";
     private final String ARTIFACT_ID = "artifactId";
     private final String VERSION = "version";
+    private final Path tempDir;
     private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
     private String MAVEN_META_INF = "META-INF" + File.separator + "maven";
-    private final Path tempDir;
 
     public M2ServletContextListener() {
         Path tempDir = null;
@@ -111,7 +111,8 @@ public class M2ServletContextListener implements ServletContextListener {
             RepositorySystemSession session = newSession(newRepositorySystem());
             for (Path p : ds) {
                 if (p.toString().endsWith(JAR_EXT)) {
-                    deployJar(p.toAbsolutePath().toString(), session);
+                    deployJar(p.toAbsolutePath().toString(),
+                              session);
                     i++;
                 }
             }
@@ -130,11 +131,12 @@ public class M2ServletContextListener implements ServletContextListener {
             gav = new GAV(props.getProperty(GROUP_ID),
                           props.getProperty(ARTIFACT_ID),
                           props.getProperty(VERSION));
-            deploy(gav, file, session);
+            deploy(gav,
+                   file,
+                   session);
         }
         return gav;
     }
-
 
     private Properties readZipFile(String zipFilePath) {
         try {
@@ -161,8 +163,8 @@ public class M2ServletContextListener implements ServletContextListener {
     }
 
     public void deploy(final GAV gav,
-                          final String jarPath,
-                          final RepositorySystemSession session) {
+                       final String jarPath,
+                       final RepositorySystemSession session) {
         Artifact jarArtifact = new DefaultArtifact(gav.getGroupId(),
                                                    gav.getArtifactId(),
                                                    JAR_ARTIFACT,
@@ -179,16 +181,22 @@ public class M2ServletContextListener implements ServletContextListener {
                 if (entry.getName().endsWith("pom.xml")) {
                     final String jarFileName = jarArtifact.getFile().toPath().getFileName().toString();
                     Path pomDir = Files.createDirectory(tempDir.resolve(jarFileName));
-                    target = Files.createFile(pomDir.resolve(jarFileName.substring(0, jarFileName.length() - 4) + ".pom"));
+                    target = Files.createFile(pomDir.resolve(jarFileName.substring(0,
+                                                                                   jarFileName.length() - 4) + ".pom"));
                     InputStream stream = jarFile.getInputStream(entry);
-                    java.nio.file.Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
+                    java.nio.file.Files.copy(stream,
+                                             target,
+                                             StandardCopyOption.REPLACE_EXISTING);
                     break;
                 }
             }
-            pom = new SubArtifact(jarArtifact, null, "pom").setFile(target.toFile());
+            pom = new SubArtifact(jarArtifact,
+                                  null,
+                                  "pom").setFile(target.toFile());
         } catch (Exception ex) {
             pom = null;
-            logger.error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(),
+                         ex);
         }
 
         try {
@@ -206,15 +214,8 @@ public class M2ServletContextListener implements ServletContextListener {
     }
 
     private RepositorySystemSession newSession(RepositorySystem system) {
-        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
-        artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        String global = artifactRepositoryPreference.getGlobalM2RepoDir();
-        if (global == null) {
-            global = "repositories" + File.separator + "kie" + File.separator + "global";
-            logger.info("using fallback {}", global);
-        }
-        LocalRepository localRepo = new LocalRepository(global);
+        LocalRepository localRepo = new LocalRepository(getGlobalRepoPath());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
         return session;
@@ -229,5 +230,16 @@ public class M2ServletContextListener implements ServletContextListener {
         locator.addService(TransporterFactory.class,
                            HttpTransporterFactory.class);
         return locator.getService(RepositorySystem.class);
+    }
+
+    public static String getGlobalRepoPath(){
+        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
+        artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
+        String global = artifactRepositoryPreference.getGlobalM2RepoDir();
+        if (global == null) {
+            global = "repositories" + File.separator + "kie" + File.separator + "global";
+            logger.info("using fallback {}", global);
+        }
+        return global;
     }
 }
