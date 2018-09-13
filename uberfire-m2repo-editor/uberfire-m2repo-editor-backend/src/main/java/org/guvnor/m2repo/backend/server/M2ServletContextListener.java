@@ -45,7 +45,6 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.installation.InstallRequest;
-import org.eclipse.aether.installation.InstallResult;
 import org.eclipse.aether.installation.InstallationException;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
@@ -67,22 +66,24 @@ public class M2ServletContextListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(M2ServletContextListener.class);
 
-    private final String JAR_EXT = ".jar";
-    private final String WEB_INF_FOLDER = "WEB-INF";
-    private final String LIB_FOLDER = "lib";
-    private final String JAR_ARTIFACT = "jar";
-    private final String GROUP_ID = "groupId";
-    private final String ARTIFACT_ID = "artifactId";
-    private final String VERSION = "version";
+    private static final String JAR_EXT = ".jar";
+    private static final String WEB_INF_FOLDER = "WEB-INF";
+    private static final String LIB_FOLDER = "lib";
+    private static final String JAR_ARTIFACT = "jar";
+    private static final String GROUP_ID = "groupId";
+    private static final String ARTIFACT_ID = "artifactId";
+    private static final String VERSION = "version";
+    private static final String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
+    private static final String MAVEN_META_INF = "META-INF" + File.separator + "maven";
     private final Path tempDir;
-    private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
-    private String MAVEN_META_INF = "META-INF" + File.separator + "maven";
 
     public M2ServletContextListener() {
         Path tempDir = null;
         try {
             tempDir = Files.createTempDirectory("pom-extract");
         } catch (IOException e) {
+            logger.error(e.getMessage(),
+                         e);
         }
         this.tempDir = tempDir;
     }
@@ -215,7 +216,7 @@ public class M2ServletContextListener implements ServletContextListener {
 
     private RepositorySystemSession newSession(RepositorySystem system) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepo = new LocalRepository(getGlobalRepoPath());
+        LocalRepository localRepo = new LocalRepository(ArtifactRepositoryPreference.getGlobalM2RepoDirWithFallback());
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
                                                                            localRepo));
         return session;
@@ -230,16 +231,5 @@ public class M2ServletContextListener implements ServletContextListener {
         locator.addService(TransporterFactory.class,
                            HttpTransporterFactory.class);
         return locator.getService(RepositorySystem.class);
-    }
-
-    public static String getGlobalRepoPath(){
-        ArtifactRepositoryPreference artifactRepositoryPreference = new ArtifactRepositoryPreference();
-        artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
-        String global = artifactRepositoryPreference.getGlobalM2RepoDir();
-        if (global == null) {
-            global = "repositories" + File.separator + "kie" + File.separator + "global";
-            logger.info("using fallback {}", global);
-        }
-        return global;
     }
 }
