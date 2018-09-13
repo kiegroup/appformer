@@ -18,15 +18,18 @@ package org.guvnor.m2repo.backend.server;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -49,6 +52,7 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.util.artifact.SubArtifact;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.preferences.ArtifactRepositoryPreference;
 import org.slf4j.Logger;
@@ -61,6 +65,8 @@ import org.slf4j.LoggerFactory;
 @WebListener
 public class M2ServletContextListener implements ServletContextListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(M2ServletContextListener.class);
+
     private final String JAR_EXT = ".jar";
     private final String WEB_INF_FOLDER = "WEB-INF";
     private final String LIB_FOLDER = "lib";
@@ -71,10 +77,15 @@ public class M2ServletContextListener implements ServletContextListener {
     private final String POM_PROPERTIES = "pom.properties";
     private String JARS_FOLDER = File.separator + WEB_INF_FOLDER + File.separator + LIB_FOLDER + File.separator;
     private String MAVEN_META_INF = "META-INF" + File.separator + "maven";
-
-    private Logger logger = LoggerFactory.getLogger(M2ServletContextListener.class);
+    private final Path tempDir;
 
     public M2ServletContextListener() {
+        Path tempDir = null;
+        try {
+            tempDir = Files.createTempDirectory("pom-extract");
+        } catch (IOException e) {
+        }
+        this.tempDir = tempDir;
     }
 
     @Override
@@ -95,14 +106,13 @@ public class M2ServletContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
     }
 
-    private int deployJarsFromWar(String path) {
+    private int deployJarsFromWar(final String path) {
         int i = 0;
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(path))) {
             RepositorySystemSession session = newSession(newRepositorySystem());
             for (Path p : ds) {
                 if (p.toString().endsWith(JAR_EXT)) {
-                    deployJar(p.toAbsolutePath().toString(),
-                              session);
+                    deployJar(p.toAbsolutePath().toString(), session);
                     i++;
                 }
             }
@@ -113,17 +123,15 @@ public class M2ServletContextListener implements ServletContextListener {
         return i;
     }
 
-    public GAV deployJar(String file,
-                         RepositorySystemSession session) {
+    public GAV deployJar(final String file,
+                         final RepositorySystemSession session) {
         GAV gav = new GAV();
         Properties props = readZipFile(file);
         if (!props.isEmpty()) {
             gav = new GAV(props.getProperty(GROUP_ID),
                           props.getProperty(ARTIFACT_ID),
                           props.getProperty(VERSION));
-            deploy(gav,
-                   file,
-                   session);
+            deploy(gav, file, session);
         }
         return gav;
     }
@@ -141,7 +149,7 @@ public class M2ServletContextListener implements ServletContextListener {
                     props.load(bis);
                     bis.close();
                     return props;
-                } else{
+                } else {
                     continue;
                 }
             }
@@ -153,20 +161,45 @@ public class M2ServletContextListener implements ServletContextListener {
         return new Properties();
     }
 
-    public boolean deploy(GAV gav,
-                          String jarFile,
-                          RepositorySystemSession session) {
+    public boolean deploy(final GAV gav,
+                          final String jarPath,
+                          final RepositorySystemSession session) {
         Artifact jarArtifact = new DefaultArtifact(gav.getGroupId(),
                                                    gav.getArtifactId(),
                                                    JAR_ARTIFACT,
                                                    gav.getVersion());
-        jarArtifact = jarArtifact.setFile(new File(jarFile));
+        jarArtifact = jarArtifact.setFile(new File(jarPath));
+
+        Artifact pom = null;
+        try {
+            final ZipFile jarFile = new ZipFile(jarArtifact.getFile());
+            Path target = null;
+            final Enumeration<? extends ZipEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.getName().endsWith("pom.xml")) {
+                    final String jarFileName = jarArtifact.getFile().toPath().getFileName().toString();
+                    Path pomDir = Files.createDirectory(tempDir.resolve(jarFileName));
+                    target = Files.createFile(pomDir.resolve(jarFileName.substring(0, jarFileName.length() - 4) + ".pom"));
+                    InputStream stream = jarFile.getInputStream(entry);
+                    java.nio.file.Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
+                    break;
+                }
+            }
+            pom = new SubArtifact(jarArtifact, null, "pom").setFile(target.toFile());
+        } catch (Exception ex) {
+            pom = null;
+        }
+
         try {
             final InstallRequest installRequest = new InstallRequest();
             installRequest.addArtifact(jarArtifact);
+            if (pom != null) {
+                installRequest.addArtifact(pom);
+            }
             InstallResult result = Aether.getAether().getSystem().install(session,
                                                                           installRequest);
-            return result.getArtifacts().size() == 1;
+            return result.getArtifacts().size() >= 1;
         } catch (InstallationException e) {
             logger.error(e.getMessage(),
                          e);
@@ -179,9 +212,9 @@ public class M2ServletContextListener implements ServletContextListener {
         artifactRepositoryPreference.defaultValue(artifactRepositoryPreference);
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
         String global = artifactRepositoryPreference.getGlobalM2RepoDir();
-        if(global == null){
-            global = "repositories" +File.separator +"kie" +File.separator +"global";
-            logger.info("using fallback {}",global);
+        if (global == null) {
+            global = "repositories" + File.separator + "kie" + File.separator + "global";
+            logger.info("using fallback {}", global);
         }
         LocalRepository localRepo = new LocalRepository(global);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session,
