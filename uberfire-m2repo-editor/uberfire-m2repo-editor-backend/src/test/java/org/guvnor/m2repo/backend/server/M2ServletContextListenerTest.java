@@ -110,6 +110,14 @@ public class M2ServletContextListenerTest {
                                                                                artifactRequest);
         assertThat(result.isMissing()).isFalse();
         assertThat(result.isResolved()).isTrue();
+        String absolutePath = result.getArtifact().getFile().toString();
+        String folder = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
+        File remoteRepos = new File(folder + File.separator + "_remote.repositories");
+        assertThat(remoteRepos.exists()).isTrue();
+        File metadata = new File(folder + File.separator +"maven-metadata-local.xml");
+        assertThat(metadata.exists()).isTrue();
+        File pom = new File(folder + File.separator +"uberfire-m2repo-editor-backend-100-SNAPSHOT.pom");
+        assertThat(pom.exists()).isTrue();
     }
 
     private boolean checksIfArtifactIsPresent(RepositorySystemSession session) {
