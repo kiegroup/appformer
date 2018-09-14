@@ -1500,8 +1500,8 @@
     </dependency>
     
     <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>appformer-js-ts-exporter</artifactId>
+      <groupId>org.appformer</groupId>
+      <artifactId>appformer-api-ts-exporter</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
