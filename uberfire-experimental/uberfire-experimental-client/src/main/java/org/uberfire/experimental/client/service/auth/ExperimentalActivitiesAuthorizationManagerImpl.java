@@ -14,23 +14,31 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.mvp;
+package org.uberfire.experimental.client.service.auth;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.google.gwt.dom.client.Document;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
+import org.uberfire.client.workbench.widgets.menu.events.PerspectiveVisibiltiyChangeEvent;
 import org.uberfire.experimental.client.disabled.screen.DisabledFeatureActivity;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
+import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.events.PortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.registry.ExperimentalFeature;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.ConditionalPlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -44,18 +52,23 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
     private ClientExperimentalFeaturesRegistryService experimentalFeaturesRegistryService;
     private SyncBeanManager iocManager;
     private Supplier<String> uniqueIdSupplier;
+    private Event<PerspectiveVisibiltiyChangeEvent> perspectiveVisibleEvent;
 
-    protected Map<String, String> activityIdToExperimentalFeatureId = new HashMap<>();
-    protected Map<String, String> activityToExperimentalFeatureId = new HashMap<>();
+    private Map<String, String> activityIdToExperimentalFeatureId = new HashMap<>();
+    private Map<String, String> activityClassToExperimentalFeatureId = new HashMap<>();
+    private List<String> perspectiveIds = new ArrayList<>();
+    private List<String> screenIds = new ArrayList<>();
+    private List<String> editorIds = new ArrayList<>();
 
     @Inject
-    public ExperimentalActivitiesAuthorizationManagerImpl(SyncBeanManager iocManager, ClientExperimentalFeaturesRegistryService experimentalFeaturesRegistryService) {
-        this(iocManager, experimentalFeaturesRegistryService, () -> createUniqueId());
+    public ExperimentalActivitiesAuthorizationManagerImpl(SyncBeanManager iocManager, ClientExperimentalFeaturesRegistryService experimentalFeaturesRegistryService, Event<PerspectiveVisibiltiyChangeEvent> perspectiveVisibleEvent) {
+        this(iocManager, experimentalFeaturesRegistryService, perspectiveVisibleEvent, () -> createUniqueId());
     }
 
-    ExperimentalActivitiesAuthorizationManagerImpl(SyncBeanManager iocManager, ClientExperimentalFeaturesRegistryService experimentalFeaturesRegistryService, Supplier<String> uniqueIdSupplier) {
+    ExperimentalActivitiesAuthorizationManagerImpl(SyncBeanManager iocManager, ClientExperimentalFeaturesRegistryService experimentalFeaturesRegistryService, Event<PerspectiveVisibiltiyChangeEvent> perspectiveVisibleEvent, Supplier<String> uniqueIdSupplier) {
         this.iocManager = iocManager;
         this.uniqueIdSupplier = uniqueIdSupplier;
+        this.perspectiveVisibleEvent = perspectiveVisibleEvent;
         this.experimentalFeaturesRegistryService = experimentalFeaturesRegistryService;
     }
 
@@ -66,7 +79,18 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
                 .map(SyncBeanDef::getInstance)
                 .forEach(activity -> {
                     activityIdToExperimentalFeatureId.put(activity.getActivityId(), activity.getExperimentalFeatureId());
-                    activityToExperimentalFeatureId.put(activity.getActivityTypeName(), activity.getExperimentalFeatureId());
+                    activityClassToExperimentalFeatureId.put(activity.getActivityTypeName(), activity.getExperimentalFeatureId());
+                    switch (activity.getActivityType()) {
+                        case PERSPECTIVE:
+                            perspectiveIds.add(activity.getActivityId());
+                            break;
+                        case SCREEN:
+                            screenIds.add(activity.getActivityId());
+                            break;
+                        case EDITOR:
+                            editorIds.add(activity.getActivityId());
+                            break;
+                    }
                 });
     }
 
@@ -100,15 +124,16 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
             disabledRequest.addParameter(DisabledFeatureActivity.ID_PARAM, uniqueIdSupplier.get());
             disabledRequest.addParameter(DisabledFeatureActivity.FEATURE_ID_PARAM, optional.get());
 
-            part.setPlace(new ConditionalPlaceRequest(identifier, request.getParameters()).when(placeRequest -> authorizeByActivityId(identifier)).orElse(disabledRequest));
+            part.setPlace(new ConditionalPlaceRequest(identifier, request.getParameters()).when(placeRequest -> authorizeActivityId(identifier)).orElse(disabledRequest));
         }
     }
 
     protected boolean authorizeByClassName(final String activityClassName) {
-        return doAuthorize(() -> activityToExperimentalFeatureId.get(activityClassName));
+        return doAuthorize(() -> activityClassToExperimentalFeatureId.get(activityClassName));
     }
 
-    protected boolean authorizeByActivityId(final String activityId) {
+    @Override
+    public boolean authorizeActivityId(final String activityId) {
         return doAuthorize(() -> activityIdToExperimentalFeatureId.get(activityId));
     }
 
@@ -124,5 +149,22 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
 
     private static String createUniqueId() {
         return Document.get().createUniqueId();
+    }
+
+    public void onFeatureModified(@Observes PortableExperimentalFeatureModifiedEvent event) {
+        onFeatureModified(event.getFeature());
+    }
+
+    public void onFeatureModified(@Observes NonPortableExperimentalFeatureModifiedEvent event) {
+        onFeatureModified(event.getFeature());
+    }
+
+    private void onFeatureModified(ExperimentalFeature feature) {
+
+        activityIdToExperimentalFeatureId.entrySet().stream()
+                .filter(entry -> perspectiveIds.contains(entry.getKey()) && entry.getValue().equals(feature.getFeatureId()))
+                .findAny()
+                .map(Map.Entry::getKey)
+                .ifPresent(activityId -> perspectiveVisibleEvent.fire(new PerspectiveVisibiltiyChangeEvent(activityId, feature.isEnabled())));
     }
 }

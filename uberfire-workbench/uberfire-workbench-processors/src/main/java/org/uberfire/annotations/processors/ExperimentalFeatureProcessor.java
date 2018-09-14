@@ -17,8 +17,10 @@
 package org.uberfire.annotations.processors;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.processing.Messager;
@@ -43,10 +45,18 @@ public class ExperimentalFeatureProcessor extends AbstractErrorAbsorbingProcesso
     private static final String PROVIDER_SUFFIX = "ExperimentalFeatureDefinitionProvider";
     private static final String EXPERIMENTAL_ACTIVITY_SUFFIX = "ExperimentalFeatureActivityReference";
 
-    private static final Collection<String> ACTIVITY_ANNOTATIONS;
+    private static final String PERSPECTIVE = "PERSPECTIVE";
+    private static final String SCREEN = "SCREEN";
+    private static final String EDITOR = "EDITOR";
+
+    public static final Map<String, String> ACTIVITY_TYPES_MAPPING;
 
     static {
-        ACTIVITY_ANNOTATIONS = Arrays.asList(ClientAPIModule.getWorkbenchEditorClass(), ClientAPIModule.getWorkbenchScreenClass(), ClientAPIModule.getWorkbenchPerspectiveClass());
+        ACTIVITY_TYPES_MAPPING = new HashMap<>();
+
+        ACTIVITY_TYPES_MAPPING.put(ClientAPIModule.getWorkbenchPerspectiveClass(), "PERSPECTIVE");
+        ACTIVITY_TYPES_MAPPING.put(ClientAPIModule.getWorkbenchScreenClass(), "SCREEN");
+        ACTIVITY_TYPES_MAPPING.put(ClientAPIModule.getWorkbenchEditorClass(), "EDITOR");
     }
 
     private ExperimentalFeatureDefinitionProviderGenerator providerGenerator;
@@ -118,7 +128,7 @@ public class ExperimentalFeatureProcessor extends AbstractErrorAbsorbingProcesso
                     //the generated code to be stored as a compilable file for javac to process.
                     write(packageName, className, code);
 
-                    if (hasActivity(classElement)) {
+                    if (getActivityType(classElement).isPresent()) {
                         final String activityClassName = classElement.getSimpleName() + EXPERIMENTAL_ACTIVITY_SUFFIX;
                         final StringBuffer activityCode = experimentalActivityGenerator.generate(packageName, packageElement, activityClassName, classElement, processingEnv);
 
@@ -135,11 +145,11 @@ public class ExperimentalFeatureProcessor extends AbstractErrorAbsorbingProcesso
         return true;
     }
 
-    private boolean hasActivity(TypeElement classElement) {
+    public static Optional<String> getActivityType(TypeElement classElement) {
         return classElement.getAnnotationMirrors().stream()
-                .filter(mirror -> ACTIVITY_ANNOTATIONS.contains(mirror.getAnnotationType().toString()))
-                .findAny()
-                .isPresent();
+                .map(mirror -> ACTIVITY_TYPES_MAPPING.get(mirror.getAnnotationType().toString()))
+                .filter(Objects::nonNull)
+                .findAny();
     }
 
     private void write(final String packageName, final String className, final StringBuffer code) throws IOException {

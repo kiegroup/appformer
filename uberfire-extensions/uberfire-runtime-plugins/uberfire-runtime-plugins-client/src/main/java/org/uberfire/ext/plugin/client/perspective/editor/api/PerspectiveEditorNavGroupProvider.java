@@ -16,12 +16,12 @@
 package org.uberfire.ext.plugin.client.perspective.editor.api;
 
 import java.util.Collection;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.resources.i18n.PerspectiveEditorPaletteI18n;
 
@@ -29,7 +29,6 @@ import org.uberfire.ext.plugin.client.resources.i18n.PerspectiveEditorPaletteI18
  * {@link PerspectiveEditorComponentGroupProvider} holding all the available {@link PerspectiveEditorNavComponent} instances
  */
 @ApplicationScoped
-@ExperimentalFeature
 public class PerspectiveEditorNavGroupProvider implements PerspectiveEditorComponentGroupProvider {
 
     private SyncBeanManager beanManager;

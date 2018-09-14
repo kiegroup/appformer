@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.service.editor;
+package org.uberfire.client.workbench.widgets.menu.events;
 
-import java.util.List;
+import org.uberfire.workbench.events.UberFireEvent;
 
-import org.jboss.errai.common.client.api.annotations.MapsTo;
-import org.jboss.errai.common.client.api.annotations.Portable;
+public class PerspectiveVisibiltiyChangeEvent implements UberFireEvent {
 
-@Portable
-public class FeatureEditorModel {
+    private String perspectiveId;
+    private boolean visible;
 
-    private List<EditableFeature> features;
-
-    public FeatureEditorModel(@MapsTo("features") List<EditableFeature> features) {
-        this.features = features;
+    public PerspectiveVisibiltiyChangeEvent(String perspectiveId, boolean visible) {
+        this.perspectiveId = perspectiveId;
+        this.visible = visible;
     }
 
-    public List<EditableFeature> getFeatures() {
-        return features;
+    public String getPerspectiveId() {
+        return perspectiveId;
     }
 
-    public void setFeatures(List<EditableFeature> features) {
-        this.features = features;
+    public boolean isVisible() {
+        return visible;
     }
 }

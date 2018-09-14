@@ -21,5 +21,5 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface FeaturesEditorService {
 
-    void save(FeatureEditorModel model);
+    void save(EditableExperimentalFeature editableFeature);
 }

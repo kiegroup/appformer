@@ -16,26 +16,36 @@
 
 package org.uberfire.experimental.client.service.impl;
 
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.events.PortableExperimentalFeatureModifiedEvent;
 import org.uberfire.experimental.service.backend.BackendExperimentalFeaturesRegistryService;
 import org.uberfire.experimental.service.backend.impl.ExperimentalFeaturesSessionImpl;
 import org.uberfire.experimental.service.registry.ExperimentalFeaturesRegistry;
+import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 
 @ApplicationScoped
 public class ClientExperimentalFeaturesRegistryServiceImpl implements ClientExperimentalFeaturesRegistryService {
 
     private Caller<BackendExperimentalFeaturesRegistryService> backendService;
+    private Event<NonPortableExperimentalFeatureModifiedEvent> event;
 
     private ExperimentalFeaturesSessionImpl session;
 
     @Inject
-    public ClientExperimentalFeaturesRegistryServiceImpl(Caller<BackendExperimentalFeaturesRegistryService> backendService) {
+    public ClientExperimentalFeaturesRegistryServiceImpl(Caller<BackendExperimentalFeaturesRegistryService> backendService, Event<NonPortableExperimentalFeatureModifiedEvent> event) {
         this.backendService = backendService;
+        this.event = event;
     }
 
     @Override
@@ -54,7 +64,30 @@ public class ClientExperimentalFeaturesRegistryServiceImpl implements ClientExpe
     }
 
     @Override
+    public void updateExperimentalFeature(String featureId, boolean enabled) {
+        if(isExperimentalEnabled()) {
+
+            Optional<ExperimentalFeatureImpl> optional = Optional.ofNullable(session.getFeaturesRegistry().getFeature(featureId));
+
+            if(optional.isPresent()) {
+                ExperimentalFeatureImpl feature = optional.get();
+
+                if(feature.isEnabled() != enabled) {
+
+                    feature.setEnabled(enabled);
+
+                    event.fire(new NonPortableExperimentalFeatureModifiedEvent(feature));
+                }
+            }
+        }
+    }
+
+    @Override
     public Boolean isExperimentalEnabled() {
         return session.isExperimentalFeaturesEnabled();
+    }
+
+    public void onGlobalFeatureModified(@Observes PortableExperimentalFeatureModifiedEvent event) {
+        updateExperimentalFeature(event.getFeature().getFeatureId(), event.getFeature().isEnabled());
     }
 }

@@ -16,9 +16,12 @@
 
 package org.uberfire.experimental.client.service;
 
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.service.ExperimentalFeaturesRegistryService;
 
 public interface ClientExperimentalFeaturesRegistryService extends ExperimentalFeaturesRegistryService {
 
     void loadRegistry();
+
+    void updateExperimentalFeature(String featureId, boolean enabled);
 }

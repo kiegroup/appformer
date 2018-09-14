@@ -18,8 +18,8 @@ package org.uberfire.experimental.service.backend.impl;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
-import org.uberfire.experimental.service.registry.impl.ExperimentalFeaturesRegistryImpl;
 import org.uberfire.experimental.service.backend.ExperimentalFeaturesSession;
+import org.uberfire.experimental.service.registry.impl.ExperimentalFeaturesRegistryImpl;
 
 @Portable
 public class ExperimentalFeaturesSessionImpl implements ExperimentalFeaturesSession {

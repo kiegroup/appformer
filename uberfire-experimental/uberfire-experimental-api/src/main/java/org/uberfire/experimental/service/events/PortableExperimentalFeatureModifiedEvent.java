@@ -14,31 +14,16 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.service.editor;
+package org.uberfire.experimental.service.events;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.uberfire.experimental.service.registry.ExperimentalFeature;
 
 @Portable
-public class EditableFeature {
+public class PortableExperimentalFeatureModifiedEvent extends ExperimentalFeatureModifiedEvent {
 
-    private String definitionId;
-    private Boolean enabled;
-
-    public EditableFeature(@MapsTo("definitionId") String definitionId, @MapsTo("enabled") Boolean enabled) {
-        this.definitionId = definitionId;
-        this.enabled = enabled;
-    }
-
-    public String getDefinitionId() {
-        return definitionId;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public PortableExperimentalFeatureModifiedEvent(@MapsTo("feature") ExperimentalFeature feature) {
+        super(feature);
     }
 }

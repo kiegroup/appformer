@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -37,8 +38,9 @@ import org.uberfire.experimental.service.backend.BackendExperimentalFeaturesRegi
 import org.uberfire.experimental.service.backend.ExperimentalFeaturesSession;
 import org.uberfire.experimental.service.backend.impl.ExperimentalFeaturesSessionImpl;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
-import org.uberfire.experimental.service.editor.FeatureEditorModel;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.service.editor.FeaturesEditorService;
+import org.uberfire.experimental.service.registry.ExperimentalFeature;
 import org.uberfire.experimental.service.registry.ExperimentalFeaturesRegistry;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeaturesRegistryImpl;
@@ -123,15 +125,16 @@ public class BackendExperimentalFeaturesRegistryServiceImpl implements Experimen
     }
 
     @Override
-    public void save(FeatureEditorModel model) {
-        List<ExperimentalFeatureImpl> features = model.getFeatures().stream()
-                .filter(editableFeature -> defRegistry.getFeatureById(editableFeature.getDefinitionId()) != null)
-                .map(editableFeature -> new ExperimentalFeatureImpl(editableFeature.getDefinitionId(), editableFeature.getEnabled()))
-                .collect(Collectors.toList());
+    public void save(EditableExperimentalFeature editableFeature) {
+        if(defRegistry.getFeatureById(editableFeature.getFeatureId()) != null) {
+            ExperimentalFeaturesRegistryImpl currentRegistry = getFeaturesRegistry();
 
-        ExperimentalFeaturesRegistryImpl registry = new ExperimentalFeaturesRegistryImpl(features);
+            Optional<ExperimentalFeatureImpl> optional = Optional.ofNullable(currentRegistry.getFeature(editableFeature.getFeatureId()));
 
-        updateRegistry(registry);
+            optional.ifPresent(feature -> feature.setEnabled(editableFeature.isEnabled()));
+        } else {
+            throw new IllegalArgumentException("Cannot find ExperimentalFeature '" + editableFeature.getFeatureId() + "'");
+        }
     }
 
     public void updateRegistry(ExperimentalFeaturesRegistry registry) {
@@ -141,7 +144,7 @@ public class BackendExperimentalFeaturesRegistryServiceImpl implements Experimen
 
         Properties properties = new Properties();
 
-        registry.getFeaturesList()
+        registry.getAllFeatures()
                 .stream()
                 .forEach(feature -> properties.put(feature.getFeatureId(), String.valueOf(feature.isEnabled())));
 

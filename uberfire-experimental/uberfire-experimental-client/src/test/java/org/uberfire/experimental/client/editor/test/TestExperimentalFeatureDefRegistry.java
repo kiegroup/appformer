@@ -25,7 +25,6 @@ public class TestExperimentalFeatureDefRegistry extends ExperimentalFeatureDefRe
     public static final String FEATURE_2 = "feature_2";
     public static final String FEATURE_3 = "feature_3";
 
-
     public TestExperimentalFeatureDefRegistry() {
         register(new ExperimentalFeatureDefinition(FEATURE_1, false, "", FEATURE_1, FEATURE_1));
         register(new ExperimentalFeatureDefinition(FEATURE_2, false, "", FEATURE_2, FEATURE_2));

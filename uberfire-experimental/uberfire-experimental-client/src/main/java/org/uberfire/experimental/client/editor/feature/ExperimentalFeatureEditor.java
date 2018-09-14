@@ -28,7 +28,8 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.soup.commons.validation.PortablePreconditions;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
-import org.uberfire.experimental.service.editor.EditableFeature;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
+import org.uberfire.mvp.ParameterizedCommand;
 
 @Dependent
 public class ExperimentalFeatureEditor implements ExperimentalFeatureEditorView.Presenter,
@@ -41,9 +42,10 @@ public class ExperimentalFeatureEditor implements ExperimentalFeatureEditorView.
     private TranslationService translationService;
     private ExperimentalFeatureEditorView view;
 
+    private EditableExperimentalFeature feature;
+    private ParameterizedCommand<EditableExperimentalFeature> onChange;
+
     private String name;
-    private EditableFeature feature;
-    private boolean changed = false;
 
     @Inject
     public ExperimentalFeatureEditor(ExperimentalFeatureDefRegistry registry, TranslationService translationService, ExperimentalFeatureEditorView view) {
@@ -57,20 +59,22 @@ public class ExperimentalFeatureEditor implements ExperimentalFeatureEditorView.
         view.init(this);
     }
 
-    public void render(EditableFeature feature) {
+    public void render(EditableExperimentalFeature feature, ParameterizedCommand<EditableExperimentalFeature> onChange) {
         PortablePreconditions.checkNotNull("feature", feature);
-
-        ExperimentalFeatureDefinition definition = registry.getFeatureById(feature.getDefinitionId());
-
-        PortablePreconditions.checkNotNull("definition", definition);
+        PortablePreconditions.checkNotNull("onChange", onChange);
 
         this.feature = feature;
+        this.onChange = onChange;
+
+        ExperimentalFeatureDefinition definition = registry.getFeatureById(feature.getFeatureId());
+
+        PortablePreconditions.checkNotNull("definition", definition);
 
         name = getTranslation(definition.getNameKey(), definition.getId());
 
         String description = getTranslation(definition.getDescriptionKey(), null);
 
-        view.render(name, description, feature.getEnabled());
+        view.render(name, description, feature.isEnabled());
     }
 
     private String getTranslation(String key, String defaultValue) {
@@ -87,20 +91,16 @@ public class ExperimentalFeatureEditor implements ExperimentalFeatureEditorView.
         return name;
     }
 
-    public EditableFeature getFeature() {
+    public EditableExperimentalFeature getFeature() {
         return feature;
     }
 
     @Override
     public void notifyChange(boolean newEnabledValue) {
-        if (newEnabledValue != feature.getEnabled()) {
+        if (newEnabledValue != feature.isEnabled()) {
             feature.setEnabled(newEnabledValue);
-            changed = !changed;
+            onChange.execute(feature);
         }
-    }
-
-    public boolean hasChanged() {
-        return changed;
     }
 
     @Override

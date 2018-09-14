@@ -30,15 +30,14 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.experimental.client.editor.feature.ExperimentalFeatureEditor;
 import org.uberfire.experimental.client.resources.i18n.UberfireExperimentalConstants;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
+import org.uberfire.experimental.service.editor.FeaturesEditorService;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeaturesRegistryImpl;
-import org.uberfire.experimental.service.editor.FeaturesEditorService;
 import org.uberfire.mocks.CallerMock;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -72,8 +71,6 @@ public class ExperimentalFeaturesEditorScreenTest {
 
     private ExperimentalFeaturesEditorScreen presenter;
 
-    private boolean hasChanged = false;
-
     @Before
     public void init() {
         features.add(new ExperimentalFeatureImpl(FEATURE_1, false));
@@ -84,7 +81,7 @@ public class ExperimentalFeaturesEditorScreenTest {
 
         when(registryService.getFeaturesRegistry()).thenReturn(registry);
 
-        when(instance.get()).thenAnswer((Answer<ExperimentalFeatureEditor>) invocationOnMock -> getEditorInstance());
+        when(instance.get()).thenAnswer((Answer<ExperimentalFeatureEditor>) invocationOnMock -> mock(ExperimentalFeatureEditor.class));
 
         editorServiceCaller = new CallerMock<>(featuresEditorService);
 
@@ -119,37 +116,17 @@ public class ExperimentalFeaturesEditorScreenTest {
     }
 
     @Test
-    public void testCloseWithoutSaving() {
+    public void testModificationCallback() {
+        EditableExperimentalFeature feature = new EditableExperimentalFeature(FEATURE_1, true);
 
-        testShow();
+        presenter.doSave(feature);
 
-        presenter.close();
-
-        verify(featuresEditorService, never()).save(any());
-    }
-
-    @Test
-    public void testCloseSaving() {
-
-        hasChanged = true;
-
-        testShow();
-
-        presenter.close();
-
-        verify(featuresEditorService).save(any());
+        verify(featuresEditorService, times(1)).save(feature);
+        verify(registryService, times(1)).updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled());
     }
 
     private void verifyClear() {
         verify(view).clear();
         verify(instance).destroyAll();
-    }
-
-    private ExperimentalFeatureEditor getEditorInstance() {
-        ExperimentalFeatureEditor editor = mock(ExperimentalFeatureEditor.class);
-
-        when(editor.hasChanged()).thenReturn(hasChanged);
-
-        return editor;
     }
 }

@@ -18,7 +18,6 @@ package org.uberfire.experimental.client.editor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -33,15 +32,13 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.client.editor.feature.ExperimentalFeatureEditor;
 import org.uberfire.experimental.client.resources.i18n.UberfireExperimentalConstants;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
-import org.uberfire.experimental.service.editor.EditableFeature;
-import org.uberfire.experimental.service.editor.FeatureEditorModel;
 import org.uberfire.experimental.service.editor.FeaturesEditorService;
 import org.uberfire.experimental.service.registry.ExperimentalFeature;
 import org.uberfire.experimental.service.registry.ExperimentalFeaturesRegistry;
-import org.uberfire.lifecycle.OnClose;
 import org.uberfire.lifecycle.OnOpen;
 
 @ApplicationScoped
@@ -79,7 +76,7 @@ public class ExperimentalFeaturesEditorScreen implements ExperimentalFeaturesEdi
         ExperimentalFeaturesRegistry registry = registryService.getFeaturesRegistry();
 
         if (registry != null) {
-            registry.getFeaturesList()
+            registry.getAllFeatures()
                     .stream()
                     .map(this::getFeatureEditor)
                     .sorted()
@@ -88,29 +85,17 @@ public class ExperimentalFeaturesEditorScreen implements ExperimentalFeaturesEdi
         }
     }
 
-    private ExperimentalFeatureEditor getFeatureEditor(ExperimentalFeature feature) {
+    private ExperimentalFeatureEditor getFeatureEditor(final ExperimentalFeature feature) {
         ExperimentalFeatureEditor element = instance.get();
-        element.render(new EditableFeature(feature.getFeatureId(), feature.isEnabled()));
+        element.render(new EditableExperimentalFeature(feature.getFeatureId(), feature.isEnabled()), this::doSave);
         return element;
     }
 
-    @OnClose
-    public void close() {
-        Optional<ExperimentalFeatureEditor> optional = featureEditors.stream()
-                .filter(ExperimentalFeatureEditor::hasChanged)
-                .findAny();
-
-        if (optional.isPresent()) {
-            doSave();
-        }
-    }
-
-    private void doSave() {
-        List<EditableFeature> modelElements = featureEditors.stream().map(ExperimentalFeatureEditor::getFeature).collect(Collectors.toList());
-
-        FeatureEditorModel model = new FeatureEditorModel(modelElements);
-
-        editorService.call((RemoteCallback<Void>) aVoid -> registryService.loadRegistry()).save(model);
+    protected void doSave(final EditableExperimentalFeature feature) {
+        editorService.call((RemoteCallback<Void>) aVoid -> {
+                               registryService.updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled());
+                           }
+        ).save(feature);
     }
 
     @WorkbenchPartTitle

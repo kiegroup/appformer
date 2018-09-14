@@ -19,7 +19,8 @@ package org.uberfire.annotations.processors;
 import javax.annotation.Generated;
 import javax.enterprise.context.Dependent;
 
-import org.uberfire.experimental.client.mvp.ExperimentalActivityReference;
+import org.uberfire.experimental.client.service.auth.ExperimentalActivityReference;
+import org.uberfire.workbench.model.ActivityResourceType;
 
 /*
  * WARNING! This class is generated. Do not modify.
@@ -41,5 +42,10 @@ public class ExperimentalFeatureTest3ExperimentalFeatureActivityReference implem
     @Override
     public String getExperimentalFeatureId() {
         return "org.uberfire.annotations.processors.ExperimentalFeatureTest3";
+    }
+
+    @Override
+    public ActivityResourceType getActivityType() {
+        return ActivityResourceType.SCREEN;
     }
 }

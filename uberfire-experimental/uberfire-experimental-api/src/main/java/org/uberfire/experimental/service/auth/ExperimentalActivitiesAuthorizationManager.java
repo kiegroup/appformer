@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package org.uberfire.client.mvp.experimental;
+package org.uberfire.experimental.service.auth;
 
-import org.uberfire.client.mvp.WorkbenchActivity;
 import org.uberfire.mvp.impl.ConditionalPlaceRequest;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PartDefinition;
 
 /**
- * Handles authorization management for any {@link WorkbenchActivity} marked as experimental
+ * Handles authorization management for any activity marked as experimental
  */
 public interface ExperimentalActivitiesAuthorizationManager {
 
@@ -44,6 +43,13 @@ public interface ExperimentalActivitiesAuthorizationManager {
      * @return true or false depending on the settings.
      */
     boolean authorizeActivityClass(Class<?> activityClass);
+
+    /**
+     *
+     * @param activityId
+     * @return
+     */
+    boolean authorizeActivityId(String activityId);
 
     /**
      * Checks if the {@link PartDefinition} place points to an experimental activity and replaces it to a {@link ConditionalPlaceRequest}

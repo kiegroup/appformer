@@ -16,7 +16,8 @@
 
 package org.uberfire.experimental.service.registry.impl;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
@@ -53,7 +54,7 @@ public class ExperimentalFeaturesRegistryImpl implements ExperimentalFeaturesReg
     }
 
     @Override
-    public List<ExperimentalFeature> getFeaturesList() {
-        return new ArrayList<>(features);
+    public Collection<ExperimentalFeature> getAllFeatures() {
+        return Collections.unmodifiableList(features);
     }
 }

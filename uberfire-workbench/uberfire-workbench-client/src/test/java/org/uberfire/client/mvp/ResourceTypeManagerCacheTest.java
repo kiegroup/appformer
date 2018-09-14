@@ -35,10 +35,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
 import org.uberfire.client.workbench.type.ClientResourceType;
+import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.workbench.category.Category;
 
 import static org.mockito.Matchers.any;

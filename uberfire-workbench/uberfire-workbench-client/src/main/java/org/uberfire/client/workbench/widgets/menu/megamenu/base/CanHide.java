@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.definition.annotations;
+package org.uberfire.client.workbench.widgets.menu.megamenu.base;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public interface CanHide {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface ExperimentalFeature {
+    void show();
 
-    Scope scope() default Scope.USER;
+    void hide();
 
-    String group() default "";
-
-    String nameI18nKey() default "";
-
-    String descriptionI18nKey() default "";
-
-    enum Scope {
-        GLOBAL,
-        USER
-    }
 }
-

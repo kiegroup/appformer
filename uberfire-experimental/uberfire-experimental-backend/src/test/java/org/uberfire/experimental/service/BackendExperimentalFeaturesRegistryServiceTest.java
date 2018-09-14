@@ -130,7 +130,7 @@ public class BackendExperimentalFeaturesRegistryServiceTest {
                 .isNotNull()
                 .isInstanceOf(ExperimentalFeaturesRegistryImpl.class);
 
-        Assertions.assertThat(registry.getFeaturesList())
+        Assertions.assertThat(registry.getAllFeatures())
                 .isNotNull()
                 .hasSize(defRegistry.getAllFeatures().size());
 
@@ -181,7 +181,7 @@ public class BackendExperimentalFeaturesRegistryServiceTest {
                 .isNotNull()
                 .isInstanceOf(ExperimentalFeaturesRegistryImpl.class);
 
-        Assertions.assertThat(registry.getFeaturesList())
+        Assertions.assertThat(registry.getAllFeatures())
                 .isNotNull()
                 .hasSize(defRegistry.getAllFeatures().size());
 
@@ -204,7 +204,7 @@ public class BackendExperimentalFeaturesRegistryServiceTest {
                 .isNotNull()
                 .isInstanceOf(ExperimentalFeaturesRegistryImpl.class);
 
-        Assertions.assertThat(registry.getFeaturesList())
+        Assertions.assertThat(registry.getAllFeatures())
                 .isNotNull()
                 .hasSize(defRegistry.getAllFeatures().size());
 

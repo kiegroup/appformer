@@ -27,14 +27,13 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 @Dependent
-@ExperimentalFeature
 public class BarChartDragComponent extends DisplayerDragComponent {
 
     @Inject
     public BarChartDragComponent(SyncBeanManager beanManager,
-            DisplayerViewer viewer,
-            PlaceManager placeManager,
-            PerspectiveCoordinator perspectiveCoordinator ) {
+                                 DisplayerViewer viewer,
+                                 PlaceManager placeManager,
+                                 PerspectiveCoordinator perspectiveCoordinator) {
 
         super(beanManager, viewer, placeManager, perspectiveCoordinator);
     }

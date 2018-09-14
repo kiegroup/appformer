@@ -42,5 +42,5 @@ public interface ExperimentalFeaturesRegistry {
      * Returns all the {@link ExperimentalFeature} present on the platform
      * @return a List containing all {@link ExperimentalFeature} present on the platform
      */
-    Collection<ExperimentalFeature> getFeaturesList();
+    Collection<ExperimentalFeature> getAllFeatures();
 }
