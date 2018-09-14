@@ -19,7 +19,8 @@ package ${packageName};
 import javax.annotation.Generated;
 import javax.enterprise.context.Dependent;
 
-import org.uberfire.experimental.client.mvp.ExperimentalActivityReference;
+import org.uberfire.experimental.client.service.auth.ExperimentalActivityReference;
+import org.uberfire.workbench.model.ActivityResourceType;
 
 /*
  * WARNING! This class is generated. Do not modify.
@@ -41,5 +42,10 @@ public class ${className} implements ExperimentalActivityReference {
     @Override
     public String getExperimentalFeatureId() {
         return "${featureId}";
+    }
+
+    @Override
+    public ActivityResourceType getActivityType() {
+        return ActivityResourceType.${activityType};
     }
 }

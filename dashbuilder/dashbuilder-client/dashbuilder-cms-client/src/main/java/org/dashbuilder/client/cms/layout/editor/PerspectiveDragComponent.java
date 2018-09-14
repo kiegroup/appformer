@@ -16,6 +16,7 @@
 package org.dashbuilder.client.cms.layout.editor;
 
 import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -23,21 +24,20 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.dashbuilder.client.cms.widget.PerspectiveWidget;
 import org.gwtbootstrap3.client.ui.Modal;
-import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.ext.layout.editor.client.api.HasModalConfiguration;
 import org.uberfire.ext.layout.editor.client.api.ModalConfigurationContext;
 import org.uberfire.ext.layout.editor.client.api.RenderingContext;
 import org.uberfire.ext.plugin.client.perspective.editor.api.PerspectiveEditorCoreComponent;
 import org.uberfire.ext.plugin.model.Plugin;
 
-import static org.dashbuilder.navigation.layout.NavDragComponentSettings.*;
+import static org.dashbuilder.navigation.layout.NavDragComponentSettings.PERSPECTIVE_ID;
 
 /**
  * Runtime perspective drag component.
  */
 @Dependent
-@ExperimentalFeature
-public class PerspectiveDragComponent implements PerspectiveEditorCoreComponent, HasModalConfiguration {
+public class PerspectiveDragComponent implements PerspectiveEditorCoreComponent,
+                                                 HasModalConfiguration {
 
     PerspectiveDragConfigModal perspectiveDragConfigModal;
     PerspectiveWidget perspectiveWidget;

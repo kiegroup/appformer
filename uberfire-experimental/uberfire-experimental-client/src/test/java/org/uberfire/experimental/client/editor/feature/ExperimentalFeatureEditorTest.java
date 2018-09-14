@@ -29,12 +29,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry;
-import org.uberfire.experimental.service.editor.EditableFeature;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
+import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -52,6 +53,9 @@ public class ExperimentalFeatureEditorTest {
 
     @Mock
     private TranslationService translationService;
+
+    @Mock
+    private ParameterizedCommand<EditableExperimentalFeature> onChange;
 
     private ExperimentalFeatureEditor editor;
 
@@ -73,9 +77,9 @@ public class ExperimentalFeatureEditorTest {
 
         verify(view).getElement();
 
-        EditableFeature feature = spy(new EditableFeature(TestExperimentalFeatureDefRegistry.FEATURE_1, false));
+        EditableExperimentalFeature feature = spy(new EditableExperimentalFeature(TestExperimentalFeatureDefRegistry.FEATURE_1, false));
 
-        editor.render(feature);
+        editor.render(feature, onChange);
 
         verify(translationService, times(2)).getTranslation(TestExperimentalFeatureDefRegistry.FEATURE_1);
 
@@ -87,17 +91,19 @@ public class ExperimentalFeatureEditorTest {
         editor.notifyChange(false);
 
         verify(feature, never()).setEnabled(false);
-        assertFalse(editor.hasChanged());
+        verify(onChange, never()).execute(any());
 
         editor.notifyChange(true);
+        verify(onChange, times(1)).execute(any());
 
         verify(feature).setEnabled(true);
-        assertTrue(editor.hasChanged());
+        verify(onChange, times(1)).execute(any());
 
         editor.notifyChange(false);
+        verify(onChange, times(2)).execute(any());
 
         verify(feature).setEnabled(false);
-        assertFalse(editor.hasChanged());
+        verify(onChange, times(2)).execute(any());
     }
 
     @Test
@@ -107,19 +113,19 @@ public class ExperimentalFeatureEditorTest {
 
         ExperimentalFeatureEditor editor4 = new ExperimentalFeatureEditor(defRegistry, translationService, mock(ExperimentalFeatureEditorView.class));
 
-        EditableFeature feature3 = new EditableFeature(TestExperimentalFeatureDefRegistry.FEATURE_3, false);
+        ExperimentalFeatureImpl feature3 = new ExperimentalFeatureImpl(TestExperimentalFeatureDefRegistry.FEATURE_3, false);
         ExperimentalFeatureEditor editor3 = new ExperimentalFeatureEditor(defRegistry, translationService, mock(ExperimentalFeatureEditorView.class));
-        editor3.render(feature3);
+        editor3.render(new EditableExperimentalFeature(feature3), mock(ParameterizedCommand.class));
 
-        EditableFeature feature1 = new EditableFeature(TestExperimentalFeatureDefRegistry.FEATURE_1, false);
+        ExperimentalFeatureImpl feature1 = new ExperimentalFeatureImpl(TestExperimentalFeatureDefRegistry.FEATURE_1, false);
         ExperimentalFeatureEditor editor1 = new ExperimentalFeatureEditor(defRegistry, translationService, mock(ExperimentalFeatureEditorView.class));
-        editor1.render(feature1);
+        editor1.render(new EditableExperimentalFeature(feature1), mock(ParameterizedCommand.class));
 
         ExperimentalFeatureEditor editor5 = new ExperimentalFeatureEditor(defRegistry, translationService, mock(ExperimentalFeatureEditorView.class));
 
-        EditableFeature feature2 = new EditableFeature(TestExperimentalFeatureDefRegistry.FEATURE_2, false);
+        ExperimentalFeatureImpl feature2 = new ExperimentalFeatureImpl(TestExperimentalFeatureDefRegistry.FEATURE_2, false);
         ExperimentalFeatureEditor editor2 = new ExperimentalFeatureEditor(defRegistry, translationService, mock(ExperimentalFeatureEditorView.class));
-        editor2.render(feature2);
+        editor2.render(new EditableExperimentalFeature(feature2), mock(ParameterizedCommand.class));
 
         List<ExperimentalFeatureEditor> editors = Arrays.asList(editor1, editor2, editor3, editor4, editor5);
 

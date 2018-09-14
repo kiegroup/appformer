@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.definition.annotations;
+package org.uberfire.client.workbench.widgets.menu;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.function.BiConsumer;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface ExperimentalFeature {
+public class MenuItemVisibilityHandler {
 
-    Scope scope() default Scope.USER;
+    private String identifier;
+    private BiConsumer<String, Boolean> visibilityChangeCallback;
 
-    String group() default "";
+    public MenuItemVisibilityHandler(String identifier, BiConsumer<String, Boolean> visibilityChangeCallback) {
+        this.identifier = identifier;
+        this.visibilityChangeCallback = visibilityChangeCallback;
+    }
 
-    String nameI18nKey() default "";
+    public void run(Boolean visibile) {
+        visibilityChangeCallback.accept(identifier, visibile);
+    }
 
-    String descriptionI18nKey() default "";
-
-    enum Scope {
-        GLOBAL,
-        USER
+    public String getIdentifier() {
+        return identifier;
     }
 }
-

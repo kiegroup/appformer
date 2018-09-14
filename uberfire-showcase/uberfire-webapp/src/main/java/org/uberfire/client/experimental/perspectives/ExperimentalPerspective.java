@@ -36,13 +36,17 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuPosition;
 import org.uberfire.workbench.model.menu.Menus;
 
+import static org.uberfire.client.experimental.perspectives.ExperimentalPerspective.IDENTIFIER;
+
 /**
  * A simple perspective with one tabbed panel.
  */
 @ApplicationScoped
-@WorkbenchPerspective(identifier = "ExperimentalPerspective")
+@WorkbenchPerspective(identifier = IDENTIFIER)
 @ExperimentalFeature(nameI18nKey = "experimental_perspective", descriptionI18nKey = "experimental_perspective_description")
 public class ExperimentalPerspective {
+
+    public static final String IDENTIFIER = "ExperimentalPerspective";
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {

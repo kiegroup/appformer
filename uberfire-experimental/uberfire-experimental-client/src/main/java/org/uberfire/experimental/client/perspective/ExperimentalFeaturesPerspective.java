@@ -23,24 +23,21 @@ import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
 import org.uberfire.experimental.client.editor.ExperimentalFeaturesEditorScreen;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
-import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = ExperimentalFeaturesPerspective.PERSPECTIVE_ID)
+@WorkbenchPerspective(identifier = ExperimentalFeaturesPerspective.IDENTIFIER)
 public class ExperimentalFeaturesPerspective {
 
-    public static final String PERSPECTIVE_ID = "ExperimentalFeaturesPerspective";
+    public static final String IDENTIFIER = "ExperimentalFeaturesPerspective";
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
 
         PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
-        perspective.setName("Experimental Features Authoring");
+        perspective.setName("Experimental Features Editor");
 
         perspective.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalFeaturesEditorScreen.SCREEN_ID)));
         return perspective;

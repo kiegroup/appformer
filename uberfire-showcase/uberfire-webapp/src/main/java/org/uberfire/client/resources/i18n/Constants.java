@@ -49,4 +49,20 @@ public interface Constants
     String experimental_asset_editor();
 
     String experimental_asset_editor_description();
+
+    String experimental_features_editor();
+
+    String admin_perspective();
+
+    String apps_perspective();
+
+    String multi_screem_perspective();
+
+    String plugin_authoring();
+
+    String preferences_perspective();
+
+    String simple_perspective();
+
+    String standalone_editor_perspective();
 }

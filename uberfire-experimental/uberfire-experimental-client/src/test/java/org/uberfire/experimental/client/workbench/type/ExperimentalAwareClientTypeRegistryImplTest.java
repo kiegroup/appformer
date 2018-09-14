@@ -18,17 +18,14 @@ package org.uberfire.experimental.client.workbench.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.jboss.errai.ioc.client.container.Proxy;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.workbench.type.ClientResourceType;
@@ -123,7 +120,7 @@ public class ExperimentalAwareClientTypeRegistryImplTest {
         assertFalse(clientTypeRegistry.isEnabled(new WrongClientResourceType()));
     }
 
-    private SyncBeanDef<?> createBeanDef(final Class resourceType,  Object instance) {
+    private SyncBeanDef<?> createBeanDef(final Class resourceType, Object instance) {
 
         SyncBeanDef def = mock(SyncBeanDef.class);
         when(def.getBeanClass()).thenReturn(resourceType);

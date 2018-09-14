@@ -14,65 +14,37 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.service.registry.impl;
+package org.uberfire.experimental.service.editor;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.experimental.service.registry.ExperimentalFeature;
 
 @Portable
-public class ExperimentalFeatureImpl implements ExperimentalFeature {
+public class EditableExperimentalFeature {
 
     private String featureId;
     private boolean enabled;
 
-    public ExperimentalFeatureImpl() {
-    }
-
-    public ExperimentalFeatureImpl(@MapsTo("featureId") String featureId, @MapsTo("enabled") boolean enabled) {
+    public EditableExperimentalFeature(@MapsTo("featureId") String featureId, @MapsTo("enabled") boolean enabled) {
         this.featureId = featureId;
         this.enabled = enabled;
     }
 
-    @Override
+    public EditableExperimentalFeature(ExperimentalFeature feature) {
+        this.featureId = feature.getFeatureId();
+        this.enabled = feature.isEnabled();
+    }
+
     public String getFeatureId() {
         return featureId;
     }
 
-    public void setFeatureId(String featureId) {
-        this.featureId = featureId;
-    }
-
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ExperimentalFeatureImpl feature = (ExperimentalFeatureImpl) o;
-
-        if (enabled != feature.enabled) {
-            return false;
-        }
-        return featureId.equals(feature.featureId);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = featureId.hashCode();
-        result = 31 * result + (enabled ? 1 : 0);
-        return result;
     }
 }

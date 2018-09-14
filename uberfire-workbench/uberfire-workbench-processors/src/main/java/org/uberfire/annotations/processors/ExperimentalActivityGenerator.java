@@ -49,6 +49,7 @@ public class ExperimentalActivityGenerator extends AbstractGenerator {
         String featureId = typeElement.getQualifiedName().toString();
         String activityClass = typeElement.getQualifiedName().toString() + "Activity";
         String activityId = extractActivityId(typeElement);
+        String activityType = ExperimentalFeatureProcessor.getActivityType((TypeElement) element).get();
 
         if (GeneratorUtils.debugLoggingEnabled()) {
             messager.printMessage(Kind.NOTE, "Package name: " + packageName);
@@ -56,6 +57,7 @@ public class ExperimentalActivityGenerator extends AbstractGenerator {
             messager.printMessage(Kind.NOTE, "Feature Id: " + featureId);
             messager.printMessage(Kind.NOTE, "Activity class: " + activityClass);
             messager.printMessage(Kind.NOTE, "Activity Id: " + activityId);
+            messager.printMessage(Kind.NOTE, "Activity Type: " + activityType);
         }
 
         root.put("packageName", packageName);
@@ -63,6 +65,7 @@ public class ExperimentalActivityGenerator extends AbstractGenerator {
         root.put("featureId", featureId);
         root.put("activityClass", activityClass);
         root.put("activityId", activityId);
+        root.put("activityType", activityType);
 
         //Generate code
         try (StringWriter sw = new StringWriter();

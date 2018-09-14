@@ -34,7 +34,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.ActivityLifecycleError.LifecyclePhase;
-import org.uberfire.client.mvp.experimental.ExperimentalActivitiesAuthorizationManager;
+import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.ExternalPathPlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
@@ -319,8 +319,8 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
     /**
-     * Gets the bean definition of the activity associated with the given place ID, if one exists.
-     * @param identifier the place ID. Null is permitted, but always resolves to an empty collection.
+     * Gets the bean definition of the activity associated with the given place IDENTIFIER, if one exists.
+     * @param identifier the place IDENTIFIER. Null is permitted, but always resolves to an empty collection.
      * @return an unmodifiable collection with zero or one item, depending on if the resolution was successful.
      */
     private Collection<SyncBeanDef<Activity>> resolveById(final String identifier) {

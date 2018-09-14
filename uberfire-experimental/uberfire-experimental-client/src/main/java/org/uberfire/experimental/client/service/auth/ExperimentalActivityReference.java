@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.mvp;
+package org.uberfire.experimental.client.service.auth;
 
 import org.uberfire.client.mvp.WorkbenchActivity;
+import org.uberfire.workbench.model.ActivityResourceType;
 
 /**
  * Helper class that links a experimental feature to a {@link WorkbenchActivity}
@@ -37,4 +38,9 @@ public interface ExperimentalActivityReference {
      * @return The experimental feature id
      */
     String getExperimentalFeatureId();
+
+    /**
+     * @return The activity type
+     */
+    ActivityResourceType getActivityType();
 }

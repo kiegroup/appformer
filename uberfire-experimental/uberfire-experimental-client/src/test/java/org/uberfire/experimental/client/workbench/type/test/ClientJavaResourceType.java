@@ -18,6 +18,6 @@ package org.uberfire.experimental.client.workbench.type.test;
 
 import org.uberfire.client.workbench.type.ClientResourceType;
 
-public class ClientJavaResourceType extends JavaResourceType implements  ClientResourceType {
+public class ClientJavaResourceType extends JavaResourceType implements ClientResourceType {
 
 }

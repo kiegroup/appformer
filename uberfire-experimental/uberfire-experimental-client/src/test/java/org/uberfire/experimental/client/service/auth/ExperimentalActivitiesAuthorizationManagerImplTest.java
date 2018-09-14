@@ -14,31 +14,39 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.mvp;
+package org.uberfire.experimental.client.service.auth;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
+import javax.enterprise.event.Event;
+
+import org.assertj.core.api.Assertions;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.widgets.menu.events.PerspectiveVisibiltiyChangeEvent;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
 import org.uberfire.experimental.client.test.TestExperimentalActivityReference;
 import org.uberfire.experimental.client.test.model.TestExperimentalScreen1Activity;
 import org.uberfire.experimental.client.test.model.TestExperimentalScreen2Activity;
 import org.uberfire.experimental.client.test.model.TestNonExperimentalScreenActivity;
+import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.ConditionalPlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
+import org.uberfire.workbench.model.ActivityResourceType;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PartDefinition;
 
@@ -75,13 +83,16 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
     @Mock
     private ClientExperimentalFeaturesRegistryService registryService;
 
+    @Mock
+    private Event<PerspectiveVisibiltiyChangeEvent> perspectiveVisibleEvent;
+
     private ExperimentalActivitiesAuthorizationManagerImpl authorizationManager;
 
     @Before
     public void init() {
         when(syncBeanManager.lookupBeans(ExperimentalActivityReference.class)).thenAnswer((Answer<Collection<SyncBeanDef<ExperimentalActivityReference>>>) invocationOnMock -> getReferences());
 
-        authorizationManager = spy(new ExperimentalActivitiesAuthorizationManagerImpl(syncBeanManager, registryService, () -> UUID.randomUUID().toString()));
+        authorizationManager = spy(new ExperimentalActivitiesAuthorizationManagerImpl(syncBeanManager, registryService, perspectiveVisibleEvent, () -> UUID.randomUUID().toString()));
 
         authorizationManager.init();
 
@@ -114,10 +125,38 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
         testSecure(ACTIVITY_1_ID, DefaultPlaceRequest.class, this::validateSecure);
     }
 
-
     @Test
     public void testSecurePartWithOUTExperimentalPlaceRequest() {
         testSecure(NON_EXPERIMENTAL_ACTIVITY_ID, DefaultPlaceRequest.class, this::validateDoNothingSecure);
+    }
+
+    @Test
+    public void testOnFeatureModified() {
+        authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(new ExperimentalFeatureImpl(FEATURE_2_ID, true)));
+
+        verify(perspectiveVisibleEvent, never()).fire(any());
+
+        authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(new ExperimentalFeatureImpl(FEATURE_1_ID, true)));
+
+        ArgumentCaptor<PerspectiveVisibiltiyChangeEvent> captor = ArgumentCaptor.forClass(PerspectiveVisibiltiyChangeEvent.class);
+
+        verify(perspectiveVisibleEvent, times(1)).fire(captor.capture());
+
+        Assertions.assertThat(captor.getValue())
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("perspectiveId", ACTIVITY_1_ID)
+                .hasFieldOrPropertyWithValue("visible", true);
+
+        authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(new ExperimentalFeatureImpl(FEATURE_1_ID, false)));
+
+        captor = ArgumentCaptor.forClass(PerspectiveVisibiltiyChangeEvent.class);
+
+        verify(perspectiveVisibleEvent, times(2)).fire(captor.capture());
+
+        Assertions.assertThat(captor.getValue())
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("perspectiveId", ACTIVITY_1_ID)
+                .hasFieldOrPropertyWithValue("visible", false);
     }
 
     private void testSecure(String activityId, Class<? extends PlaceRequest> requestType, BiConsumer<PanelDefinition, PartDefinition> validation) {
@@ -147,8 +186,8 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
     }
 
     private Collection<SyncBeanDef<ExperimentalActivityReference>> getReferences() {
-        return Arrays.asList(createReference(new TestExperimentalActivityReference(ACTIVITY_1_ID_TYPENAME, ACTIVITY_1_ID, FEATURE_1_ID)),
-                             createReference(new TestExperimentalActivityReference(ACTIVITY_2_ID_TYPENAME, ACTIVITY_2_ID, FEATURE_2_ID)));
+        return Arrays.asList(createReference(new TestExperimentalActivityReference(ACTIVITY_1_ID_TYPENAME, ACTIVITY_1_ID, FEATURE_1_ID, ActivityResourceType.PERSPECTIVE)),
+                             createReference(new TestExperimentalActivityReference(ACTIVITY_2_ID_TYPENAME, ACTIVITY_2_ID, FEATURE_2_ID, ActivityResourceType.SCREEN)));
     }
 
     private SyncBeanDef<ExperimentalActivityReference> createReference(ExperimentalActivityReference activityReference) {
