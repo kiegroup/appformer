@@ -1,0 +1,6 @@
+activation=javax.activation:activation
+ant=org.apache.ant:ant
+ant-launcher=org.apache.ant:ant-launcher
+aopalliance=aopalliance:aopalliance
+base=com.google.jsinterop:base
+junit=junit:junit
