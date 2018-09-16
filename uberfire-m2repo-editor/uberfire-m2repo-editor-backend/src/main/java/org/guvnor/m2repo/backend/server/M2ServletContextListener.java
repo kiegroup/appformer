@@ -121,7 +121,7 @@ public class M2ServletContextListener implements ServletContextListener {
                           props.getProperty(VERSION));
             deploy(gav, file);
         } else {
-            logger.warn("Missing Metadata Info for lib: " + file);
+            logger.info("Maven Artifact deployed from WEB-INF: {} ", gav.toString());
         }
         return gav;
     }

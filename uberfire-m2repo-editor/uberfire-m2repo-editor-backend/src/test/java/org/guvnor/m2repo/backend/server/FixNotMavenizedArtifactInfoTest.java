@@ -17,12 +17,32 @@ public class FixNotMavenizedArtifactInfoTest {
     @Test
     public void testProperties() {
         final FixNotMavenizedArtifactInfo fixNotMavenizedArtifactInfo = new FixNotMavenizedArtifactInfo();
-        final Properties result = fixNotMavenizedArtifactInfo.getProperties("/opt/wildfly/standalone/tmp/vfs/temp/temp9c869d5d938ad120/content-b548cc99838ba656/WEB-INF/lib/junit-4.12.jar");
+        {
+            final Properties result = fixNotMavenizedArtifactInfo.getProperties("/opt/wildfly/standalone/tmp/vfs/temp/temp9c869d5d938ad120/content-b548cc99838ba656/WEB-INF/lib/junit-4.12.jar");
 
-        assertFalse(result.isEmpty());
-        assertThat(result.getProperty(GROUP_ID)).isEqualTo("junit");
-        assertThat(result.getProperty(ARTIFACT_ID)).isEqualTo("junit");
-        assertThat(result.getProperty(VERSION)).isEqualTo("4.12");
+            assertFalse(result.isEmpty());
+            assertThat(result.getProperty(GROUP_ID)).isEqualTo("junit");
+            assertThat(result.getProperty(ARTIFACT_ID)).isEqualTo("junit");
+            assertThat(result.getProperty(VERSION)).isEqualTo("4.12");
+        }
+
+        {
+            final Properties result = fixNotMavenizedArtifactInfo.getProperties("/opt/wildfly/standalone/tmp/vfs/temp/temp9c869d5d938ad120/content-b548cc99838ba656/WEB-INF/lib/ant-launcher-X.12-SNAPSHOT.jar");
+
+            assertFalse(result.isEmpty());
+            assertThat(result.getProperty(GROUP_ID)).isEqualTo("org.apache.ant");
+            assertThat(result.getProperty(ARTIFACT_ID)).isEqualTo("ant-launcher");
+            assertThat(result.getProperty(VERSION)).isEqualTo("X.12-SNAPSHOT");
+        }
+
+        {
+            final Properties result = fixNotMavenizedArtifactInfo.getProperties("/opt/wildfly/standalone/tmp/vfs/temp/temp9c869d5d938ad120/content-b548cc99838ba656/WEB-INF/lib/ant-X.12-SNAPSHOT.jar");
+
+            assertFalse(result.isEmpty());
+            assertThat(result.getProperty(GROUP_ID)).isEqualTo("org.apache.ant");
+            assertThat(result.getProperty(ARTIFACT_ID)).isEqualTo("ant");
+            assertThat(result.getProperty(VERSION)).isEqualTo("X.12-SNAPSHOT");
+        }
     }
 
     @Test
