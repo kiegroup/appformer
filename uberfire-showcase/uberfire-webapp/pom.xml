@@ -454,7 +454,7 @@
 
     <dependency>
       <groupId>org.appformer</groupId>
-      <artifactId>appformer-js-core</artifactId>
+      <artifactId>appformer-js</artifactId>
     </dependency>
 
     <dependency>

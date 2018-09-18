@@ -162,11 +162,11 @@ public class AppFormerJsBridge {
                     ? Marshalling.toJSON(value)
                     : null;
 
-            Object[] objects = stream(((Object[]) params[0])).map(jsonToGwt).toArray();
+            final Object[] gwtParams = stream(((Object[]) params[0])).map(jsonToGwt).toArray();
 
             MessageBuilder.createCall()
                     .call(serviceFqcn)
-                    .endpoint(method, qualifiers, objects)
+                    .endpoint(method, qualifiers, gwtParams)
                     .respondTo(Object.class, value -> res.onInvoke(gwtToJson.apply(value)))
                     .errorsHandledBy((e, a) -> true)
                     .sendNowWith(ErraiBus.get());
