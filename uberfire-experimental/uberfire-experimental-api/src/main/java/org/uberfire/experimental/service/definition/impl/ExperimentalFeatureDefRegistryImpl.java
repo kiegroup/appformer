@@ -17,8 +17,10 @@
 package org.uberfire.experimental.service.definition.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
@@ -43,6 +45,14 @@ public class ExperimentalFeatureDefRegistryImpl implements ExperimentalFeatureDe
 
     @Override
     public Collection<ExperimentalFeatureDefinition> getAllFeatures() {
-        return features.values();
+        return Collections.unmodifiableCollection(features.values());
+    }
+
+    public Collection<ExperimentalFeatureDefinition> getGlobalFeatures() {
+        return Collections.unmodifiableCollection(features.values().stream().filter(ExperimentalFeatureDefinition::isGlobal).collect(Collectors.toList()));
+    }
+
+    public Collection<ExperimentalFeatureDefinition> getUserFeatures() {
+        return Collections.unmodifiableCollection(features.values().stream().filter(feature -> !feature.isGlobal()).collect(Collectors.toList()));
     }
 }

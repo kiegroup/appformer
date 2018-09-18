@@ -31,6 +31,6 @@ public class ExperimentalFeatureTest5ExperimentalFeatureDefinitionProvider imple
 
     @Override
     public ExperimentalFeatureDefinition getDefinition() {
-        return new ExperimentalFeatureDefinition("org.uberfire.annotations.processors.ExperimentalFeatureTest5", false, "", "org.uberfire.annotations.processors.ExperimentalFeatureTest5.name", "org.uberfire.annotations.processors.ExperimentalFeatureTest5.description");
+        return new ExperimentalFeatureDefinition("org.uberfire.annotations.processors.ExperimentalFeatureTest5", false, "", "org.uberfire.annotations.processors.ExperimentalFeatureTest5", "");
     }
 }

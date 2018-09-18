@@ -119,7 +119,7 @@ public class ExperimentalAssetEditor extends BaseEditor<String, DefaultMetadata>
     }
 
     public void onDelete(@Observes ExperimentalAssetRemoved event) {
-        if(event.getPath().equals(versionRecordManager.getCurrentPath())) {
+        if (event.getPath().equals(versionRecordManager.getCurrentPath())) {
             placeManager.closePlace(place);
         }
     }

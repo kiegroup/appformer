@@ -34,9 +34,6 @@ import org.uberfire.annotations.processors.facades.ClientAPIModule;
 
 public class ExperimentalFeatureDefinitionProviderGenerator extends AbstractGenerator {
 
-    private static final String NAME_SUFFIX = ".name";
-    private static final String DESCRIPTION_SUFFIX = ".description";
-
     @Override
     public StringBuffer generate(String packageName, PackageElement packageElement, String className, Element element, ProcessingEnvironment processingEnvironment) throws GenerationException {
 
@@ -97,19 +94,13 @@ public class ExperimentalFeatureDefinitionProviderGenerator extends AbstractGene
         String nameKey = ClientAPIModule.getExperimentalFeatureNameKey(typeElement);
 
         if (nameKey.isEmpty()) {
-            nameKey = typeElement.getQualifiedName().toString() + NAME_SUFFIX;
+            nameKey = typeElement.getQualifiedName().toString();
         }
 
         return nameKey;
     }
 
     private String getDescriptionKey(TypeElement typeElement) {
-        String descriptionKey = ClientAPIModule.getExperimentalFeatureDescriptionKey(typeElement);
-
-        if (descriptionKey.isEmpty()) {
-            descriptionKey = typeElement.getQualifiedName().toString() + DESCRIPTION_SUFFIX;
-        }
-
-        return descriptionKey;
+        return ClientAPIModule.getExperimentalFeatureDescriptionKey(typeElement);
     }
 }
