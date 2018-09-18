@@ -37,7 +37,7 @@ public class JsNativeScreen {
     }
 
     public native void render() /*-{
-        $wnd.appformer.render(
+        $wnd.AppFormer.render(
                 this.@org.uberfire.jsbridge.client.JsNativeScreen::self.af_componentRoot(),
                 this.@org.uberfire.jsbridge.client.JsNativeScreen::container);
     }-*/;

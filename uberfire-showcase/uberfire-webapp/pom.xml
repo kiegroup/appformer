@@ -454,7 +454,12 @@
 
     <dependency>
       <groupId>org.appformer</groupId>
-      <artifactId>appformer-js</artifactId>
+      <artifactId>appformer-js-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.appformer</groupId>
+      <artifactId>appformer-js-showcase-components</artifactId>
     </dependency>
   </dependencies>
 

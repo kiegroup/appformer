@@ -70,9 +70,12 @@ public class AppFormerJsBridge {
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase/showcase-components.bundle.js")
+                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
-                                .setCallback((Success<Void>) i3 -> workbench.removeStartupBlocker(AppFormerJsBridge.class))
+                                .setCallback((Success<Void>) i3 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
+                                        .setWindow(ScriptInjector.TOP_WINDOW)
+                                        .setCallback((Success<Void>) i4 -> workbench.removeStartupBlocker(AppFormerJsBridge.class))
+                                        .inject())
                                 .inject())
                         .inject())
                 .inject();
@@ -138,7 +141,7 @@ public class AppFormerJsBridge {
             final String[] parts = path.split("\\|");
             final String serviceFqcn = parts[0];
             final String method = parts[1];
-            final Annotation[] qualifiers = {};
+            final Annotation[] qualifiers = {}; //FIXME: Support qualifiers?
 
             final Function<Object, Object> jsonToGwt = object -> {
                 final String json = (String) object;
@@ -159,7 +162,7 @@ public class AppFormerJsBridge {
                     ? Marshalling.toJSON(value)
                     : null;
 
-            Object[] objects = stream(((String[]) params[0])).map(jsonToGwt).toArray();
+            Object[] objects = stream(((Object[]) params[0])).map(jsonToGwt).toArray();
 
             MessageBuilder.createCall()
                     .call(serviceFqcn)
