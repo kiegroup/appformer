@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.editor.feature;
+package org.uberfire.experimental.client.editor.group.feature;
 
 import java.util.Comparator;
 
@@ -111,5 +111,13 @@ public class ExperimentalFeatureEditor implements ExperimentalFeatureEditorView.
     @Override
     public int compareTo(ExperimentalFeatureEditor other) {
         return comparator.compare(this.getName(), other.getName());
+    }
+
+    public boolean isEnabled() {
+        return feature.isEnabled();
+    }
+
+    public void enable() {
+        view.setEnabled(!feature.isEnabled());
     }
 }

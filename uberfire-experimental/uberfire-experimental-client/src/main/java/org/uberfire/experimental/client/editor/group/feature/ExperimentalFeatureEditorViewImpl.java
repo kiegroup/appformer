@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.editor.feature;
+package org.uberfire.experimental.client.editor.group.feature;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
-import elemental2.dom.HTMLAnchorElement;
-import elemental2.dom.HTMLDivElement;
+import com.google.gwt.user.client.Event;
+import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLLabelElement;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
-import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
+import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.SizeType;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.SinkNative;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.views.pfly.widgets.JQueryProducer;
-import org.uberfire.client.views.pfly.widgets.Popover;
 
 @Templated
 public class ExperimentalFeatureEditorViewImpl implements ExperimentalFeatureEditorView,
@@ -39,42 +39,59 @@ public class ExperimentalFeatureEditorViewImpl implements ExperimentalFeatureEdi
 
     @Inject
     @DataField
-    private HTMLDivElement container;
-
-    @Inject
-    @DataField
     private HTMLLabelElement name;
 
-    @Inject
     @DataField
-    private HTMLAnchorElement helpMessage;
+    @Inject
+    private HTMLLabelElement description;
 
     @Inject
     @DataField
     private ToggleSwitch enabled;
-
-    @Inject
-    private JQueryProducer.JQuery<Popover> jQueryPopover;
-
-    @Inject
-    private Elemental2DomUtil util;
 
     @Override
     public void init(Presenter presenter) {
         this.presenter = presenter;
     }
 
+    @PostConstruct
+    public void init() {
+        this.enabled.setSize(SizeType.MINI);
+    }
+
     @Override
     public void render(String name, String description, boolean enabled) {
+
         this.name.textContent = name;
-        this.enabled.setValue(enabled);
 
         if (description != null) {
-            helpMessage.setAttribute("data-content", description);
-            jQueryPopover.wrap(util.asHTMLElement(helpMessage)).popover();
-        } else {
-            container.removeChild(helpMessage);
+            this.description.textContent = description;
         }
+
+        this.enabled.setValue(enabled);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled.setValue(enabled, true);
+    }
+
+    private void maybeAddTitle(HTMLElement element) {
+        if (element.offsetWidth < element.scrollWidth && element.title.isEmpty()) {
+            element.title = element.textContent;
+        }
+    }
+
+    @SinkNative(Event.ONMOUSEOVER)
+    @EventHandler("name")
+    public void onLoadName(Event event) {
+        maybeAddTitle(name);
+    }
+
+    @SinkNative(Event.ONMOUSEOVER)
+    @EventHandler("description")
+    public void onLoadDescription(Event event) {
+        maybeAddTitle(description);
     }
 
     @EventHandler("enabled")

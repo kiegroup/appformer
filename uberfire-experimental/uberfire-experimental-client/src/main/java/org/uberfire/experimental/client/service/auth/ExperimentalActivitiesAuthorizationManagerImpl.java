@@ -29,12 +29,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.google.gwt.dom.client.Document;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.workbench.widgets.menu.events.PerspectiveVisibiltiyChangeEvent;
 import org.uberfire.experimental.client.disabled.screen.DisabledFeatureActivity;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.client.util.ExperimentalUtils;
 import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
 import org.uberfire.experimental.service.events.PortableExperimentalFeatureModifiedEvent;
@@ -148,7 +148,7 @@ public class ExperimentalActivitiesAuthorizationManagerImpl implements Experimen
     }
 
     private static String createUniqueId() {
-        return Document.get().createUniqueId();
+        return ExperimentalUtils.createUniqueId();
     }
 
     public void onFeatureModified(@Observes PortableExperimentalFeatureModifiedEvent event) {

@@ -62,11 +62,6 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-workbench-client-views-patternfly</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-workbench-processors</artifactId>
       <scope>provided</scope>
     </dependency>

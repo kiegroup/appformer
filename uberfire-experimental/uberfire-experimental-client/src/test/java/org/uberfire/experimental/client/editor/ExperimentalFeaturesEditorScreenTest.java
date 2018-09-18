@@ -18,8 +18,13 @@ package org.uberfire.experimental.client.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.MapAssert;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,32 +32,47 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.uberfire.experimental.client.editor.feature.ExperimentalFeatureEditor;
+import org.uberfire.experimental.client.editor.group.ExperimentalFeaturesGroup;
+import org.uberfire.experimental.client.editor.group.ExperimentalFeaturesGroupView;
+import org.uberfire.experimental.client.editor.group.TestExperimentalFeaturesGroup;
+import org.uberfire.experimental.client.editor.group.feature.ExperimentalFeatureEditor;
 import org.uberfire.experimental.client.resources.i18n.UberfireExperimentalConstants;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry;
+import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
 import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.service.editor.FeaturesEditorService;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeaturesRegistryImpl;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.SessionInfoMock;
+import org.uberfire.security.ResourceAction;
+import org.uberfire.security.ResourceType;
+import org.uberfire.security.authz.AuthorizationManager;
 
 import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry.FEATURE_1;
-import static org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry.FEATURE_2;
-import static org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry.FEATURE_3;
+import static org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry.FEATURE_1;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExperimentalFeaturesEditorScreenTest {
+
+    private static final String USER_NAME = "user";
+
+    @Mock
+    private ManagedInstance<ExperimentalFeatureEditor> editorInstance;
 
     @Mock
     private TranslationService translationService;
 
     @Mock
     private ClientExperimentalFeaturesRegistryService registryService;
+
+    private ExperimentalFeatureDefRegistry defRegistry;
 
     private ExperimentalFeaturesRegistryImpl registry;
 
@@ -62,30 +82,44 @@ public class ExperimentalFeaturesEditorScreenTest {
     private ExperimentalFeaturesEditorScreenView view;
 
     @Mock
-    private ManagedInstance<ExperimentalFeatureEditor> instance;
+    private ManagedInstance<ExperimentalFeaturesGroup> instance;
 
     @Mock
     private FeaturesEditorService featuresEditorService;
+
+    @Mock
+    private AuthorizationManager authorizationManager;
+
+    private SessionInfoMock sessionInfo;
 
     private CallerMock<FeaturesEditorService> editorServiceCaller;
 
     private ExperimentalFeaturesEditorScreen presenter;
 
+    private List<TestExperimentalFeaturesGroup> groups = new ArrayList<>();
+
     @Before
     public void init() {
-        features.add(new ExperimentalFeatureImpl(FEATURE_1, false));
-        features.add(new ExperimentalFeatureImpl(FEATURE_2, false));
-        features.add(new ExperimentalFeatureImpl(FEATURE_3, false));
+
+        when(editorInstance.get()).thenReturn(mock(ExperimentalFeatureEditor.class));
+
+        sessionInfo = new SessionInfoMock(USER_NAME);
+
+        defRegistry = new TestExperimentalFeatureDefRegistry();
+
+        features = defRegistry.getAllFeatures().stream()
+                .map(def -> new ExperimentalFeatureImpl(def.getId(), false))
+                .collect(Collectors.toList());
 
         registry = new ExperimentalFeaturesRegistryImpl(features);
 
         when(registryService.getFeaturesRegistry()).thenReturn(registry);
 
-        when(instance.get()).thenAnswer((Answer<ExperimentalFeatureEditor>) invocationOnMock -> mock(ExperimentalFeatureEditor.class));
+        when(instance.get()).thenAnswer((Answer<ExperimentalFeaturesGroup>) invocationOnMock -> createGroup());
 
         editorServiceCaller = new CallerMock<>(featuresEditorService);
 
-        presenter = new ExperimentalFeaturesEditorScreen(translationService, registryService, view, instance, editorServiceCaller);
+        presenter = new ExperimentalFeaturesEditorScreen(translationService, registryService, defRegistry, view, instance, editorServiceCaller, sessionInfo, authorizationManager);
     }
 
     @Test
@@ -106,13 +140,45 @@ public class ExperimentalFeaturesEditorScreenTest {
     }
 
     @Test
-    public void testShow() {
+    public void testShowGroupsWithPermissions() {
+
+        testShowGroups(true);
+    }
+
+    @Test
+    public void testShowGroupsWithoutPermissions() {
+
+        testShowGroups(false);
+    }
+
+    private void testShowGroups(final boolean withPermissions) {
+
+        when(authorizationManager.authorize(any(ResourceType.class), any(ResourceAction.class), any(User.class))).thenReturn(withPermissions);
 
         presenter.show();
 
         verifyClear();
 
-        verify(instance, times(features.size())).get();
+        int expectedGroups = 2;
+
+        final List<String> expectedGroupNames = new ArrayList<>();
+        expectedGroupNames.add(UberfireExperimentalConstants.experimentalFeaturesGeneralGroupKey);
+        expectedGroupNames.add(TestExperimentalFeatureDefRegistry.GROUP);
+
+        if (withPermissions) {
+            expectedGroups++;
+            expectedGroupNames.add(UberfireExperimentalConstants.experimentalFeaturesGlobalGroupKey);
+        }
+
+        verify(instance, times(expectedGroups)).get();
+
+        Map<String, TestExperimentalFeaturesGroup> groupMap = groups.stream()
+                .collect(Collectors.toMap(TestExperimentalFeaturesGroup::getLabelKey, group -> group));
+
+        MapAssert<String, TestExperimentalFeaturesGroup> mapAssert = Assertions.assertThat(groupMap);
+
+        mapAssert.hasSize(expectedGroups)
+                .containsKeys(expectedGroupNames.toArray(new String[expectedGroups]));
     }
 
     @Test
@@ -123,6 +189,14 @@ public class ExperimentalFeaturesEditorScreenTest {
 
         verify(featuresEditorService, times(1)).save(feature);
         verify(registryService, times(1)).updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled());
+    }
+
+    private ExperimentalFeaturesGroup createGroup() {
+        TestExperimentalFeaturesGroup group = new TestExperimentalFeaturesGroup(mock(ExperimentalFeaturesGroupView.class), mock(TranslationService.class), editorInstance);
+
+        groups.add(group);
+
+        return group;
     }
 
     private void verifyClear() {

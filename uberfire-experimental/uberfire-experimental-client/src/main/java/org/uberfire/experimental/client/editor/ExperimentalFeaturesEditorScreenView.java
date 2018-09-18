@@ -17,13 +17,14 @@
 package org.uberfire.experimental.client.editor;
 
 import org.uberfire.client.mvp.UberElemental;
-import org.uberfire.experimental.client.editor.feature.ExperimentalFeatureEditor;
+import org.uberfire.experimental.client.editor.group.feature.ExperimentalFeatureEditor;
+import org.uberfire.experimental.client.editor.group.ExperimentalFeaturesGroup;
 
 public interface ExperimentalFeaturesEditorScreenView extends UberElemental<ExperimentalFeaturesEditorScreenView.Presenter> {
 
     void clear();
 
-    void add(ExperimentalFeatureEditor experimentalFeatureElement);
+    void add(ExperimentalFeaturesGroup experimentalFeaturesGroup);
 
     interface Presenter {
 

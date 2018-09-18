@@ -14,16 +14,35 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.editor.feature;
+package org.uberfire.experimental.client.editor.group;
 
 import org.uberfire.client.mvp.UberElemental;
+import org.uberfire.experimental.client.editor.group.feature.ExperimentalFeatureEditor;
 
-public interface ExperimentalFeatureEditorView extends UberElemental<ExperimentalFeatureEditorView.Presenter> {
+public interface ExperimentalFeaturesGroupView extends UberElemental<ExperimentalFeaturesGroupView.Presenter> {
 
-    void render(String name, String description, boolean enabled);
+    void setLabel(String label);
+
+    void setEnableAllLabel(String label);
+
+    void render(ExperimentalFeatureEditor editor);
+
+    void clear();
+
+    void expand();
+
+    void collapse();
+
+    void arrangeCaret();
 
     interface Presenter {
 
-        void notifyChange(boolean newEnabledValue);
+        void notifyExpand();
+
+        String getLabel();
+
+        void doEnableAll();
+
+        boolean isExpanded();
     }
 }

@@ -18,14 +18,12 @@ package org.uberfire.experimental.client.editor;
 
 import javax.inject.Inject;
 
-import elemental2.dom.Document;
-import elemental2.dom.HTMLLIElement;
-import elemental2.dom.HTMLUListElement;
+import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.experimental.client.editor.feature.ExperimentalFeatureEditor;
+import org.uberfire.experimental.client.editor.group.ExperimentalFeaturesGroup;
 
 @Templated
 public class ExperimentalFeaturesEditorScreenViewImpl implements ExperimentalFeaturesEditorScreenView,
@@ -37,11 +35,8 @@ public class ExperimentalFeaturesEditorScreenViewImpl implements ExperimentalFea
     private Elemental2DomUtil util;
 
     @Inject
-    private Document document;
-
-    @Inject
-    @DataField("features-container")
-    private HTMLUListElement featuresContainer;
+    @DataField
+    private HTMLDivElement container;
 
     @Override
     public void init(Presenter presenter) {
@@ -50,14 +45,11 @@ public class ExperimentalFeaturesEditorScreenViewImpl implements ExperimentalFea
 
     @Override
     public void clear() {
-        util.removeAllElementChildren(featuresContainer);
+        util.removeAllElementChildren(container);
     }
 
     @Override
-    public void add(ExperimentalFeatureEditor experimentalFeatureElement) {
-        HTMLLIElement li = (HTMLLIElement) document.createElement("li");
-        li.setAttribute("class", "list-group-item");
-        li.appendChild(experimentalFeatureElement.getElement());
-        featuresContainer.appendChild(li);
+    public void add(ExperimentalFeaturesGroup experimentalFeaturesGroup) {
+        container.appendChild(experimentalFeaturesGroup.getElement());
     }
 }

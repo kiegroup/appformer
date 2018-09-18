@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.enterprise.event.Event;
 
@@ -41,6 +42,8 @@ import org.uberfire.experimental.client.test.model.TestExperimentalScreen1Activi
 import org.uberfire.experimental.client.test.model.TestExperimentalScreen2Activity;
 import org.uberfire.experimental.client.test.model.TestNonExperimentalScreenActivity;
 import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.events.PortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.registry.ExperimentalFeature;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.ConditionalPlaceRequest;
@@ -131,12 +134,22 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
     }
 
     @Test
-    public void testOnFeatureModified() {
-        authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(new ExperimentalFeatureImpl(FEATURE_2_ID, true)));
+    public void testOnFeatureModifiedEvent() {
+        testOnFeatureModified(feature -> authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(feature)));
+    }
+
+    @Test
+    public void testOnFeatureModifiedGlobalEvent() {
+        testOnFeatureModified(feature -> authorizationManager.onFeatureModified(new PortableExperimentalFeatureModifiedEvent(feature)));
+    }
+
+    private void testOnFeatureModified(Consumer<ExperimentalFeature> authorizationEventConsumer) {
+
+        authorizationEventConsumer.accept(new ExperimentalFeatureImpl(FEATURE_2_ID, true));
 
         verify(perspectiveVisibleEvent, never()).fire(any());
 
-        authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(new ExperimentalFeatureImpl(FEATURE_1_ID, true)));
+        authorizationEventConsumer.accept(new ExperimentalFeatureImpl(FEATURE_1_ID, true));
 
         ArgumentCaptor<PerspectiveVisibiltiyChangeEvent> captor = ArgumentCaptor.forClass(PerspectiveVisibiltiyChangeEvent.class);
 
@@ -147,7 +160,7 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
                 .hasFieldOrPropertyWithValue("perspectiveId", ACTIVITY_1_ID)
                 .hasFieldOrPropertyWithValue("visible", true);
 
-        authorizationManager.onFeatureModified(new NonPortableExperimentalFeatureModifiedEvent(new ExperimentalFeatureImpl(FEATURE_1_ID, false)));
+        authorizationEventConsumer.accept(new ExperimentalFeatureImpl(FEATURE_1_ID, false));
 
         captor = ArgumentCaptor.forClass(PerspectiveVisibiltiyChangeEvent.class);
 

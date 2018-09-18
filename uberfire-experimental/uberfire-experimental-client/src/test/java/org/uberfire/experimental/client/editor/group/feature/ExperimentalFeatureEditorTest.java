@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.editor.feature;
+package org.uberfire.experimental.client.editor.group.feature;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,12 +28,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry;
+import org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry;
 import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -104,6 +105,14 @@ public class ExperimentalFeatureEditorTest {
 
         verify(feature).setEnabled(false);
         verify(onChange, times(2)).execute(any());
+
+        assertFalse(editor.isEnabled());
+        verify(feature, times(5)).isEnabled();
+
+        editor.enable();
+
+        verify(feature, times(6)).isEnabled();
+        verify(view).setEnabled(true);
     }
 
     @Test

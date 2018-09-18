@@ -16,8 +16,10 @@
 
 package org.uberfire.experimental.client.editor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -32,14 +34,20 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
-import org.uberfire.experimental.client.editor.feature.ExperimentalFeatureEditor;
+import org.uberfire.experimental.client.editor.group.ExperimentalFeaturesGroup;
 import org.uberfire.experimental.client.resources.i18n.UberfireExperimentalConstants;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
+import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
+import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.service.editor.FeaturesEditorService;
 import org.uberfire.experimental.service.registry.ExperimentalFeature;
 import org.uberfire.experimental.service.registry.ExperimentalFeaturesRegistry;
+import org.uberfire.experimental.service.security.GlobalExperimentalFeatureAction;
+import org.uberfire.experimental.service.security.GlobalExperimentalFeatureResourceType;
 import org.uberfire.lifecycle.OnOpen;
+import org.uberfire.rpc.SessionInfo;
+import org.uberfire.security.authz.AuthorizationManager;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = ExperimentalFeaturesEditorScreen.SCREEN_ID)
@@ -49,19 +57,32 @@ public class ExperimentalFeaturesEditorScreen implements ExperimentalFeaturesEdi
 
     private final TranslationService translationService;
     private final ClientExperimentalFeaturesRegistryService registryService;
+    private final ExperimentalFeatureDefRegistry defRegistry;
     private final ExperimentalFeaturesEditorScreenView view;
-    private final ManagedInstance<ExperimentalFeatureEditor> instance;
+    private final ManagedInstance<ExperimentalFeaturesGroup> groupsInstance;
     private final Caller<FeaturesEditorService> editorService;
-
-    protected final List<ExperimentalFeatureEditor> featureEditors = new ArrayList<>();
+    private final SessionInfo sessionInfo;
+    private final AuthorizationManager authorizationManager;
 
     @Inject
-    public ExperimentalFeaturesEditorScreen(final TranslationService translationService, final ClientExperimentalFeaturesRegistryService registryService, final ExperimentalFeaturesEditorScreenView view, final ManagedInstance<ExperimentalFeatureEditor> instance, Caller<FeaturesEditorService> editorService) {
+    public ExperimentalFeaturesEditorScreen(final TranslationService translationService,
+                                            final ClientExperimentalFeaturesRegistryService registryService,
+                                            final ExperimentalFeatureDefRegistry defRegistry,
+                                            final ExperimentalFeaturesEditorScreenView view,
+                                            final ManagedInstance<ExperimentalFeaturesGroup> groupsInstance,
+                                            final Caller<FeaturesEditorService> editorService,
+                                            final SessionInfo sessionInfo,
+                                            final AuthorizationManager authorizationManager) {
         this.translationService = translationService;
         this.registryService = registryService;
+        this.defRegistry = defRegistry;
         this.view = view;
-        this.instance = instance;
+        this.groupsInstance = groupsInstance;
         this.editorService = editorService;
+        this.sessionInfo = sessionInfo;
+        this.authorizationManager = authorizationManager;
+
+
     }
 
     @PostConstruct
@@ -76,26 +97,54 @@ public class ExperimentalFeaturesEditorScreen implements ExperimentalFeaturesEdi
         ExperimentalFeaturesRegistry registry = registryService.getFeaturesRegistry();
 
         if (registry != null) {
-            registry.getAllFeatures()
+            Map<String, Set<ExperimentalFeature>> groupedFeatures = registry.getAllFeatures().stream()
+                    .collect(Collectors.groupingBy(this::getFeatureGroupName, Collectors.toSet()));
+
+            TreeSet<ExperimentalFeaturesGroup> groups = groupedFeatures.entrySet()
                     .stream()
-                    .map(this::getFeatureEditor)
-                    .sorted()
-                    .collect(Collectors.toCollection(() -> featureEditors))
-                    .forEach(view::add);
+                    .map(this::getFeaturesGroup)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toCollection(TreeSet::new));
+
+            if (!groups.isEmpty()) {
+                groups.first().expand();
+                groups.forEach(view::add);
+            }
         }
     }
 
-    private ExperimentalFeatureEditor getFeatureEditor(final ExperimentalFeature feature) {
-        ExperimentalFeatureEditor element = instance.get();
-        element.render(new EditableExperimentalFeature(feature.getFeatureId(), feature.isEnabled()), this::doSave);
-        return element;
+    private String getFeatureGroupName(ExperimentalFeature feature) {
+        ExperimentalFeatureDefinition definition = defRegistry.getFeatureById(feature.getFeatureId());
+
+        if (definition.isGlobal()) {
+            return UberfireExperimentalConstants.experimentalFeaturesGlobalGroupKey;
+        }
+
+        if (definition.getGroup().isEmpty()) {
+            return UberfireExperimentalConstants.experimentalFeaturesGeneralGroupKey;
+        }
+
+        return definition.getGroup();
+    }
+
+    private ExperimentalFeaturesGroup getFeaturesGroup(Map.Entry<String, Set<ExperimentalFeature>> entry) {
+        String groupName = entry.getKey();
+
+        if (groupName.equals(UberfireExperimentalConstants.experimentalFeaturesGlobalGroupKey)) {
+            if (!authorizationManager.authorize(new GlobalExperimentalFeatureResourceType(), GlobalExperimentalFeatureAction.EDIT, sessionInfo.getIdentity())) {
+                return null;
+            }
+        }
+
+        ExperimentalFeaturesGroup group = groupsInstance.get();
+
+        group.init(groupName, entry.getValue(), this::doSave);
+
+        return group;
     }
 
     protected void doSave(final EditableExperimentalFeature feature) {
-        editorService.call((RemoteCallback<Void>) aVoid -> {
-                               registryService.updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled());
-                           }
-        ).save(feature);
+        editorService.call((RemoteCallback<Void>) aVoid -> registryService.updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled())).save(feature);
     }
 
     @WorkbenchPartTitle
@@ -110,8 +159,7 @@ public class ExperimentalFeaturesEditorScreen implements ExperimentalFeaturesEdi
 
     @PreDestroy
     public void clear() {
-        featureEditors.clear();
         view.clear();
-        instance.destroyAll();
+        groupsInstance.destroyAll();
     }
 }

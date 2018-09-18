@@ -46,7 +46,7 @@ import static org.uberfire.ext.editor.commons.client.menu.MenuItems.SAVE;
 
 @Dependent
 @WorkbenchEditor(identifier = "ExperimentalAsset", supportedTypes = ExperimentalAssetResourceType.class)
-@ExperimentalFeature(nameI18nKey = "experimental_asset_editor", descriptionI18nKey = "experimental_asset_editor_description", scope = ExperimentalFeature.Scope.GLOBAL)
+@ExperimentalFeature(nameI18nKey = "experimental_asset_editor", descriptionI18nKey = "experimental_asset_editor_description")
 public class ExperimentalAssetEditor extends BaseEditor<String, DefaultMetadata> {
 
     private ExperimentalAssetResourceType resourceType;

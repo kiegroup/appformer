@@ -65,4 +65,34 @@ public interface Constants
     String simple_perspective();
 
     String standalone_editor_perspective();
+
+    String global_feature1();
+
+    String global_feature2();
+
+    String global_feature3();
+
+    String global_feature_description();
+
+    String group1();
+
+    String group1_feature1();
+
+    String group1_feature2();
+
+    String group1_feature3();
+
+    String group2();
+
+    String group2_feature1();
+
+    String group3();
+
+    String group3_feature1();
+
+    String group3_feature2();
+
+    String group3_feature3();
+
+    String experimental_feature_description();
 }
