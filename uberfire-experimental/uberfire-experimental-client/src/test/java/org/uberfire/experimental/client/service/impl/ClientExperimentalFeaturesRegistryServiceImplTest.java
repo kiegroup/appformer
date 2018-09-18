@@ -42,9 +42,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry.FEATURE_1;
-import static org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry.FEATURE_2;
-import static org.uberfire.experimental.client.editor.test.TestExperimentalFeatureDefRegistry.FEATURE_3;
+import static org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry.FEATURE_1;
+import static org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry.FEATURE_2;
+import static org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry.FEATURE_3;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClientExperimentalFeaturesRegistryServiceImplTest {

@@ -31,4 +31,25 @@ public interface UberfireExperimentalConstants {
 
     @TranslationKey(defaultValue = "")
     String disabledFeatureTitle = "DisabledFeatureTitle";
+
+    @TranslationKey(defaultValue = "")
+    String experimentalFeaturesGeneralGroupKey = "experimentalFeatures.generalGroup";
+
+    @TranslationKey(defaultValue = "")
+    String experimentalFeaturesGlobalGroupKey = "experimentalFeatures.globalGroup";
+
+    @TranslationKey(defaultValue = "")
+    String ExperimentalFeaturesGroupEnableAll = "ExperimentalFeaturesGroup.enableAll";
+
+    @TranslationKey(defaultValue = "")
+    String ExperimentalFeaturesGroupDisableAll = "ExperimentalFeaturesGroup.disableAll";
+
+    @TranslationKey(defaultValue = "")
+    String GlobalExperimentalFeatures = "experimentalFeatures.global";
+
+    @TranslationKey(defaultValue = "")
+    String GlobalExperimentalFeaturesHelp = "experimentalFeatures.globalHelp";
+
+    @TranslationKey(defaultValue = "")
+    String GlobalExperimentalFeaturesEdit = "experimentalFeatures.globalEdit";
 }

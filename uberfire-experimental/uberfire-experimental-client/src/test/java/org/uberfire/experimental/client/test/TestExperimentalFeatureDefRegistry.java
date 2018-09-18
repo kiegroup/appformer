@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.editor.test;
+package org.uberfire.experimental.client.test;
 
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
 import org.uberfire.experimental.service.definition.impl.ExperimentalFeatureDefRegistryImpl;
@@ -25,9 +25,19 @@ public class TestExperimentalFeatureDefRegistry extends ExperimentalFeatureDefRe
     public static final String FEATURE_2 = "feature_2";
     public static final String FEATURE_3 = "feature_3";
 
+    public static final String GLOBAL_FEATURE_1 = "globalFeature_1";
+    public static final String GLOBAL_FEATURE_2 = "globalFeature_2";
+    public static final String GLOBAL_FEATURE_3 = "globalFeature_3";
+
+    public static final String GROUP = "group";
+
     public TestExperimentalFeatureDefRegistry() {
         register(new ExperimentalFeatureDefinition(FEATURE_1, false, "", FEATURE_1, FEATURE_1));
-        register(new ExperimentalFeatureDefinition(FEATURE_2, false, "", FEATURE_2, FEATURE_2));
+        register(new ExperimentalFeatureDefinition(FEATURE_2, false, GROUP, FEATURE_2, FEATURE_2));
         register(new ExperimentalFeatureDefinition(FEATURE_3, false, "", FEATURE_3, FEATURE_3));
+
+        register(new ExperimentalFeatureDefinition(GLOBAL_FEATURE_1, true, "", GLOBAL_FEATURE_1, GLOBAL_FEATURE_1));
+        register(new ExperimentalFeatureDefinition(GLOBAL_FEATURE_2, true, "", GLOBAL_FEATURE_2, GLOBAL_FEATURE_2));
+        register(new ExperimentalFeatureDefinition(GLOBAL_FEATURE_3, true, "", GLOBAL_FEATURE_3, GLOBAL_FEATURE_3));
     }
 }
