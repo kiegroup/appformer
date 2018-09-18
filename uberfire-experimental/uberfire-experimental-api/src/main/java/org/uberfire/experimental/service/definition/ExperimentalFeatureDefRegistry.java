@@ -31,8 +31,20 @@ public interface ExperimentalFeatureDefRegistry {
     ExperimentalFeatureDefinition getFeatureById(String definitionId);
 
     /**
-     * Lists all the {@link ExperimentalFeatureDefinition} availables on the platform
+     * Lists all the {@link ExperimentalFeatureDefinition} available on the platform
      * @return a Collection containing all the {@link ExperimentalFeatureDefinition}
      */
     Collection<ExperimentalFeatureDefinition> getAllFeatures();
+
+    /**
+     * Lists all the global {@link ExperimentalFeatureDefinition}
+     * @return a Collection containing all the {@link ExperimentalFeatureDefinition}
+     */
+    Collection<ExperimentalFeatureDefinition> getGlobalFeatures();
+
+    /**
+     * Lists the user-level {@link ExperimentalFeatureDefinition}
+     * @return a Collection containing {@link ExperimentalFeatureDefinition}
+     */
+    Collection<ExperimentalFeatureDefinition> getUserFeatures();
 }

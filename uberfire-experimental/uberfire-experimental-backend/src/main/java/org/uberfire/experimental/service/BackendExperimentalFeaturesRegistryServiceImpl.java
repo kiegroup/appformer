@@ -16,40 +16,26 @@
 
 package org.uberfire.experimental.service;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jboss.errai.bus.server.annotations.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uberfire.experimental.service.backend.BackendExperimentalFeaturesRegistryService;
 import org.uberfire.experimental.service.backend.ExperimentalFeaturesSession;
 import org.uberfire.experimental.service.backend.impl.ExperimentalFeaturesSessionImpl;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
+import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
 import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.service.editor.FeaturesEditorService;
-import org.uberfire.experimental.service.registry.ExperimentalFeature;
-import org.uberfire.experimental.service.registry.ExperimentalFeaturesRegistry;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeaturesRegistryImpl;
-import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.FileSystem;
-import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
-import org.uberfire.java.nio.file.Path;
-import org.uberfire.rpc.SessionInfo;
-import org.uberfire.spaces.SpacesAPI;
+import org.uberfire.experimental.service.storage.ExperimentalFeaturesStorage;
 
 @Service
 @ApplicationScoped
@@ -57,63 +43,25 @@ public class BackendExperimentalFeaturesRegistryServiceImpl implements Experimen
                                                                        BackendExperimentalFeaturesRegistryService,
                                                                        FeaturesEditorService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BackendExperimentalFeaturesRegistryServiceImpl.class);
-
-    public static final String COMMENTS = "Experimental features registry";
-
     public static final String EXPERIMENTAL_FEATURES_PROPERTY_NAME = "appformer.experimental.features";
-
-    private static final String EXPERIMENTAL = "experimental";
-
-    public static final String EXPERIMENTAL_FILE_NAME = "." + EXPERIMENTAL;
-
-    public static final String SEPARATOR = "/";
-
-    public static final String EXPERIMENTAL_STORAGE_FOLDER = SEPARATOR + EXPERIMENTAL;
-
-    private final SessionInfo sessionInfo;
-
-    private final SpacesAPI spaces;
-
-    private final IOService ioService;
 
     private final ExperimentalFeatureDefRegistry defRegistry;
 
-    private FileSystem fileSystem;
+    private ExperimentalFeaturesStorage globalStorage;
+
+    private ExperimentalFeaturesStorage userStorage;
 
     @Inject
-    public BackendExperimentalFeaturesRegistryServiceImpl(final SessionInfo sessionInfo, final SpacesAPI spaces, @Named("configIO") final IOService ioService, final ExperimentalFeatureDefRegistry defRegistry) {
-        this.sessionInfo = sessionInfo;
-        this.spaces = spaces;
-        this.ioService = ioService;
+    public BackendExperimentalFeaturesRegistryServiceImpl(final ExperimentalFeatureDefRegistry defRegistry, @Named("global") final ExperimentalFeaturesStorage globalStorage, @Named("user") final ExperimentalFeaturesStorage userStorage) {
         this.defRegistry = defRegistry;
-    }
-
-    @PostConstruct
-    public void init() {
-        initializeFileSystem();
+        this.globalStorage = globalStorage;
+        this.userStorage = userStorage;
     }
 
     @Override
     public ExperimentalFeaturesRegistryImpl getFeaturesRegistry() {
-
-        ExperimentalFeaturesRegistryImpl registry = loadRegistry();
-
-        if (registry == null) {
-            registry = newRegistry();
-            updateRegistry(registry);
-        }
-
-        return registry;
+        return loadRegistry();
     }
-
-    private ExperimentalFeaturesRegistryImpl newRegistry() {
-        List<ExperimentalFeatureImpl> features = defRegistry.getAllFeatures().stream()
-                .map(featureDef -> new ExperimentalFeatureImpl(featureDef.getId(), false))
-                .collect(Collectors.toList());
-        return new ExperimentalFeaturesRegistryImpl(features);
-    }
-
     @Override
     public Boolean isExperimentalEnabled() {
         return Boolean.parseBoolean(System.getProperty(EXPERIMENTAL_FEATURES_PROPERTY_NAME, "false"));
@@ -121,91 +69,52 @@ public class BackendExperimentalFeaturesRegistryServiceImpl implements Experimen
 
     @Override
     public boolean isFeatureEnabled(String featureId) {
+
+        ExperimentalFeaturesRegistryImpl registry = getFeaturesRegistry();
+
+        if(registry.getFeature(featureId) == null) {
+            return true;
+        }
+
         return isExperimentalEnabled() && getFeaturesRegistry().isFeatureEnabled(featureId);
     }
 
     @Override
     public void save(EditableExperimentalFeature editableFeature) {
-        if(defRegistry.getFeatureById(editableFeature.getFeatureId()) != null) {
-            ExperimentalFeaturesRegistryImpl currentRegistry = getFeaturesRegistry();
 
-            Optional<ExperimentalFeatureImpl> optional = Optional.ofNullable(currentRegistry.getFeature(editableFeature.getFeatureId()));
+        if(!isExperimentalEnabled()) {
+            throw new IllegalStateException("Impossible edit feature '" + editableFeature.getFeatureId() + "': Experimental Framework is disabled");
+        }
 
-            optional.ifPresent(feature -> feature.setEnabled(editableFeature.isEnabled()));
+        Optional<ExperimentalFeatureDefinition> optional = Optional.ofNullable(defRegistry.getFeatureById(editableFeature.getFeatureId()));
+
+        if (optional.isPresent()) {
+            ExperimentalFeatureDefinition definition = optional.get();
+
+            ExperimentalFeatureImpl feature = new ExperimentalFeatureImpl(editableFeature.getFeatureId(), editableFeature.isEnabled());
+
+            if (definition.isGlobal()) {
+                globalStorage.store(feature);
+            } else {
+                userStorage.store(feature);
+            }
         } else {
             throw new IllegalArgumentException("Cannot find ExperimentalFeature '" + editableFeature.getFeatureId() + "'");
         }
     }
 
-    public void updateRegistry(ExperimentalFeaturesRegistry registry) {
-        String path = getStoragePath();
-
-        Path fsPath = fileSystem.getPath(path);
-
-        Properties properties = new Properties();
-
-        registry.getAllFeatures()
-                .stream()
-                .forEach(feature -> properties.put(feature.getFeatureId(), String.valueOf(feature.isEnabled())));
-
-        try (OutputStream out = ioService.newOutputStream(fsPath)) {
-            ioService.startBatch(fileSystem);
-            properties.store(out, COMMENTS);
-        } catch (Exception ex) {
-            LOGGER.warn("Impossible to write registry for user {}: {}", sessionInfo.getIdentity().getIdentifier(), ex);
-        } finally {
-            ioService.endBatch();
-        }
-    }
-
     private ExperimentalFeaturesRegistryImpl loadRegistry() {
-        String path = getStoragePath();
+        List<ExperimentalFeatureImpl> features = new ArrayList<>();
 
-        Path fsPath = fileSystem.getPath(path);
+        features.addAll(userStorage.getFeatures());
 
-        if (ioService.exists(fsPath)) {
+        features.addAll(globalStorage.getFeatures());
 
-            try (InputStream in = ioService.newInputStream(fsPath)) {
-                Properties properties = new Properties();
-
-                properties.load(in);
-
-                List<ExperimentalFeatureImpl> features = properties.entrySet().stream()
-                        .filter(entry -> defRegistry.getFeatureById((String) entry.getKey()) != null)
-                        .map(entry -> new ExperimentalFeatureImpl((String) entry.getKey(), Boolean.valueOf((String) entry.getValue())))
-                        .collect(Collectors.toList());
-
-                return new ExperimentalFeaturesRegistryImpl(features);
-            } catch (Exception ex) {
-                LOGGER.warn("Impossible to load registry", ex);
-            }
-        }
-
-        return null;
-    }
-
-    private String getStoragePath() {
-        return EXPERIMENTAL_STORAGE_FOLDER + SEPARATOR + sessionInfo.getIdentity().getIdentifier() + SEPARATOR + EXPERIMENTAL_FILE_NAME;
+        return new ExperimentalFeaturesRegistryImpl(features);
     }
 
     @Override
     public ExperimentalFeaturesSession getExperimentalFeaturesSession() {
         return new ExperimentalFeaturesSessionImpl(isExperimentalEnabled(), getFeaturesRegistry());
-    }
-
-    protected void initializeFileSystem() {
-
-        final URI fileSystemURI = spaces.resolveFileSystemURI(SpacesAPI.Scheme.GIT, SpacesAPI.DEFAULT_SPACE, "preferences");
-
-        try {
-            Map<String, Object> options = new HashMap<>();
-
-            options.put("init", Boolean.TRUE);
-            options.put("internal", Boolean.TRUE);
-
-            fileSystem = ioService.newFileSystem(fileSystemURI, options);
-        } catch (FileSystemAlreadyExistsException e) {
-            fileSystem = ioService.getFileSystem(fileSystemURI);
-        }
     }
 }
