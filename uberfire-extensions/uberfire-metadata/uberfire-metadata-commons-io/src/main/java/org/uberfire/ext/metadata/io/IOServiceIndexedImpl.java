@@ -363,9 +363,9 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                         }
 
                         private void queueDeleteEvent(WatchEvent object, final WatchContext context, final IndexerDispatcher dispatcher) throws DisposedException {
-                            Path path = context.getOldPath();
-                            if(!path.getFileName().toString().startsWith(".")){
-                                final Path oldPath = context.getOldPath();
+                            final Path oldPath = context.getOldPath();
+                            // ignore delete events for dot files, because dot files are not indexed
+                            if(!oldPath.getFileName().toString().startsWith(".")){
                                 dispatcher.offer(new DeletedFileEvent(oldPath));
                             }
                         }
