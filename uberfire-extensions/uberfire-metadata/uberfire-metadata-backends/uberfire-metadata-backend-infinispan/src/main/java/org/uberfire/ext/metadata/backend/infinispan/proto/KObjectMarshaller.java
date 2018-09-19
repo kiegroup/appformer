@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.infinispan.protostream.MessageMarshaller;
@@ -108,23 +109,52 @@ public class KObjectMarshaller implements MessageMarshaller<KObject> {
     public void writeTo(ProtoStreamWriter protoStreamWriter,
                         KObject kObject) throws IOException {
 
-        protoStreamWriter.writeString(MetaObject.META_OBJECT_ID,
-                                      kObject.getId());
-        protoStreamWriter.writeString(MetaObject.META_OBJECT_TYPE,
-                                      kObject.getType().getName());
-        protoStreamWriter.writeString(CLUSTER_ID,
-                                      kObject.getClusterId());
-        protoStreamWriter.writeString(SEGMENT_ID,
-                                      kObject.getSegmentId());
-        protoStreamWriter.writeString(MetaObject.META_OBJECT_KEY,
-                                      kObject.getKey());
+        Descriptor descriptor = protoStreamWriter.getSerializationContext().getMessageDescriptor(this.getTypeName());
 
-        Map<String, KProperty<?>> props = new HashMap<>();
-        kObject.getProperties().iterator().forEachRemaining(kprop -> props.putIfAbsent(kprop.getName(),
-                                                                                       kprop));
+        TreeMap<Integer, KProperty<?>> props = new TreeMap<>();
 
-        props.forEach((name, kProperty) -> {
+        this.addKProperty(props,
+                          descriptor,
+                          MetaObject.META_OBJECT_ID,
+                          kObject.getId());
+        this.addKProperty(props,
+                          descriptor,
+                          MetaObject.META_OBJECT_TYPE,
+                          kObject.getType().getName());
+        this.addKProperty(props,
+                          descriptor,
+                          CLUSTER_ID,
+                          kObject.getClusterId());
+        this.addKProperty(props,
+                          descriptor,
+                          SEGMENT_ID,
+                          kObject.getSegmentId());
+        this.addKProperty(props,
+                          descriptor,
+                          MetaObject.META_OBJECT_KEY,
+                          kObject.getKey());
+
+        kObject.getProperties()
+                .iterator()
+                .forEachRemaining(kprop ->
+                                          Optional.ofNullable(descriptor.findFieldByName(toProtobufFormat(kprop.getName())))
+                                                  .ifPresent(field -> props
+                                                          .putIfAbsent(field.getNumber(),
+                                                                       kprop)));
+
+        if (kObject.fullText()) {
+            this.addKProperty(props,
+                              descriptor,
+                              MetaObject.META_OBJECT_FULL_TEXT,
+                              props.values().stream()
+                                      .filter(kProperty -> kProperty.isSearchable() && !(kProperty.getValue() instanceof Boolean))
+                                      .map(kProperty -> String.valueOf(kProperty.getValue()).toLowerCase())
+                                      .collect(joining("\n")));
+        }
+
+        props.keySet().forEach((number) -> {
             try {
+                KProperty<?> kProperty = props.get(number);
                 this.writeField(toProtobufFormat(kProperty.getName()),
                                 kProperty.getValue(),
                                 protoStreamWriter);
@@ -133,14 +163,6 @@ public class KObjectMarshaller implements MessageMarshaller<KObject> {
                              e);
             }
         });
-
-        if (kObject.fullText()) {
-            protoStreamWriter.writeString(MetaObject.META_OBJECT_FULL_TEXT,
-                                          props.values().stream()
-                                                  .filter(kProperty -> kProperty.isSearchable() && !(kProperty.getValue() instanceof Boolean))
-                                                  .map(kProperty -> String.valueOf(kProperty.getValue()).toLowerCase())
-                                                  .collect(joining("\n")));
-        }
     }
 
     @Override
@@ -272,6 +294,16 @@ public class KObjectMarshaller implements MessageMarshaller<KObject> {
 
     private boolean isMainAttribute(FieldDescriptor fieldDescriptor) {
         return this.getMainAttributes().contains(fieldDescriptor.getName());
+    }
+
+    private KProperty<?> addKProperty(Map<Integer, KProperty<?>> props,
+                                      Descriptor descriptor,
+                                      String key,
+                                      String value) {
+        return props.put(descriptor.findFieldByName(toProtobufFormat(key)).getNumber(),
+                         new KPropertyImpl<>(key,
+                                             value,
+                                             false));
     }
 
     private boolean isExtension(final String name) {

@@ -1139,6 +1139,10 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.jboss.marshalling</groupId>
+            <artifactId>jboss-marshalling-osgi</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
