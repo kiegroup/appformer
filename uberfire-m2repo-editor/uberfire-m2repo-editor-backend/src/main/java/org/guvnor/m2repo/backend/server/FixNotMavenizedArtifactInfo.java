@@ -2,7 +2,6 @@ package org.guvnor.m2repo.backend.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -11,7 +10,6 @@ import org.guvnor.common.services.project.model.GAV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.Comparator.naturalOrder;
 import static org.guvnor.m2repo.backend.server.M2ServletContextListener.ARTIFACT_ID;
 import static org.guvnor.m2repo.backend.server.M2ServletContextListener.GROUP_ID;
 import static org.guvnor.m2repo.backend.server.M2ServletContextListener.VERSION;
@@ -35,12 +33,12 @@ public class FixNotMavenizedArtifactInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(FixNotMavenizedArtifactInfo.class);
 
-    //sort artifact names from longer to shorter, to prevent false-positive matches with artifactIds which are
-    // prefixes of other artifactIds (e.g. ant vs. ant-launcher)
-    private static final Comparator<String> LONG_BEFORE_SHORT_COMPARATOR = Comparator.comparing(String::length).reversed().thenComparing(naturalOrder());
-
-    private final TreeMap<String, String[]> notMavenizedArtifacts = new TreeMap<>(LONG_BEFORE_SHORT_COMPARATOR);
-
+    private final TreeMap<String, String[]> notMavenizedArtifacts = new TreeMap<>((o1, o2) -> {
+        if (o1.length() != o2.length()) {
+            return o2.length() - o1.length();
+        }
+        return o1.compareTo(o2);
+    });
     private static final String POM_TEMPLATE = "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
             "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
             "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" +
