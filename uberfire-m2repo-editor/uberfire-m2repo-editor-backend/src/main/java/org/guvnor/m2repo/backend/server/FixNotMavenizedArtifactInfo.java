@@ -37,7 +37,7 @@ public class FixNotMavenizedArtifactInfo {
 
     //sort artifact names from longer to shorter, to prevent false-positive matches with artifactIds which are
     // prefixes of other artifactIds (e.g. ant vs. ant-launcher)
-    private static final Comparator<String> LONG_BEFORE_SHORT_COMPARATOR = Comparator.comparing(String::length).reversed();
+    private static final Comparator<String> LONG_BEFORE_SHORT_COMPARATOR = Comparator.comparing(String::length).reversed().thenComparing(naturalOrder());
 
     private final TreeMap<String, String[]> notMavenizedArtifacts = new TreeMap<>(LONG_BEFORE_SHORT_COMPARATOR);
 
