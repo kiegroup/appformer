@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -130,7 +129,7 @@ public class ModuleRepositoryResolverImpl
             return Collections.emptySet();
         }
 
-        final Set<MavenRepositoryMetadata> repositories = new HashSet<>();
+        final Set<MavenRepositoryMetadata> repositories = new HashSet<MavenRepositoryMetadata>();
 
         try {
             //Load Project's pom.xml
@@ -140,10 +139,11 @@ public class ModuleRepositoryResolverImpl
 
             final InputStream pomStream = new ByteArrayInputStream(pomXML.getBytes(StandardCharsets.UTF_8));
             final MavenProject mavenProject = MavenProjectLoader.parseMavenPom(pomStream);
+            final Aether aether = new Aether(mavenProject);
             final Map<MavenRepositorySource, Collection<RemoteRepository>> remoteRepositories = getRemoteRepositories(mavenProject);
 
             //Local Repository
-            repositories.add(makeRepositoryMetaData(Aether.getAether().getSession().getLocalRepository(),
+            repositories.add(makeRepositoryMetaData(aether.getSession().getLocalRepository(),
                                                     MavenRepositorySource.LOCAL));
 
             if (remoteRepositories.isEmpty()) {
@@ -237,8 +237,7 @@ public class ModuleRepositoryResolverImpl
                                                                          final Module module,
                                                                          final MavenRepositoryMetadata... filter) {
         GAVPreferences gavPreferences = gavPreferencesProvider.get();
-        final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo = scopeResolutionStrategies.getUserInfoFor(GuvnorPreferenceScopes.PROJECT,
-                                                                                                                           module.getEncodedIdentifier());
+        final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo = scopeResolutionStrategies.getUserInfoFor(GuvnorPreferenceScopes.PROJECT, module.getEncodedIdentifier());
         gavPreferences.load(scopeResolutionStrategyInfo);
         if (gavPreferences.isConflictingGAVCheckDisabled()) {
             return Collections.EMPTY_SET;
