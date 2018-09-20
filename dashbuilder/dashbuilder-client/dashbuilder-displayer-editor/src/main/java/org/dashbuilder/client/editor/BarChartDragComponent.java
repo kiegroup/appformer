@@ -21,6 +21,7 @@ import org.dashbuilder.displayer.client.PerspectiveCoordinator;
 import org.dashbuilder.displayer.client.widgets.DisplayerViewer;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -30,9 +31,9 @@ public class BarChartDragComponent extends DisplayerDragComponent {
 
     @Inject
     public BarChartDragComponent(SyncBeanManager beanManager,
-            DisplayerViewer viewer,
-            PlaceManager placeManager,
-            PerspectiveCoordinator perspectiveCoordinator ) {
+                                 DisplayerViewer viewer,
+                                 PlaceManager placeManager,
+                                 PerspectiveCoordinator perspectiveCoordinator) {
 
         super(beanManager, viewer, placeManager, perspectiveCoordinator);
     }

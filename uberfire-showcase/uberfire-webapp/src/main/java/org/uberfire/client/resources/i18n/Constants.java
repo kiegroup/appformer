@@ -37,4 +37,62 @@ public interface Constants
     String SignOut();
 
     String WelcomeUser();
+
+    String experimental_perspective();
+
+    String experimental_perspective_description();
+
+    String experimental_asset_explorer();
+
+    String experimental_asset_explorer_description();
+
+    String experimental_asset_editor();
+
+    String experimental_asset_editor_description();
+
+    String experimental_features_editor();
+
+    String admin_perspective();
+
+    String apps_perspective();
+
+    String multi_screem_perspective();
+
+    String plugin_authoring();
+
+    String preferences_perspective();
+
+    String simple_perspective();
+
+    String standalone_editor_perspective();
+
+    String global_feature1();
+
+    String global_feature2();
+
+    String global_feature3();
+
+    String global_feature_description();
+
+    String group1();
+
+    String group1_feature1();
+
+    String group1_feature2();
+
+    String group1_feature3();
+
+    String group2();
+
+    String group2_feature1();
+
+    String group3();
+
+    String group3_feature1();
+
+    String group3_feature2();
+
+    String group3_feature3();
+
+    String experimental_feature_description();
 }
