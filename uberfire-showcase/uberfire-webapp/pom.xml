@@ -615,8 +615,8 @@
             <configuration>
               <properties>
                 <property>
-                  <name>ts-exporter-generate</name>
-                  <value>true</value>
+                  <name>ts-exporter</name>
+                  <value>all</value>
                 </property>
               </properties>
             </configuration>
