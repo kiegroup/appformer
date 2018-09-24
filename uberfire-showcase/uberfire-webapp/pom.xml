@@ -609,6 +609,8 @@
         <version>1.0.0</version>
         <executions>
           <execution>
+            <id>set-ts-exporter-all</id>
+            <phase>validate</phase>
             <goals>
               <goal>set-system-properties</goal>
             </goals>
@@ -617,6 +619,21 @@
                 <property>
                   <name>ts-exporter</name>
                   <value>all</value>
+                </property>
+              </properties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>set-ts-exporter-none</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>set-system-properties</goal>
+            </goals>
+            <configuration>
+              <properties>
+                <property>
+                  <name>ts-exporter</name>
+                  <value>none</value>
                 </property>
               </properties>
             </configuration>
