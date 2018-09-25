@@ -1,0 +1,9 @@
+{
+  "name": "uberfire-api-ts-decorators",
+  "decorators": {
+    "Path":"org.uberfire.backend.vfs.Path",
+    "PathImpl":"org.uberfire.backend.vfs.impl.PathFactory.PathImpl",
+    "ObservablePath":"org.uberfire.backend.vfs.ObservablePath",
+    "ObservablePathImpl":"org.uberfire.backend.vfs.impl.ObservablePathImpl"
+  }
+}
