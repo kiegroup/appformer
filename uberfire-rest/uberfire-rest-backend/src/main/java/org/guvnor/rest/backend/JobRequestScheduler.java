@@ -69,6 +69,14 @@ public class JobRequestScheduler {
 
     }
 
+    /*
+    https://issues.jboss.org/browse/AF-1587
+    Workbench Rest API - deleting space sometimes randomly takes more than 60 seconds
+
+    There's a significative improvement on timeouts by using an @Unmanaged ExecutorService.
+    The @Unmanaged tends to be more available and likely that it won't share the Async execution
+    of the operations itself. 
+    */
     @Inject
     public JobRequestScheduler(@Unmanaged ExecutorService executorService,
                                JobResultManager jobResultManager,
