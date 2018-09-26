@@ -174,7 +174,7 @@ public class AppFormerJsBridge {
     }
 
     public native static void callNative(final Object func, final Object arg) /*-{
-        func(JSON.parse(arg));
+        func(JSON.parse(arg)); //FIXME: Unmarshall!
     }-*/;
 
     interface Success<T> extends Callback<T, Exception> {
