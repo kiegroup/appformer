@@ -12,13 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.guvnor.structure.client.editors.pom;
+package org.guvnor.structure.pom;
 
-import org.guvnor.structure.pom.DynamicPomDependency;
-
-public interface PomStructureContextChangeHandler {
-
-    void onNewDynamicDependencyAdded(final DynamicPomDependency DynamicPomDependency);
-
-    class HandlerRegistration { }
+public enum DependencyType {
+    JPA
 }
