@@ -3,9 +3,8 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +14,33 @@
  */
 package org.guvnor.structure.pom;
 
-public interface DynamicPomDependency {
+public class DynamicPomDependency {
 
-    String getGroupID();
-    String getArtifactID();
-    String getVersion();
+    private String groupID, artifactID, version;
+
+    public DynamicPomDependency(String groupID,
+                                String artifactID,
+                                String version) {
+        this.groupID = groupID;
+        this.artifactID = artifactID;
+        this.version = version;
+    }
+
+    public String getGroupID() {
+        return groupID;
+    }
+
+    public String getArtifactID() {
+        return artifactID;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DynamicPomDependency{");
+        sb.append('}');
+        return sb.toString();
+    }
 }

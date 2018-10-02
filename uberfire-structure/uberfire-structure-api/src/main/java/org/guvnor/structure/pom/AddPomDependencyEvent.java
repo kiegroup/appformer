@@ -18,20 +18,42 @@ import java.util.Optional;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.uberfire.backend.vfs.Path;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 @Portable
 public class AddPomDependencyEvent {
 
-    private final DynamicPomDependency dynamicPomDependency;
+    private DynamicPomDependency dynamicPomDependency;
+    private Path projectPath;
+    private DependencyType type;
 
-    public AddPomDependencyEvent(@MapsTo("dynamicPomDependency") final DynamicPomDependency dynamicPomDependency) {
-
-        this.dynamicPomDependency = checkNotNull("dynamicPomDependency", dynamicPomDependency);
+    public AddPomDependencyEvent(@MapsTo("dynamicPomDependency") final DynamicPomDependency dynamicPomDependency,
+                                 @MapsTo("projectPath") final Path projectPath) {
+        this.dynamicPomDependency = checkNotNull("dynamicPomDependency",
+                                                 dynamicPomDependency);
+        this.projectPath = checkNotNull("projectPath",
+                                        projectPath);
     }
 
-    public Optional<DynamicPomDependency> getNewPomDependency(){
+    public AddPomDependencyEvent(@MapsTo("dependencyType") final DependencyType type,
+                                 @MapsTo("projectPath") final Path projectPath) {
+        this.type = checkNotNull("dependencyType",
+                                 type);
+        this.projectPath = checkNotNull("projectPath",
+                                        projectPath);
+    }
+
+    public Optional<DynamicPomDependency> getNewPomDependency() {
         return Optional.of(dynamicPomDependency);
+    }
+
+    public Optional<Path> getProjectPath() {
+        return Optional.of(projectPath);
+    }
+
+    public Optional<DependencyType> getDependencyType() {
+        return Optional.of(type);
     }
 }
