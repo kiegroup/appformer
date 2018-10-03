@@ -16,14 +16,16 @@ package org.guvnor.structure.pom;
 
 public class DynamicPomDependency {
 
-    private String groupID, artifactID, version;
+    private String groupID, artifactID, version, scope;
 
     public DynamicPomDependency(String groupID,
                                 String artifactID,
-                                String version) {
+                                String version,
+                                String scope) {
         this.groupID = groupID;
         this.artifactID = artifactID;
         this.version = version;
+        this.scope = scope;
     }
 
     public String getGroupID() {
@@ -38,8 +40,15 @@ public class DynamicPomDependency {
         return version;
     }
 
+    public String getScope() { return scope; }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DynamicPomDependency{");
+        sb.append("groupID='").append(groupID).append('\'');
+        sb.append(", artifactID='").append(artifactID).append('\'');
+        sb.append(", version='").append(version).append('\'');
+        sb.append(", scope='").append(scope).append('\'');
         sb.append('}');
         return sb.toString();
     }
