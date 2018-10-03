@@ -45,13 +45,12 @@ public class MapperDependencyTypes {
         Map<DependencyType, DynamicPomDependency> mapping = new HashMap<>(props.size());
         for (Object key : props.keySet()) {
             String dep = props.getProperty(key.toString());
-            StringTokenizer st = new StringTokenizer(dep,
-                                                     ":");
+            StringTokenizer st = new StringTokenizer(dep, ":");
             while (st.hasMoreElements()) {
                 String groupID = st.nextElement().toString();
                 String artifactID = st.nextElement().toString();
                 String versionID = st.nextElement().toString();
-                mapping.put(DependencyType.valueOf(dep),
+                mapping.put(DependencyType.valueOf(key.toString()),
                             new DynamicPomDependency(groupID,
                                                      artifactID,
                                                      versionID));
