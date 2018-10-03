@@ -17,6 +17,9 @@ package org.guvnor.structure.backend.pom;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -36,6 +39,8 @@ public class PomEditorDefault implements PomEditor {
     private final Logger logger = LoggerFactory.getLogger(PomEditorDefault.class);
     private MavenXpp3Reader reader;
     private MavenXpp3Writer writer;
+    private static final String DELIMITER = ":";
+
 
     public PomEditorDefault() {
         reader = new MavenXpp3Reader();
@@ -47,11 +52,18 @@ public class PomEditorDefault implements PomEditor {
         if (dep.getGroupID().isEmpty() || dep.getArtifactID().isEmpty()) {
             return false;
         }
+
         try {
             Dependency pomDep = getMavenDependency(dep);
+            pomDep.setType("jar");
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
-            model.getDependencies().add(pomDep);
+            Set keys = getKeysFromDeps(model.getDependencies());
+            if(!keys.contains(getKeyFromDep(dep))) {
+                model.getDependencies().add(pomDep);
+            }else{
+                return false;
+            }
             writePOMModelOnFS(filePath,
                               model);
         } catch (Exception ex) {
@@ -60,6 +72,22 @@ public class PomEditorDefault implements PomEditor {
             return false;
         }
         return true;
+    }
+
+    private String getKeyFromDep(DynamicPomDependency dep){
+        StringBuilder sb = new StringBuilder();
+        sb.append(dep.getGroupID()).append(DELIMITER).append(dep.getArtifactID()).append(DELIMITER).append(dep.getVersion()).toString();
+        return sb.toString();
+    }
+
+    private Set<String> getKeysFromDeps(List<Dependency> deps){
+        Set<String> depsMap = new HashSet<>(deps.size());
+        for(Dependency dep : deps){
+            StringBuilder sb = new StringBuilder();
+            sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId()).append(DELIMITER).append(dep.getVersion());
+            depsMap.add(sb.toString());
+        }
+        return depsMap;
     }
 
     private void writePOMModelOnFS(org.uberfire.java.nio.file.Path filePath,

@@ -38,6 +38,7 @@ public class MapperDependencyTypesTest {
         assertThat(dep.getGroupID()).isEqualToIgnoringCase("org.hibernate.javax.persistence");
         assertThat(dep.getArtifactID()).isEqualToIgnoringCase("hibernate-jpa-2.1-api");
         assertThat(dep.getVersion()).isEqualToIgnoringCase("1.0.2.Final");
+        assertThat(dep.getScope()).isEmpty();
     }
 
     @Test
@@ -49,7 +50,7 @@ public class MapperDependencyTypesTest {
         testJPADep(mapping);
     }
 
-    
+
     @Test
     public void loadMappingTest(){
         Properties props = mapper.getMapperProperties();
