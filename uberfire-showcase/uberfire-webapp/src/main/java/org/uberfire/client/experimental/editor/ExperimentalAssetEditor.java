@@ -22,6 +22,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -31,6 +32,8 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.resources.i18n.Constants;
+import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
 import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.ext.editor.commons.client.BaseEditor;
 import org.uberfire.ext.editor.commons.file.DefaultMetadata;
@@ -39,6 +42,7 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.shared.experimental.ExperimentalAssetRemoved;
 import org.uberfire.shared.experimental.ExperimentalEditorService;
+import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
 import static org.uberfire.ext.editor.commons.client.menu.MenuItems.DELETE;
@@ -49,13 +53,15 @@ import static org.uberfire.ext.editor.commons.client.menu.MenuItems.SAVE;
 @ExperimentalFeature(nameI18nKey = "experimental_asset_editor", descriptionI18nKey = "experimental_asset_editor_description")
 public class ExperimentalAssetEditor extends BaseEditor<String, DefaultMetadata> {
 
-    private ExperimentalAssetResourceType resourceType;
-    private AssetEditor editor;
-    private Caller<ExperimentalEditorService> service;
+    private final ClientExperimentalFeaturesRegistryService registryService;
+    private final ExperimentalAssetResourceType resourceType;
+    private final AssetEditor editor;
+    private final Caller<ExperimentalEditorService> service;
 
     @Inject
-    public ExperimentalAssetEditor(ExperimentalAssetResourceType resourceType, AssetEditor editor, Caller<ExperimentalEditorService> service) {
+    public ExperimentalAssetEditor(final ClientExperimentalFeaturesRegistryService registryService, final ExperimentalAssetResourceType resourceType, AssetEditor editor, final Caller<ExperimentalEditorService> service) {
         super(editor.getView());
+        this.registryService = registryService;
         this.resourceType = resourceType;
         this.editor = editor;
         this.service = service;
@@ -94,6 +100,26 @@ public class ExperimentalAssetEditor extends BaseEditor<String, DefaultMetadata>
         final String content = editor.getContent();
         service.call(getSaveSuccessCallback(content.hashCode())).save(versionRecordManager.getCurrentPath(), content);
         concurrentUpdateSessionInfo = null;
+    }
+
+    @Override
+    protected void makeMenuBar() {
+        super.makeMenuBar();
+
+        // Checking manually the experimental actions from the experimental features framework
+        if (registryService.isFeatureEnabled(ExperimentalAssetAction.class.getName())) {
+            menuBuilder.addNewTopLevelMenu(MenuFactory.newTopLevelMenu(Constants.INSTANCE.experimental_asset_editor_actionsExperimental())
+                                                   .respondsWith(() -> Window.alert(Constants.INSTANCE.experimental_asset_editor_actionsExperimentalText()))
+                                                   .endMenu()
+                                                   .build().getItems().get(0));
+        }
+
+        if (registryService.isFeatureEnabled(ExperimentalAssetAction2.class.getName())) {
+            menuBuilder.addNewTopLevelMenu(MenuFactory.newTopLevelMenu(Constants.INSTANCE.experimental_asset_editor_actionsExperimental2())
+                                                   .respondsWith(() -> Window.alert(Constants.INSTANCE.experimental_asset_editor_actionsExperimental2Text()))
+                                                   .endMenu()
+                                                   .build().getItems().get(0));
+        }
     }
 
     @Override

@@ -85,6 +85,7 @@ public class ExperimentalExplorer implements ExperimentalExplorerView.Presenter,
         view.clean();
     }
 
+    @Override
     public void createNew() {
         newAssetPopup.show();
     }

@@ -19,11 +19,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.workbench.panels.WorkbenchPanelPresenter;
@@ -33,7 +31,6 @@ import org.uberfire.client.workbench.pmgr.nswe.part.WorkbenchPartPresenterDefaul
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PartDefinition;
 import org.uberfire.workbench.model.Position;
-import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 
 import static org.uberfire.debug.Debug.objectId;
 

@@ -121,7 +121,7 @@ public class ExperimentalFeaturesGroupViewImpl implements ExperimentalFeaturesGr
 
     @Override
     public void arrangeCaret() {
-        if(presenter.isExpanded()) {
+        if (presenter.isExpanded()) {
             caret.className = "fa fa-caret-down";
         } else {
             caret.className = "fa fa-caret-right";

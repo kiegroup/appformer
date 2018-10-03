@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.client.service;
+package org.uberfire.client.experimental.editor;
 
-import org.uberfire.experimental.service.ExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 
-public interface ClientExperimentalFeaturesRegistryService extends ExperimentalFeaturesRegistryService {
+@ExperimentalFeature(nameI18nKey = "experimental_asset_editor_action2", descriptionI18nKey = "experimental_asset_editor_action_description")
+public class ExperimentalAssetAction2 {
 
-    void loadRegistry();
-
-    void updateExperimentalFeature(String featureId, boolean enabled);
 }

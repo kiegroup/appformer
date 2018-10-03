@@ -19,6 +19,7 @@ package org.uberfire.experimental.service.registry.impl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -35,19 +36,20 @@ public class ExperimentalFeaturesRegistryImpl implements ExperimentalFeaturesReg
     }
 
     @Override
-    public ExperimentalFeatureImpl getFeature(String featureId) {
+    public Optional<ExperimentalFeature> getFeature(String featureId) {
         return features.stream()
                 .filter(feature -> feature.getFeatureId().equals(featureId))
-                .findAny().orElse(null);
+                .map(feature -> (ExperimentalFeature) feature)
+                .findAny();
     }
 
     @Override
     public boolean isFeatureEnabled(String featureId) {
 
-        ExperimentalFeatureImpl feature = getFeature(featureId);
+        Optional<ExperimentalFeature> optional = getFeature(featureId);
 
-        if (feature != null) {
-            return feature.isEnabled();
+        if (optional.isPresent()) {
+            return optional.get().isEnabled();
         }
 
         return true;

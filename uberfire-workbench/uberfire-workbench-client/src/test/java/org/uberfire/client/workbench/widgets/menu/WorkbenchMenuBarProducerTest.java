@@ -145,7 +145,7 @@ public class WorkbenchMenuBarProducerTest {
 
         presenter.onPerspectiveVisibilityChange(new PerspectiveVisibiltiyChangeEvent("perspectiveId", false));
 
-        verify(presenter, times(1)).onPerspectiveVisibilityChange(any());
+        verify(presenter).onPerspectiveVisibilityChange(any());
     }
 
     private void assertMenuBarPresenter(final boolean isStandalone,

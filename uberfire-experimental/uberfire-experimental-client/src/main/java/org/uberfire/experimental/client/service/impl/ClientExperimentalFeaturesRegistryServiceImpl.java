@@ -25,12 +25,12 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.uberfire.experimental.service.editor.EditableExperimentalFeature;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
-import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
-import org.uberfire.experimental.service.events.PortableExperimentalFeatureModifiedEvent;
 import org.uberfire.experimental.service.backend.BackendExperimentalFeaturesRegistryService;
 import org.uberfire.experimental.service.backend.impl.ExperimentalFeaturesSessionImpl;
+import org.uberfire.experimental.service.events.NonPortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.events.PortableExperimentalFeatureModifiedEvent;
+import org.uberfire.experimental.service.registry.ExperimentalFeature;
 import org.uberfire.experimental.service.registry.ExperimentalFeaturesRegistry;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 
@@ -65,14 +65,14 @@ public class ClientExperimentalFeaturesRegistryServiceImpl implements ClientExpe
 
     @Override
     public void updateExperimentalFeature(String featureId, boolean enabled) {
-        if(isExperimentalEnabled()) {
+        if (isExperimentalEnabled()) {
 
-            Optional<ExperimentalFeatureImpl> optional = Optional.ofNullable(session.getFeaturesRegistry().getFeature(featureId));
+            Optional<ExperimentalFeature> optional = session.getFeaturesRegistry().getFeature(featureId);
 
-            if(optional.isPresent()) {
-                ExperimentalFeatureImpl feature = optional.get();
+            if (optional.isPresent()) {
+                ExperimentalFeatureImpl feature = (ExperimentalFeatureImpl) optional.get();
 
-                if(feature.isEnabled() != enabled) {
+                if (feature.isEnabled() != enabled) {
 
                     feature.setEnabled(enabled);
 

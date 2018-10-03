@@ -81,8 +81,6 @@ public class ExperimentalFeaturesEditorScreen implements ExperimentalFeaturesEdi
         this.editorService = editorService;
         this.sessionInfo = sessionInfo;
         this.authorizationManager = authorizationManager;
-
-
     }
 
     @PostConstruct

@@ -19,8 +19,8 @@ package org.uberfire.client.experimental.screens.explorer.asset;
 import javax.inject.Inject;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import elemental2.dom.HTMLAnchorElement;
 import elemental2.dom.HTMLButtonElement;
-import elemental2.dom.HTMLDivElement;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -34,11 +34,7 @@ public class AssetDisplayerViewImpl implements AssetDisplayerView,
 
     @Inject
     @DataField
-    private HTMLDivElement name;
-
-    @Inject
-    @DataField
-    private HTMLButtonElement open;
+    private HTMLAnchorElement name;
 
     @Inject
     @DataField
@@ -54,7 +50,7 @@ public class AssetDisplayerViewImpl implements AssetDisplayerView,
         this.presenter = presenter;
     }
 
-    @EventHandler("open")
+    @EventHandler("name")
     public void onOpen(ClickEvent event) {
         presenter.open();
     }

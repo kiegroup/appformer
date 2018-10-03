@@ -34,5 +34,6 @@ public interface ExperimentalExplorerView extends UberElemental<ExperimentalExpl
 
     interface Presenter {
 
+        void createNew();
     }
 }

@@ -56,8 +56,8 @@ public class ExperimentalPerspective {
         perspective.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalPerspectiveHeader.ID)));
 
         final PanelDefinition west = new PanelDefinitionImpl(SimpleWorkbenchPanelPresenter.class.getName());
-        west.setWidth(300);
-        west.setMinWidth(200);
+        west.setWidth(500);
+        west.setMinWidth(500);
         west.addPart(new PartDefinitionImpl(new DefaultPlaceRequest(ExperimentalExplorerScreen.ID)));
 
         perspective.getRoot().insertChild(CompassPosition.WEST, west);

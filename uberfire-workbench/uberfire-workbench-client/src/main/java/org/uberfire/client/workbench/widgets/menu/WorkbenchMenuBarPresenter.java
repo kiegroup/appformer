@@ -31,7 +31,6 @@ import org.uberfire.client.workbench.events.PlaceMaximizedEvent;
 import org.uberfire.client.workbench.events.PlaceMinimizedEvent;
 import org.uberfire.client.workbench.widgets.menu.base.WorkbenchBaseMenuPresenter;
 import org.uberfire.client.workbench.widgets.menu.base.WorkbenchBaseMenuView;
-import org.uberfire.client.workbench.widgets.menu.events.PerspectiveVisibiltiyChangeEvent;
 import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.PlaceRequest;
@@ -417,7 +416,7 @@ public class WorkbenchMenuBarPresenter extends WorkbenchBaseMenuPresenter implem
         void enableContextMenuItem(String menuItemId,
                                    boolean enabled);
 
-        void setAllMenuItemVisible(String perspectiveId, boolean visible);
+        void setAllMenuItemsVisible(String perspectiveId, boolean visible);
 
         void setMenuItemVisible(String perspectiveId, boolean visible);
 

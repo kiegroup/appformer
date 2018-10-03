@@ -72,7 +72,7 @@ public class BackendExperimentalFeaturesRegistryServiceImpl implements Experimen
 
         ExperimentalFeaturesRegistryImpl registry = getFeaturesRegistry();
 
-        if(registry.getFeature(featureId) == null) {
+        if(!registry.getFeature(featureId).isPresent()) {
             return true;
         }
 

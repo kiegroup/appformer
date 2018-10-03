@@ -20,13 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.uberfire.client.mvp.Activity;
-import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.client.workbench.widgets.menu.HasMenus;
 import org.uberfire.client.workbench.widgets.menu.MenuItemVisibilityHandler;
 import org.uberfire.client.workbench.widgets.menu.events.PerspectiveVisibiltiyChangeEvent;
-import org.uberfire.workbench.model.ActivityResourceType;
 import org.uberfire.workbench.model.menu.MenuGroup;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -52,7 +49,7 @@ public abstract class WorkbenchBaseMenuPresenter implements HasMenus {
                 addedMenus = new ArrayList<>();
             }
 
-            if(visibilityHandlers == null) {
+            if (visibilityHandlers == null) {
                 visibilityHandlers = new ArrayList<>();
             }
 
@@ -105,7 +102,7 @@ public abstract class WorkbenchBaseMenuPresenter implements HasMenus {
     }
 
     public void onPerspectiveVisibilityChange(PerspectiveVisibiltiyChangeEvent event) {
-        if(visibilityHandlers != null) {
+        if (visibilityHandlers != null) {
             visibilityHandlers.stream()
                     .filter(handler -> handler.getIdentifier().equals(event.getPerspectiveId()))
                     .forEach(handler -> handler.run(event.isVisible()));

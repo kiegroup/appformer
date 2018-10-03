@@ -75,14 +75,14 @@ public abstract class WorkbenchMenuNavBarView extends Composite implements Workb
 
 
     public void setMenuItemVisible(String menuItemId, boolean visible) {
-        dosetMenuItemVisible(getMenuItemWidgetMap().get(menuItemId), visible);
+        doSetMenuItemVisible(getMenuItemWidgetMap().get(menuItemId), visible);
     }
 
     public void setContextMenuItemVisible(String menuItemId, boolean visible) {
-        dosetMenuItemVisible(getMenuItemContextWidgetMap().get(menuItemId), visible);
+        doSetMenuItemVisible(getMenuItemContextWidgetMap().get(menuItemId), visible);
     }
 
-    private void dosetMenuItemVisible(final ComplexPanel cp, final boolean visible) {
+    private void doSetMenuItemVisible(final ComplexPanel cp, final boolean visible) {
         if (cp == null) {
             return;
         }

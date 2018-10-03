@@ -24,6 +24,7 @@ import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
+import org.uberfire.client.resources.i18n.Constants;
 import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.workbench.model.menu.MenuFactory;
@@ -37,8 +38,12 @@ public class ExperimentalExplorerScreen implements IsElement {
 
     private static final String TITLE = "Explorer";
 
+    private final ExperimentalExplorer explorer;
+
     @Inject
-    private ExperimentalExplorer explorer;
+    public ExperimentalExplorerScreen(final ExperimentalExplorer explorer) {
+        this.explorer = explorer;
+    }
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -52,7 +57,7 @@ public class ExperimentalExplorerScreen implements IsElement {
 
     @WorkbenchMenu
     public Menus getMenu() {
-        return MenuFactory.newTopLevelMenu("new")
+        return MenuFactory.newTopLevelMenu(Constants.INSTANCE.experimental_asset_explorer_actionsAdd())
                 .respondsWith(() -> explorer.createNew())
                 .endMenu()
                 .build();

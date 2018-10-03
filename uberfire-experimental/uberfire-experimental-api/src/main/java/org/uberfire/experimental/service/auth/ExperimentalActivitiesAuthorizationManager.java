@@ -45,9 +45,9 @@ public interface ExperimentalActivitiesAuthorizationManager {
     boolean authorizeActivityClass(Class<?> activityClass);
 
     /**
-     *
-     * @param activityId
-     * @return
+     * Determines if the experimental framework enables rendering a the activity identified by the activityId param.
+     * @param activityId the activity identifier
+     * @return true or false depending on the settings.
      */
     boolean authorizeActivityId(String activityId);
 

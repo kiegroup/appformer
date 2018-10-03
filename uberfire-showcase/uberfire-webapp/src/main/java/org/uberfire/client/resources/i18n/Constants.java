@@ -95,4 +95,34 @@ public interface Constants
     String group3_feature3();
 
     String experimental_feature_description();
+
+    String experimental_asset_editor_action();
+
+    String experimental_asset_editor_action2();
+
+    String experimental_asset_editor_action_description();
+
+    @Key("experimental_asset_editor_actions.experimental")
+    String experimental_asset_editor_actionsExperimental();
+
+    @Key("experimental_asset_editor_actions.experimental2")
+    String experimental_asset_editor_actionsExperimental2();
+
+    @Key("experimental_asset_editor_actions.experimentalText")
+    String experimental_asset_editor_actionsExperimentalText();
+
+    @Key("experimental_asset_editor_actions.experimental2Text")
+    String experimental_asset_editor_actionsExperimental2Text();
+
+    @Key("experimental_asset_explorer_actions.add")
+    String experimental_asset_explorer_actionsAdd();
+
+    @Key("ExperimentalExplorerViewImpl.emptyTitle")
+    String ExperimentalExplorerViewImplEmptyTitle();
+
+    @Key("ExperimentalExplorerViewImpl.emptyText")
+    String ExperimentalExplorerViewImplEmptyText();
+
+    @Key("ExperimentalExplorerViewImpl.add")
+    String ExperimentalExplorerViewImplAdd();
 }

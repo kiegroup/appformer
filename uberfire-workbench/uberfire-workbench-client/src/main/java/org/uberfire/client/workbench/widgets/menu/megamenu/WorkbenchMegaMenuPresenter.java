@@ -416,12 +416,12 @@ public class WorkbenchMegaMenuPresenter extends WorkbenchBaseMenuPresenter {
         String perspectiveId = menuItemPerspective.getPlaceRequest().getIdentifier();
         boolean visible = experimentalActivitiesAuthorizationManager.authorizeActivityId(perspectiveId);
 
-        maybeHideMenuItem(perspectiveId, visible);
+        changeMenuItemVisibility(perspectiveId, visible);
 
-        registerVisibilityChangeHandler(new MenuItemVisibilityHandler(perspectiveId, this::maybeHideMenuItem));
+        registerVisibilityChangeHandler(new MenuItemVisibilityHandler(perspectiveId, this::changeMenuItemVisibility));
     }
 
-    private void maybeHideMenuItem(String id, boolean visible) {
+    private void changeMenuItemVisibility(String id, boolean visible) {
         CanHide canHide = canHideMenuItemByIdentifier.get(id);
         if (canHide != null) {
             if (visible) {

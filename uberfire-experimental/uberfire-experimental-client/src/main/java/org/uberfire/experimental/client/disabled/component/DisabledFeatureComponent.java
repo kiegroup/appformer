@@ -58,7 +58,7 @@ public class DisabledFeatureComponent implements IsElement {
         String featureName = Optional.ofNullable(translationService.getTranslation(feature.getNameKey())).orElse(featureId);
         String text;
 
-        if(feature.isGlobal()) {
+        if (feature.isGlobal()) {
             text = translationService.format(UberfireExperimentalConstants.disabledGlobalExperimentalFeature, featureName);
         } else {
             text = translationService.format(UberfireExperimentalConstants.disabledExperimentalFeature, featureName);

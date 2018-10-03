@@ -17,6 +17,7 @@
 package org.uberfire.experimental.service.registry;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Registry of all {@link ExperimentalFeature} present on the platform
@@ -36,7 +37,7 @@ public interface ExperimentalFeaturesRegistry {
      * @return the {@link ExperimentalFeature} instance identified by the featureId if is present on the platform,
      * null if it doesn't exist
      */
-    ExperimentalFeature getFeature(String featureId);
+    Optional<ExperimentalFeature> getFeature(String featureId);
 
     /**
      * Returns all the {@link ExperimentalFeature} present on the platform

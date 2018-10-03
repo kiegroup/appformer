@@ -17,7 +17,6 @@
 package org.uberfire.experimental.client.editor;
 
 import org.uberfire.client.mvp.UberElemental;
-import org.uberfire.experimental.client.editor.group.feature.ExperimentalFeatureEditor;
 import org.uberfire.experimental.client.editor.group.ExperimentalFeaturesGroup;
 
 public interface ExperimentalFeaturesEditorScreenView extends UberElemental<ExperimentalFeaturesEditorScreenView.Presenter> {

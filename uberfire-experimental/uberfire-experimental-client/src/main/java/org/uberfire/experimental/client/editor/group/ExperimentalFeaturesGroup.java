@@ -19,6 +19,8 @@ package org.uberfire.experimental.client.editor.group;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
@@ -77,7 +79,10 @@ public class ExperimentalFeaturesGroup implements IsElement,
 
         view.setLabel(getLabel());
 
-        features.forEach(this::render);
+        features.stream()
+                .map(this::getEditor)
+                .collect(Collectors.toCollection(TreeSet::new))
+                .forEach(view::render);
 
         setEnableAllLabel();
     }
@@ -98,13 +103,14 @@ public class ExperimentalFeaturesGroup implements IsElement,
         return enabled != editors.size();
     }
 
-    private void render(ExperimentalFeature experimentalFeature) {
+    private ExperimentalFeatureEditor getEditor(ExperimentalFeature experimentalFeature) {
         ExperimentalFeatureEditor editor = editorInstance.get();
 
         editor.render(new EditableExperimentalFeature(experimentalFeature), callback);
 
-        view.render(editor);
         editors.add(editor);
+
+        return editor;
     }
 
     @Override

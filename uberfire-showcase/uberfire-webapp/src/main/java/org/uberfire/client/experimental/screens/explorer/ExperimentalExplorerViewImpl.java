@@ -23,12 +23,16 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import elemental2.dom.Document;
 import elemental2.dom.Element;
+import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLUListElement;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.experimental.screens.explorer.asset.AssetDisplayer;
@@ -39,6 +43,14 @@ public class ExperimentalExplorerViewImpl implements ExperimentalExplorerView,
                                                      IsElement {
 
     private Presenter presenter;
+
+    @Inject
+    @DataField
+    private HTMLDivElement empty;
+
+    @Inject
+    @DataField
+    private HTMLButtonElement addButton;
 
     @Inject
     @DataField
@@ -60,6 +72,7 @@ public class ExperimentalExplorerViewImpl implements ExperimentalExplorerView,
 
     @Override
     public void show(AssetDisplayer asset) {
+        empty.hidden = true;
         Element listElement = document.createElement("li");
         listElement.className = "list-group-item";
         listElement.appendChild(asset.getElement());
@@ -77,6 +90,10 @@ public class ExperimentalExplorerViewImpl implements ExperimentalExplorerView,
             assets.removeChild(pair.getK1());
             assetsList.remove(pair);
         }
+
+        if (assetsList.isEmpty()) {
+            empty.hidden = false;
+        }
     }
 
     @Override
@@ -91,5 +108,10 @@ public class ExperimentalExplorerViewImpl implements ExperimentalExplorerView,
     public void clean() {
         elemental2DomUtil.removeAllElementChildren(assets);
         assetsList.clear();
+    }
+
+    @EventHandler("addButton")
+    public void onClick(ClickEvent event) {
+        presenter.createNew();
     }
 }

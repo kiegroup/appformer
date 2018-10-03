@@ -21,9 +21,9 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
-import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesDefRegistry;
 import org.uberfire.experimental.client.service.ClientExperimentalFeaturesRegistryService;
+import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
 
 @EntryPoint
 @Bundle("resources/i18n/UberfireExperimentalConstants.properties")
