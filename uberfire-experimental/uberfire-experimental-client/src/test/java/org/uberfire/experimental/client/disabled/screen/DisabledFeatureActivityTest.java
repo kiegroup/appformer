@@ -31,7 +31,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,12 +66,12 @@ public class DisabledFeatureActivityTest {
     public void testFunctionality() {
         activity.onOpen();
 
-        verify(placeRequest, times(1)).getParameter(DisabledFeatureActivity.FEATURE_ID_PARAM, null);
+        verify(placeRequest).getParameter(DisabledFeatureActivity.FEATURE_ID_PARAM, null);
 
-        verify(component, times(1)).show(EXPERIMENTAL_FEATURE_ID);
+        verify(component).show(EXPERIMENTAL_FEATURE_ID);
 
         activity.getTitle();
 
-        verify(translationService, times(1)).getTranslation(UberfireExperimentalConstants.disabledFeatureTitle);
+        verify(translationService).getTranslation(UberfireExperimentalConstants.disabledFeatureTitle);
     }
 }

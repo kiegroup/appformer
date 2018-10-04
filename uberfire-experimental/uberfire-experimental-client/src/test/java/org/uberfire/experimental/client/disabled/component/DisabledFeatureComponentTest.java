@@ -30,7 +30,6 @@ import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinitio
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -83,12 +82,12 @@ public class DisabledFeatureComponentTest {
 
         component.show(EXPERIMENTAL_FEATURE_ID);
 
-        verify(translationService, times(1)).getTranslation(EXPERIMENTAL_FEATURE_ID);
+        verify(translationService).getTranslation(EXPERIMENTAL_FEATURE_ID);
 
         String i18nConstant = global ? UberfireExperimentalConstants.disabledGlobalExperimentalFeature : UberfireExperimentalConstants.disabledExperimentalFeature;
 
-        verify(translationService, times(1)).format(eq(i18nConstant), anyString());
+        verify(translationService).format(eq(i18nConstant), anyString());
 
-        verify(view, times(1)).show(anyString());
+        verify(view).show(anyString());
     }
 }

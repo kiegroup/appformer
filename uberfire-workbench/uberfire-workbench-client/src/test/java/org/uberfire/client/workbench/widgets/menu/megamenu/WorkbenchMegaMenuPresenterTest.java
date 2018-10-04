@@ -316,19 +316,14 @@ public class WorkbenchMegaMenuPresenterTest {
                                     identity)).thenReturn(true);
 
         presenter.addMenus(menus);
-        verify(presenter,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(true));
+
+        verify(presenter).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(true);
-        verify(presenter,
-               times(2)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(presenter, times(2)).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(false);
-        verify(presenter,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(false));
+        verify(presenter).enableMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -341,19 +336,13 @@ public class WorkbenchMegaMenuPresenterTest {
                                     identity)).thenReturn(true);
 
         presenter.addMenus(menus);
-        verify(presenter,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(presenter).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(true);
-        verify(presenter,
-               times(2)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(presenter, times(2)).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(false);
-        verify(presenter,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(false));
+        verify(presenter).enableMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -366,19 +355,13 @@ public class WorkbenchMegaMenuPresenterTest {
                                     identity)).thenReturn(true);
 
         presenter.addMenus(menus);
-        verify(presenter,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(presenter).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(true);
-        verify(presenter,
-               times(2)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(presenter, times(2)).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(false);
-        verify(presenter,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(false));
+        verify(presenter).enableMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -400,18 +383,13 @@ public class WorkbenchMegaMenuPresenterTest {
                                                             null,
                                                             contextMenus,
                                                             perspectiveId));
-        verify(presenter,
-               times(1)).enableContextMenuItem(anyString(),
-                                               eq(true));
+        verify(presenter).enableContextMenuItem(anyString(), eq(true));
 
         contextMenus.getItems().get(0).setEnabled(true);
-        verify(presenter,
-               times(2)).enableContextMenuItem(anyString(),
-                                               eq(true));
+        verify(presenter, times(2)).enableContextMenuItem(anyString(), eq(true));
 
         contextMenus.getItems().get(0).setEnabled(false);
-        verify(presenter).enableContextMenuItem(anyString(),
-                                                eq(false));
+        verify(presenter).enableContextMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -776,7 +754,7 @@ public class WorkbenchMegaMenuPresenterTest {
         verify(experimentalActivitiesAuthorizationManager, times(3)).authorizeActivityId(anyString());
         verify(presenter.canHideMenuItemByIdentifier, times(3)).put(any(), any());
         verify(presenter.canHideMenuItemByIdentifier.get(PERSPECTIVE_ID), times(2)).show();
-        verify(presenter.canHideMenuItemByIdentifier.get(SECOND_PERSPECTIVE_ID), times(1)).hide();
+        verify(presenter.canHideMenuItemByIdentifier.get(SECOND_PERSPECTIVE_ID)).hide();
         verify(presenter.canHideMenuItemByIdentifier.get(THIRD_PERSPECTIVE_ID), times(2)).show();
     }
 

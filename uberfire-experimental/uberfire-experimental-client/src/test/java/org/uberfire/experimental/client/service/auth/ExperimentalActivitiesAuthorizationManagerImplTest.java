@@ -153,7 +153,7 @@ public class ExperimentalActivitiesAuthorizationManagerImplTest {
 
         ArgumentCaptor<PerspectiveVisibiltiyChangeEvent> captor = ArgumentCaptor.forClass(PerspectiveVisibiltiyChangeEvent.class);
 
-        verify(perspectiveVisibleEvent, times(1)).fire(captor.capture());
+        verify(perspectiveVisibleEvent).fire(captor.capture());
 
         Assertions.assertThat(captor.getValue())
                 .isNotNull()

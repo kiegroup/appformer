@@ -43,7 +43,6 @@ import org.uberfire.security.authz.AuthorizationManager;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -185,7 +184,7 @@ public class WorkbenchMegaMenuProducerTest {
 
         presenter.onPerspectiveVisibilityChange(new PerspectiveVisibiltiyChangeEvent("perspectiveId", false));
 
-        verify(presenter, times(1)).onPerspectiveVisibilityChange(any());
+        verify(presenter).onPerspectiveVisibilityChange(any());
     }
 
     private void assertMegaMenuPresenter(final boolean isStandalone,

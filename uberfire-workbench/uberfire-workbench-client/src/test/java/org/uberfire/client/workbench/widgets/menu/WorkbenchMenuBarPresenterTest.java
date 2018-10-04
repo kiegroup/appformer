@@ -244,19 +244,13 @@ public class WorkbenchMenuBarPresenterTest {
                                     identity)).thenReturn(true);
 
         presenter.addMenus(menus);
-        verify(view,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(view).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(true);
-        verify(view,
-               times(2)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(view, times(2)).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(false);
-        verify(view,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(false));
+        verify(view).enableMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -268,19 +262,13 @@ public class WorkbenchMenuBarPresenterTest {
                                     identity)).thenReturn(true);
 
         presenter.addMenus(menus);
-        verify(view,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(view).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(true);
-        verify(view,
-               times(2)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(view, times(2)).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(false);
-        verify(view,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(false));
+        verify(view).enableMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -291,19 +279,13 @@ public class WorkbenchMenuBarPresenterTest {
                                     identity)).thenReturn(true);
 
         presenter.addMenus(menus);
-        verify(view,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(view).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(true);
-        verify(view,
-               times(2)).enableMenuItem(anyString(),
-                                        eq(true));
+        verify(view, times(2)).enableMenuItem(anyString(), eq(true));
 
         menus.getItems().get(0).setEnabled(false);
-        verify(view,
-               times(1)).enableMenuItem(anyString(),
-                                        eq(false));
+        verify(view).enableMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -323,18 +305,13 @@ public class WorkbenchMenuBarPresenterTest {
                                                             null,
                                                             contextMenus,
                                                             PERSPECTIVE_ID));
-        verify(view,
-               times(1)).enableContextMenuItem(anyString(),
-                                               eq(true));
+        verify(view).enableContextMenuItem(anyString(), eq(true));
 
         contextMenus.getItems().get(0).setEnabled(true);
-        verify(view,
-               times(2)).enableContextMenuItem(anyString(),
-                                               eq(true));
+        verify(view, times(2)).enableContextMenuItem(anyString(), eq(true));
 
         contextMenus.getItems().get(0).setEnabled(false);
-        verify(view).enableContextMenuItem(anyString(),
-                                           eq(false));
+        verify(view).enableContextMenuItem(anyString(), eq(false));
     }
 
     @Test
@@ -384,7 +361,7 @@ public class WorkbenchMenuBarPresenterTest {
 
         verify(experimentalActivitiesAuthorizationManager, times(3)).authorizeActivityId(anyString());
         verify(view, times(2)).setMenuItemVisible(anyString(), eq(true));
-        verify(view, times(1)).setMenuItemVisible(anyString(), eq(false));
+        verify(view).setMenuItemVisible(anyString(), eq(false));
     }
 
     @Test
@@ -392,13 +369,13 @@ public class WorkbenchMenuBarPresenterTest {
         testAddMenusWithExperimentalPerspective();
 
         presenter.onPerspectiveVisibilityChange(new PerspectiveVisibiltiyChangeEvent(PERSPECTIVE_ID, false));
-        verify(view, times(1)).setMenuItemVisible(PERSPECTIVE_ID, false);
+        verify(view).setMenuItemVisible(PERSPECTIVE_ID, false);
 
         presenter.onPerspectiveVisibilityChange(new PerspectiveVisibiltiyChangeEvent(SECOND_PERSPECTIVE_ID, true));
-        verify(view, times(1)).setMenuItemVisible(SECOND_PERSPECTIVE_ID, true);
+        verify(view).setMenuItemVisible(SECOND_PERSPECTIVE_ID, true);
 
         presenter.onPerspectiveVisibilityChange(new PerspectiveVisibiltiyChangeEvent(THIRD_PERSPECTIVE_ID, false));
-        verify(view, times(1)).setMenuItemVisible(THIRD_PERSPECTIVE_ID, false);
+        verify(view).setMenuItemVisible(THIRD_PERSPECTIVE_ID, false);
     }
 
     @Test

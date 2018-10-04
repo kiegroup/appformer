@@ -47,10 +47,10 @@ public class GlobalExperimentalFeaturesStorageImplTest extends AbstractExperimen
 
         verifyInit();
 
-        verify(ioService, times(1)).exists(any());
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).exists(any());
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(new ArrayList<>(storage.getFeatures()), new ExperimentalFeatureImpl(GLOBAL_FEATURE_1, false), new ExperimentalFeatureImpl(GLOBAL_FEATURE_2, false), new ExperimentalFeatureImpl(GLOBAL_FEATURE_3, false));
     }
@@ -67,7 +67,7 @@ public class GlobalExperimentalFeaturesStorageImplTest extends AbstractExperimen
         verifyInit();
 
         verify(ioService, times(2)).exists(any());
-        verify(ioService, times(1)).newInputStream(any());
+        verify(ioService).newInputStream(any());
 
         verify(ioService, never()).newOutputStream(any());
         verify(ioService, never()).startBatch(fileSystem);
@@ -87,11 +87,11 @@ public class GlobalExperimentalFeaturesStorageImplTest extends AbstractExperimen
         verifyInit();
 
         verify(ioService, times(2)).exists(any());
-        verify(ioService, times(1)).newInputStream(any());
+        verify(ioService).newInputStream(any());
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(new ArrayList<>(storage.getFeatures()), new ExperimentalFeatureImpl(GLOBAL_FEATURE_1, true), new ExperimentalFeatureImpl(GLOBAL_FEATURE_2, false), new ExperimentalFeatureImpl(GLOBAL_FEATURE_3, true));
     }
@@ -107,11 +107,11 @@ public class GlobalExperimentalFeaturesStorageImplTest extends AbstractExperimen
         verifyInit();
 
         verify(ioService, times(2)).exists(any());
-        verify(ioService, times(1)).newInputStream(any());
+        verify(ioService).newInputStream(any());
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(new ArrayList<>(storage.getFeatures()), new ExperimentalFeatureImpl(GLOBAL_FEATURE_1, true), new ExperimentalFeatureImpl(GLOBAL_FEATURE_2, false), new ExperimentalFeatureImpl(GLOBAL_FEATURE_3, true));
     }
@@ -129,17 +129,17 @@ public class GlobalExperimentalFeaturesStorageImplTest extends AbstractExperimen
 
         storage.store(new ExperimentalFeatureImpl(GLOBAL_FEATURE_1, false));
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
-        verify(event, times(1)).fire(any());
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
+        verify(event).fire(any());
 
         verifyLoadedFeatures(new ArrayList<>(storage.getFeatures()), new ExperimentalFeatureImpl(GLOBAL_FEATURE_1, false), new ExperimentalFeatureImpl(GLOBAL_FEATURE_2, false), new ExperimentalFeatureImpl(GLOBAL_FEATURE_3, true));
     }
 
     private void verifyInit() {
         verify(spaces).resolveFileSystemURI(any(), any(), any());
-        verify(ioService, times(1)).newFileSystem(any(), any());
+        verify(ioService).newFileSystem(any(), any());
     }
 
     @Override

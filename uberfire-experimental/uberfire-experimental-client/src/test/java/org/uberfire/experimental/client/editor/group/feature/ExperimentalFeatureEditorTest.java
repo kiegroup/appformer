@@ -95,10 +95,10 @@ public class ExperimentalFeatureEditorTest {
         verify(onChange, never()).execute(any());
 
         editor.notifyChange(true);
-        verify(onChange, times(1)).execute(any());
+        verify(onChange).execute(any());
 
         verify(feature).setEnabled(true);
-        verify(onChange, times(1)).execute(any());
+        verify(onChange).execute(any());
 
         editor.notifyChange(false);
         verify(onChange, times(2)).execute(any());

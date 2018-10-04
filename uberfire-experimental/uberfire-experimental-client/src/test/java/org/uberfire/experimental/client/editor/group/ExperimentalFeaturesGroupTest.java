@@ -99,7 +99,6 @@ public class ExperimentalFeaturesGroupTest {
                 return null;
             }).when(editorView).setEnabled(anyBoolean());
 
-
             editors.add(editor);
 
             return editor;
@@ -107,16 +106,16 @@ public class ExperimentalFeaturesGroupTest {
 
         group = new ExperimentalFeaturesGroup(view, translationService, editorInstance);
 
-        verify(view, times(1)).init(group);
+        verify(view).init(group);
 
         group.getElement();
 
-        verify(view, times(1)).getElement();
+        verify(view).getElement();
     }
 
     @Test
     public void testLoadWithEnableAllAnchor() {
-       testLoad(true);
+        testLoad(true);
     }
 
     @Test
@@ -152,19 +151,19 @@ public class ExperimentalFeaturesGroupTest {
         group.expand();
 
         assertTrue(group.isExpanded());
-        verify(view, times(1)).expand();
+        verify(view).expand();
 
         group.expand();
 
-        verify(view, times(1)).expand();
+        verify(view).expand();
 
         group.collapse();
 
         assertFalse(group.isExpanded());
-        verify(view, times(1)).collapse();
+        verify(view).collapse();
 
         group.notifyExpand();
-        verify(view, times(1)).arrangeCaret();
+        verify(view).arrangeCaret();
     }
 
     @Test
@@ -191,7 +190,6 @@ public class ExperimentalFeaturesGroupTest {
         Assertions.assertThat(groups)
                 .hasSize(4)
                 .containsExactly(generalGroup, secondGroup, thirdGroup, adminGroup);
-
     }
 
     private void testAnchorPress(boolean enabled) {
@@ -206,7 +204,7 @@ public class ExperimentalFeaturesGroupTest {
 
     private void testLoad(boolean enableAll) {
 
-        if(!enableAll) {
+        if (!enableAll) {
             features.forEach(feature -> feature.setEnabled(true));
         }
 
@@ -222,7 +220,7 @@ public class ExperimentalFeaturesGroupTest {
     private void checkSetEnableAllLabel(boolean isEnabled, int times) {
         verify(view, times(times)).setEnableAllLabel(anyString());
 
-        if(isEnabled) {
+        if (isEnabled) {
             verify(translationService).getTranslation(UberfireExperimentalConstants.ExperimentalFeaturesGroupEnableAll);
         } else {
             verify(translationService).getTranslation(UberfireExperimentalConstants.ExperimentalFeaturesGroupDisableAll);

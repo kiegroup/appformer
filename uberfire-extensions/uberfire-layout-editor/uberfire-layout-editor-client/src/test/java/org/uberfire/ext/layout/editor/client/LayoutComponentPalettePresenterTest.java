@@ -122,7 +122,7 @@ public class LayoutComponentPalettePresenterTest {
 
         verify(dragComponentGroupPresenter, times(3)).init(any());
         verify(dragComponentGroupPresenter, times(3)).getView();
-        verify(dragComponentGroupView, times(1)).setExpanded(true);
+        verify(dragComponentGroupView).setExpanded(true);
         verify(dragComponentGroupView, times(2)).setExpanded(false);
         verify(view, times(3)).addDraggableComponentGroup(any());
 
@@ -160,8 +160,8 @@ public class LayoutComponentPalettePresenterTest {
 
         verify(dragComponentGroupPresenter, times(2)).init(any());
         verify(dragComponentGroupPresenter, times(2)).getView();
-        verify(dragComponentGroupView, times(1)).setExpanded(true);
-        verify(dragComponentGroupView, times(1)).setExpanded(false);
+        verify(dragComponentGroupView).setExpanded(true);
+        verify(dragComponentGroupView).setExpanded(false);
         verify(view, times(2)).addDraggableComponentGroup(any());
 
         assertEquals(2, presenter.getLayoutDragComponentGroups().size());

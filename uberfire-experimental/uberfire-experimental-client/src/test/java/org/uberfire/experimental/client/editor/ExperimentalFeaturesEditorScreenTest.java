@@ -187,8 +187,8 @@ public class ExperimentalFeaturesEditorScreenTest {
 
         presenter.doSave(feature);
 
-        verify(featuresEditorService, times(1)).save(feature);
-        verify(registryService, times(1)).updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled());
+        verify(featuresEditorService).save(feature);
+        verify(registryService).updateExperimentalFeature(feature.getFeatureId(), feature.isEnabled());
     }
 
     private ExperimentalFeaturesGroup createGroup() {

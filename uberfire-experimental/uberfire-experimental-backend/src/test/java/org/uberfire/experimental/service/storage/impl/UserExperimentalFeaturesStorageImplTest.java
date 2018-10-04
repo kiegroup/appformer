@@ -44,12 +44,12 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
 
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
-        verify(ioService, times(1)).exists(any());
+        verify(ioService).exists(any());
         verify(ioService, never()).newInputStream(any());
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(features, new ExperimentalFeatureImpl(FEATURE_1, false), new ExperimentalFeatureImpl(FEATURE_2, false), new ExperimentalFeatureImpl(FEATURE_3, false));
     }
@@ -68,7 +68,7 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
         verify(ioService, times(2)).exists(any());
-        verify(ioService, times(1)).newInputStream(any());
+        verify(ioService).newInputStream(any());
 
         verify(ioService, never()).newOutputStream(any());
         verify(ioService, never()).startBatch(fileSystem);
@@ -90,11 +90,11 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
         verify(ioService, times(2)).exists(any());
-        verify(ioService, times(1)).newInputStream(any());
+        verify(ioService).newInputStream(any());
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(features, new ExperimentalFeatureImpl(FEATURE_1, true), new ExperimentalFeatureImpl(FEATURE_2, false), new ExperimentalFeatureImpl(FEATURE_3, true));
     }
@@ -112,11 +112,11 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
         verify(ioService, times(2)).exists(any());
-        verify(ioService, times(1)).newInputStream(any());
+        verify(ioService).newInputStream(any());
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(features, new ExperimentalFeatureImpl(FEATURE_1, true), new ExperimentalFeatureImpl(FEATURE_2, false), new ExperimentalFeatureImpl(FEATURE_3, true));
     }
@@ -133,16 +133,16 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
 
         storage.store(new ExperimentalFeatureImpl(FEATURE_1, false));
 
-        verify(ioService, times(1)).newOutputStream(any());
-        verify(ioService, times(1)).startBatch(fileSystem);
-        verify(ioService, times(1)).endBatch();
+        verify(ioService).newOutputStream(any());
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).endBatch();
 
         verifyLoadedFeatures(new ArrayList<>(storage.getFeatures()), new ExperimentalFeatureImpl(FEATURE_1, false), new ExperimentalFeatureImpl(FEATURE_2, false), new ExperimentalFeatureImpl(FEATURE_3, true));
     }
 
     private void verifyInit() {
         verify(spaces).resolveFileSystemURI(any(), any(), any());
-        verify(ioService, times(1)).newFileSystem(any(), any());
+        verify(ioService).newFileSystem(any(), any());
     }
 
     @Override

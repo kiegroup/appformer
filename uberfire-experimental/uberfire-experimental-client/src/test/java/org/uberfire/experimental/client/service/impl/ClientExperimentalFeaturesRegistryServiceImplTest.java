@@ -39,7 +39,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.uberfire.experimental.client.test.TestExperimentalFeatureDefRegistry.FEATURE_1;
@@ -110,7 +109,7 @@ public class ClientExperimentalFeaturesRegistryServiceImplTest {
 
         ArgumentCaptor<NonPortableExperimentalFeatureModifiedEvent> eventCaptor = ArgumentCaptor.forClass(NonPortableExperimentalFeatureModifiedEvent.class);
 
-        verify(event, times(1)).fire(eventCaptor.capture());
+        verify(event).fire(eventCaptor.capture());
 
         assertEquals(feature, eventCaptor.getValue().getFeature());
     }

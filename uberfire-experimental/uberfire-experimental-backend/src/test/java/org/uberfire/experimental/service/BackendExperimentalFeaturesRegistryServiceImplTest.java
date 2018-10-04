@@ -230,7 +230,7 @@ public class BackendExperimentalFeaturesRegistryServiceImplTest {
 
         ArgumentCaptor<ExperimentalFeatureImpl> captor = ArgumentCaptor.forClass(ExperimentalFeatureImpl.class);
 
-        verify(storage, times(1)).store(captor.capture());
+        verify(storage).store(captor.capture());
         verify(otherStorage, never()).store(any());
 
         ExperimentalFeatureImpl feature = captor.getValue();
