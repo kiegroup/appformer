@@ -36,11 +36,11 @@ import org.uberfire.java.nio.file.StandardOpenOption;
 
 public class PomEditorDefault implements PomEditor {
 
+    private static final String DELIMITER = ":";
     private final Logger logger = LoggerFactory.getLogger(PomEditorDefault.class);
+
     private MavenXpp3Reader reader;
     private MavenXpp3Writer writer;
-    private static final String DELIMITER = ":";
-
 
     public PomEditorDefault() {
         reader = new MavenXpp3Reader();
@@ -59,9 +59,9 @@ public class PomEditorDefault implements PomEditor {
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
             Set keys = getKeysFromDeps(model.getDependencies());
-            if(!keys.contains(getKeyFromDep(dep))) {
+            if (!keys.contains(getKeyFromDep(dep))) {
                 model.getDependencies().add(pomDep);
-            }else{
+            } else {
                 return false;
             }
             writePOMModelOnFS(filePath,
@@ -74,15 +74,42 @@ public class PomEditorDefault implements PomEditor {
         return true;
     }
 
-    private String getKeyFromDep(DynamicPomDependency dep){
+    public boolean addDependencies(List<DynamicPomDependency> deps,
+                                 Path pomPath) {
+        if (deps.isEmpty()) {
+            return false;
+        }
+
+        try {
+            org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
+            Model model = getPOMModel(filePath);
+            Set keys = getKeysFromDeps(model.getDependencies());
+            for(DynamicPomDependency dep : deps){
+                Dependency pomDep = getMavenDependency(dep);
+                //pomDep.setType("jar");
+                if (!keys.contains(getKeyFromDep(dep))) {
+                    model.getDependencies().add(pomDep);
+                }
+            }
+            writePOMModelOnFS(filePath,
+                              model);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(),
+                         ex);
+            return false;
+        }
+        return true;
+    }
+
+    private String getKeyFromDep(DynamicPomDependency dep) {
         StringBuilder sb = new StringBuilder();
         sb.append(dep.getGroupID()).append(DELIMITER).append(dep.getArtifactID()).append(DELIMITER).append(dep.getVersion()).toString();
         return sb.toString();
     }
 
-    private Set<String> getKeysFromDeps(List<Dependency> deps){
+    private Set<String> getKeysFromDeps(List<Dependency> deps) {
         Set<String> depsMap = new HashSet<>(deps.size());
-        for(Dependency dep : deps){
+        for (Dependency dep : deps) {
             StringBuilder sb = new StringBuilder();
             sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId()).append(DELIMITER).append(dep.getVersion());
             depsMap.add(sb.toString());
@@ -95,10 +122,10 @@ public class PomEditorDefault implements PomEditor {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         writer.write(baos,
                      model);
-        Files.delete(filePath);
         Files.write(filePath,
                     baos.toByteArray(),
-                    StandardOpenOption.CREATE_NEW);
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     private Model getPOMModel(org.uberfire.java.nio.file.Path filePath) throws IOException, XmlPullParserException {

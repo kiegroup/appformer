@@ -14,7 +14,7 @@
  */
 package org.guvnor.structure.backend.pom;
 
-import java.util.Optional;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
@@ -30,38 +30,26 @@ public class PomStructureEditor {
 
     private final Logger logger = LoggerFactory.getLogger(PomStructureEditor.class);
     private PomEditor pomEditor;
-    private MapperDependencyTypes mapper;
+    private DependencyTypesMapper mapper;
 
     public PomStructureEditor() {
         pomEditor = new PomEditorDefault();
-        mapper = new MapperDependencyTypes();
+        mapper = new DependencyTypesMapper();
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
-        final Optional<DynamicPomDependency> dependencyOptional = event.getNewPomDependency();
-        final Optional<Path> projectPathOptional = event.getProjectPath();
-        final Optional<DependencyType> dependencyTypeOptional = event.getDependencyType();
-
-        if (dependencyOptional.isPresent() && projectPathOptional.isPresent()) {
-
-            addDependencyToPom(projectPathOptional.get(),
-                               dependencyOptional.get());
-        } else if (dependencyTypeOptional.isPresent() && projectPathOptional.isPresent()) {
-
-            addDependencyToPom(projectPathOptional.get(),
-                               mapper.getDependency(dependencyTypeOptional.get()));
-        } else {
-            logger.error("Invalid event received {}",
-                         event);
-        }
+        final Path projectPathOptional = event.getProjectPath();
+        final DependencyType dependencyTypeOptional = event.getDependencyType();
+        addDependenciesToPom(projectPathOptional, mapper.getDependencies(dependencyTypeOptional));
     }
 
-    private void addDependencyToPom(Path projectPath,
-                                    DynamicPomDependency dep) {
-        if (!pomEditor.addDependency(dep,
+
+    private void addDependenciesToPom(Path projectPath,
+                                    List<DynamicPomDependency>deps) {
+        if (!pomEditor.addDependencies(deps,
                                      projectPath)) {
-            logger.warn("Failed to add dependency {} to pom.xml located in {}",
-                        dep,
+            logger.warn("Failed to add dependencies {} to pom.xml located in {}",
+                        deps,
                         projectPath);
         }
     }
