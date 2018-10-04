@@ -16,12 +16,13 @@ package org.guvnor.structure.backend.pom;
 
 import java.util.List;
 import java.util.Map;
+
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 
 public class DependencyTypesMapper {
 
-    private final static String JSON_POM_DEPS ="DependencyTypesMapper.json";
+    private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
     private Map<DependencyType, List<DynamicPomDependency>> mapping;
     private PomJsonReader jsonDepsReader;
 
@@ -37,5 +38,4 @@ public class DependencyTypesMapper {
     public List<DynamicPomDependency> getDependencies(DependencyType key) {
         return mapping.get(key);
     }
-
 }

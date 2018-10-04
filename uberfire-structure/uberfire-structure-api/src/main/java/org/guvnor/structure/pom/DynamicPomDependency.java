@@ -40,7 +40,9 @@ public class DynamicPomDependency {
         return version;
     }
 
-    public String getScope() { return scope; }
+    public String getScope() {
+        return scope;
+    }
 
     @Override
     public String toString() {

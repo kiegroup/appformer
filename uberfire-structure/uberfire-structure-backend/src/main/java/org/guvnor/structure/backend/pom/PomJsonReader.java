@@ -68,7 +68,8 @@ public class PomJsonReader {
                 try {
                     fis.close();
                 } catch (IOException ex) {
-                    logger.warn(ex.getMessage(), ex);
+                    logger.warn(ex.getMessage(),
+                                ex);
                 }
             }
             if (reader != null) {
