@@ -14,8 +14,9 @@
  */
 package org.guvnor.structure.backend.pom;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
@@ -24,17 +25,19 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MapperDependencyTypesTest {
+public class DependencyTypesMapperTest {
 
-    private MapperDependencyTypes mapper;
+    private DependencyTypesMapper mapper;
 
     @Before
     public void setUp(){
-        mapper= new MapperDependencyTypes();
+        mapper= new DependencyTypesMapper();
     }
 
-    private void testJPADep(Map<DependencyType, DynamicPomDependency> mapping) {
-        DynamicPomDependency dep = mapping.get(DependencyType.JPA);
+    private void testJPADep(Map<DependencyType, List<DynamicPomDependency>> mapping) {
+        List<DynamicPomDependency> deps = mapping.get(DependencyType.JPA);
+        assertThat(deps).hasSize(1);
+        DynamicPomDependency dep = deps.get(0);
         assertThat(dep.getGroupID()).isEqualToIgnoringCase("org.hibernate.javax.persistence");
         assertThat(dep.getArtifactID()).isEqualToIgnoringCase("hibernate-jpa-2.1-api");
         assertThat(dep.getVersion()).isEqualToIgnoringCase("1.0.2.Final");
@@ -43,21 +46,20 @@ public class MapperDependencyTypesTest {
 
     @Test
     public void mappingTest(){
-        Properties props = mapper.getMapperProperties();
-        assertThat(props).isNotEmpty();
-        Map<DependencyType, DynamicPomDependency> mapping = mapper.getMapping();
+        Map<DependencyType, List<DynamicPomDependency>> mapping = mapper.getMapping();
         assertThat(mapping).isNotEmpty();
         testJPADep(mapping);
     }
-
 
     @Test
-    public void loadMappingTest(){
-        Properties props = mapper.getMapperProperties();
-        assertThat(props).isNotEmpty();
-        Map<DependencyType, DynamicPomDependency> mapping = mapper.loadMapping(props);
-        assertThat(mapping).isNotEmpty();
-        testJPADep(mapping);
+    public void mappingDependencyTest(){
+        List<DynamicPomDependency> deps = mapper.getDependencies(DependencyType.JPA);
+        assertThat(deps).isNotEmpty();
+        assertThat(deps).hasSize(1);
+        Map<DependencyType, List<DynamicPomDependency>> map = new HashMap<>();
+        map.put(DependencyType.JPA, deps);
+        testJPADep(map);
     }
+
 
 }
