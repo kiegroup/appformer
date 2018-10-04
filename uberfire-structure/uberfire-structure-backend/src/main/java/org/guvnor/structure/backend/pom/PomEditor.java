@@ -25,5 +25,5 @@ public interface PomEditor {
                           Path pomPath);
 
     boolean addDependencies(List<DynamicPomDependency> deps,
-                                   Path pomPath);
+                            Path pomPath);
 }
