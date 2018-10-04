@@ -51,22 +51,19 @@ public class AppFormerJsBridge {
     @Inject
     private Workbench workbench;
 
-    @Inject
-    private TranslationService translationService;
-
     public void init(final String gwtModuleName) {
 
         workbench.addStartupBlocker(AppFormerJsBridge.class);
 
         exposeBridge();
 
-//        ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
-//                .setWindow(ScriptInjector.TOP_WINDOW)
-//                .inject();
-//
-//        ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
-//                .setWindow(ScriptInjector.TOP_WINDOW)
-//                .inject();
+        ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
+                .setWindow(ScriptInjector.TOP_WINDOW)
+                .inject();
+
+        ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
+                .setWindow(ScriptInjector.TOP_WINDOW)
+                .inject();
 
         //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
@@ -102,6 +99,8 @@ public class AppFormerJsBridge {
     }
 
     public String translate(final String key, final Object[] args) {
+        final SyncBeanManager beanManager = IOC.getBeanManager();
+        final TranslationService translationService = beanManager.lookupBean(TranslationService.class).getInstance();
         return translationService != null ? translationService.format(key, args) : "GWT-Translated (" + key + ")";
     }
 
