@@ -34,7 +34,6 @@ import org.jboss.errai.bus.client.api.base.MessageBuilder;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
-import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
@@ -61,10 +60,6 @@ public class AppFormerJsBridge {
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .inject();
 
-        ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
-                .setWindow(ScriptInjector.TOP_WINDOW)
-                .inject();
-
         //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
         ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
@@ -73,10 +68,15 @@ public class AppFormerJsBridge {
                         .setWindow(ScriptInjector.TOP_WINDOW)
                         .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
-                                .setCallback((Success<Void>) i3 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
+                                .setCallback((Success<Void>) i3 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
                                         .setWindow(ScriptInjector.TOP_WINDOW)
-                                        .setCallback((Success<Void>) i4 -> workbench.removeStartupBlocker(AppFormerJsBridge.class))
-                                        .inject())
+                                        .setCallback((Success<Void>) i4 -> {
+                                            ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
+                                                    .setWindow(ScriptInjector.TOP_WINDOW)
+                                                    .setCallback((Success<Void>) i5 -> {
+                                                        workbench.removeStartupBlocker(AppFormerJsBridge.class);
+                                                    }).inject();
+                                        }).inject())
                                 .inject())
                         .inject())
                 .inject();
@@ -99,9 +99,7 @@ public class AppFormerJsBridge {
     }
 
     public String translate(final String key, final Object[] args) {
-        final SyncBeanManager beanManager = IOC.getBeanManager();
-        final TranslationService translationService = beanManager.lookupBean(TranslationService.class).getInstance();
-        return translationService != null ? translationService.format(key, args) : "GWT-Translated (" + key + ")";
+        return "GWT-Translated (" + key + ")";
     }
 
     @SuppressWarnings("unchecked")

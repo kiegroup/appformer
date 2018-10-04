@@ -5,7 +5,7 @@ const CircularDependencyPlugin = require("circular-dependency-plugin");
 module.exports = {
     mode: "production",
     entry: {
-        index: "./src/index.ts"
+        index: "./src/index.tsx"
     },
     externals: {
         'appformer-js': {
