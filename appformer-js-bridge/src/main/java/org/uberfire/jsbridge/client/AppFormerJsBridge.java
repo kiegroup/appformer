@@ -70,13 +70,12 @@ public class AppFormerJsBridge {
                                 .setWindow(ScriptInjector.TOP_WINDOW)
                                 .setCallback((Success<Void>) i3 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
                                         .setWindow(ScriptInjector.TOP_WINDOW)
-                                        .setCallback((Success<Void>) i4 -> {
-                                            ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
-                                                    .setWindow(ScriptInjector.TOP_WINDOW)
-                                                    .setCallback((Success<Void>) i5 -> {
-                                                        workbench.removeStartupBlocker(AppFormerJsBridge.class);
-                                                    }).inject();
-                                        }).inject())
+                                        .setCallback((Success<Void>) i4 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
+                                                .setWindow(ScriptInjector.TOP_WINDOW)
+                                                .setCallback((Success<Void>) i5 ->
+                                                        workbench.removeStartupBlocker(AppFormerJsBridge.class))
+                                                .inject())
+                                        .inject())
                                 .inject())
                         .inject())
                 .inject();
