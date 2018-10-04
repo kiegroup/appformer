@@ -1,0 +1,7 @@
+{
+  "name": "uberfire-showcase-react-components",
+  "type": "lib",
+  "main": "./dist/index.js",
+  "components": ["FirstComponent"],
+  "decorators": {}
+}

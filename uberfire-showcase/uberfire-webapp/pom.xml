@@ -461,6 +461,13 @@
       <groupId>org.appformer</groupId>
       <artifactId>appformer-js-showcase-components</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-showcase-react-components</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>

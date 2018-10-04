@@ -19,9 +19,7 @@ package org.uberfire.jsbridge.client;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -45,7 +43,6 @@ import org.uberfire.client.workbench.Workbench;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @Dependent
@@ -63,9 +60,16 @@ public class AppFormerJsBridge {
 
         exposeBridge();
 
+//        ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
+//                .setWindow(ScriptInjector.TOP_WINDOW)
+//                .inject();
+//
+//        ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
+//                .setWindow(ScriptInjector.TOP_WINDOW)
+//                .inject();
+
         //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
-
         ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")

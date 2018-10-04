@@ -1,0 +1,22 @@
+{
+  "name": "uberfire-showcase-react-components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "npx webpack && npm unpublish --force --registry http://localhost:4873 && npm publish --registry http://localhost:4873",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "circular-dependency-plugin": "^5.0.2",
+    "clean-webpack-plugin": "^0.1.19",
+    "ts-loader": "^5.2.0",
+    "typescript": "^3.0.3",
+    "webpack": "^4.20.1",
+    "webpack-clean-plugin": "^0.2.3",
+    "webpack-cli": "^3.1.1"
+  },
+  "author": "",
+  "license": "Apache-2.0"
+}

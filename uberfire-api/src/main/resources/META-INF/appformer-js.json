@@ -1,0 +1,14 @@
+{
+  "name": "uberfire-api-ts-decorators",
+  "type": "decorators",
+  "main": "",
+  "components": [],
+  "decorators": {
+    "Path": "org.uberfire.backend.vfs.Path",
+    "PathImpl": "org.uberfire.backend.vfs.impl.PathFactory.PathImpl",
+    "ObservablePath": "org.uberfire.backend.vfs.ObservablePath",
+    "ObservablePathImpl": "org.uberfire.backend.vfs.impl.ObservablePathImpl",
+    "PerspectiveDefinition": "org.uberfire.workbench.model.PerspectiveDefinition",
+    "PerspectiveDefinitionImpl": "org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl"
+  }
+}
