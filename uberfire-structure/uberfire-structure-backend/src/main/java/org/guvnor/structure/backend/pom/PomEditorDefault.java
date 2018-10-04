@@ -86,7 +86,6 @@ public class PomEditorDefault implements PomEditor {
             Set keys = getKeysFromDeps(model.getDependencies());
             for (DynamicPomDependency dep : deps) {
                 Dependency pomDep = getMavenDependency(dep);
-                //pomDep.setType("jar");
                 if (!keys.contains(getKeyFromDep(dep))) {
                     model.getDependencies().add(pomDep);
                 }
