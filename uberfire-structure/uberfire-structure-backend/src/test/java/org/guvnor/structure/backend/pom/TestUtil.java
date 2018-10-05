@@ -32,15 +32,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TestUtil {
 
+    public final static String GROUP_ID_TEST = "org.hibernate.javax.persistence";
+    public final static String ARTIFACT_ID_TEST = "hibernate-jpa-2.1-api";
+    public final static String VERSION_ID_TEST = "1.0.2.Final";
     private static Logger logger = LoggerFactory.getLogger(TestUtil.class);
 
     public static void testJPADep(Map<DependencyType, List<DynamicPomDependency>> mapping) {
         List<DynamicPomDependency> deps = mapping.get(DependencyType.JPA);
         assertThat(deps).hasSize(1);
         DynamicPomDependency dep = deps.get(0);
-        assertThat(dep.getGroupID()).isEqualToIgnoringCase("org.hibernate.javax.persistence");
-        assertThat(dep.getArtifactID()).isEqualToIgnoringCase("hibernate-jpa-2.1-api");
-        assertThat(dep.getVersion()).isEqualToIgnoringCase("1.0.2.Final");
+        assertThat(dep.getGroupID()).isEqualToIgnoringCase(GROUP_ID_TEST);
+        assertThat(dep.getArtifactID()).isEqualToIgnoringCase(ARTIFACT_ID_TEST);
+        assertThat(dep.getVersion()).isEqualToIgnoringCase(VERSION_ID_TEST);
         assertThat(dep.getScope()).isEmpty();
     }
 

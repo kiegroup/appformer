@@ -55,7 +55,6 @@ public class PomEditorDefault implements PomEditor {
 
         try {
             Dependency pomDep = getMavenDependency(dep);
-            pomDep.setType("jar");
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
             Set keys = getKeysFromDeps(model.getDependencies());
@@ -79,25 +78,29 @@ public class PomEditorDefault implements PomEditor {
         if (deps.isEmpty()) {
             return false;
         }
-
+        boolean result = false;
         try {
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
             Set keys = getKeysFromDeps(model.getDependencies());
+
             for (DynamicPomDependency dep : deps) {
                 Dependency pomDep = getMavenDependency(dep);
                 if (!keys.contains(getKeyFromDep(dep))) {
                     model.getDependencies().add(pomDep);
+                    result = true;
                 }
             }
-            writePOMModelOnFS(filePath,
-                              model);
+            if(result) {
+                writePOMModelOnFS(filePath,
+                                  model);
+            }
         } catch (Exception ex) {
             logger.error(ex.getMessage(),
                          ex);
-            return false;
+            result = false;
         }
-        return true;
+        return result;
     }
 
     private String getKeyFromDep(DynamicPomDependency dep) {
