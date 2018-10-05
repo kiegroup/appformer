@@ -1,3 +1,4 @@
+import {VFSService} from "@kiegroup-ts-generated/uberfire-backend-api-rpc";
 
 alert("I'm alive!");
 
@@ -20,6 +21,9 @@ export class StaticReactComponent extends AppFormer.Screen {
 
     af_onOpen(): void {
         alert("OPEN!!");
+        new VFSService().get({uri: "default://uf-playground/todo.md"}).then(p => {
+            console.info(p);
+        })
     }
 }
 

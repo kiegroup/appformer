@@ -144,14 +144,8 @@ public class AppFormerJsBridge {
             final Annotation[] qualifiers = {}; //FIXME: Support qualifiers?
 
             final Function<Object, Object> jsonToGwt = object -> {
-                final String json = (String) object;
-
-                if (!json.startsWith("{")) {
-                    return json;
-                }
-
                 try {
-                    return Marshalling.fromJSON(json);
+                    return Marshalling.fromJSON((String) object);
                 } catch (final Exception e) {
                     DomGlobal.console.info("Error converting JS obj to GWT obj", e);
                     throw e;

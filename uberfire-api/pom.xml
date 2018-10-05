@@ -76,4 +76,17 @@
 
   </dependencies>
 
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>**/node_modules/**</exclude>
+          <exclude>**/dist/**</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
+
 </project>

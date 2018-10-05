@@ -5,7 +5,7 @@
   "components": [],
   "decorators": {
     "Path": "org.uberfire.backend.vfs.Path",
-    "PathImpl": "org.uberfire.backend.vfs.impl.PathFactory.PathImpl",
+    "PathImpl": "org.uberfire.backend.vfs.PathFactory.PathImpl",
     "ObservablePath": "org.uberfire.backend.vfs.ObservablePath",
     "ObservablePathImpl": "org.uberfire.backend.vfs.impl.ObservablePathImpl",
     "PerspectiveDefinition": "org.uberfire.workbench.model.PerspectiveDefinition",

@@ -20,6 +20,7 @@
   "author": "",
   "license": "Apache-2.0",
   "optionalDependencies": {
+    "@kiegroup-ts-generated/uberfire-backend-api-rpc": "^1.0.0",
     "appformer-js": "^1.0.0"
   },
   "dependencies": {
