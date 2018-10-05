@@ -15,13 +15,13 @@
 package org.guvnor.structure.backend.pom;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
@@ -30,19 +30,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PomEditorDefaultTest {
 
-    private static Logger logger = LoggerFactory.getLogger(PomEditorDefaultTest.class);
+    private final String POM = "pom.xml";
     private PomEditor editor;
     private Path tmpRoot, tmp;
-
-
 
     @Before
     public void setUp() throws Exception {
         editor = new PomEditorDefault();
         tmpRoot = Files.createTempDirectory("repo");
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
-                                       "dummy",
-                                       "target/test-classes/dummy");
+                                                "dummy",
+                                                "target/test-classes/dummy");
     }
 
     @After
@@ -59,20 +57,46 @@ public class PomEditorDefaultTest {
                                                             "4.12",
                                                             "");
         boolean result = editor.addDependency(dep,
-                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + "pom.xml",
-                                                                  tmp.toUri().toString() + File.separator + "pom.xml"));
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void addDepsTest() {
+        DynamicPomDependency dep = new DynamicPomDependency("junit",
+                                                            "junit",
+                                                            "4.12",
+                                                            "");
+        List<DynamicPomDependency> deps = Arrays.asList(dep);
+        boolean result = editor.addDependencies(deps,
+                                                PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
     }
 
     @Test
     public void addDuplicatedDepTest() {
-        DynamicPomDependency dep = new DynamicPomDependency("org.hibernate.javax.persistence",
-                                                            "hibernate-jpa-2.1-api",
-                                                            "1.0.2.Final",
+        DynamicPomDependency dep = new DynamicPomDependency(TestUtil.GROUP_ID_TEST,
+                                                            TestUtil.ARTIFACT_ID_TEST,
+                                                            TestUtil.VERSION_ID_TEST,
                                                             "");
         boolean result = editor.addDependency(dep,
-                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + "pom.xml",
-                                                                  tmp.toUri().toString() + File.separator + "pom.xml"));
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addDuplicatedDepsTest() {
+        DynamicPomDependency dep = new DynamicPomDependency(TestUtil.GROUP_ID_TEST,
+                                                            TestUtil.ARTIFACT_ID_TEST,
+                                                            TestUtil.VERSION_ID_TEST,
+                                                            "");
+        List<DynamicPomDependency> deps = Arrays.asList(dep);
+        boolean result = editor.addDependencies(deps,
+                                                PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isFalse();
     }
 }
