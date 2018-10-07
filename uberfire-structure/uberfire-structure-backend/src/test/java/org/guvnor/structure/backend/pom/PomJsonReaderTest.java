@@ -36,7 +36,8 @@ public class PomJsonReaderTest {
 
     @Test
     public void readDepsTest(){
-        Map<DependencyType, List<DynamicPomDependency>> mapping = reader.readDeps();
+        ConfigurationMap conf = reader.readConfiguration();
+        Map<DependencyType, List<DynamicPomDependency>> mapping = conf.getMapping();
         assertThat(mapping).isNotEmpty();
         TestUtil.testJPADep(mapping);
     }

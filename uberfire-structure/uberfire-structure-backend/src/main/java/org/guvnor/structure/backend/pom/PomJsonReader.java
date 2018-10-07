@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class PomJsonReader {
 
     private final Logger logger = LoggerFactory.getLogger(PomJsonReader.class);
-    private String jsonPomFile;
+    private String jsonPomFile, kieVersion;
     private JsonObject pomObject;
 
     public PomJsonReader(InputStream in) {
@@ -78,7 +78,8 @@ public class PomJsonReader {
         }
     }
 
-    public Map<DependencyType, List<DynamicPomDependency>> readDeps() {
+    public ConfigurationMap readConfiguration() {
+        kieVersion = pomObject.get("kieVersion").toString();
         JsonArray dependencies = pomObject.getJsonArray("dependencies");
         Map<DependencyType, List<DynamicPomDependency>> mapping = new HashMap<>(dependencies.size());
         for (int i = 0; i < dependencies.size(); i++) {
@@ -100,6 +101,7 @@ public class PomJsonReader {
             mapping.put(DependencyType.valueOf(type),
                         dynamic);
         }
-        return mapping;
+        return new ConfigurationMap(mapping, kieVersion);
     }
+
 }
