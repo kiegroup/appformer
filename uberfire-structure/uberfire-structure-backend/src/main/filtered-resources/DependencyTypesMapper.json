@@ -1,4 +1,5 @@
 {
+  "kieVersion":"${version.org.kie}",
   "dependencies":[
     {
       "type":"JPA",
