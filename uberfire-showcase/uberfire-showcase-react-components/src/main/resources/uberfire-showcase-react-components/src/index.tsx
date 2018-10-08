@@ -22,8 +22,8 @@ export class StaticReactComponent extends AppFormer.Screen {
     af_onOpen(): void {
         alert("OPEN!!");
         new VFSService().get({uri: "default://uf-playground/todo.md"}).then(p => {
-            console.info(p);
-        })
+            console.info(p.getFileName());
+        });
     }
 }
 
