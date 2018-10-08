@@ -14,6 +14,8 @@
  */
 package org.guvnor.structure.pom;
 
+import java.util.Set;
+
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
@@ -24,12 +26,21 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 public class AddPomDependencyEvent {
 
     private Path projectPath;
-    private DependencyType type;
+    //private DependencyType type;
+    private Set<DependencyType> types;
 
-    public AddPomDependencyEvent(@MapsTo("dependencyType") final DependencyType type,
+    /*public AddPomDependencyEvent(@MapsTo("dependencyType") final DependencyType type,
                                  @MapsTo("projectPath") final Path projectPath) {
         this.type = checkNotNull("dependencyType",
                                  type);
+        this.projectPath = checkNotNull("projectPath",
+                                        projectPath);
+    }*/
+
+    public AddPomDependencyEvent(@MapsTo("dependencyTypes") final Set<DependencyType> types,
+                                 @MapsTo("projectPath") final Path projectPath) {
+        this.types = checkNotNull("dependencyTypes",
+                                 types);
         this.projectPath = checkNotNull("projectPath",
                                         projectPath);
     }
@@ -38,7 +49,11 @@ public class AddPomDependencyEvent {
         return projectPath;
     }
 
-    public DependencyType getDependencyType() {
+    /*public DependencyType getDependencyType() {
         return type;
+    }*/
+
+    public Set<DependencyType> getDependencyTypes() {
+        return types;
     }
 }

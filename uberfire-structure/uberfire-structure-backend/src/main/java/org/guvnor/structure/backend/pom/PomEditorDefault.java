@@ -17,6 +17,8 @@ package org.guvnor.structure.backend.pom;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +28,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +51,7 @@ public class PomEditorDefault implements PomEditor {
     }
 
     public boolean addDependency(DynamicPomDependency dep,
-                                 Path pomPath) {
+                                 Path pomPath, DependencyTypesMapper mapper) {
         if (dep.getGroupID().isEmpty() || dep.getArtifactID().isEmpty()) {
             return false;
         }
@@ -73,8 +76,12 @@ public class PomEditorDefault implements PomEditor {
         return true;
     }
 
-    public boolean addDependencies(List<DynamicPomDependency> deps,
-                                   Path pomPath) {
+    public boolean addDependencies(Set<DependencyType> dependencyTypes,
+                                   Path pomPath, DependencyTypesMapper mapper) {
+        List<DynamicPomDependency> deps = new ArrayList<>();
+        for(DependencyType dep :dependencyTypes){
+            deps.addAll(mapper.getDependencies(EnumSet.of(dep)));
+        }
         if (deps.isEmpty()) {
             return false;
         }

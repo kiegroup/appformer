@@ -15,6 +15,7 @@
 package org.guvnor.structure.backend.pom;
 
 import java.util.List;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
@@ -39,15 +40,15 @@ public class PomStructureEditor {
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
         final Path projectPath = event.getProjectPath();
-        final DependencyType dependencyType = event.getDependencyType();
+        final Set<DependencyType> dependencyTypes = event.getDependencyTypes();
         addDependenciesToPom(projectPath,
-                             mapper.getDependencies(dependencyType));
+                             dependencyTypes, mapper);
     }
 
-    private void addDependenciesToPom(Path projectPath,
-                                      List<DynamicPomDependency> deps) {
-        if (!pomEditor.addDependencies(deps,
-                                       projectPath)) {
+    private void addDependenciesToPom(Path projectPath, Set<DependencyType> dependencyTypes, DependencyTypesMapper mapper) {
+        List<DynamicPomDependency> deps = mapper.getDependencies(dependencyTypes);
+        if (!pomEditor.addDependencies(dependencyTypes,
+                                       projectPath, mapper)) {
             logger.warn("Failed to add dependencies {} to pom.xml located in {}",
                         deps,
                         projectPath);

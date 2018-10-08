@@ -99,7 +99,7 @@ public class PomJsonReader {
             JsonArray deps = depType.getJsonArray("deps");
             ArrayList<DynamicPomDependency> dynamic = new ArrayList<>(deps.size());
             for (int k = 0; k < deps.size(); k++) {
-                JsonObject dep = deps.getJsonObject(i);
+                JsonObject dep = deps.getJsonObject(k);
                 DynamicPomDependency dynamicDep = new DynamicPomDependency(
                         dep.getString("groupId"),
                         dep.getString("artifactId"),

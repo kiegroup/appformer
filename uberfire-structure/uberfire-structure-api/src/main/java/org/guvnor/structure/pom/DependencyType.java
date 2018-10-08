@@ -15,5 +15,5 @@
 package org.guvnor.structure.pom;
 
 public enum DependencyType {
-    JPA
+    JPA, TEST
 }

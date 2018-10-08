@@ -14,6 +14,7 @@
  */
 package org.guvnor.structure.backend.pom;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +44,11 @@ public class DependencyTypesMapper {
         return conf.getInternalArtifacts();
     }
 
-    public List<DynamicPomDependency> getDependencies(DependencyType key) {
-        return conf.getMapping().get(key);
+    public List<DynamicPomDependency> getDependencies(Set<DependencyType> dependencyTypes) {
+        List<DynamicPomDependency> result = new ArrayList<>();
+        for(DependencyType type : dependencyTypes){
+            result.addAll(conf.getMapping().get(type));
+        }
+        return result;
     }
 }

@@ -14,6 +14,7 @@
  */
 package org.guvnor.structure.backend.pom;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class DependencyTypesMapperTest {
 
     @Test
     public void mappingDependencyTest() {
-        List<DynamicPomDependency> deps = mapper.getDependencies(DependencyType.JPA);
+        List<DynamicPomDependency> deps = mapper.getDependencies(EnumSet.of(DependencyType.JPA));
         assertThat(deps).isNotEmpty();
         assertThat(deps).hasSize(1);
         Map<DependencyType, List<DynamicPomDependency>> map = new HashMap<>();

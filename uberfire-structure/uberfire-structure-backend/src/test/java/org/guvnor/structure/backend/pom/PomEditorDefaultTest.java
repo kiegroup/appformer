@@ -15,9 +15,9 @@
 package org.guvnor.structure.backend.pom;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 
+import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.junit.After;
 import org.junit.Before;
@@ -32,10 +32,12 @@ public class PomEditorDefaultTest {
 
     private final String POM = "pom.xml";
     private PomEditor editor;
+    private DependencyTypesMapper mapper;
     private Path tmpRoot, tmp;
 
     @Before
     public void setUp() throws Exception {
+        mapper = new DependencyTypesMapper();
         editor = new PomEditorDefault();
         tmpRoot = Files.createTempDirectory("repo");
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
@@ -52,51 +54,41 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addDepTest() {
-        DynamicPomDependency dep = new DynamicPomDependency("junit",
-                                                            "junit",
-                                                            "4.12",
+        DynamicPomDependency dep = new DynamicPomDependency("io.vertx",
+                                                            "vertx-core",
+                                                            "3.5.4",
                                                             "");
         boolean result = editor.addDependency(dep,
                                               PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                  tmp.toUri().toString() + File.separator + POM));
+                                                                  tmp.toUri().toString() + File.separator + POM), mapper);
         assertThat(result).isTrue();
     }
 
     @Test
     public void addDepsTest() {
-        DynamicPomDependency dep = new DynamicPomDependency("junit",
-                                                            "junit",
-                                                            "4.12",
-                                                            "");
-        List<DynamicPomDependency> deps = Arrays.asList(dep);
-        boolean result = editor.addDependencies(deps,
+        boolean result = editor.addDependencies(EnumSet.of(DependencyType.JPA),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM));
+                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
         assertThat(result).isTrue();
     }
 
     @Test
     public void addDuplicatedDepTest() {
-        DynamicPomDependency dep = new DynamicPomDependency(TestUtil.GROUP_ID_TEST,
-                                                            TestUtil.ARTIFACT_ID_TEST,
-                                                            TestUtil.VERSION_ID_TEST,
-                                                            "");
+        DynamicPomDependency dep = new DynamicPomDependency("junit",
+                                                            "junit",
+                                                            "4.12",
+                                                            "test");
         boolean result = editor.addDependency(dep,
                                               PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                  tmp.toUri().toString() + File.separator + POM));
+                                                                  tmp.toUri().toString() + File.separator + POM), mapper);
         assertThat(result).isFalse();
     }
 
     @Test
     public void addDuplicatedDepsTest() {
-        DynamicPomDependency dep = new DynamicPomDependency(TestUtil.GROUP_ID_TEST,
-                                                            TestUtil.ARTIFACT_ID_TEST,
-                                                            TestUtil.VERSION_ID_TEST,
-                                                            "");
-        List<DynamicPomDependency> deps = Arrays.asList(dep);
-        boolean result = editor.addDependencies(deps,
+        boolean result = editor.addDependencies(EnumSet.of(DependencyType.TEST),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM));
+                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
         assertThat(result).isFalse();
     }
 }
