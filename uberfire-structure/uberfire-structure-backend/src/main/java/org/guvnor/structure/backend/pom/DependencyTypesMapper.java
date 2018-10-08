@@ -24,10 +24,9 @@ public class DependencyTypesMapper {
 
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
     private ConfigurationMap conf ;
-    private PomJsonReader jsonDepsReader;
 
     public DependencyTypesMapper() {
-        jsonDepsReader = new PomJsonReader(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
+        PomJsonReader jsonDepsReader = new PomJsonReader(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
         conf = jsonDepsReader.readConfiguration();
     }
 

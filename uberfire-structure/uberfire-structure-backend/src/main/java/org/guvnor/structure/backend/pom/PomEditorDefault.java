@@ -82,11 +82,11 @@ public class PomEditorDefault implements PomEditor {
         try {
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
-            Set keys = getKeysFromDeps(model.getDependencies());
+            Set<String> keys = getKeysFromDeps(model.getDependencies());
 
             for (DynamicPomDependency dep : deps) {
-                Dependency pomDep = getMavenDependency(dep);
                 if (!keys.contains(getKeyFromDep(dep))) {
+                    Dependency pomDep = getMavenDependency(dep);
                     model.getDependencies().add(pomDep);
                     result = true;
                 }
@@ -110,13 +110,13 @@ public class PomEditorDefault implements PomEditor {
     }
 
     private Set<String> getKeysFromDeps(List<Dependency> deps) {
-        Set<String> depsMap = new HashSet<>(deps.size());
+        Set<String> depsSet = new HashSet<>(deps.size());
         for (Dependency dep : deps) {
             StringBuilder sb = new StringBuilder();
             sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId()).append(DELIMITER).append(dep.getVersion());
-            depsMap.add(sb.toString());
+            depsSet.add(sb.toString());
         }
-        return depsMap;
+        return depsSet;
     }
 
     private void writePOMModelOnFS(org.uberfire.java.nio.file.Path filePath,
