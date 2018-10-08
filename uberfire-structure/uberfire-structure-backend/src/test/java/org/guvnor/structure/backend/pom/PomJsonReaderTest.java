@@ -31,7 +31,7 @@ public class PomJsonReaderTest {
 
     @Before
     public void setUp(){
-        reader = new PomJsonReader("target/test-classes/"+JSON_POM_DEPS , JSON_POM_DEPS);
+        reader = new PomJsonReader("target/test-classes/" , JSON_POM_DEPS);
     }
 
     @Test

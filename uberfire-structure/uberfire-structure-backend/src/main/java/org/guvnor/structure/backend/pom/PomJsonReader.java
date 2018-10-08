@@ -17,6 +17,7 @@ package org.guvnor.structure.backend.pom;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,11 +31,13 @@ import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.java.nio.file.Files;
+import org.uberfire.java.nio.file.Paths;
 
 public class PomJsonReader {
 
     private final Logger logger = LoggerFactory.getLogger(PomJsonReader.class);
-    private String jsonPomFile, kieVersion;
+    private String kieVersion;
     private JsonObject pomObject;
 
     public PomJsonReader(InputStream in) {
@@ -49,14 +52,14 @@ public class PomJsonReader {
 
     public PomJsonReader(String path,
                          String jsonName) {
-        jsonPomFile = jsonName;
-        if (!path.endsWith(jsonPomFile)) {
-            throw new RuntimeException("no " + jsonPomFile + " in the provided path :" + path);
+        String jsonPath = path+jsonName;
+        if (!Files.exists(Paths.get(jsonPath))) {
+            throw new RuntimeException("no " + jsonName + " in the provided path :" + path);
         }
         InputStream fis = null;
         JsonReader reader = null;
         try {
-            fis = new FileInputStream(path);
+            fis = new FileInputStream(jsonPath);
             reader = Json.createReader(fis);
             pomObject = reader.readObject();
             reader.close();

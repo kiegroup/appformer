@@ -38,10 +38,10 @@ public class PomStructureEditor {
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
-        final Path projectPathOptional = event.getProjectPath();
-        final DependencyType dependencyTypeOptional = event.getDependencyType();
-        addDependenciesToPom(projectPathOptional,
-                             mapper.getDependencies(dependencyTypeOptional));
+        final Path projectPath = event.getProjectPath();
+        final DependencyType dependencyType = event.getDependencyType();
+        addDependenciesToPom(projectPath,
+                             mapper.getDependencies(dependencyType));
     }
 
     private void addDependenciesToPom(Path projectPath,
