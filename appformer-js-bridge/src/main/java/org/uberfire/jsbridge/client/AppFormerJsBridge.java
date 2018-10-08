@@ -36,6 +36,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
+import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.workbench.Workbench;
@@ -103,8 +104,27 @@ public class AppFormerJsBridge {
 
     @SuppressWarnings("unchecked")
     public void registerPerspective(final Object jsObject) {
-        //TODO: Actually register perspectives
-        DomGlobal.console.info(jsObject + " registered as perspective.");
+        final SyncBeanManager beanManager = IOC.getBeanManager();
+        final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
+        final JsNativePerspective newPerspective = new JsNativePerspective((JavaScriptObject) jsObject);
+        final JsWorkbenchPerspectiveActivity activity = new JsWorkbenchPerspectiveActivity(newPerspective,
+                                                                                           beanManager.lookupBean(PlaceManager.class).getInstance());
+
+        //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
+        final SingletonBeanDefinition<JsWorkbenchPerspectiveActivity, JsWorkbenchPerspectiveActivity> activityBean = new SingletonBeanDefinition<>(
+                activity,
+                JsWorkbenchPerspectiveActivity.class,
+                new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
+                activity.getIdentifier(),
+                true,
+                PerspectiveActivity.class,
+                Activity.class);
+
+        beanManager.registerBean(activityBean);
+        beanManager.registerBeanTypeAlias(activityBean, PerspectiveActivity.class);
+        beanManager.registerBeanTypeAlias(activityBean, Activity.class);
+
+        activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
 
     @SuppressWarnings("unchecked")
