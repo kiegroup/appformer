@@ -17,6 +17,7 @@ package org.guvnor.structure.backend.pom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
@@ -33,8 +34,6 @@ public class DependencyTypesMapperTest {
     public void setUp() {
         mapper = new DependencyTypesMapper();
     }
-
-
 
     @Test
     public void mappingTest() {
@@ -53,4 +52,12 @@ public class DependencyTypesMapperTest {
                 deps);
         TestUtil.testJPADep(map);
     }
+
+    @Test
+    public void mappingInternalDependenciesTest() {
+        Set<DynamicPomDependency> deps = mapper.getInternalArtifacts();
+        assertThat(deps).isNotEmpty();
+        assertThat(deps).hasSize(3);
+    }
+
 }

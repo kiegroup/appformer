@@ -1,5 +1,10 @@
 {
   "kieVersion":"${version.org.kie}",
+  "internalArtifacts":[
+    {"groupId":"org.kie", "artifactId":"kie-internal", "scope":"provided"},
+    {"groupId":"org.optaplanner", "artifactId":"optaplanner-core", "scope":"provided"},
+    {"groupId":"org.dashbuilder", "artifactId":"kie-internal", "scope":"provided"}
+  ],
   "dependencies":[
     {
       "type":"JPA",
