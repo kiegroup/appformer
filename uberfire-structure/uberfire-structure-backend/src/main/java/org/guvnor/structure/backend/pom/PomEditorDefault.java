@@ -19,8 +19,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.model.Dependency;
@@ -60,10 +62,19 @@ public class PomEditorDefault implements PomEditor {
             Dependency pomDep = getMavenDependency(dep);
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
-            Set keys = getKeysFromDeps(model.getDependencies());
-            if (!keys.contains(getKeyFromDep(dep))) {
+            Map<String,String> keys = getKeysFromDeps(model.getDependencies());
+            String keyDep = getKeyFromDep(dep);
+            if (!keys.containsKey(keyDep)) {
                 model.getDependencies().add(pomDep);
-            } else {
+            }else {
+                //override dep version with the version contained in the json
+                String versionKey = keys.get(keyDep);
+                List<Dependency> modelDeps = model.getDependencies();
+                for(Dependency modelDep: modelDeps){
+                    if(modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID())){
+                        modelDep.setVersion(versionKey);
+                    }
+                }
                 return false;
             }
             writePOMModelOnFS(filePath,
@@ -89,13 +100,22 @@ public class PomEditorDefault implements PomEditor {
         try {
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
-            Set<String> keys = getKeysFromDeps(model.getDependencies());
+            Map<String, String> keys = getKeysFromDeps(model.getDependencies());
 
             for (DynamicPomDependency dep : deps) {
-                if (!keys.contains(getKeyFromDep(dep))) {
+                if (!keys.containsKey(getKeyFromDep(dep))) {
                     Dependency pomDep = getMavenDependency(dep);
                     model.getDependencies().add(pomDep);
                     result = true;
+                }else{
+                    //override dep version with the version contained in the json
+                    List<Dependency> modelDeps = model.getDependencies();
+                    for(Dependency modelDep: modelDeps){
+                        if(modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID()) && !modelDep.getVersion().equals(dep.getVersion())){
+                            modelDep.setVersion(dep.getVersion());
+                            result = true;
+                        }
+                    }
                 }
             }
             if(result) {
@@ -112,18 +132,18 @@ public class PomEditorDefault implements PomEditor {
 
     private String getKeyFromDep(DynamicPomDependency dep) {
         StringBuilder sb = new StringBuilder();
-        sb.append(dep.getGroupID()).append(DELIMITER).append(dep.getArtifactID()).append(DELIMITER).append(dep.getVersion()).toString();
+        sb.append(dep.getGroupID()).append(DELIMITER).append(dep.getArtifactID()).toString();
         return sb.toString();
     }
 
-    private Set<String> getKeysFromDeps(List<Dependency> deps) {
-        Set<String> depsSet = new HashSet<>(deps.size());
+    private Map<String, String> getKeysFromDeps(List<Dependency> deps) {
+        Map<String, String> depsMap = new HashMap<>(deps.size());
         for (Dependency dep : deps) {
             StringBuilder sb = new StringBuilder();
-            sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId()).append(DELIMITER).append(dep.getVersion());
-            depsSet.add(sb.toString());
+            sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId());
+            depsMap.put(sb.toString(), dep.getVersion());
         }
-        return depsSet;
+        return depsMap;
     }
 
     private void writePOMModelOnFS(org.uberfire.java.nio.file.Path filePath,
