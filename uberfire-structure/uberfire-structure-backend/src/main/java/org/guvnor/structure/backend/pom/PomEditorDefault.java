@@ -129,13 +129,13 @@ public class PomEditorDefault implements PomEditor {
     }
 
     private Map<String, String> getKeysFromDeps(List<Dependency> deps) {
-        Map<String, String> depsSet = new HashMap(deps.size());
+        Map<String, String> depsMap = new HashMap(deps.size());
         for (Dependency dep : deps) {
             StringBuilder sb = new StringBuilder();
             sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId());
-            depsSet.put(sb.toString(), dep.getVersion());
+            depsMap.put(sb.toString(), dep.getVersion());
         }
-        return depsSet;
+        return depsMap;
     }
 
     private void writePOMModelOnFS(org.uberfire.java.nio.file.Path filePath,
