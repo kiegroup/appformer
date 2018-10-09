@@ -6,7 +6,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "npx webpack && npm unpublish --force --registry http://localhost:4873 && npm publish --registry http://localhost:4873",
-    "reload": "bash -c 'npx webpack && ( find ${0} | grep public/${npm_package_name}.js | xargs -I {} cp ./dist/index.js {} )'",
+    "reload": "bash -c 'npx webpack && (find ${0} | grep public/${npm_package_name}.js | xargs -I {} cp -v ${npm_package_main} {})'",
     "reload:auto": "bash -c 'npx watch \"npm run reload -- ${0}\" src'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

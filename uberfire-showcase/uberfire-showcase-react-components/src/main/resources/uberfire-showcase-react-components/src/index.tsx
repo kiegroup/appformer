@@ -13,7 +13,7 @@ export class StaticReactComponent extends AppFormer.Screen {
     }
 
     af_componentRoot(root?: { ss: AppFormer.Screen[]; ps: AppFormer.Perspective[] }): AppFormer.Element {
-        return <div>...This is a React Component...</div>;
+        return <div>This is a React Component...</div>;
     }
 
     af_onOpen(): void {
