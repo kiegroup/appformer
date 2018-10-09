@@ -6,6 +6,8 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "npx webpack && npm unpublish --force --registry http://localhost:4873 && npm publish --registry http://localhost:4873",
+    "reload": "bash -c 'npx webpack && ( find ${0} | grep public/${npm_package_name}.js | xargs -I {} cp ./dist/index.js {} )'",
+    "reload:auto": "bash -c 'npx watch \"npm run reload -- ${0}\" src'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
@@ -13,6 +15,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "ts-loader": "^5.2.0",
     "typescript": "^3.0.3",
+    "watch": "^1.0.2",
     "webpack": "^4.20.1",
     "webpack-clean-plugin": "^0.2.3",
     "webpack-cli": "^3.1.1"
@@ -24,8 +27,8 @@
     "appformer-js": "^1.0.0"
   },
   "dependencies": {
-    "@types/react": "^16.4.14",
-    "@types/react-dom": "^16.0.8",
+    "@types/react": "^16.4.16",
+    "@types/react-dom": "^16.0.9",
     "react": "^16.5.2",
     "react-dom": "^16.5.2"
   }
