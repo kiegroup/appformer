@@ -54,7 +54,7 @@ public class PomJsonReader {
 
     public PomJsonReader(String path,
                          String jsonName) {
-        String jsonPath = path+jsonName;
+        String jsonPath = path + jsonName;
         if (!Files.exists(Paths.get(jsonPath))) {
             throw new RuntimeException("no " + jsonName + " in the provided path :" + path);
         }
@@ -84,10 +84,12 @@ public class PomJsonReader {
     }
 
     public ConfigurationMap readConfiguration() {
-        kieVersion = pomObject.get("kieVersion").toString();
+        kieVersion = pomObject.getString("kieVersion");
         Map<DependencyType, List<DynamicPomDependency>> mapping = getDependencyTypeMap();
         Set<DynamicPomDependency> internalArtifacts = getInternalArtifactsSet(kieVersion);
-        return new ConfigurationMap(mapping, internalArtifacts, kieVersion);
+        return new ConfigurationMap(mapping,
+                                    internalArtifacts,
+                                    kieVersion);
     }
 
     private Map<DependencyType, List<DynamicPomDependency>> getDependencyTypeMap() {
@@ -115,19 +117,18 @@ public class PomJsonReader {
         return mapping;
     }
 
-
     private Set<DynamicPomDependency> getInternalArtifactsSet(String kieVersion) {
         JsonArray internalArtifacts = pomObject.getJsonArray("internalArtifacts");
         Set<DynamicPomDependency> dynamic = new HashSet<>(internalArtifacts.size());
         for (int i = 0; i < internalArtifacts.size(); i++) {
-                JsonObject dep = internalArtifacts.getJsonObject(i);
-                DynamicPomDependency dynamicDep = new DynamicPomDependency(
-                        dep.getString("groupId"),
-                        dep.getString("artifactId"),
-                        kieVersion,
-                        dep.getString("scope")
-                );
-                dynamic.add(dynamicDep);
+            JsonObject dep = internalArtifacts.getJsonObject(i);
+            DynamicPomDependency dynamicDep = new DynamicPomDependency(
+                    dep.getString("groupId"),
+                    dep.getString("artifactId"),
+                    kieVersion,
+                    dep.getString("scope")
+            );
+            dynamic.add(dynamicDep);
         }
         return dynamic;
     }

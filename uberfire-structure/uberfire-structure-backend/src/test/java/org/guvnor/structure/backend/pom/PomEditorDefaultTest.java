@@ -46,7 +46,7 @@ public class PomEditorDefaultTest {
     @Before
     public void setUp() throws Exception {
         mapper = new DependencyTypesMapper();
-        editor = new PomEditorDefault();
+        editor = new PomEditorDefault(mapper);
         tmpRoot = Files.createTempDirectory("repo");
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
@@ -60,10 +60,12 @@ public class PomEditorDefaultTest {
         }
     }
 
-    private Dependency getDependency(List<Dependency> deps , String groupId, String artifactId){
+    private Dependency getDependency(List<Dependency> deps,
+                                     String groupId,
+                                     String artifactId) {
         Dependency dependency = new Dependency();
-        for (Dependency dep : deps){
-            if(dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)){
+        for (Dependency dep : deps) {
+            if (dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)) {
                 dependency.setGroupId(dep.getGroupId());
                 dependency.setArtifactId(dep.getArtifactId());
                 dependency.setVersion(dep.getVersion());
@@ -71,7 +73,7 @@ public class PomEditorDefaultTest {
                 break;
             }
         }
-        return  dependency;
+        return dependency;
     }
 
     @Test
@@ -82,7 +84,7 @@ public class PomEditorDefaultTest {
                                                             "");
         boolean result = editor.addDependency(dep,
                                               PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                  tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                  tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
     }
 
@@ -90,7 +92,7 @@ public class PomEditorDefaultTest {
     public void addDepsTest() {
         boolean result = editor.addDependencies(EnumSet.of(DependencyType.JPA),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
     }
 
@@ -102,7 +104,7 @@ public class PomEditorDefaultTest {
                                                             "test");
         boolean result = editor.addDependency(dep,
                                               PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                  tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                  tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isFalse();
     }
 
@@ -110,7 +112,7 @@ public class PomEditorDefaultTest {
     public void addDuplicatedDepsTest() {
         boolean result = editor.addDependencies(EnumSet.of(DependencyType.TEST),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isFalse();
     }
 
@@ -123,14 +125,15 @@ public class PomEditorDefaultTest {
         Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        Dependency changedDep = getDependency(model.getDependencies(), "org.hibernate.javax.persistence", "hibernate-jpa-2.1-api");
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.hibernate.javax.persistence",
+                                              "hibernate-jpa-2.1-api");
         assertThat(changedDep.getVersion()).isEqualTo("1.0.2.Final");
     }
-
 
     @Test
     public void addAndOverrideVersionDepsTest() throws Exception {
@@ -138,16 +141,21 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
-        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA, DependencyType.TEST);
+        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA,
+                                              DependencyType.TEST);
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        Dependency changedDep = getDependency(model.getDependencies(), "org.hibernate.javax.persistence", "hibernate-jpa-2.1-api");
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.hibernate.javax.persistence",
+                                              "hibernate-jpa-2.1-api");
         assertThat(changedDep.getVersion()).isEqualTo("1.0.2.Final");
-        changedDep = getDependency(model.getDependencies(), "junit", "junit");
+        changedDep = getDependency(model.getDependencies(),
+                                   "junit",
+                                   "junit");
         assertThat(changedDep.getVersion()).isEqualTo("4.12");
     }
 
@@ -160,28 +168,54 @@ public class PomEditorDefaultTest {
         Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
+                                                                    tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        Dependency changedDep = getDependency(model.getDependencies(), "org.kie", "kie-internal");
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.kie",
+                                              "kie-internal");
         assertThat(changedDep.getVersion()).isEqualTo("7.7.0-SNAPSHOT");
     }
 
     @Test
     public void addAndOverrideCurrentKieVersionDepTest() throws Exception {
         //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
-       /* tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
+         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsCurrent",
-                                                "target/test-classes/dummyInternalDepsCurrent");*/
+                                                 "target/classes");
+        org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(POM, tmpRoot + File.separator + "dummyInternalDepsCurrent" + File.separator + POM);
+
         Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
-        boolean result = editor.addDependencies(deps,
-                                                PathFactory.newPath( POM,
-                                                                    URI.create("target/classes") + File.separator + POM), mapper);
+        boolean result = editor.addDependencies(deps, pomPath);
         assertThat(result).isTrue();
         MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        Dependency changedDep = getDependency(model.getDependencies(), "org.kie", "kie-internal");
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(pomPath.toURI()))));
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.kie",
+                                              "kie-internal");
         assertThat(changedDep.getVersion()).isEqualTo(mapper.getKieVersion());
+    }
+
+    @Test
+    public void addUpdatedKieVersionDepTest() throws Exception {
+        tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
+                                                "dummyInternalDepsOld",
+                                                "target/test-classes/dummyInternalDepsOld");
+
+        org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                            tmp.toUri().toString() + File.separator + POM);
+        DynamicPomDependency dep = new DynamicPomDependency("org.kie",
+                                                            "kie-internal",
+                                                            "7.13.0-SNAPSHOT",
+                                                            "provided");
+        boolean result = editor.addDependency(dep, pomPath);
+        assertThat(result).isFalse();
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(pomPath.toURI()))));
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.kie",
+                                              "kie-internal");
+        assertThat(changedDep.getVersion()).isEqualTo("7.7.0-SNAPSHOT");
     }
 }

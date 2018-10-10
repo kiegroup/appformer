@@ -25,14 +25,14 @@ import org.guvnor.structure.pom.DynamicPomDependency;
 public class DependencyTypesMapper {
 
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
-    private ConfigurationMap conf ;
+    private ConfigurationMap conf;
 
     public DependencyTypesMapper() {
         PomJsonReader jsonDepsReader = new PomJsonReader(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
         conf = jsonDepsReader.readConfiguration();
     }
 
-    public String getKieVersion(){
+    public String getKieVersion() {
         return conf.getKieVersion();
     }
 
@@ -46,7 +46,7 @@ public class DependencyTypesMapper {
 
     public List<DynamicPomDependency> getDependencies(Set<DependencyType> dependencyTypes) {
         List<DynamicPomDependency> result = new ArrayList<>();
-        for(DependencyType type : dependencyTypes){
+        for (DependencyType type : dependencyTypes) {
             result.addAll(conf.getMapping().get(type));
         }
         return result;
