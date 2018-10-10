@@ -26,13 +26,13 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-internal</artifactId>
-      <version>7.7.0-SNAPSHOT</version>
+      <version>${version.org.kie}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-core</artifactId>
-      <version>7.7.0-SNAPSHOT</version>
+      <version>${version.org.kie}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

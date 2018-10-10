@@ -200,6 +200,10 @@
         <directory>src/main/filtered-resources</directory>
         <filtering>true</filtering>
       </resource>
+      <resource>
+        <directory>src/test/resources/dummyInternalDepsCurrent</directory>
+        <filtering>true</filtering>
+      </resource>
     </resources>
   </build>
 
