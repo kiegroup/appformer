@@ -42,13 +42,16 @@ public class PomStructureEditor {
         final Path projectPath = event.getProjectPath();
         final Set<DependencyType> dependencyTypes = event.getDependencyTypes();
         addDependenciesToPom(projectPath,
-                             dependencyTypes, mapper);
+                             dependencyTypes,
+                             mapper);
     }
 
-    private void addDependenciesToPom(Path projectPath, Set<DependencyType> dependencyTypes, DependencyTypesMapper mapper) {
+    private void addDependenciesToPom(Path projectPath,
+                                      Set<DependencyType> dependencyTypes,
+                                      DependencyTypesMapper mapper) {
         List<DynamicPomDependency> deps = mapper.getDependencies(dependencyTypes);
         if (!pomEditor.addDependencies(dependencyTypes,
-                                       projectPath, mapper)) {
+                                       projectPath)) {
             logger.warn("Failed to add dependencies {} to pom.xml located in {}",
                         deps,
                         projectPath);

@@ -62,39 +62,67 @@ public class PomEditorDefault implements PomEditor {
             return false;
         }
 
+        boolean result = false;
         try {
-            Dependency pomDep = getMavenDependency(dep);
+            boolean internalArtifact = isInternalArtifact(dep);
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
-            Map<String,String> keys = getKeysFromDeps(model.getDependencies());
+            List<Dependency> depsFromPom = model.getDependencies();
+            Map<String, String> keys = getKeysFromDeps(depsFromPom);
             String keyDep = getKeyFromDep(dep);
             if (!keys.containsKey(keyDep)) {
+                Dependency pomDep = getMavenPomDep(dep,
+                                                   internalArtifact,
+                                                   getKieVersionFromPom(dep,
+                                                                        depsFromPom));
                 model.getDependencies().add(pomDep);
-            }else {
-                //override dep version with the version contained in the json
-                String versionKey = keys.get(keyDep);
-                List<Dependency> modelDeps = model.getDependencies();
-                for(Dependency modelDep: modelDeps){
-                    if(modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID())){
-                        modelDep.setVersion(versionKey);
+                result = true;
+            } else {
+                for (Dependency modelDep : depsFromPom) {
+                    if (modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID())) {
+                        if (internalArtifact) {
+                            modelDep.setVersion(getKieVersionFromPom(dep,
+                                                                     depsFromPom));
+                        } else {
+                            modelDep.setVersion(keys.get(keyDep));
+                        }
                     }
                 }
-                return false;
             }
-            writePOMModelOnFS(filePath,
-                              model);
+            if (result) {
+                writePOMModelOnFS(filePath,
+                                  model);
+            }
         } catch (Exception ex) {
             logger.error(ex.getMessage(),
                          ex);
-            return false;
+            result = false;
         }
-        return true;
+        return result;
+    }
+
+    private Dependency getMavenPomDep(DynamicPomDependency dep,
+                                      boolean internalArtifact,
+                                      String kieVersionFromPom) {
+        Dependency pomDep = getMavenDependency(dep);
+        if (internalArtifact) {
+            pomDep.setVersion(kieVersionFromPom);
+        }
+        return pomDep;
+    }
+
+    private String getKieVersionFromPom(DynamicPomDependency dep,
+                                        List<Dependency> depsFromPom) {
+        Dependency depInternalFromPom = getDependency(depsFromPom,
+                                                      dep.getGroupID(),
+                                                      dep.getArtifactID());
+        return depInternalFromPom.getVersion();
     }
 
     public boolean addDependencies(Set<DependencyType> dependencyTypes,
                                    Path pomPath) {
         List<DynamicPomDependency> deps = new ArrayList<>();
-        for(DependencyType dep :dependencyTypes){
+        for (DependencyType dep : dependencyTypes) {
             deps.addAll(mapper.getDependencies(EnumSet.of(dep)));
         }
         if (deps.isEmpty()) {
@@ -104,29 +132,38 @@ public class PomEditorDefault implements PomEditor {
         try {
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
             Model model = getPOMModel(filePath);
+            List<Dependency> depsFromPom = model.getDependencies();
             Map<String, String> keys = getKeysFromDeps(model.getDependencies());
 
             for (DynamicPomDependency dep : deps) {
-
-                isInternalArtifact(dep);
-
+                boolean internalArtifact = isInternalArtifact(dep);
 
                 if (!keys.containsKey(getKeyFromDep(dep))) {
-                    Dependency pomDep = getMavenDependency(dep);
+                    Dependency pomDep = getMavenPomDep(dep,
+                                                       internalArtifact,
+                                                       getKieVersionFromPom(dep,
+                                                                            depsFromPom));
                     model.getDependencies().add(pomDep);
+
                     result = true;
-                }else{
-                    //override dep version with the version contained in the json
-                    List<Dependency> modelDeps = model.getDependencies();
-                    for(Dependency modelDep: modelDeps){
-                        if(modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID()) && !modelDep.getVersion().equals(dep.getVersion())){
-                            modelDep.setVersion(dep.getVersion());
+                } else {
+                    for (Dependency modelDep : depsFromPom) {
+                        if (modelDep.getGroupId().equals(dep.getGroupID()) &&
+                                modelDep.getArtifactId().equals(dep.getArtifactID()) &&
+                                !modelDep.getVersion().equals(dep.getVersion())) {
+
+                            if (internalArtifact) {
+                                modelDep.setVersion(getKieVersionFromPom(dep,
+                                                                         depsFromPom));
+                            } else {
+                                modelDep.setVersion(dep.getVersion());
+                            }
                             result = true;
                         }
                     }
                 }
             }
-            if(result) {
+            if (result) {
                 writePOMModelOnFS(filePath,
                                   model);
             }
@@ -149,7 +186,8 @@ public class PomEditorDefault implements PomEditor {
         for (Dependency dep : deps) {
             StringBuilder sb = new StringBuilder();
             sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId());
-            depsMap.put(sb.toString(), dep.getVersion());
+            depsMap.put(sb.toString(),
+                        dep.getVersion());
         }
         return depsMap;
     }
@@ -179,16 +217,32 @@ public class PomEditorDefault implements PomEditor {
         return pomDep;
     }
 
-    private Set<String> getInternalGroupIds(DependencyTypesMapper mapper){
+    private Set<String> getInternalGroupIds(DependencyTypesMapper mapper) {
         Set<DynamicPomDependency> deps = mapper.getInternalArtifacts();
         Set<String> groups = new HashSet<>(deps.size());
-        for(DynamicPomDependency dep : deps){
+        for (DynamicPomDependency dep : deps) {
             groups.add(dep.getGroupID());
         }
-        return  groups;
+        return groups;
     }
 
-    private boolean isInternalArtifact(DynamicPomDependency dependency){
+    private boolean isInternalArtifact(DynamicPomDependency dependency) {
         return internalGroupIds.contains(dependency.getGroupID());
+    }
+
+    private Dependency getDependency(List<Dependency> deps,
+                                     String groupId,
+                                     String artifactId) {
+        Dependency dependency = new Dependency();
+        for (Dependency dep : deps) {
+            if (dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)) {
+                dependency.setGroupId(dep.getGroupId());
+                dependency.setArtifactId(dep.getArtifactId());
+                dependency.setVersion(dep.getVersion());
+                dependency.setScope(dep.getScope());
+                break;
+            }
+        }
+        return dependency;
     }
 }

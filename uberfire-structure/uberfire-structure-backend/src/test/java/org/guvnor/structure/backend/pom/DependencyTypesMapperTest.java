@@ -60,5 +60,4 @@ public class DependencyTypesMapperTest {
         assertThat(deps).isNotEmpty();
         assertThat(deps).hasSize(3);
     }
-
 }
