@@ -1,10 +1,21 @@
 {
   "kieVersion":"${version.org.kie}",
+  "internalArtifacts":[
+    {"groupId":"org.kie", "artifactId":"kie-internal", "scope":"provided"},
+    {"groupId":"org.optaplanner", "artifactId":"optaplanner-core", "scope":"provided"},
+    {"groupId":"org.dashbuilder", "artifactId":"kie-internal", "scope":"provided"}
+  ],
   "dependencies":[
     {
-      "type":"JPA",
+      "type": "JPA",
+      "deps": [
+        {"groupId": "org.hibernate.javax.persistence", "artifactId": "hibernate-jpa-2.1-api", "version": "1.0.2.Final", "scope": ""}
+      ]
+    },
+    {
+      "type":"TEST",
       "deps":[
-            {"groupId":"org.hibernate.javax.persistence", "artifactId":"hibernate-jpa-2.1-api", "version":"1.0.2.Final", "scope":""}
+        {"groupId":"junit", "artifactId":"junit", "version":"4.12", "scope":"test"}
       ]
     }
   ]

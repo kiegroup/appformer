@@ -22,9 +22,7 @@ import org.uberfire.backend.vfs.Path;
 
 public interface PomEditor {
 
-    boolean addDependency(DynamicPomDependency dep,
-                          Path pomPath, DependencyTypesMapper mapper);
+    boolean addDependency(DynamicPomDependency dep, Path pomPath);
 
-    boolean addDependencies(Set<DependencyType> dependencyTypes,
-                            Path pomPath, DependencyTypesMapper mapper);
+    boolean addDependencies(Set<DependencyType> dependencyTypes, Path pomPath);
 }

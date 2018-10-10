@@ -32,7 +32,7 @@ public class DependencyTypesMapper {
         conf = jsonDepsReader.readConfiguration();
     }
 
-    public String kieVersion(){
+    public String getKieVersion(){
         return conf.getKieVersion();
     }
 

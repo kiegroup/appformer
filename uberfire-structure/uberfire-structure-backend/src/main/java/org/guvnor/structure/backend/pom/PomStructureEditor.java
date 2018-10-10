@@ -34,8 +34,8 @@ public class PomStructureEditor {
     private DependencyTypesMapper mapper;
 
     public PomStructureEditor() {
-        pomEditor = new PomEditorDefault();
         mapper = new DependencyTypesMapper();
+        pomEditor = new PomEditorDefault(mapper);
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {

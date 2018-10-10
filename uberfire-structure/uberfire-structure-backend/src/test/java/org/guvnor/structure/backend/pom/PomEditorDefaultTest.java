@@ -16,7 +16,7 @@ package org.guvnor.structure.backend.pom;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Arrays;
+import java.net.URI;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +58,20 @@ public class PomEditorDefaultTest {
         if (tmpRoot != null) {
             TestUtil.rm(tmpRoot.toFile());
         }
+    }
+
+    private Dependency getDependency(List<Dependency> deps , String groupId, String artifactId){
+        Dependency dependency = new Dependency();
+        for (Dependency dep : deps){
+            if(dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)){
+                dependency.setGroupId(dep.getGroupId());
+                dependency.setArtifactId(dep.getArtifactId());
+                dependency.setVersion(dep.getVersion());
+                dependency.setScope(dep.getScope());
+                break;
+            }
+        }
+        return  dependency;
     }
 
     @Test
@@ -116,19 +130,7 @@ public class PomEditorDefaultTest {
         Dependency changedDep = getDependency(model.getDependencies(), "org.hibernate.javax.persistence", "hibernate-jpa-2.1-api");
         assertThat(changedDep.getVersion()).isEqualTo("1.0.2.Final");
     }
-    private Dependency getDependency(List<Dependency> deps , String groupId, String artifactId){
-        Dependency dependency = new Dependency();
-        for (Dependency dep : deps){
-            if(dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)){
-                dependency.setGroupId(dep.getGroupId());
-                dependency.setArtifactId(dep.getArtifactId());
-                dependency.setVersion(dep.getVersion());
-                dependency.setScope(dep.getScope());
-                break;
-            }
-        }
-        return  dependency;
-    }
+
 
     @Test
     public void addAndOverrideVersionDepsTest() throws Exception {
@@ -147,5 +149,39 @@ public class PomEditorDefaultTest {
         assertThat(changedDep.getVersion()).isEqualTo("1.0.2.Final");
         changedDep = getDependency(model.getDependencies(), "junit", "junit");
         assertThat(changedDep.getVersion()).isEqualTo("4.12");
+    }
+
+    @Test
+    public void addAndOverrideKieVersionDepTest() throws Exception {
+        //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
+        tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
+                                                "dummyInternalDepsOld",
+                                                "target/test-classes/dummyInternalDepsOld");
+        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
+        boolean result = editor.addDependencies(deps,
+                                                PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                    tmp.toUri().toString() + File.separator + POM), mapper);
+        assertThat(result).isTrue();
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
+        Dependency changedDep = getDependency(model.getDependencies(), "org.kie", "kie-internal");
+        assertThat(changedDep.getVersion()).isEqualTo("7.7.0-SNAPSHOT");
+    }
+
+    @Test
+    public void addAndOverrideCurrentKieVersionDepTest() throws Exception {
+        //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
+       /* tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
+                                                "dummyInternalDepsCurrent",
+                                                "target/test-classes/dummyInternalDepsCurrent");*/
+        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
+        boolean result = editor.addDependencies(deps,
+                                                PathFactory.newPath( POM,
+                                                                    URI.create("target/classes") + File.separator + POM), mapper);
+        assertThat(result).isTrue();
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
+        Dependency changedDep = getDependency(model.getDependencies(), "org.kie", "kie-internal");
+        assertThat(changedDep.getVersion()).isEqualTo(mapper.getKieVersion());
     }
 }

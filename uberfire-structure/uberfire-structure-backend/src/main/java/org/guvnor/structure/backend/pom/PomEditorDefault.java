@@ -46,14 +46,18 @@ public class PomEditorDefault implements PomEditor {
 
     private MavenXpp3Reader reader;
     private MavenXpp3Writer writer;
+    private DependencyTypesMapper mapper;
+    private Set<String> internalGroupIds;
 
-    public PomEditorDefault() {
+    public PomEditorDefault(DependencyTypesMapper mapper) {
         reader = new MavenXpp3Reader();
         writer = new MavenXpp3Writer();
+        this.mapper = mapper;
+        internalGroupIds = getInternalGroupIds(this.mapper);
     }
 
     public boolean addDependency(DynamicPomDependency dep,
-                                 Path pomPath, DependencyTypesMapper mapper) {
+                                 Path pomPath) {
         if (dep.getGroupID().isEmpty() || dep.getArtifactID().isEmpty()) {
             return false;
         }
@@ -88,7 +92,7 @@ public class PomEditorDefault implements PomEditor {
     }
 
     public boolean addDependencies(Set<DependencyType> dependencyTypes,
-                                   Path pomPath, DependencyTypesMapper mapper) {
+                                   Path pomPath) {
         List<DynamicPomDependency> deps = new ArrayList<>();
         for(DependencyType dep :dependencyTypes){
             deps.addAll(mapper.getDependencies(EnumSet.of(dep)));
@@ -103,6 +107,10 @@ public class PomEditorDefault implements PomEditor {
             Map<String, String> keys = getKeysFromDeps(model.getDependencies());
 
             for (DynamicPomDependency dep : deps) {
+
+                isInternalArtifact(dep);
+
+
                 if (!keys.containsKey(getKeyFromDep(dep))) {
                     Dependency pomDep = getMavenDependency(dep);
                     model.getDependencies().add(pomDep);
@@ -169,5 +177,18 @@ public class PomEditorDefault implements PomEditor {
             pomDep.setVersion(dep.getVersion());
         }
         return pomDep;
+    }
+
+    private Set<String> getInternalGroupIds(DependencyTypesMapper mapper){
+        Set<DynamicPomDependency> deps = mapper.getInternalArtifacts();
+        Set<String> groups = new HashSet<>(deps.size());
+        for(DynamicPomDependency dep : deps){
+            groups.add(dep.getGroupID());
+        }
+        return  groups;
+    }
+
+    private boolean isInternalArtifact(DynamicPomDependency dependency){
+        return internalGroupIds.contains(dependency.getGroupID());
     }
 }
