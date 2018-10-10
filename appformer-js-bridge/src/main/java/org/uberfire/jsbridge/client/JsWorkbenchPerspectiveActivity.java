@@ -21,14 +21,22 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
     // TODO: subscriptions?
 
+    /**
+     * This method is called when this perspective is instantiated
+     * @param place
+     */
     @Override
     public void onStartup(final PlaceRequest place) {
+        super.onStartup(place);
+
         this.place = place;
         this.realPerspective.run("af_onStartup");
     }
 
     @Override
     public void onOpen() {
+        super.onOpen();
+
         //this.realPerspective.render(); TODO ??
         this.realPerspective.run("af_onOpen");
         placeManager.executeOnOpenCallbacks(place);
@@ -36,12 +44,16 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
     @Override
     public void onClose() {
+        super.onClose();
+
         this.realPerspective.run("af_onClose");
         placeManager.executeOnCloseCallbacks(place);
     }
 
     @Override
     public void onShutdown() {
+        super.onShutdown();
+
         this.realPerspective.run("af_onShutdown");
     }
 
