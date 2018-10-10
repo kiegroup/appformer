@@ -50,7 +50,7 @@ public class PomJsonReader {
 
     public PomJsonReader(String path,
                          String jsonName) {
-        String jsonPath = path+jsonName;
+        String jsonPath = path + jsonName;
         if (!Files.exists(Paths.get(jsonPath))) {
             throw new RuntimeException("no " + jsonName + " in the provided path :" + path);
         }

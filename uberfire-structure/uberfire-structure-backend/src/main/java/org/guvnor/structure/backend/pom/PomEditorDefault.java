@@ -65,8 +65,8 @@ public class PomEditorDefault implements PomEditor {
                 //override dep version with the version contained in the json
                 String versionKey = keys.get(keyDep);
                 List<Dependency> modelDeps = model.getDependencies();
-                for(Dependency modelDep: modelDeps){
-                    if(modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID())){
+                for (Dependency modelDep : modelDeps) {
+                    if (modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID())) {
                         modelDep.setVersion(versionKey);
                     }
                 }
@@ -99,18 +99,18 @@ public class PomEditorDefault implements PomEditor {
                     Dependency pomDep = getMavenDependency(dep);
                     model.getDependencies().add(pomDep);
                     result = true;
-                }else{
+                } else {
                     //override dep version with the version contained in the json
                     List<Dependency> modelDeps = model.getDependencies();
-                    for(Dependency modelDep: modelDeps){
-                        if(modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID()) && !modelDep.getVersion().equals(dep.getVersion())){
+                    for (Dependency modelDep : modelDeps) {
+                        if (modelDep.getGroupId().equals(dep.getGroupID()) && modelDep.getArtifactId().equals(dep.getArtifactID()) && !modelDep.getVersion().equals(dep.getVersion())) {
                             modelDep.setVersion(dep.getVersion());
                             result = true;
                         }
                     }
                 }
             }
-            if(result) {
+            if (result) {
                 writePOMModelOnFS(filePath,
                                   model);
             }
@@ -133,7 +133,8 @@ public class PomEditorDefault implements PomEditor {
         for (Dependency dep : deps) {
             StringBuilder sb = new StringBuilder();
             sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId());
-            depsMap.put(sb.toString(), dep.getVersion());
+            depsMap.put(sb.toString(),
+                        dep.getVersion());
         }
         return depsMap;
     }
