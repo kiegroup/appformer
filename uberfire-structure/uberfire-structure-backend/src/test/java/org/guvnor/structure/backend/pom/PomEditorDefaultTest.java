@@ -118,7 +118,6 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addAndOverrideVersionDepTest() throws Exception {
-        //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
@@ -137,7 +136,6 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addAndOverrideVersionDepsTest() throws Exception {
-        //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
@@ -161,7 +159,6 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addAndOverrideKieVersionDepTest() throws Exception {
-        //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsOld",
                                                 "target/test-classes/dummyInternalDepsOld");
@@ -180,7 +177,6 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addAndOverrideCurrentKieVersionDepTest() throws Exception {
-        //During the scan of the pom if a dep is founded present will be override the version with the version in the json file
          tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsCurrent",
                                                  "target/classes");

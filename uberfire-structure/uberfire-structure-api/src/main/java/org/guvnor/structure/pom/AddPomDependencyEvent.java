@@ -26,16 +26,7 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 public class AddPomDependencyEvent {
 
     private Path projectPath;
-    //private DependencyType type;
     private Set<DependencyType> types;
-
-    /*public AddPomDependencyEvent(@MapsTo("dependencyType") final DependencyType type,
-                                 @MapsTo("projectPath") final Path projectPath) {
-        this.type = checkNotNull("dependencyType",
-                                 type);
-        this.projectPath = checkNotNull("projectPath",
-                                        projectPath);
-    }*/
 
     public AddPomDependencyEvent(@MapsTo("dependencyTypes") final Set<DependencyType> types,
                                  @MapsTo("projectPath") final Path projectPath) {
@@ -48,10 +39,6 @@ public class AddPomDependencyEvent {
     public Path getProjectPath() {
         return projectPath;
     }
-
-    /*public DependencyType getDependencyType() {
-        return type;
-    }*/
 
     public Set<DependencyType> getDependencyTypes() {
         return types;
