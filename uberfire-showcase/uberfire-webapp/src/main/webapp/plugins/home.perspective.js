@@ -17,9 +17,13 @@
 $registerPerspective({
     id: "Home",
     is_default: true,
-    panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
+    panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
     view: {
         parts: [
+            {
+                place: "ReactComponent",
+                parameters: {}
+            },
             {
                 place: "welcome",
                 parameters: {}
@@ -64,10 +68,6 @@ $registerPerspective({
                     },
                     {
                         place: "YouTubeScreen",
-                        parameters: {}
-                    },
-                    {
-                        place: "A-react-screen",
                         parameters: {}
                     }
                 ]
