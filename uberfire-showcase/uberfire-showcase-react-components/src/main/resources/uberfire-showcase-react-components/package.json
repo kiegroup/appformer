@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build:ts-exporter": "npx webpack && npm unpublish --force --registry http://localhost:4873 && npm publish --registry http://localhost:4873",
+    "build:ts-exporter": "rm -rf node_modules package-lock.json && npm i -reg http://localhost:4873 && npx webpack && npm unpublish --force --registry http://localhost:4873 && npm publish --registry http://localhost:4873",
     "reload": "bash -c 'npx webpack && (find ${0} | grep public/${npm_package_name}.js | xargs -I {} cp -v ${npm_package_main} {})'",
     "reload:auto": "bash -c 'npx watch \"npm run reload -- ${0}\" src'",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,10 +23,10 @@
   "author": "",
   "license": "Apache-2.0",
   "optionalDependencies": {
-    "@kiegroup-ts-generated/uberfire-backend-api-rpc": "^1.0.0",
     "appformer-js": "^1.0.0"
   },
   "dependencies": {
+    "@kiegroup-ts-generated/uberfire-backend-api-rpc": "^1.0.0",
     "@types/react": "^16.4.16",
     "@types/react-dom": "^16.0.9",
     "react": "^16.5.2",
