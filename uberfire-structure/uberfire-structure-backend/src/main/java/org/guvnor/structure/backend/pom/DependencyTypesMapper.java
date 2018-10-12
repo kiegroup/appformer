@@ -20,13 +20,16 @@ import java.util.Map;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 
+/***
+ * Mapper of the dependencies associated to each DependencyType
+ */
 public class DependencyTypesMapper {
 
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
     private Map<DependencyType, List<DynamicPomDependency>> mapping;
 
     public DependencyTypesMapper() {
-        PomJsonReader jsonDepsReader = new PomJsonReader(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
+        PomJsonReaderDefault jsonDepsReader = new PomJsonReaderDefault(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
         mapping = jsonDepsReader.readDeps();
     }
 

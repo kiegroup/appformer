@@ -14,6 +14,9 @@
  */
 package org.guvnor.structure.pom;
 
+/***
+ * Dependency used to add Maven dependencies on the pom
+ */
 public class DynamicPomDependency {
 
     private String groupID, artifactID, version, scope;
