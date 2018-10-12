@@ -19,7 +19,9 @@ import java.util.Set;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.uberfire.backend.vfs.Path;
-
+/**
+ * Behaviours of the PomEditor to add a single or a list of dependencies on a specified pom
+ */
 public interface PomEditor {
 
     boolean addDependency(DynamicPomDependency dep,

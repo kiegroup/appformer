@@ -7,6 +7,9 @@ import java.util.Set;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 
+/**
+ * Configuration loaded form JsonFile
+ */
 public class ConfigurationMap {
 
     private Map<DependencyType, List<DynamicPomDependency>> mapping;

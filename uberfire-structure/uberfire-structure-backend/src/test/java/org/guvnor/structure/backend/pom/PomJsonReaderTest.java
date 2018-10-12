@@ -27,12 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PomJsonReaderTest {
 
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
-    private PomJsonReader reader;
+    private PomJsonReaderDefault reader;
 
     @Before
     public void setUp() {
-        reader = new PomJsonReader("target/classes/",
-                                   JSON_POM_DEPS);
+        reader = new PomJsonReaderDefault("target/classes/",
+                                          JSON_POM_DEPS);
     }
 
     @Test
