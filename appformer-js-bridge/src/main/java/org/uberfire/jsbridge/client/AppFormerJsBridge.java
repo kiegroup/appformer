@@ -51,17 +51,19 @@ public class AppFormerJsBridge {
     @Inject
     private Workbench workbench;
 
-    public void init(final String gwtModuleName) {
+    @Inject
+    private AppFormerJSActivityLoader appFormerJSLoader;
 
+    public void init(final String gwtModuleName) {
         workbench.addStartupBlocker(AppFormerJsBridge.class);
 
         exposeBridge();
 
         ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
+                .setCallback((Success<Void>) i2 -> appFormerJSLoader.init(gwtModuleName))
                 .inject();
 
-        //FIXME: Not ideal to load scripts here. Make it lazy.
         //FIXME: Load React from local instead of CDN.
         ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
@@ -69,13 +71,11 @@ public class AppFormerJsBridge {
                         .setWindow(ScriptInjector.TOP_WINDOW)
                         .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
-                                .setCallback((Success<Void>) i3 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/uberfire-showcase-react-components.js")
+                                .setCallback((Success<Void>) i3 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
                                         .setWindow(ScriptInjector.TOP_WINDOW)
-                                        .setCallback((Success<Void>) i4 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/showcase-components-autoregister.js")
-                                                .setWindow(ScriptInjector.TOP_WINDOW)
-                                                .setCallback((Success<Void>) i5 ->
-                                                        workbench.removeStartupBlocker(AppFormerJsBridge.class))
-                                                .inject())
+
+                                        .setCallback((Success<Void>) i5 ->
+                                                workbench.removeStartupBlocker(AppFormerJsBridge.class))
                                         .inject())
                                 .inject())
                         .inject())
@@ -127,30 +127,11 @@ public class AppFormerJsBridge {
         activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
 
-    @SuppressWarnings("unchecked")
     public void registerScreen(final Object jsObject) {
-
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
-        final JsNativeScreen newScreen = new JsNativeScreen((JavaScriptObject) jsObject);
-        final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen,
-                                                                                 beanManager.lookupBean(PlaceManager.class).getInstance());
+        final AppFormerJSActivityLoader jsLoader = beanManager.lookupBean(AppFormerJSActivityLoader.class).getInstance();
+        jsLoader.registerScreen(jsObject);
 
-        //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
-        final SingletonBeanDefinition<JsWorkbenchScreenActivity, JsWorkbenchScreenActivity> activityBean = new SingletonBeanDefinition<>(
-                activity,
-                JsWorkbenchScreenActivity.class,
-                new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
-                activity.getIdentifier(),
-                true,
-                WorkbenchScreenActivity.class,
-                Activity.class);
-
-        beanManager.registerBean(activityBean);
-        beanManager.registerBeanTypeAlias(activityBean, WorkbenchScreenActivity.class);
-        beanManager.registerBeanTypeAlias(activityBean, Activity.class);
-
-        activityBeansCache.addNewScreenActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
     }
 
     public Promise<Object> rpc(final String path, final Object[] params) {

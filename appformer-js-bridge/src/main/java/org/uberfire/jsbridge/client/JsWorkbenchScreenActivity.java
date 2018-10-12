@@ -19,6 +19,7 @@ package org.uberfire.jsbridge.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
 import elemental2.core.JsObject;
 import elemental2.dom.DomGlobal;
@@ -50,6 +51,10 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         super(placeManager);
         this.screen = screen;
         this.subscriptions = new ArrayList<>();
+    }
+
+    public void updateRealContent(JavaScriptObject jsObject) {
+        this.screen.updateRealContent(jsObject);
     }
 
     //
@@ -194,4 +199,6 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         this.subscriptions.forEach(Subscription::remove);
         this.subscriptions = new ArrayList<>();
     }
+
+
 }

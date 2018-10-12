@@ -278,6 +278,7 @@ public class PlaceManagerImpl
                          new Command() {
                              @Override
                              public void execute() {
+                                 //TODO eder, probably a bug place should be resolved.getPlace (conditional place)
                                  goTo(place,
                                       panel,
                                       doWhenFinished);
@@ -295,6 +296,7 @@ public class PlaceManagerImpl
                                     (PopupActivity) activity);
                 doWhenFinished.execute();
             } else if (activity.isType(ActivityResourceType.PERSPECTIVE.name())) {
+                //TODO eder, probably a bug place should be resolved.getPlace (conditional place)
                 launchPerspectiveActivity(place,
                                           doWhenFinished,
                                           (PerspectiveActivity) activity);
@@ -478,6 +480,7 @@ public class PlaceManagerImpl
 
             if (activity.isType(ActivityResourceType.EDITOR.name()) || activity.isType(ActivityResourceType.SCREEN.name())) {
                 final WorkbenchActivity workbenchActivity = (WorkbenchActivity) activity;
+                //TODO eder, probably a bug place should be resolved.getPlace (conditional place)
                 launchWorkbenchActivityInPanel(place,
                                                workbenchActivity,
                                                part,
