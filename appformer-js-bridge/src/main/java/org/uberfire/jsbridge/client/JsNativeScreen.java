@@ -23,21 +23,31 @@ import elemental2.dom.HTMLElement;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 
+import java.util.function.Consumer;
+
 public class JsNativeScreen {
 
     private final HTMLElement container;
     private JavaScriptObject self;
     private String componentId;
-    private ParameterizedCommand<String> lazyLoadParentScript;
+    private Consumer<String> lazyLoadParentScript;
 
-    public JsNativeScreen(final JavaScriptObject obj) {
+    public static JsNativeScreen build(String identifier, JavaScriptObject jsObject, Consumer<String> lazyLoadParentScript) {
+        if (jsObject == null) {
+            return new JsNativeScreen(identifier, lazyLoadParentScript);
+        } else {
+            return new JsNativeScreen(jsObject);
+        }
+    }
+
+    private JsNativeScreen(final JavaScriptObject obj) {
         this.self = obj;
         this.container = (HTMLElement) DomGlobal.document.createElement("div");
         final Element span = DomGlobal.document.createElement("span");
         this.container.classList.add("js-screen-container");
     }
 
-    public JsNativeScreen(final String componentId, ParameterizedCommand<String> lazyLoadParentScript) {
+    private JsNativeScreen(final String componentId, Consumer<String> lazyLoadParentScript) {
         this.componentId = componentId;
         this.lazyLoadParentScript = lazyLoadParentScript;
         this.container = (HTMLElement) DomGlobal.document.createElement("div");
@@ -58,7 +68,7 @@ public class JsNativeScreen {
         if (this.self != null) {
             renderNative();
         } else {
-            lazyLoadParentScript.execute(componentId);
+            lazyLoadParentScript.accept(componentId);
         }
     }
 
@@ -124,6 +134,5 @@ public class JsNativeScreen {
     public native boolean definesNative(final String property) /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property] !== undefined;
     }-*/;
-
 
 }

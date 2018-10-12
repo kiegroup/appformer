@@ -27,6 +27,7 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import javax.enterprise.context.Dependent;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
@@ -58,55 +59,41 @@ public class AppFormerJSActivityLoader {
 
             JsWorkbenchScreenActivity activity = (JsWorkbenchScreenActivity) activityManager.getActivity(new DefaultPlaceRequest(id));
             activity.updateRealContent(jsObject);
-        }
-        else{
+        } else {
             registryComponent(id, jsObject);
 
         }
     }
 
+    //TODO this should be unified with JSWorkbenchScreenActivity getIdentifier
     public native String extractId(final JavaScriptObject object)  /*-{
         return object['af_componentId'];
     }-*/;
 
 
-    private ParameterizedCommand<String> lazyLoadParentScript(){
-        return new ParameterizedCommand<String>() {
+    private void lazyLoadParentScript(String component) {
+        //TODO REMOVE THIS: ONLY FOR DEMO PURPOSES
+        com.google.gwt.user.client.Timer timer = new com.google.gwt.user.client.Timer() {
             @Override
-            public void execute(String component) {
-
-                com.google.gwt.user.client.Timer timer = new com.google.gwt.user.client.Timer()
-                {
-                    @Override
-                    public void run()
-                    {
-                        String targetScript = components.get(component);
-                        if (!loadedScripts.contains(targetScript)) {
-                            loadedScripts.add(targetScript);
-                            ScriptInjector.fromUrl("/" + gwtModuleName + "/" + targetScript)
-                                    .setWindow(ScriptInjector.TOP_WINDOW)
-                                    .inject();
-                        }
-
-                    }
-                };
-
-                timer.schedule(5000);
-
+            public void run() {
+                String targetScript = components.get(component);
+                if (!loadedScripts.contains(targetScript)) {
+                    loadedScripts.add(targetScript);
+                    ScriptInjector.fromUrl("/" + gwtModuleName + "/" + targetScript)
+                            .setWindow(ScriptInjector.TOP_WINDOW)
+                            .inject();
+                }
 
             }
         };
+        timer.schedule(5000);
     }
+
     private void registryComponent(String identifier, JavaScriptObject jsObject) {
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        JsNativeScreen newScreen;
-        if(jsObject==null){
-            newScreen = new JsNativeScreen(identifier,lazyLoadParentScript());
-        }
-        else{
-            newScreen = new JsNativeScreen(jsObject);
-        }
+        JsNativeScreen newScreen = JsNativeScreen.build(identifier, jsObject, this::lazyLoadParentScript);
+
         final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen,
                 beanManager.lookupBean(PlaceManager.class).getInstance());
         final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
