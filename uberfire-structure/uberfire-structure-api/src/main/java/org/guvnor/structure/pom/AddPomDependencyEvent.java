@@ -21,7 +21,9 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
-
+/***
+ * Event to add dependencies type to a pom in a project
+ */
 @Portable
 public class AddPomDependencyEvent {
 
