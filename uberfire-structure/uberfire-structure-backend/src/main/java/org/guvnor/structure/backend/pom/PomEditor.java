@@ -14,11 +14,13 @@
  */
 package org.guvnor.structure.backend.pom;
 
+import java.util.List;
 import java.util.Set;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.uberfire.backend.vfs.Path;
+
 /**
  * Behaviours of the PomEditor to add a single or a list of dependencies on a specified pom
  */
@@ -29,4 +31,13 @@ public interface PomEditor {
 
     boolean addDependencies(Set<DependencyType> dependencyTypes,
                             Path pomPath);
+
+    boolean removeDependency(DynamicPomDependency dep,
+                             Path pomPath);
+
+    boolean removeDependencyTypes(Set<DependencyType> dependencyTypes,
+                                  Path pomPath);
+
+    boolean removeDependencies(List<DynamicPomDependency> deps,
+                               Path pomPath);
 }
