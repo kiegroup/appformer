@@ -17,6 +17,7 @@ package org.guvnor.structure.backend.pom;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -74,6 +75,56 @@ public class PomEditorDefaultTest {
             }
         }
         return dependency;
+    }
+
+    @Test
+    public void removeDepTest() throws Exception {
+        DynamicPomDependency dep = new DynamicPomDependency("org.springframework",
+                                                            "spring-aop",
+                                                            "4.3.8.RELEASE",
+                                                            "");
+        boolean result = editor.removeDependency(dep,
+                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                     tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isTrue();
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
+        assertThat(model.getDependencies()).hasSize(1);
+    }
+
+    @Test
+    public void removeDepsTest() throws Exception {
+        DynamicPomDependency dep = new DynamicPomDependency("org.springframework",
+                                                            "spring-aop",
+                                                            "4.3.8.RELEASE",
+                                                            "");
+
+        DynamicPomDependency depTwo = new DynamicPomDependency("junit",
+                                                               "junit",
+                                                               "4.12",
+                                                               "");
+        List<DynamicPomDependency> deps = Arrays.asList(dep,
+                                                        depTwo);
+        boolean result = editor.removeDependencies(deps,
+                                                   PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                       tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isTrue();
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
+        assertThat(model.getDependencies()).hasSize(0);
+    }
+
+    @Test
+    public void removeDependencyTypeTest() throws Exception {
+
+        Set<DependencyType> deps = EnumSet.of(DependencyType.TEST);
+        boolean result = editor.removeDependencyTypes(deps,
+                                                      PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                          tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isTrue();
+        MavenXpp3Reader reader = new MavenXpp3Reader();
+        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
+        assertThat(model.getDependencies()).hasSize(1);
     }
 
     @Test
@@ -177,13 +228,15 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addAndOverrideCurrentKieVersionDepTest() throws Exception {
-         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
+        tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsCurrent",
-                                                 "target/classes");
-        org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(POM, tmpRoot + File.separator + "dummyInternalDepsCurrent" + File.separator + POM);
+                                                "target/classes");
+        org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(POM,
+                                                                    tmpRoot + File.separator + "dummyInternalDepsCurrent" + File.separator + POM);
 
         Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
-        boolean result = editor.addDependencies(deps, pomPath);
+        boolean result = editor.addDependencies(deps,
+                                                pomPath);
         assertThat(result).isTrue();
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(pomPath.toURI()))));
@@ -200,12 +253,13 @@ public class PomEditorDefaultTest {
                                                 "target/test-classes/dummyInternalDepsOld");
 
         org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                            tmp.toUri().toString() + File.separator + POM);
+                                                                    tmp.toUri().toString() + File.separator + POM);
         DynamicPomDependency dep = new DynamicPomDependency("org.kie",
                                                             "kie-internal",
                                                             "7.13.0-SNAPSHOT",
                                                             "provided");
-        boolean result = editor.addDependency(dep, pomPath);
+        boolean result = editor.addDependency(dep,
+                                              pomPath);
         assertThat(result).isFalse();
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(pomPath.toURI()))));
