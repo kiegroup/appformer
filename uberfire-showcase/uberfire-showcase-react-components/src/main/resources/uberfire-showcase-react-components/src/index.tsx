@@ -42,19 +42,19 @@ export class FirstReactPerspective extends AppFormer.Perspective {
     }
 
     af_onStartup(): void {
-        alert("PERSPECTIVE STARTED!");
+        console.info("React Perspective Started!");
     }
 
     af_onOpen(): void {
-        alert("PERSPECTIVE OPENED!");
+        console.info("React Perspective Opened!");
     }
 
     af_onClose(): void {
-        alert("PERSPECTIVE CLOSED!");
+        console.info("React Perspective Closed!");
     }
 
     af_onShutdown(): void {
-        alert("PERSPECTIVE SHUTDOWN!");
+        console.info("React Perspective Shutdown!");
     }
 
 }
