@@ -6,7 +6,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ts-exporter": "npx webpack && npm unpublish --force --registry http://localhost:4873 && npm publish --registry http://localhost:4873"
+    "build:ts-exporter": "npx webpack && npm unpublish -f -reg http://localhost:4873 && yarn publish --new-version ${npm_package_version} --registry http://localhost:4873"
   },
   "author": "",
   "license": "ISC",
