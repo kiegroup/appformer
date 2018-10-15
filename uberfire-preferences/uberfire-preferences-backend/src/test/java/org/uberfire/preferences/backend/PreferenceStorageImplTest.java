@@ -20,10 +20,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 
+import javax.enterprise.event.Event;
+
 import org.jboss.errai.marshalling.server.MappingContextSingleton;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.backend.server.io.object.ObjectStorageImpl;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
@@ -33,6 +36,7 @@ import org.uberfire.mocks.FileSystemTestingUtils;
 import org.uberfire.mocks.SessionInfoMock;
 import org.uberfire.preferences.shared.PreferenceScope;
 import org.uberfire.preferences.shared.PreferenceScopeTypes;
+import org.uberfire.preferences.shared.event.PreferenceUpdatedEvent;
 import org.uberfire.preferences.shared.impl.DefaultPreferenceScopeResolutionStrategy;
 import org.uberfire.preferences.shared.impl.DefaultPreferenceScopeTypes;
 import org.uberfire.preferences.shared.impl.DefaultScopes;
@@ -74,6 +78,9 @@ public class PreferenceStorageImplTest {
     private PreferenceScopeFactoryImpl scopeFactory;
 
     private PreferenceScopeTypes scopeTypes;
+    
+    @Mock
+    private Event<PreferenceUpdatedEvent> preferenceUpdatedEvent;    
 
     @Before
     public void setup() throws IOException {
@@ -95,7 +102,8 @@ public class PreferenceStorageImplTest {
                                                                         scopeTypes,
                                                                         scopeFactory,
                                                                         objectStorage,
-                                                                        new SpacesAPIImpl());
+                                                                        new SpacesAPIImpl(),
+                                                                        preferenceUpdatedEvent);
         preferenceStorageServiceBackendImpl.init();
 
         userEntireApplicationScope = scopeFactory.createScope(userScope,

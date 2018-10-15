@@ -23,10 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.event.Event;
+
 import org.jboss.errai.marshalling.server.MappingContextSingleton;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.backend.server.io.object.ObjectStorageImpl;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
@@ -39,6 +42,7 @@ import org.uberfire.preferences.shared.PreferenceScope;
 import org.uberfire.preferences.shared.PreferenceScopeFactory;
 import org.uberfire.preferences.shared.PreferenceScopeResolutionStrategy;
 import org.uberfire.preferences.shared.PreferenceScopeTypes;
+import org.uberfire.preferences.shared.event.PreferenceUpdatedEvent;
 import org.uberfire.preferences.shared.impl.DefaultPreferenceScopeResolutionStrategy;
 import org.uberfire.preferences.shared.impl.DefaultPreferenceScopeTypes;
 import org.uberfire.preferences.shared.impl.DefaultScopes;
@@ -98,6 +102,9 @@ public class PreferenceStoreImplTest {
     private PreferenceScopeResolutionStrategyInfo preferenceScopeResolutionStrategyInfo;
 
     private PreferenceStoreImpl preferenceStore;
+    
+    @Mock
+    private Event<PreferenceUpdatedEvent> preferenceUpdatedEvent;
 
     @Before
     public void setup() throws IOException {
@@ -122,7 +129,8 @@ public class PreferenceStoreImplTest {
                                                 scopeTypes,
                                                 scopeFactory,
                                                 objectStorage,
-                                                new SpacesAPIImpl()));
+                                                new SpacesAPIImpl(),
+                                                preferenceUpdatedEvent));
         storage.init();
 
         preferenceStore = spy(new PreferenceStoreImpl(storage,
