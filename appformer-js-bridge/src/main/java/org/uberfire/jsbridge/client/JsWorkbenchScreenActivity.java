@@ -18,6 +18,7 @@ package org.uberfire.jsbridge.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -41,6 +42,8 @@ import org.uberfire.workbench.model.toolbar.ToolBar;
 
 public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
+    private InvocationPostponer invocationsPostponer;
+
     private PlaceRequest place;
     private JsNativeScreen screen;
     private List<Subscription> subscriptions;
@@ -51,10 +54,12 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         super(placeManager);
         this.screen = screen;
         this.subscriptions = new ArrayList<>();
+        this.invocationsPostponer = new InvocationPostponer();
     }
 
-    public void updateRealContent(JavaScriptObject jsObject) {
+    public void updateRealContent(final JavaScriptObject jsObject) {
         this.screen.updateRealContent(jsObject);
+        this.invocationsPostponer.executeAll();
     }
 
     //
@@ -63,43 +68,76 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public void onStartup(final PlaceRequest place) {
+
         this.place = place;
+
+        if (!this.screen.scriptLoaded()) {
+            this.invocationsPostponer.postpone(() -> this.onStartup(place));
+            return;
+        }
+
         this.registerSubscriptions();
         screen.run("af_onStartup", JsPlaceRequest.fromPlaceRequest(place));
     }
 
     @Override
     public void onOpen() {
+
+        // render no matter if the script was loaded or not, even if the call results in a blank screen being rendered.
         screen.render();
+
+        if (!this.screen.scriptLoaded()) {
+            this.invocationsPostponer.postpone(this::onOpen);
+            return;
+        }
+
         screen.run("af_onOpen");
         placeManager.executeOnOpenCallbacks(place);
     }
 
     @Override
     public void onClose() {
-        screen.run("af_onClose");
+
+        if (this.screen.scriptLoaded()) {
+            screen.run("af_onClose");
+        }
+
         placeManager.executeOnCloseCallbacks(place);
     }
 
     @Override
     public boolean onMayClose() {
-        return !screen.defines("af_onMayClose") || (boolean) screen.run("af_onMayClose");
+
+        if (this.screen.scriptLoaded()) {
+            return !screen.defines("af_onMayClose") || (boolean) screen.run("af_onMayClose");
+        }
+
+        return true;
     }
 
     @Override
     public void onShutdown() {
-        this.unsubscribeFromAllEvents();
-        screen.run("af_onShutdown");
+
+        this.invocationsPostponer.clear();
+
+        if (this.screen.scriptLoaded()) {
+            this.unsubscribeFromAllEvents();
+            screen.run("af_onShutdown");
+        }
     }
 
     @Override
     public void onFocus() {
-        screen.run("af_onFocus");
+        if (this.screen.scriptLoaded()) {
+            screen.run("af_onFocus");
+        }
     }
 
     @Override
     public void onLostFocus() {
-        screen.run("af_onLostFocus");
+        if (this.screen.scriptLoaded()) {
+            screen.run("af_onLostFocus");
+        }
     }
 
     // PROPERTIES
@@ -200,5 +238,26 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         this.subscriptions = new ArrayList<>();
     }
 
+    private class InvocationPostponer {
 
+        private final Stack<Runnable> invocations;
+
+        public InvocationPostponer() {
+            this.invocations = new Stack<>();
+        }
+
+        public void postpone(final Runnable invocation) {
+            this.invocations.push(invocation);
+        }
+
+        public void executeAll() {
+            while (!this.invocations.isEmpty()) {
+                this.invocations.pop().run();
+            }
+        }
+
+        public void clear() {
+            this.invocations.clear();
+        }
+    }
 }

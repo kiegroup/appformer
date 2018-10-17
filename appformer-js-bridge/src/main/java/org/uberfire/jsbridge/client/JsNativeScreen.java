@@ -16,14 +16,11 @@
 
 package org.uberfire.jsbridge.client;
 
+import java.util.function.Consumer;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import elemental2.dom.DomGlobal;
-import elemental2.dom.Element;
 import elemental2.dom.HTMLElement;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
-
-import java.util.function.Consumer;
 
 public class JsNativeScreen {
 
@@ -43,7 +40,6 @@ public class JsNativeScreen {
     private JsNativeScreen(final JavaScriptObject obj) {
         this.self = obj;
         this.container = (HTMLElement) DomGlobal.document.createElement("div");
-        final Element span = DomGlobal.document.createElement("span");
         this.container.classList.add("js-screen-container");
     }
 
@@ -65,22 +61,25 @@ public class JsNativeScreen {
     }
 
     public void render() {
-        if (this.self != null) {
+        if (this.scriptLoaded()) {
             renderNative();
         } else {
             lazyLoadParentScript.accept(componentId);
         }
     }
 
+    public boolean scriptLoaded() {
+        return this.self != null;
+    }
+
     public native void renderNative() /*-{
         $wnd.AppFormer.render(
-            this.@org.uberfire.jsbridge.client.JsNativeScreen::self.af_componentRoot(),
-            this.@org.uberfire.jsbridge.client.JsNativeScreen::container);
+                this.@org.uberfire.jsbridge.client.JsNativeScreen::self.af_componentRoot(),
+                this.@org.uberfire.jsbridge.client.JsNativeScreen::container);
     }-*/;
 
-
     public Object get(final String property) {
-        if (self == null) {
+        if (!this.scriptLoaded()) {
             return componentId;
         }
         return getNative(property);
@@ -91,7 +90,7 @@ public class JsNativeScreen {
     }-*/;
 
     public Object run(final String functionName) {
-        if (self == null) {
+        if (!this.scriptLoaded()) {
             return null;
         }
         return runNative(functionName);
@@ -102,7 +101,7 @@ public class JsNativeScreen {
     }-*/;
 
     public Object run(final String functionName, final Object arg1) {
-        if (self == null) {
+        if (!this.scriptLoaded()) {
             return null;
         }
         return runNative(functionName, arg1);
@@ -113,7 +112,7 @@ public class JsNativeScreen {
     }-*/;
 
     public Object run(final String functionName, final Object arg1, final Object arg2) {
-        if (self == null) {
+        if (!this.scriptLoaded()) {
             return null;
         }
         return runNative(functionName, arg1, arg2);
@@ -124,15 +123,13 @@ public class JsNativeScreen {
     }-*/;
 
     public boolean defines(final String property) {
-        if (self == null) {
+        if (!this.scriptLoaded()) {
             return false;
         }
         return definesNative(property);
     }
 
-
     public native boolean definesNative(final String property) /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property] !== undefined;
     }-*/;
-
 }
