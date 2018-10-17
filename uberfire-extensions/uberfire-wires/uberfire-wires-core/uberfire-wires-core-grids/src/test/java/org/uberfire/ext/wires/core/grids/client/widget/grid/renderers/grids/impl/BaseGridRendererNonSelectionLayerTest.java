@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.ait.lienzo.client.core.shape.Line;
 import com.ait.lienzo.client.core.shape.MultiPath;
@@ -295,13 +296,15 @@ public class BaseGridRendererNonSelectionLayerTest extends BaseGridRendererTest 
 
         renderer.renderSelectedCells(model,
                                      context,
-                                     rendererHelper).execute(rc);
+                                     rendererHelper,
+                                     model.getSelectedCells(),
+                                     selectedRange -> 0.0).execute(rc);
 
         verify(renderer,
-               times(1)).renderSelectedRange(eq(model),
-                                             columnsCaptor.capture(),
+               times(1)).renderSelectedRange(columnsCaptor.capture(),
                                              eq(selectionColumnIndex),
-                                             selectedRangeCaptor.capture());
+                                             selectedRangeCaptor.capture(),
+                                             any(Function.class));
 
         final List<GridColumn<?>> columns = columnsCaptor.getValue();
         assertNotNull(columns);

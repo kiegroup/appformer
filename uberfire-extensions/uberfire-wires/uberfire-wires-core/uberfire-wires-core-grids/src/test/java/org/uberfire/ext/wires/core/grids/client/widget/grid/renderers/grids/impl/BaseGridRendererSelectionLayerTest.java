@@ -19,13 +19,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.ait.lienzo.test.LienzoMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.uberfire.ext.wires.core.grids.client.model.GridData;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyColumnRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBoundaryRenderContext;
@@ -91,12 +91,14 @@ public class BaseGridRendererSelectionLayerTest extends BaseGridRendererTest {
 
         renderer.renderSelectedCells(model,
                                      context,
-                                     rendererHelper).execute(rc);
+                                     rendererHelper,
+                                     model.getSelectedCells(),
+                                     selectedRange -> 0.0).execute(rc);
 
-        verify(renderer, never()).renderSelectedRange(any(GridData.class),
-                                                      anyList(),
+        verify(renderer, never()).renderSelectedRange(anyList(),
                                                       anyInt(),
-                                                      any(SelectedRange.class));
+                                                      any(SelectedRange.class),
+                                                      any(Function.class));
     }
 
     @Test

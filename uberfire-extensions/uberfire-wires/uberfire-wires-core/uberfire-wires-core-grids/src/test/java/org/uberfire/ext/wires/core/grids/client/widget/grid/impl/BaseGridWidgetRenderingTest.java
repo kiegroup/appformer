@@ -17,6 +17,8 @@
 package org.uberfire.ext.wires.core.grids.client.widget.grid.impl;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
 import com.ait.lienzo.client.core.Context2D;
 import com.ait.lienzo.client.core.shape.Group;
@@ -154,7 +156,9 @@ public class BaseGridWidgetRenderingTest {
         when(selections.asNode()).thenReturn(mock(Node.class));
         when(renderer.renderSelectedCells(any(GridData.class),
                                           any(GridBodyRenderContext.class),
-                                          eq(rendererHelper))).thenReturn((rc) -> rc.getGroup().add(selections));
+                                          eq(rendererHelper),
+                                          any(List.class),
+                                          any(Function.class))).thenReturn((rc) -> rc.getGroup().add(selections));
     }
 
     @SuppressWarnings("unchecked")

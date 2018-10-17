@@ -125,4 +125,55 @@ public class CoordinateUtilities {
 
         return uiColumnIndex;
     }
+
+    /**
+     * Gets the header row index corresponding to the provided Canvas y-coordinate relative to
+     * the grid. Grid-relative coordinates can be obtained from {@link INodeXYEvent} using
+     * {@link CoordinateUtilities#convertDOMToGridCoordinate(GridWidget, Point2D)}
+     * @param gridWidget GridWidget to check.
+     * @param ap Canvas coordinate relative to the GridWidget.
+     * @return The header row index or null if the coordinate did not map to a header row.
+     */
+    public static Integer getUiHeaderRowIndex(final GridWidget gridWidget,
+                                              final Point2D ap) {
+        final double cx = ap.getX();
+        final double cy = ap.getY();
+
+        final Group header = gridWidget.getHeader();
+        final GridRenderer renderer = gridWidget.getRenderer();
+        final BaseGridRendererHelper.RenderingInformation ri = gridWidget.getRendererHelper().getRenderingInformation();
+        final double headerRowsYOffset = ri.getHeaderRowsYOffset();
+        final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
+        final double headerMaxY = (header == null ? renderer.getHeaderHeight() : renderer.getHeaderHeight() + header.getY());
+
+        if (cx < 0 || cx > gridWidget.getWidth()) {
+            return null;
+        }
+        if (cy < headerMinY || cy > headerMaxY) {
+            return null;
+        }
+
+        //Get header column index
+        final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
+        final BaseGridRendererHelper.ColumnInformation ci = rendererHelper.getColumnInformation(cx);
+        final GridColumn<?> column = ci.getColumn();
+        if (column == null) {
+            return null;
+        }
+
+        //Get header row index
+        int uiHeaderRowIndex = 0;
+        double offsetY = cy - headerMinY;
+        final double headerRowsHeight = renderer.getHeaderRowHeight();
+        final double headerRowHeight = headerRowsHeight / column.getHeaderMetaData().size();
+        while (headerRowHeight < offsetY) {
+            offsetY = offsetY - headerRowHeight;
+            uiHeaderRowIndex++;
+        }
+        if (uiHeaderRowIndex < 0 || uiHeaderRowIndex > column.getHeaderMetaData().size() - 1) {
+            return null;
+        }
+
+        return uiHeaderRowIndex;
+    }
 }

@@ -100,6 +100,49 @@ public class BaseCellSelectionManager implements CellSelectionManager {
     }
 
     @Override
+    public boolean selectHeaderCell(final Point2D ap,
+                                    final boolean isShiftKeyDown,
+                                    final boolean isControlKeyDown) {
+        final Integer uiHeaderRowIndex = CoordinateUtilities.getUiHeaderRowIndex(gridWidget,
+                                                                                 ap);
+        final Integer uiHeaderColumnIndex = CoordinateUtilities.getUiColumnIndex(gridWidget,
+                                                                                 ap.getX());
+        if (uiHeaderRowIndex == null || uiHeaderColumnIndex == null) {
+            return false;
+        }
+
+        return selectHeaderCell(uiHeaderRowIndex,
+                                uiHeaderColumnIndex,
+                                isShiftKeyDown,
+                                isControlKeyDown);
+    }
+
+    @Override
+    public boolean selectHeaderCell(final int uiHeaderRowIndex,
+                                    final int uiHeaderColumnIndex,
+                                    final boolean isShiftKeyDown,
+                                    final boolean isControlKeyDown) {
+        if (uiHeaderColumnIndex < 0 || uiHeaderColumnIndex > gridModel.getColumnCount() - 1) {
+            return false;
+        }
+
+        final GridColumn<?> gridColumn = gridModel.getColumns().get(uiHeaderColumnIndex);
+        final List<GridColumn.HeaderMetaData> gridColumnHeaderMetaData = gridColumn.getHeaderMetaData();
+        if (uiHeaderRowIndex < 0 || uiHeaderRowIndex > gridColumnHeaderMetaData.size() - 1) {
+            return false;
+        }
+        final GridColumn.HeaderMetaData headerMetaData = gridColumnHeaderMetaData.get(uiHeaderRowIndex);
+        final CellSelectionStrategy strategy = headerMetaData.getSelectionStrategy();
+
+        //Handle selection
+        return strategy.handleSelection(gridModel,
+                                        uiHeaderRowIndex,
+                                        uiHeaderColumnIndex,
+                                        isShiftKeyDown,
+                                        isControlKeyDown);
+    }
+
+    @Override
     public boolean adjustSelection(final SelectionExtension direction,
                                    final boolean isShiftKeyDown) {
         final GridData.SelectedCell origin = gridModel.getSelectedCellsOrigin();

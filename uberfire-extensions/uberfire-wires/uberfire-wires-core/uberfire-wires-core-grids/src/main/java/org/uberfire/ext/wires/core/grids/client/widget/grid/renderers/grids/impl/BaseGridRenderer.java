@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Line;
@@ -104,9 +105,12 @@ public class BaseGridRenderer implements GridRenderer {
     @Override
     public RendererCommand renderSelectedCells(final GridData model,
                                                final GridBodyRenderContext context,
-                                               final BaseGridRendererHelper rendererHelper) {
+                                               final BaseGridRendererHelper rendererHelper,
+                                               final List<GridData.SelectedCell> selectedCells,
+                                               final Function<SelectedRange, Double> selectedCellsHeightSupplier) {
         return (RenderSelectedCellsCommand) (rc) -> {
             if (!rc.isSelectionLayer()) {
+
                 final List<GridColumn<?>> blockColumns = context.getBlockColumns();
                 final SelectionsTransformer transformer = context.getTransformer();
                 final double gridLineStrokeWidth = theme.getBodyGridLine().getStrokeWidth();
@@ -117,7 +121,7 @@ public class BaseGridRenderer implements GridRenderer {
                 final int maxVisibleUiRowIndex = context.getMaxVisibleRowIndex();
 
                 //Convert SelectedCells into SelectedRanges, i.e. group them into rectangular ranges
-                final List<SelectedRange> selectedRanges = transformer.transformToSelectedRanges();
+                final List<SelectedRange> selectedRanges = transformer.transformToSelectedRanges(selectedCells);
 
                 final Group g = new Group();
                 for (SelectedRange selectedRange : selectedRanges) {
@@ -150,10 +154,10 @@ public class BaseGridRenderer implements GridRenderer {
                                                            selectedRange.getHeight() - dy);
                     }
 
-                    final Group cs = renderSelectedRange(model,
-                                                         blockColumns,
+                    final Group cs = renderSelectedRange(blockColumns,
                                                          minVisibleUiColumnIndex,
-                                                         _selectedRange);
+                                                         _selectedRange,
+                                                         selectedCellsHeightSupplier);
                     if (cs != null) {
                         final double csx = rendererHelper.getColumnOffset(blockColumns,
                                                                           _selectedRange.getUiColumnIndex() - minVisibleUiColumnIndex);
@@ -169,18 +173,17 @@ public class BaseGridRenderer implements GridRenderer {
         };
     }
 
-    protected Group renderSelectedRange(final GridData model,
-                                        final List<GridColumn<?>> blockColumns,
+    protected Group renderSelectedRange(final List<GridColumn<?>> blockColumns,
                                         final int minVisibleUiColumnIndex,
-                                        final SelectedRange selectedRange) {
+                                        final SelectedRange selectedRange,
+                                        final Function<SelectedRange, Double> selectedCellsHeightSupplier) {
         final Group cellSelector = new Group();
         final double gridLineStrokeWidth = theme.getBodyGridLine().getStrokeWidth();
         final double selectorStrokeWidth = theme.getCellSelectorBorder().getStrokeWidth();
         final double width = getSelectedRangeWidth(blockColumns,
                                                    minVisibleUiColumnIndex,
                                                    selectedRange) - (gridLineStrokeWidth + selectorStrokeWidth);
-        final double height = getSelectedRangeHeight(model,
-                                                     selectedRange) - (gridLineStrokeWidth + selectorStrokeWidth);
+        final double height = selectedCellsHeightSupplier.apply(selectedRange) - (gridLineStrokeWidth + selectorStrokeWidth);
         final Rectangle selector = theme.getCellSelectorBorder()
                 .setWidth(width)
                 .setHeight(height)
@@ -209,15 +212,6 @@ public class BaseGridRenderer implements GridRenderer {
             }
         }
         return width;
-    }
-
-    double getSelectedRangeHeight(final GridData model,
-                                  final SelectedRange selectedRange) {
-        double height = 0;
-        for (int rowIndex = 0; rowIndex < selectedRange.getHeight(); rowIndex++) {
-            height = height + model.getRow(selectedRange.getUiRowIndex() + rowIndex).getHeight();
-        }
-        return height;
     }
 
     @Override

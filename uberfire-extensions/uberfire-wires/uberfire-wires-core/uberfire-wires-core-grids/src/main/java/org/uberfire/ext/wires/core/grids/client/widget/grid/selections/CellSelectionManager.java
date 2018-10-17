@@ -52,6 +52,34 @@ public interface CellSelectionManager {
                        final boolean isControlKeyDown);
 
     /**
+     * Handles selection of a cell in the Header by delegating selection to a @{link HeaderCellSelectionStrategy}
+     * associated with the header cell being selected. Different strategies may select an entire column, or a range
+     * depending upon shift/control key states etc.
+     * @param ap Canvas coordinate relative to the GridWidget.
+     * @param isShiftKeyDown True if the shift key is pressed.
+     * @param isControlKeyDown True if the control key is pressed.
+     * @return true if the selections have changed.
+     */
+    boolean selectHeaderCell(final Point2D ap,
+                             final boolean isShiftKeyDown,
+                             final boolean isControlKeyDown);
+
+    /**
+     * Handles selection of a cell in the Header by delegating selection to a @{link HeaderCellSelectionStrategy}
+     * associated with the header cell being selected. Different strategies may select an entire column, or a range
+     * depending upon shift/control key states etc.
+     * @param uiHeaderRowIndex Index of row as seen in the UI. 0-based index. Top row is 0.
+     * @param uiHeaderColumnIndex Index of the column as seen in the UI. 0-based index. Leftmost column is 0.
+     * @param isShiftKeyDown True if the shift key is pressed.
+     * @param isControlKeyDown True if the control key is pressed.
+     * @return true if the selections have changed.
+     */
+    boolean selectHeaderCell(final int uiHeaderRowIndex,
+                             final int uiHeaderColumnIndex,
+                             final boolean isShiftKeyDown,
+                             final boolean isControlKeyDown);
+
+    /**
      * Adjusts an existing selection, based on the selection origin, depending on the
      * provided parameters. If the shift key is down the current selected range is extended
      * in the required direction; otherwise the current origin is moved in the required direction.

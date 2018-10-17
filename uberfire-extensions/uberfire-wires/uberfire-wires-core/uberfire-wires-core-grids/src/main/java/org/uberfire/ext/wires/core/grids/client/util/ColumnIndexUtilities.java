@@ -43,4 +43,54 @@ public class ColumnIndexUtilities {
         }
         throw new IllegalStateException("Column was not found!");
     }
+
+    @SuppressWarnings("unchecked")
+    public static int getHeaderBlockStartColumnIndex(final List<GridColumn<?>> allColumns,
+                                                     final GridColumn.HeaderMetaData headerMetaData,
+                                                     final int headerRowIndex,
+                                                     final int headerColumnIndex) {
+        //Back-track adding width of proceeding columns sharing header MetaData
+        int candidateHeaderColumnIndex = headerColumnIndex;
+        if (candidateHeaderColumnIndex == 0) {
+            return candidateHeaderColumnIndex;
+        }
+        while (candidateHeaderColumnIndex > 0) {
+            final GridColumn candidateColumn = allColumns.get(candidateHeaderColumnIndex - 1);
+            final List<GridColumn.HeaderMetaData> candidateHeaderMetaData = candidateColumn.getHeaderMetaData();
+            if (candidateHeaderMetaData.size() - 1 < headerRowIndex) {
+                break;
+            }
+            if (!candidateHeaderMetaData.get(headerRowIndex).equals(headerMetaData)) {
+                break;
+            }
+            candidateHeaderColumnIndex--;
+        }
+
+        return candidateHeaderColumnIndex;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int getHeaderBlockEndColumnIndex(final List<GridColumn<?>> allColumns,
+                                                   final GridColumn.HeaderMetaData headerMetaData,
+                                                   final int headerRowIndex,
+                                                   final int headerColumnIndex) {
+        //Forward-track adding width of following columns sharing header MetaData
+        int candidateHeaderColumnIndex = headerColumnIndex;
+        if (candidateHeaderColumnIndex == allColumns.size() - 1) {
+            return candidateHeaderColumnIndex;
+        }
+        while (candidateHeaderColumnIndex < allColumns.size() - 1) {
+            final GridColumn candidateColumn = allColumns.get(candidateHeaderColumnIndex + 1);
+            final List<GridColumn.HeaderMetaData> candidateHeaderMetaData = candidateColumn.getHeaderMetaData();
+            if (candidateHeaderMetaData.size() - 1 < headerRowIndex) {
+                break;
+            }
+            if (!candidateHeaderMetaData.get(headerRowIndex).equals(headerMetaData)) {
+                break;
+            }
+            candidateHeaderColumnIndex++;
+        }
+
+        return candidateHeaderColumnIndex;
+    }
 }
