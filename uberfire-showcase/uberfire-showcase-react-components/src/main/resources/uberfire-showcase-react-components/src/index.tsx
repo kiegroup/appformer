@@ -37,8 +37,68 @@ export class FirstReactPerspective extends AppFormer.Perspective {
         super();
         this.isReact = true;
         this.af_isDefault = false;
-        this.af_componentId = "First React Perspective";
+        this.af_componentId = "FirstReactPerspective";
         this.af_perspectiveScreens = [];
+
+        this.af_defaultPanelType = AppFormer.PanelType.MULTI_LIST;
+        this.af_parts = FirstReactPerspective.parts();
+        this.af_panels = FirstReactPerspective.panels();
+    }
+
+    private static parts() {
+        const reactComponentPart = new AppFormer.Part();
+        reactComponentPart.placeName = "ReactComponent";
+
+        const welcomePart = new AppFormer.Part();
+        welcomePart.placeName = "welcome";
+
+        return [reactComponentPart, welcomePart];
+    }
+
+    private static panels() {
+
+        // ----- West section
+        const youtubeVideosPart = new AppFormer.Part();
+        youtubeVideosPart.placeName = "YouTubeVideos";
+        youtubeVideosPart.parameters = {
+            "key1": "value1",
+            "key2": "value2"
+        };
+
+        const panelWest = new AppFormer.Panel();
+        panelWest.width = 250;
+        panelWest.minWidth = 200;
+        panelWest.position = AppFormer.CompassPosition.WEST;
+        panelWest.panelType = AppFormer.PanelType.STATIC;
+        panelWest.parts = [youtubeVideosPart];
+
+        // ----- East section
+        const readmePart = new AppFormer.Part();
+        readmePart.placeName = "ReadmeScreen";
+
+        const todoListPart = new AppFormer.Part();
+        todoListPart.placeName = "TodoListScreen";
+
+        const panelEast = new AppFormer.Panel();
+        panelEast.width = 450;
+        panelEast.position = AppFormer.CompassPosition.EAST;
+        panelEast.panelType = AppFormer.PanelType.MULTI_LIST;
+        panelEast.parts = [readmePart, todoListPart];
+
+        // ----- South section
+        const sampleEditorPart = new AppFormer.Part();
+        sampleEditorPart.placeName = "SampleWorkbenchEditor";
+
+        const youtubeScreenPart = new AppFormer.Part();
+        youtubeScreenPart.placeName = "YouTubeScreen";
+
+        const panelSouth = new AppFormer.Panel();
+        panelSouth.height = 400;
+        panelSouth.position = AppFormer.CompassPosition.SOUTH;
+        panelSouth.panelType = AppFormer.PanelType.MULTI_LIST;
+        panelSouth.parts = [sampleEditorPart, youtubeScreenPart];
+
+        return [panelWest, panelEast, panelSouth];
     }
 
     af_perspectiveRoot(root?: { ss: AppFormer.Screen[]; ps: AppFormer.Perspective[] }): AppFormer.Element {

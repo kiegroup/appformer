@@ -3,12 +3,18 @@ package org.uberfire.jsbridge.client;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceType;
 import org.uberfire.workbench.model.ActivityResourceType;
+import org.uberfire.workbench.model.ContextDisplayMode;
+import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.ContextDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
+
+import static java.util.stream.Collectors.toList;
 
 public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspectiveActivity {
 
@@ -89,8 +95,34 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
     @Override
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
-        final PerspectiveDefinition def = new PerspectiveDefinitionImpl();
+
+        final PerspectiveDefinition def = new PerspectiveDefinitionImpl(defaultPanelType());
         def.setName(getIdentifier());
+
+        final PanelDefinition rootPanel = def.getRoot();
+
+        final String contextId = this.realPerspective.contextId();
+        if (contextId != null) {
+            def.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(contextId)));
+        }
+
+        final ContextDisplayMode contextDisplayMode = this.realPerspective.contextDisplayMode();
+        def.setContextDisplayMode(contextDisplayMode);
+
+        realPerspective.parts().stream()
+                .map(part -> new JsWorkbenchPartConverter(part).toPartDefinition())
+                .collect(toList())
+                .forEach(rootPanel::addPart);
+
+        realPerspective.panels().stream()
+                .map(panel -> new JsWorkbenchPanelConverter(panel).toPanelDefinition())
+                .collect(toList())
+                .forEach(panel -> rootPanel.insertChild(panel.getPosition(), panel));
+
         return def;
+    }
+
+    private String defaultPanelType() {
+        return (String) realPerspective.get("af_defaultPanelType");
     }
 }

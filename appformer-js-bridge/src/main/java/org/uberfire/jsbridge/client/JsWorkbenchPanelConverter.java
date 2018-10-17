@@ -1,0 +1,56 @@
+package org.uberfire.jsbridge.client;
+
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.workbench.model.PanelDefinition;
+import org.uberfire.workbench.model.impl.ContextDefinitionImpl;
+import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
+
+import static java.util.stream.Collectors.toList;
+
+public class JsWorkbenchPanelConverter {
+
+    private final JsNativePanel nativePanel;
+
+    public JsWorkbenchPanelConverter(final JsNativePanel nativePanel) {
+        this.nativePanel = nativePanel;
+    }
+
+    public PanelDefinition toPanelDefinition() {
+
+        final PanelDefinition newPanel = new PanelDefinitionImpl(nativePanel.panelType());
+        newPanel.setPosition(nativePanel.position());
+
+        newPanel.setContextDisplayMode(nativePanel.contextDisplayMode());
+        if (nativePanel.contextId() != null) {
+            newPanel.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(nativePanel.contextId())));
+        }
+
+        if (nativePanel.width() > 0) {
+            newPanel.setWidth(nativePanel.width());
+        }
+
+        if (nativePanel.minWidth() > 0) {
+            newPanel.setMinWidth(nativePanel.minWidth());
+        }
+
+        if (nativePanel.height() > 0) {
+            newPanel.setHeight(nativePanel.height());
+        }
+
+        if (nativePanel.minHeight() > 0) {
+            newPanel.setHeight(nativePanel.minHeight());
+        }
+
+        nativePanel.parts().stream()
+                .map(part -> new JsWorkbenchPartConverter(part).toPartDefinition())
+                .collect(toList())
+                .forEach(newPanel::addPart);
+
+        nativePanel.children().stream()
+                .map(panel -> new JsWorkbenchPanelConverter(panel).toPanelDefinition())
+                .collect(toList())
+                .forEach(panel -> newPanel.insertChild(panel.getPosition(), panel));
+
+        return newPanel;
+    }
+}
