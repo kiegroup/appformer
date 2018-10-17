@@ -70,6 +70,7 @@ import org.uberfire.client.views.pfly.modal.ErrorPopupView;
 import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
 import org.uberfire.client.workbench.StandaloneEditorPerspective;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
+import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.widgets.menu.UtilityMenuBar;
 import org.uberfire.client.workbench.widgets.menu.WorkbenchMenuBar;
 import org.uberfire.experimental.client.perspective.ExperimentalFeaturesPerspective;
@@ -80,6 +81,7 @@ import org.uberfire.ext.plugin.client.perspective.editor.layout.editor.Perspecti
 import org.uberfire.ext.preferences.client.admin.AdminPagePerspective;
 import org.uberfire.ext.preferences.client.central.PreferencesCentralPerspective;
 import org.uberfire.jsbridge.client.AppFormerJsBridge;
+import org.uberfire.jsbridge.client.JsWorkbenchPerspectiveActivity;
 import org.uberfire.jsbridge.client.JsWorkbenchScreenActivity;
 import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -184,7 +186,21 @@ public class ShowcaseEntryPoint {
         appFormerJsBridge.init("org.uberfire.UberfireShowcase");
     }
 
-    private void setupMenu(@Observes final ApplicationReadyEvent event) {
+    private void onApplicationReady(@Observes final ApplicationReadyEvent event) {
+        setupMenu();
+    }
+
+    private void onNewPerspective(@Observes final NewPerspectiveEvent event) {
+
+        final String perspectiveName = event.getPerspectiveName();
+
+        final PerspectiveActivity activity = (PerspectiveActivity) activityManager.getActivity(new DefaultPlaceRequest(perspectiveName));
+        if (activity instanceof JsWorkbenchPerspectiveActivity) {
+            setupMenu();
+        }
+    }
+
+    private void setupMenu() {
 
         final PerspectiveActivity defaultPerspective = getDefaultPerspectiveActivity();
 
