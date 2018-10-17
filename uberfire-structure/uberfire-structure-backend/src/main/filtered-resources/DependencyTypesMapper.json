@@ -9,13 +9,13 @@
     {
       "type": "JPA",
       "deps": [
-        {"groupId": "org.hibernate.javax.persistence", "artifactId": "hibernate-jpa-2.1-api", "version": "1.0.2.Final", "scope": ""}
+        {"groupId": "org.hibernate.javax.persistence", "artifactId": "hibernate-jpa-2.1-api", "version": "${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}", "scope": "compile"}
       ]
     },
     {
       "type":"TEST",
       "deps":[
-        {"groupId":"junit", "artifactId":"junit", "version":"4.12", "scope":"test"}
+        {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"}
       ]
     }
   ]
