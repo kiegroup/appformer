@@ -17,7 +17,7 @@
       "deps":[
         {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"}
       ]
-    }
+    },
     {
       "type":"VALIDATION",
       "deps":[
