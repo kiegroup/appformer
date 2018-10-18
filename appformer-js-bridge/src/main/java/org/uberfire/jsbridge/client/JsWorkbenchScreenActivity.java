@@ -143,7 +143,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     // PROPERTIES
     @Override
     public String getTitle() {
-        return (String) screen.get("af_componentTitle");
+        return (String) screen.get("componentTitle");
     }
 
     @Override
@@ -158,7 +158,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String getIdentifier() {
-        return (String) screen.get("af_componentId");
+        return (String) screen.get("componentId");
     }
 
     @Override
@@ -188,7 +188,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String contextId() {
-        return (String) screen.get("af_componentContextId");
+        return (String) screen.get("componentContextId");
     }
 
     @Override
@@ -207,7 +207,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     private void registerSubscriptions() {
         DomGlobal.console.info("Registering event subscriptions for " + this.getIdentifier() + "...");
-        final JsObject subscriptions = (JsObject) this.screen.get("af_subscriptions");
+        final JsObject subscriptions = (JsObject) this.screen.get("subscriptions");
         for (final String eventFqcn : JsObject.keys(subscriptions)) {
             if (subscriptions.hasOwnProperty(eventFqcn)) {
                 final Any jsObject = Js.uncheckedCast(subscriptions);

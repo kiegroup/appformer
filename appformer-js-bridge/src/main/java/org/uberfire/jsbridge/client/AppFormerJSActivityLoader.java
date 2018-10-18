@@ -67,7 +67,7 @@ public class AppFormerJSActivityLoader {
 
     //TODO this should be unified with JSWorkbenchScreenActivity getIdentifier
     public native String extractId(final JavaScriptObject object)  /*-{
-        return object['af_componentId'];
+        return object['componentId'];
     }-*/;
 
 

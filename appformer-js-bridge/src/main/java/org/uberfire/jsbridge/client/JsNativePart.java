@@ -23,23 +23,6 @@ public class JsNativePart {
         return (String) get("placeName");
     }
 
-    public ContextDisplayMode contextDisplayMode() {
-        final JSONObject displayInfo = new JSONObject(displayInfo());
-        return ContextDisplayMode.valueOf(displayInfo.get("contextDisplayMode").isString().stringValue());
-    }
-
-    public String contextId() {
-
-        final JSONObject displayInfo = new JSONObject(displayInfo());
-
-        final JSONValue contextId = displayInfo.get("contextId");
-        if (contextId == null) {
-            return null;
-        }
-
-        return contextId.isString().stringValue();
-    }
-
     public Map<String, String> parameters() {
 
         final JavaScriptObject jsParameters = (JavaScriptObject) get("parameters");
@@ -53,8 +36,16 @@ public class JsNativePart {
                 .collect(toMap(Pair::getK1, Pair::getK2));
     }
 
-    private native JavaScriptObject displayInfo()   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePart::self["displayInfo"];
+    public ContextDisplayMode contextDisplayMode() {
+        return ContextDisplayMode.valueOf(contextDisplayModeString());
+    }
+
+    public native String contextId()   /*-{
+        return this.@org.uberfire.jsbridge.client.JsNativePart::self["displayInfo"]["contextId"];
+    }-*/;
+
+    private native String contextDisplayModeString()   /*-{
+        return this.@org.uberfire.jsbridge.client.JsNativePart::self["displayInfo"]["contextDisplayMode"];
     }-*/;
 
     private native Object get(final String fieldToInvoke)   /*-{

@@ -70,27 +70,27 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
     @Override
     public String getIdentifier() {
-        return (String) realPerspective.get("af_componentId");
+        return (String) realPerspective.get("componentId");
     }
 
     @Override
     public boolean isDefault() {
-        return (boolean) realPerspective.get("af_isDefault");
+        return (boolean) realPerspective.get("isDefault");
     }
 
     @Override
     public boolean isTransient() {
-        return (boolean) realPerspective.get("af_isTransient");
+        return (boolean) realPerspective.get("isTransient");
     }
 
     @Override
     public Menus getMenus() {
-        return (Menus) realPerspective.get("af_menus");
+        return (Menus) realPerspective.get("menus");
     }
 
     @Override
     public ToolBar getToolBar() {
-        return (ToolBar) realPerspective.get("af_toolbar");
+        return (ToolBar) realPerspective.get("toolbar");
     }
 
     @Override
@@ -123,6 +123,6 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
     }
 
     private String defaultPanelType() {
-        return (String) realPerspective.get("af_defaultPanelType");
+        return (String) realPerspective.get("defaultPanelType");
     }
 }

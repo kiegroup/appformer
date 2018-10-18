@@ -88,22 +88,15 @@ public class JsNativePanel {
     }
 
     public ContextDisplayMode contextDisplayMode() {
-        final JSONObject displayInfo = new JSONObject(displayInfo());
-        return ContextDisplayMode.valueOf(displayInfo.get("contextDisplayMode").isString().stringValue());
+        return ContextDisplayMode.valueOf(contextDisplayModeString());
     }
 
-    public String contextId() {
+    public native String contextId()   /*-{
+        return this.@org.uberfire.jsbridge.client.JsNativePanel::self["displayInfo"]["contextId"];
+    }-*/;
 
-        final JSONValue contextId = new JSONObject(displayInfo()).get("contextId");
-        if (contextId == null) {
-            return null;
-        }
-
-        return contextId.isString().stringValue();
-    }
-
-    private native JavaScriptObject displayInfo()   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePanel::self["displayInfo"];
+    private native String contextDisplayModeString()   /*-{
+        return this.@org.uberfire.jsbridge.client.JsNativePanel::self["displayInfo"]["contextDisplayMode"];
     }-*/;
 
     private native Object get(final String fieldToInvoke)   /*-{
