@@ -18,5 +18,12 @@
         {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"}
       ]
     }
+    {
+      "type":"VALIDATION",
+      "deps":[
+        {"groupId":"javax.validation", "artifactId":"validation-api", "version":"${version.javax.validation}", "scope":""},
+        {"groupId":"org.hibernate", "artifactId":"hibernate-validator", "version":"${version.org.hibernate.hibernate-validator}", "scope":""}
+      ]
+    }
   ]
 }

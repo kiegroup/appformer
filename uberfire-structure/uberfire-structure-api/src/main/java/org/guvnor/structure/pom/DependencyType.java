@@ -17,5 +17,5 @@ package org.guvnor.structure.pom;
  * Types managed by the Pom's event
  */
 public enum DependencyType {
-    JPA, TEST
+    JPA, TEST, VALIDATION
 }
