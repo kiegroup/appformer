@@ -80,7 +80,7 @@ public class JsNativeScreen {
 
     public Object get(final String property) {
         if (!this.scriptLoaded()) {
-            return componentId;
+            return null;
         }
         return getNative(property);
     }
@@ -132,4 +132,8 @@ public class JsNativeScreen {
     public native boolean definesNative(final String property) /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property] !== undefined;
     }-*/;
+
+    public String getComponentId() {
+        return componentId;
+    }
 }

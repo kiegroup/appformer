@@ -158,7 +158,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String getIdentifier() {
-        return (String) screen.get("componentId");
+        return screen.getComponentId();
     }
 
     @Override

@@ -86,7 +86,7 @@ public class AppFormerJSActivityLoader {
 
             }
         };
-        timer.schedule(5000);
+        timer.schedule(1500);
     }
 
     private void registryComponent(String identifier, JavaScriptObject jsObject) {
