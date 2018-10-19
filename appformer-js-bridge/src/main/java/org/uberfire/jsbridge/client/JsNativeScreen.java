@@ -86,7 +86,8 @@ public class JsNativeScreen {
     }
 
     public String componentTitle() {
-        return (String) get("af_componentTitle");
+        final String title = (String) get("af_componentTitle");
+        return title != null ? title : getComponentId();
     }
 
     public String componentContextId() {
