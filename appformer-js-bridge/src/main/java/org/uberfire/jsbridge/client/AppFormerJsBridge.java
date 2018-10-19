@@ -39,6 +39,7 @@ import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PerspectiveActivity;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.Workbench;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -98,7 +99,9 @@ public class AppFormerJsBridge {
     }
 
     public String translate(final String key, final Object[] args) {
-        return "GWT-Translated (" + key + ")";
+        final SyncBeanManager beanManager = IOC.getBeanManager();
+        final TranslationService translationService = beanManager.lookupBean(TranslationService.class).getInstance();
+        return translationService.format(key, args);
     }
 
     @SuppressWarnings("unchecked")
