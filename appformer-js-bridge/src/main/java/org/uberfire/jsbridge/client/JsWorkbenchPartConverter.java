@@ -17,11 +17,12 @@ public class JsWorkbenchPartConverter {
     public PartDefinition toPartDefinition() {
 
         final PlaceRequest placeRequest = new DefaultPlaceRequest(nativePart.placeName(), nativePart.parameters());
-
         final PartDefinition partDefinition = new PartDefinitionImpl(placeRequest);
-        partDefinition.setContextDisplayMode(nativePart.contextDisplayMode());
-        if (nativePart.contextId() != null) {
-            partDefinition.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(nativePart.contextId())));
+
+        final JsNativeContextDisplay contextDisplay = nativePart.contextDisplay();
+        partDefinition.setContextDisplayMode(contextDisplay.mode());
+        if (contextDisplay.contextId() != null) {
+            partDefinition.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(contextDisplay.contextId())));
         }
 
         return partDefinition;

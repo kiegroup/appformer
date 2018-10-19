@@ -5,18 +5,18 @@ import java.util.Map;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONValue;
 import org.uberfire.commons.data.Pair;
-import org.uberfire.workbench.model.ContextDisplayMode;
 
 import static java.util.stream.Collectors.toMap;
 
 public class JsNativePart {
 
     private final JavaScriptObject self;
+    private final JsNativeContextDisplay contextDisplay;
 
     public JsNativePart(final JavaScriptObject self) {
         this.self = self;
+        this.contextDisplay = new JsNativeContextDisplay(self, "displayInfo");
     }
 
     public String placeName() {
@@ -36,23 +36,11 @@ public class JsNativePart {
                 .collect(toMap(Pair::getK1, Pair::getK2));
     }
 
-    public ContextDisplayMode contextDisplayMode() {
-        return ContextDisplayMode.valueOf(contextDisplayModeString());
+    public JsNativeContextDisplay contextDisplay() {
+        return contextDisplay;
     }
-
-    public native String contextId()   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePart::self["displayInfo"]["contextId"];
-    }-*/;
-
-    private native String contextDisplayModeString()   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePart::self["displayInfo"]["contextDisplayMode"];
-    }-*/;
 
     private native Object get(final String fieldToInvoke)   /*-{
         return this.@org.uberfire.jsbridge.client.JsNativePart::self[fieldToInvoke];
-    }-*/;
-
-    public native Object run(final String method)   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePart::self[method]();
     }-*/;
 }

@@ -19,6 +19,7 @@ package org.uberfire.jsbridge.client;
 import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import elemental2.core.JsObject;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 
@@ -78,48 +79,85 @@ public class JsNativeScreen {
                 this.@org.uberfire.jsbridge.client.JsNativeScreen::container);
     }-*/;
 
-    public Object get(final String property) {
+    // ===== Properties
+
+    public String componentId() {
+        return (String) get("af_componentId");
+    }
+
+    public String componentTitle() {
+        return (String) get("af_componentTitle");
+    }
+
+    public String componentContextId() {
+        return (String) get("af_componentContextId");
+    }
+
+    public JsObject subscriptions() {
+        return (JsObject) get("af_subscriptions");
+    }
+
+    // ===== Lifecycle
+
+    public void onStartup(final JsPlaceRequest placeRequest) {
+        run("af_onStartup", placeRequest);
+    }
+
+    public void onOpen() {
+        run("af_onOpen");
+    }
+
+    public void onClose() {
+        run("af_onClose");
+    }
+
+    public boolean onMayClose() {
+        return !defines("af_onMayClose") || (boolean) run("af_onMayClose");
+    }
+
+    public void onShutdown() {
+        run("af_onShutdown");
+    }
+
+    public void onFocus() {
+        run("af_onFocus");
+    }
+
+    public void onLostFocus() {
+        run("af_onLostFocus");
+    }
+
+    private Object get(final String property) {
         if (!this.scriptLoaded()) {
             return null;
         }
         return getNative(property);
     }
 
-    public native Object getNative(final String property)  /*-{
+    private native Object getNative(final String property)  /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property];
     }-*/;
 
-    public Object run(final String functionName) {
+    private Object run(final String functionName) {
         if (!this.scriptLoaded()) {
             return null;
         }
         return runNative(functionName);
     }
 
-    public native Object runNative(final String functionName) /*-{
+    private native Object runNative(final String functionName) /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName]();
     }-*/;
 
-    public Object run(final String functionName, final Object arg1) {
+    private Object run(final String functionName, final Object arg1) {
         if (!this.scriptLoaded()) {
             return null;
         }
         return runNative(functionName, arg1);
     }
 
-    public native Object runNative(final String functionName, final Object arg1) /*-{
+    private native Object runNative(final String functionName, final Object arg1) /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName](arg1);
-    }-*/;
-
-    public Object run(final String functionName, final Object arg1, final Object arg2) {
-        if (!this.scriptLoaded()) {
-            return null;
-        }
-        return runNative(functionName, arg1, arg2);
-    }
-
-    public native Object runNative(final String functionName, final Object arg1, final Object arg2) /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName](arg1, arg2);
     }-*/;
 
     public boolean defines(final String property) {
@@ -129,7 +167,7 @@ public class JsNativeScreen {
         return definesNative(property);
     }
 
-    public native boolean definesNative(final String property) /*-{
+    private native boolean definesNative(final String property) /*-{
         return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property] !== undefined;
     }-*/;
 

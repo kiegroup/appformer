@@ -77,7 +77,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         }
 
         this.registerSubscriptions();
-        screen.run("af_onStartup", JsPlaceRequest.fromPlaceRequest(place));
+        screen.onStartup(JsPlaceRequest.fromPlaceRequest(place));
     }
 
     @Override
@@ -91,7 +91,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
             return;
         }
 
-        screen.run("af_onOpen");
+        screen.onOpen();
         placeManager.executeOnOpenCallbacks(place);
     }
 
@@ -99,7 +99,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     public void onClose() {
 
         if (this.screen.scriptLoaded()) {
-            screen.run("af_onClose");
+            screen.onClose();
         }
 
         placeManager.executeOnCloseCallbacks(place);
@@ -109,7 +109,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
     public boolean onMayClose() {
 
         if (this.screen.scriptLoaded()) {
-            return !screen.defines("af_onMayClose") || (boolean) screen.run("af_onMayClose");
+            return screen.onMayClose();
         }
 
         return true;
@@ -122,28 +122,28 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
         if (this.screen.scriptLoaded()) {
             this.unsubscribeFromAllEvents();
-            screen.run("af_onShutdown");
+            screen.onShutdown();
         }
     }
 
     @Override
     public void onFocus() {
         if (this.screen.scriptLoaded()) {
-            screen.run("af_onFocus");
+            screen.onFocus();
         }
     }
 
     @Override
     public void onLostFocus() {
         if (this.screen.scriptLoaded()) {
-            screen.run("af_onLostFocus");
+            screen.onLostFocus();
         }
     }
 
     // PROPERTIES
     @Override
     public String getTitle() {
-        return (String) screen.get("componentTitle");
+        return screen.componentTitle();
     }
 
     @Override
@@ -158,7 +158,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String getIdentifier() {
-        return screen.getComponentId();
+        return screen.componentId();
     }
 
     @Override
@@ -188,7 +188,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     @Override
     public String contextId() {
-        return (String) screen.get("componentContextId");
+        return screen.componentContextId();
     }
 
     @Override
@@ -207,7 +207,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
     private void registerSubscriptions() {
         DomGlobal.console.info("Registering event subscriptions for " + this.getIdentifier() + "...");
-        final JsObject subscriptions = (JsObject) this.screen.get("subscriptions");
+        final JsObject subscriptions = this.screen.subscriptions();
         for (final String eventFqcn : JsObject.keys(subscriptions)) {
             if (subscriptions.hasOwnProperty(eventFqcn)) {
                 final Any jsObject = Js.uncheckedCast(subscriptions);

@@ -6,7 +6,6 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceType;
 import org.uberfire.workbench.model.ActivityResourceType;
-import org.uberfire.workbench.model.ContextDisplayMode;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.PerspectiveDefinition;
 import org.uberfire.workbench.model.impl.ContextDefinitionImpl;
@@ -36,15 +35,14 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
         super.onStartup(place);
 
         this.place = place;
-        this.realPerspective.run("af_onStartup");
+        this.realPerspective.onStartup();
     }
 
     @Override
     public void onOpen() {
         super.onOpen();
 
-        //this.realPerspective.render(); TODO ??
-        this.realPerspective.run("af_onOpen");
+        this.realPerspective.onOpen();
         placeManager.executeOnOpenCallbacks(place);
     }
 
@@ -52,7 +50,7 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
     public void onClose() {
         super.onClose();
 
-        this.realPerspective.run("af_onClose");
+        this.realPerspective.onClose();
         placeManager.executeOnCloseCallbacks(place);
     }
 
@@ -60,7 +58,7 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
     public void onShutdown() {
         super.onShutdown();
 
-        this.realPerspective.run("af_onShutdown");
+        this.realPerspective.onShutdown();
     }
 
     @Override
@@ -70,59 +68,53 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
     @Override
     public String getIdentifier() {
-        return (String) realPerspective.get("componentId");
+        return realPerspective.componentId();
     }
 
     @Override
     public boolean isDefault() {
-        return (boolean) realPerspective.get("isDefault");
+        return realPerspective.isDefault();
     }
 
     @Override
     public boolean isTransient() {
-        return (boolean) realPerspective.get("isTransient");
+        return realPerspective.isTransient();
     }
 
     @Override
     public Menus getMenus() {
-        return (Menus) realPerspective.get("menus");
+        return realPerspective.menus();
     }
 
     @Override
     public ToolBar getToolBar() {
-        return (ToolBar) realPerspective.get("toolbar");
+        return realPerspective.toolbar();
     }
 
     @Override
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
 
-        final PerspectiveDefinition def = new PerspectiveDefinitionImpl(defaultPanelType());
+        final PerspectiveDefinition def = new PerspectiveDefinitionImpl(realPerspective.defaultPanelType());
         def.setName(getIdentifier());
+
+        final JsNativeContextDisplay contextDisplay = this.realPerspective.contextDisplay();
+        def.setContextDisplayMode(contextDisplay.mode());
+        if (contextDisplay.contextId() != null) {
+            def.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(contextDisplay.contextId())));
+        }
 
         final PanelDefinition rootPanel = def.getRoot();
 
-        final String contextId = this.realPerspective.contextId();
-        if (contextId != null) {
-            def.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(contextId)));
-        }
-
-        final ContextDisplayMode contextDisplayMode = this.realPerspective.contextDisplayMode();
-        def.setContextDisplayMode(contextDisplayMode);
-
-        realPerspective.parts().stream()
+        realPerspective.view().parts().stream()
                 .map(part -> new JsWorkbenchPartConverter(part).toPartDefinition())
                 .collect(toList())
                 .forEach(rootPanel::addPart);
 
-        realPerspective.panels().stream()
+        realPerspective.view().panels().stream()
                 .map(panel -> new JsWorkbenchPanelConverter(panel).toPanelDefinition())
                 .collect(toList())
                 .forEach(panel -> rootPanel.insertChild(panel.getPosition(), panel));
 
         return def;
-    }
-
-    private String defaultPanelType() {
-        return (String) realPerspective.get("defaultPanelType");
     }
 }

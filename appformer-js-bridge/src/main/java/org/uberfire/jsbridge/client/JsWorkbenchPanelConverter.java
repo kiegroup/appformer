@@ -20,9 +20,11 @@ public class JsWorkbenchPanelConverter {
         final PanelDefinition newPanel = new PanelDefinitionImpl(nativePanel.panelType());
         newPanel.setPosition(nativePanel.position());
 
-        newPanel.setContextDisplayMode(nativePanel.contextDisplayMode());
-        if (nativePanel.contextId() != null) {
-            newPanel.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(nativePanel.contextId())));
+        final JsNativeContextDisplay contextDisplay = nativePanel.contextDisplay();
+
+        newPanel.setContextDisplayMode(contextDisplay.mode());
+        if (contextDisplay.contextId() != null) {
+            newPanel.setContextDefinition(new ContextDefinitionImpl(new DefaultPlaceRequest(contextDisplay.contextId())));
         }
 
         if (nativePanel.width() > 0) {
@@ -41,12 +43,12 @@ public class JsWorkbenchPanelConverter {
             newPanel.setHeight(nativePanel.minHeight());
         }
 
-        nativePanel.parts().stream()
+        nativePanel.view().parts().stream()
                 .map(part -> new JsWorkbenchPartConverter(part).toPartDefinition())
                 .collect(toList())
                 .forEach(newPanel::addPart);
 
-        nativePanel.children().stream()
+        nativePanel.view().panels().stream()
                 .map(panel -> new JsWorkbenchPanelConverter(panel).toPanelDefinition())
                 .collect(toList())
                 .forEach(panel -> newPanel.insertChild(panel.getPosition(), panel));
