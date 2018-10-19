@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.mocks.CallerMock;
-import org.uberfire.mvp.Command;
 import org.uberfire.ssh.client.resources.i18n.AppformerSSHConstants;
 import org.uberfire.ssh.service.backend.keystore.util.PublicKeyConverter;
 import org.uberfire.ssh.service.shared.editor.SSHKeyEditorService;
@@ -43,6 +42,8 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 public class NewSSHKeyModalTest {
 
     private static final String NAME = "name";
+    private static final String EXISTING_KEY_NAME = "existing name";
+
     private static final String WRONG_KEY = "wrong key";
     private static final String WRONG_KEY_FORMAT = "ssh-rsa wrong key";
     private static final String VALID_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDNsKIMkhaI8iX69IKsux/LdgG3zP1wW5RNJz" +
@@ -53,6 +54,15 @@ public class NewSSHKeyModalTest {
             "HocGn4VPjKZl7Jhqxu9evwF5siuZEDL4oK8NgPwAZxMYcFuefdPgpxA/wmqWAh6JPbXLstQlG24bTrxCIzsx7qEfhU65KQJaLi3kso4LA/" +
             "IDmPRHIFGNUbY3YOwfDpmH/fHFQNY/5uy5/0oICAv9M3QBEMvB2rWpWJT8j2CkISCSjzPNnB490uUv9cxNnLs8tDrOHlAnm+k0iXyJ4hjq" +
             "tXqSbLCLz2Jw== katy";
+
+    private static final String EXISTING_KEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDmak4Wu23RZ6XmN94bOsqecZxuTa4RRhh" +
+            "QmHmTZjMB7HM57/90u/B/gB/GhsPEu1nAXL0npY56tT/MPQ8vRm2C2W9A7CzN5+z5yyL3W01YZy3kzslk77CjULjfhrcfQSL3b2sPG5jv5" +
+            "E5/nyC/swSytucwT/PE7aXTS9H6cHIKUdYPzIt94SHoBxWRIK7PJi9d+eLB+hmDzvbVa1ezu5a8yu2kcHi6NxxfI5iRj2rsceDTp0imC1j" +
+            "MoC6ZDfBvZSxL9FXTMwFdNnmTlJveBtv9nAbnAvIWlilS0VOkdj1s3GxBxeZYAcKbcsK9sJzusptk5dxGsG2Z8vInaglN6OaOQ7b7tcomz" +
+            "CYYwviGQ9gRX8sGsVrw39gsDIGYP2tA4bRr7ecHnlNg1b0HCchA5+QCDk4Hbz1UrnHmPA2Lg9c3WGm2qedvQdVJXuS3mlwYOqL40aXPs68" +
+            "90PvFJUlpiVSznF50djPnwsMxJZEf1HdTXgZD1Bh54ogZf7czyUNfkNkE69yJDbTHjpQd0cKUQnu9tVxqmBzhX31yF4VcsMeADcf2Z8wlA" +
+            "3n4LZnC/GwonYlq5+G93zJpFOkPhme8c2XuPuCXF795lsxyJ8SB/AlwPJAhEtm0y0s0l1l4eWqxsDxkBOgN+ivU0czrVMssHJEJb4o0FLf" +
+            "7iHhOW56/iMdD9w== katy";
 
     @Mock
     private NewSSHKeyModalView view;
@@ -66,12 +76,15 @@ public class NewSSHKeyModalTest {
     private TranslationService translationService;
 
     @Mock
-    private Command addCommand;
+    private NewSSHKeyModalHandler handler;
 
     private NewSSHKeyModal modal;
 
     @Before
     public void init() {
+        when(handler.existsKeyName(eq(EXISTING_KEY_NAME))).thenReturn(true);
+        when(handler.existsKey(eq(EXISTING_KEY))).thenReturn(true);
+
         when(translationService.format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any())).thenReturn("Field cannot be empty");
 
         doAnswer((Answer<Void>) invocationOnMock -> {
@@ -91,7 +104,7 @@ public class NewSSHKeyModalTest {
     @Test
     public void testBasicFunctions() {
 
-        modal.init(addCommand);
+        modal.init(handler);
 
         modal.show();
 
@@ -122,12 +135,14 @@ public class NewSSHKeyModalTest {
         verify(translationService).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplKey));
         verify(translationService, times(2)).format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any());
         verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyFormatError);
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists);
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationKeyNameAlreadyExists), any());
 
         verify(view).setNameValidationError(any());
         verify(view).setKeyValidationError(any());
 
         verify(sshKeyEditorService, never()).addKey(anyString(), anyString());
-        verify(addCommand, never()).execute();
+        verify(handler, never()).onAddKey();
     }
 
     @Test
@@ -142,12 +157,14 @@ public class NewSSHKeyModalTest {
         verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplKey));
         verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any());
         verify(translationService).getTranslation(AppformerSSHConstants.ValidationKeyFormatError);
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists);
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationKeyNameAlreadyExists), any());
 
         verify(view, never()).setNameValidationError(any());
         verify(view).setKeyValidationError(any());
 
         verify(sshKeyEditorService, never()).addKey(anyString(), anyString());
-        verify(addCommand, never()).execute();
+        verify(handler, never()).onAddKey();
     }
 
     @Test
@@ -161,13 +178,59 @@ public class NewSSHKeyModalTest {
         verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplName));
         verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplKey));
         verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any());
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists);
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationKeyNameAlreadyExists), any());
 
         verify(view, never()).setNameValidationError(any());
 
         verify(sshKeyEditorService).addKey(anyString(), anyString());
         verify(translationService).getTranslation(AppformerSSHConstants.ValidationKeyFormatError);
         verify(view).setKeyValidationError(any());
-        verify(addCommand, never()).execute();
+        verify(handler, never()).onAddKey();
+    }
+
+    @Test
+    public void testAddKeyExistingKeyNameValidationFailure() {
+        testBasicFunctions();
+
+        modal.notifyAdd(EXISTING_KEY_NAME, VALID_KEY);
+
+        verify(view).resetValidation();
+
+        verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplName));
+        verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplKey));
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any());
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists);
+        verify(translationService).format(eq(AppformerSSHConstants.ValidationKeyNameAlreadyExists), any());
+
+        verify(view).setNameValidationError(any());
+
+        verify(sshKeyEditorService, never()).addKey(anyString(), anyString());
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyFormatError);
+        verify(view, never()).setKeyValidationError(any());
+        verify(handler, never()).onAddKey();
+    }
+
+    @Test
+    public void testAddKeyExistingKeyValidationFailure() {
+        testBasicFunctions();
+
+        modal.notifyAdd(NAME, EXISTING_KEY);
+
+        verify(view).resetValidation();
+
+        verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplName));
+        verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplKey));
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any());
+        verify(translationService).getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists);
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationKeyNameAlreadyExists), any());
+
+        verify(view, never()).setNameValidationError(any());
+
+        verify(sshKeyEditorService, never()).addKey(anyString(), anyString());
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyFormatError);
+        verify(view).setKeyValidationError(any());
+        verify(handler, never()).onAddKey();
     }
 
     @Test
@@ -182,18 +245,20 @@ public class NewSSHKeyModalTest {
         verify(translationService, never()).getTranslation(eq(AppformerSSHConstants.NewSSHKeyModalViewImplKey));
         verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationCannotBeEmpty), any());
         verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyFormatError);
+        verify(translationService, never()).getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists);
+        verify(translationService, never()).format(eq(AppformerSSHConstants.ValidationKeyNameAlreadyExists), any());
 
         verify(view, never()).setNameValidationError(any());
         verify(view, never()).setKeyValidationError(any());
 
         verify(sshKeyEditorService).addKey(anyString(), anyString());
-        verify(addCommand).execute();
+        verify(handler).onAddKey();
     }
 
     @Test
     public void testInitNull() {
         Assertions.assertThatThrownBy(() -> modal.init(null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Parameter named 'addCommand' should be not null!");
+                .hasMessage("Parameter named 'handler' should be not null!");
     }
 }

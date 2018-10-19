@@ -16,7 +16,10 @@
 
 package org.uberfire.ssh.client.editor.component;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -28,6 +31,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.uberfire.ssh.client.editor.component.creation.NewSSHKeyModal;
+import org.uberfire.ssh.client.editor.component.creation.NewSSHKeyModalHandler;
 import org.uberfire.ssh.client.editor.component.empty.SSHKeysEditorEmptyStateDisplayer;
 import org.uberfire.ssh.client.editor.component.keys.SSHKeysDisplayer;
 import org.uberfire.ssh.service.shared.editor.PortableSSHPublicKey;
@@ -35,6 +39,7 @@ import org.uberfire.ssh.service.shared.editor.SSHKeyEditorService;
 
 @Dependent
 public class SSHKeysEditor implements SSHKeysEditorView.Presenter,
+                                      NewSSHKeyModalHandler,
                                       IsElement {
 
     private final SSHKeysEditorView view;
@@ -42,6 +47,8 @@ public class SSHKeysEditor implements SSHKeysEditorView.Presenter,
     private final SSHKeysEditorEmptyStateDisplayer emptyStateDisplayer;
     private final NewSSHKeyModal newSSHKeyModal;
     private final Caller<SSHKeyEditorService> serviceCaller;
+
+    private List<PortableSSHPublicKey> currentKeys = new ArrayList<>();
 
     @Inject
     public SSHKeysEditor(final SSHKeysEditorView view, final SSHKeysDisplayer keysDisplayer, final SSHKeysEditorEmptyStateDisplayer emptyStateDisplayer, final NewSSHKeyModal newSSHKeyModal, final Caller<SSHKeyEditorService> serviceCaller) {
@@ -57,7 +64,7 @@ public class SSHKeysEditor implements SSHKeysEditorView.Presenter,
         view.init(this);
         keysDisplayer.init(this::showNewKeyModal, this::delete);
         emptyStateDisplayer.init(this::showNewKeyModal);
-        newSSHKeyModal.init(this::onAddKey);
+        newSSHKeyModal.init(this);
     }
 
     public void load() {
@@ -69,6 +76,7 @@ public class SSHKeysEditor implements SSHKeysEditorView.Presenter,
         if (keys.isEmpty()) {
             view.show(emptyStateDisplayer.getElement());
         } else {
+            currentKeys.addAll(keys);
             keysDisplayer.render(keys);
             view.show(keysDisplayer.getElement());
         }
@@ -82,7 +90,21 @@ public class SSHKeysEditor implements SSHKeysEditorView.Presenter,
         newSSHKeyModal.show();
     }
 
-    protected void onAddKey() {
+    @Override
+    public boolean existsKeyName(final String name) {
+        return findKey(key -> key.getName().equals(name));
+    }
+
+    @Override
+    public boolean existsKey(final String keyContent) {
+        return findKey(key -> key.getKeyContent().equals(keyContent));
+    }
+
+    private boolean findKey(final Predicate<PortableSSHPublicKey> predicate) {
+        return currentKeys.stream().anyMatch(predicate);
+    }
+
+    public void onAddKey() {
         newSSHKeyModal.hide();
         load();
     }
@@ -95,5 +117,6 @@ public class SSHKeysEditor implements SSHKeysEditorView.Presenter,
     @PreDestroy
     public void clear() {
         view.clear();
+        currentKeys.clear();
     }
 }

@@ -80,6 +80,6 @@ public class SSHKeyEditorServiceImpl implements SSHKeyEditorService {
     }
 
     private PortableSSHPublicKey convert(SSHPublicKey key) {
-        return new PortableSSHPublicKey(key.getId(), key.getMetaData().getName(), key.getMetaData().getCreationDate(), key.getMetaData().getLastTimeUsed());
+        return new PortableSSHPublicKey(key.getId(), key.getMetaData().getName(), PublicKeyConverter.fromPublicKey(key.getKey()), key.getMetaData().getCreationDate(), key.getMetaData().getLastTimeUsed());
     }
 }

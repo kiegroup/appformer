@@ -26,12 +26,14 @@ public class PortableSSHPublicKey {
 
     private String id;
     private String name;
+    private String keyContent;
     private Date creationDate;
     private Date lastTimeUsed;
 
-    public PortableSSHPublicKey(@MapsTo("id") String id, @MapsTo("name") String name, @MapsTo("creationDate") Date creationDate, @MapsTo("lastTimeUsed") Date lastTimeUsed) {
+    public PortableSSHPublicKey(@MapsTo("id") String id, @MapsTo("name") String name, @MapsTo("keyContent") String keyContent, @MapsTo("creationDate") Date creationDate, @MapsTo("lastTimeUsed") Date lastTimeUsed) {
         this.id = id;
         this.name = name;
+        this.keyContent = keyContent;
         this.creationDate = creationDate;
         this.lastTimeUsed = lastTimeUsed;
     }
@@ -44,8 +46,8 @@ public class PortableSSHPublicKey {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getKeyContent() {
+        return keyContent;
     }
 
     public Date getCreationDate() {

@@ -56,4 +56,10 @@ public interface AppformerSSHConstants {
 
     @TranslationKey(defaultValue = "")
     String ValidationKeyFormatError = "Validation.keyFormatError";
+
+    @TranslationKey(defaultValue = "")
+    String ValidationKeyNameAlreadyExists = "Validation.keyNameAlreadyExists";
+
+    @TranslationKey(defaultValue = "")
+    String ValidationKeyAlreadyExists = "Validation.keyAlreadyExists";
 }

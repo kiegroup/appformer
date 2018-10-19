@@ -41,7 +41,7 @@ public class NewSSHKeyModal implements NewSSHKeyModalView.Presenter {
     private final Caller<SSHKeyEditorService> serviceCaller;
     private final TranslationService translationService;
 
-    private Command addCommand;
+    private NewSSHKeyModalHandler handler;
 
     @Inject
     public NewSSHKeyModal(final NewSSHKeyModalView view, final Caller<SSHKeyEditorService> serviceCaller, final TranslationService translationService) {
@@ -52,10 +52,10 @@ public class NewSSHKeyModal implements NewSSHKeyModalView.Presenter {
         view.init(this);
     }
 
-    public void init(Command addCommand) {
-        PortablePreconditions.checkNotNull("addCommand", addCommand);
+    public void init(NewSSHKeyModalHandler handler) {
+        PortablePreconditions.checkNotNull("handler", handler);
 
-        this.addCommand = addCommand;
+        this.handler = handler;
     }
 
     public void show() {
@@ -78,9 +78,7 @@ public class NewSSHKeyModal implements NewSSHKeyModalView.Presenter {
 
         if (nameValid && keyValid) {
             serviceCaller.call((RemoteCallback<Void>) response -> {
-                if (addCommand != null) {
-                    addCommand.execute();
-                }
+                handler.onAddKey();
             }, (ErrorCallback<Message>) (message, throwable) -> {
                 view.setKeyValidationError(translationService.getTranslation(AppformerSSHConstants.ValidationKeyFormatError));
                 return false;
@@ -104,6 +102,11 @@ public class NewSSHKeyModal implements NewSSHKeyModalView.Presenter {
             return false;
         }
 
+        if(handler.existsKey(keyContent)) {
+            view.setKeyValidationError(translationService.getTranslation(AppformerSSHConstants.ValidationKeyAlreadyExists));
+            return false;
+        }
+
         return true;
     }
 
@@ -112,6 +115,11 @@ public class NewSSHKeyModal implements NewSSHKeyModalView.Presenter {
 
         if (optional.isPresent()) {
             view.setNameValidationError(optional.get());
+            return false;
+        }
+
+        if(handler.existsKeyName(name)) {
+            view.setNameValidationError(translationService.format(AppformerSSHConstants.ValidationKeyNameAlreadyExists, name));
             return false;
         }
         return true;
