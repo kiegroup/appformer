@@ -12,7 +12,7 @@ export class StaticReactComponent extends AppFormer.Screen {
         this.af_componentTitle = "React component";
     }
 
-    af_componentRoot(root?: { ss: AppFormer.Screen[]; ps: AppFormer.Perspective[] }): AppFormer.RootElement {
+    af_componentRoot(): AppFormer.RootElement {
         return <div style={{padding: "10px"}}>
             <Clock/>
             <Files/>
@@ -79,7 +79,7 @@ export class FirstReactPerspective extends AppFormer.Perspective {
         return [panelWest, panelEast, panelSouth];
     }
 
-    af_perspectiveRoot(root?: { ss: AppFormer.Screen[]; ps: AppFormer.Perspective[] }): AppFormer.RootElement {
+    af_perspectiveRoot(): AppFormer.RootElement {
         return <div>This is a test perspective!</div>; // TODO create perspective layout here
     }
 
