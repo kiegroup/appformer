@@ -84,7 +84,19 @@ public class AppFormerJsBridge {
             goTo: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::goTo(Ljava/lang/String;),
             rpc: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::rpc(Ljava/lang/String;[Ljava/lang/Object;),
             translate: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::translate(Ljava/lang/String;[Ljava/lang/Object;),
-            sendEvent: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::sendEvent(Ljava/lang/String;)
+            sendEvent: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::sendEvent(Ljava/lang/String;),
+            render: function(component, container, callback) {
+                if (component instanceof HTMLElement) {
+                    container.innerHTML = "";
+                    container.appendChild(component);
+                    callback();
+                } else if (typeof component === "string") {
+                    container.innerHTML = component;
+                    callback();
+                } else {
+                    $wnd.ReactDOM.render(component, container, callback);
+                }
+            }
         };
     }-*/;
 
@@ -168,10 +180,6 @@ public class AppFormerJsBridge {
                     .sendNowWith(ErraiBus.get());
         });
     }
-
-    public native static void callNative(final Object func, final Object arg) /*-{
-        func(JSON.parse(arg)); //FIXME: Unmarshall!
-    }-*/;
 
     interface Success<T> extends Callback<T, Exception> {
 

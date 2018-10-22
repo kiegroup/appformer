@@ -218,7 +218,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
 
                 final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
                     public void fireEvent(final Object event) {
-                        AppFormerJsBridge.callNative(callback, Marshalling.toJSON(event));
+                        callNative(callback, Marshalling.toJSON(event));
                     }
                 });
 
@@ -231,6 +231,10 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
             }
         }
     }
+
+    public native static void callNative(final Object func, final String jsonArg) /*-{
+        func(JSON.parse(jsonArg)); //FIXME: Unmarshall!
+    }-*/;
 
     private void unsubscribeFromAllEvents() {
         DomGlobal.console.info("Removing event subscriptions for " + this.getIdentifier() + "...");
