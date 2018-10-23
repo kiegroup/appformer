@@ -60,8 +60,6 @@ public class CoordinateUtilitiesTest {
 
     private static final double DEFAULT_ROW_HEIGHT = 20D;
     private static final double COLUMN_WIDTH = 50D;
-    private static final double HEADER_HEIGHT = 50.0;
-    private static final double HEADER_ROW_HEIGHT = HEADER_HEIGHT / 2;
 
     @Mock
     private BaseGridRendererHelper gridRendererHelper;
@@ -248,7 +246,7 @@ public class CoordinateUtilitiesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetUiHeaderRowIndexHeaderMaxY() {
-        point = new Point2D(COLUMN_WIDTH / 2, HEADER_HEIGHT + 5.0);
+        point = new Point2D(COLUMN_WIDTH / 2, gridRenderer.getHeaderHeight() + 5.0);
         setupGridWidget();
 
         final GridColumn uiColumn = new BaseGridColumn<>(new BaseHeaderMetaData("first"), gridColumnRenderer, COLUMN_WIDTH);
@@ -263,7 +261,7 @@ public class CoordinateUtilitiesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetUiHeaderRowIndexRow0() {
-        point = new Point2D(COLUMN_WIDTH / 2, HEADER_ROW_HEIGHT - 5.0);
+        point = new Point2D(COLUMN_WIDTH / 2, gridRenderer.getHeaderRowHeight() - 5.0);
         setupGridWidget();
 
         final GridColumn uiColumn = new BaseGridColumn<>(new BaseHeaderMetaData("first"), gridColumnRenderer, COLUMN_WIDTH);
@@ -280,7 +278,7 @@ public class CoordinateUtilitiesTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testGetUiHeaderRowIndexRow1() {
-        point = new Point2D(COLUMN_WIDTH / 2, HEADER_ROW_HEIGHT + 5.0);
+        point = new Point2D(COLUMN_WIDTH / 2, gridRenderer.getHeaderRowHeight() + 5.0);
         setupGridWidget();
 
         final List<GridColumn.HeaderMetaData> headerMetaData = new ArrayList<>();

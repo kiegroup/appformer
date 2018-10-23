@@ -168,14 +168,16 @@ public interface GridRenderer {
      * @param context The context of the render phase.
      * @param rendererHelper Helper for rendering.
      * @param selectedCells The cells that are selected.
-     * @param selectedCellsHeightSupplier A function that returns the height of a selection.
+     * @param selectedCellsYOffsetStrategy A function that returns the YOffset of a selection.
+     * @param selectedCellsHeightStrategy A function that returns the height of a selection.
      * @return A command that adds the "selected cells".
      */
     RendererCommand renderSelectedCells(final GridData model,
                                         final GridBodyRenderContext context,
                                         final BaseGridRendererHelper rendererHelper,
                                         final List<GridData.SelectedCell> selectedCells,
-                                        final Function<SelectedRange, Double> selectedCellsHeightSupplier);
+                                        final BiFunction<SelectedRange, Integer, Double> selectedCellsYOffsetStrategy,
+                                        final Function<SelectedRange, Double> selectedCellsHeightStrategy);
 
     /**
      * Renders the header for the Grid.

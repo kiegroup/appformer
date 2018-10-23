@@ -107,7 +107,8 @@ public class BaseGridRenderer implements GridRenderer {
                                                final GridBodyRenderContext context,
                                                final BaseGridRendererHelper rendererHelper,
                                                final List<GridData.SelectedCell> selectedCells,
-                                               final Function<SelectedRange, Double> selectedCellsHeightSupplier) {
+                                               final BiFunction<SelectedRange, Integer, Double> selectedCellsYOffsetStrategy,
+                                               final Function<SelectedRange, Double> selectedCellsHeightStrategy) {
         return (RenderSelectedCellsCommand) (rc) -> {
             if (!rc.isSelectionLayer()) {
 
@@ -157,11 +158,11 @@ public class BaseGridRenderer implements GridRenderer {
                     final Group cs = renderSelectedRange(blockColumns,
                                                          minVisibleUiColumnIndex,
                                                          _selectedRange,
-                                                         selectedCellsHeightSupplier);
+                                                         selectedCellsHeightStrategy);
                     if (cs != null) {
                         final double csx = rendererHelper.getColumnOffset(blockColumns,
                                                                           _selectedRange.getUiColumnIndex() - minVisibleUiColumnIndex);
-                        final double csy = rendererHelper.getRowOffset(_selectedRange.getUiRowIndex()) - rendererHelper.getRowOffset(minVisibleUiRowIndex);
+                        final double csy = selectedCellsYOffsetStrategy.apply(_selectedRange, minVisibleUiRowIndex);
                         cs.setX(csx + gridLineStrokeWidth + (selectorStrokeWidth / 2))
                                 .setY(csy + gridLineStrokeWidth + (selectorStrokeWidth / 2))
                                 .setListening(false);
@@ -176,14 +177,14 @@ public class BaseGridRenderer implements GridRenderer {
     protected Group renderSelectedRange(final List<GridColumn<?>> blockColumns,
                                         final int minVisibleUiColumnIndex,
                                         final SelectedRange selectedRange,
-                                        final Function<SelectedRange, Double> selectedCellsHeightSupplier) {
+                                        final Function<SelectedRange, Double> selectedCellsHeightStrategy) {
         final Group cellSelector = new Group();
         final double gridLineStrokeWidth = theme.getBodyGridLine().getStrokeWidth();
         final double selectorStrokeWidth = theme.getCellSelectorBorder().getStrokeWidth();
         final double width = getSelectedRangeWidth(blockColumns,
                                                    minVisibleUiColumnIndex,
                                                    selectedRange) - (gridLineStrokeWidth + selectorStrokeWidth);
-        final double height = selectedCellsHeightSupplier.apply(selectedRange) - (gridLineStrokeWidth + selectorStrokeWidth);
+        final double height = selectedCellsHeightStrategy.apply(selectedRange) - (gridLineStrokeWidth + selectorStrokeWidth);
         final Rectangle selector = theme.getCellSelectorBorder()
                 .setWidth(width)
                 .setHeight(height)

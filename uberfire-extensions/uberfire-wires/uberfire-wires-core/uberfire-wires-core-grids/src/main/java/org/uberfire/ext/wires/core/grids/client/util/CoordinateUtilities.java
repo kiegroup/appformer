@@ -164,10 +164,11 @@ public class CoordinateUtilities {
         //Get header row index
         int uiHeaderRowIndex = 0;
         double offsetY = cy - headerMinY;
-        final double headerRowsHeight = renderer.getHeaderRowHeight();
-        final double headerRowHeight = headerRowsHeight / column.getHeaderMetaData().size();
-        while (headerRowHeight < offsetY) {
-            offsetY = offsetY - headerRowHeight;
+        final double headerRowHeight = renderer.getHeaderRowHeight();
+        final double headerRowsHeight = headerRowHeight * gridWidget.getModel().getHeaderRowCount();
+        final double columnHeaderRowHeight = headerRowsHeight / column.getHeaderMetaData().size();
+        while (columnHeaderRowHeight < offsetY) {
+            offsetY = offsetY - columnHeaderRowHeight;
             uiHeaderRowIndex++;
         }
         if (uiHeaderRowIndex < 0 || uiHeaderRowIndex > column.getHeaderMetaData().size() - 1) {

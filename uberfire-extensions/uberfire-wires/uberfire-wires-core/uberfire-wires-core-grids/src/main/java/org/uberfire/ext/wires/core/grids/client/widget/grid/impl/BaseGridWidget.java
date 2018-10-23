@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -94,14 +95,20 @@ public class BaseGridWidget extends Group implements GridWidget {
     private boolean isSelected = false;
     private final CellSelectionManager cellSelectionManager;
 
-    private final Function<SelectedRange, Double> headerSelectionHeightSupplier = selectedRange -> {
-        final double headerRowHeight = getRenderer().getHeaderRowHeight();
-        final List<GridColumn.HeaderMetaData> headerMetaData = model.getColumns().get(selectedRange.getUiColumnIndex()).getHeaderMetaData();
-        final double rowHeight = headerRowHeight / headerMetaData.size();
-        return selectedRange.getHeight() * rowHeight;
+    private final BiFunction<SelectedRange, Integer, Double> headerSelectionYOffsetStrategy;
+
+    private final BiFunction<SelectedRange, Integer, Double> bodySelectionYOffsetStrategy;
+
+    private final Function<SelectedRange, Double> headerSelectionHeightStrategy = selectedRange -> {
+        final double headerHeight = getRenderer().getHeaderHeight();
+        final double headerRowsYOffset = renderingInformation.getHeaderRowsYOffset();
+        final GridColumn<?> uiColumn = model.getColumns().get(selectedRange.getUiColumnIndex());
+        final List<GridColumn.HeaderMetaData> headerMetaData = uiColumn.getHeaderMetaData();
+        final double headerRowHeight = (headerHeight - headerRowsYOffset) / headerMetaData.size();
+        return selectedRange.getHeight() * headerRowHeight;
     };
 
-    private final Function<SelectedRange, Double> bodySelectionHeightSupplier = selectedRange ->
+    private final Function<SelectedRange, Double> bodySelectionHeightStrategy = selectedRange ->
             IntStream.range(0, selectedRange.getHeight())
                     .mapToObj(rowIndex -> model.getRow(selectedRange.getUiRowIndex() + rowIndex))
                     .collect(Collectors.summingDouble(GridRow::getHeight));
@@ -131,6 +138,18 @@ public class BaseGridWidget extends Group implements GridWidget {
             state.reset();
             getViewport().getElement().getStyle().setCursor(state.getCursor());
         });
+
+        headerSelectionYOffsetStrategy = (selectedRange, minVisibleUiRowIndex) -> {
+            final double headerRowsYOffset = renderingInformation.getHeaderRowsYOffset();
+            final double uiRowOffset = renderer.getHeaderRowHeight() * selectedRange.getUiRowIndex();
+            return headerRowsYOffset + uiRowOffset;
+        };
+
+        bodySelectionYOffsetStrategy = (selectedRange, minVisibleUiRowIndex) -> {
+            final double uiRowOffset = rendererHelper.getRowOffset(selectedRange.getUiRowIndex());
+            final double uiMinVisibleRowOffset = rendererHelper.getRowOffset(minVisibleUiRowIndex);
+            return uiRowOffset - uiMinVisibleRowOffset;
+        };
     }
 
     protected BaseGridRendererHelper getBaseGridRendererHelper() {
@@ -399,7 +418,8 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          bodyTransformer,
                                                          renderingInformation,
                                                          model.getSelectedHeaderCells(),
-                                                         headerSelectionHeightSupplier));
+                                                         headerSelectionYOffsetStrategy,
+                                                         headerSelectionHeightStrategy));
         }
         if (floatingHeaderSelections != null) {
             addCommandToRenderQueue(floatingHeaderSelections,
@@ -410,7 +430,8 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          floatingColumnsTransformer,
                                                          renderingInformation,
                                                          model.getSelectedHeaderCells(),
-                                                         headerSelectionHeightSupplier));
+                                                         headerSelectionYOffsetStrategy,
+                                                         headerSelectionHeightStrategy));
         }
 
         if (bodySelections != null) {
@@ -422,7 +443,8 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          bodyTransformer,
                                                          renderingInformation,
                                                          model.getSelectedCells(),
-                                                         bodySelectionHeightSupplier));
+                                                         bodySelectionYOffsetStrategy,
+                                                         bodySelectionHeightStrategy));
         }
         if (floatingBodySelections != null) {
             addCommandToRenderQueue(floatingBodySelections,
@@ -433,7 +455,8 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                          floatingColumnsTransformer,
                                                          renderingInformation,
                                                          model.getSelectedCells(),
-                                                         bodySelectionHeightSupplier));
+                                                         bodySelectionYOffsetStrategy,
+                                                         bodySelectionHeightStrategy));
         }
         if (boundary != null) {
             addCommandToRenderQueue(boundary,
@@ -716,7 +739,8 @@ public class BaseGridWidget extends Group implements GridWidget {
                                                                 final SelectionsTransformer transformer,
                                                                 final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                                                 final List<GridData.SelectedCell> selectedCells,
-                                                                final Function<SelectedRange, Double> selectedCellsHeightSupplier) {
+                                                                final BiFunction<SelectedRange, Integer, Double> selectedCellsYOffsetStrategy,
+                                                                final Function<SelectedRange, Double> selectedCellsHeightStrategy) {
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
         final double floatingX = floatingBlockInformation.getX();
         final double floatingWidth = floatingBlockInformation.getWidth();
@@ -738,7 +762,8 @@ public class BaseGridWidget extends Group implements GridWidget {
                                             context,
                                             rendererHelper,
                                             selectedCells,
-                                            selectedCellsHeightSupplier);
+                                            selectedCellsYOffsetStrategy,
+                                            selectedCellsHeightStrategy);
     }
 
     @Override

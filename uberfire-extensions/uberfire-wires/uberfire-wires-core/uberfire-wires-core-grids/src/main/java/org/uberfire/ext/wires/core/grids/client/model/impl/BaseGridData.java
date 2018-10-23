@@ -268,6 +268,10 @@ public class BaseGridData implements GridData {
 
     @Override
     public int getHeaderRowCount() {
+        int headerRowCount = this.headerRowCount;
+        for (GridColumn<?> column : columns) {
+            headerRowCount = Math.max(headerRowCount, column.getHeaderMetaData().size());
+        }
         return headerRowCount;
     }
 

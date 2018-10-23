@@ -18,6 +18,7 @@ package org.uberfire.ext.wires.core.grids.client.widget.grid.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.ait.lienzo.client.core.Context2D;
@@ -55,7 +56,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils.ROW_HEIGHT;
+import static org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT;
 import static org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils.makeRenderingInformation;
 
 @RunWith(LienzoMockitoTestRunner.class)
@@ -158,6 +159,7 @@ public class BaseGridWidgetRenderingTest {
                                           any(GridBodyRenderContext.class),
                                           eq(rendererHelper),
                                           any(List.class),
+                                          any(BiFunction.class),
                                           any(Function.class))).thenReturn((rc) -> rc.getGroup().add(selections));
     }
 
@@ -179,7 +181,7 @@ public class BaseGridWidgetRenderingTest {
                                                                                100.0));
 
         model.appendColumn(column);
-        model.appendRow(new BaseGridRow(ROW_HEIGHT));
+        model.appendRow(new BaseGridRow(HEADER_ROW_HEIGHT));
 
         final Context2D context2D = mock(Context2D.class);
         final BoundingBox boundingBox = mock(BoundingBox.class);
