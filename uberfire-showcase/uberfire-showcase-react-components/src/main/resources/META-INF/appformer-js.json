@@ -2,6 +2,19 @@
   "name": "uberfire-showcase-react-components",
   "type": "lib",
   "main": "./dist/index.js",
-  "components": ["ReactComponent"],
+  "components": [
+    {
+      "id": "ReactComponent",
+      "type": "screen",
+      "params": {}
+    },
+    {
+      "id": "FirstReactPerspective",
+      "type": "perspective",
+      "params": {
+        "is_default": false
+      }
+    }
+  ],
   "decorators": {}
 }

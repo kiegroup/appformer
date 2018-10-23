@@ -1,4 +1,4 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective.jsnative;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import org.uberfire.workbench.model.ContextDisplayMode;
@@ -23,12 +23,12 @@ public class JsNativeContextDisplay {
     }
 
     private native String contextId(final String displayInfoField)   /*-{
-        var contextDisplay = this.@org.uberfire.jsbridge.client.JsNativeContextDisplay::self[displayInfoField];
+        var contextDisplay = this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativeContextDisplay::self[displayInfoField];
         return contextDisplay && contextDisplay["contextId"];
     }-*/;
 
     private native String contextDisplayModeString(final String displayInfoField)   /*-{
-        var contextDisplay = this.@org.uberfire.jsbridge.client.JsNativeContextDisplay::self[displayInfoField];
+        var contextDisplay = this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativeContextDisplay::self[displayInfoField];
         return contextDisplay && contextDisplay["contextDisplayMode"];
     }-*/;
 }

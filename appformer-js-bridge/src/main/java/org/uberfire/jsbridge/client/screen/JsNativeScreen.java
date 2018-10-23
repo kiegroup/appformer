@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.screen;
 
 import java.util.function.Consumer;
 
@@ -22,6 +22,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import elemental2.core.JsObject;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
+import org.uberfire.jsbridge.client.JsPlaceRequest;
 
 public class JsNativeScreen {
 
@@ -75,8 +76,8 @@ public class JsNativeScreen {
 
     public native void renderNative() /*-{
         $wnd.AppFormer.render(
-                this.@org.uberfire.jsbridge.client.JsNativeScreen::self.af_componentRoot(),
-                this.@org.uberfire.jsbridge.client.JsNativeScreen::container);
+                this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self.af_componentRoot(),
+                this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
     }-*/;
 
     // ===== Properties
@@ -136,7 +137,7 @@ public class JsNativeScreen {
     }
 
     private native Object getNative(final String property)  /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property];
+        return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[property];
     }-*/;
 
     private Object run(final String functionName) {
@@ -147,7 +148,7 @@ public class JsNativeScreen {
     }
 
     private native Object runNative(final String functionName) /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName]();
+        return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName]();
     }-*/;
 
     private Object run(final String functionName, final Object arg1) {
@@ -158,7 +159,7 @@ public class JsNativeScreen {
     }
 
     private native Object runNative(final String functionName, final Object arg1) /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.JsNativeScreen::self[functionName](arg1);
+        return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName](arg1);
     }-*/;
 
     public boolean defines(final String property) {
@@ -169,7 +170,7 @@ public class JsNativeScreen {
     }
 
     private native boolean definesNative(final String property) /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeScreen::self[property] !== undefined;
+        return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[property] !== undefined;
     }-*/;
 
     public String getComponentId() {

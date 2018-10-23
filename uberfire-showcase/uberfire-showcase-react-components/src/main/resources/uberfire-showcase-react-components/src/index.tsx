@@ -33,6 +33,7 @@ export class FirstReactPerspective extends AppFormer.Perspective {
     constructor() {
         super("FirstReactPerspective");
         this.af_isReact = true;
+        this.af_isTransient = false;
         this.af_parts = FirstReactPerspective.parts();
         this.af_panels = FirstReactPerspective.panels();
     }

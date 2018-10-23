@@ -1,4 +1,4 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective.jsnative;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +43,10 @@ public class JsNativeView {
     }
 
     private native JsArray<JavaScriptObject> nativeParts(final String partsField) /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeView::self[partsField];
+        return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativeView::self[partsField];
     }-*/;
 
     private native JsArray<JavaScriptObject> nativePanels(final String panelsField) /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativeView::self[panelsField];
+        return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativeView::self[panelsField];
     }-*/;
 }

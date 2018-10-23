@@ -1,7 +1,9 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective;
 
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.jsbridge.client.perspective.jsnative.JsNativeContextDisplay;
+import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceType;
@@ -18,10 +20,14 @@ import static java.util.stream.Collectors.toList;
 public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspectiveActivity {
 
     private JsNativePerspective realPerspective;
+    private final boolean isDefault;
 
-    public JsWorkbenchPerspectiveActivity(final JsNativePerspective realPerspective, final PlaceManager placeManager) {
+    public JsWorkbenchPerspectiveActivity(final JsNativePerspective realPerspective,
+                                          final PlaceManager placeManager,
+                                          final boolean isDefault) {
         super(placeManager);
         this.realPerspective = realPerspective;
+        this.isDefault = isDefault;
     }
 
     // TODO: subscriptions?
@@ -73,7 +79,7 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
     @Override
     public boolean isDefault() {
-        return realPerspective.isDefault();
+        return this.isDefault;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective.jsnative;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +41,6 @@ public class JsNativePart {
     }
 
     private native Object get(final String fieldToInvoke)   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePart::self[fieldToInvoke];
+        return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePart::self[fieldToInvoke];
     }-*/;
 }

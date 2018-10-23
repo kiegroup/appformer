@@ -17,8 +17,6 @@
 package org.uberfire.jsbridge.client;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.function.Function;
 
 import javax.enterprise.context.Dependent;
@@ -26,7 +24,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.Callback;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
@@ -36,25 +33,18 @@ import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
-import org.uberfire.client.mvp.Activity;
-import org.uberfire.client.mvp.ActivityBeansCache;
-import org.uberfire.client.mvp.PerspectiveActivity;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.Workbench;
+import org.uberfire.jsbridge.client.loading.AppFormerJsActivityLoader;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static java.util.Arrays.stream;
-import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
 @Dependent
 public class AppFormerJsBridge {
 
     @Inject
-    private Workbench workbench;
-
-    @Inject
-    private AppFormerJSActivityLoader appFormerJsLoader;
+    private AppFormerJsActivityLoader appFormerJsLoader;
 
     public void init(final String gwtModuleName) {
 
@@ -116,35 +106,16 @@ public class AppFormerJsBridge {
         return translationService.format(key, args);
     }
 
-    @SuppressWarnings("unchecked")
     public void registerPerspective(final Object jsObject) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
-        final JsNativePerspective newPerspective = new JsNativePerspective((JavaScriptObject) jsObject);
-        final JsWorkbenchPerspectiveActivity activity = new JsWorkbenchPerspectiveActivity(newPerspective,
-                                                                                           beanManager.lookupBean(PlaceManager.class).getInstance());
-
-        //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
-        final SingletonBeanDefinition<JsWorkbenchPerspectiveActivity, JsWorkbenchPerspectiveActivity> activityBean = new SingletonBeanDefinition<>(
-                activity,
-                JsWorkbenchPerspectiveActivity.class,
-                new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
-                activity.getIdentifier(),
-                true,
-                PerspectiveActivity.class,
-                Activity.class);
-
-        beanManager.registerBean(activityBean);
-        beanManager.registerBeanTypeAlias(activityBean, PerspectiveActivity.class);
-        beanManager.registerBeanTypeAlias(activityBean, Activity.class);
-
-        activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
+        final AppFormerJsActivityLoader jsLoader = beanManager.lookupBean(AppFormerJsActivityLoader.class).getInstance();
+        jsLoader.onActivityLoaded(jsObject);
     }
 
     public void registerScreen(final Object jsObject) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        final AppFormerJSActivityLoader jsLoader = beanManager.lookupBean(AppFormerJSActivityLoader.class).getInstance();
-        jsLoader.registerScreen(jsObject);
+        final AppFormerJsActivityLoader jsLoader = beanManager.lookupBean(AppFormerJsActivityLoader.class).getInstance();
+        jsLoader.onActivityLoaded(jsObject);
     }
 
     public Promise<Object> rpc(final String path, final Object[] params) {

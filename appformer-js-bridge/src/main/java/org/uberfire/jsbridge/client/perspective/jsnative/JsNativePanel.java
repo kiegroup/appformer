@@ -1,4 +1,4 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective.jsnative;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import org.uberfire.workbench.model.CompassPosition;
@@ -49,6 +49,6 @@ public class JsNativePanel {
     }
 
     private native Object get(final String fieldToInvoke)   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePanel::self[fieldToInvoke];
+        return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePanel::self[fieldToInvoke];
     }-*/;
 }

@@ -1,4 +1,4 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective.jsnative;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import org.uberfire.workbench.model.menu.Menus;
@@ -66,10 +66,10 @@ public class JsNativePerspective {
     }
 
     private native Object get(final String fieldToInvoke)   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePerspective::self[fieldToInvoke];
+        return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective::self[fieldToInvoke];
     }-*/;
 
     private native Object run(final String method)   /*-{
-        return this.@org.uberfire.jsbridge.client.JsNativePerspective::self[method]();
+        return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective::self[method]();
     }-*/;
 }

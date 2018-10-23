@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +34,16 @@ import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.jsbridge.client.AppFormerJsBridge;
+import org.uberfire.jsbridge.client.JsPlaceRequest;
+import org.uberfire.jsbridge.client.loading.JsWorkbenchLazyActivity;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.CompassPosition;
 import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
 
-public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
+public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity implements JsWorkbenchLazyActivity {
 
     private InvocationPostponer invocationsPostponer;
 
@@ -57,6 +60,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         this.invocationsPostponer = new InvocationPostponer();
     }
 
+    @Override
     public void updateRealContent(final JavaScriptObject jsObject) {
         this.screen.updateRealContent(jsObject);
         this.invocationsPostponer.executeAll();
@@ -242,7 +246,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity {
         this.subscriptions = new ArrayList<>();
     }
 
-    private class InvocationPostponer {
+    public class InvocationPostponer {
 
         private final Stack<Runnable> invocations;
 

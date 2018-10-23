@@ -1,5 +1,7 @@
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.perspective;
 
+import org.uberfire.jsbridge.client.perspective.jsnative.JsNativeContextDisplay;
+import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePanel;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.impl.ContextDefinitionImpl;
