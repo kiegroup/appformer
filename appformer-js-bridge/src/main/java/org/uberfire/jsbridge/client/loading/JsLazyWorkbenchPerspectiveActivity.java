@@ -10,10 +10,12 @@ import org.uberfire.jsbridge.client.loading.AppFormerComponentConfiguration.Pers
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchPerspectiveActivity;
 import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.mvp.impl.ForcedPlaceRequest;
 import org.uberfire.security.ResourceType;
 import org.uberfire.workbench.model.ActivityResourceType;
 import org.uberfire.workbench.model.PerspectiveDefinition;
+import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
@@ -180,9 +182,9 @@ public class JsLazyWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspec
     }
 
     private PerspectiveDefinition buildEmptyDefinition() {
-        final PerspectiveDefinition def = new PerspectiveDefinitionImpl();
+        final PerspectiveDefinition def = new PerspectiveDefinitionImpl("org.uberfire.client.workbench.panels.impl.ImmutableWorkbenchPanelPresenter");
         def.setName(getIdentifier());
-        // TODO: must render a loading page
+        def.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("LazyLoadingScreen")));
         return def;
     }
 }

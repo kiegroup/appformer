@@ -99,7 +99,7 @@ public class AppFormerJsActivityLoader {
 
         switch (component.getType()) {
             case PERSPECTIVE:
-                registerPerspective(component, jsObject);
+                registerPerspective(component);
                 break;
             case SCREEN:
                 registerScreen(component, jsObject);
@@ -143,8 +143,7 @@ public class AppFormerJsActivityLoader {
     }
 
     @SuppressWarnings("unchecked")
-    private void registerPerspective(final AppFormerComponentConfiguration component,
-                                     final JavaScriptObject jsObject) {
+    private void registerPerspective(final AppFormerComponentConfiguration component) {
 
         final String componentId = component.getId();
 
