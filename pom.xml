@@ -57,6 +57,7 @@
     <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <version.com.google.guava>20.0</version.com.google.guava>
+    <version.com.jcraft>0.1.54</version.com.jcraft>
     <version.org.apache.tomcat>7.0.61</version.org.apache.tomcat>
     <!-- Version 1.1.0.Final which is coming from ip-bom is not compatible with GWT 2.8.0 -->
     <version.javax.validation>1.0.0.GA</version.javax.validation>
@@ -1320,6 +1321,11 @@
         </exclusions>
       </dependency>
 
+      <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <version>${version.com.jcraft}</version>
+      </dependency>
 
       <!-- Required to run the ElasticSearch server when performing the unit test executions.
           The ELS data provider requires groovy scripts enabled on the server.-->
