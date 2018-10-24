@@ -986,6 +986,12 @@
         <version>${version.com.google.elemental2}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.google.elemental2</groupId>
+        <artifactId>elemental2-promise</artifactId>
+        <version>${version.com.google.elemental2}</version>
+      </dependency>
+
       <!-- RHDM-588 freemarker -->
       <dependency>
         <groupId>org.freemarker</groupId>
