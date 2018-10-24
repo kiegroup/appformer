@@ -16,6 +16,7 @@
 package org.uberfire.ext.wires.core.grids.client.util;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 
@@ -60,7 +61,7 @@ public class ColumnIndexUtilities {
             if (candidateHeaderMetaData.size() - 1 < headerRowIndex) {
                 break;
             }
-            if (!candidateHeaderMetaData.get(headerRowIndex).equals(headerMetaData)) {
+            if (!Objects.equals(candidateHeaderMetaData.get(headerRowIndex), headerMetaData)) {
                 break;
             }
             candidateHeaderColumnIndex--;
@@ -85,7 +86,7 @@ public class ColumnIndexUtilities {
             if (candidateHeaderMetaData.size() - 1 < headerRowIndex) {
                 break;
             }
-            if (!candidateHeaderMetaData.get(headerRowIndex).equals(headerMetaData)) {
+            if (!Objects.equals(candidateHeaderMetaData.get(headerRowIndex), headerMetaData)) {
                 break;
             }
             candidateHeaderColumnIndex++;

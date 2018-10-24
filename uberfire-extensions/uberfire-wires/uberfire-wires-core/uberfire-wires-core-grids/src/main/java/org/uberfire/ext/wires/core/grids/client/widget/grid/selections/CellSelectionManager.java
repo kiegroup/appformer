@@ -27,12 +27,12 @@ public interface CellSelectionManager {
      * Handles selection of a cell by delegating selection to a @{link CellSelectionStrategy} associated
      * with the cell being selected. Different strategies may select an entire row, a range depending
      * upon shift/control key states etc.
-     * @param ap Canvas coordinate relative to the GridWidget.
+     * @param rp Canvas coordinate relative to the GridWidget.
      * @param isShiftKeyDown True if the shift key is pressed.
      * @param isControlKeyDown True if the control key is pressed.
      * @return true if the selections have changed.
      */
-    boolean selectCell(final Point2D ap,
+    boolean selectCell(final Point2D rp,
                        final boolean isShiftKeyDown,
                        final boolean isControlKeyDown);
 
@@ -55,12 +55,12 @@ public interface CellSelectionManager {
      * Handles selection of a cell in the Header by delegating selection to a @{link HeaderCellSelectionStrategy}
      * associated with the header cell being selected. Different strategies may select an entire column, or a range
      * depending upon shift/control key states etc.
-     * @param ap Canvas coordinate relative to the GridWidget.
+     * @param rp Canvas coordinate relative to the GridWidget.
      * @param isShiftKeyDown True if the shift key is pressed.
      * @param isControlKeyDown True if the control key is pressed.
      * @return true if the selections have changed.
      */
-    boolean selectHeaderCell(final Point2D ap,
+    boolean selectHeaderCell(final Point2D rp,
                              final boolean isShiftKeyDown,
                              final boolean isControlKeyDown);
 

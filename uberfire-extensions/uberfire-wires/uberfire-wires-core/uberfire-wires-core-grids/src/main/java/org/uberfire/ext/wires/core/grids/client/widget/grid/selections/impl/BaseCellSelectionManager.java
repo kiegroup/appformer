@@ -50,13 +50,13 @@ public class BaseCellSelectionManager implements CellSelectionManager {
     }
 
     @Override
-    public boolean selectCell(final Point2D ap,
+    public boolean selectCell(final Point2D rp,
                               final boolean isShiftKeyDown,
                               final boolean isControlKeyDown) {
         final Integer uiRowIndex = CoordinateUtilities.getUiRowIndex(gridWidget,
-                                                                     ap.getY());
+                                                                     rp.getY());
         final Integer uiColumnIndex = CoordinateUtilities.getUiColumnIndex(gridWidget,
-                                                                           ap.getX());
+                                                                           rp.getX());
         if (uiRowIndex == null || uiColumnIndex == null) {
             return false;
         }
@@ -100,13 +100,13 @@ public class BaseCellSelectionManager implements CellSelectionManager {
     }
 
     @Override
-    public boolean selectHeaderCell(final Point2D ap,
+    public boolean selectHeaderCell(final Point2D rp,
                                     final boolean isShiftKeyDown,
                                     final boolean isControlKeyDown) {
         final Integer uiHeaderRowIndex = CoordinateUtilities.getUiHeaderRowIndex(gridWidget,
-                                                                                 ap);
+                                                                                 rp);
         final Integer uiHeaderColumnIndex = CoordinateUtilities.getUiColumnIndex(gridWidget,
-                                                                                 ap.getX());
+                                                                                 rp.getX());
         if (uiHeaderRowIndex == null || uiHeaderColumnIndex == null) {
             return false;
         }
@@ -134,7 +134,6 @@ public class BaseCellSelectionManager implements CellSelectionManager {
         final GridColumn.HeaderMetaData headerMetaData = gridColumnHeaderMetaData.get(uiHeaderRowIndex);
         final CellSelectionStrategy strategy = headerMetaData.getSelectionStrategy();
 
-        //Handle selection
         return strategy.handleSelection(gridModel,
                                         uiHeaderRowIndex,
                                         uiHeaderColumnIndex,

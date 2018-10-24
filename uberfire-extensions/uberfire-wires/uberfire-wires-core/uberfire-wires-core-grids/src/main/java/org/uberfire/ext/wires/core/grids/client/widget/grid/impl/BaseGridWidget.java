@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -96,22 +95,9 @@ public class BaseGridWidget extends Group implements GridWidget {
     private final CellSelectionManager cellSelectionManager;
 
     private final BiFunction<SelectedRange, Integer, Double> headerSelectionYOffsetStrategy;
-
+    private final Function<SelectedRange, Double> headerSelectionHeightStrategy;
     private final BiFunction<SelectedRange, Integer, Double> bodySelectionYOffsetStrategy;
-
-    private final Function<SelectedRange, Double> headerSelectionHeightStrategy = selectedRange -> {
-        final double headerHeight = getRenderer().getHeaderHeight();
-        final double headerRowsYOffset = renderingInformation.getHeaderRowsYOffset();
-        final GridColumn<?> uiColumn = model.getColumns().get(selectedRange.getUiColumnIndex());
-        final List<GridColumn.HeaderMetaData> headerMetaData = uiColumn.getHeaderMetaData();
-        final double headerRowHeight = (headerHeight - headerRowsYOffset) / headerMetaData.size();
-        return selectedRange.getHeight() * headerRowHeight;
-    };
-
-    private final Function<SelectedRange, Double> bodySelectionHeightStrategy = selectedRange ->
-            IntStream.range(0, selectedRange.getHeight())
-                    .mapToObj(rowIndex -> model.getRow(selectedRange.getUiRowIndex() + rowIndex))
-                    .collect(Collectors.summingDouble(GridRow::getHeight));
+    private final Function<SelectedRange, Double> bodySelectionHeightStrategy;
 
     public BaseGridWidget(final GridData model,
                           final GridSelectionManager selectionManager,
@@ -139,17 +125,45 @@ public class BaseGridWidget extends Group implements GridWidget {
             getViewport().getElement().getStyle().setCursor(state.getCursor());
         });
 
-        headerSelectionYOffsetStrategy = (selectedRange, minVisibleUiRowIndex) -> {
+        headerSelectionYOffsetStrategy = getHeaderSelectionYOffsetStrategy();
+        headerSelectionHeightStrategy = getHeaderSelectionHeightStrategy();
+        bodySelectionYOffsetStrategy = getBodySelectionYOffsetStrategy();
+        bodySelectionHeightStrategy = getBodySelectionHeightStrategy();
+    }
+
+    BiFunction<SelectedRange, Integer, Double> getHeaderSelectionYOffsetStrategy() {
+        return (selectedRange, minVisibleUiRowIndex) -> {
             final double headerRowsYOffset = renderingInformation.getHeaderRowsYOffset();
             final double uiRowOffset = renderer.getHeaderRowHeight() * selectedRange.getUiRowIndex();
             return headerRowsYOffset + uiRowOffset;
         };
+    }
 
-        bodySelectionYOffsetStrategy = (selectedRange, minVisibleUiRowIndex) -> {
+    Function<SelectedRange, Double> getHeaderSelectionHeightStrategy() {
+        return selectedRange -> {
+            final double headerHeight = getRenderer().getHeaderHeight();
+            final double headerRowsYOffset = renderingInformation.getHeaderRowsYOffset();
+            final GridColumn<?> uiColumn = model.getColumns().get(selectedRange.getUiColumnIndex());
+            final List<GridColumn.HeaderMetaData> headerMetaData = uiColumn.getHeaderMetaData();
+            final double headerRowHeight = (headerHeight - headerRowsYOffset) / headerMetaData.size();
+            return selectedRange.getHeight() * headerRowHeight;
+        };
+    }
+
+    BiFunction<SelectedRange, Integer, Double> getBodySelectionYOffsetStrategy() {
+        return (selectedRange, minVisibleUiRowIndex) -> {
             final double uiRowOffset = rendererHelper.getRowOffset(selectedRange.getUiRowIndex());
             final double uiMinVisibleRowOffset = rendererHelper.getRowOffset(minVisibleUiRowIndex);
             return uiRowOffset - uiMinVisibleRowOffset;
         };
+    }
+
+    Function<SelectedRange, Double> getBodySelectionHeightStrategy() {
+        return selectedRange ->
+                IntStream.range(0, selectedRange.getHeight())
+                        .mapToObj(rowIndex -> model.getRow(selectedRange.getUiRowIndex() + rowIndex))
+                        .mapToDouble(GridRow::getHeight)
+                        .sum();
     }
 
     protected BaseGridRendererHelper getBaseGridRendererHelper() {
@@ -783,10 +797,10 @@ public class BaseGridWidget extends Group implements GridWidget {
     }
 
     @Override
-    public boolean selectCell(final Point2D ap,
+    public boolean selectCell(final Point2D rp,
                               final boolean isShiftKeyDown,
                               final boolean isControlKeyDown) {
-        return cellSelectionManager.selectCell(ap,
+        return cellSelectionManager.selectCell(rp,
                                                isShiftKeyDown,
                                                isControlKeyDown);
     }
@@ -803,10 +817,10 @@ public class BaseGridWidget extends Group implements GridWidget {
     }
 
     @Override
-    public boolean selectHeaderCell(final Point2D ap,
+    public boolean selectHeaderCell(final Point2D rp,
                                     final boolean isShiftKeyDown,
                                     final boolean isControlKeyDown) {
-        return cellSelectionManager.selectHeaderCell(ap,
+        return cellSelectionManager.selectHeaderCell(rp,
                                                      isShiftKeyDown,
                                                      isControlKeyDown);
     }

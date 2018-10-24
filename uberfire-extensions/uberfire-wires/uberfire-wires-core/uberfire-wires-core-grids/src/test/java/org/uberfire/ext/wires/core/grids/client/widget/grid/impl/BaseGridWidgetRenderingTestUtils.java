@@ -35,6 +35,14 @@ public class BaseGridWidgetRenderingTestUtils {
 
     public static RenderingInformation makeRenderingInformation(final GridData model,
                                                                 final List<Double> rowOffsets) {
+        return makeRenderingInformation(model,
+                                        rowOffsets,
+                                        HEADER_HEIGHT);
+    }
+
+    public static RenderingInformation makeRenderingInformation(final GridData model,
+                                                                final List<Double> rowOffsets,
+                                                                final double headerHeight) {
         return new RenderingInformation(mock(Bounds.class),
                                         model.getColumns(),
                                         new BaseGridRendererHelper.RenderingBlockInformation(model.getColumns(),
@@ -54,7 +62,7 @@ public class BaseGridWidgetRenderingTestUtils {
                                         false,
                                         HEADER_ROW_COUNT,
                                         HEADER_ROW_HEIGHT,
-                                        HEADER_HEIGHT,
-                                        0);
+                                        headerHeight,
+                                        headerHeight - (HEADER_ROW_COUNT * HEADER_ROW_HEIGHT));
     }
 }
