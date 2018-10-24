@@ -54,6 +54,7 @@
     <version.org.kie.soup>${version.org.kie}</version.org.kie.soup>
     <!-- Exception as it is needed for gwt-maven-plugin version-->
     <version.com.google.gwt>2.8.2</version.com.google.gwt>
+    <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <version.com.google.guava>20.0</version.com.google.guava>
     <version.org.apache.tomcat>7.0.61</version.org.apache.tomcat>
@@ -977,6 +978,12 @@
             <artifactId>javax.annotation-api</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.elemental2</groupId>
+        <artifactId>elemental2-dom</artifactId>
+        <version>${version.com.google.elemental2}</version>
       </dependency>
 
       <!-- RHDM-588 freemarker -->
