@@ -19,41 +19,46 @@ package org.uberfire.jsbridge.client.screen;
 import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.JsObject;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.uberfire.jsbridge.client.JsPlaceRequest;
+import org.uberfire.jsbridge.client.loading.LazyLoadingScreen;
 
 public class JsNativeScreen {
 
+    private final String componentId;
     private final HTMLElement container;
+
+    private final Consumer<String> lazyLoadParentScript;
     private JavaScriptObject self;
-    private String componentId;
-    private Consumer<String> lazyLoadParentScript;
+    private boolean loaded;
 
-    public static JsNativeScreen build(String identifier, JavaScriptObject jsObject, Consumer<String> lazyLoadParentScript) {
-        if (jsObject == null) {
-            return new JsNativeScreen(identifier, lazyLoadParentScript);
-        } else {
-            return new JsNativeScreen(jsObject);
-        }
-    }
+    private final Elemental2DomUtil elemental2DomUtil;
 
-    private JsNativeScreen(final JavaScriptObject obj) {
-        this.self = obj;
-        this.container = (HTMLElement) DomGlobal.document.createElement("div");
-        this.container.classList.add("js-screen-container");
-    }
+    public JsNativeScreen(final String componentId,
+                          final Consumer<String> lazyLoadParentScript,
+                          final LazyLoadingScreen lazyScreen) {
 
-    private JsNativeScreen(final String componentId, Consumer<String> lazyLoadParentScript) {
+        this.loaded = false;
         this.componentId = componentId;
+
+        this.elemental2DomUtil = new Elemental2DomUtil();
+        this.container = createContainerForLoadingScreen(lazyScreen.asWidget(), this.elemental2DomUtil);
+
         this.lazyLoadParentScript = lazyLoadParentScript;
-        this.container = (HTMLElement) DomGlobal.document.createElement("div");
-        this.container.classList.add("js-screen-container");
     }
 
-    public void updateRealContent(JavaScriptObject jsObject) {
+    public void updateRealContent(final JavaScriptObject jsObject) {
+        this.loaded = true;
         this.self = jsObject;
+
+        // reset container content's, removing the loading content
+        this.elemental2DomUtil.removeAllElementChildren(this.container);
+
+        // re-render with the updated content
         render();
     }
 
@@ -63,16 +68,30 @@ public class JsNativeScreen {
     }
 
     public void render() {
-        if (this.scriptLoaded()) {
+        if (this.screenLoaded()) {
             renderNative();
         } else {
             lazyLoadParentScript.accept(componentId);
         }
     }
 
-    public boolean scriptLoaded() {
-        return this.self != null;
+    public boolean screenLoaded() {
+        return this.loaded;
     }
+
+    private HTMLElement createContainerForLoadingScreen(final Widget loadingWidget,
+                                                        final Elemental2DomUtil elemental2DomUtil) {
+
+        final HTMLElement container = (HTMLElement) DomGlobal.document.createElement("div");
+        container.classList.add("js-screen-container");
+
+        // while loading, this screen will render the loadingWidget's content
+        elemental2DomUtil.appendWidgetToElement(container, loadingWidget);
+
+        return container;
+    }
+
+    // ===== Native calls
 
     public native void renderNative() /*-{
         $wnd.AppFormer.render(
@@ -80,7 +99,7 @@ public class JsNativeScreen {
                 this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
     }-*/;
 
-    // ===== Properties
+    // ========== Properties
 
     public String componentId() {
         return (String) get("af_componentId");
@@ -99,7 +118,7 @@ public class JsNativeScreen {
         return (JsObject) get("af_subscriptions");
     }
 
-    // ===== Lifecycle
+    // ========== Lifecycle
 
     public void onStartup(final JsPlaceRequest placeRequest) {
         run("af_onStartup", placeRequest);
@@ -130,7 +149,7 @@ public class JsNativeScreen {
     }
 
     private Object get(final String property) {
-        if (!this.scriptLoaded()) {
+        if (!this.screenLoaded()) {
             return null;
         }
         return getNative(property);
@@ -141,7 +160,7 @@ public class JsNativeScreen {
     }-*/;
 
     private Object run(final String functionName) {
-        if (!this.scriptLoaded()) {
+        if (!this.screenLoaded()) {
             return null;
         }
         return runNative(functionName);
@@ -152,7 +171,7 @@ public class JsNativeScreen {
     }-*/;
 
     private Object run(final String functionName, final Object arg1) {
-        if (!this.scriptLoaded()) {
+        if (!this.screenLoaded()) {
             return null;
         }
         return runNative(functionName, arg1);
@@ -163,7 +182,7 @@ public class JsNativeScreen {
     }-*/;
 
     public boolean defines(final String property) {
-        if (!this.scriptLoaded()) {
+        if (!this.screenLoaded()) {
             return false;
         }
         return definesNative(property);

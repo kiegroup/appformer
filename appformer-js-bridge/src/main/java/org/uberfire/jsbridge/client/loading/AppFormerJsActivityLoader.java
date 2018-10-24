@@ -54,7 +54,7 @@ public class AppFormerJsActivityLoader {
     private void extractComponentsFromRegistry() {
         Arrays.stream(AppFormerComponentsRegistry.keys())
                 .map(k -> new AppFormerComponentConfiguration(k, AppFormerComponentsRegistry.get(k)))
-                .forEach(config -> registerComponent(config, null));
+                .forEach(this::registerComponent);
     }
 
     public void onActivityLoaded(final Object jsInput) {
@@ -95,14 +95,14 @@ public class AppFormerJsActivityLoader {
         timer.schedule(1500);
     }
 
-    private void registerComponent(final AppFormerComponentConfiguration component, final JavaScriptObject jsObject) {
+    private void registerComponent(final AppFormerComponentConfiguration component) {
 
         switch (component.getType()) {
             case PERSPECTIVE:
                 registerPerspective(component);
                 break;
             case SCREEN:
-                registerScreen(component, jsObject);
+                registerScreen(component);
                 break;
             default:
                 throw new IllegalArgumentException("Don't know how to register component " + component.getId());
@@ -110,13 +110,14 @@ public class AppFormerJsActivityLoader {
     }
 
     @SuppressWarnings("unchecked")
-    private void registerScreen(final AppFormerComponentConfiguration component,
-                                final JavaScriptObject jsObject) {
+    private void registerScreen(final AppFormerComponentConfiguration component) {
 
         final String identifier = component.getId();
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        JsNativeScreen newScreen = JsNativeScreen.build(identifier, jsObject, this::lazyLoadParentScript);
+        final JsNativeScreen newScreen = new JsNativeScreen(identifier,
+                                                            this::lazyLoadParentScript,
+                                                            beanManager.lookupBean(LazyLoadingScreen.class).getInstance());
 
         final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen,
                                                                                  beanManager.lookupBean(PlaceManager.class).getInstance());
