@@ -3,8 +3,6 @@ import * as AppFormer from 'appformer-js';
 import {Clock} from "./Clock";
 import {Files} from "./Files";
 
-alert("I'm alive!");
-
 export class StaticReactComponent extends AppFormer.Screen {
     constructor() {
         super("ReactComponent");
@@ -12,7 +10,7 @@ export class StaticReactComponent extends AppFormer.Screen {
         this.af_componentTitle = "React component";
     }
 
-    af_componentRoot(): AppFormer.RootElement {
+    af_componentRoot(): AppFormer.Element {
         return <div style={{padding: "10px"}}>
             <Clock/>
             <Files/>
@@ -80,7 +78,7 @@ export class FirstReactPerspective extends AppFormer.Perspective {
         return [panelWest, panelEast, panelSouth];
     }
 
-    af_perspectiveRoot(): AppFormer.RootElement {
+    af_componentRoot(): AppFormer.Element {
         return <div>This is a test perspective!</div>; // TODO create perspective layout here
     }
 
@@ -102,4 +100,5 @@ export class FirstReactPerspective extends AppFormer.Perspective {
 
 }
 
-AppFormer.register({StaticReactComponent, FirstReactPerspective});
+AppFormer.register(new StaticReactComponent());
+AppFormer.register( new FirstReactPerspective());

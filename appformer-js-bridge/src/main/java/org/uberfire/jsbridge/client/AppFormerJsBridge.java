@@ -74,8 +74,8 @@ public class AppFormerJsBridge {
             goTo: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::goTo(Ljava/lang/String;),
             rpc: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::rpc(Ljava/lang/String;[Ljava/lang/Object;),
             translate: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::translate(Ljava/lang/String;[Ljava/lang/Object;),
-            sendEvent: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::sendEvent(Ljava/lang/String;),
-            render: function(component, container, callback) {
+            fireEvent: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::fireEvent(Ljava/lang/String;),
+            render: function (component, container, callback) {
                 if (component instanceof HTMLElement) {
                     container.innerHTML = "";
                     container.appendChild(component);
@@ -90,7 +90,7 @@ public class AppFormerJsBridge {
         };
     }-*/;
 
-    public void sendEvent(final String eventJson) {
+    public void fireEvent(final String eventJson) {
         CDI.fireEvent(Marshalling.fromJSON(eventJson));
     }
 
@@ -141,7 +141,7 @@ public class AppFormerJsBridge {
                     ? Marshalling.toJSON(value)
                     : null;
 
-            final Object[] gwtParams = stream(((Object[]) params[0])).map(jsonToGwt).toArray();
+            final Object[] gwtParams = stream(params).map(jsonToGwt).toArray();
 
             MessageBuilder.createCall()
                     .call(serviceFqcn)
