@@ -57,6 +57,7 @@
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
     <version.com.google.guava>20.0</version.com.google.guava>
+    <version.com.google.jsinterop.base>1.0.0-RC1</version.com.google.jsinterop.base>
     <version.org.apache.tomcat>7.0.61</version.org.apache.tomcat>
     <!-- Version 1.1.0.Final which is coming from ip-bom is not compatible with GWT 2.8.0 -->
     <version.javax.validation>1.0.0.GA</version.javax.validation>
@@ -1007,6 +1008,12 @@
         <groupId>com.google.elemental2</groupId>
         <artifactId>elemental2-promise</artifactId>
         <version>${version.com.google.elemental2}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.jsinterop</groupId>
+        <artifactId>base</artifactId>
+        <version>${version.com.google.jsinterop.base}</version>
       </dependency>
 
       <!-- RHDM-588 freemarker -->
