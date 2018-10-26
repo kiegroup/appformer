@@ -116,7 +116,7 @@
     <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <version.io.netty.old>3.10.6.Final</version.io.netty.old>
-    <version.elasticsearch.client>5.6.1</version.elasticsearch.client>
+    <version.org.elasticsearch>5.6.1</version.org.elasticsearch>
     <version.org.apache.lucene>6.6.1</version.org.apache.lucene>
     <version.com.unboundid>3.2.0</version.com.unboundid>
     <version.org.infinispan>9.3.2.Final</version.org.infinispan>
@@ -1129,7 +1129,23 @@
       <dependency>
         <groupId>org.elasticsearch.client</groupId>
         <artifactId>transport</artifactId>
-        <version>${version.elasticsearch.client}</version>
+        <version>${version.org.elasticsearch}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${version.org.elasticsearch}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>elasticsearch-rest-client</artifactId>
+        <version>${version.org.elasticsearch}</version>
         <exclusions>
           <exclusion>
             <artifactId>commons-logging</artifactId>
