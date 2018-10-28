@@ -131,6 +131,8 @@ public class InfinispanContext implements Disposable {
         addProtobufClass(serializationContext,
                          SCHEMA_PROTO,
                          Schema.class);
+
+        this.loadProtobufSchema(getProtobufCache());
     }
 
     private RemoteCacheManager createRemoteCache(Map<String, String> properties) {
@@ -140,9 +142,9 @@ public class InfinispanContext implements Disposable {
         String host = properties.get(HOST);
         String port = properties.get(PORT);
         try {
-            ConfigurationBuilder builder = getMaybeSecuryBuilder(username,
-                                                                 password,
-                                                                 realm)
+            ConfigurationBuilder builder = getMaybeSecurityBuilder(username,
+                                                                   password,
+                                                                   realm)
                     .addServer()
                     .host(host)
                     .port(Integer.parseInt(port))
@@ -157,9 +159,9 @@ public class InfinispanContext implements Disposable {
         }
     }
 
-    private AuthenticationConfigurationBuilder getMaybeSecuryBuilder(String username,
-                                                                     String password,
-                                                                     String realm) {
+    private AuthenticationConfigurationBuilder getMaybeSecurityBuilder(String username,
+                                                                       String password,
+                                                                       String realm) {
 
         ConfigurationBuilder b = new ConfigurationBuilder();
 
@@ -233,6 +235,27 @@ public class InfinispanContext implements Disposable {
             throw new InfinispanException("Can't add protobuf schema <" + schema.getName() + "> to cache",
                                           e);
         }
+    }
+
+    public void loadProtobufSchema(RemoteCache<String, String> metadataCache) {
+        metadataCache.entrySet()
+                .stream()
+                .filter(entry -> !entry.getKey().equals(SCHEMA_PROTO))
+                .forEach((entry) -> {
+                    int index = entry.getKey().lastIndexOf('.');
+                    String protoTypeName = entry.getKey().substring(0,
+                                                                    index);
+                    String proto = entry.getValue();
+
+                    try {
+                        marshaller.registerSchema(protoTypeName,
+                                                  proto,
+                                                  KObject.class);
+                    } catch (IOException e) {
+                        throw new InfinispanException("Can't add protobuf schema <" + protoTypeName + "> to cache",
+                                                      e);
+                    }
+                });
     }
 
     @Override
