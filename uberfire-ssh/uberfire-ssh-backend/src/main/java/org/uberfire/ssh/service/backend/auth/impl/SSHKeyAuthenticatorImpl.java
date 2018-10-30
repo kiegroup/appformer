@@ -50,7 +50,7 @@ public class SSHKeyAuthenticatorImpl implements SSHKeyAuthenticator {
         if (!workbenchUserManagerInstance.isUnsatisfied() && !workbenchUserManagerInstance.isAmbiguous()) {
             this.userManager = workbenchUserManagerInstance.get();
         } else {
-            LOGGER.warn("Cannot find any implmenentation of 'WorkbenchUserManager'. Loading default implemntation from SSH module");
+            LOGGER.warn("Cannot find any implementation of 'WorkbenchUserManager'. Loading default implementation on SSH module");
             this.userManager = this::getUser;
         }
     }
