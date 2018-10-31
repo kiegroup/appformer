@@ -1,6 +1,7 @@
 package org.dashbuilder.renderer.c3.client.charts.bubble;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 
 import com.google.gwt.core.shared.GWT;
@@ -146,6 +148,17 @@ public class C3BubbleChartDisplayer extends C3Displayer {
         return C3Point.create(
                         d -> rValues.get(d.getId()));
     }
+    
+    @Override
+    protected String getSelectedCategory(C3DataInfo info) {
+        return info.getName();
+    }
+    
+    @Override
+    protected int getSelectedRowIndex(C3DataInfo info) {
+        String[] categories = createCategories();
+        return Arrays.asList(categories).indexOf(info.getName());
+    }    
     
     private double map(double value, double start1, double stop1, double start2, double stop2) {
         return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));

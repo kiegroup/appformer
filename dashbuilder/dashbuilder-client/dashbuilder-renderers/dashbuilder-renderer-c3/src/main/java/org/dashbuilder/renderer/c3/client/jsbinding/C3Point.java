@@ -9,7 +9,6 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class C3Point {
     
-    
     @JsOverlay
     public static C3Point create(RadiusCallback r) {
         C3Point instance = new C3Point();
@@ -24,18 +23,8 @@ public class C3Point {
     @FunctionalInterface
     public interface RadiusCallback {
         
-        double callback(C3D value);
+        double callback(C3DataInfo value);
     
-    }
-    
-    @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-    public static class C3D {
-        
-        @JsProperty
-        public native String getId();
-        
-        @JsProperty
-        public native int getIndex();
     }
         
 }

@@ -55,7 +55,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 public class C3Renderer extends AbstractRendererLibrary {
 
     public static final String UUID = "c3";
-
+    
     @Inject
     protected SyncBeanManager beanManager;
 

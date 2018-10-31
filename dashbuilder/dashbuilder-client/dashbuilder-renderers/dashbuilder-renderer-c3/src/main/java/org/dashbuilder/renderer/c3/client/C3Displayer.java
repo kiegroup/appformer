@@ -15,12 +15,15 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
+import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
@@ -31,11 +34,15 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisY;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Grid;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3GridConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Selection;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Transition;
+import org.uberfire.mvp.Command;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import com.google.gwt.i18n.client.NumberFormat;
 
@@ -44,6 +51,7 @@ import elemental2.core.JsObject;
 public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
     
     protected View view;
+    private Map<String, Integer> selectedRows = new HashMap<>();
 
     public interface View extends AbstractGwtDisplayer.View<C3Displayer> {
 
@@ -56,16 +64,28 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         String getColumnsTitle();
         
         void showTitle(String title);
+
+        
+        // TODO: move to CDI to use FilterLabelSet
+        
+        void setOnFilterClear(Command clearCommand);
+        
+        void setOnFilterRemoved(ParameterizedCommand<String> removeFilterCommand);
+        
+        void addFilter(String filter);
+
+        void removeFilters();
         
     }
-    
     
     public C3Displayer(View view) {
         super();
         this.view = view;
         view.init(this);
+        view.setOnFilterClear(this::clearFilters);
+        view.setOnFilterRemoved(this::removeFilter);
     }
-
+    
     @Override
     public View getView() {
         return view;
@@ -141,7 +161,17 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         String type = getView().getType();
         String[][] groups = createGroups();
         JsObject xs = createXs();
-        return C3ChartData.create(series, type, groups, xs);
+        C3Selection selection = createSelection();
+        C3ChartData c3Data = C3ChartData.create(series, type, groups, xs, selection);
+        if(displayerSettings.isFilterNotificationEnabled()) {
+            c3Data.setOnselected(this::addToSelection);
+        }
+        return c3Data;
+    }
+
+    protected C3Selection createSelection() {
+        boolean filterEnabled = displayerSettings.isFilterNotificationEnabled();
+        return C3Selection.create(filterEnabled, true, false);
     }
 
     protected JsObject createXs() {
@@ -208,7 +238,6 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         return categories;
     }
 
-
     /**
      * Extracts the series of the column 1 and other columns
      * @return
@@ -230,6 +259,57 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
             }
         }
         return data;
+    }
+    
+    // FILTERS HANDLING
+    
+    
+    protected int getSelectedRowIndex(C3DataInfo info) {
+        return info.getIndex();
+    }
+    
+    
+    protected String getSelectedCategory(C3DataInfo info) {
+        List<?> values = dataSet.getColumns().get(0).getValues();
+        return values.get(info.getIndex()).toString();
+    }
+    
+    private void clearFilters() {
+        selectedRows = new HashMap<>();
+        updateFilters();
+    }
+    
+    private void addToSelection(C3DataInfo data) {
+        int row = getSelectedRowIndex(data);
+        String selectedRow =  getSelectedCategory(data);
+        if(selectedRows.remove(selectedRow) == null) {
+            selectedRows.put(selectedRow, row);
+        }
+        updateFilters();
+    }
+    
+    private void removeFilter(String key) {
+        selectedRows.remove(key);
+        updateFilters();
+    }
+    
+    private void updateFilters() {
+        List<Interval> intervalList = new ArrayList<>();
+        String columnId = dataSet.getColumns().get(0).getId();
+        getView().removeFilters();
+        if(selectedRows.isEmpty()) {
+            filterReset(columnId);
+        } else {
+            selectedRows.forEach((k, i) -> {
+                Interval interval = dataSetHandler.getInterval(columnId, i);
+                intervalList.add(interval);
+                getView().addFilter(k);
+            });
+            filterApply(columnId, intervalList);
+        }
+        if (!displayerSettings.isFilterSelfApplyEnabled()) {
+            updateVisualization();
+        }
     }
 
 }

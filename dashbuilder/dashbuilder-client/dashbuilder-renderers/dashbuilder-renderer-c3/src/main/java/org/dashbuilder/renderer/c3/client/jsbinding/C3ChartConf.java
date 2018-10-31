@@ -32,16 +32,22 @@ public class C3ChartConf {
     
     @JsProperty
     public native void setBindto(Element element);
+    
     @JsProperty
     public native void setSize(C3ChartSize size);
+    
     @JsProperty
     public native void setData(C3ChartData data);
+    
     @JsProperty
     public native void setAxis(C3AxisInfo axis);
+    
     @JsProperty
     public native void setGrid(C3Grid grid);
+    
     @JsProperty
     public native void setTransition(C3Transition transition);
+    
     @JsProperty
     public native void setPoint(C3Point point);
     

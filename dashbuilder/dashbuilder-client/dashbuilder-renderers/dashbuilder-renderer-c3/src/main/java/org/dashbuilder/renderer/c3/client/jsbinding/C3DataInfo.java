@@ -1,23 +1,25 @@
 package org.dashbuilder.renderer.c3.client.jsbinding;
 
-import com.google.gwt.dom.client.DivElement;
-
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class C3Chart {
+public class C3DataInfo {
     
     @JsProperty
-    public native DivElement getElement();
+    public native String getId();
     
-    public native void flush();
+    @JsProperty
+    public native int getIndex();
     
-    public native void select(String[] points);
+    @JsProperty
+    public native String getX();
     
-    public native void focus(String points);
+    @JsProperty
+    public native String getValue();
     
-    public native void defocus();
+    @JsProperty
+    public native String getName();
     
 }
