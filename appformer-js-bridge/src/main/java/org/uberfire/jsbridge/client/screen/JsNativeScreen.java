@@ -99,6 +99,12 @@ public class JsNativeScreen {
                 this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
     }-*/;
 
+    private native void unmount() /*-{
+        if (this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self.af_isReact) {
+            $wnd.ReactDOM.unmountComponentAtNode(this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
+        }
+    }-*/;
+
     // ========== Properties
 
     public String componentId() {
@@ -130,6 +136,7 @@ public class JsNativeScreen {
 
     public void onClose() {
         run("af_onClose");
+        unmount();
     }
 
     public boolean onMayClose() {
