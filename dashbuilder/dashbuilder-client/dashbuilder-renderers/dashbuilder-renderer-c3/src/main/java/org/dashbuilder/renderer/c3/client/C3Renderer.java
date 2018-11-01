@@ -104,7 +104,7 @@ public class C3Renderer extends AbstractRendererLibrary {
                 displayer = getAreaChartForSubType(subtype);
                 break;
             case BUBBLECHART:
-                displayer = new C3BubbleChartDisplayer();
+                displayer = beanManager.lookupBean(C3BubbleChartDisplayer.class).newInstance();
                 break;
             default:
                 return null;
@@ -116,46 +116,55 @@ public class C3Renderer extends AbstractRendererLibrary {
         C3Displayer displayer;
         switch (subtype) {
             case BAR:
-                displayer = C3BarChartDisplayer.rotated();
+                displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
+                                        .newInstance()
+                                        .rotated();
                 break;
             case BAR_STACKED:
-                displayer = C3BarChartDisplayer.stackedAndRotated();
+                displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
+                                       .newInstance()
+                                       .stackedAndRotated();
                 break;
             case COLUMN:
-                displayer = C3BarChartDisplayer.notRotated();
+                displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
+                                       .newInstance()
+                                       .notRotated();
                 break;
             case COLUMN_STACKED:
-                displayer = C3BarChartDisplayer.stacked();
+                displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
+                                       .newInstance()
+                                       .stacked();
                 break;
             default:
-                displayer = C3BarChartDisplayer.rotated();
+                displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
+                                       .newInstance()
+                                       .rotated();
                 break;
         }
         return displayer;
     }
 
     private C3Displayer getLineChartForSubType(DisplayerSubType subtype) {
-        C3Displayer displayer;
+        C3LineChartDisplayer displayer =  beanManager.lookupBean(C3LineChartDisplayer.class)
+                                                     .newInstance();
         if(subtype == SMOOTH) { 
-            displayer = C3LineChartDisplayer.createSmooth();
-        } else {
-            displayer = C3LineChartDisplayer.create();
-        }
+            displayer = displayer.smooth();
+        } 
         return displayer;
     }
     
     private C3Displayer getPieChartForSubType(DisplayerSubType subtype) {
-        C3Displayer displayer;
+        C3PieChartDisplayer displayer = beanManager.lookupBean(C3PieChartDisplayer.class)
+                                                   .newInstance();
         if(subtype == DONUT) { 
-            displayer = C3PieChartDisplayer.createDonut();
-        } else {
-            displayer = C3PieChartDisplayer.create();
-        }
+            displayer = displayer.donut();
+        } 
         return displayer;
     }
     
     private C3Displayer getAreaChartForSubType(DisplayerSubType subtype) {
-        return new C3AreaChartDisplayer();
+        return beanManager.lookupBean(C3AreaChartDisplayer.class)
+                .newInstance();
     }
 
     @Override

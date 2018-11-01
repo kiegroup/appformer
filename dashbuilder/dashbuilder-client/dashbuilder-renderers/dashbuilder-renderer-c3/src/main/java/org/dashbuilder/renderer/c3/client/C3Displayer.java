@@ -15,11 +15,11 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
+import org.dashbuilder.common.client.widgets.FilterLabel;
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
@@ -41,19 +41,16 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Selection;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Transition;
-import org.uberfire.mvp.Command;
-import org.uberfire.mvp.ParameterizedCommand;
 
 import com.google.gwt.i18n.client.NumberFormat;
 
 import elemental2.core.JsObject;
 
-public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
+public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGwtDisplayer<V> {
     
-    protected View view;
-    private Map<String, Integer> selectedRows = new HashMap<>();
+    private FilterLabelSet filterLabelSet;
 
-    public interface View extends AbstractGwtDisplayer.View<C3Displayer> {
+    public interface View<P extends C3Displayer> extends AbstractGwtDisplayer.View<P> {
 
         void updateChart(C3ChartConf conf);
         
@@ -65,32 +62,16 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         
         void showTitle(String title);
 
-        
-        // TODO: move to CDI to use FilterLabelSet
-        
-        void setOnFilterClear(Command clearCommand);
-        
-        void setOnFilterRemoved(ParameterizedCommand<String> removeFilterCommand);
-        
-        void addFilter(String filter);
-
-        void removeFilters();
+        void setFilterLabelSet(FilterLabelSet filterLabelSet);
         
     }
     
-    public C3Displayer(View view) {
+    public C3Displayer(FilterLabelSet filterLabelSet) {
         super();
-        this.view = view;
-        view.init(this);
-        view.setOnFilterClear(this::clearFilters);
-        view.setOnFilterRemoved(this::removeFilter);
+        this.filterLabelSet = filterLabelSet;
+        this.filterLabelSet.setOnClearAllCommand(this::onFilterClearAll);
     }
     
-    @Override
-    public View getView() {
-        return view;
-    }
-
     @Override
     public DisplayerConstraints createDisplayerConstraints() {
         DataSetLookupConstraints lookupConstraints = new DataSetLookupConstraints()
@@ -121,6 +102,7 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
 
     @Override
     protected void createVisualization() {
+        getView().setFilterLabelSet(filterLabelSet);
         updateVisualization();
     }
 
@@ -131,6 +113,7 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         }
         C3ChartConf conf = buildConfiguration();
         getView().updateChart(conf);
+        updateFilterStatus();
     }
 
     protected C3ChartConf buildConfiguration() {
@@ -261,8 +244,45 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         return data;
     }
     
-    // FILTERS HANDLING
+    // New filters handling
+    void onFilterClearAll() {
+        super.filterReset();
+
+        // Update the displayer view in order to reflect the current selection
+        // (only if not has already been redrawn in the previous filterUpdate() call)
+        if (!displayerSettings.isFilterSelfApplyEnabled()) {
+            updateVisualization();
+        }
+    }
     
+    void onFilterLabelRemoved(String columnId, int row) {
+        super.filterUpdate(columnId, row);
+
+        // Update the displayer view in order to reflect the current selection
+        // (only if not has already been redrawn in the previous filterUpdate() call)
+        if (!displayerSettings.isFilterSelfApplyEnabled()) {
+            updateVisualization();
+        }
+    }
+    
+    protected void updateFilterStatus() {
+        filterLabelSet.clear();
+        Set<String> columnFilters = filterColumns();
+        if (displayerSettings.isFilterEnabled() && !columnFilters.isEmpty()) {
+
+            for (String columnId : columnFilters) {
+                List<Interval> selectedValues = filterIntervals(columnId);
+                DataColumn column = dataSet.getColumnById(columnId);
+                for (Interval interval : selectedValues) {
+                    String formattedValue = formatInterval(interval, column);
+                    FilterLabel filterLabel = filterLabelSet.addLabel(formattedValue);
+                    filterLabel.setOnRemoveCommand(() -> onFilterLabelRemoved(columnId, interval.getIndex()));
+                }
+            }
+        }
+    }
+    
+    // FILTERS HANDLING
     
     protected int getSelectedRowIndex(C3DataInfo info) {
         return info.getIndex();
@@ -274,42 +294,15 @@ public class C3Displayer extends AbstractGwtDisplayer<C3Displayer.View> {
         return values.get(info.getIndex()).toString();
     }
     
-    private void clearFilters() {
-        selectedRows = new HashMap<>();
-        updateFilters();
-    }
-    
     private void addToSelection(C3DataInfo data) {
         int row = getSelectedRowIndex(data);
-        String selectedRow =  getSelectedCategory(data);
-        if(selectedRows.remove(selectedRow) == null) {
-            selectedRows.put(selectedRow, row);
-        }
-        updateFilters();
-    }
-    
-    private void removeFilter(String key) {
-        selectedRows.remove(key);
-        updateFilters();
-    }
-    
-    private void updateFilters() {
-        List<Interval> intervalList = new ArrayList<>();
-        String columnId = dataSet.getColumns().get(0).getId();
-        getView().removeFilters();
-        if(selectedRows.isEmpty()) {
-            filterReset(columnId);
-        } else {
-            selectedRows.forEach((k, i) -> {
-                Interval interval = dataSetHandler.getInterval(columnId, i);
-                intervalList.add(interval);
-                getView().addFilter(k);
-            });
-            filterApply(columnId, intervalList);
-        }
+        String columnId =  dataSet.getColumns().get(0).getId();
+        Integer maxSelections = displayerSettings.isFilterSelfApplyEnabled() ? null : dataSet.getRowCount();
+        filterUpdate(columnId, row, maxSelections);
+
         if (!displayerSettings.isFilterSelfApplyEnabled()) {
             updateVisualization();
         }
     }
-
+    
 }

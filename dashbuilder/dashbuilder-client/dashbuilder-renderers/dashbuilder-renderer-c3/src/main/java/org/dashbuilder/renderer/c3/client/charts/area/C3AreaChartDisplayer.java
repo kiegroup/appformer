@@ -1,5 +1,9 @@
 package org.dashbuilder.renderer.c3.client.charts.area;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
@@ -7,15 +11,23 @@ import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 
-public class C3AreaChartDisplayer extends C3Displayer {
+
+@Dependent
+public class C3AreaChartDisplayer extends C3Displayer<C3AreaChartDisplayer.View> {
     
-    public C3AreaChartDisplayer() {
-        super(new C3AreaChartView());
+    
+    public interface View extends C3Displayer.View<C3AreaChartDisplayer> {
+    }
+    
+    private View view;
+    
+    @Inject
+    public C3AreaChartDisplayer(View view, FilterLabelSet filterLabelSet) {
+        super(filterLabelSet);
+        this.view = view;
+        this.view.init(this);
     }
 
-    public C3AreaChartDisplayer(View view) {
-        super(view);
-    }
     
     @Override
     public DisplayerConstraints createDisplayerConstraints() {
@@ -48,6 +60,12 @@ public class C3AreaChartDisplayer extends C3Displayer {
                 .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP)
                 .supportsAttribute(DisplayerAttributeGroupDef.CHART_LEGEND_GROUP )
                 .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP);
+    }
+
+
+    @Override
+    public View getView() {
+        return view;
     }
     
 }

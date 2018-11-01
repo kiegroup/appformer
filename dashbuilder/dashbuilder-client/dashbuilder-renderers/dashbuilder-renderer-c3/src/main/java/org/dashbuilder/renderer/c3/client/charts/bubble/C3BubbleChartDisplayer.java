@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
@@ -24,11 +28,11 @@ import elemental2.core.JsObject;
 import jsinterop.base.Any;
 import jsinterop.base.Js;
 
-// TODO: Limit categories?
-
-// TODO: order x axis
-
-public class C3BubbleChartDisplayer extends C3Displayer {
+@Dependent
+public class C3BubbleChartDisplayer extends C3Displayer<C3BubbleChartDisplayer.View> {
+    
+    public interface View extends C3Displayer.View<C3BubbleChartDisplayer> {
+    }
     
     private static final int X_INDEX = 1;
     private static final int Y_INDEX = 2;
@@ -37,12 +41,18 @@ public class C3BubbleChartDisplayer extends C3Displayer {
     private static double MIN_BUBBLE_SIZE  = 5;
     private static double MAX_BUBBLE_SIZE  = 45;
     
-    public C3BubbleChartDisplayer() {
-        super(new C3BubbleChartView());
+    private View view;
+    
+    @Inject
+    public C3BubbleChartDisplayer(View view, FilterLabelSet filterLabelSet) {
+        super(filterLabelSet);
+        this.view = view;
+        this.view.init(this);
     }
-
-    public C3BubbleChartDisplayer(View view) {
-        super(view);
+    
+    @Override
+    public View getView() {
+        return view;
     }
     
     
@@ -163,5 +173,5 @@ public class C3BubbleChartDisplayer extends C3Displayer {
     private double map(double value, double start1, double stop1, double start2, double stop2) {
         return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
     }
-    
+
 }

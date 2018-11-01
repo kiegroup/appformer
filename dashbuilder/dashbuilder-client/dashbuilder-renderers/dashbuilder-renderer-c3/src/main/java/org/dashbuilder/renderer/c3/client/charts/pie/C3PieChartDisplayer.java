@@ -2,6 +2,10 @@ package org.dashbuilder.renderer.c3.client.charts.pie;
 
 import java.util.List;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
@@ -11,22 +15,32 @@ import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
 
-public class C3PieChartDisplayer extends C3Displayer {
+@Dependent
+public class C3PieChartDisplayer extends C3Displayer<C3PieChartDisplayer.View> {
     
-    public C3PieChartDisplayer() {
-        super(new C3PieChartView());
-    }
-
-    public C3PieChartDisplayer(View view) {
-        super(view);
-    }
-    
-    public static C3PieChartDisplayer create() {
-        return new C3PieChartDisplayer();
+    public interface View extends C3Displayer.View<C3PieChartDisplayer> {
+        
+        void setShowAsDonut(boolean showAsDonut);
+        
     }
     
-    public static C3PieChartDisplayer createDonut() {
-        return new C3PieChartDisplayer(new C3DonutChartView());
+    private View view;
+    
+    @Inject
+    public C3PieChartDisplayer(View view, FilterLabelSet filterLabelSet) {
+        super(filterLabelSet);
+        this.view = view;
+        this.view.init(this);
+    }
+    
+    @Override
+    public View getView() {
+        return view;
+    }
+    
+    public C3PieChartDisplayer donut() {
+        getView().setShowAsDonut(true);
+        return this;
     }
     
     // In C3 we only need the series for PieCharts, categories are not needed

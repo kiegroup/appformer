@@ -8,7 +8,7 @@ import static org.mockito.Matchers.any;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerSettingsFactory;
-import org.dashbuilder.renderer.c3.client.C3Displayer.View;
+import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -28,8 +28,8 @@ public class C3DisplayerConfigurationTest extends C3DisplayerTest {
     
     @Test
     public void testC3DisplayerConfiguration() {
-        C3Displayer displayer = c3Displayer(byYear);
-        View view = displayer.getView();
+        C3LineChartDisplayer displayer = c3LineChartDisplayer(byYear);
+        C3LineChartDisplayer.View view = displayer.getView();
         Mockito.verify(view).init(any());;
     }
 

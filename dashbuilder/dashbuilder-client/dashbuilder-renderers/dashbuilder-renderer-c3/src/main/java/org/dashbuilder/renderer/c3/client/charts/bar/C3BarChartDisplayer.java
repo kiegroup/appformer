@@ -1,5 +1,9 @@
 package org.dashbuilder.renderer.c3.client.charts.bar;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
@@ -9,35 +13,47 @@ import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
 
-public class C3BarChartDisplayer extends C3Displayer {
+@Dependent
+public class C3BarChartDisplayer extends C3Displayer<C3BarChartDisplayer.View> {
+    
+    
+    public interface View extends C3Displayer.View<C3BarChartDisplayer> {
+    }
     
     private boolean rotated;
     private boolean stacked;
+    private View view;
     
-    private C3BarChartDisplayer(boolean rotated, boolean stacked) {
-        super(new C3BarChartView());
-        this.rotated = rotated;
-        this.stacked = stacked;
-    }
-
-    public C3BarChartDisplayer(View view) {
-        super(view);
-    }
     
-    public static C3BarChartDisplayer notRotated() {
-        return new C3BarChartDisplayer(false, false);
+    @Inject
+    public C3BarChartDisplayer(View view, FilterLabelSet filterLabelSet) {
+        super(filterLabelSet);
+        this.view = view;
+        this.view.init(this);
     }
     
-    public static C3BarChartDisplayer rotated() {
-        return new C3BarChartDisplayer(true, false);
+    public C3BarChartDisplayer notRotated() {
+        this.setRotated(false);
+        this.setStacked(false);
+        return this;
     }
     
-    public static C3BarChartDisplayer stacked() {
-        return new C3BarChartDisplayer(false, true);
+    public C3BarChartDisplayer rotated() {
+        this.setRotated(true);
+        this.setStacked(false);
+        return this;
     }
     
-    public static C3BarChartDisplayer stackedAndRotated() {
-        return new C3BarChartDisplayer(true, true);
+    public C3BarChartDisplayer stacked() {
+        this.setRotated(false);
+        this.setStacked(true);
+        return this;
+    }
+    
+    public C3BarChartDisplayer stackedAndRotated() {
+        this.setRotated(true);
+        this.setStacked(true);
+        return this;
     }
     
     @Override
@@ -99,6 +115,19 @@ public class C3BarChartDisplayer extends C3Displayer {
     
     public boolean isStacked() {
         return stacked;
+    }
+
+    public void setRotated(boolean rotated) {
+        this.rotated = rotated;
+    }
+
+    public void setStacked(boolean stacked) {
+        this.stacked = stacked;
+    }
+
+    @Override
+    public View getView() {
+        return view;
     }
 
 }

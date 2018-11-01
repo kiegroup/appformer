@@ -1,5 +1,9 @@
 package org.dashbuilder.renderer.c3.client.charts.line;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
@@ -7,23 +11,34 @@ import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 
-public class C3LineChartDisplayer extends C3Displayer {
+@Dependent
+public class C3LineChartDisplayer extends C3Displayer<C3LineChartDisplayer.View> {
     
-    public C3LineChartDisplayer() {
-        super(new C3LineChartView());
+    public interface View extends C3Displayer.View<C3LineChartDisplayer> {
+        
+        void setSmooth(boolean smooth);
+        
     }
+    
+    private View view;
 
-    public C3LineChartDisplayer(View view) {
-        super(view);
+    @Inject
+    public C3LineChartDisplayer(View view, FilterLabelSet filterLabelSet) {
+        super(filterLabelSet);
+        this.view = view;
+        this.view.init(this);
     }
     
-    public static C3LineChartDisplayer create() {
-        return new C3LineChartDisplayer();
+    @Override
+    public View getView() {
+        return view;
     }
     
-    public static C3LineChartDisplayer createSmooth() {
-        return new C3LineChartDisplayer(new C3SmoothChartView());
+    public C3LineChartDisplayer smooth() {
+        getView().setSmooth(true);
+        return this;
     }
+   
     
     @Override
     public DisplayerConstraints createDisplayerConstraints() {
