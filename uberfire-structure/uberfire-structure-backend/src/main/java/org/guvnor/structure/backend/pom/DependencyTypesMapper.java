@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+
 /***
  * Mapper of the dependencies associated to each DependencyType
  */

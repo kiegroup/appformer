@@ -16,7 +16,6 @@ package org.guvnor.structure.backend.pom;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -35,7 +34,7 @@ import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class PomEditorDefaultTest {
 
@@ -125,6 +124,50 @@ public class PomEditorDefaultTest {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         assertThat(model.getDependencies()).hasSize(1);
+    }
+
+    @Test
+    public void addEmptyDepTest() {
+        DynamicPomDependency dep = new DynamicPomDependency("",
+                                                            "",
+                                                            "",
+                                                            "");
+        boolean result = editor.addDependency(dep,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addNullDepTest() {
+        boolean result = editor.addDependency(null,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addNullGroupIDTest() {
+        DynamicPomDependency dep = new DynamicPomDependency(null,
+                                                            "junit",
+                                                            "4.12",
+                                                            "");
+        boolean result = editor.addDependency(dep,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addNullArtifactIDTest() {
+        DynamicPomDependency dep = new DynamicPomDependency("junit",
+                                                            null,
+                                                            "4.12",
+                                                            "");
+        boolean result = editor.addDependency(dep,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
     }
 
     @Test

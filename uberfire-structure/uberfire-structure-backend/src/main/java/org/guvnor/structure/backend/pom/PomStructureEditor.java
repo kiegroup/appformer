@@ -25,6 +25,7 @@ import org.guvnor.structure.pom.DynamicPomDependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
+
 /**
  * Editor to receive PomDependency Event
  */
