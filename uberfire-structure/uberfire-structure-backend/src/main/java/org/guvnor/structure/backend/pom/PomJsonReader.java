@@ -6,5 +6,4 @@ package org.guvnor.structure.backend.pom;
 public interface PomJsonReader {
 
     ConfigurationMap readConfiguration();
-
 }
