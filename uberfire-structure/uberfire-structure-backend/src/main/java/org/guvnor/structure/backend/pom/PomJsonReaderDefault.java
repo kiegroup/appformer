@@ -57,7 +57,8 @@ public class PomJsonReaderDefault {
             throw new RuntimeException("no " + jsonName + " in the provided path :" + path);
         }
 
-        try (JsonReader reader = Json.createReader(new FileInputStream(jsonPath))) {
+        try (InputStream fis = new FileInputStream(jsonPath);
+             JsonReader reader = Json.createReader(fis)) {
             pomObject = reader.readObject();
         } catch (Exception e) {
             logger.error(e.getMessage());
