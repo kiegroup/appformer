@@ -15,7 +15,6 @@
 package org.guvnor.structure.backend.pom;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,28 +53,12 @@ public class PomJsonReaderDefault implements PomJsonReader {
         if (!Files.exists(Paths.get(jsonPath))) {
             throw new RuntimeException("no " + jsonName + " in the provided path :" + path);
         }
-        InputStream fis = null;
-        JsonReader reader = null;
-        try {
-            fis = new FileInputStream(jsonPath);
-            reader = Json.createReader(fis);
+
+        try (JsonReader reader = Json.createReader(new FileInputStream(jsonPath))) {
             pomObject = reader.readObject();
-            reader.close();
         } catch (Exception e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException ex) {
-                    logger.warn(ex.getMessage(),
-                                ex);
-                }
-            }
-            if (reader != null) {
-                reader.close();
-            }
         }
     }
 

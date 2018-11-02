@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -32,7 +31,7 @@ import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.Paths;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class PomEditorDefaultTest {
 
@@ -54,6 +53,50 @@ public class PomEditorDefaultTest {
         if (tmpRoot != null) {
             TestUtil.rm(tmpRoot.toFile());
         }
+    }
+
+    @Test
+    public void addEmptyDepTest() {
+        DynamicPomDependency dep = new DynamicPomDependency("",
+                                                            "",
+                                                            "",
+                                                            "");
+        boolean result = editor.addDependency(dep,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addNullDepTest() {
+        boolean result = editor.addDependency(null,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addNullGroupIDTest() {
+        DynamicPomDependency dep = new DynamicPomDependency(null,
+                                                            "junit",
+                                                            "4.12",
+                                                            "");
+        boolean result = editor.addDependency(dep,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    public void addNullArtifactIDTest() {
+        DynamicPomDependency dep = new DynamicPomDependency("junit",
+                                                            null,
+                                                            "4.12",
+                                                            "");
+        boolean result = editor.addDependency(dep,
+                                              PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
+                                                                  tmp.toUri().toString() + File.separator + POM));
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -100,9 +143,9 @@ public class PomEditorDefaultTest {
                                                 "dummyOverride",
                                                 "target/test-classes/dummy");
         DynamicPomDependency dep = new DynamicPomDependency("org.hibernate.javax.persistence",
-                                                               "hibernate-jpa-2.1-api",
-                                                               "1.0.3.Final",
-                                                               "");
+                                                            "hibernate-jpa-2.1-api",
+                                                            "1.0.3.Final",
+                                                            "");
         List<DynamicPomDependency> deps = Arrays.asList(dep);
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
@@ -111,16 +154,18 @@ public class PomEditorDefaultTest {
 
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        Dependency changedDep = getDependency(model.getDependencies(), "org.hibernate.javax.persistence", "hibernate-jpa-2.1-api");
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.hibernate.javax.persistence",
+                                              "hibernate-jpa-2.1-api");
         assertThat(changedDep.getVersion()).isEqualTo("1.0.3.Final");
     }
 
-
-
-    private Dependency getDependency(List<Dependency> deps , String groupId, String artifactId){
+    private Dependency getDependency(List<Dependency> deps,
+                                     String groupId,
+                                     String artifactId) {
         Dependency dependency = new Dependency();
-        for (Dependency dep : deps){
-            if(dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)){
+        for (Dependency dep : deps) {
+            if (dep.getGroupId().equals(groupId) && dep.getArtifactId().equals(artifactId)) {
                 dependency.setGroupId(dep.getGroupId());
                 dependency.setArtifactId(dep.getArtifactId());
                 dependency.setVersion(dep.getVersion());
@@ -128,7 +173,7 @@ public class PomEditorDefaultTest {
                 break;
             }
         }
-        return  dependency;
+        return dependency;
     }
 
     @Test
@@ -155,10 +200,11 @@ public class PomEditorDefaultTest {
                                                             "4.13",
                                                             "");
         DynamicPomDependency depTwo = new DynamicPomDependency("org.hibernate.javax.persistence",
-                                                            "hibernate-jpa-2.1-api",
-                                                            "1.0.3.Final",
-                                                            "");
-        List<DynamicPomDependency> deps = Arrays.asList(dep, depTwo);
+                                                               "hibernate-jpa-2.1-api",
+                                                               "1.0.3.Final",
+                                                               "");
+        List<DynamicPomDependency> deps = Arrays.asList(dep,
+                                                        depTwo);
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
@@ -166,9 +212,13 @@ public class PomEditorDefaultTest {
 
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        Dependency changedDep = getDependency(model.getDependencies(), "org.hibernate.javax.persistence", "hibernate-jpa-2.1-api");
+        Dependency changedDep = getDependency(model.getDependencies(),
+                                              "org.hibernate.javax.persistence",
+                                              "hibernate-jpa-2.1-api");
         assertThat(changedDep.getVersion()).isEqualTo("1.0.3.Final");
-        changedDep = getDependency(model.getDependencies(), "junit", "junit");
+        changedDep = getDependency(model.getDependencies(),
+                                   "junit",
+                                   "junit");
         assertThat(changedDep.getVersion()).isEqualTo("4.13");
     }
 }

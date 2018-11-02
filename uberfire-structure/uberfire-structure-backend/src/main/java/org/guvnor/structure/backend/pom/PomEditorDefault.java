@@ -49,7 +49,7 @@ public class PomEditorDefault implements PomEditor {
 
     public boolean addDependency(DynamicPomDependency dep,
                                  Path pomPath) {
-        if (dep.getGroupID().isEmpty() || dep.getArtifactID().isEmpty()) {
+        if (dep == null || !isGroupIDValid(dep) || !isArtifactIDValid(dep)) {
             return false;
         }
 
@@ -162,5 +162,13 @@ public class PomEditorDefault implements PomEditor {
             pomDep.setVersion(dep.getVersion());
         }
         return pomDep;
+    }
+
+    private boolean isGroupIDValid(DynamicPomDependency dep) {
+        return dep.getGroupID() != null && !dep.getGroupID().isEmpty();
+    }
+
+    private boolean isArtifactIDValid(DynamicPomDependency dep) {
+        return dep.getArtifactID() != null && !dep.getArtifactID().isEmpty();
     }
 }

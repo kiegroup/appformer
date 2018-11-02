@@ -22,7 +22,7 @@ import org.guvnor.structure.pom.DynamicPomDependency;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class PomJsonReaderTest {
 
@@ -30,16 +30,15 @@ public class PomJsonReaderTest {
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
 
     @Before
-    public void setUp(){
-        reader = new PomJsonReaderDefault("target/test-classes/", JSON_POM_DEPS);
+    public void setUp() {
+        reader = new PomJsonReaderDefault("target/test-classes/",
+                                          JSON_POM_DEPS);
     }
 
     @Test
-    public void readDepsTest(){
+    public void readDepsTest() {
         Map<DependencyType, List<DynamicPomDependency>> mapping = reader.readDeps();
         assertThat(mapping).isNotEmpty();
         TestUtil.testJPADep(mapping);
     }
-
-
 }

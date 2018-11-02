@@ -23,7 +23,7 @@ import org.guvnor.structure.pom.DynamicPomDependency;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class DependencyTypesMapperTest {
 
@@ -33,8 +33,6 @@ public class DependencyTypesMapperTest {
     public void setUp() {
         mapper = new DependencyTypesMapper();
     }
-
-
 
     @Test
     public void mappingTest() {
