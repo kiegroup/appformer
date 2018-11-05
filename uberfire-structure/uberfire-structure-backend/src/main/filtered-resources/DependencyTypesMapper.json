@@ -24,6 +24,15 @@
         {"groupId":"javax.validation", "artifactId":"validation-api", "version":"${version.javax.validation}", "scope":""},
         {"groupId":"org.hibernate", "artifactId":"hibernate-validator", "version":"${version.org.hibernate.hibernate-validator}", "scope":""}
       ]
+    },
+    {
+      "type":"SCENARIO-RUNTIME",
+      "deps":[
+        {"groupId":"org.drools", "artifactId":"drools-wb-scenario-simulation-editor-ap", "version":"${version.org.kie}", "scope":""},
+        {"groupId":"org.drools", "artifactId":"drools-wb-scenario-simulation-editor-backend", "version":"${version.org.kie}", "scope":""},
+        {"groupId":"org.drools", "artifactId":"drools-compiler", "version":"${version.org.kie}", "scope":""}
+      ]
     }
+
   ]
 }

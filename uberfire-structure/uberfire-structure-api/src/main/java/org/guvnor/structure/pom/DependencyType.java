@@ -20,5 +20,6 @@ package org.guvnor.structure.pom;
 public enum DependencyType {
     JPA,
     TEST,
-    VALIDATION
+    VALIDATION,
+    SCENARIO_RUNTIME
 }
