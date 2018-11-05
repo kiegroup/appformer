@@ -37,6 +37,8 @@ public class PomStructureEditorTest {
     private PomStructureEditor editor;
     private Path tmpRoot, tmp;
     private final String POM = "pom.xml";
+    private DependencyTypesMapper mapper;
+    private String JPA_HIBERNATE_VERSION;
 
     @Before
     public void setUp() throws Exception {
@@ -44,6 +46,8 @@ public class PomStructureEditorTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
                                                 "target/test-classes/dummy_empty_deps");
+        mapper = new DependencyTypesMapper();
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(DependencyType.JPA).get(0).getVersion();
     }
 
     @Test
@@ -63,7 +67,7 @@ public class PomStructureEditorTest {
         Dependency dep = model.getDependencies().get(0);
         assertThat(dep.getGroupId()).containsOnlyOnce("org.hibernate.javax.persistence");
         assertThat(dep.getArtifactId()).containsOnlyOnce("hibernate-jpa-2.1-api");
-        assertThat(dep.getVersion()).containsOnlyOnce("1.0.2.Final");
+        assertThat(dep.getVersion()).containsOnlyOnce(JPA_HIBERNATE_VERSION);
     }
 }
 
