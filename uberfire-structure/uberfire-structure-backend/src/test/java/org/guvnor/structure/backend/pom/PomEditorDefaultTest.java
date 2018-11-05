@@ -42,6 +42,7 @@ public class PomEditorDefaultTest {
     private PomEditor editor;
     private DependencyTypesMapper mapper;
     private Path tmpRoot, tmp;
+    private String JPA_HIBERNATE_VERSION;
 
     @Before
     public void setUp() throws Exception {
@@ -51,6 +52,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
                                                 "target/test-classes/dummy");
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(DependencyType.JPA).get(0).getVersion();
     }
 
     @After
@@ -225,7 +227,7 @@ public class PomEditorDefaultTest {
         Dependency changedDep = getDependency(model.getDependencies(),
                                               "org.hibernate.javax.persistence",
                                               "hibernate-jpa-2.1-api");
-        assertThat(changedDep.getVersion()).isEqualTo("1.0.2.Final");
+        assertThat(changedDep.getVersion()).isEqualTo(JPA_HIBERNATE_VERSION);
     }
 
     @Test
@@ -244,7 +246,7 @@ public class PomEditorDefaultTest {
         Dependency changedDep = getDependency(model.getDependencies(),
                                               "org.hibernate.javax.persistence",
                                               "hibernate-jpa-2.1-api");
-        assertThat(changedDep.getVersion()).isEqualTo("1.0.2.Final");
+        assertThat(changedDep.getVersion()).isEqualTo(JPA_HIBERNATE_VERSION);
         changedDep = getDependency(model.getDependencies(),
                                    "junit",
                                    "junit");
