@@ -15,7 +15,8 @@
     {
       "type":"TEST",
       "deps":[
-        {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"}
+        {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"},
+        {"groupId":"org.assertj", "artifactId":"assertj-core", "version":"${version.org.assertj}", "scope":"test"}
       ]
     },
     {
@@ -28,9 +29,10 @@
     {
       "type":"SCENARIO_RUNTIME",
       "deps":[
-        {"groupId":"org.drools", "artifactId":"drools-wb-scenario-simulation-editor-ap", "version":"${version.org.kie}", "scope":""},
-        {"groupId":"org.drools", "artifactId":"drools-wb-scenario-simulation-editor-backend", "version":"${version.org.kie}", "scope":""},
-        {"groupId":"org.drools", "artifactId":"drools-compiler", "version":"${version.org.kie}", "scope":""}
+        {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"},
+        {"groupId":"org.drools", "artifactId":"drools-wb-scenario-simulation-editor-ap", "version":"${version.org.kie}", "scope":"test"},
+        {"groupId":"org.drools", "artifactId":"drools-wb-scenario-simulation-editor-backend", "version":"${version.org.kie}", "scope":"test"},
+        {"groupId":"org.drools", "artifactId":"drools-compiler", "version":"${version.org.kie}", "scope":"test"}
       ]
     }
 
