@@ -444,6 +444,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         }
         destroyColumns(allGridColumns);
         activeGridColumn.setWidth(columnNewWidth);
+        activeGridColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.percentage);
         layer.batch();
     }
 

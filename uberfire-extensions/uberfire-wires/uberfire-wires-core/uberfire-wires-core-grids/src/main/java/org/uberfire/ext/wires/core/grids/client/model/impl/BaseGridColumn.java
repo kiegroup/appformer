@@ -41,6 +41,7 @@ public class BaseGridColumn<T> implements GridColumn<T> {
     private int index = -1;
     private List<HeaderMetaData> headerMetaData = new ArrayList<HeaderMetaData>();
     private GridColumnRenderer<T> columnRenderer;
+    private ColumnWidthMode columnWidthMode = ColumnWidthMode.auto;
 
     public BaseGridColumn(final HeaderMetaData headerMetaData,
                           final GridColumnRenderer<T> columnRenderer,
@@ -171,6 +172,16 @@ public class BaseGridColumn<T> implements GridColumn<T> {
     @Override
     public void setMaximumWidth(final Double maximumWidth) {
         this.maximumWidth = maximumWidth;
+    }
+
+    @Override
+    public ColumnWidthMode getColumnWidthMode() {
+        return columnWidthMode;
+    }
+
+    @Override
+    public void setColumnWidthMode(ColumnWidthMode columnWidthMode) {
+        this.columnWidthMode = columnWidthMode;
     }
 
     @Override

@@ -220,4 +220,25 @@ public interface GridColumn<T> {
             return HeaderSingleCellSelectionStrategy.INSTANCE;
         }
     }
+
+
+    ColumnWidthMode getColumnWidthMode();
+
+    void setColumnWidthMode(ColumnWidthMode columnWidthMode);
+
+    enum ColumnWidthMode {
+        fixed, percentage, auto;
+
+        static public boolean isAuto(GridColumn<?> column) {
+            return auto.equals(column.getColumnWidthMode());
+        }
+
+        static public boolean isFixed(GridColumn<?> column) {
+            return fixed.equals(column.getColumnWidthMode());
+        }
+
+        static public boolean isPercentage(GridColumn<?> column) {
+            return percentage.equals(column.getColumnWidthMode());
+        }
+    }
 }
