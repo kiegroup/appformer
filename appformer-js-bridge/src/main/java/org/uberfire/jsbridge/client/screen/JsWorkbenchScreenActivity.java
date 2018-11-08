@@ -22,9 +22,8 @@ import java.util.Stack;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
-import elemental2.core.JsObject;
+import elemental2.core.Map;
 import elemental2.dom.DomGlobal;
-import jsinterop.base.Any;
 import jsinterop.base.Js;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.Subscription;
@@ -34,7 +33,6 @@ import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.marshalling.client.Marshalling;
 import org.uberfire.client.mvp.AbstractWorkbenchScreenActivity;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.jsbridge.client.AppFormerJsBridge;
 import org.uberfire.jsbridge.client.JsPlaceRequest;
 import org.uberfire.jsbridge.client.loading.JsWorkbenchLazyActivity;
 import org.uberfire.mvp.PlaceRequest;
@@ -211,29 +209,26 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
     private void registerSubscriptions() {
         DomGlobal.console.info("Registering event subscriptions for " + this.getIdentifier() + "...");
-        final JsObject subscriptions = this.screen.subscriptions();
-        for (final String eventFqcn : JsObject.keys(subscriptions)) {
-            if (subscriptions.hasOwnProperty(eventFqcn)) {
-                final Any jsObject = Js.uncheckedCast(subscriptions);
-                final Object callback = jsObject.asPropertyMap().get(eventFqcn);
+        final Map<String, Object> subscriptions = Js.cast(this.screen.subscriptions());
 
-                //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
-                //FIXME: Marshall/unmarshall is happening twice
+        subscriptions.forEach((callback, eventFqcn, self) -> {
+            //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
+            //FIXME: Marshall/unmarshall is happening twice
 
-                final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
-                    public void fireEvent(final Object event) {
-                        callNative(callback, Marshalling.toJSON(event));
-                    }
-                });
+            final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
+                public void fireEvent(final Object event) {
+                    callNative(callback, Marshalling.toJSON(event));
+                }
+            });
 
-                //Subscribes to client-sent events.
-                this.subscriptions.add(subscription);
+            //Subscribes to client-sent events.
+            this.subscriptions.add(subscription);
 
-                //TODO: Handle local-only events
-                //Forwards server-sent events to the local subscription.
-                ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
-            }
-        }
+            //TODO: Handle local-only events
+            //Forwards server-sent events to the local subscription.
+            ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
+            return null;
+        });
     }
 
     public native static void callNative(final Object func, final String jsonArg) /*-{
