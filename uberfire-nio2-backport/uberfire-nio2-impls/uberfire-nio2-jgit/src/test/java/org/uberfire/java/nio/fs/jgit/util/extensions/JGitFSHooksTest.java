@@ -20,9 +20,12 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
+import org.uberfire.java.nio.file.extensions.FileSystemHookExecutionContext;
 import org.uberfire.java.nio.file.extensions.FileSystemHooks;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -31,49 +34,52 @@ public class JGitFSHooksTest {
     @Test
     public void executeFSHooksTest() {
 
-        String fsName = "dora";
+        final String fsName = "dora";
+
         AtomicBoolean executedWithLambda = new AtomicBoolean(false);
 
-        FileSystemHooks.FileSystemHook<String> hook = spy(new FileSystemHooks.FileSystemHook<String>() {
+        FileSystemHooks.FileSystemHook hook = spy(new FileSystemHooks.FileSystemHook() {
             @Override
-            public void execute(String s) {
-                assertEquals(fsName, s);
+            public void execute(FileSystemHookExecutionContext context) {
+                assertEquals(fsName, context.getFsName());
             }
         });
 
-        FileSystemHooks.FileSystemHook<String> lambdaHook = s -> {
-            assertEquals(fsName, s);
+        FileSystemHooks.FileSystemHook lambdaHook = context -> {
+            assertEquals(fsName, context.getFsName());
             executedWithLambda.set(true);
         };
 
-        JGitFSHooks.executeFSHooks(hook, FileSystemHooks.ExternalUpdate, fsName);
-        JGitFSHooks.executeFSHooks(lambdaHook, FileSystemHooks.ExternalUpdate, fsName);
+        JGitFSHooks.executeFSHooks(hook, FileSystemHooks.ExternalUpdate, new FileSystemHookExecutionContext(fsName));
+        JGitFSHooks.executeFSHooks(lambdaHook, FileSystemHooks.ExternalUpdate, new FileSystemHookExecutionContext(fsName));
 
-        verify(hook).execute(fsName);
+        verify(hook).execute(any());
+
         assertTrue(executedWithLambda.get());
     }
 
     @Test
     public void executeFSHooksArrayTest() {
 
-        String fsName = "dora";
+        final String fsName = "dora";
+
         AtomicBoolean executedWithLambda = new AtomicBoolean(false);
 
-        FileSystemHooks.FileSystemHook<String> hook = spy(new FileSystemHooks.FileSystemHook<String>() {
+        FileSystemHooks.FileSystemHook hook = spy(new FileSystemHooks.FileSystemHook() {
             @Override
-            public void execute(String s) {
-                assertEquals(fsName, s);
+            public void execute(FileSystemHookExecutionContext context) {
+                assertEquals(fsName, context.getFsName());
             }
         });
 
-        FileSystemHooks.FileSystemHook<String> lambdaHook = s -> {
-            assertEquals(fsName, s);
+        FileSystemHooks.FileSystemHook lambdaHook = context -> {
+            assertEquals(fsName, context.getFsName());
             executedWithLambda.set(true);
         };
 
-        JGitFSHooks.executeFSHooks(Arrays.asList(hook, lambdaHook), FileSystemHooks.ExternalUpdate, fsName);
+        JGitFSHooks.executeFSHooks(Arrays.asList(hook, lambdaHook), FileSystemHooks.ExternalUpdate, new FileSystemHookExecutionContext(fsName));
 
-        verify(hook).execute(fsName);
+        verify(hook).execute(any());
         assertTrue(executedWithLambda.get());
     }
 }

@@ -28,6 +28,7 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.junit.Assume;
 import org.junit.Test;
 import org.uberfire.java.nio.file.FileSystem;
+import org.uberfire.java.nio.file.extensions.FileSystemHookExecutionContext;
 import org.uberfire.java.nio.file.extensions.FileSystemHooks;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
 import org.uberfire.java.nio.security.FileSystemAuthenticator;
@@ -35,6 +36,7 @@ import org.uberfire.java.nio.security.FileSystemAuthorizer;
 import org.uberfire.java.nio.security.FileSystemUser;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -59,10 +61,10 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
 
     @Test
     public void testSSHPostReceiveHook() throws IOException {
-        FileSystemHooks.FileSystemHook<String> hook = spy(new FileSystemHooks.FileSystemHook<String>() {
+        FileSystemHooks.FileSystemHook hook = spy(new FileSystemHooks.FileSystemHook() {
             @Override
-            public void execute(String s) {
-                assertEquals("repo", s);
+            public void execute(FileSystemHookExecutionContext context) {
+                assertEquals("repo", context.getFsName());
             }
         });
 
@@ -118,7 +120,7 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
         //Push clone back to origin
         provider.getFileSystem(URI.create("git://repo-clone?push=ssh://admin@localhost:" + gitSSHPort + "/repo"));
 
-        verify(hook).execute("repo");
+        verify(hook).execute(any());
 
     }
 }
