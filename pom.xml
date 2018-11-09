@@ -22,12 +22,12 @@
     <groupId>org.jboss.integration-platform</groupId>
     <artifactId>jboss-integration-platform-bom</artifactId>
     <!-- Keep in sync with the parent version of uberfire-bom/pom.xml -->
-    <version>8.1.0.Final</version>
+    <version>8.3.2.Final</version>
   </parent>
 
   <groupId>org.uberfire</groupId>
   <artifactId>uberfire-parent</artifactId>
-  <version>2.11.0-SNAPSHOT</version>
+  <version>2.12.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UberFire parent</name>
@@ -50,7 +50,7 @@
 
   <properties>
     <uberfire.version>${project.version}</uberfire.version>
-    <version.org.kie>7.14.0-SNAPSHOT</version.org.kie>
+    <version.org.kie>7.15.0-SNAPSHOT</version.org.kie>
     <version.org.kie.soup>${version.org.kie}</version.org.kie.soup>
     <!-- Exception as it is needed for gwt-maven-plugin version-->
     <version.com.google.gwt>2.8.2</version.com.google.gwt>
@@ -65,7 +65,7 @@
     <version.org.apache.sshd>1.6.0</version.org.apache.sshd>
     <!-- Custom Freemarker build with workaround for random concurrent access issue (annotation processors). See AF-600 for more info.-->
     <version.org.freemarker>2.3.26.jbossorg-1</version.org.freemarker>
-    <version.org.jboss.errai>4.4.0-SNAPSHOT</version.org.jboss.errai>
+    <version.org.jboss.errai>4.4.2-SNAPSHOT</version.org.jboss.errai>
     <version.org.webjars.bower.org.patternfly>3.18.1</version.org.webjars.bower.org.patternfly>
     <version.org.webjars.bower.google-code-prettify>1.0.4</version.org.webjars.bower.google-code-prettify>
     <version.org.webjars.bower.bootstrap-select>1.10.0</version.org.webjars.bower.bootstrap-select>
@@ -85,9 +85,9 @@
     <version.org.picketlink>2.6.0.Final</version.org.picketlink>
     <version.org.wildfly.security>1.1.3.Final</version.org.wildfly.security>
     <!-- WildFly version used together with the GWT's Super Dev Mode -->
-    <version.org.wildfly.gwt.sdm>11.0.0.Final</version.org.wildfly.gwt.sdm>
+    <version.org.wildfly.gwt.sdm>14.0.1.Final</version.org.wildfly.gwt.sdm>
     <!-- Patched WildFly version used for SDM with IntelliJ -->
-    <version.org.jboss.errai.wildfly.sdm>11.0.0.Final</version.org.jboss.errai.wildfly.sdm>
+    <version.org.jboss.errai.wildfly.sdm>14.0.1.Final</version.org.jboss.errai.wildfly.sdm>
 
     <version.org.apache.activemq.artemis>2.3.0</version.org.apache.activemq.artemis>
     <version.io.netty>4.1.16.Final</version.io.netty>
@@ -115,7 +115,8 @@
     <version.elasticsearch.client>5.6.1</version.elasticsearch.client>
     <version.org.apache.lucene>6.6.1</version.org.apache.lucene>
     <version.com.unboundid>3.2.0</version.com.unboundid>
-    <com.fasterxml.jackson>2.8.10</com.fasterxml.jackson>
+    <version.org.infinispan>9.3.2.Final</version.org.infinispan>
+
     <!-- Newer version in ip-bom causes ServiceLoader error -->
     <version.ch.qos.logback>1.1.3</version.ch.qos.logback>
     <version.jnuit.docker.rule>0.3</version.jnuit.docker.rule>
@@ -139,11 +140,18 @@
 
     <!-- Required since support for ELS 2.x. Keep in sync with kie-parent or remove when those
           two versions are being updated on the IP BOM.-->
-    <version.com.fasterxml.jackson>2.6.2</version.com.fasterxml.jackson>
     <version.commons-cli>1.3.1</version.commons-cli>
 
     <!-- required to fix RHDM-293 -->
     <version.org.apache.logging.log4j.log4j-to-slf4j>2.9.0</version.org.apache.logging.log4j.log4j-to-slf4j>
+
+    <!-- this versions can be removed once these were migrated to jboss-ip-bom > 8.3.0.Final -->
+    <version.org.wildfly>14.0.1.Final</version.org.wildfly>
+    <version.org.wildfly.core>6.0.2.Final</version.org.wildfly.core>
+
+    <version.org.arquillian.cube>1.15.3</version.org.arquillian.cube>
+
+    <version.org.jboss.shrinkwrap>1.2.6</version.org.jboss.shrinkwrap>
 
   </properties>
 
@@ -641,7 +649,7 @@
             <include>**/*Constants_ja.properties</include>
             <include>**/*Constants_pt_BR.properties</include>
             <include>**/*Constants_zh_CN.properties</include>
-              <include>**/*Constants_ru.properties</include>
+            <include>**/*Constants_ru.properties</include>
           </includes>
           <excludes>
             <exclude>**/ErraiApp.properties</exclude>
@@ -853,6 +861,7 @@
     <module>uberfire-backend</module>
     <module>uberfire-js</module>
     <module>uberfire-testing-utils</module>
+    <module>uberfire-experimental</module>
     <module>uberfire-workbench</module>
     <module>uberfire-packaging</module>
     <module>uberfire-preferences</module>
@@ -865,6 +874,7 @@
     <module>uberfire-structure</module>
     <module>uberfire-test-utils</module>
     <module>uberfire-workingset</module>
+    <module>uberfire-ssh</module>
     <module>uberfire-showcase</module>
     <module>dashbuilder</module>
   </modules>
@@ -1119,27 +1129,48 @@
         <artifactId>lucene-backward-codecs</artifactId>
         <version>${version.org.apache.lucene}</version>
       </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <version>${com.fasterxml.jackson}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${com.fasterxml.jackson}</version>
-      </dependency>
 
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-query-dsl</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-remote-query-client</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-client-hotrod</artifactId>
+        <version>${version.org.infinispan}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.marshalling</groupId>
+            <artifactId>jboss-marshalling-osgi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-query</artifactId>
+        <version>${version.org.infinispan}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.infinispan</groupId>
+        <artifactId>infinispan-commons</artifactId>
+        <version>${version.org.infinispan}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.marshalling</groupId>
+            <artifactId>jboss-marshalling-osgi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>org.wildfly.security</groupId>
         <artifactId>wildfly-elytron</artifactId>
@@ -1276,29 +1307,6 @@
         </exclusions>
       </dependency>
 
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-smile</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-yaml</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-cbor</artifactId>
-        <version>${version.com.fasterxml.jackson}</version>
-      </dependency>
 
       <!-- Required to run the ElasticSearch server when performing the unit test executions.
           The ELS data provider requires groovy scripts enabled on the server.-->
@@ -1326,8 +1334,8 @@
       <!-- log4j-to-slf4j -->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
-	<artifactId>log4j-to-slf4j</artifactId>
-	<version>${version.org.apache.logging.log4j.log4j-to-slf4j}</version>
+        <artifactId>log4j-to-slf4j</artifactId>
+        <version>${version.org.apache.logging.log4j.log4j-to-slf4j}</version>
       </dependency>
 
       <!-- Test deps -->
@@ -1351,6 +1359,34 @@
         <version>${version.org.mariadb.jdbc}</version>
         <scope>test</scope>
       </dependency>
+
+
+      <!-- ARQUILLIAN -->
+
+      <dependency>
+        <groupId>org.arquillian.cube</groupId>
+        <artifactId>arquillian-cube-docker-junit-rule</artifactId>
+        <version>${version.org.arquillian.cube}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.shrinkwrap</groupId>
+        <artifactId>shrinkwrap-impl-base</artifactId>
+        <version>${version.org.jboss.shrinkwrap}</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

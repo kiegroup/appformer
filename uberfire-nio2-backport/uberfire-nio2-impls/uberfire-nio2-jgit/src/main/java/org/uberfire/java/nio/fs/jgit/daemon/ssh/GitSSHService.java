@@ -33,22 +33,29 @@ import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.scp.UnknownCommand;
 import org.eclipse.jgit.transport.resolver.ReceivePackFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
 import org.uberfire.java.nio.security.FileSystemAuthenticator;
 import org.uberfire.java.nio.security.FileSystemAuthorizer;
 import org.uberfire.java.nio.security.FileSystemUser;
+import org.uberfire.java.nio.security.SSHAuthenticator;
 
 import static org.apache.sshd.common.NamedFactory.setUpBuiltinFactories;
 import static org.apache.sshd.server.ServerBuilder.builder;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotEmpty;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.java.nio.fs.jgit.daemon.common.PortUtil.validateOrGetNew;
 
 public class GitSSHService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GitSSHService.class);
 
     private final SshServer sshd = buildSshServer();
 
     private FileSystemAuthenticator fileSystemAuthenticator;
     private FileSystemAuthorizer fileSystemAuthorizer;
+    private SSHAuthenticator sshAuthenticator;
 
     private static SshServer buildSshServer() {
         final List<BuiltinCiphers> ciphers =
@@ -84,12 +91,15 @@ public class GitSSHService {
         checkNotNull("repositoryResolver",
                      repositoryResolver);
 
-        sshd.getProperties().put(SshServer.IDLE_TIMEOUT,
-                                 sshIdleTimeout);
+        sshd.getProperties().put(SshServer.IDLE_TIMEOUT, sshIdleTimeout);
 
         if (inetSocketAddress != null) {
             sshd.setHost(inetSocketAddress.getHostName());
-            sshd.setPort(inetSocketAddress.getPort());
+            sshd.setPort(validateOrGetNew(inetSocketAddress.getPort()));
+
+            if (inetSocketAddress.getPort() != sshd.getPort()) {
+                LOG.error("SSH for Git original port {} not available, new free port {} assigned.", inetSocketAddress.getPort(), sshd.getPort());
+            }
         }
 
         if (!certDir.exists()) {
@@ -125,15 +135,27 @@ public class GitSSHService {
                 return new UnknownCommand(command);
             }
         });
-        sshd.setPublickeyAuthenticator(new CachingPublicKeyAuthenticator((username, key, session) -> false));
-        sshd.setPasswordAuthenticator((username, password, session) -> {
-            final FileSystemUser user = getUserPassAuthenticator().authenticate(username,
-                                                                                password);
+        sshd.setPublickeyAuthenticator(new CachingPublicKeyAuthenticator((username, key, session) -> {
+
+            final FileSystemUser user = getSshAuthenticator().authenticate(username, key);
+
             if (user == null) {
                 return false;
             }
-            session.setAttribute(BaseGitCommand.SUBJECT_KEY,
-                                 user);
+
+            session.setAttribute(BaseGitCommand.SUBJECT_KEY, user);
+
+            return true;
+        }));
+        sshd.setPasswordAuthenticator((username, password, session) -> {
+
+            final FileSystemUser user = getUserPassAuthenticator().authenticate(username, password);
+
+            if (user == null) {
+                return false;
+            }
+
+            session.setAttribute(BaseGitCommand.SUBJECT_KEY, user);
             return true;
         });
     }
@@ -180,5 +202,13 @@ public class GitSSHService {
 
     public void setAuthorizationManager(FileSystemAuthorizer fileSystemAuthorizer) {
         this.fileSystemAuthorizer = fileSystemAuthorizer;
+    }
+
+    public SSHAuthenticator getSshAuthenticator() {
+        return sshAuthenticator;
+    }
+
+    public void setSshAuthenticator(SSHAuthenticator sshAuthenticator) {
+        this.sshAuthenticator = sshAuthenticator;
     }
 }
