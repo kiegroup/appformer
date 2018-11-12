@@ -15,8 +15,7 @@
     {
       "type":"TEST",
       "deps":[
-        {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"},
-        {"groupId":"org.assertj", "artifactId":"assertj-core", "version":"${version.org.assertj}", "scope":"test"}
+        {"groupId":"junit", "artifactId":"junit", "version":"${version.junit}", "scope":"test"}
       ]
     },
     {
