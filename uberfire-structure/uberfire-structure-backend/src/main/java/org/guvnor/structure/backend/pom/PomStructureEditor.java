@@ -16,7 +16,6 @@ package org.guvnor.structure.backend.pom;
 
 import java.util.List;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
