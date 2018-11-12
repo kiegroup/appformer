@@ -53,6 +53,7 @@ public class PomEditorDefaultTest {
                                                 "dummy",
                                                 "target/test-classes/dummy");
         JPA_HIBERNATE_VERSION = mapper.getMapping().get(DependencyType.JPA).get(0).getVersion();
+
     }
 
     @After
@@ -127,7 +128,7 @@ public class PomEditorDefaultTest {
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         assertThat(model.getDependencies()).hasSize(1);
     }
-
+  
     @Test
     public void addEmptyDepTest() {
         DynamicPomDependency dep = new DynamicPomDependency("",

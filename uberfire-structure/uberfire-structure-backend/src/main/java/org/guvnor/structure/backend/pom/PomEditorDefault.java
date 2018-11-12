@@ -54,6 +54,7 @@ public class PomEditorDefault implements PomEditor {
         writer = new MavenXpp3Writer();
         this.mapper = mapper;
         internalGroupIds = getInternalGroupIds(this.mapper);
+
     }
 
     public boolean addDependency(DynamicPomDependency dep,
@@ -107,6 +108,7 @@ public class PomEditorDefault implements PomEditor {
         for (DependencyType dep : dependencyTypes) {
             deps.addAll(mapper.getDependencies(EnumSet.of(dep)));
         }
+
         if (deps.isEmpty()) {
             return false;
         }
@@ -359,7 +361,7 @@ public class PomEditorDefault implements PomEditor {
         }
         return dependency;
     }
-
+  
     private boolean isGroupIDValid(DynamicPomDependency dep) {
         return dep.getGroupID() != null && !dep.getGroupID().isEmpty();
     }

@@ -15,7 +15,6 @@
 package org.guvnor.structure.pom;
 
 import java.util.Set;
-
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
@@ -29,6 +28,7 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 public class AddPomDependencyEvent {
 
     private Path projectPath;
+
     private Set<DependencyType> types;
 
     public AddPomDependencyEvent(@MapsTo("dependencyTypes") final Set<DependencyType> types,
@@ -45,5 +45,6 @@ public class AddPomDependencyEvent {
 
     public Set<DependencyType> getDependencyTypes() {
         return types;
+
     }
 }
