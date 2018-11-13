@@ -276,4 +276,12 @@ public abstract class BaseGridColumnRenderer<T> implements GridColumnRenderer<T>
         g.add(text);
         return g;
     }
+
+    protected boolean isToReturnNull(final GridCell<T> cell) {
+        return cell == null || cell.getValue() == null || (cell.getValue().getValue() == null && cell.getValue().getPlaceHolder() == null);
+    }
+
+    protected boolean isPlaceHolderToBeShown(final GridCell<T> cell) {
+        return cell.getValue() != null && cell.getValue().getValue() == null && cell.getValue().getPlaceHolder() != null;
+    }
 }

@@ -27,7 +27,7 @@ public class StringColumnRenderer extends BaseGridColumnRenderer<String> {
     @Override
     public Group renderCell(final GridCell<String> cell,
                             final GridBodyCellRenderContext context) {
-        if (cell == null || cell.getValue() == null || (cell.getValue().getValue() == null && cell.getValue().getPlaceHolder() == null)) {
+        if (isToReturnNull(cell)) {
             return null;
         }
 
@@ -37,9 +37,7 @@ public class StringColumnRenderer extends BaseGridColumnRenderer<String> {
         Text text;
         String value;
 
-        // Show placeholder only if the following conditions are met
-        if (cell.getValue() != null && cell.getValue().getValue() == null && cell.getValue().getPlaceHolder() != null) {
-            // Render as placeholder
+        if (isPlaceHolderToBeShown(cell)) {
             text = theme.getPlaceholderText();
             value = cell.getValue().getPlaceHolder();
         } else {
