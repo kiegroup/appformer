@@ -23,16 +23,14 @@ import com.ait.lienzo.shared.core.types.TextAlign;
 import com.ait.lienzo.shared.core.types.TextBaseLine;
 import com.ait.lienzo.shared.core.types.TextUnit;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.KIEColours;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.KIEStyles;
 
 /**
  * Definition of themes used by a render for the pluggable rendering mechanism.
  */
 public interface GridRendererTheme {
 
-    String PLACEHOLDER_COLOR = "#757575";
-    String FONT_FAMILY_LABEL = "Open Sans, Helvetica, Arial, sans-serif";
-    String FONT_STYLE_ITALIC = "italic";
-    int FONT_SIZE = 10;
 
     /**
      * Returns a display name for the theme.
@@ -123,10 +121,10 @@ public interface GridRendererTheme {
      */
     default Text getPlaceholderText() {
         return new Text("")
-                .setFillColor(PLACEHOLDER_COLOR)
-                .setFontSize(FONT_SIZE)
-                .setFontFamily(FONT_FAMILY_LABEL)
-                .setFontStyle(FONT_STYLE_ITALIC)
+                .setFillColor(KIEColours.PLACEHOLDER_COLOR)
+                .setFontSize(KIEStyles.FONT_SIZE)
+                .setFontFamily(KIEStyles.FONT_FAMILY_LABEL)
+                .setFontStyle(KIEStyles.FONT_STYLE_ITALIC)
                 .setTextUnit(TextUnit.PT)
                 .setListening(false)
                 .setTextBaseLine(TextBaseLine.MIDDLE)
