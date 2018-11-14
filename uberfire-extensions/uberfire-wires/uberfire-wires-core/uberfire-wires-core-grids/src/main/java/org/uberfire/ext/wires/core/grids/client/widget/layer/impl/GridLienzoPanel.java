@@ -15,6 +15,8 @@
  */
 package org.uberfire.ext.wires.core.grids.client.widget.layer.impl;
 
+import java.util.stream.Collectors;
+
 import com.ait.lienzo.client.core.shape.Viewport;
 import com.ait.lienzo.client.widget.LienzoPanel;
 import com.google.gwt.core.client.Scheduler;
@@ -28,6 +30,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import org.uberfire.ext.wires.core.grids.client.model.Bounds;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.scrollbars.GridLienzoScrollHandler;
 import org.uberfire.ext.wires.core.grids.client.widget.scrollbars.GridLienzoScrollable;
 
@@ -186,6 +189,11 @@ public class GridLienzoPanel extends FocusPanel implements RequiresResize,
                                               height - scrollbarHeight);
         getLienzoPanel().setPixelSize(width - scrollbarWidth,
                                       height - scrollbarHeight);
+        boolean toRefresh = getDefaultGridLayer().getGridWidgets().stream()
+                .map(gridWidget -> gridWidget.getModel().setVisibleSizeAndRefresh(width, height)).collect(Collectors.toSet()).contains(true);
+        if(toRefresh) {
+            this.getDefaultGridLayer().draw();
+        }
     }
 
     private void updateScrollPanelSize(final int width,

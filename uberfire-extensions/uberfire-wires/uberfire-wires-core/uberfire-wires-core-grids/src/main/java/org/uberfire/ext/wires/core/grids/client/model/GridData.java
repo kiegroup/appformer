@@ -295,6 +295,15 @@ public interface GridData {
     void expandCell(final int rowIndex,
                     final int columnIndex);
 
+
+    // FIXME
+    boolean refreshWidth();
+
+    boolean setVisibleSizeAndRefresh(int width, int height);
+
+    int getVisibleWidth();
+    int getVisibleHeight();
+
     /**
      * A range of rows.
      */

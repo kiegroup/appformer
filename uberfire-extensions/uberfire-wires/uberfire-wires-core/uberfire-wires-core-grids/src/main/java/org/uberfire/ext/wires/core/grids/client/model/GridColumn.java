@@ -227,7 +227,7 @@ public interface GridColumn<T> {
     void setColumnWidthMode(ColumnWidthMode columnWidthMode);
 
     enum ColumnWidthMode {
-        fixed, percentage, auto;
+        fixed, auto;
 
         static public boolean isAuto(GridColumn<?> column) {
             return auto.equals(column.getColumnWidthMode());
@@ -235,10 +235,6 @@ public interface GridColumn<T> {
 
         static public boolean isFixed(GridColumn<?> column) {
             return fixed.equals(column.getColumnWidthMode());
-        }
-
-        static public boolean isPercentage(GridColumn<?> column) {
-            return percentage.equals(column.getColumnWidthMode());
         }
     }
 }

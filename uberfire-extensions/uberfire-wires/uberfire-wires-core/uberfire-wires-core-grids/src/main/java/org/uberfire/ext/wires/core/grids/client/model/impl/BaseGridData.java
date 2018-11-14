@@ -25,8 +25,10 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.google.gwt.core.client.GWT;
 import org.uberfire.ext.wires.core.grids.client.model.GridCell;
 import org.uberfire.ext.wires.core.grids.client.model.GridCellValue;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
@@ -50,6 +52,8 @@ public class BaseGridData implements GridData {
 
     protected BaseGridDataIndexManager indexManager = new BaseGridDataIndexManager(this);
     protected BaseGridDataSelectionsManager selectionsManager = new BaseGridDataSelectionsManager(this);
+    private int visibleWidth;
+    private int visibleHeight;
 
     public BaseGridData() {
         this(true);
@@ -74,7 +78,25 @@ public class BaseGridData implements GridData {
         column.setIndex(columns.size());
         columns.add(column);
 
+        // FIXME to test
+        if(GridColumn.ColumnWidthMode.isAuto(column)) {
+            initWidth(column);
+        }
+
+        refreshWidth();
+
         selectionsManager.onInsertColumn(columns.size() - 1);
+    }
+
+    // FIXME to test
+    private void initWidth(GridColumn<?> column) {
+        long numberOfAutoColumns = getColumns().stream().filter(GridColumn.ColumnWidthMode::isAuto).count();
+        int visibleWidth = getVisibleWidth();
+        GWT.log("INIT column = " + column);
+        GWT.log("numberOfAutoColumns = " + numberOfAutoColumns);
+        GWT.log("visibleWidth = " + visibleWidth);
+        GWT.log("result = " + ((double) visibleWidth) / numberOfAutoColumns);
+        column.setWidth(((double) visibleWidth) / numberOfAutoColumns);
     }
 
     @Override
@@ -84,7 +106,14 @@ public class BaseGridData implements GridData {
         columns.add(index,
                     column);
 
+        // FIXME to test
+        if(GridColumn.ColumnWidthMode.isAuto(column)) {
+            initWidth(column);
+        }
+        refreshWidth();
+
         selectionsManager.onInsertColumn(index);
+
     }
 
     @Override
@@ -116,6 +145,9 @@ public class BaseGridData implements GridData {
             }
         }
 
+        // FIXME to test
+        refreshWidth();
+
         selectionsManager.onDeleteColumn(index);
     }
 
@@ -129,6 +161,10 @@ public class BaseGridData implements GridData {
         } else {
             columns.remove(column);
         }
+
+        // FIXME to test
+        refreshWidth();
+
     }
 
     @Override
@@ -618,5 +654,116 @@ public class BaseGridData implements GridData {
             maxRowIndex++;
         }
         return maxRowIndex - 1;
+    }
+
+    // FIXME to test
+    @Override
+    public boolean refreshWidth() {
+        boolean toRefresh = false;
+        GWT.log("REFRESH COLUMN");
+        GWT.log("MODEL " + this.hashCode());
+
+        // FIXME mocked
+        double visiblePanel = getVisibleWidth();
+        if(visiblePanel == 0) {
+            GWT.log("No data");
+            return false;
+        }
+
+        GWT.log("--- START REFRESH: visiblePanel:" + visiblePanel);
+        double targetGrossWidth = visiblePanel;
+        double currentGrossWidth = getColumns().stream()
+                .filter(GridColumn::isVisible)
+                .mapToDouble(GridColumn::getWidth)
+                .sum();
+
+        GWT.log("targetGrossWidth = " + targetGrossWidth);
+        GWT.log("currentGrossWidth = " + currentGrossWidth);
+        GWT.log("numberOfColumns = " + getColumns().size());
+
+        if(currentGrossWidth > visiblePanel) {
+            GWT.log("REFRESH No need to resize");
+            return false;
+        }
+        else {
+            GWT.log("REFRESH Need resize");
+        }
+
+        double fixedWidth = getColumns().stream()
+                .filter(GridColumn.ColumnWidthMode::isFixed)
+                .filter(GridColumn::isVisible)
+                .mapToDouble(GridColumn::getWidth)
+                .sum();
+
+//        double percentageWidth = getColumns().stream()
+//                .filter(GridColumn.ColumnWidthMode::isPercentage)
+//                .mapToDouble(column -> {
+//            double originalWidth = column.getWidth();
+//            column.setWidth(column.getPercentage() * targetGrossWidth);
+//            GWT.log("PERCENTAGE COLUMN = " + column);
+//            GWT.log("originalWidth = " + originalWidth);
+//            GWT.log("percentage = " + column.getPercentage());
+//            GWT.log("newWidth = " + column.getWidth());
+//            return originalWidth;
+//        }).sum();
+//
+//        long numberOfFluidColumn = getColumns().stream()
+//                .filter(GridColumn.ColumnWidthMode::isAuto)
+//                .count();
+
+        double targetWidth = targetGrossWidth - fixedWidth;// - percentageWidth;
+        double currentWidth = currentGrossWidth - fixedWidth;// - percentageWidth;
+
+        GWT.log("fixedWidth = " + fixedWidth);
+//        GWT.log("percentageWidth = " + percentageWidth);
+        GWT.log("targetWidth = " + targetWidth);
+        GWT.log("currentWidth = " + currentWidth);
+
+        toRefresh = getColumns().stream()
+                .filter(GridColumn::isVisible)
+                .map(column -> {
+            GWT.log("--- COLUMN:" + column.toString());
+            if(column.getWidth() == 0) {
+                GWT.log("!! COLUMN WITH 0 WIDTH: " + column);
+            }
+            if(GridColumn.ColumnWidthMode.isAuto(column)) {
+                double oldWidth = column.getWidth();
+                double ratio = oldWidth / currentWidth;
+                double newWidth = ratio * targetWidth;
+//                double newWidth = targetWidth / numberOfFluidColumn;
+//                GWT.log("IS not fixed size, old: " + column.getWidth() + " new:" + newWidth);
+                GWT.log("IS not fixed size, old: " + column.getWidth() + " new:" + newWidth + " ratio:" + ratio);
+                if(newWidth > column.getMinimumWidth()) {
+                    GWT.log("CAN be reduced");
+                    column.setWidth(newWidth);
+                }
+                else {
+                    GWT.log("CANNOT be reduced, new:" + column.getMinimumWidth());
+                    column.setWidth(column.getMinimumWidth());
+                }
+                return true;
+            }
+            return false;
+        }).collect(Collectors.toSet()).contains(true);
+        GWT.log("--- END REFRESH");
+        return toRefresh;
+    }
+
+    @Override
+    public boolean setVisibleSizeAndRefresh(int width, int height) {
+        GWT.log("+++++ VISIBLE PANEL: " + width + " " + height);
+        this.visibleWidth = width;
+        this.visibleHeight = height;
+        return refreshWidth();
+    }
+
+    @Override
+    public int getVisibleWidth() {
+        return this.visibleWidth;
+    }
+
+    @Override
+    public int getVisibleHeight() {
+        return this.visibleHeight;
     }
 }
