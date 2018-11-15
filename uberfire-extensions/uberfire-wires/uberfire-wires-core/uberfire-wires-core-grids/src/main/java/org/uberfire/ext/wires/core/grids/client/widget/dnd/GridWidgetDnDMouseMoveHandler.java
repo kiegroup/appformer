@@ -472,6 +472,9 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
 
                 rightColumn.setWidth(newWidth);
             }
+            else {
+                columnNewWidth = activeGridColumn.getWidth();
+            }
         }
 
         activeGridColumn.setWidth(columnNewWidth);

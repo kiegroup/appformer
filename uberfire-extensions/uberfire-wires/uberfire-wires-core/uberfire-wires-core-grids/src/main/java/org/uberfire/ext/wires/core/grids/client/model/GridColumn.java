@@ -221,7 +221,7 @@ public interface GridColumn<T> {
         }
     }
 
-
+    // FIXME add javadoc
     ColumnWidthMode getColumnWidthMode();
 
     void setColumnWidthMode(ColumnWidthMode columnWidthMode);

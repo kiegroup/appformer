@@ -185,12 +185,15 @@ public class GridLienzoPanel extends FocusPanel implements RequiresResize,
         final Integer scrollbarWidth = getGridLienzoScrollHandler().scrollbarWidth();
         final Integer scrollbarHeight = getGridLienzoScrollHandler().scrollbarHeight();
 
-        getDomElementContainer().setPixelSize(width - scrollbarWidth,
-                                              height - scrollbarHeight);
-        getLienzoPanel().setPixelSize(width - scrollbarWidth,
-                                      height - scrollbarHeight);
+        final int visibleWidth = width - scrollbarWidth;
+        final int visibleHeight = height - scrollbarHeight;
+
+        getDomElementContainer().setPixelSize(visibleWidth,
+                                              visibleHeight);
+        getLienzoPanel().setPixelSize(visibleWidth,
+                                      visibleHeight);
         boolean toRefresh = getDefaultGridLayer().getGridWidgets().stream()
-                .map(gridWidget -> gridWidget.getModel().setVisibleSizeAndRefresh(width, height)).collect(Collectors.toSet()).contains(true);
+                .map(gridWidget -> gridWidget.getModel().setVisibleSizeAndRefresh(visibleWidth, visibleHeight)).collect(Collectors.toSet()).contains(true);
         if(toRefresh) {
             this.getDefaultGridLayer().draw();
         }
