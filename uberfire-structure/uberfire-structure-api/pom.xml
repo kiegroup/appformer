@@ -19,6 +19,7 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-model</artifactId>
@@ -44,11 +45,11 @@
       <artifactId>uberfire-social-activities-api</artifactId>
     </dependency>
 
-    <!-- Errai Core -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-bus</artifactId>
@@ -58,6 +59,16 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-experimental-api</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-security-server</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-api</artifactId>
+    </dependency>   
   </dependencies>
 
 </project>
