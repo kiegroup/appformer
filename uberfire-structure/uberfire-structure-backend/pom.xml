@@ -125,6 +125,10 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-experimental-backend</artifactId>
+    </dependency>
 
 
 

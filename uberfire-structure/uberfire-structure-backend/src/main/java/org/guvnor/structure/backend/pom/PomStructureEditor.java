@@ -18,13 +18,16 @@ import java.util.List;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import org.guvnor.structure.pom.AddPomDependencyEvent;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+import org.guvnor.structure.pom.PomDependencyExperimental;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.experimental.service.backend.BackendExperimentalFeaturesRegistryService;
 
 /**
  * Editor to receive PomDependency Event
@@ -35,18 +38,30 @@ public class PomStructureEditor {
     private final Logger logger = LoggerFactory.getLogger(PomStructureEditor.class);
     private PomEditor pomEditor;
     private DependencyTypesMapper mapper;
+    boolean enabledPomDependenciesFeature;
 
+    // for test
     public PomStructureEditor() {
         mapper = new DependencyTypesMapper();
         pomEditor = new PomEditorDefault(mapper);
+        enabledPomDependenciesFeature = true;
+    }
+
+    @Inject
+    public PomStructureEditor(BackendExperimentalFeaturesRegistryService experimentalServiceRegistry) {
+        mapper = new DependencyTypesMapper();
+        pomEditor = new PomEditorDefault(mapper);
+        enabledPomDependenciesFeature = experimentalServiceRegistry.getExperimentalFeaturesSession().getFeaturesRegistry().isFeatureEnabled(PomDependencyExperimental.class.getName());
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
-        final Path projectPath = event.getProjectPath();
-        final Set<DependencyType> dependencyTypes = event.getDependencyTypes();
-        addDependenciesToPom(projectPath,
-                             dependencyTypes,
-                             mapper);
+        if(enabledPomDependenciesFeature) {
+            final Path projectPath = event.getProjectPath();
+            final Set<DependencyType> dependencyTypes = event.getDependencyTypes();
+            addDependenciesToPom(projectPath,
+                                 dependencyTypes,
+                                 mapper);
+        }
     }
 
     private void addDependenciesToPom(Path projectPath,
