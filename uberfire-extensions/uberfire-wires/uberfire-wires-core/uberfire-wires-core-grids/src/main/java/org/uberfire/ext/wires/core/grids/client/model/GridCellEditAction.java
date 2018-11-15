@@ -38,8 +38,7 @@ public enum GridCellEditAction {
     }
 
     public static GridCellEditAction getSupportedEditAction(final AbstractNodeMouseEvent event) {
-        return Arrays.asList(values())
-                .stream()
+        return Arrays.stream(values())
                 .filter(action -> Objects.equals(action.eventClass, event.getClass()))
                 .findFirst()
                 .orElse(NONE);
