@@ -195,15 +195,16 @@ public class GuvnorM2Repository {
 
     private void inputStreamToFile(final InputStream inputStream,
                                    final File file) {
-
-        FileOutputStream fos = null;
-        try {
-            if (!file.exists()) {
+        if (!file.exists()) {
+            try {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            fos = new FileOutputStream(file);
+        }
 
+        try (FileOutputStream fos = new FileOutputStream(file)) {
             final byte[] buf = new byte[BUFFER_SIZE];
             int byteRead = 0;
             while ((byteRead = inputStream.read(buf)) != -1) {
@@ -212,17 +213,9 @@ public class GuvnorM2Repository {
                           byteRead);
             }
         } catch (IOException e) {
+            log.error("Error occurred when trying to close stream",
+                      e);
             throw new RuntimeException(e);
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.flush();
-                    fos.close();
-                } catch (IOException e) {
-                    log.error("Error occurred when trying to close stream",
-                              e);
-                }
-            }
         }
     }
 
@@ -511,9 +504,7 @@ public class GuvnorM2Repository {
     }
 
     private String loadGAVFromJarInternal(final File file) {
-        try {
-            ZipFile zip = new ZipFile(file);
-
+        try (ZipFile zip = new ZipFile(file)) {
             for (Enumeration e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
 
@@ -522,10 +513,8 @@ public class GuvnorM2Repository {
                                             entry);
                 }
             }
-        } catch (ZipException e) {
-            log.error(e.getMessage());
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("Exception while loading GAV from JAR, Message: {}", e.getMessage());
         }
 
         return null;
