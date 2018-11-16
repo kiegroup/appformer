@@ -62,6 +62,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
+import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 
@@ -132,15 +133,16 @@ public class DataSetExportServicesImpl implements DataSetExportServices {
             String tempCsvFile = uuidGenerator.newUuid() + ".csv";
             Path tempCsvPath = gitStorage.createTempFile(tempCsvFile);
 
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(tempCsvPath)));
-            CSVWriter writer = new CSVWriter(bw,
-                    DEFAULT_SEPARATOR_CHAR.charAt(0),
-                    DEFAULT_QUOTE_CHAR.charAt(0),
-                    DEFAULT_ESCAPE_CHAR.charAt(0));
-            writer.writeAll(lines);
-            writer.close();
-            writer.flush();
-            writer.close();
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(tempCsvPath)));
+                 CSVWriter writer = new CSVWriter(bw,
+                            DEFAULT_SEPARATOR_CHAR.charAt(0),
+                            DEFAULT_QUOTE_CHAR.charAt(0),
+                            DEFAULT_ESCAPE_CHAR.charAt(0))
+                ) {
+                writer.writeAll(lines);
+            } catch (IOException ex) {
+                log.error("Error when exporting dataSet to CSV, {}", ex.getMessage());
+            }
             return Paths.convert(tempCsvPath);
         }
         catch (Exception e) {
