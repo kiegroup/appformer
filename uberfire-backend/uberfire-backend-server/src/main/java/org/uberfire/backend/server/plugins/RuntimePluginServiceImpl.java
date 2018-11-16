@@ -116,11 +116,11 @@ public class RuntimePluginServiceImpl implements RuntimePluginService {
         final Path pluginsRootPath = Paths.get(URI.create("file://" + realPath));
 
         if (Files.isDirectory(pluginsRootPath)) {
-            final DirectoryStream<Path> stream = Files.newDirectoryStream(pluginsRootPath,
-                                                                          glob);
-
-            for (final Path activeJS : stream) {
-                result.add(new String(Files.readAllBytes(activeJS)));
+            try (final DirectoryStream<Path> stream = Files.newDirectoryStream(pluginsRootPath,
+                                                                          glob)) {
+                for (final Path activeJS : stream) {
+                    result.add(new String(Files.readAllBytes(activeJS)));
+                }
             }
         }
 
