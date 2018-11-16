@@ -98,19 +98,16 @@ public abstract class AbstractProcessorTest {
      */
     public String getExpectedSourceCode(final String compilationUnit) throws FileNotFoundException {
         StringBuilder sb = new StringBuilder();
-        try {
-            final String path = this.getClass().getResource("/" + compilationUnit).getPath();
-            final FileReader fr = new FileReader(path);
-            final BufferedReader input = new BufferedReader(fr);
-            try {
-                String line = null;
+        String lineSeparator = System.getProperty("line.separator");
+        final String path = this.getClass().getResource("/" + compilationUnit).getPath();
+
+        try (final FileReader fr = new FileReader(path);
+             final BufferedReader input = new BufferedReader(fr);) {
+                String line;
                 while ((line = input.readLine()) != null) {
                     sb.append(line);
-                    sb.append(System.getProperty("line.separator"));
+                    sb.append(lineSeparator);
                 }
-            } finally {
-                input.close();
-            }
         } catch (FileNotFoundException fnfe) {
             throw fnfe;
         } catch (IOException ioe) {
