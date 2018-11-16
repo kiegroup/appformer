@@ -139,6 +139,8 @@
       <artifactId>uberfire-experimental-backend</artifactId>
     </dependency>
 
+
+
     <!-- The version of commons-io in droolsjbpm-build-bootstrap pom is way too old-->
     <dependency>
       <groupId>commons-io</groupId>
