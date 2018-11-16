@@ -131,8 +131,7 @@ public class M2ServletContextListener implements ServletContextListener {
     }
 
     private Properties readZipFile(String zipFilePath) {
-        try {
-            final ZipFile zipFile = new ZipFile(zipFilePath);
+        try (final ZipFile zipFile = new ZipFile(zipFilePath);) {
             final Enumeration<? extends ZipEntry> e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = e.nextElement();
@@ -147,7 +146,7 @@ public class M2ServletContextListener implements ServletContextListener {
                 }
             }
         } catch (IOException e) {
-            logger.error("IOError :{}", e.getMessage(), e);
+            logger.error("IOError while reading ZIP file :{}", e.getMessage(), e);
         }
 
         return fixNotMavenizedArtifact.getProperties(zipFilePath);
@@ -173,8 +172,7 @@ public class M2ServletContextListener implements ServletContextListener {
         jarArtifact = jarArtifact.setFile(jarFile);
 
         Artifact pom = null;
-        try {
-            final ZipFile jarZipFile = new ZipFile(jarArtifact.getFile());
+        try (final ZipFile jarZipFile = new ZipFile(jarArtifact.getFile())) {
             boolean foundPom = false;
             Path target = null;
             final Enumeration<? extends ZipEntry> entries = jarZipFile.entries();
