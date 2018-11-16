@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -139,10 +141,10 @@ public class AuthorizationPolicyDeployer {
      */
     public NonEscapedProperties readPolicyProperties(Path policyDir) throws IOException {
         NonEscapedProperties properties = new NonEscapedProperties();
-        Files.list(policyDir)
-                .filter(this::isPolicyFile)
-                .forEach(path -> loadPolicyFile(properties,
-                                                path));
+        try (Stream<Path> stream = Files.list(policyDir).filter(this::isPolicyFile)) {
+            stream.forEach(path -> loadPolicyFile(properties,
+                                                   path));
+        }
 
         return properties;
     }
