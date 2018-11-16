@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 
-public class PomJsonReaderDefault {
+public class PomJsonReaderDefault implements PomJsonReader{
 
     private final Logger logger = LoggerFactory.getLogger(PomJsonReaderDefault.class);
     private String kieVersion;

@@ -135,16 +135,6 @@
       <artifactId>plexus-utils</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-experimental-backend</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-experimental-api</artifactId>
-    </dependency>
-
     <!-- The version of commons-io in droolsjbpm-build-bootstrap pom is way too old-->
     <dependency>
       <groupId>commons-io</groupId>
