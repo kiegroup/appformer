@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.*;
 public class PomJsonReaderTest {
 
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
-    private PomJsonReaderDefault reader;
+    private PomJsonReader reader;
 
     @Before
     public void setUp() {
