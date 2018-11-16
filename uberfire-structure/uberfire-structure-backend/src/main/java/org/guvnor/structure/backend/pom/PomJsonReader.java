@@ -11,5 +11,5 @@ import org.guvnor.structure.pom.DynamicPomDependency;
  */
 public interface PomJsonReader {
 
-    Map<DependencyType, List<DynamicPomDependency>> readDeps();
+    ConfigurationMap readConfiguration();
 }

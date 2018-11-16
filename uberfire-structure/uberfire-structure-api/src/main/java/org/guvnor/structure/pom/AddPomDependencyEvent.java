@@ -14,6 +14,7 @@
  */
 package org.guvnor.structure.pom;
 
+import java.util.Set;
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
@@ -21,18 +22,19 @@ import org.uberfire.backend.vfs.Path;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 /***
- * Event to add dependency type to a pom in a project
+ * Event to add dependencies type to a pom in a project
  */
 @Portable
 public class AddPomDependencyEvent {
 
     private Path projectPath;
-    private DependencyType type;
 
-    public AddPomDependencyEvent(@MapsTo("dependencyType") final DependencyType type,
+    private Set<DependencyType> types;
+
+    public AddPomDependencyEvent(@MapsTo("dependencyTypes") final Set<DependencyType> types,
                                  @MapsTo("projectPath") final Path projectPath) {
-        this.type = checkNotNull("dependencyType",
-                                 type);
+        this.types = checkNotNull("dependencyTypes",
+                                  types);
         this.projectPath = checkNotNull("projectPath",
                                         projectPath);
     }
@@ -41,7 +43,8 @@ public class AddPomDependencyEvent {
         return projectPath;
     }
 
-    public DependencyType getDependencyType() {
-        return type;
+    public Set<DependencyType> getDependencyTypes() {
+        return types;
+
     }
 }

@@ -14,8 +14,10 @@
  */
 package org.guvnor.structure.backend.pom;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
@@ -26,18 +28,30 @@ import org.guvnor.structure.pom.DynamicPomDependency;
 public class DependencyTypesMapper {
 
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
-    private Map<DependencyType, List<DynamicPomDependency>> mapping;
+    private ConfigurationMap conf;
 
     public DependencyTypesMapper() {
         PomJsonReaderDefault jsonDepsReader = new PomJsonReaderDefault(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
-        mapping = jsonDepsReader.readDeps();
+        conf = jsonDepsReader.readConfiguration();
+    }
+
+    public String getKieVersion() {
+        return conf.getKieVersion();
     }
 
     public Map<DependencyType, List<DynamicPomDependency>> getMapping() {
-        return mapping;
+        return conf.getMapping();
     }
 
-    public List<DynamicPomDependency> getDependencies(DependencyType key) {
-        return mapping.get(key);
+    public Set<DynamicPomDependency> getInternalArtifacts() {
+        return conf.getInternalArtifacts();
+    }
+
+    public List<DynamicPomDependency> getDependencies(Set<DependencyType> dependencyTypes) {
+        List<DynamicPomDependency> result = new ArrayList<>();
+        for (DependencyType type : dependencyTypes) {
+            result.addAll(conf.getMapping().get(type));
+        }
+        return result;
     }
 }

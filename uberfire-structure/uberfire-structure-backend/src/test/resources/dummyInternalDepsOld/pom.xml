@@ -24,9 +24,16 @@
   <version>1.0.0.Final</version>
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
-      <version>4.3.8.RELEASE</version>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-internal</artifactId>
+      <version>7.7.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.optaplanner</groupId>
+      <artifactId>optaplanner-core</artifactId>
+      <version>7.7.0-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

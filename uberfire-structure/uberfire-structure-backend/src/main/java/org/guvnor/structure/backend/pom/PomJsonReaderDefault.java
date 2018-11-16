@@ -18,8 +18,10 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -32,9 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 
-public class PomJsonReaderDefault implements PomJsonReader {
+public class PomJsonReaderDefault {
 
     private final Logger logger = LoggerFactory.getLogger(PomJsonReaderDefault.class);
+    private String kieVersion;
+
     private JsonObject pomObject;
 
     public PomJsonReaderDefault(InputStream in) {
@@ -53,8 +57,8 @@ public class PomJsonReaderDefault implements PomJsonReader {
         if (!Files.exists(Paths.get(jsonPath))) {
             throw new RuntimeException("no " + jsonName + " in the provided path :" + path);
         }
+        try (InputStream fis = new FileInputStream(jsonPath);
 
-        try (FileInputStream fis = new FileInputStream(jsonPath);
              JsonReader reader = Json.createReader(fis)) {
             pomObject = reader.readObject();
         } catch (Exception e) {
@@ -63,7 +67,17 @@ public class PomJsonReaderDefault implements PomJsonReader {
         }
     }
 
-    public Map<DependencyType, List<DynamicPomDependency>> readDeps() {
+    public ConfigurationMap readConfiguration() {
+        kieVersion = pomObject.getString("kieVersion");
+        Map<DependencyType, List<DynamicPomDependency>> mapping = getDependencyTypeMap();
+        Set<DynamicPomDependency> internalArtifacts = getInternalArtifactsSet(kieVersion);
+        return new ConfigurationMap(mapping,
+                                    internalArtifacts,
+                                    kieVersion);
+    }
+
+    private Map<DependencyType, List<DynamicPomDependency>> getDependencyTypeMap() {
+
         JsonArray dependencies = pomObject.getJsonArray("dependencies");
         Map<DependencyType, List<DynamicPomDependency>> mapping = new HashMap<>(dependencies.size());
         for (int i = 0; i < dependencies.size(); i++) {
@@ -72,7 +86,8 @@ public class PomJsonReaderDefault implements PomJsonReader {
             JsonArray deps = depType.getJsonArray("deps");
             ArrayList<DynamicPomDependency> dynamic = new ArrayList<>(deps.size());
             for (int k = 0; k < deps.size(); k++) {
-                JsonObject dep = deps.getJsonObject(i);
+                JsonObject dep = deps.getJsonObject(k);
+
                 DynamicPomDependency dynamicDep = new DynamicPomDependency(
                         dep.getString("groupId"),
                         dep.getString("artifactId"),
@@ -86,5 +101,21 @@ public class PomJsonReaderDefault implements PomJsonReader {
                         dynamic);
         }
         return mapping;
+    }
+
+    private Set<DynamicPomDependency> getInternalArtifactsSet(String kieVersion) {
+        JsonArray internalArtifacts = pomObject.getJsonArray("internalArtifacts");
+        Set<DynamicPomDependency> dynamic = new HashSet<>(internalArtifacts.size());
+        for (int i = 0; i < internalArtifacts.size(); i++) {
+            JsonObject dep = internalArtifacts.getJsonObject(i);
+            DynamicPomDependency dynamicDep = new DynamicPomDependency(
+                    dep.getString("groupId"),
+                    dep.getString("artifactId"),
+                    kieVersion,
+                    dep.getString("scope")
+            );
+            dynamic.add(dynamicDep);
+        }
+        return dynamic;
     }
 }

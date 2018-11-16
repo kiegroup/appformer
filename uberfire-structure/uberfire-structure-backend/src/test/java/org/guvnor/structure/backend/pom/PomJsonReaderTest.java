@@ -26,18 +26,19 @@ import static org.assertj.core.api.Assertions.*;
 
 public class PomJsonReaderTest {
 
-    private PomJsonReaderDefault reader;
     private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
+    private PomJsonReaderDefault reader;
 
     @Before
     public void setUp() {
-        reader = new PomJsonReaderDefault("target/test-classes/",
+        reader = new PomJsonReaderDefault("target/classes/",
                                           JSON_POM_DEPS);
     }
 
     @Test
     public void readDepsTest() {
-        Map<DependencyType, List<DynamicPomDependency>> mapping = reader.readDeps();
+        ConfigurationMap conf = reader.readConfiguration();
+        Map<DependencyType, List<DynamicPomDependency>> mapping = conf.getMapping();
         assertThat(mapping).isNotEmpty();
         TestUtil.testJPADep(mapping);
     }
