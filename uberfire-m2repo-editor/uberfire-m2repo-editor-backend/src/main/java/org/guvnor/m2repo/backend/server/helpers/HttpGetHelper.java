@@ -163,14 +163,10 @@ public class HttpGetHelper {
         response.setDateHeader("Expires",
                                System.currentTimeMillis() + DEFAULT_EXPIRE_TIME);
 
-        RandomAccessFile input = null;
         OutputStream output = null;
-
-        try {
-            input = new RandomAccessFile(file,
-                                         "r");
+        try (RandomAccessFile input = new RandomAccessFile(file,
+                                                 "r")) {
             output = response.getOutputStream();
-
             if (ranges.isEmpty() || ranges.get(0) == full) {
                 Range r = full;
                 response.setContentType(contentType);
@@ -227,9 +223,6 @@ public class HttpGetHelper {
         } finally {
             if (output != null) {
                 output.close();
-            }
-            if (input != null) {
-                input.close();
             }
         }
     }
