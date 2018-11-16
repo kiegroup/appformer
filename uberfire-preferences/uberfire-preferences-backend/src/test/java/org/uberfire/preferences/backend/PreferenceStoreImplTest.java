@@ -103,9 +103,6 @@ public class PreferenceStoreImplTest {
 
     private PreferenceStoreImpl preferenceStore;
     
-    @Mock
-    private Event<PreferenceUpdatedEvent> preferenceUpdatedEvent;
-
     @Before
     public void setup() throws IOException {
         MappingContextSingleton.get();
@@ -118,6 +115,8 @@ public class PreferenceStoreImplTest {
         final IOService ioService = mockIoService(fileSystem);
 
         ObjectStorage objectStorage = new ObjectStorageImpl(ioService);
+        
+        Event<PreferenceUpdatedEvent> preferenceUpdatedEvent = mock(Event.class);
 
         scopeTypes = new DefaultPreferenceScopeTypes(new ServerUsernameProvider(sessionInfo));
         scopeFactory = new PreferenceScopeFactoryImpl(scopeTypes);

@@ -78,9 +78,6 @@ public class PreferenceStorageImplTest {
     private PreferenceScopeFactoryImpl scopeFactory;
 
     private PreferenceScopeTypes scopeTypes;
-    
-    @Mock
-    private Event<PreferenceUpdatedEvent> preferenceUpdatedEvent;    
 
     @Before
     public void setup() throws IOException {
@@ -97,6 +94,7 @@ public class PreferenceStorageImplTest {
         scopeFactory = new PreferenceScopeFactoryImpl(scopeTypes);
         scopeResolutionStrategyInfo = new DefaultPreferenceScopeResolutionStrategy(scopeFactory,
                                                                                    null).getInfo();
+        Event<PreferenceUpdatedEvent>  preferenceUpdatedEvent = mock(Event.class);
         preferenceStorageServiceBackendImpl = new PreferenceStorageImpl(ioService,
                                                                         sessionInfo,
                                                                         scopeTypes,
