@@ -24,9 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.sshd.server.SshServer;
+import org.assertj.core.api.Assertions;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.junit.Assume;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.extensions.FileSystemHookExecutionContext;
 import org.uberfire.java.nio.file.extensions.FileSystemHooks;
@@ -120,7 +122,13 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
         //Push clone back to origin
         provider.getFileSystem(URI.create("git://repo-clone?push=ssh://admin@localhost:" + gitSSHPort + "/repo"));
 
-        verify(hook).execute(any());
+        ArgumentCaptor<FileSystemHookExecutionContext> captor = ArgumentCaptor.forClass(FileSystemHookExecutionContext.class);
+
+        verify(hook).execute(captor.capture());
+
+        Assertions.assertThat(captor.getValue())
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("fsName", "repo");
 
     }
 }

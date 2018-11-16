@@ -45,7 +45,6 @@ public class GitRepositoryFactoryHelper implements RepositoryFactoryHelper {
 
     private Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate;
 
-    @Inject
     private PostCommitNotificationService postCommitNotificationService;
 
     @Inject
@@ -58,11 +57,13 @@ public class GitRepositoryFactoryHelper implements RepositoryFactoryHelper {
     public GitRepositoryFactoryHelper(@Named("ioStrategy") IOService indexedIOService,
                                       @Named("configIO") IOService notIndexedIOService,
                                       SpacesAPI spacesAPI,
-                                      Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate) {
+                                      Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate,
+                                      PostCommitNotificationService postCommitNotificationService) {
         this.indexedIOService = indexedIOService;
         this.notIndexedIOService = notIndexedIOService;
         this.spacesAPI = spacesAPI;
         this.repositoryExternalUpdate = repositoryExternalUpdate;
+        this.postCommitNotificationService = postCommitNotificationService;
     }
 
     @Override
