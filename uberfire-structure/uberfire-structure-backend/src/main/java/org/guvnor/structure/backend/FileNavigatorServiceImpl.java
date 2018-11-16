@@ -60,24 +60,25 @@ public class FileNavigatorServiceImpl implements FileNavigatorService {
         final ArrayList<org.uberfire.backend.vfs.Path> breadcrumbs = new ArrayList<>();
 
         Path path = Paths.convert(_path);
-        final DirectoryStream<Path> stream = ioService.newDirectoryStream(path);
+        try (final DirectoryStream<Path> stream = ioService.newDirectoryStream(path)) {
 
-        for (final Path activePath : stream) {
-            final VersionAttributeView versionAttributeView = ioService.getFileAttributeView(activePath,
-                                                                                             VersionAttributeView.class);
-            int index = versionAttributeView.readAttributes().history().records().size() - 1;
+            for (final Path activePath : stream) {
+                final VersionAttributeView versionAttributeView = ioService.getFileAttributeView(activePath,
+                                                                                                 VersionAttributeView.class);
+                int index = versionAttributeView.readAttributes().history().records().size() - 1;
 
-            final String authorEmail = versionAttributeView.readAttributes().history().records().get(index).email();
-            final String author = versionAttributeView.readAttributes().history().records().get(index).author();
-            final String comment = versionAttributeView.readAttributes().history().records().get(index).comment();
+                final String authorEmail = versionAttributeView.readAttributes().history().records().get(index).email();
+                final String author = versionAttributeView.readAttributes().history().records().get(index).author();
+                final String comment = versionAttributeView.readAttributes().history().records().get(index).comment();
 
-            final String time = p.format(new Date(Files.getLastModifiedTime(activePath).toMillis()));
-            result.add(new DataContent(Files.isDirectory(activePath),
-                                       comment,
-                                       author,
-                                       authorEmail,
-                                       time,
-                                       Paths.convert(activePath)));
+                final String time = p.format(new Date(Files.getLastModifiedTime(activePath).toMillis()));
+                result.add(new DataContent(Files.isDirectory(activePath),
+                                           comment,
+                                           author,
+                                           authorEmail,
+                                           time,
+                                           Paths.convert(activePath)));
+            }
         }
 
         sort(result,
