@@ -54,16 +54,16 @@ public class CommandServer implements Runnable {
     }
 
     public void run() {
-        try {
-            ServerSocket serverSocket = new ServerSocket(portNumber);
-            Socket clientSocket = serverSocket.accept();
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String commandStr;
-            while ((commandStr = in.readLine()) != null) {
-                commandEvent.fire(new CommandEvent(commandStr));
-                out.println(">>> " + commandStr + " [OK]");
-            }
+        try (ServerSocket serverSocket = new ServerSocket(portNumber);
+             Socket clientSocket = serverSocket.accept();
+             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+            ) {
+                String commandStr;
+                while ((commandStr = in.readLine()) != null) {
+                    commandEvent.fire(new CommandEvent(commandStr));
+                    out.println(">>> " + commandStr + " [OK]");
+                }
         } catch (Exception e) {
             log.error("Command server error", e);
         }
