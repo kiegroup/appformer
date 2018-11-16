@@ -59,7 +59,7 @@ public class JGitPathImpl extends AbstractPath<JGitFileSystem>
                                  final String pathx,
                                  final String host,
                                  final boolean isRoot) {
-        final boolean isRooted = isRoot ? true : pathx.startsWith("/");
+        final boolean isRooted = isRoot || pathx.startsWith("/");
 
         final boolean isAbsolute;
         if (isRooted) {
@@ -176,12 +176,11 @@ public class JGitPathImpl extends AbstractPath<JGitFileSystem>
                     try {
                         file = File.createTempFile("git",
                                                    "temp");
-                        final InputStream in = getFileSystem().provider().newInputStream(this);
-                        final OutputStream out = new FileOutputStream(file);
-                        internalCopy(in,
-                                     out);
-                        in.close();
-                        out.close();
+                        try (final InputStream in = getFileSystem().provider().newInputStream(this);
+                             final OutputStream out = new FileOutputStream(file)) {
+                            internalCopy(in,
+                                         out);
+                        }
                     } catch (final Exception ex) {
                         file = null;
                     }
