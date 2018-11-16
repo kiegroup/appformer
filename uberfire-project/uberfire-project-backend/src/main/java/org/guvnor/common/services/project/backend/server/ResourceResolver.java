@@ -562,18 +562,21 @@ public abstract class ResourceResolver<T extends Module>
         final LinkedDotFileFilter dotFileFilter = new LinkedDotFileFilter(metaDataFileFilter);
         final LinkedDirectoryFilter directoryFilter = new LinkedDirectoryFilter(dotFileFilter);
 
-        final DirectoryStream<org.uberfire.java.nio.file.Path> nioChildPackageSrcPaths = ioService.newDirectoryStream(nioPackageSrcPath,
-                                                                                                                      directoryFilter);
-        for (org.uberfire.java.nio.file.Path nioChildPackageSrcPath : nioChildPackageSrcPaths) {
-            if (recursive) {
-                packageNames.addAll(getPackageNames(nioModuleRootPath,
-                                                    nioChildPackageSrcPath,
-                                                    includeDefault,
-                                                    includeChild,
-                                                    recursive));
-            } else {
-                packageNames.add(getPackagePathSuffix(nioModuleRootPath,
-                                                      nioChildPackageSrcPath));
+        try (final DirectoryStream<org.uberfire.java.nio.file.Path> nioChildPackageSrcPaths
+                     = ioService.newDirectoryStream(nioPackageSrcPath,
+                                                    directoryFilter)
+            ) {
+            for (org.uberfire.java.nio.file.Path nioChildPackageSrcPath : nioChildPackageSrcPaths) {
+                if (recursive) {
+                    packageNames.addAll(getPackageNames(nioModuleRootPath,
+                                                        nioChildPackageSrcPath,
+                                                        includeDefault,
+                                                        includeChild,
+                                                        recursive));
+                } else {
+                    packageNames.add(getPackagePathSuffix(nioModuleRootPath,
+                                                          nioChildPackageSrcPath));
+                }
             }
         }
         return packageNames;
