@@ -112,20 +112,20 @@ public class ClusterJMSService implements ClusterService {
             Destination topic = createDestination(type,
                                                   channel,
                                                   session);
-            MessageConsumer messageConsumer = session.createConsumer(topic);
-
-            messageConsumer.setMessageListener(message -> {
-                if (message instanceof ObjectMessage) {
-                    try {
-                        Serializable object = ((ObjectMessage) message).getObject();
-                        if (objectMessageClass.isInstance(object)) {
-                            listener.accept((T) object);
+            try (MessageConsumer messageConsumer = session.createConsumer(topic)) {
+                messageConsumer.setMessageListener(message -> {
+                    if (message instanceof ObjectMessage) {
+                        try {
+                            Serializable object = ((ObjectMessage) message).getObject();
+                            if (objectMessageClass.isInstance(object)) {
+                                listener.accept((T) object);
+                            }
+                        } catch (JMSException e) {
+                            LOGGER.error("Exception receiving JMS message: " + e.getMessage());
                         }
-                    } catch (JMSException e) {
-                        LOGGER.error("Exception receiving JMS message: " + e.getMessage());
                     }
-                }
-            });
+                });
+            }
         } catch (Exception e) {
             LOGGER.error("Error creating JMS Watch Service: " + e.getMessage());
         }
@@ -136,26 +136,17 @@ public class ClusterJMSService implements ClusterService {
                                        String channel,
                                        Serializable object) {
 
-        Session session = null;
-        try {
-            session = connection.createSession(false,
-                                               Session.AUTO_ACKNOWLEDGE);
+        try (Session session = connection.createSession(false,
+                                                        Session.AUTO_ACKNOWLEDGE)) {
             Destination destination = createDestination(type,
                                                         channel,
                                                         session);
             ObjectMessage objectMessage = session.createObjectMessage(object);
-            MessageProducer messageProducer = session.createProducer(destination);
-            messageProducer.send(objectMessage);
+            try (MessageProducer messageProducer = session.createProducer(destination)) {
+                messageProducer.send(objectMessage);
+            }
         } catch (JMSException e) {
             LOGGER.error("Exception on JMS broadcast: " + e.getMessage());
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (JMSException e) {
-                    LOGGER.error("Exception on closing JMS session (this could trigger a leak) " + e.getMessage());
-                }
-            }
         }
     }
 
