@@ -44,6 +44,8 @@ public class BaseGridColumn<T> implements GridColumn<T> {
     private GridColumnRenderer<T> columnRenderer;
     private ColumnWidthMode columnWidthMode = ColumnWidthMode.fixed;
 
+    protected String placeHolder = null;
+
     public BaseGridColumn(final HeaderMetaData headerMetaData,
                           final GridColumnRenderer<T> columnRenderer,
                           final double width) {
@@ -65,6 +67,20 @@ public class BaseGridColumn<T> implements GridColumn<T> {
         this.headerMetaData.addAll(headerMetaData);
         this.columnRenderer = columnRenderer;
         this.width = width;
+    }
+
+    public BaseGridColumn(final HeaderMetaData headerMetaData,
+                          final GridColumnRenderer<T> columnRenderer,
+                          final double width, final String placeHolder) {
+        this(headerMetaData, columnRenderer, width);
+        this.placeHolder = placeHolder;
+    }
+
+    public BaseGridColumn(final List<HeaderMetaData> headerMetaData,
+                          final GridColumnRenderer<T> columnRenderer,
+                          final double width, final String placeHolder) {
+        this(headerMetaData, columnRenderer, width);
+        this.placeHolder = placeHolder;
     }
 
     @Override
@@ -176,6 +192,14 @@ public class BaseGridColumn<T> implements GridColumn<T> {
     @Override
     public void setMaximumWidth(final Double maximumWidth) {
         this.maximumWidth = maximumWidth;
+    }
+
+    public String getPlaceHolder() {
+        return placeHolder;
+    }
+
+    public void setPlaceHolder(String placeHolder) {
+        this.placeHolder = placeHolder;
     }
 
     @Override
