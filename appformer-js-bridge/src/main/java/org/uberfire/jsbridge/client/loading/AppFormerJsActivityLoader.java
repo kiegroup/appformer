@@ -29,6 +29,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.ActivityManager;
+import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyActivity;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
@@ -154,15 +155,26 @@ public class AppFormerJsActivityLoader {
         final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
         final ActivityManager activityManager = beanManager.lookupBean(ActivityManager.class).getInstance();
 
-        final JsLazyWorkbenchPerspectiveActivity activity = new JsLazyWorkbenchPerspectiveActivity(component,
+        final PerspectiveActivity activity = registerPerspectiveActivity(component, placeManager, activityManager, beanManager);
+
+        components.put(componentId, component.getSource());
+        activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
+    }
+
+    private PerspectiveActivity registerPerspectiveActivity(final AppFormerComponentConfiguration component,
+                                                            final PlaceManager placeManager,
+                                                            final ActivityManager activityManager,
+                                                            final SyncBeanManager beanManager) {
+
+        final JsWorkbenchLazyPerspectiveActivity activity = new JsWorkbenchLazyPerspectiveActivity(component,
                                                                                                    placeManager,
                                                                                                    activityManager,
                                                                                                    this::lazyLoadParentScript);
 
         //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
-        final SingletonBeanDefinition<JsLazyWorkbenchPerspectiveActivity, JsLazyWorkbenchPerspectiveActivity> activityBean = new SingletonBeanDefinition<>(
+        final SingletonBeanDefinition<JsWorkbenchLazyPerspectiveActivity, JsWorkbenchLazyPerspectiveActivity> activityBean = new SingletonBeanDefinition<>(
                 activity,
-                JsLazyWorkbenchPerspectiveActivity.class,
+                JsWorkbenchLazyPerspectiveActivity.class,
                 new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
                 activity.getIdentifier(),
                 true,
@@ -175,7 +187,6 @@ public class AppFormerJsActivityLoader {
         beanManager.registerBeanTypeAlias(activityBean, JsWorkbenchLazyActivity.class);
         beanManager.registerBeanTypeAlias(activityBean, Activity.class);
 
-        components.put(componentId, component.getSource());
-        activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
+        return activity;
     }
 }

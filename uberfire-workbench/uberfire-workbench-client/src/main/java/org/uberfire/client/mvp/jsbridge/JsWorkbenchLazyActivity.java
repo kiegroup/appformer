@@ -1,4 +1,4 @@
-package org.uberfire.jsbridge.client.loading;
+package org.uberfire.client.mvp.jsbridge;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

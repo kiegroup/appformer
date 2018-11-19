@@ -5,9 +5,13 @@ import java.util.function.Consumer;
 import com.google.gwt.core.client.JavaScriptObject;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
+import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyPerspective;
+import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.panels.impl.ImmutableWorkbenchPanelPresenter;
 import org.uberfire.jsbridge.client.loading.AppFormerComponentConfiguration.PerspectiveComponentParams;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchPerspectiveActivity;
+import org.uberfire.jsbridge.client.perspective.JsWorkbenchTemplatedPerspectiveActivity;
 import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -20,18 +24,18 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
 
-public class JsLazyWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspectiveActivity implements JsWorkbenchLazyActivity {
+public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspectiveActivity implements JsWorkbenchLazyPerspective {
 
     private final ActivityManager activityManager;
 
     private final String backedPerspectiveId;
     private final boolean configuredIsDefault;
-    private JsWorkbenchPerspectiveActivity backedPerspective;
+    private PerspectiveActivity backedPerspective;
 
     private boolean loaded;
     private final Consumer<String> lazyLoadingParentScript;
 
-    public JsLazyWorkbenchPerspectiveActivity(final AppFormerComponentConfiguration backedComponent,
+    public JsWorkbenchLazyPerspectiveActivity(final AppFormerComponentConfiguration backedComponent,
                                               final PlaceManager placeManager,
                                               final ActivityManager activityManager,
                                               final Consumer<String> lazyLoadingParentScript) {
@@ -53,9 +57,17 @@ public class JsLazyWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspec
 
         this.loaded = true;
 
-        this.backedPerspective = new JsWorkbenchPerspectiveActivity(new JsNativePerspective(backedPerspective),
-                                                                    super.placeManager,
-                                                                    this.isDefault());
+        final JsNativePerspective jsPerspective = new JsNativePerspective(backedPerspective);
+        if (jsPerspective.isTemplated()) {
+            this.backedPerspective = new JsWorkbenchTemplatedPerspectiveActivity(this.getIdentifier(),
+                                                                                 this.isDefault(),
+                                                                                 jsPerspective,
+                                                                                 placeManager);
+        } else {
+            this.backedPerspective = new JsWorkbenchPerspectiveActivity(jsPerspective,
+                                                                        super.placeManager,
+                                                                        this.isDefault());
+        }
 
         if (this.activityManager.isStarted(this)) {
             // current activity is started, need to move the backed perspective to started state
@@ -67,6 +79,14 @@ public class JsLazyWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspec
             this.backedPerspective.onOpen();
             super.placeManager.goTo(new ForcedPlaceRequest(this.backedPerspectiveId));
         }
+    }
+
+    @Override
+    public PerspectiveActivity get() {
+        if (this.isPerspectiveLoaded()) {
+            return this.backedPerspective;
+        }
+        return this;
     }
 
     // ===== LIFECYCLE
@@ -182,9 +202,9 @@ public class JsLazyWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspec
     }
 
     private PerspectiveDefinition buildEmptyDefinition() {
-        final PerspectiveDefinition def = new PerspectiveDefinitionImpl("org.uberfire.client.workbench.panels.impl.ImmutableWorkbenchPanelPresenter");
+        final PerspectiveDefinition def = new PerspectiveDefinitionImpl(ImmutableWorkbenchPanelPresenter.class.getName());
         def.setName(getIdentifier());
-        def.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest("LazyLoadingScreen")));
+        def.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(LazyLoadingScreen.IDENTIFIER)));
         return def;
     }
 }

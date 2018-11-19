@@ -1,6 +1,12 @@
 package org.uberfire.jsbridge.client.perspective.jsnative;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import elemental2.dom.HTMLElement;
+import jsinterop.base.Js;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
 
@@ -28,6 +34,10 @@ public class JsNativePerspective {
         return (boolean) get("af_isTransient");
     }
 
+    public boolean isTemplated() {
+        return (boolean) get("af_isTemplated");
+    }
+
     public Menus menus() {
         return (Menus) get("af_menus");
     }
@@ -53,17 +63,48 @@ public class JsNativePerspective {
     }
 
     public void onOpen() {
-        //this.render(); TODO ??
         run("af_onOpen");
+    }
+
+    public Set<HTMLElement> getContainerComponents(final HTMLElement container) {
+        final JsArray<JavaScriptObject> jsComponents = nativeGetAfComponents(container);
+
+        final Set<HTMLElement> components = new HashSet<>();
+        for (int i = 0; i < jsComponents.length(); i++) {
+            components.add(Js.cast(jsComponents.get(i)));
+        }
+
+        return components;
     }
 
     public void onClose() {
         run("af_onClose");
     }
 
+    public void onClose(final HTMLElement container) {
+        onClose();
+        unmount(container);
+    }
+
     public void onShutdown() {
         run("af_onShutdown");
     }
+
+    private native void unmount(final HTMLElement container) /*-{
+        if (this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective::self.af_isReact) {
+            $wnd.ReactDOM.unmountComponentAtNode(container);
+        }
+    }-*/;
+
+    private native JsArray<JavaScriptObject> nativeGetAfComponents(final HTMLElement container) /*-{
+        return $wnd._AppFormerUtils.findChildContainers(container);
+    }-*/;
+
+    public native void renderNative(final HTMLElement container) /*-{
+        $wnd.AppFormer.render(
+                this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective::self.af_componentRoot(),
+                container);
+    }-*/;
 
     private native Object get(final String fieldToInvoke)   /*-{
         return this.@org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective::self[fieldToInvoke];

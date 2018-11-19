@@ -14,8 +14,10 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Templated("lazy-loading.html")
-@WorkbenchScreen(identifier = "LazyLoadingScreen")
+@WorkbenchScreen(identifier = LazyLoadingScreen.IDENTIFIER)
 public class LazyLoadingScreen extends Composite {
+
+    public static final String IDENTIFIER = "LazyLoadingScreen";
 
     private Label title;
 

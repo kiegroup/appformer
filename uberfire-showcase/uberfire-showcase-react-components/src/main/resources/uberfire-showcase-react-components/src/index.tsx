@@ -2,6 +2,7 @@ import * as React from "react";
 import * as AppFormer from 'appformer-js';
 import {Clock} from "./Clock";
 import {Files} from "./Files";
+import {TemplatedPanel} from "./TemplatedPanel";
 
 export class StaticReactComponent extends AppFormer.Screen {
     constructor() {
@@ -26,23 +27,23 @@ export class StaticReactComponent extends AppFormer.Screen {
     }
 }
 
-export class FirstReactPerspective extends AppFormer.Perspective {
+export class CompassLayoutJsPerspective extends AppFormer.CompassLayoutPerspective {
 
     constructor() {
-        super("FirstReactPerspective");
-        this.af_isReact = true;
+        super("CompassLayoutJsPerspective");
         this.af_isTransient = false;
-        this.af_parts = FirstReactPerspective.parts();
-        this.af_panels = FirstReactPerspective.panels();
+
+        this.af_parts = this.parts();
+        this.af_panels = this.panels();
     }
 
-    private static parts() {
+    private parts() {
         const reactComponentPart = new AppFormer.Part("ReactComponent");
         const welcomePart = new AppFormer.Part("welcome");
         return [reactComponentPart, welcomePart];
     }
 
-    private static panels() {
+    private panels() {
 
         // ----- West section
         const youtubeVideosPart = new AppFormer.Part("YouTubeVideos");
@@ -78,10 +79,6 @@ export class FirstReactPerspective extends AppFormer.Perspective {
         return [panelWest, panelEast, panelSouth];
     }
 
-    af_componentRoot(): AppFormer.Element {
-        return <div>This is a test perspective!</div>; // TODO create perspective layout here
-    }
-
     af_onStartup(): void {
         console.info("React Perspective Started!");
     }
@@ -100,5 +97,122 @@ export class FirstReactPerspective extends AppFormer.Perspective {
 
 }
 
+export class ReactTemplatedJsPerspective extends AppFormer.Perspective {
+
+    constructor() {
+        super("ReactTemplatedJsPerspective");
+        this.af_isReact = true;
+        this.af_isTransient = true;
+    }
+
+    af_componentRoot(children?: any): AppFormer.Element {
+        return (
+            <div className="fluid-container">
+                <div style={{height: "5%", paddingTop: "10px"}} className="text-center">
+                    <span className="lead">React templated Perspective</span>
+                </div>
+                <div style={{height: "95%"}}>
+                    <div className="fluid-row" style={{height: "48%"}}>
+                        <div className="col-md-4">
+                            <TemplatedPanel title={"React Component"}>
+                                <div af-js-component={"ReactComponent"} data-startup-foo1="bar1" data-startup-foo2="bar2"/>
+                            </TemplatedPanel>
+                        </div>
+                        <div className="col-md-4">
+                            <TemplatedPanel title={"Welcome"}>
+                                <div af-js-component={"welcome"}/>
+                            </TemplatedPanel>
+                        </div>
+                        <div className="col-md-4">
+                            <TemplatedPanel title={"Readme"}>
+                                <div af-js-component={"ReadmeScreen"}/>
+                            </TemplatedPanel>
+                        </div>
+                    </div>
+                    <div style={{height: "2%"}}/>
+                    <div className="fluid-row" style={{height: "48%"}}>
+                        <div className="col-md-4">
+                            <TemplatedPanel title={"Plugins Explorer"}>
+                                <div af-js-component={"Plugins Explorer"}/>
+                            </TemplatedPanel>
+                        </div>
+                        <div className="col-md-4">
+                            <TemplatedPanel title={"Todo List"}>
+                                <div af-js-component={"TodoListScreen"}/>
+                            </TemplatedPanel>
+                        </div>
+                        <div className="col-md-4">
+                            <TemplatedPanel title={"GitHub Commit Stats"}>
+                                <div af-js-component={"GitHubCommitDaysStats"}/>
+                            </TemplatedPanel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+}
+
+export class StringTemplatedJsPerspective extends AppFormer.Perspective {
+
+    constructor() {
+        super("StringTemplatedJsPerspective");
+        this.af_isReact = false;
+        this.af_isTransient = true;
+    }
+
+    af_componentRoot(children?: any): string {
+        return `
+            <div class="fluid-container">
+                <div style="height: 5%; padding-top: 10px;" class="text-center">
+                    <span class="lead">HTML-templated Perspective</span>
+                </div>
+                <div style="height: 95%">
+                    <div class="fluid-row" style="height: 48%">
+                        <div class="col-md-4">
+                            <div class="panel panel-warning">
+                                <div class="panel-heading" style="height: 10%">
+                                    <h3 class="panel-title">Plugins Explorer</h3></div>
+                                <div class="panel-body" style="height: 80%">
+                                    <div af-js-component="Plugins Explorer"></div>
+                                </div>
+                                <div class="panel-footer" style="height: 10%">
+                                    <span class="badge">NOT powered by React :-)</span></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel panel-warning">
+                                <div class="panel-heading" style="height: 10%">
+                                    <h3 class="panel-title">Welcome</h3></div>
+                                <div class="panel-body" style="height: 80%">
+                                    <div af-js-component="welcome" data-startup-special-message="Hi there!"></div>
+                                </div>
+                                <div class="panel-footer" style="height: 10%">
+                                    <span class="badge">NOT powered by React :-)</span></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel panel-warning">
+                                <div class="panel-heading" style="height: 10%">
+                                    <h3 class="panel-title">GitHubCommitDaysStats</h3></div>
+                                <div class="panel-body" style="height: 80%">
+                                    <div af-js-component="GitHubCommitDaysStats"></div>
+                                </div>
+                                <div class="panel-footer" style="height: 10%">
+                                    <span class="badge">NOT powered by React :-)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+`;
+    }
+
+}
+
 AppFormer.register(new StaticReactComponent());
-AppFormer.register( new FirstReactPerspective());
+AppFormer.register(new CompassLayoutJsPerspective());
+AppFormer.register(new ReactTemplatedJsPerspective());
+AppFormer.register(new StringTemplatedJsPerspective());
