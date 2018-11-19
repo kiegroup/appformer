@@ -39,6 +39,7 @@ public class PomStructureEditor {
     private PomEditor pomEditor;
     private DependencyTypesMapper mapper;
     boolean enabledPomDependenciesFeature;
+    private BackendExperimentalFeaturesRegistryService experimentalServiceRegistry;
 
     // for test
     public PomStructureEditor() {
@@ -51,10 +52,11 @@ public class PomStructureEditor {
     public PomStructureEditor(BackendExperimentalFeaturesRegistryService experimentalServiceRegistry) {
         mapper = new DependencyTypesMapper();
         pomEditor = new PomEditorDefault(mapper);
-        enabledPomDependenciesFeature = experimentalServiceRegistry.getExperimentalFeaturesSession().getFeaturesRegistry().isFeatureEnabled(PomDependencyExperimental.class.getName());
+        this.experimentalServiceRegistry = experimentalServiceRegistry;
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
+        enabledPomDependenciesFeature = experimentalServiceRegistry.getExperimentalFeaturesSession().getFeaturesRegistry().isFeatureEnabled(PomDependencyExperimental.class.getName());
         if(enabledPomDependenciesFeature) {
             final Path projectPath = event.getProjectPath();
             final Set<DependencyType> dependencyTypes = event.getDependencyTypes();

@@ -16,5 +16,6 @@
   <source path="repositories"/>
   <source path="security" />
   <source path="social" />
+  <source path="pom" />
 
 </module>

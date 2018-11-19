@@ -26,7 +26,7 @@ import org.uberfire.client.views.pfly.sys.PatternFlyBootstrapper;
  * Bootstrap widgets-core
  */
 @EntryPoint
-@Bundle("resources/org/guvnor/structure/client/resources/i18n/Messages.properties")
+@Bundle("resources/i18n/Messages.properties")
 public class StructureEntryPoint {
 
     @PostConstruct
