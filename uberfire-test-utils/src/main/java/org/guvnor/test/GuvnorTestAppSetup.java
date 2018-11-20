@@ -22,10 +22,12 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
+import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
 import org.uberfire.io.IOService;
 import org.uberfire.io.impl.IOServiceDotFileImpl;
 import org.uberfire.rpc.SessionInfo;
+import org.uberfire.rpc.impl.SessionInfoImpl;
 
 import static org.mockito.Mockito.*;
 
@@ -46,7 +48,7 @@ public class GuvnorTestAppSetup {
     @Produces
     @Alternative
     public SessionInfo sessionInfo() {
-        return mock(SessionInfo.class);
+        return new SessionInfoImpl("id-test", new UserImpl("test-user"));
     }
 
     @Produces

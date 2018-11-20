@@ -51,7 +51,7 @@ public class PomStructureEditorTest {
     }
 
     @Test
-    public void onNEwDynamicDependencyEventTest() throws Exception {
+    public void onNewDynamicDependencyEventTest() throws Exception {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         assertThat(model.getDependencies()).hasSize(0);
