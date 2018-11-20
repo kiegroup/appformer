@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.gwt.core.client.GWT;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.columns.GridColumnRenderer;
 
@@ -100,9 +99,6 @@ public class BaseGridColumn<T> implements GridColumn<T> {
 
     @Override
     public void setWidth(final double width) {
-        GWT.log(">>>>>>> COLUMN: " + this);
-        GWT.log(">>>>>>> COLUMN old: " + this.width);
-        GWT.log(">>>>>>> COLUMN new: " + width);
         this.width = width;
     }
 

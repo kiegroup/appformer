@@ -28,7 +28,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import com.google.gwt.core.client.GWT;
 import org.uberfire.ext.wires.core.grids.client.model.GridCell;
 import org.uberfire.ext.wires.core.grids.client.model.GridCellValue;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
@@ -136,7 +135,7 @@ public class BaseGridData implements GridData {
         }
 
         // FIXME to test
-        internalRefreshWidth(true, OptionalDouble.of(originalWidth));
+        internalRefreshWidth(true, OptionalDouble.empty());
 
         selectionsManager.onDeleteColumn(index);
     }
@@ -153,7 +152,7 @@ public class BaseGridData implements GridData {
         }
 
         // FIXME to test
-        internalRefreshWidth(true, OptionalDouble.of(originalWidth));
+        internalRefreshWidth(true, OptionalDouble.empty());
     }
 
     @Override
@@ -662,7 +661,6 @@ public class BaseGridData implements GridData {
         double visiblePanel = getVisibleWidth();
         // this happens during initialization
         if (visiblePanel == 0) {
-            GWT.log("visiblePanel = 0");
             return false;
         }
         // FIXME add a comment
@@ -671,10 +669,6 @@ public class BaseGridData implements GridData {
         }
 
         GridWidthMetadata gridWidthMetadata = new GridWidthMetadata(optionalCurrentWidth);
-
-        GWT.log("currentGrossWidth = " + gridWidthMetadata.currentGrossWidth);
-        GWT.log("numberOfAutoColumn = " + gridWidthMetadata.numberOfAutoColumn);
-        GWT.log("fixedWidth = " + gridWidthMetadata.fixedWidth);
 
         // if there are no columns with auto width no need to continue
         if (gridWidthMetadata.numberOfAutoColumn == 0) {
@@ -685,22 +679,11 @@ public class BaseGridData implements GridData {
         double resizeRatio = previousVisibleWidth == 0 ? 0 : visiblePanel / previousVisibleWidth;
 
         double currentNew = gridWidthMetadata.currentGrossWidth;
-//        if (changedNumberOfColumn) {
-//            currentNew = gridWidthMetadata.currentGrossWidth - visiblePanel / gridWidthMetadata.numberOfAutoColumn;
-//        }
 
-        GWT.log("currentNew = " + currentNew);
-        GWT.log("optionalCurrentWidth.orElse(0) = " + optionalCurrentWidth.orElse(0));
-        GWT.log("gridWidthMetadata.currentGrossWidth = " + gridWidthMetadata.currentGrossWidth);
-        GWT.log("visiblePanel = " + visiblePanel);
-        GWT.log("getWidth() = " + getWidth());
         double targetGrossWidth = Math.max(visiblePanel, currentNew * resizeRatio);
 
         double currentWidth = getWidth() - gridWidthMetadata.fixedWidth;
         double targetWidth = targetGrossWidth - gridWidthMetadata.fixedWidth;
-
-        GWT.log("currentWidth = " + currentWidth);
-        GWT.log("targetWidth = " + targetWidth);
 
         boolean toRedraw = false;
         for (GridColumn<?> column : getColumns()) {
@@ -710,9 +693,6 @@ public class BaseGridData implements GridData {
             double oldWidth = column.getWidth();
             double ratio = oldWidth / currentWidth;
             double newWidth = ratio * targetWidth;
-            GWT.log("oldWidth = " + oldWidth);
-            GWT.log("newWidth = " + newWidth);
-            GWT.log("ratio = " + ratio);
             // this could happen during initialization when columns can be added before the first call to setVisibleSizeAndRefresh
             if (oldWidth == 0) {
                 newWidth = calculateInitWidth(column, OptionalDouble.empty());
@@ -735,9 +715,6 @@ public class BaseGridData implements GridData {
         this.previousVisibleWidth = this.visibleWidth;
         this.visibleWidth = width;
         this.visibleHeight = height;
-        GWT.log("previousVisibleWidth = " + previousVisibleWidth);
-        GWT.log("width = " + width);
-        GWT.log("height = " + height);
         return refreshWidth();
     }
 
@@ -758,16 +735,11 @@ public class BaseGridData implements GridData {
         }
         GridWidthMetadata gridWidthMetadata = new GridWidthMetadata(optionalCurrentWidth);
         int visibleWidth = getVisibleWidth();
-        GWT.log("column = " + column);
-        GWT.log("visibleWidth = " + visibleWidth);
-        GWT.log("numberOfAutoColumns = " + gridWidthMetadata.numberOfAutoColumn);
-//        GWT.log("gridWidthMetadata.availableWidthForAuto / gridWidthMetadata.numberOfAutoColumn = " + gridWidthMetadata.availableWidthForAuto / gridWidthMetadata.numberOfAutoColumn);
-        GWT.log("(visibleWidth - gridWidthMetadata.fixedWidth) / gridWidthMetadata.numberOfAutoColumn = " + (visibleWidth - gridWidthMetadata.fixedWidth) / gridWidthMetadata.numberOfAutoColumn);
 
-        if(gridWidthMetadata.numberOfAutoColumn < 2) {
+        if (gridWidthMetadata.numberOfAutoColumn < 2) {
             return visibleWidth - gridWidthMetadata.fixedWidth;
         }
-        return (visibleWidth - gridWidthMetadata.fixedWidth) / (gridWidthMetadata.numberOfAutoColumn -1);
+        return (visibleWidth - gridWidthMetadata.fixedWidth) / (gridWidthMetadata.numberOfAutoColumn - 1);
     }
 
     private class GridWidthMetadata {
@@ -791,14 +763,9 @@ public class BaseGridData implements GridData {
                 fixedWidth = GridColumn.ColumnWidthMode.isFixed(column) ? fixedWidth + columnWidth : fixedWidth;
             }
             previousWidth = optionalCurrentWidth.orElse(currentGrossWidth);
-            if(optionalCurrentWidth.isPresent()) {
-                GWT.log("QUI currentGrossWidth:" + currentGrossWidth + " optionalCurrentWidth.getAsDouble():" + optionalCurrentWidth.getAsDouble());
+            if (optionalCurrentWidth.isPresent()) {
                 currentGrossWidth = optionalCurrentWidth.getAsDouble();
             }
-            GWT.log("QUI1 fixedWidth:" + fixedWidth);
-//            availableWidthForAuto = currentGrossWidth - fixedWidth;
-//            GWT.log("QUI2 availableWidthForAuto:" + availableWidthForAuto);
-
         }
     }
 }

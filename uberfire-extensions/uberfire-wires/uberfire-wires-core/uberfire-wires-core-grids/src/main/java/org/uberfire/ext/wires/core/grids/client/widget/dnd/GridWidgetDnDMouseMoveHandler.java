@@ -18,15 +18,12 @@ package org.uberfire.ext.wires.core.grids.client.widget.dnd;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
 
 import com.ait.lienzo.client.core.event.NodeMouseMoveEvent;
 import com.ait.lienzo.client.core.event.NodeMouseMoveHandler;
 import com.ait.lienzo.client.core.mediator.IMediator;
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.types.Point2D;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
@@ -458,13 +455,10 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
 
         // FIXME to test
         // if the grid is becoming less than 100% width
-        GWT.log("newGridWidth = " + newGridWidth);
-        GWT.log("visibleWidth = " + visibleWidth);
         if (newGridWidth < visibleWidth && delta > 0) {
 
             // look for a column with auto width on the right
             Optional<GridColumn<?>> rightGridColumn = getFirstRightAutoColumn(activeGridColumn, activeGridModel);
-            GWT.log("Right column: " + rightGridColumn.isPresent());
             if (rightGridColumn.isPresent()) {
                 GridColumn<?> rightColumn = rightGridColumn.get();
                 double originalRightColumnWidth = rightColumn.getWidth();
@@ -487,7 +481,6 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         List<GridColumn<?>> columns = model.getColumns();
         int targetIndex = columns.indexOf(target);
 
-        GWT.log("FROM: " + (targetIndex + 1) + " TO: " + (columns.size() - 1));
         for(int i = targetIndex + 1; i < columns.size(); i += 1) {
             GridColumn<?> gridColumn = columns.get(i);
             if(GridColumn.ColumnWidthMode.isAuto(gridColumn)) {
