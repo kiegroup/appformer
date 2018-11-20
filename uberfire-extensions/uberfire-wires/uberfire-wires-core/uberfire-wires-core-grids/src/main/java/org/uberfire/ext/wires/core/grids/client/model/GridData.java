@@ -297,7 +297,8 @@ public interface GridData {
 
 
     // FIXME
-    boolean refreshWidth(boolean forceRefresh);
+    boolean refreshWidth();
+    boolean refreshWidth(double currentWidth);
 
     boolean setVisibleSizeAndRefresh(int width, int height);
 

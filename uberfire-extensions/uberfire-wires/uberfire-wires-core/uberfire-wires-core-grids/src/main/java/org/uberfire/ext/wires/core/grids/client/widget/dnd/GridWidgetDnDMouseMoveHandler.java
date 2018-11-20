@@ -18,6 +18,8 @@ package org.uberfire.ext.wires.core.grids.client.widget.dnd;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
 import com.ait.lienzo.client.core.event.NodeMouseMoveEvent;
 import com.ait.lienzo.client.core.event.NodeMouseMoveHandler;
@@ -445,13 +447,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
             }
         }
 
-        GWT.log(">>>>> COLUMN: " + activeGridColumn);
-//        if (GridColumn.ColumnWidthMode.isFixed(activeGridColumn)) {
-//            GWT.log(">>>>> FIXED");
-//            return;
-//        }
         destroyColumns(allGridColumns);
-        GWT.log(">>>>> COLUMN OLD WIDTH: " + activeGridColumn.getWidth());
 
         double originalLeftColumnWidth = activeGridColumn.getWidth();
         double delta = originalLeftColumnWidth - columnNewWidth;
@@ -459,38 +455,44 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         int visibleWidth = activeGridModel.getVisibleWidth();
         double gridWidgetWidth = activeGridWidget.getWidth();
         double newGridWidth = gridWidgetWidth - delta;
-        if (newGridWidth < visibleWidth) {
 
-            Optional<GridColumn<?>> rightGridColumn = getRightGridColumn(activeGridColumn, activeGridModel);
+        // FIXME to test
+        // if the grid is becoming less than 100% width
+        GWT.log("newGridWidth = " + newGridWidth);
+        GWT.log("visibleWidth = " + visibleWidth);
+        if (newGridWidth < visibleWidth && delta > 0) {
+
+            // look for a column with auto width on the right
+            Optional<GridColumn<?>> rightGridColumn = getFirstRightAutoColumn(activeGridColumn, activeGridModel);
+            GWT.log("Right column: " + rightGridColumn.isPresent());
             if (rightGridColumn.isPresent()) {
                 GridColumn<?> rightColumn = rightGridColumn.get();
                 double originalRightColumnWidth = rightColumn.getWidth();
                 double newWidth = originalRightColumnWidth + delta;
-//                if (newWidth < rightColumn.getMinimumWidth()) {
-//                    newWidth = rightColumn.getMinimumWidth();
-//                }
 
                 rightColumn.setWidth(newWidth);
             }
-            else {
+            // or revert column resizing if the column itself has auto width
+            else if (GridColumn.ColumnWidthMode.isAuto(activeGridColumn)){
                 columnNewWidth = activeGridColumn.getWidth();
             }
         }
 
         activeGridColumn.setWidth(columnNewWidth);
-
-        GWT.log(">>>>> COLUMN NEW WIDTH: " + activeGridColumn.getWidth());
-        GWT.log(">>>>> COLUMN OLD MODE: " + activeGridColumn.getColumnWidthMode());
-//        double gridWidgetWidth = activeGridWidget.getWidth();
-        GWT.log(">>>>> WIDGET WIDTH: " + activeGridWidget.getWidth());
         layer.batch();
     }
 
-    private Optional<GridColumn<?>> getRightGridColumn(GridColumn<?> target, GridData model) {
+    // FIXME to test
+    Optional<GridColumn<?>> getFirstRightAutoColumn(GridColumn<?> target, GridData model) {
         List<GridColumn<?>> columns = model.getColumns();
         int targetIndex = columns.indexOf(target);
-        if (targetIndex >= 0 && targetIndex < columns.size() - 1) {
-            return Optional.of(columns.get(targetIndex + 1));
+
+        GWT.log("FROM: " + (targetIndex + 1) + " TO: " + (columns.size() - 1));
+        for(int i = targetIndex + 1; i < columns.size(); i += 1) {
+            GridColumn<?> gridColumn = columns.get(i);
+            if(GridColumn.ColumnWidthMode.isAuto(gridColumn)) {
+                return Optional.of(gridColumn);
+            }
         }
         return Optional.empty();
     }

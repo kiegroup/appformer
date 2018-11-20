@@ -192,8 +192,13 @@ public class GridLienzoPanel extends FocusPanel implements RequiresResize,
                                               visibleHeight);
         getLienzoPanel().setPixelSize(visibleWidth,
                                       visibleHeight);
-        boolean toRefresh = getDefaultGridLayer().getGridWidgets().stream()
-                .map(gridWidget -> gridWidget.getModel().setVisibleSizeAndRefresh(visibleWidth, visibleHeight)).collect(Collectors.toSet()).contains(true);
+
+        // FIXME add better comment
+        boolean toRefresh = false;
+        for (GridWidget gridWidget : getDefaultGridLayer().getGridWidgets()) {
+            toRefresh = toRefresh || gridWidget.getModel().setVisibleSizeAndRefresh(visibleWidth, visibleHeight);
+        }
+
         if(toRefresh) {
             this.getDefaultGridLayer().draw();
         }
