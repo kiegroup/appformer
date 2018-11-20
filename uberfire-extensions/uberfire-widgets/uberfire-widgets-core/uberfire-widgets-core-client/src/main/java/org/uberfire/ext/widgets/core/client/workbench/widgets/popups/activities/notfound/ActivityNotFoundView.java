@@ -18,10 +18,8 @@ package org.uberfire.ext.widgets.core.client.workbench.widgets.popups.activities
 import javax.annotation.PostConstruct;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Label;
@@ -51,11 +49,6 @@ public class ActivityNotFoundView extends SimplePanel
     @Override
     public void setRequestedPlaceIdentifier(String identifier) {
         requestedPlaceIdentifierLabel.setText(identifier);
-    }
-
-    @UiHandler("okButton")
-    public void onClickOkButton(final ClickEvent event) {
-        presenter.close();
     }
 
     interface ActivityNotFoundViewBinder

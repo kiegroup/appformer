@@ -28,7 +28,6 @@
       <g:Label text="{i18n.activityNotFound}"/>
     </g:HorizontalPanel>
     <b:Label ui:field="requestedPlaceIdentifierLabel"></b:Label>
-    <b:Button ui:field="okButton">OK</b:Button>
   </g:VerticalPanel>
 
 </ui:UiBinder> 
