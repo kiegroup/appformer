@@ -51,10 +51,12 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -93,6 +95,9 @@ public class GridWidgetDnDMouseMoveHandlerTest {
     @Mock
     private NodeMouseMoveEvent event;
 
+    @Mock
+    private BaseHeaderMetaData header;
+
     @Captor
     private ArgumentCaptor<List<GridColumn<?>>> uiColumnsArgumentCaptor;
 
@@ -109,6 +114,11 @@ public class GridWidgetDnDMouseMoveHandlerTest {
     private Mediators mediators;
 
     private GridWidgetDnDMouseMoveHandler handler;
+
+    private double originalColumnWidth = 200;
+    private double originalRightColumnWidth = 300;
+    private BaseGridColumn<String> column;
+    private BaseGridColumn<String> rightColumn;
 
     @Before
     public void setup() {
@@ -174,6 +184,9 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         final GridWidgetDnDMouseMoveHandler wrapped = new GridWidgetDnDMouseMoveHandler(layer,
                                                                                         state);
         this.handler = spy(wrapped);
+
+        column = new BaseGridColumn<>(header, columnRenderer, originalColumnWidth);
+        rightColumn = new BaseGridColumn<>(header, columnRenderer, originalRightColumnWidth);
     }
 
     @Test
@@ -468,5 +481,41 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         assertEquals(1,
                      uiRows.size());
         assertTrue(uiRows.contains(uiModel.getRow(0)));
+    }
+
+    @Test
+    public void adjustColumnWidth() {
+        double proposedNewWidth = 100;
+        uiModel.setVisibleSizeAndRefresh(10, 0);
+        assertEquals(proposedNewWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
+
+        uiModel.setVisibleSizeAndRefresh(1000, 0);
+        proposedNewWidth = 300;
+        assertEquals(proposedNewWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
+
+        proposedNewWidth = 100;
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        assertEquals(originalColumnWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
+
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.fixed);
+        uiModel.appendColumn(column);
+        uiModel.appendColumn(rightColumn);
+        rightColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        assertEquals(proposedNewWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
+        assertEquals(originalRightColumnWidth + (originalColumnWidth - proposedNewWidth), rightColumn.getWidth(), 0.1);
+    }
+
+    @Test
+    public void getFirstRightAutoColumn() {
+        assertFalse(handler.getFirstRightAutoColumn(column, uiModel).isPresent());
+
+        uiModel.appendColumn(column);
+        assertFalse(handler.getFirstRightAutoColumn(column, uiModel).isPresent());
+
+        uiModel.appendColumn(rightColumn);
+        assertFalse(handler.getFirstRightAutoColumn(column, uiModel).isPresent());
+
+        rightColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        assertEquals(rightColumn, handler.getFirstRightAutoColumn(column, uiModel).get());
     }
 }

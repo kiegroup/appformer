@@ -446,6 +446,13 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
 
         destroyColumns(allGridColumns);
 
+        activeGridColumn.setWidth(adjustColumnWidth(columnNewWidth, activeGridColumn, activeGridWidget));
+        layer.batch();
+    }
+
+    protected double adjustColumnWidth(double columnNewWidth, GridColumn<?> activeGridColumn, GridWidget activeGridWidget) {
+        final GridData activeGridModel = activeGridWidget.getModel();
+
         double originalLeftColumnWidth = activeGridColumn.getWidth();
         double delta = originalLeftColumnWidth - columnNewWidth;
 
@@ -453,7 +460,6 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         double gridWidgetWidth = activeGridWidget.getWidth();
         double newGridWidth = gridWidgetWidth - delta;
 
-        // FIXME to test
         // if the grid is becoming less than 100% width
         if (newGridWidth < visibleWidth && delta > 0) {
 
@@ -468,15 +474,12 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
             }
             // or revert column resizing if the column itself has auto width
             else if (GridColumn.ColumnWidthMode.isAuto(activeGridColumn)){
-                columnNewWidth = activeGridColumn.getWidth();
+                columnNewWidth = originalLeftColumnWidth;
             }
         }
-
-        activeGridColumn.setWidth(columnNewWidth);
-        layer.batch();
+        return columnNewWidth;
     }
 
-    // FIXME to test
     Optional<GridColumn<?>> getFirstRightAutoColumn(GridColumn<?> target, GridData model) {
         List<GridColumn<?>> columns = model.getColumns();
         int targetIndex = columns.indexOf(target);

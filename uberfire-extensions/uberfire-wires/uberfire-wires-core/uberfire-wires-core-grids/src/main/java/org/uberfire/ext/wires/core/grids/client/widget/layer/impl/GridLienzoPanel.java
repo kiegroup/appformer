@@ -15,8 +15,6 @@
  */
 package org.uberfire.ext.wires.core.grids.client.widget.layer.impl;
 
-import java.util.stream.Collectors;
-
 import com.ait.lienzo.client.core.shape.Viewport;
 import com.ait.lienzo.client.widget.LienzoPanel;
 import com.google.gwt.core.client.Scheduler;
@@ -193,21 +191,27 @@ public class GridLienzoPanel extends FocusPanel implements RequiresResize,
         getLienzoPanel().setPixelSize(visibleWidth,
                                       visibleHeight);
 
-        // FIXME add better comment
-        boolean toRefresh = false;
-        for (GridWidget gridWidget : getDefaultGridLayer().getGridWidgets()) {
-            toRefresh = toRefresh || gridWidget.getModel().setVisibleSizeAndRefresh(visibleWidth, visibleHeight);
-        }
-
-        if(toRefresh) {
-            this.getDefaultGridLayer().draw();
-        }
+        propagateNewPanelSize(visibleWidth, visibleHeight);
     }
 
     private void updateScrollPanelSize(final int width,
                                        final int height) {
         getScrollPanel().setPixelSize(width,
                                       height);
+    }
+
+    protected void propagateNewPanelSize(int visibleWidth, int visibleHeight) {
+        if (getDefaultGridLayer() == null) {
+            return;
+        }
+        // propagate to all widgets the new visible width and refresh the layer if needed
+        boolean toRefresh = false;
+        for (GridWidget gridWidget : getDefaultGridLayer().getGridWidgets()) {
+            toRefresh = toRefresh || gridWidget.getModel().setVisibleSizeAndRefresh(visibleWidth, visibleHeight);
+        }
+        if (toRefresh) {
+            this.getDefaultGridLayer().draw();
+        }
     }
 
     @Override

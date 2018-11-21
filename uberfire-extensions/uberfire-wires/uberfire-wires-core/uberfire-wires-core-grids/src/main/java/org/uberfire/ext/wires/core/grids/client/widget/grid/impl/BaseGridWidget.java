@@ -521,7 +521,7 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
 
         //Include selection indicator if required
-        if (isSelected && selection != null) {
+        if (isSelected) {
             add(selection);
         }
     }

@@ -80,7 +80,7 @@ public class BaseGridData implements GridData {
         columns.add(column);
 
         OptionalDouble optionalOriginalWidth = OptionalDouble.of(originalWidth);
-        // FIXME to test
+
         column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
 
         internalRefreshWidth(true, optionalOriginalWidth);
@@ -97,7 +97,7 @@ public class BaseGridData implements GridData {
                     column);
 
         OptionalDouble optionalOriginalWidth = OptionalDouble.of(originalWidth);
-        // FIXME to test
+
         column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
         internalRefreshWidth(true, optionalOriginalWidth);
 
@@ -106,7 +106,6 @@ public class BaseGridData implements GridData {
 
     @Override
     public void deleteColumn(final GridColumn<?> column) {
-        double originalWidth = getWidth();
         final int index = column.getIndex();
         for (GridColumn<?> c : columns) {
             if (c.getIndex() > index) {
@@ -134,14 +133,12 @@ public class BaseGridData implements GridData {
             }
         }
 
-        // FIXME to test
         internalRefreshWidth(true, OptionalDouble.empty());
 
         selectionsManager.onDeleteColumn(index);
     }
 
     void removeColumn(final GridColumn<?> column) {
-        double originalWidth = getWidth();
         final IntStream indexes = IntStream.range(0, columns.size());
         final OptionalInt columnIndex = indexes.filter(i -> column == columns.get(i)).findFirst();
 
@@ -151,7 +148,6 @@ public class BaseGridData implements GridData {
             columns.remove(column);
         }
 
-        // FIXME to test
         internalRefreshWidth(true, OptionalDouble.empty());
     }
 
@@ -644,13 +640,11 @@ public class BaseGridData implements GridData {
         return maxRowIndex - 1;
     }
 
-    // FIXME to test
     @Override
     public boolean refreshWidth() {
         return internalRefreshWidth(false, OptionalDouble.empty());
     }
 
-    // FIXME to test
     @Override
     public boolean refreshWidth(double currentWidth) {
         return internalRefreshWidth(false, OptionalDouble.of(currentWidth));
@@ -658,13 +652,14 @@ public class BaseGridData implements GridData {
 
     protected boolean internalRefreshWidth(boolean changedNumberOfColumn, OptionalDouble optionalCurrentWidth) {
 
-        double visiblePanel = getVisibleWidth();
+        double visibleWidth = getVisibleWidth();
         // this happens during initialization
-        if (visiblePanel == 0) {
+        if (visibleWidth == 0) {
             return false;
         }
-        // FIXME add a comment
-        if (!changedNumberOfColumn && previousVisibleWidth != 0 && visiblePanel == previousVisibleWidth) {
+        // refresh is not needed if it has not been added a column and visibleWidth doesn't change (except if
+        // previousVisibleWidth is 0 so it is the first refresh)
+        if (!changedNumberOfColumn && previousVisibleWidth != 0 && visibleWidth == previousVisibleWidth) {
             return false;
         }
 
@@ -675,12 +670,12 @@ public class BaseGridData implements GridData {
             return false;
         }
 
-        // FIXME add a comment
-        double resizeRatio = previousVisibleWidth == 0 ? 0 : visiblePanel / previousVisibleWidth;
+        // if previousVisibleWidth is equal to 0 this means that is the first resize and visibleWidth need to win in Math.max
+        double resizeRatio = previousVisibleWidth == 0 ? 0 : visibleWidth / previousVisibleWidth;
 
         double currentNew = gridWidthMetadata.currentGrossWidth;
 
-        double targetGrossWidth = Math.max(visiblePanel, currentNew * resizeRatio);
+        double targetGrossWidth = Math.max(visibleWidth, currentNew * resizeRatio);
 
         double currentWidth = getWidth() - gridWidthMetadata.fixedWidth;
         double targetWidth = targetGrossWidth - gridWidthMetadata.fixedWidth;
@@ -728,7 +723,6 @@ public class BaseGridData implements GridData {
         return this.visibleHeight;
     }
 
-    // FIXME to test
     double calculateInitWidth(GridColumn<?> column, OptionalDouble optionalCurrentWidth) {
         if (!GridColumn.ColumnWidthMode.isAuto(column)) {
             return column.getWidth();

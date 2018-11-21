@@ -221,20 +221,33 @@ public interface GridColumn<T> {
         }
     }
 
-    // FIXME add javadoc
+    /**
+     * Get column width mode
+     * @return
+     */
     ColumnWidthMode getColumnWidthMode();
 
+    /**
+     * Set column width mode
+     * @return
+     */
     void setColumnWidthMode(ColumnWidthMode columnWidthMode);
 
+    /**
+     * Enum that identify the width mode of a column
+     */
     enum ColumnWidthMode {
-        fixed, auto;
+        // fixed means that no automatic resize will be done, only the user can manually resize it
+        fixed,
+        // auto means that its width will be calculate to fit all the available space
+        auto;
 
         static public boolean isAuto(GridColumn<?> column) {
-            return auto.equals(column.getColumnWidthMode());
+            return column != null && auto.equals(column.getColumnWidthMode());
         }
 
         static public boolean isFixed(GridColumn<?> column) {
-            return fixed.equals(column.getColumnWidthMode());
+            return column != null && fixed.equals(column.getColumnWidthMode());
         }
     }
 }

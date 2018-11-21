@@ -295,14 +295,37 @@ public interface GridData {
     void expandCell(final int rowIndex,
                     final int columnIndex);
 
-
-    // FIXME
+    /**
+     * Update width for column with {@link GridColumn.ColumnWidthMode#auto}
+     * @return a boolean that indicates if grid need to be redraw or not
+     */
     boolean refreshWidth();
+
+    /**
+     * Update width for column with {@link GridColumn.ColumnWidthMode#auto}
+     * @param currentWidth is the grid width before this resize iteration
+     * @return a boolean that indicates if grid need to be redraw or not
+     */
     boolean refreshWidth(double currentWidth);
 
+    /**
+     * Update visible size information and refresh column's width
+     * @param width
+     * @param height
+     * @return a boolean that indicates if grid need to be redraw or not
+     */
     boolean setVisibleSizeAndRefresh(int width, int height);
 
+    /**
+     * Get visible width
+     * @return
+     */
     int getVisibleWidth();
+
+    /**
+     * Get visible height
+     * @return
+     */
     int getVisibleHeight();
 
     /**
