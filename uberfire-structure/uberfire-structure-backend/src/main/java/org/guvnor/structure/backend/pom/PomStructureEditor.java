@@ -56,7 +56,9 @@ public class PomStructureEditor {
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
-        enabledPomDependenciesFeature = experimentalServiceRegistry.getExperimentalFeaturesSession().getFeaturesRegistry().isFeatureEnabled(PomDependencyExperimental.class.getName());
+        if(experimentalServiceRegistry != null) {
+            enabledPomDependenciesFeature = experimentalServiceRegistry.getExperimentalFeaturesSession().getFeaturesRegistry().isFeatureEnabled(PomDependencyExperimental.class.getName());
+        }
         if(enabledPomDependenciesFeature) {
             final Path projectPath = event.getProjectPath();
             final Set<DependencyType> dependencyTypes = event.getDependencyTypes();

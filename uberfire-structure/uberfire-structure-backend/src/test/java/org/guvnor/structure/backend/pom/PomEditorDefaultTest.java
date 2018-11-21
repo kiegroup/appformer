@@ -275,7 +275,7 @@ public class PomEditorDefaultTest {
     public void addAndOverrideCurrentKieVersionDepTest() throws Exception {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsCurrent",
-                                                "target/classes");
+                                                "target/test-classes/dummyInternalDepsCurrent");
         org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(POM,
                                                                     tmpRoot + File.separator + "dummyInternalDepsCurrent" + File.separator + POM);
 

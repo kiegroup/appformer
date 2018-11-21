@@ -223,7 +223,10 @@
     </resources>
     <testResources>
       <testResource>
-        <directory>src/test/resources/dummyInternalDepsCurrent</directory>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/filtered-resources</directory>
         <filtering>true</filtering>
       </testResource>
     </testResources>
