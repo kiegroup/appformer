@@ -18,13 +18,12 @@ package org.uberfire.ext.widgets.core.client.workbench.widgets.popups.activities
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.core.client.resources.i18n.CoreConstants;
-import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
@@ -36,21 +35,16 @@ import org.uberfire.mvp.PlaceRequest;
 public class ActivityNotFoundPresenter {
 
     @Inject
-    private View view;
+    private ActivityNotFoundView view;
+
     @Inject
     private PlaceManager placeManager;
+
     private PlaceRequest place;
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
-    }
-
-    @OnOpen
-    public void onOpen() {
-        final String identifier = place.getParameter("requestedPlaceIdentifier",
-                                                     null);
-        view.setRequestedPlaceIdentifier(identifier);
     }
 
     @WorkbenchPartTitle
@@ -59,18 +53,11 @@ public class ActivityNotFoundPresenter {
     }
 
     @WorkbenchPartView
-    public UberView<ActivityNotFoundPresenter> getView() {
+    public SimplePanel getView() {
         return view;
     }
 
     public void close() {
         placeManager.forceClosePlace(this.place);
-    }
-
-    public interface View
-            extends
-            UberView<ActivityNotFoundPresenter> {
-
-        void setRequestedPlaceIdentifier(final String requestedPlaceIdentifier);
     }
 }

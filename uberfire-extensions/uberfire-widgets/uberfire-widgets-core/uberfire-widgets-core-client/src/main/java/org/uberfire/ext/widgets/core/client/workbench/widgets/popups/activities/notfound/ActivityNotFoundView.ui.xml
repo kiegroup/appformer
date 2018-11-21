@@ -21,13 +21,10 @@
              
   <ui:with field="i18n" type="org.uberfire.ext.widgets.core.client.resources.i18n.CoreConstants" />
   <ui:with field="images" type="org.uberfire.ext.widgets.core.client.resources.CoreImages" />
-               
-  <g:VerticalPanel>
-    <g:HorizontalPanel>
-      <g:Image resource="{images.warningLarge}"/>
-      <g:Label text="{i18n.activityNotFound}"/>
-    </g:HorizontalPanel>
-    <b:Label ui:field="requestedPlaceIdentifierLabel"></b:Label>
-  </g:VerticalPanel>
+
+  <g:HorizontalPanel>
+    <g:Image resource="{images.warningLarge}"/>
+    <g:Label text="{i18n.activityNotFound}"/>
+  </g:HorizontalPanel>
 
 </ui:UiBinder> 

@@ -19,36 +19,19 @@ import javax.annotation.PostConstruct;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.Label;
 
 /**
  * View for when an Activity cannot be found
  */
-public class ActivityNotFoundView extends SimplePanel
-        implements
-        ActivityNotFoundPresenter.View {
+public class ActivityNotFoundView extends SimplePanel {
 
     private static ActivityNotFoundViewBinder uiBinder = GWT.create(ActivityNotFoundViewBinder.class);
-    @UiField
-    public Label requestedPlaceIdentifierLabel;
-    private ActivityNotFoundPresenter presenter;
 
     @PostConstruct
     public void init() {
         setWidget(uiBinder.createAndBindUi(this));
-    }
-
-    @Override
-    public void init(final ActivityNotFoundPresenter presenter) {
-        this.presenter = presenter;
-    }
-
-    @Override
-    public void setRequestedPlaceIdentifier(String identifier) {
-        requestedPlaceIdentifierLabel.setText(identifier);
     }
 
     interface ActivityNotFoundViewBinder
