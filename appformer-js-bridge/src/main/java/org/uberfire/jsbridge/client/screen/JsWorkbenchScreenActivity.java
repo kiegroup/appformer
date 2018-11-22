@@ -78,6 +78,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
             return;
         }
 
+        //FIXME: This is probably better to be on the onOpen method.
         this.registerSubscriptions();
         screen.onStartup(JsPlaceRequest.fromPlaceRequest(place));
     }

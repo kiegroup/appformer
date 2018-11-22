@@ -21,10 +21,6 @@ $registerPerspective({
     view: {
         parts: [
             {
-                place: "ReactComponent",
-                parameters: {}
-            },
-            {
                 place: "welcome",
                 parameters: {}
             }

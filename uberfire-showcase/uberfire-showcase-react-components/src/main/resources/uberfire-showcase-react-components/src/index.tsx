@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as AppFormer from 'appformer-js';
+import * as AppFormerEditors from 'appformer-js-editors';
 import {Clock} from "./Clock";
 import {Files} from "./Files";
 import {TemplatedPanel} from "./TemplatedPanel";
@@ -159,14 +160,14 @@ export class ReactTemplatedJsPerspective extends AppFormer.Perspective {
 export class StringTemplatedJsPerspective extends AppFormer.Perspective {
 
     constructor() {
-        super("StringTemplatedJsPerspective");
-        this.af_isReact = false;
-        this.af_isTransient = true;
-        this.af_name = "JS String Templated Perspective";
-    }
+    super("StringTemplatedJsPerspective");
+    this.af_isReact = false;
+    this.af_isTransient = true;
+    this.af_name = "JS String Templated Perspective";
+}
 
     af_componentRoot(children?: any): string {
-        return `
+    return `
             <div class="fluid-container">
                 <div style="height: 5%; padding-top: 10px;" class="text-center">
                     <span class="lead">HTML-templated Perspective</span>
@@ -211,11 +212,29 @@ export class StringTemplatedJsPerspective extends AppFormer.Perspective {
             </div>
 
 `;
+}
+}
+export class ReactHtmlEditor extends AppFormerEditors.Editor {
+
+    constructor() {
+        super("ReactEditor");
+        this.af_resourceTypes = ["SampleResourceType"];
+        this.af_componentTitle = "ReactEditor";
+        this.af_isReact = true;
+        this.af_priority = 200000;
     }
 
+    af_onOpen(): void {
+        alert("yay!");
+    }
+
+    public af_componentRoot(children?: any): AppFormer.Element {
+        return <div>Test</div>;
+    }
 }
 
 AppFormer.register(new StaticReactComponent());
 AppFormer.register(new CompassLayoutJsPerspective());
 AppFormer.register(new ReactTemplatedJsPerspective());
 AppFormer.register(new StringTemplatedJsPerspective());
+AppFormer.register(new ReactHtmlEditor());

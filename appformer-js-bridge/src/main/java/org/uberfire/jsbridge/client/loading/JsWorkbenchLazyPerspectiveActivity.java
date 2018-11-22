@@ -9,7 +9,6 @@ import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyPerspective;
 import org.uberfire.client.workbench.panels.impl.ImmutableWorkbenchPanelPresenter;
-import org.uberfire.jsbridge.client.loading.AppFormerComponentConfiguration.PerspectiveComponentParams;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchPerspectiveActivity;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchTemplatedPerspectiveActivity;
 import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
@@ -35,7 +34,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     private boolean loaded;
     private final Consumer<String> lazyLoadingParentScript;
 
-    public JsWorkbenchLazyPerspectiveActivity(final AppFormerComponentConfiguration backedComponent,
+    public JsWorkbenchLazyPerspectiveActivity(final AppFormerComponentsRegistry.Entry registryEntry,
                                               final PlaceManager placeManager,
                                               final ActivityManager activityManager,
                                               final Consumer<String> lazyLoadingParentScript) {
@@ -43,11 +42,11 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
         super(placeManager);
         this.activityManager = activityManager;
 
-        this.backedPerspectiveId = backedComponent.getId();
+        this.backedPerspectiveId = registryEntry.getComponentId();
         this.lazyLoadingParentScript = lazyLoadingParentScript;
 
-        final PerspectiveComponentParams config = new PerspectiveComponentParams(backedComponent.getParams());
-        this.configuredIsDefault = config.isDefault().orElse(super.isDefault());
+        this.configuredIsDefault = new AppFormerComponentsRegistry.Entry.PerspectiveParams(registryEntry.getParams())
+                .isDefault().orElse(super.isDefault());
 
         this.loaded = false;
     }

@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import elemental2.dom.DomGlobal;
 import jsinterop.annotations.JsMethod;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
@@ -134,6 +135,12 @@ public class PlaceManagerImpl
     private LayoutSelection layoutSelection;
     @Inject
     private ExperimentalActivitiesAuthorizationManager activitiesAuthorizationManager;
+    @Inject
+    private AppFormerActivityLoader appFormerActivityLoader;
+
+    public interface AppFormerActivityLoader {
+        boolean triggerLoadOfMatchingEditors(final Path path, final Runnable callback);
+    }
 
     @PostConstruct
     public void initPlaceHistoryHandler() {
@@ -264,7 +271,10 @@ public class PlaceManagerImpl
         if (place == null || place.equals(DefaultPlaceRequest.NOWHERE)) {
             return;
         }
-        final ResolvedRequest resolved = resolveActivity(place);
+
+        final ResolvedRequest resolved = resolveActivity(place, () -> {
+            this.closePlace(new DefaultPlaceRequest("LazyLoadingScreen"), () -> this.goTo(place));
+        });
 
         if (resolved.getActivity() != null) {
             final Activity activity = resolved.getActivity();
@@ -371,6 +381,7 @@ public class PlaceManagerImpl
      * {@code org.uberfire.client.mvp.PlaceManagerImpl.ignoreUnkownPlaces} property in {@link UberfirePreferences}.
      * @param place A non-null place request that could have originated from within application code, from within the
      * framework, or by parsing a hash fragment from a browser history event.
+     * @param lazyLoadingSuccessCallback
      * @return a non-null ResolvedRequest, where:
      * <ul>
      * <li>the Activity value is either the unambiguous resolved Activity instance, or null if the activity was
@@ -382,7 +393,8 @@ public class PlaceManagerImpl
      * TODO (UF-94) : make this simpler. with enough tests in place, we should experiment with doing the recursive
      * lookup automatically.
      */
-    private ResolvedRequest resolveActivity(final PlaceRequest place) {
+    private ResolvedRequest resolveActivity(final PlaceRequest place,
+                                            final Runnable lazyLoadingSuccessCallback) {
 
         final PlaceRequest resolvedPlaceRequest = resolvePlaceRequest(place);
 
@@ -390,6 +402,10 @@ public class PlaceManagerImpl
 
         if (existingDestination != null) {
             return existingDestination;
+        }
+
+        if (appFormerActivityLoader.triggerLoadOfMatchingEditors(place.getPath(), lazyLoadingSuccessCallback)) {
+            return new ResolvedRequest(null, new DefaultPlaceRequest("LazyLoadingScreen"));
         }
 
         final Set<Activity> activities = activityManager.getActivities(resolvedPlaceRequest);
@@ -473,7 +489,10 @@ public class PlaceManagerImpl
         if (place == null) {
             return;
         }
-        final ResolvedRequest resolved = resolveActivity(place);
+
+        final ResolvedRequest resolved = resolveActivity(place, () -> {
+            this.closePlace(new DefaultPlaceRequest("LazyLoadingScreen"), () -> this.goTo(place));
+        });
 
         if (resolved.getActivity() != null) {
             final Activity activity = resolved.getActivity();

@@ -28,6 +28,13 @@
       "params": {
         "is_default": false
       }
+    },
+    {
+      "id": "ReactEditor",
+      "type": "editor",
+      "params": {
+        "matches": "^.*html$"
+      }
     }
   ],
   "decorators": {}

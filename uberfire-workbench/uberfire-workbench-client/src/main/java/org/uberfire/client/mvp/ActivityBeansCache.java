@@ -33,6 +33,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import elemental2.dom.DomGlobal;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -42,8 +43,6 @@ import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.experimental.service.auth.ExperimentalActivitiesAuthorizationManager;
-
-import static java.util.Collections.sort;
 
 /**
  *
@@ -97,8 +96,7 @@ public class ActivityBeansCache {
 
             validateUniqueness(id);
 
-            activitiesById.put(id,
-                               activityBean);
+            put(activityBean, id);
 
             if (isSplashScreen(activityBean.getQualifiers())) {
                 splashActivities.add((SplashScreenActivity) activityBean.getInstance());
@@ -112,15 +110,10 @@ public class ActivityBeansCache {
         }
 
         this.resourceTypeManagerCache.sortResourceActivitiesByPriority();
+    }
 
-
-        //FIXME: Scan all *-manifest.js files to index screens by their ids.
-        // **Check if this code runs after the startupBlockers were removed.
-        // Example:
-        // screen-11 => js-screens-1.js
-        // screen-12 => js-screens-1.js
-        // screen-3 => js-screens-3.js
-
+    private void put(SyncBeanDef<Activity> activityBean, String id) {
+        activitiesById.put(id, activityBean);
     }
 
     private void addResourceActivity(SyncBeanDef<Activity> activityBean,
@@ -163,8 +156,7 @@ public class ActivityBeansCache {
 
         validateUniqueness(id);
 
-        activitiesById.put(id,
-                           activityBean);
+        put(activityBean, id);
         newWorkbenchScreenEventEvent.fire(new NewWorkbenchScreenEvent(id));
     }
 
@@ -182,8 +174,7 @@ public class ActivityBeansCache {
 
         validateUniqueness(id);
 
-        activitiesById.put(id,
-                           activityBean);
+        put(activityBean, id);
         newPerspectiveEventEvent.fire(new NewPerspectiveEvent(id));
     }
 
@@ -193,12 +184,12 @@ public class ActivityBeansCache {
     public void addNewEditorActivity(final SyncBeanDef<Activity> activityBean,
                                      String priority,
                                      String resourceTypeName) {
+
         final String id = activityBean.getName();
 
         validateUniqueness(id);
 
-        activitiesById.put(id,
-                           activityBean);
+        put(activityBean, id);
 
         this.resourceTypeManagerCache.addResourceActivity(new ActivityAndMetaInfo(iocManager,
                                                                                   activityBean,
@@ -207,13 +198,24 @@ public class ActivityBeansCache {
         this.resourceTypeManagerCache.sortResourceActivitiesByPriority();
     }
 
+    public void addNewEditorActivity(final SyncBeanDef<Activity> syncBeanDef,
+                                     final int priority,
+                                     final List<String> resourceTypes) {
+
+        validateUniqueness(syncBeanDef.getName());
+        put(syncBeanDef, syncBeanDef.getName());
+
+        ActivityAndMetaInfo metaInfo = new ActivityAndMetaInfo(iocManager, syncBeanDef, priority, resourceTypes);
+        this.resourceTypeManagerCache.addResourceActivity(metaInfo);
+        this.resourceTypeManagerCache.sortResourceActivitiesByPriority();
+    }
+
     public void addNewSplashScreenActivity(final SyncBeanDef<Activity> activityBean) {
         final String id = activityBean.getName();
 
         validateUniqueness(id);
 
-        activitiesById.put(id,
-                           activityBean);
+        put(activityBean, id);
         splashActivities.add((SplashScreenActivity) activityBean.getInstance());
     }
 
@@ -235,10 +237,6 @@ public class ActivityBeansCache {
      * was registered under.
      */
     public SyncBeanDef<Activity> getActivity(final String id) {
-        SyncBeanDef<Activity> activitySyncBeanDef = activitiesById.get(id);
-        if (activitySyncBeanDef == null) {
-            //TODO: Load JS file containing definition of screen with this id.
-        }
         return activitiesById.get(id);
     }
 

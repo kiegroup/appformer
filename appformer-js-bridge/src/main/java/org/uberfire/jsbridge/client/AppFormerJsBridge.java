@@ -35,6 +35,7 @@ import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.Workbench;
 import org.uberfire.jsbridge.client.loading.AppFormerJsActivityLoader;
@@ -87,6 +88,7 @@ public class AppFormerJsBridge {
             registerScreen: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerScreen(Ljava/lang/Object;),
             registerPerspective: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::registerPerspective(Ljava/lang/Object;),
             goTo: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::goTo(Ljava/lang/String;),
+            goToPath: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::goToPath(Ljava/lang/String;),
             rpc: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::rpc(Ljava/lang/String;[Ljava/lang/Object;),
             translate: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::translate(Ljava/lang/String;[Ljava/lang/Object;),
             fireEvent: this.@org.uberfire.jsbridge.client.AppFormerJsBridge::fireEvent(Ljava/lang/String;),
@@ -115,6 +117,13 @@ public class AppFormerJsBridge {
         placeManager.goTo(new DefaultPlaceRequest(place));
     }
 
+    public void goToPath(final String uri) {
+        final SyncBeanManager beanManager = IOC.getBeanManager();
+        final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
+        PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length -1], uri); //FIXME: Not good
+        placeManager.goTo(path);
+    }
+
     public String translate(final String key, final Object[] args) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final TranslationService translationService = beanManager.lookupBean(TranslationService.class).getInstance();
@@ -124,13 +133,13 @@ public class AppFormerJsBridge {
     public void registerPerspective(final Object jsObject) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final AppFormerJsActivityLoader jsLoader = beanManager.lookupBean(AppFormerJsActivityLoader.class).getInstance();
-        jsLoader.onActivityLoaded(jsObject);
+        jsLoader.onComponentLoaded(jsObject);
     }
 
     public void registerScreen(final Object jsObject) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final AppFormerJsActivityLoader jsLoader = beanManager.lookupBean(AppFormerJsActivityLoader.class).getInstance();
-        jsLoader.onActivityLoaded(jsObject);
+        jsLoader.onComponentLoaded(jsObject);
     }
 
     public Promise<Object> rpc(final String path, final Object[] params) {
