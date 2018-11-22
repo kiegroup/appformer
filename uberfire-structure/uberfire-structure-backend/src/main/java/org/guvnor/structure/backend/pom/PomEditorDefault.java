@@ -175,7 +175,10 @@ public class PomEditorDefault implements PomEditor {
                 result = true;
             }
         } catch (Exception ex) {
-            logger.error(ex.getMessage(),
+            logger.error("Error while removing a dependency {}:{} {} {}",
+                         dep.getArtifactID(),
+                         dep.getGroupID(),
+                         ex.getMessage(),
                          ex);
             result = false;
         }
@@ -203,7 +206,9 @@ public class PomEditorDefault implements PomEditor {
                                   model);
             }
         } catch (Exception ex) {
-            logger.error(ex.getMessage(),
+            logger.error("Error while removing dependencies [{}] {} {}",
+                         deps,
+                         ex.getMessage(),
                          ex);
             result = false;
         }
