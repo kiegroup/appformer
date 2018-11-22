@@ -41,7 +41,8 @@ import org.uberfire.java.nio.file.OpenOption;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.attribute.FileAttribute;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.uberfire.ext.metadata.io.KObjectUtil.toKCluster;
 
 public class BatchIndexTest extends BaseIndexTest {
@@ -213,6 +214,8 @@ public class BatchIndexTest extends BaseIndexTest {
                        Executors.newCachedThreadPool(new DescriptiveThreadFactory()),
                        indexersFactory(),
                        indexerDispatcherFactory(config.getIndexEngine()),
+                       (e) -> {
+                       },
                        DublinCoreView.class).run(ioService().get("git://elastic-temp-repo-test/").getFileSystem(),
                                                  () -> {
                                                      try {

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ import static org.uberfire.java.nio.file.Files.walkFileTree;
 
 public final class BatchIndex {
 
+
     private static final Logger LOG = LoggerFactory.getLogger(BatchIndex.class);
 
     private final MetaIndexEngine indexEngine;
@@ -54,12 +56,15 @@ public final class BatchIndex {
     private final IndexersFactory indexersFactory;
     private final IndexerDispatcherFactory dispatcherFactory;
 
+    private Consumer<FileSystem> consumer;
+
     @SafeVarargs
     public BatchIndex(final MetaIndexEngine indexEngine,
                       final Observer observer,
                       final ExecutorService executorService,
                       final IndexersFactory indexersFactory,
                       final IndexerDispatcherFactory dispatcherFactory,
+                      final Consumer<FileSystem> consumer,
                       final Class<? extends FileAttributeView>... views) {
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
@@ -70,6 +75,8 @@ public final class BatchIndex {
         this.views = views;
 
         this.executorService = executorService;
+
+        this.consumer = consumer;
     }
 
     public void runAsync(final FileSystem fs) {
@@ -95,7 +102,7 @@ public final class BatchIndex {
                     });
 
                     try {
-                        BatchIndex.this.run(fs, null);
+                        BatchIndex.this.run(fs, () -> consumer.accept(fs));
                         indexFinished.set(true);
                     } catch (Exception ex) {
                         if (!indexDisposed.get()) {

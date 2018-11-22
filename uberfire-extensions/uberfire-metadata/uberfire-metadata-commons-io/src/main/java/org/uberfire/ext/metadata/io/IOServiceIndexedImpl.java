@@ -156,7 +156,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         this.executorService = executorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
-        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, views);
+        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, this::setupWatchService, views);
         ensureCoreIndexerExists();
     }
 
@@ -175,7 +175,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         this.executorService = executorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
-        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, views);
+        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, this::setupWatchService, views);
         ensureCoreIndexerExists();
     }
 
@@ -195,7 +195,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         this.executorService = executorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
-        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, views);
+        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, this::setupWatchService, views);
         ensureCoreIndexerExists();
     }
 
@@ -217,7 +217,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         this.executorService = executorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
-        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, views);
+        this.batchIndex = new BatchIndex(indexEngine, observer, executorService, indexersFactory, dispatcherFactory, this::setupWatchService, views);
         ensureCoreIndexerExists();
     }
 
@@ -237,7 +237,6 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
             ProviderNotFoundException, SecurityException {
         final FileSystem fs = super.getFileSystem(uri);
         setupBatchIndex(fs);
-        setupWatchService(fs);
         return fs;
     }
 
@@ -249,7 +248,6 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         final FileSystem fs = super.newFileSystem(uri,
                                                   env);
         setupBatchIndex(fs);
-        setupWatchService(fs);
         return fs;
     }
 
@@ -281,6 +279,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         }
         final WatchService ws = fs.newWatchService();
         watchServicesByFS.put(fs.getName(), ws);
+        LOGGER.info("Indexing file system. { " + fs.getName() + " }");
 
         final ExecutorService defaultInstance = this.executorService;
 
