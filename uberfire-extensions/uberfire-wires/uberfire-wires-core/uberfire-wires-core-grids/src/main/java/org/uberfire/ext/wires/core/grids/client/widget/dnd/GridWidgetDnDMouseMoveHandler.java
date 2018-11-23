@@ -463,7 +463,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         // if the grid is becoming less than 100% width
         if (newGridWidth < visibleWidth && delta > 0) {
 
-            // look for a column with auto width on the right
+            // look for a column with AUTO width on the right
             Optional<GridColumn<?>> rightGridColumn = getFirstRightAutoColumn(activeGridColumn, activeGridModel);
             if (rightGridColumn.isPresent()) {
                 GridColumn<?> rightColumn = rightGridColumn.get();
@@ -472,7 +472,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
 
                 rightColumn.setWidth(newWidth);
             }
-            // or revert column resizing if the column itself has auto width
+            // or revert column resizing if the column itself has AUTO width
             else if (GridColumn.ColumnWidthMode.isAuto(activeGridColumn)){
                 columnNewWidth = originalLeftColumnWidth;
             }

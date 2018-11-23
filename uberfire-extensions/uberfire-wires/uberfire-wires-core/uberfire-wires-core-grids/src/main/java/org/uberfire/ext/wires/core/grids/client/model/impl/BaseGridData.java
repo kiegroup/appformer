@@ -81,10 +81,10 @@ public class BaseGridData implements GridData {
 
         OptionalDouble optionalOriginalWidth = OptionalDouble.of(originalWidth);
 
-        column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
-
-        internalRefreshWidth(true, optionalOriginalWidth);
-
+        if(GridColumn.ColumnWidthMode.isAuto(column)) {
+            column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
+            internalRefreshWidth(true, optionalOriginalWidth);
+        }
         selectionsManager.onInsertColumn(columns.size() - 1);
     }
 
@@ -98,9 +98,10 @@ public class BaseGridData implements GridData {
 
         OptionalDouble optionalOriginalWidth = OptionalDouble.of(originalWidth);
 
-        column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
-        internalRefreshWidth(true, optionalOriginalWidth);
-
+        if(GridColumn.ColumnWidthMode.isAuto(column)) {
+            column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
+            internalRefreshWidth(true, optionalOriginalWidth);
+        }
         selectionsManager.onInsertColumn(index);
     }
 
@@ -665,7 +666,7 @@ public class BaseGridData implements GridData {
 
         GridWidthMetadata gridWidthMetadata = new GridWidthMetadata(optionalCurrentWidth);
 
-        // if there are no columns with auto width no need to continue
+        // if there are no columns with AUTO width no need to continue
         if (gridWidthMetadata.numberOfAutoColumn == 0) {
             return false;
         }
@@ -742,7 +743,7 @@ public class BaseGridData implements GridData {
         private double currentGrossWidth = 0;
         private double previousWidth = 0;
         private long numberOfAutoColumn = 0;
-        // total size of fixed column
+        // total size of FIXED column
         private double fixedWidth = 0;
 
         private GridWidthMetadata(OptionalDouble optionalCurrentWidth) {

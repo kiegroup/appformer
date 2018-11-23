@@ -210,7 +210,7 @@ public class GridLienzoPanel extends FocusPanel implements RequiresResize,
             toRefresh = toRefresh || gridWidget.getModel().setVisibleSizeAndRefresh(visibleWidth, visibleHeight);
         }
         if (toRefresh) {
-            this.getDefaultGridLayer().draw();
+            this.getDefaultGridLayer().batch();
         }
     }
 

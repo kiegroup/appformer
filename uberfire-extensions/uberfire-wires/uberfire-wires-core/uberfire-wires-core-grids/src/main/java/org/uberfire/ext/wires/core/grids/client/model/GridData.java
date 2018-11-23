@@ -296,20 +296,20 @@ public interface GridData {
                     final int columnIndex);
 
     /**
-     * Update width for column with {@link GridColumn.ColumnWidthMode#auto}
+     * Updates the width of columns with {@link GridColumn.ColumnWidthMode#AUTO}
      * @return a boolean that indicates if grid need to be redraw or not
      */
     boolean refreshWidth();
 
     /**
-     * Update width for column with {@link GridColumn.ColumnWidthMode#auto}
+     * Updates the width of columns with {@link GridColumn.ColumnWidthMode#AUTO}
      * @param currentWidth is the grid width before this resize iteration
      * @return a boolean that indicates if grid need to be redraw or not
      */
     boolean refreshWidth(double currentWidth);
 
     /**
-     * Update visible size information and refresh column's width
+     * Update visible size information and refresh columns width. See {@link GridData#refreshWidth()}
      * @param width
      * @param height
      * @return a boolean that indicates if grid need to be redraw or not

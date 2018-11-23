@@ -41,7 +41,7 @@ public class BaseGridColumn<T> implements GridColumn<T> {
     private int index = -1;
     private List<HeaderMetaData> headerMetaData = new ArrayList<HeaderMetaData>();
     private GridColumnRenderer<T> columnRenderer;
-    private ColumnWidthMode columnWidthMode = ColumnWidthMode.fixed;
+    private ColumnWidthMode columnWidthMode = ColumnWidthMode.FIXED;
 
     protected String placeHolder = null;
 

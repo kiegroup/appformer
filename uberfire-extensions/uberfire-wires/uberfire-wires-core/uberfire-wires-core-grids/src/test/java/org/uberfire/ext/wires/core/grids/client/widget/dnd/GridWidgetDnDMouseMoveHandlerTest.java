@@ -56,7 +56,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -494,13 +493,13 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         assertEquals(proposedNewWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
 
         proposedNewWidth = 100;
-        column.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
         assertEquals(originalColumnWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
 
-        column.setColumnWidthMode(GridColumn.ColumnWidthMode.fixed);
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.FIXED);
         uiModel.appendColumn(column);
         uiModel.appendColumn(rightColumn);
-        rightColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        rightColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
         assertEquals(proposedNewWidth, handler.adjustColumnWidth(proposedNewWidth, column, gridWidget), 0.1);
         assertEquals(originalRightColumnWidth + (originalColumnWidth - proposedNewWidth), rightColumn.getWidth(), 0.1);
     }
@@ -515,7 +514,7 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         uiModel.appendColumn(rightColumn);
         assertFalse(handler.getFirstRightAutoColumn(column, uiModel).isPresent());
 
-        rightColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        rightColumn.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
         assertEquals(rightColumn, handler.getFirstRightAutoColumn(column, uiModel).get());
     }
 }

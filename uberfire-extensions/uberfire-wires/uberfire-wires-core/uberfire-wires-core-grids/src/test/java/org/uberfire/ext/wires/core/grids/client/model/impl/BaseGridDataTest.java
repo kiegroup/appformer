@@ -16,25 +16,21 @@
 
 package org.uberfire.ext.wires.core.grids.client.model.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 
 import com.ait.lienzo.test.LienzoMockitoTestRunner;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.uberfire.ext.wires.core.grids.client.model.GridCellValue;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.columns.GridColumnRenderer;
 
-import static org.assertj.core.api.AssertionsForClassTypes.in;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -212,6 +208,7 @@ public class BaseGridDataTest {
     public void appendColumn() {
         BaseGridData data = spy(baseGridData);
         final BaseGridColumn<String> column = new BaseGridColumn<>(header, columnRenderer, 100.0);
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
 
         double originalWidth = data.getWidth();
         data.appendColumn(column);
@@ -221,12 +218,19 @@ public class BaseGridDataTest {
         assertTrue(booleanArgumentCaptor.getValue());
         assertTrue(optionalDoubleArgumentCaptor.getValue().isPresent());
         assertEquals(originalWidth, optionalDoubleArgumentCaptor.getValue().getAsDouble(), 0.1);
+
+        reset(data);
+        final BaseGridColumn<String> columnFixed = new BaseGridColumn<>(header, columnRenderer, 100.0);
+        data.appendColumn(columnFixed);
+
+        verify(data, never()).internalRefreshWidth(anyBoolean(), any());
     }
 
     @Test
     public void insertColumn() {
         BaseGridData data = spy(baseGridData);
         final BaseGridColumn<String> column = new BaseGridColumn<>(header, columnRenderer, 100.0);
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
 
         double originalWidth = data.getWidth();
         data.insertColumn(0, column);
@@ -236,6 +240,12 @@ public class BaseGridDataTest {
         assertTrue(booleanArgumentCaptor.getValue());
         assertTrue(optionalDoubleArgumentCaptor.getValue().isPresent());
         assertEquals(originalWidth, optionalDoubleArgumentCaptor.getValue().getAsDouble(), 0.1);
+
+        reset(data);
+        final BaseGridColumn<String> columnFixed = new BaseGridColumn<>(header, columnRenderer, 100.0);
+        data.insertColumn(0, columnFixed);
+
+        verify(data, never()).internalRefreshWidth(anyBoolean(), any());
     }
 
     @Test
@@ -312,7 +322,7 @@ public class BaseGridDataTest {
 
         BaseGridColumn<String> column = new BaseGridColumn<>(header, columnRenderer, 100.0);
         data.appendColumn(column);
-        column.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
 
         column.setWidth(0);
         assertTrue(data.internalRefreshWidth(true, OptionalDouble.empty()));
@@ -341,24 +351,24 @@ public class BaseGridDataTest {
         BaseGridData data = spy(baseGridData);
         double originalWidth = 100;
         BaseGridColumn<String> column = new BaseGridColumn<>(header, columnRenderer, originalWidth);
-        column.setColumnWidthMode(GridColumn.ColumnWidthMode.fixed);
+        column.setColumnWidthMode(GridColumn.ColumnWidthMode.FIXED);
         data.appendColumn(column);
         assertEquals(originalWidth, data.calculateInitWidth(column, OptionalDouble.empty()), 0.1);
 
         data.setVisibleSizeAndRefresh(500, 0);
 
         BaseGridColumn<String> column1 = new BaseGridColumn<>(header, columnRenderer, originalWidth);
-        column1.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        column1.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
         data.appendColumn(column1);
 
         assertEquals(data.getVisibleWidth() - originalWidth, data.calculateInitWidth(column1, OptionalDouble.empty()), 0.1);
 
         BaseGridColumn<String> column2 = new BaseGridColumn<>(header, columnRenderer, originalWidth);
-        column2.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        column2.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
         data.appendColumn(column2);
 
         BaseGridColumn<String> column3 = new BaseGridColumn<>(header, columnRenderer, originalWidth);
-        column3.setColumnWidthMode(GridColumn.ColumnWidthMode.auto);
+        column3.setColumnWidthMode(GridColumn.ColumnWidthMode.AUTO);
         data.appendColumn(column3);
 
         assertEquals(((data.getVisibleWidth() - originalWidth) / 2), data.calculateInitWidth(column2, OptionalDouble.empty()), 0.1);
