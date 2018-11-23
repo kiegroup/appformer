@@ -14,6 +14,7 @@
  */
 package org.guvnor.common.services.project.backend.server;
 
+import org.eclipse.jgit.lib.RefUpdate;
 import org.guvnor.common.services.project.backend.server.utils.PathUtil;
 import org.guvnor.common.services.project.events.NewProjectEvent;
 import org.guvnor.common.services.project.model.Module;
@@ -33,10 +34,11 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.java.nio.fs.jgit.util.Git;
+import org.uberfire.java.nio.fs.jgit.util.commands.RemoveRemote;
+import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -48,6 +50,7 @@ import static java.util.stream.Collectors.toList;
 public class WorkspaceProjectMigrationServiceImpl implements WorkspaceProjectMigrationService {
 
     private static final Logger log = LoggerFactory.getLogger(WorkspaceProjectMigrationServiceImpl.class);
+    public static final String REMOTE_ORIGIN_REF = "refs/remotes/origin/master";
 
     private WorkspaceProjectService workspaceProjectService;
     private RepositoryService repositoryService;
@@ -129,13 +132,12 @@ public class WorkspaceProjectMigrationServiceImpl implements WorkspaceProjectMig
         return configurations;
     }
 
-    private void cleanupOrigin(Repository repository) {
+    protected void cleanupOrigin(Repository repository) {
         try {
             // AF-1715: Cleaning origin to prevent errors while importing the new generated repo.
             Git git = ((JGitPathImpl) pathUtil.convert(repository.getDefaultBranch().get().getPath())).getFileSystem().getGit();
-            git.getRepository().getConfig().unsetSection("remote", "origin");
-            git.getRepository().getConfig().save();
-        } catch (IOException e) {
+            new RemoveRemote(git,"origin",REMOTE_ORIGIN_REF).execute();
+        } catch (GitException e) {
             log.warn("Error cleaning up origin for repository '{}': {}", repository.getAlias(), e);
         }
     }
