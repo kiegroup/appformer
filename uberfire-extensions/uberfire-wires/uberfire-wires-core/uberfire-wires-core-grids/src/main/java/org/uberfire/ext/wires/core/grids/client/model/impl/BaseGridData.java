@@ -81,7 +81,7 @@ public class BaseGridData implements GridData {
 
         OptionalDouble optionalOriginalWidth = OptionalDouble.of(originalWidth);
 
-        if(GridColumn.ColumnWidthMode.isAuto(column)) {
+        if (GridColumn.ColumnWidthMode.isAuto(column)) {
             column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
             internalRefreshWidth(true, optionalOriginalWidth);
         }
@@ -98,7 +98,7 @@ public class BaseGridData implements GridData {
 
         OptionalDouble optionalOriginalWidth = OptionalDouble.of(originalWidth);
 
-        if(GridColumn.ColumnWidthMode.isAuto(column)) {
+        if (GridColumn.ColumnWidthMode.isAuto(column)) {
             column.setWidth(calculateInitWidth(column, optionalOriginalWidth));
             internalRefreshWidth(true, optionalOriginalWidth);
         }
@@ -671,15 +671,19 @@ public class BaseGridData implements GridData {
             return false;
         }
 
-        // if previousVisibleWidth is equal to 0 this means that is the first resize and visibleWidth need to win in Math.max
-        double resizeRatio = previousVisibleWidth == 0 ? 0 : visibleWidth / previousVisibleWidth;
+        // verify if grid was 100% width with a delta
+        boolean wasFullWidth = Math.abs(gridWidthMetadata.currentGrossWidth - previousVisibleWidth) < 0.1;
 
-        double currentNew = gridWidthMetadata.currentGrossWidth;
-
-        double targetGrossWidth = Math.max(visibleWidth, currentNew * resizeRatio);
+        // keep 100% width or max between visible area and grid width
+        double targetGrossWidth = wasFullWidth ? visibleWidth : Math.max(visibleWidth, gridWidthMetadata.currentGrossWidth);
 
         double currentWidth = getWidth() - gridWidthMetadata.fixedWidth;
         double targetWidth = targetGrossWidth - gridWidthMetadata.fixedWidth;
+
+        // if grid is greater than visible panel and it wasn't at full width no refresh is needed
+        if (visibleWidth < gridWidthMetadata.currentGrossWidth && !wasFullWidth) {
+            return false;
+        }
 
         boolean toRedraw = false;
         for (GridColumn<?> column : getColumns()) {
@@ -696,8 +700,11 @@ public class BaseGridData implements GridData {
             if (newWidth < column.getMinimumWidth()) {
                 newWidth = column.getMinimumWidth();
             }
-            column.setWidth(newWidth);
-            toRedraw = true;
+            // if nothing changed no need to update nor refresh
+            if (newWidth != oldWidth) {
+                column.setWidth(newWidth);
+                toRedraw = true;
+            }
         }
         return toRedraw;
     }

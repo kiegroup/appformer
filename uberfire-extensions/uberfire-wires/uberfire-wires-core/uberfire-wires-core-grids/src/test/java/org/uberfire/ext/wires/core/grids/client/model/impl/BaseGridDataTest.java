@@ -36,7 +36,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(LienzoMockitoTestRunner.class)
 public class BaseGridDataTest {
@@ -332,6 +338,16 @@ public class BaseGridDataTest {
         column.setMinimumWidth(minimumWidth);
         assertTrue(data.internalRefreshWidth(true, OptionalDouble.empty()));
         assertEquals(minimumWidth, column.getWidth(), 0.1);
+
+        BaseGridColumn<String> fixedColumn = new BaseGridColumn<>(header, columnRenderer, 100);
+        data.appendColumn(fixedColumn);
+        column.setWidth(100.0);
+        column.setMinimumWidth(100.0);
+        assertTrue(data.internalRefreshWidth(false, OptionalDouble.empty()));
+        assertEquals(visibleWidth - fixedColumn.getWidth(), column.getWidth(), 0.1);
+        // if already refreshed nothing should change
+        assertFalse(data.internalRefreshWidth(false, OptionalDouble.empty()));
+        assertEquals(visibleWidth - fixedColumn.getWidth(), column.getWidth(), 0.1);
     }
 
     @Test
