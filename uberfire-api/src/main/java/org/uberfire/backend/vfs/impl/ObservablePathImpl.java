@@ -49,7 +49,7 @@ public class ObservablePathImpl implements ObservablePath,
     private transient Path original;
 
     @Inject
-    private transient SessionInfo sessionInfo;
+    transient SessionInfo sessionInfo;
 
     private transient List<Command> onRenameCommand = new ArrayList<Command>();
     private transient List<Command> onDeleteCommand = new ArrayList<Command>();
@@ -293,7 +293,7 @@ public class ObservablePathImpl implements ObservablePath,
         }
     }
 
-    private void executeConcurrentRenameCommand(final Path path,
+    void executeConcurrentRenameCommand(final Path path,
                                                 final Path destinationPath,
                                                 final String sessionId,
                                                 final User identity) {
@@ -333,7 +333,7 @@ public class ObservablePathImpl implements ObservablePath,
         }
     }
 
-    private void executeConcurrentCopyCommand(final Path path,
+    void executeConcurrentCopyCommand(final Path path,
                                               final Path destinationPath,
                                               final String sessionId,
                                               final User identity) {
@@ -373,7 +373,7 @@ public class ObservablePathImpl implements ObservablePath,
         }
     }
 
-    private void executeConcurrentUpdateCommand(final Path path,
+    void executeConcurrentUpdateCommand(final Path path,
                                                 final String sessionId,
                                                 final User identity) {
         if (!onConcurrentUpdateCommand.isEmpty()) {
@@ -407,7 +407,7 @@ public class ObservablePathImpl implements ObservablePath,
         }
     }
 
-    private void executeConcurrentDeleteCommand(final Path path,
+    void executeConcurrentDeleteCommand(final Path path,
                                                 final String sessionId,
                                                 final User identity) {
         if (!onConcurrentDeleteCommand.isEmpty()) {
