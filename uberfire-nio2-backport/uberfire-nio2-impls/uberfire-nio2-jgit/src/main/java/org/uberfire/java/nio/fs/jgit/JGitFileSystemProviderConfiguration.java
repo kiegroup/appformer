@@ -51,6 +51,7 @@ public class JGitFileSystemProviderConfiguration {
     public static final String GIT_SSH_ALGORITHM = "org.uberfire.nio.git.ssh.algorithm";
     public static final String GIT_SSH_PASSPHRASE = "org.uberfire.nio.git.ssh.passphrase";
     public static final String GIT_GC_LIMIT = "org.uberfire.nio.git.gc.limit";
+    public static final String GIT_HTTP_SSLVERIFY ="org.uberfire.nio.git.http.sslVerify";
     public static final String SSH_OVER_HTTP = "org.uberfire.nio.git.proxy.ssh.over.http";
     public static final String HTTP_PROXY_HOST = "http.proxyHost";
     public static final String HTTP_PROXY_PORT = "http.proxyPort";

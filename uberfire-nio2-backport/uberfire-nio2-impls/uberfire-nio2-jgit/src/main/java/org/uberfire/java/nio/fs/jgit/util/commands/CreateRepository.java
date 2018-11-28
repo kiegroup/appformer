@@ -22,8 +22,10 @@ import java.util.Optional;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.uberfire.java.nio.IOException;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.GitImpl;
 
@@ -53,6 +55,19 @@ public class CreateRepository {
         this.hookDir = hookDir;
         this.leaders = leaders;
     }
+    
+    private void setSSLVerify(Repository repo) throws Exception {
+    	String ssl =  System.getProperty(JGitFileSystemProviderConfiguration.GIT_HTTP_SSLVERIFY); 
+        if(null != ssl) {
+        	boolean sslVerify = Boolean.valueOf(ssl);
+        	if(!sslVerify) {
+        		StoredConfig config = repo.getConfig();
+                config.setBoolean( "http", null, "sslVerify", false );
+                config.save();
+        	}
+        	
+        }
+    }
 
     public Optional<Git> execute() {
         try {
@@ -77,6 +92,8 @@ public class CreateRepository {
                     .build();
 
             final org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo);
+            
+            setSSLVerify(repo);
 
             if (hookDir != null) {
                 final File repoHookDir = new File(repoDir,
