@@ -12,6 +12,9 @@ public class C3Chart {
     @JsProperty
     public native DivElement getElement();
     
+    @JsProperty
+    public native C3Legend getLegend();
+    
     public native void flush();
     
     public native void select(String[] points);

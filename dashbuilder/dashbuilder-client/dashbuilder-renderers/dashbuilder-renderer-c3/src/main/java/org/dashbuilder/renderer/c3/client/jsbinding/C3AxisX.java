@@ -26,5 +26,14 @@ public class C3AxisX {
     
     @JsProperty
     public native void setTick(C3Tick tick);
-
+    
+    @JsProperty
+    public native C3Tick getTick();
+    
+    @JsProperty
+    public native void setShow(boolean show);
+    
+    @JsProperty
+    public native void setLabel(String label);
+    
 }

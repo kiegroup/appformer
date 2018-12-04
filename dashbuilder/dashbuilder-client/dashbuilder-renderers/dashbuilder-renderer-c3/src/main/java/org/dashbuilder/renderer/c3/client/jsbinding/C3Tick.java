@@ -21,6 +21,9 @@ public class C3Tick {
     
     @JsProperty
     public native void setFit(boolean fit);
+    
+    @JsProperty
+    public native void setRotate(int rotate);
 
     @JsFunction
     @FunctionalInterface

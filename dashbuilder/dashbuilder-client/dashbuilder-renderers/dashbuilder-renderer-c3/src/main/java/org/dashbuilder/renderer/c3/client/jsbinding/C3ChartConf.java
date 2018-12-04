@@ -19,7 +19,9 @@ public class C3ChartConf {
                                      C3AxisInfo axis,
                                      C3Grid grid,
                                      C3Transition transition,
-                                     C3Point point) {
+                                     C3Point point,
+                                     C3Padding padding,
+                                     C3Legend legend) {
         C3ChartConf instance = new C3ChartConf();
         instance.setSize(size);
         instance.setData(data);
@@ -27,6 +29,8 @@ public class C3ChartConf {
         instance.setGrid(grid);
         instance.setTransition(transition);
         instance.setPoint(point);
+        instance.setPadding(padding);
+        instance.setLegend(legend);
         return instance;
     }
     
@@ -51,5 +55,10 @@ public class C3ChartConf {
     @JsProperty
     public native void setPoint(C3Point point);
     
+    @JsProperty
+    public native void setPadding(C3Padding padding);
+
+    @JsProperty
+    public native void setLegend(C3Legend legend);    
     
 }

@@ -24,5 +24,11 @@ public class C3AxisInfo {
     public native void setX(C3AxisX x);
     
     @JsProperty
-    public native void setY(C3AxisY y);    
+    public native C3AxisX getX();
+    
+    @JsProperty
+    public native void setY(C3AxisY y);
+    
+    @JsProperty
+    public native C3AxisY getY();
 }

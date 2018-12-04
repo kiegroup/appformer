@@ -27,6 +27,7 @@ import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
+import org.dashbuilder.displayer.Position;
 import org.dashbuilder.displayer.client.AbstractGwtDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
@@ -37,6 +38,8 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Grid;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3GridConf;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Legend;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Padding;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Selection;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
@@ -64,6 +67,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
 
         void setFilterLabelSet(FilterLabelSet filterLabelSet);
         
+        void setBackgroundColor(String color);
+
     }
     
     public C3Displayer(FilterLabelSet filterLabelSet) {
@@ -108,12 +113,10 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
 
     @Override
     protected void updateVisualization() {
-        if (displayerSettings.isTitleVisible()) {
-            getView().showTitle(displayerSettings.getTitle());
-        }
         C3ChartConf conf = buildConfiguration();
         getView().updateChart(conf);
         updateFilterStatus();
+        applyPropertiesToView();
     }
 
     protected C3ChartConf buildConfiguration() {
@@ -122,17 +125,47 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         C3AxisInfo axis = createAxis();
         C3ChartData data = createData();
         C3Point point = createPoint();
+        C3Padding padding = createPadding();
+        C3Grid grid = createGrid();
+        C3Legend legend = createLegend();
+        applyPropertiesToAxes(axis);
         return C3ChartConf.create(
                     C3ChartSize.create(width, height),
                     data,
                     axis,
-                    C3Grid.create(
-                            C3GridConf.create(true), 
-                            C3GridConf.create(true)
-                    ),
+                    grid,
                     C3Transition.create(0),
-                    point
+                    point,
+                    padding, 
+                    legend
                 );
+    }
+
+    private void applyPropertiesToAxes(C3AxisInfo axis) {
+        axis.getX().setLabel(displayerSettings.getXAxisTitle());
+        axis.getX().setShow(displayerSettings.isXAxisShowLabels());
+        axis.getX().getTick().setRotate(displayerSettings.getXAxisLabelsAngle());
+        axis.getY().setShow(displayerSettings.isYAxisShowLabels());
+        axis.getY().setLabel(displayerSettings.getYAxisTitle());
+    }
+
+    protected C3Legend createLegend() {
+        return C3Legend.create(displayerSettings.isChartShowLegend(), 
+                               getLegendPosition());
+    }
+
+    private C3Grid createGrid() {
+        return C3Grid.create(
+                C3GridConf.create(true), 
+                C3GridConf.create(true)
+        );
+    }
+
+    protected C3Padding createPadding() {
+        return C3Padding.create(displayerSettings.getChartMarginTop(), 
+                                displayerSettings.getChartMarginRight(), 
+                                displayerSettings.getChartMarginBottom(), 
+                                displayerSettings.getChartMarginLeft());
     }
 
     protected C3Point createPoint() {
@@ -303,6 +336,19 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         if (!displayerSettings.isFilterSelfApplyEnabled()) {
             updateVisualization();
         }
+    }
+    
+    private void applyPropertiesToView() {
+        if (displayerSettings.isTitleVisible()) {
+            getView().showTitle(displayerSettings.getTitle());
+        }
+        getView().setBackgroundColor(displayerSettings.getChartBackgroundColor());
+    }
+
+    private String getLegendPosition() {
+        Position legendPosition = displayerSettings.getChartLegendPosition();
+        String c3LegendPosition = C3Legend.convertPosition(legendPosition);
+        return c3LegendPosition;
     }
     
 }

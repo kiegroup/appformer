@@ -5,6 +5,7 @@ import org.dashbuilder.displayer.client.AbstractGwtDisplayerView;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Chart;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Padding;
 import org.dashbuilder.renderer.c3.client.resources.i18n.C3DisplayerConstants;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
@@ -22,6 +23,7 @@ public abstract class C3DisplayerView<P extends C3Displayer>
     private Panel displayerPanel = new FlowPanel();
     
     private HTML titleHtml = new HTML();
+    private C3Chart chart;
     
     @Override
     public void init(P presenter) {
@@ -38,7 +40,7 @@ public abstract class C3DisplayerView<P extends C3Displayer>
     public void updateChart(C3ChartConf conf) {
         displayerPanel.clear();
         conf.setBindto(displayerPanel.getElement());
-        C3.generate(conf);
+        chart = C3.generate(conf);
     }
 
     @Override
@@ -63,6 +65,13 @@ public abstract class C3DisplayerView<P extends C3Displayer>
         element.getStyle().setProperty("z-index", "10");
         filterPanel.clear();
         filterPanel.add(ElementWrapperWidget.getWidget(element));
+    }
+    
+    @Override
+    public void setBackgroundColor(String color) {
+        chart.getElement().getElementsByTagName("svg")
+                          .getItem(0).getStyle()
+                          .setBackgroundColor(color);
     }
     
 }
