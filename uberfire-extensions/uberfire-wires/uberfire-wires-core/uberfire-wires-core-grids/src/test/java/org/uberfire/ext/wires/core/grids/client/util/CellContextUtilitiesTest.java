@@ -39,7 +39,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @RunWith(LienzoMockitoTestRunner.class)
-public class RenderContextUtilitiesTest {
+public class CellContextUtilitiesTest {
 
     private static final double HEADER_HEIGHT = 50.0;
     private static final double HEADER_ROW_HEIGHT = HEADER_HEIGHT / 2;
@@ -96,11 +96,11 @@ public class RenderContextUtilitiesTest {
         doReturn(25.0).when(ci).getOffsetX();
         doReturn(1).when(ci).getUiColumnIndex();
 
-        final GridBodyCellRenderContext context = RenderContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           rp,
-                                                                                           0);
+        final GridBodyCellRenderContext context = CellContextUtilities.makeRenderContext(gridWidget,
+                                                                                         ri,
+                                                                                         ci,
+                                                                                         rp,
+                                                                                         0);
 
         assertNotNull(context);
         assertEquals(25.0,
@@ -125,11 +125,11 @@ public class RenderContextUtilitiesTest {
         doReturn(25.0).when(ci).getOffsetX();
         doReturn(1).when(ci).getUiColumnIndex();
 
-        final GridBodyCellRenderContext context = RenderContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           rp,
-                                                                                           0);
+        final GridBodyCellRenderContext context = CellContextUtilities.makeRenderContext(gridWidget,
+                                                                                         ri,
+                                                                                         ci,
+                                                                                         rp,
+                                                                                         0);
 
         assertNotNull(context);
         assertEquals(0.0,
@@ -156,11 +156,11 @@ public class RenderContextUtilitiesTest {
         doReturn(75.0).when(ci).getOffsetX();
         doReturn(2).when(ci).getUiColumnIndex();
 
-        final GridBodyCellRenderContext context = RenderContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           rp,
-                                                                                           0);
+        final GridBodyCellRenderContext context = CellContextUtilities.makeRenderContext(gridWidget,
+                                                                                         ri,
+                                                                                         ci,
+                                                                                         rp,
+                                                                                         0);
 
         assertNotNull(context);
         assertEquals(25.0,
@@ -185,11 +185,11 @@ public class RenderContextUtilitiesTest {
         doReturn(0.0).when(ci).getOffsetX();
         doReturn(0).when(ci).getUiColumnIndex();
 
-        final GridBodyCellRenderContext context = RenderContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           rp,
-                                                                                           0);
+        final GridBodyCellRenderContext context = CellContextUtilities.makeRenderContext(gridWidget,
+                                                                                         ri,
+                                                                                         ci,
+                                                                                         rp,
+                                                                                         0);
 
         assertNotNull(context);
         assertEquals(0.0,
@@ -216,11 +216,11 @@ public class RenderContextUtilitiesTest {
         doReturn(0.0).when(ci).getOffsetX();
         doReturn(0).when(ci).getUiColumnIndex();
 
-        final GridBodyCellRenderContext context = RenderContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           rp,
-                                                                                           0);
+        final GridBodyCellRenderContext context = CellContextUtilities.makeRenderContext(gridWidget,
+                                                                                         ri,
+                                                                                         ci,
+                                                                                         rp,
+                                                                                         0);
 
         assertNotNull(context);
         assertEquals(0.0,
@@ -242,11 +242,11 @@ public class RenderContextUtilitiesTest {
         doReturn(0.0).when(ci).getOffsetX();
         doReturn(0).when(ci).getUiColumnIndex();
 
-        final GridBodyCellRenderContext context = RenderContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           rp,
-                                                                                           0);
+        final GridBodyCellRenderContext context = CellContextUtilities.makeRenderContext(gridWidget,
+                                                                                         ri,
+                                                                                         ci,
+                                                                                         rp,
+                                                                                         0);
 
         assertNotNull(context);
         assertEquals(0.0,
