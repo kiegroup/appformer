@@ -32,6 +32,18 @@ public class RenderContextUtilities {
     public static GridBodyCellEditContext makeRenderContext(final GridWidget gridWidget,
                                                             final BaseGridRendererHelper.RenderingInformation ri,
                                                             final BaseGridRendererHelper.ColumnInformation ci,
+                                                            final int uiHeaderRowIndex) {
+        return makeRenderContext(gridWidget,
+                                 ri,
+                                 ci,
+                                 null,
+                                 uiHeaderRowIndex);
+
+    }
+
+    public static GridBodyCellEditContext makeRenderContext(final GridWidget gridWidget,
+                                                            final BaseGridRendererHelper.RenderingInformation ri,
+                                                            final BaseGridRendererHelper.ColumnInformation ci,
                                                             final Point2D rp,
                                                             final int uiHeaderRowIndex) {
         final GridColumn<?> column = ci.getColumn();
