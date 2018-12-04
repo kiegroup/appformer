@@ -128,7 +128,6 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         C3Padding padding = createPadding();
         C3Grid grid = createGrid();
         C3Legend legend = createLegend();
-        applyPropertiesToAxes(axis);
         return C3ChartConf.create(
                     C3ChartSize.create(width, height),
                     data,
@@ -139,14 +138,6 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
                     padding, 
                     legend
                 );
-    }
-
-    private void applyPropertiesToAxes(C3AxisInfo axis) {
-        axis.getX().setLabel(displayerSettings.getXAxisTitle());
-        axis.getX().setShow(displayerSettings.isXAxisShowLabels());
-        axis.getX().getTick().setRotate(displayerSettings.getXAxisLabelsAngle());
-        axis.getY().setShow(displayerSettings.isYAxisShowLabels());
-        axis.getY().setLabel(displayerSettings.getYAxisTitle());
     }
 
     protected C3Legend createLegend() {
@@ -238,14 +229,15 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
      */
     protected String[] createCategories() {
         List<DataColumn> columns = dataSet.getColumns();
+        DataColumn dataColumn = columns.get(0);
         String[] categories = null;
         if(columns.size() > 0) {
-            List<?> values = columns.get(0).getValues();
+            List<?> values = dataColumn.getValues();
             categories = new String[values.size()];
             for (int i = 0; i < categories.length; i++) {
                 Object val = values.get(i);
                 if(val != null) {
-                    categories[i] = val.toString();
+                    categories[i] = super.formatValue(val, dataColumn);
                 } else {
                     categories[i] = "cat_" + i;
                 }
@@ -254,6 +246,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         return categories;
     }
 
+    // TODO: Format x on tooltip
+    
     /**
      * Extracts the series of the column 1 and other columns
      * @return
@@ -277,7 +271,6 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         return data;
     }
     
-    // New filters handling
     void onFilterClearAll() {
         super.filterReset();
 

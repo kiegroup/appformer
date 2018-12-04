@@ -44,21 +44,18 @@ public class C3PieChartDisplayer extends C3Displayer<C3PieChartDisplayer.View> {
     }
     
     // In C3 we only need the series for PieCharts, categories are not needed
-    
     @Override
     protected String[][] createSeries() {
         List<DataColumn> columns = dataSet.getColumns();
         String[][] data  = null;
         // first columns hold the pie series name
         DataColumn categoriesColumn = columns.get(0);
-        // First column will contains the pie series information
         List<?> values = categoriesColumn.getValues();
         data = new String[values.size()][];
         // next columns hold the values for each series
-        // needs to get the column value for each serie
         for (int i = 0; i < values.size(); i++) {
             String[] seriesValues = new String[columns.size()];
-            seriesValues[0] = values.get(i).toString();
+            seriesValues[0] = formatValue(values.get(i), categoriesColumn);
             for (int j = 1; j < columns.size(); j++) {
                 DataColumn dataColumn = columns.get(j);
                 seriesValues[j] = dataColumn.getValues().get(i).toString();

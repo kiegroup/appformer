@@ -47,6 +47,9 @@ public class C3ChartConf {
     public native void setAxis(C3AxisInfo axis);
     
     @JsProperty
+    public native C3AxisInfo getAxis();
+    
+    @JsProperty
     public native void setGrid(C3Grid grid);
     
     @JsProperty

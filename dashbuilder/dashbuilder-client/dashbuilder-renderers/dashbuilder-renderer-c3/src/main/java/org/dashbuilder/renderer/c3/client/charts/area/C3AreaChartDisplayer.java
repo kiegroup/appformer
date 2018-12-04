@@ -10,10 +10,11 @@ import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
+import org.dashbuilder.renderer.c3.client.C3XYDisplayer;
 
 
 @Dependent
-public class C3AreaChartDisplayer extends C3Displayer<C3AreaChartDisplayer.View> {
+public class C3AreaChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.View> {
     
     
     public interface View extends C3Displayer.View<C3AreaChartDisplayer> {

@@ -23,13 +23,13 @@ public class C3Legend {
         // Not all positions are supported by C3.
         switch(position) {
         case BOTTOM:
-            return "bottom";
+            return position.name().toLowerCase();
         case IN:
             return "inset";
         case RIGHT:
-            return "right";
+            return position.name().toLowerCase();
         default:
-            return "bottom";
+            return "";
         }
     }
     
