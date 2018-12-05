@@ -150,7 +150,7 @@ public class C3BubbleChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.V
         for (int i = 0; i < n; i++) {
             String cat = categories[i];
             double r;
-            if(min == max) {
+            if (min == max) {
                 r = (MAX_BUBBLE_SIZE + MIN_BUBBLE_SIZE) / 2;
             } else {
                 r = map(valuesBeforeMap.get(i), min, max, MIN_BUBBLE_SIZE, MAX_BUBBLE_SIZE);

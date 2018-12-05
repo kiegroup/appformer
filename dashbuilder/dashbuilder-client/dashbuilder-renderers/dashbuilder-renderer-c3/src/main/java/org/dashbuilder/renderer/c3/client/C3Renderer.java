@@ -147,7 +147,7 @@ public class C3Renderer extends AbstractRendererLibrary {
     private C3Displayer getLineChartForSubType(DisplayerSubType subtype) {
         C3LineChartDisplayer displayer =  beanManager.lookupBean(C3LineChartDisplayer.class)
                                                      .newInstance();
-        if(subtype == SMOOTH) { 
+        if (subtype == SMOOTH) { 
             displayer = displayer.smooth();
         } 
         return displayer;
@@ -156,7 +156,7 @@ public class C3Renderer extends AbstractRendererLibrary {
     private C3Displayer getPieChartForSubType(DisplayerSubType subtype) {
         C3PieChartDisplayer displayer = beanManager.lookupBean(C3PieChartDisplayer.class)
                                                    .newInstance();
-        if(subtype == DONUT) { 
+        if (subtype == DONUT) { 
             displayer = displayer.donut();
         } 
         return displayer;
@@ -174,11 +174,6 @@ public class C3Renderer extends AbstractRendererLibrary {
     
     @Override
     public boolean isDefault(DisplayerType type) {
-//        return  BARCHART.equals(type) ||
-//                PIECHART.equals(type) ||
-//                AREACHART.equals(type) ||
-//                BUBBLECHART.equals(type) ||
-//                LINECHART.equals(type);
         return false;
     }
 }

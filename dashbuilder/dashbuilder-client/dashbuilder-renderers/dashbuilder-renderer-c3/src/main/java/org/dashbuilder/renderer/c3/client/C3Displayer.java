@@ -24,6 +24,7 @@ import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.dataset.group.Interval;
+import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
@@ -171,7 +172,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         JsObject xs = createXs();
         C3Selection selection = createSelection();
         C3ChartData c3Data = C3ChartData.create(series, type, groups, xs, selection);
-        if(displayerSettings.isFilterNotificationEnabled()) {
+        if (displayerSettings.isFilterNotificationEnabled()) {
             c3Data.setOnselected(this::addToSelection);
         }
         return c3Data;
@@ -232,12 +233,12 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         List<DataColumn> columns = dataSet.getColumns();
         DataColumn dataColumn = columns.get(0);
         String[] categories = null;
-        if(columns.size() > 0) {
+        if (columns.size() > 0) {
             List<?> values = dataColumn.getValues();
             categories = new String[values.size()];
             for (int i = 0; i < categories.length; i++) {
                 Object val = values.get(i);
-                if(val != null) {
+                if (val != null) {
                     categories[i] = super.formatValue(val, dataColumn);
                 } else {
                     categories[i] = "cat_" + i;
@@ -256,13 +257,14 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     protected String[][] createSeries() {
         List<DataColumn> columns = dataSet.getColumns();
         String[][] data  = null;
-        if(columns.size() > 1) {
+        if (columns.size() > 1) {
             data = new String[columns.size() - 1][];
             for (int i = 1; i < columns.size(); i++) {
                 DataColumn dataColumn = columns.get(i);
+                ColumnSettings columnSettings = displayerSettings.getColumnSettings(dataColumn);
                 List<?> values = dataColumn.getValues();
                 String[] seriesValues = new String[values.size() + 1];
-                seriesValues[0] = columns.get(i).getId();
+                seriesValues[0] = columnSettings.getColumnName();
                 for (int j = 0; j < values.size(); j++) {
                     seriesValues[j + 1] = values.get(j).toString(); 
                 }

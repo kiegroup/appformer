@@ -93,7 +93,7 @@ public class C3BarChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.View
     @Override
     protected String[][] createGroups() {
         String[][] groups = new String[0][0];
-        if(isStacked()) {
+        if (isStacked()) {
             groups = new String[1][];
             groups[0] = dataSet.getColumns()
                                 .stream().skip(1)

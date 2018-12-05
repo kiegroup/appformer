@@ -55,7 +55,7 @@ public class C3PieChartDisplayer extends C3Displayer<C3PieChartDisplayer.View> {
         // next columns hold the values for each series
         for (int i = 0; i < values.size(); i++) {
             String[] seriesValues = new String[columns.size()];
-            seriesValues[0] = formatValue(values.get(i), categoriesColumn);
+            seriesValues[0] = super.formatValue(values.get(i), categoriesColumn);
             for (int j = 1; j < columns.size(); j++) {
                 DataColumn dataColumn = columns.get(j);
                 seriesValues[j] = dataColumn.getValues().get(i).toString();
