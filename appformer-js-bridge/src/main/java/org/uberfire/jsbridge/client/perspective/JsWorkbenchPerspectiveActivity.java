@@ -101,7 +101,7 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
 
         final PerspectiveDefinition def = new PerspectiveDefinitionImpl(realPerspective.defaultPanelType());
-        def.setName(getIdentifier());
+        def.setName(realPerspective.name());
 
         final JsNativeContextDisplay contextDisplay = this.realPerspective.contextDisplay();
         def.setContextDisplayMode(contextDisplay.mode());

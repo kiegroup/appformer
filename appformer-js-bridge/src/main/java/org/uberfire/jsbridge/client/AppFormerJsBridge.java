@@ -17,6 +17,7 @@
 package org.uberfire.jsbridge.client;
 
 import java.lang.annotation.Annotation;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.enterprise.context.Dependent;
@@ -35,6 +36,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.workbench.Workbench;
 import org.uberfire.jsbridge.client.loading.AppFormerJsActivityLoader;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
@@ -44,26 +46,39 @@ import static java.util.Arrays.stream;
 public class AppFormerJsBridge {
 
     @Inject
+    private Workbench workbench;
+
+    @Inject
     private AppFormerJsActivityLoader appFormerJsLoader;
 
     public void init(final String gwtModuleName) {
 
+        workbench.addStartupBlocker(AppFormerJsBridge.class);
+
         exposeBridge();
 
-        ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
-                .setWindow(ScriptInjector.TOP_WINDOW)
-                .setCallback((Success<Void>) i2 -> appFormerJsLoader.init(gwtModuleName))
-                .inject();
+        final Consumer<Exception> onError = (ex) -> workbench.removeStartupBlocker(AppFormerJsBridge.class);
+        final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
 
         //FIXME: Load React from local instead of CDN.
         ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
-                .setCallback((Success<Void>) i1 -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
+                .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback((Success<Void>) i2 -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
+                        .setCallback(callback.withSuccess((v1) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
-                                .inject())
-                        .inject())
+                                .setCallback(callback.withSuccess((v2) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
+                                        .setWindow(ScriptInjector.TOP_WINDOW)
+                                        .setCallback(callback.withSuccess((v3) -> {
+                                            try {
+                                                appFormerJsLoader.init(gwtModuleName);
+                                            } finally {
+                                                workbench.removeStartupBlocker(AppFormerJsBridge.class);
+                                            }
+                                        }))
+                                        .inject()))
+                                .inject()))
+                        .inject()))
                 .inject();
     }
 
@@ -152,10 +167,26 @@ public class AppFormerJsBridge {
         });
     }
 
-    interface Success<T> extends Callback<T, Exception> {
+    class CallbackProducer<T> {
 
-        @Override
-        default void onFailure(Exception o) {
+        private final Consumer<Exception> onFailure;
+
+        CallbackProducer(final Consumer<Exception> onFailure) {
+            this.onFailure = onFailure;
+        }
+
+        Callback<T, Exception> withSuccess(final Consumer<T> onSuccess) {
+            return new Callback<T, Exception>() {
+                @Override
+                public void onFailure(Exception e) {
+                    onFailure.accept(e);
+                }
+
+                @Override
+                public void onSuccess(T t) {
+                    onSuccess.accept(t);
+                }
+            };
         }
     }
 }

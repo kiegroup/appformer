@@ -32,6 +32,7 @@ export class CompassLayoutJsPerspective extends AppFormer.CompassLayoutPerspecti
     constructor() {
         super("CompassLayoutJsPerspective");
         this.af_isTransient = false;
+        this.af_name = "JS Compass Layout Perspective";
 
         this.af_parts = this.parts();
         this.af_panels = this.panels();
@@ -103,6 +104,7 @@ export class ReactTemplatedJsPerspective extends AppFormer.Perspective {
         super("ReactTemplatedJsPerspective");
         this.af_isReact = true;
         this.af_isTransient = true;
+        this.af_name = "JS React Templated Perspective";
     }
 
     af_componentRoot(children?: any): AppFormer.Element {
@@ -160,6 +162,7 @@ export class StringTemplatedJsPerspective extends AppFormer.Perspective {
         super("StringTemplatedJsPerspective");
         this.af_isReact = false;
         this.af_isTransient = true;
+        this.af_name = "JS String Templated Perspective";
     }
 
     af_componentRoot(children?: any): string {

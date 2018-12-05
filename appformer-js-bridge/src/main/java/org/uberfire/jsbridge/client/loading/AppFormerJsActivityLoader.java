@@ -21,6 +21,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import org.jboss.errai.ioc.client.api.EntryPoint;
@@ -29,10 +32,10 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyActivity;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
+import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyActivity;
 import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.uberfire.jsbridge.client.screen.JsNativeScreen;
 import org.uberfire.jsbridge.client.screen.JsWorkbenchScreenActivity;
@@ -46,6 +49,9 @@ public class AppFormerJsActivityLoader {
     private Map<String, String> components = new HashMap<>();
     private String gwtModuleName;
     private Set<String> loadedScripts = new HashSet<>();
+
+    @Inject
+    private Event<ActivityLazyLoaded> activityLazyLoadedEvent;
 
     public void init(String gwtModuleName) {
         this.gwtModuleName = gwtModuleName;
@@ -70,8 +76,12 @@ public class AppFormerJsActivityLoader {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final ActivityManager activityManager = beanManager.lookupBean(ActivityManager.class).getInstance();
 
-        JsWorkbenchLazyActivity activity = (JsWorkbenchLazyActivity) activityManager.getActivity(new DefaultPlaceRequest(id));
-        activity.updateRealContent((JavaScriptObject) jsInput);
+        final Activity activity = activityManager.getActivity(new DefaultPlaceRequest(id));
+
+        JsWorkbenchLazyActivity lazyActivity = (JsWorkbenchLazyActivity) activity;
+        lazyActivity.updateRealContent((JavaScriptObject) jsInput);
+
+        activityLazyLoadedEvent.fire(new ActivityLazyLoaded(id, activity));
     }
 
     //TODO this should be unified with JSWorkbenchScreenActivity getIdentifier

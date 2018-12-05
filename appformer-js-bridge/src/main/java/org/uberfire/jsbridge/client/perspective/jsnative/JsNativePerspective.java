@@ -26,6 +26,10 @@ public class JsNativePerspective {
         return (String) get("af_componentId");
     }
 
+    public String name() {
+        return (String) get("af_name");
+    }
+
     public boolean isDefault() {
         return (boolean) get("af_isDefault");
     }

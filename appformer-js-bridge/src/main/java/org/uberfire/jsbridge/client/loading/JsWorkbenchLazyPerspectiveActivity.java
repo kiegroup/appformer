@@ -5,9 +5,9 @@ import java.util.function.Consumer;
 import com.google.gwt.core.client.JavaScriptObject;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.ActivityManager;
-import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyPerspective;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyPerspective;
 import org.uberfire.client.workbench.panels.impl.ImmutableWorkbenchPanelPresenter;
 import org.uberfire.jsbridge.client.loading.AppFormerComponentConfiguration.PerspectiveComponentParams;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchPerspectiveActivity;
@@ -203,7 +203,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
     private PerspectiveDefinition buildEmptyDefinition() {
         final PerspectiveDefinition def = new PerspectiveDefinitionImpl(ImmutableWorkbenchPanelPresenter.class.getName());
-        def.setName(getIdentifier());
+        def.setName(getIdentifier()); // perspective not loaded yet, we don't know its name
         def.getRoot().addPart(new PartDefinitionImpl(new DefaultPlaceRequest(LazyLoadingScreen.IDENTIFIER)));
         return def;
     }

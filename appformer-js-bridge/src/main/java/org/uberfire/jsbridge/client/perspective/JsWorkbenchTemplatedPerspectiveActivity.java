@@ -1,10 +1,13 @@
 package org.uberfire.jsbridge.client.perspective;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
+import elemental2.dom.Attr;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.NamedNodeMap;
 import elemental2.dom.Node;
 import jsinterop.base.Js;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
@@ -58,6 +61,7 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
 
         this.container = (HTMLElement) DomGlobal.document.createElement("div");
         this.container.classList.add(UF_PERSPECTIVE_CONTAINER);
+        this.componentContainersById = new HashMap<>();
     }
 
     // ====== Perspective lifecycle
@@ -128,7 +132,7 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
     @Override
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
         final PerspectiveDefinition p = new PerspectiveDefinitionImpl(TemplatedWorkbenchPanelPresenter.class.getName());
-        p.setName(realPerspective.componentId());
+        p.setName(realPerspective.name());
 
         this.componentContainersById.forEach((key, value) -> {
 
@@ -197,9 +201,22 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
     }
 
     private Map<String, String> retrieveStartUpParams(final HTMLElement component) {
-        return Arrays.stream(component.attributes.asArray())
-                .filter(attr -> attr.name.startsWith(STARTUP_PARAM_ATTR))
-                .map(attr -> newPair(attr.name.replaceFirst(STARTUP_PARAM_ATTR, ""), attr.value))
-                .collect(toMap(Pair::getK1, Pair::getK2));
+
+        final Map<String, String> params = new HashMap<>();
+
+        for (int i = 0; i < component.attributes.length; i++) {
+
+            final Attr attr = component.attributes.getAt(i);
+            if (!attr.name.startsWith(STARTUP_PARAM_ATTR)) {
+                continue;
+            }
+
+            final String key = attr.name.replaceFirst(STARTUP_PARAM_ATTR, "");
+            if (key.length() > 0) {
+                params.put(key, attr.value);
+            }
+        }
+
+        return params;
     }
 }
