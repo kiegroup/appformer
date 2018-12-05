@@ -51,6 +51,7 @@ import elemental2.core.JsObject;
 
 public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGwtDisplayer<V> {
     
+    private static final double DEFAULT_POINT_RADIUS = 2.5;
     private FilterLabelSet filterLabelSet;
 
     public interface View<P extends C3Displayer> extends AbstractGwtDisplayer.View<P> {
@@ -160,7 +161,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     }
 
     protected C3Point createPoint() {
-        return C3Point.create(d -> 2.5);
+        return C3Point.create(d -> DEFAULT_POINT_RADIUS);
     }
 
     protected C3ChartData createData() {
@@ -206,8 +207,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     }
 
     protected C3AxisY createAxisY() {
-        C3Tick tickX = createTickY();
-        return C3AxisY.create(true, tickX);
+        C3Tick tickY = createTickY();
+        return C3AxisY.create(true, tickY);
      }
 
     protected C3Tick createTickY() {
