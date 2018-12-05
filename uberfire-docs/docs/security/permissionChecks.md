@@ -11,7 +11,7 @@ It is equivalent to:
 ```
 boolean result = authzManager.authorize("perspective.read.perspective1", user);
 ```
-In this second example the low-level permission name is being used instead of the high level style based on resource actions. In the first one, what the _AuthorizatiopnManager_ is doing is just getting the underlying permission name and passing it to the method based on permission name.
+In this second example the low-level permission name is being used instead of the high level style based on resource actions. In the first one, what the _AuthorizationManager_ is doing is just getting the underlying permission name and passing it to the method based on permission name.
 
 It is always recommended to use the high level API, based on resources, since permission names are considered part of the internal resource implementation which is actually subject to change.
 

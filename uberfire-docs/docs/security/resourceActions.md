@@ -1,10 +1,10 @@
 # Resources and Actions
 
-`Resource` is a generic interface for modelling resources, like, for instance, UI assets: perspectives, screens or editors or even backend resources like repositories, projects, data objects, etc... Every _Resource_ has a dependency to a `ResourceType` that acts as a resource classifier.
+`Resource` is a generic interface for modelling resources, like, for instance, UI assets: perspectives, screens or editors or even backend resources like repositories, projects, data objects, etc. Every _Resource_ has a dependency to a `ResourceType` that acts as a resource classifier.
 
 For instance, in Uberfire there exist the `ActivityResourceType` interface which defines the following types: `PERSPECTIVE`, `SCREEN`, `EDITOR`, `SPLASH` & `POPUP`.
 
-There is also the `ResourceAction` interface which defines what actions can be aplied over a resource. The `READ` action is common to all the resource types and it basically defines the ability to reach, access or view a resource. For instance, read a file, view an item in the UI, etc.
+There is also the `ResourceAction` interface which defines what actions can be applied over a resource. The `READ` action is common to all the resource types and it basically defines the ability to reach, access or view a resource. For instance, read a file, view an item in the UI, etc.
 
 The _AuthorizationManager_ provides specific methods for checking actions against the different resource types. For example:
 

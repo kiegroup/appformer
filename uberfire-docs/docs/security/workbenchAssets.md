@@ -5,7 +5,7 @@ Uberfire implements access control mechanisms for most of its workbench assets. 
 Imagine, for instance, we are developing a workbench screen annotated as  `@WorkbenchPerspective(identifier = "HomeForManagers")`.  By default, assets are not protected unless permissions are added to the security policy. So, imagine now, we want to grant access only to individual perspectives:
 
 ```
-# Manager role only have access to the HomeForManagers perspective
+# Manager role only has access to the HomeForManagers perspective
 role.manager.permission.perspective.read=false
 role.manager.permission.perspective.read.HomeForManagers=true
 ```
@@ -33,7 +33,7 @@ role.superuser.permission.editor.read=true
 
 #### Menu items
 
-Menus can be used to implement nagivation features across the workbench. It is possible to define menu items linked to perspectives. For instance, consider the following menu structure which might be a perfect example of the main menu of a typical Uberfire app:
+Menus can be used to implement navigation features across the workbench. It is possible to define menu items linked to perspectives. For instance, consider the following menu structure which might be a perfect example of the main menu of a typical Uberfire app:
 
 ```
 import static org.uberfire.workbench.model.menu.MenuFactory.*;
@@ -56,7 +56,7 @@ import static org.uberfire.workbench.model.menu.MenuFactory.*;
 ...
 ```
 
-We have 2 menu entries visible in this app's top level menu, both linked to perspectives. The method `perspective(...)` it is used to set the target perspective identifier the system will go to after clicking on the menu item. Every menu item will show/hide depending on the perspective access permission granted to the user. In fact, the perspective menu items above could be defined also as:
+We have 2 menu entries visible in this app's top level menu, both linked to perspectives. The method `perspective(...)` is used to set the target perspective identifier the system will go to after clicking on the menu item. Every menu item will show/hide depending on the perspective access permission granted to the user. In fact, the perspective menu items above could be defined also as:
 
 ```
         newTopLevelMenu("Tasks")

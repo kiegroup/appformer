@@ -11,4 +11,4 @@ We provide two types of API:
 * The recommended one, for a more clean and organized use, is the **Beans API**. By using it, you can map a preference as an object, and save and/or load it just by CDI injection, anywhere you want. Also, edition screens are provided for users to edit their preferences.
 * There is also a **Low-level API**, which provides a low-level control of scopes.
 
-For more details on these APIs, see the next sessions.
+For more details on these APIs, see the next sections.

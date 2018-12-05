@@ -1,6 +1,6 @@
 # Authorization Policy Storage
 
-The authorization policy file is stored in a file called _WEB-INF/classes/security-policy.properties_ stored under the application's WAR structure.
+The authorization policy file is a regular file called _WEB-INF/classes/security-policy.properties_ stored under the application's WAR structure.
 
 Here is an example of a security policy:
 
@@ -46,7 +46,7 @@ _security-policy.properties_:
 ```
 # Security policy marker file.
 #
-# All the files starting with the "security-module" prefix will be loaded and
+# All the files whose name is starting with the "security-module" prefix will be loaded and
 # included as part of the global authorization policy.
 #
 ```

@@ -76,9 +76,9 @@ public void newProject() {
 
 The security annotations are can only be used under certain conditions:
 
-* Only work on client side code
-* Only work on CDI managed beans
-* Only can be added to methods that return "void"
+* Only work on client side code.
+* Only work on CDI managed beans.
+* Only can be added to methods that return "void".
 * Only work if the method is called from an external component.
 * For inner component calls the solution is to use a delegate or a "self" instance.
 

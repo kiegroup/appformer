@@ -1,10 +1,10 @@
 # Extensibility
 
-The security subsystem has been designed with extensibility in mind. That means it is possible to bring new resource types, new permissions and new security checks. To demonstrate so, let's take the Uberfire Tasks project introduced in the [UF Tasks](UF Tasks) section as real world example of integration with the security subsystem.
+The security subsystem has been designed with extensibility in mind. That means it is possible to bring new resource types, new permissions and new security checks. To demonstrate that, let's take the Uberfire Tasks project introduced in the [UF Tasks](UF Tasks) section as a real world example of integration with the security subsystem.
 
 #### Domain model changes
 
-First thing, it is to evaluate what resources requires protected access. For some of them there might exits a class representing such concept. This is indeed the case of the UTTasks' _Project_ class. Since projects can be read, created, edited, let's see how to secure those 3 actions.
+First thing is to evaluate which resources require protected access. For some of them there might exist a class representing such concept. This is indeed the case of the UTTasks' _Project_ class. Since projects can be read, created, edited, let's see how to secure those 3 actions.
 
 Make the _Project_ class to implement the _Resource_ interface:
 

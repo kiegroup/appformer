@@ -1,8 +1,8 @@
 # Home Perspectives
 
-Every time a user logs in to an Uberfire application the system need to resolve what is the default perspective to show up. Next are the steps applied by this resolution procedure:
+Every time a user logs in to an Uberfire application the system needs to resolve what is the default perspective to show up. Next are the steps applied by this resolution procedure:
 
-1.- The authorization policy is asked about the home perspective setting assigned to the user. For example:
+1. The authorization policy is asked for the home perspective setting assigned to the user. For example:
 
 ```
 role.admin.home=AdminDashboard
@@ -18,7 +18,7 @@ still the same then the first one is taken. Further details about priorities and
 resolution are introduced in the [Permission Resolution](Permission Resolution) section.
 
 
-2.- If no home perspective is set then the perspective marked as default is taken:
+2. If no home perspective is set then the perspective marked as default is taken:
 
 ```
 @WorkbenchPerspective(identifier = "HomePerspective", isDefault = true)

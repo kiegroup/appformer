@@ -14,7 +14,7 @@ What does the following call return?
 boolean result = authzManager.authorize(perspective1, user);
 ```
 
-This is a conflictive scenario wich requires to understand how the permission resolution mechanism works.
+This is a conflictive scenario which requires to understand how the permission resolution mechanism works.
 
 #### Voting strategy
 
@@ -54,7 +54,7 @@ permissionManager.setDefaultVotingStrategy(VotingStrategy.AFFIRMATIVE);
 
 ```
 
-Notice, the system is configured by default to use the _VotingStrategy.PRIORITY_
+Notice that the system is configured by default to use the _VotingStrategy.PRIORITY_
 
 #### Role priority
 

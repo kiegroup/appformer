@@ -10,7 +10,7 @@ cd uftasks
 mvn clean install
 ```
 ##Get an app server
-UFTasks was generated from Uberfire Archetype. So inside uftasks-showcase, there is a directory called uftasks-distributions-wars that has inside target directory, WAR files for JBoss EAP 6.4, Tomcar 7.0 and Wildfly 8.1. Let's install this app on Tomcat 7.0
+UFTasks was generated from Uberfire Archetype. So inside uftasks-showcase, there is a directory called uftasks-distributions-wars that has inside target directory, WAR files for JBoss EAP 6.4, Tomcar 7.0 and Wildfly 8.1. Let's install this app on Wildfly.
 
 ##Get an app server
 If you don't already have Wildfly 8.1 installed on your computer, you can [download](http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip) and install it. Installing is as easy as downloading and unzipping.

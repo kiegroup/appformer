@@ -12,7 +12,7 @@ Map<String, String> params = new HashMap<>();
 params.put( "screen", "my-screen" );
 placeManager.goTo( new DefaultPlaceRequest( "AdminPagePerspective", params ) );
 ```
-The screen parameter represents a identifier for the screen context that will be open. If your screen is set as default (see below), you can just do:
+The screen parameter represents an identifier for the screen context that will be open. If your screen is set as default (see below), you can just do:
 ```
 placeManager.goTo( new DefaultPlaceRequest( "AdminPagePerspective" ) );
 ```

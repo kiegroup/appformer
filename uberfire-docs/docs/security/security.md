@@ -1,6 +1,6 @@
 # Security
 
-Uberfire provides a complete authorization management subsystem for protecting user access to specific resources or features. In order to understand how the security mechanism works a few core concepts need to be introduced first.
+Uberfire provides a complex authorization management subsystem for protecting user access to specific resources or features. In order to understand how the security mechanism works a few core concepts need to be introduced first.
 
 #### Roles and groups
 
