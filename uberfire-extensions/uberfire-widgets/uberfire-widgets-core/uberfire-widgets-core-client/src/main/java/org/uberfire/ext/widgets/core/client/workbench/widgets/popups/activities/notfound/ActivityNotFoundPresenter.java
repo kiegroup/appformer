@@ -35,8 +35,9 @@ import org.uberfire.mvp.PlaceRequest;
 @WorkbenchPopup(identifier = "workbench.activity.notfound")
 public class ActivityNotFoundPresenter {
 
-    @Inject
     private ActivityNotFoundView view;
+
+    private PlaceManager placeManager;
 
     @WorkbenchPartTitle
     public String getTitle() {
@@ -44,7 +45,10 @@ public class ActivityNotFoundPresenter {
     }
 
     @Inject
-    private PlaceManager placeManager;
+    public ActivityNotFoundPresenter(final ActivityNotFoundView view, final PlaceManager placeManager) {
+        this.view = view;
+        this.placeManager = placeManager;
+    }
 
     private PlaceRequest place;
 
