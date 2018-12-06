@@ -25,13 +25,22 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * View for when an Activity cannot be found
  */
-public class ActivityNotFoundView extends SimplePanel {
+public class ActivityNotFoundView extends SimplePanel
+        implements
+        ActivityNotFoundPresenter.View {
+
+    private ActivityNotFoundPresenter presenter;
 
     private static ActivityNotFoundViewBinder uiBinder = GWT.create(ActivityNotFoundViewBinder.class);
 
     @PostConstruct
     public void init() {
         setWidget(uiBinder.createAndBindUi(this));
+    }
+
+    @Override
+    public void init(final ActivityNotFoundPresenter presenter) {
+        this.presenter = presenter;
     }
 
     interface ActivityNotFoundViewBinder

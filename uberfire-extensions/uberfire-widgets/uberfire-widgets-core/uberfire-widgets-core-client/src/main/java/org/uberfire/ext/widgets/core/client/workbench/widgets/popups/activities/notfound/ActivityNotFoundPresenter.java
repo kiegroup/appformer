@@ -18,11 +18,15 @@ package org.uberfire.ext.widgets.core.client.workbench.widgets.popups.activities
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.SimplePanel;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchPopup;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.UberView;
 import org.uberfire.ext.widgets.core.client.resources.i18n.CoreConstants;
+import org.uberfire.lifecycle.OnClose;
+import org.uberfire.lifecycle.OnStartup;
+import org.uberfire.mvp.PlaceRequest;
 
 /**
  * Popup presenter for when an Activity cannot be found
@@ -39,8 +43,31 @@ public class ActivityNotFoundPresenter {
         return CoreConstants.INSTANCE.ActivityNotFound();
     }
 
+    @Inject
+    private PlaceManager placeManager;
+
+    private PlaceRequest place;
+
+    @OnStartup
+    public void onStartup(final PlaceRequest place) {
+        this.place = place;
+    }
+
+    @OnClose
+    public void onClose() {
+        final String identifier = place.getParameter("requestedPlaceIdentifier",
+                                                     null);
+        if (identifier != null) {
+            placeManager.forceClosePlace(identifier);
+        }
+    }
+
     @WorkbenchPartView
-    public SimplePanel getView() {
+    public UberView<ActivityNotFoundPresenter> getView() {
         return view;
+    }
+
+    public interface View extends UberView<ActivityNotFoundPresenter> {
+
     }
 }
