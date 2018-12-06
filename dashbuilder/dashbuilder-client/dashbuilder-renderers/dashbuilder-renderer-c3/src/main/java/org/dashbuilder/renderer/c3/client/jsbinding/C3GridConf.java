@@ -9,7 +9,7 @@ import jsinterop.annotations.JsType;
 public class C3GridConf {
     
     @JsOverlay
-    public static C3GridConf create(boolean show) {
+    static C3GridConf create(boolean show) {
         C3GridConf instance = new C3GridConf();
         instance.setShow(show);
         return instance;

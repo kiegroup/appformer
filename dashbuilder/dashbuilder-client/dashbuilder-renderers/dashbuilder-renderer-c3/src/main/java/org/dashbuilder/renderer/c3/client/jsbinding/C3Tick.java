@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
 public class C3Tick {
     
     @JsOverlay
-    public static C3Tick create(FormatterCallback callback) {
+    static C3Tick create(FormatterCallback callback) {
         C3Tick instance = new C3Tick();
         instance.setFormat(callback);
         return instance;

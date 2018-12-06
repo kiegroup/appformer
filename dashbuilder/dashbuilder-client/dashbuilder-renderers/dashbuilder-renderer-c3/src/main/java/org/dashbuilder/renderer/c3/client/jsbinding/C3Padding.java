@@ -9,7 +9,7 @@ import jsinterop.annotations.JsType;
 public class C3Padding {
     
     @JsOverlay
-    public static C3Padding create(int top, int right, int bottom, int left ) {
+    static C3Padding create(int top, int right, int bottom, int left ) {
         C3Padding instance = new C3Padding();
         instance.setTop(top);
         instance.setRight(right);

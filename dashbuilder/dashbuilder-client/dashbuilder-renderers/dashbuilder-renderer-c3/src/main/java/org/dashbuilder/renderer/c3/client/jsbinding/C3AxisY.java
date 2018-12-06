@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
 public class C3AxisY {
     
     @JsOverlay
-    public static C3AxisY create(boolean show, C3Tick tick) {
+    static C3AxisY create(boolean show, C3Tick tick) {
         C3AxisY instance = new C3AxisY();
         instance.setShow(show);
         instance.setTick(tick);

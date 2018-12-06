@@ -22,6 +22,7 @@ import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.C3XYDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 
 import com.google.gwt.core.shared.GWT;
@@ -46,8 +47,8 @@ public class C3BubbleChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.V
     private View view;
     
     @Inject
-    public C3BubbleChartDisplayer(View view, FilterLabelSet filterLabelSet) {
-        super(filterLabelSet);
+    public C3BubbleChartDisplayer(View view, FilterLabelSet filterLabelSet, C3JsTypesFactory factory) {
+        super(filterLabelSet, factory);
         this.view = view;
         this.view.init(this);
     }
@@ -157,8 +158,7 @@ public class C3BubbleChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.V
             }
             rValues.put(cat, r);
         }
-        return C3Point.create(
-                        d -> rValues.get(d.getId()));
+        return factory.c3Point(d -> rValues.get(d.getId()));
     }
     
     @Override

@@ -11,7 +11,7 @@ import jsinterop.annotations.JsType;
 public class C3Legend {
     
     @JsOverlay
-    public static C3Legend create(boolean show, String position) {
+    static C3Legend create(boolean show, String position) {
         C3Legend instance = new C3Legend();
         instance.setShow(show);
         instance.setPosition(position);

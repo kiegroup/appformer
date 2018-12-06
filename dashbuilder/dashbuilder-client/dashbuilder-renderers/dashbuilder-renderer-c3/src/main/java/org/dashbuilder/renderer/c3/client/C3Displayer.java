@@ -35,16 +35,13 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisY;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
-import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
-import org.dashbuilder.renderer.c3.client.jsbinding.C3Grid;
-import org.dashbuilder.renderer.c3.client.jsbinding.C3GridConf;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Legend;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Padding;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Point;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Selection;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
-import org.dashbuilder.renderer.c3.client.jsbinding.C3Transition;
 
 import com.google.gwt.i18n.client.NumberFormat;
 
@@ -54,6 +51,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     
     private static final double DEFAULT_POINT_RADIUS = 2.5;
     private FilterLabelSet filterLabelSet;
+    protected C3JsTypesFactory factory;
 
     public interface View<P extends C3Displayer> extends AbstractGwtDisplayer.View<P> {
 
@@ -73,9 +71,10 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
 
     }
     
-    public C3Displayer(FilterLabelSet filterLabelSet) {
+    public C3Displayer(FilterLabelSet filterLabelSet, C3JsTypesFactory builder) {
         super();
         this.filterLabelSet = filterLabelSet;
+        this.factory = builder;
         this.filterLabelSet.setOnClearAllCommand(this::onFilterClearAll);
     }
     
@@ -128,41 +127,29 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         C3ChartData data = createData();
         C3Point point = createPoint();
         C3Padding padding = createPadding();
-        C3Grid grid = createGrid();
-        C3Legend legend = createLegend();
-        return C3ChartConf.create(
-                    C3ChartSize.create(width, height),
+        C3Legend legend = factory.c3Legend(displayerSettings.isChartShowLegend(), 
+                                           getLegendPosition());
+        return factory.c3ChartConf(
+                    factory.c3ChartSize(width, height),
                     data,
                     axis,
-                    grid,
-                    C3Transition.create(0),
+                    factory.c3Grid(true, true),
+                    factory.c3Transition(0),
                     point,
                     padding, 
                     legend
                 );
     }
 
-    protected C3Legend createLegend() {
-        return C3Legend.create(displayerSettings.isChartShowLegend(), 
-                               getLegendPosition());
-    }
-
-    private C3Grid createGrid() {
-        return C3Grid.create(
-                C3GridConf.create(true), 
-                C3GridConf.create(true)
-        );
-    }
-
     protected C3Padding createPadding() {
-        return C3Padding.create(displayerSettings.getChartMarginTop(), 
+        return factory.c3Padding(displayerSettings.getChartMarginTop(), 
                                 displayerSettings.getChartMarginRight(), 
                                 displayerSettings.getChartMarginBottom(), 
                                 displayerSettings.getChartMarginLeft());
     }
 
     protected C3Point createPoint() {
-        return C3Point.create(d -> DEFAULT_POINT_RADIUS);
+        return factory.c3Point(d -> DEFAULT_POINT_RADIUS);
     }
 
     protected C3ChartData createData() {
@@ -171,7 +158,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         String[][] groups = createGroups();
         JsObject xs = createXs();
         C3Selection selection = createSelection();
-        C3ChartData c3Data = C3ChartData.create(series, type, groups, xs, selection);
+        C3ChartData c3Data = factory.c3ChartData(series, type, groups, xs, selection);
         if (displayerSettings.isFilterNotificationEnabled()) {
             c3Data.setOnselected(this::addToSelection);
         }
@@ -180,7 +167,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
 
     protected C3Selection createSelection() {
         boolean filterEnabled = displayerSettings.isFilterNotificationEnabled();
-        return C3Selection.create(filterEnabled, true, false);
+        return factory.c3Selection(filterEnabled, true, false);
     }
 
     protected JsObject createXs() {
@@ -194,26 +181,26 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     protected C3AxisInfo createAxis() {
         C3AxisX axisX = createAxisX();
         C3AxisY axisY = createAxisY();
-        return C3AxisInfo.create(false, axisX, axisY);
+        return factory.c3AxisInfo(false, axisX, axisY);
     }
     
     protected C3AxisX createAxisX() {
        String[] categories = createCategories();
        C3Tick tick = createTickX();
-       return C3AxisX.create("category", categories, tick);
+       return factory.c3AxisX("category", categories, tick);
     }
     
     protected C3Tick createTickX() {
-        return C3Tick.create(null);
+        return factory.createC3Tick(null);
     }
 
     protected C3AxisY createAxisY() {
         C3Tick tickY = createTickY();
-        return C3AxisY.create(true, tickY);
+        return factory.c3AxisY(true, tickY);
      }
 
     protected C3Tick createTickY() {
-        return C3Tick.create(f -> {
+        return factory.createC3Tick(f -> {
             try {
                 double doubleFormat = Double.parseDouble(f);
                 return NumberFormat.getFormat("#,###.##").format(doubleFormat);

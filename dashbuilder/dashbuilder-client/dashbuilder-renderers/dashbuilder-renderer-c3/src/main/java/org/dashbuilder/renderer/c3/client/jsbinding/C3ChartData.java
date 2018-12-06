@@ -12,7 +12,7 @@ import jsinterop.annotations.JsType;
 public class C3ChartData {
     
     @JsOverlay
-    public static C3ChartData create(String[][] columns, 
+    static C3ChartData create(String[][] columns, 
                                      String type, 
                                      String[][] groups, 
                                      JsObject xs, 

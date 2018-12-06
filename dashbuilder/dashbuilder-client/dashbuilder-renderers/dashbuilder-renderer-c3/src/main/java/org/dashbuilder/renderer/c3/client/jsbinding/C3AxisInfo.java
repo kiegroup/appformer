@@ -9,7 +9,7 @@ import jsinterop.annotations.JsType;
 public class C3AxisInfo {
     
     @JsOverlay
-    public static C3AxisInfo create(boolean rotated, C3AxisX x, C3AxisY y) {
+    static C3AxisInfo create(boolean rotated, C3AxisX x, C3AxisY y) {
         C3AxisInfo instance = new C3AxisInfo();
         instance.setRotated(rotated);
         instance.setX(x);

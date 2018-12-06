@@ -14,7 +14,7 @@ import jsinterop.annotations.JsType;
 public class C3ChartConf {  
     
     @JsOverlay
-    public static C3ChartConf create(C3ChartSize size, 
+    static C3ChartConf create(C3ChartSize size, 
                                      C3ChartData data, 
                                      C3AxisInfo axis,
                                      C3Grid grid,

@@ -11,6 +11,7 @@ import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.C3XYDisplayer;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 
 
 @Dependent
@@ -23,8 +24,8 @@ public class C3AreaChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.Vie
     private View view;
     
     @Inject
-    public C3AreaChartDisplayer(View view, FilterLabelSet filterLabelSet) {
-        super(filterLabelSet);
+    public C3AreaChartDisplayer(View view, FilterLabelSet filterLabelSet, C3JsTypesFactory factory) {
+        super(filterLabelSet, factory);
         this.view = view;
         this.view.init(this);
     }

@@ -9,7 +9,7 @@ import jsinterop.annotations.JsType;
 public class C3ChartSize {
     
     @JsOverlay
-    public static C3ChartSize create(double width, double height) {
+    static C3ChartSize create(double width, double height) {
         C3ChartSize instance = new C3ChartSize();
         instance.setWidth(width);
         instance.setHeight(height);

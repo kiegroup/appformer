@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
 public class C3AxisX {
     
     @JsOverlay
-    public static C3AxisX create(String type, String[] categories, C3Tick tick) {
+    static C3AxisX create(String type, String[] categories, C3Tick tick) {
         C3AxisX instance = new C3AxisX();
         instance.setType(type);
         instance.setCategories(categories);

@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
 public class C3Point {
     
     @JsOverlay
-    public static C3Point create(RadiusCallback r) {
+    static C3Point create(RadiusCallback r) {
         C3Point instance = new C3Point();
         instance.setR(r);
         return instance;

@@ -9,7 +9,7 @@ import jsinterop.annotations.JsType;
 public class C3Selection {
     
     @JsOverlay
-    public static C3Selection create(boolean enabled, boolean multiple, boolean grouped) {
+    static C3Selection create(boolean enabled, boolean multiple, boolean grouped) {
         C3Selection c3Selection = new C3Selection();
         c3Selection.setEnabled(enabled);
         c3Selection.setMultiple(multiple);
