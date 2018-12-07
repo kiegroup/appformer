@@ -4,6 +4,8 @@ import * as AppFormerEditors from 'appformer-js-editors';
 import {Clock} from "./Clock";
 import {Files} from "./Files";
 import {TemplatedPanel} from "./TemplatedPanel";
+import {ObservablePath} from "uberfire-api-ts-decorators";
+import {PlaceRequest} from "@kiegroup-ts-generated/uberfire-api";
 
 export class StaticReactComponent extends AppFormer.Screen {
     constructor() {
@@ -15,7 +17,6 @@ export class StaticReactComponent extends AppFormer.Screen {
     af_componentRoot(): AppFormer.Element {
         return <div style={{padding: "10px"}}>
             <Clock/>
-            <Files/>
         </div>;
     }
 
@@ -160,14 +161,14 @@ export class ReactTemplatedJsPerspective extends AppFormer.Perspective {
 export class StringTemplatedJsPerspective extends AppFormer.Perspective {
 
     constructor() {
-    super("StringTemplatedJsPerspective");
-    this.af_isReact = false;
-    this.af_isTransient = true;
-    this.af_name = "JS String Templated Perspective";
-}
+        super("StringTemplatedJsPerspective");
+        this.af_isReact = false;
+        this.af_isTransient = true;
+        this.af_name = "JS String Templated Perspective";
+    }
 
     af_componentRoot(children?: any): string {
-    return `
+        return `
             <div class="fluid-container">
                 <div style="height: 5%; padding-top: 10px;" class="text-center">
                     <span class="lead">HTML-templated Perspective</span>
@@ -209,32 +210,42 @@ export class StringTemplatedJsPerspective extends AppFormer.Perspective {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>`;
+    }
+}
 
-`;
-}
-}
-export class ReactHtmlEditor extends AppFormerEditors.Editor {
+export class ReactMarkdownEditor extends AppFormerEditors.Editor {
 
     constructor() {
         super("ReactEditor");
-        this.af_resourceTypes = ["SampleResourceType"];
+        this.af_resourceTypes = ["MdResourceType"];
         this.af_componentTitle = "ReactEditor";
         this.af_isReact = true;
         this.af_priority = 200000;
     }
 
-    af_onOpen(): void {
-        alert("yay!");
+    af_onEditorStartup(path: ObservablePath, place: PlaceRequest): void {
+        //FIXME: path and place parameters are not arriving correctly.
     }
 
     public af_componentRoot(children?: any): AppFormer.Element {
-        return <div>Test</div>;
+        return <Files/>
     }
 }
+
+(window as any).$registerResourceType({
+    id: "MdResourceType",
+    short_name: "Markdown Resource Type",
+    description: "Markdown Description",
+    prefix: "",
+    suffix: "md",
+    priority: "1000",
+    simple_wildcard_pattern: "*.md",
+    accept: (filename: string) => filename.split('.').pop() === "md"
+});
 
 AppFormer.register(new StaticReactComponent());
 AppFormer.register(new CompassLayoutJsPerspective());
 AppFormer.register(new ReactTemplatedJsPerspective());
 AppFormer.register(new StringTemplatedJsPerspective());
-AppFormer.register(new ReactHtmlEditor());
+AppFormer.register(new ReactMarkdownEditor());

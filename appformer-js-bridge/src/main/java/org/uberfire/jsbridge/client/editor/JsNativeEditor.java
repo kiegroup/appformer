@@ -17,8 +17,9 @@
 package org.uberfire.jsbridge.client.editor;
 
 import elemental2.dom.DomGlobal;
-import elemental2.dom.Element;
 import elemental2.dom.HTMLElement;
+import org.uberfire.backend.vfs.ObservablePath;
+import org.uberfire.mvp.PlaceRequest;
 
 public class JsNativeEditor {
 
@@ -36,6 +37,14 @@ public class JsNativeEditor {
         return componentId;
     }
 
+    public native boolean af_isDirty() /*-{
+        return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_isDirty"]();
+    }-*/;
+
+    public HTMLElement getElement() {
+        return container;
+    }
+
     public native int getPriority() /*-{
         return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_priority"];
     }-*/;
@@ -44,7 +53,57 @@ public class JsNativeEditor {
         return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_componentTitle"];
     }-*/;
 
-    public native void renderNative() /*-{
+    public native String[] getResourceTypes() /*-{
+        return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_resourceTypes"];
+    }-*/;
+
+    public void af_onEditorStartup(final ObservablePath path, final PlaceRequest place) {
+        this.native_af_onEditorStartup(path, place);
+    }
+
+    public native void native_af_onEditorStartup(final Object path, final Object place) /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onEditorStartup"](path, place);
+    }-*/;
+
+    public void af_onOpen() {
+        this.mount();
+        native_af_onOpen();
+    }
+
+    public native void native_af_onOpen() /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onOpen"]();
+    }-*/;
+
+    public native void af_onSave() /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onSave"]();
+    }-*/;
+
+    public native void af_onFocus() /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onFocus"]();
+    }-*/;
+
+    public native void af_onLostFocus() /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onLostFocus"]();
+    }-*/;
+
+    public native boolean af_onMayClose() /*-{
+        return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onMayClose"]();
+    }-*/;
+
+    public void af_onClose() {
+        this.unmount();
+        native_af_onClose();
+    }
+
+    public native void native_af_onClose() /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onClose"]();
+    }-*/;
+
+    public native void af_onShutdown() /*-{
+        this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_onShutdown"]();
+    }-*/;
+
+    public native void mount() /*-{
         $wnd.AppFormer.render(
                 this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_componentRoot"](),
                 this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::container);
@@ -54,13 +113,5 @@ public class JsNativeEditor {
         if (this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_isReact"]) {
             $wnd.ReactDOM.unmountComponentAtNode(this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::container);
         }
-    }-*/;
-
-    public HTMLElement getElement() {
-        return container;
-    }
-
-    public native String[] getResourceTypes() /*-{
-        return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_resourceTypes"];
     }-*/;
 }

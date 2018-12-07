@@ -472,6 +472,29 @@
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>../uberfire-showcase-react-components/src/main/java</source>
+                <source>../uberfire-showcase-react-components/src/main/resources</source>
+                <source>../../appformer-js-bridge/src/main/java</source>
+                <source>../../appformer-js-bridge/src/main/resources</source>
+                <!--<source>../../uberfire-api/src/main/java</source>-->
+                <!--<source>../../uberfire-api/src/main/resources</source>-->
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <extraJvmArgs>-Xmx2G -XX:CompileThreshold=7000 -Derrai.jboss.home=${errai.jboss.home} -Derrai.ioc.jsinterop.support=true -Dappformer.experimental.features=true -Dorg.uberfire.nio.git.ssh.enabled=true</extraJvmArgs>

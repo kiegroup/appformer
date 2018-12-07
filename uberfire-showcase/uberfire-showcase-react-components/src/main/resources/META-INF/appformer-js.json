@@ -33,7 +33,7 @@
       "id": "ReactEditor",
       "type": "editor",
       "params": {
-        "matches": "^.*html$"
+        "matches": "^.*md$"
       }
     }
   ],

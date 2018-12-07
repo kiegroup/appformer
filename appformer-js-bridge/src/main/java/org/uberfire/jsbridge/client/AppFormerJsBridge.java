@@ -58,7 +58,7 @@ public class AppFormerJsBridge {
 
         exposeBridge();
 
-        final Consumer<Exception> onError = (ex) -> workbench.removeStartupBlocker(AppFormerJsBridge.class);
+        final Consumer<Exception> onError = ex -> workbench.removeStartupBlocker(AppFormerJsBridge.class);
         final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
 
         //FIXME: Load React from local instead of CDN.

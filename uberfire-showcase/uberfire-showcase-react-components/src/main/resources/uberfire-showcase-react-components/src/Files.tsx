@@ -2,12 +2,12 @@ import * as React from "react";
 import {VFSService} from "@kiegroup-ts-generated/uberfire-backend-api-rpc";
 import {Path} from "uberfire-api-ts-decorators";
 
-interface State {
-    readonly openFile?: File;
-}
-
 interface Props {
 
+}
+
+interface State {
+    readonly openFile?: File;
 }
 
 interface File {

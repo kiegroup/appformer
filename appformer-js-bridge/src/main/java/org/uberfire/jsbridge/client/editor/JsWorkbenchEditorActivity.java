@@ -45,41 +45,42 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
     @Override
     public void onStartup(final ObservablePath path, final PlaceRequest place) {
         this.placeRequest = place;
+        editor.af_onEditorStartup(path, place);
     }
 
     @Override
     public void onOpen() {
-        editor.renderNative();
+        editor.af_onOpen();
     }
 
     @Override
     public void onSave() {
-
+        editor.af_onSave();
     }
 
     @Override
     public void onFocus() {
-
+        editor.af_onFocus();
     }
 
     @Override
     public void onLostFocus() {
-
+        editor.af_onLostFocus();
     }
 
     @Override
     public boolean onMayClose() {
-        return true;
+        return editor.af_onMayClose();
     }
 
     @Override
     public void onClose() {
-        editor.unmount();
+        editor.af_onClose();
     }
 
     @Override
     public void onShutdown() {
-
+        editor.af_onShutdown();
     }
 
     //
@@ -87,7 +88,7 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
 
     @Override
     public boolean isDirty() {
-        return false;
+        return editor.af_isDirty();
     }
 
     @Override
@@ -117,12 +118,12 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
 
     @Override
     public Menus getMenus() {
-        return null;
+        return null; //FIXME: Implement
     }
 
     @Override
     public ToolBar getToolBar() {
-        return null;
+        return null; //FIXME: Implement
     }
 
     @Override
