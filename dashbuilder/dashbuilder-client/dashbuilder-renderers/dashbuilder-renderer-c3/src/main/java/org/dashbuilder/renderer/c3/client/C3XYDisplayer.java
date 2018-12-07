@@ -5,12 +5,15 @@ import java.util.List;
 import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisLabel;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
 
 public abstract class C3XYDisplayer<V extends C3Displayer.View> extends C3Displayer {
     
+    private static final String DEFAULT_LABEL_POS = "outer-center";
+
     public C3XYDisplayer(FilterLabelSet filterLabelSet, C3JsTypesFactory builder) {
         super(filterLabelSet, builder);
     }
@@ -34,11 +37,17 @@ public abstract class C3XYDisplayer<V extends C3Displayer.View> extends C3Displa
     }
     
     private void applyPropertiesToAxes(C3AxisInfo axis) {
-        axis.getX().setLabel(displayerSettings.getXAxisTitle());
-        axis.getX().setShow(displayerSettings.isXAxisShowLabels());
         axis.getX().getTick().setRotate(displayerSettings.getXAxisLabelsAngle());
-        axis.getY().setShow(displayerSettings.isYAxisShowLabels());
-        axis.getY().setLabel(displayerSettings.getYAxisTitle());
+        if (displayerSettings.isXAxisShowLabels()) {
+            C3AxisLabel xLabel = factory.createC3Label(displayerSettings.getXAxisTitle(), 
+                                                       DEFAULT_LABEL_POS);
+            axis.getX().setLabel(xLabel);
+        }
+        if (displayerSettings.isYAxisShowLabels()) {
+            C3AxisLabel yLabel = factory.createC3Label(displayerSettings.getYAxisTitle(), 
+                                                       DEFAULT_LABEL_POS);
+            axis.getY().setLabel(yLabel);
+        }
     }
 
 }

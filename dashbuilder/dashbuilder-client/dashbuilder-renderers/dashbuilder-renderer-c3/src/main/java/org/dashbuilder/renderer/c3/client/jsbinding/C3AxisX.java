@@ -34,6 +34,6 @@ public class C3AxisX {
     public native void setShow(boolean show);
     
     @JsProperty
-    public native void setLabel(String label);
+    public native void setLabel(C3AxisLabel label);
     
 }

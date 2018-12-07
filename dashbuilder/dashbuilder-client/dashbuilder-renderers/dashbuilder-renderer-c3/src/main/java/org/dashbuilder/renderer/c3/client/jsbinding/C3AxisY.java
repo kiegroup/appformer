@@ -24,7 +24,7 @@ public class C3AxisY {
     public native void setTick(C3Tick tick);
     
     @JsProperty
-    public native void setLabel(String label);    
+    public native void setLabel(C3AxisLabel label);    
     
         
 }

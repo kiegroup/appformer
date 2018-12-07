@@ -41,7 +41,11 @@ public class C3JsTypesFactory {
     public C3AxisY c3AxisY(boolean show, C3Tick tickY) {
         return C3AxisY.create(show, tickY);
     }
-
+    public C3AxisX c3AxisX(String type, String[] categories, C3Tick tick) {
+        return C3AxisX.create(type, categories, tick);
+    }
+    
+    
     public C3Legend c3Legend(boolean show, String position) {
         return C3Legend.create(show, position);
     }
@@ -60,9 +64,7 @@ public class C3JsTypesFactory {
         return C3AxisInfo.create(rotated, axisX, axisY);
     }
 
-    public C3AxisX c3AxisX(String type, String[] categories, C3Tick tick) {
-        return C3AxisX.create(type, categories, tick);
-    }
+
 
     public C3ChartConf c3ChartConf(C3ChartSize size, 
                                    C3ChartData data, 
@@ -77,6 +79,10 @@ public class C3JsTypesFactory {
 
     public C3Transition c3Transition(int duration) {
         return C3Transition.create(duration);
+    }
+
+    public C3AxisLabel createC3Label(String text, String position) {
+        return C3AxisLabel.create(text, position);
     }
 
 }
