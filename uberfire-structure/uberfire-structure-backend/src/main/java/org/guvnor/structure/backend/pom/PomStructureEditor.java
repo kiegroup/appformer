@@ -36,9 +36,9 @@ import org.uberfire.experimental.service.backend.BackendExperimentalFeaturesRegi
 public class PomStructureEditor {
 
     private final Logger logger = LoggerFactory.getLogger(PomStructureEditor.class);
+    boolean enabledPomDependenciesFeature;
     private PomEditor pomEditor;
     private DependencyTypesMapper mapper;
-    boolean enabledPomDependenciesFeature;
     private BackendExperimentalFeaturesRegistryService experimentalServiceRegistry;
 
     // for test
@@ -56,10 +56,10 @@ public class PomStructureEditor {
     }
 
     public void onNewDynamicDependency(final @Observes AddPomDependencyEvent event) {
-        if(experimentalServiceRegistry != null) {
+        if (experimentalServiceRegistry != null) {
             enabledPomDependenciesFeature = experimentalServiceRegistry.getExperimentalFeaturesSession().getFeaturesRegistry().isFeatureEnabled(PomDependencyExperimental.class.getName());
         }
-        if(enabledPomDependenciesFeature) {
+        if (enabledPomDependenciesFeature) {
             final Path projectPath = event.getProjectPath();
             final Set<DependencyType> dependencyTypes = event.getDependencyTypes();
             addDependenciesToPom(projectPath,

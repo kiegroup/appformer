@@ -16,13 +16,14 @@ package org.guvnor.structure.backend.pom;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.guvnor.structure.pom.AddPomDependencyEvent;
-import org.guvnor.structure.pom.DependencyType;
+import org.guvnor.structure.pom.types.JPADependencyType;
 import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.backend.vfs.PathFactory;
@@ -34,9 +35,9 @@ import static org.assertj.core.api.Assertions.*;
 
 public class PomStructureEditorTest {
 
+    private final String POM = "pom.xml";
     private PomStructureEditor editor;
     private Path tmpRoot, tmp;
-    private final String POM = "pom.xml";
     private DependencyTypesMapper mapper;
     private String JPA_HIBERNATE_VERSION;
 
@@ -47,7 +48,7 @@ public class PomStructureEditorTest {
                                                 "dummy",
                                                 "target/test-classes/dummy_empty_deps");
         mapper = new DependencyTypesMapper();
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(DependencyType.JPA).get(0).getVersion();
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(new JPADependencyType()).get(0).getVersion();
     }
 
     @Test
@@ -57,7 +58,7 @@ public class PomStructureEditorTest {
         assertThat(model.getDependencies()).hasSize(0);
 
         editor = new PomStructureEditor();
-        AddPomDependencyEvent event = new AddPomDependencyEvent(EnumSet.of(DependencyType.JPA),
+        AddPomDependencyEvent event = new AddPomDependencyEvent(new HashSet<>(Arrays.asList(new JPADependencyType())),
                                                                 PathFactory.newPath(tmp.getFileName().toString(),
                                                                                     tmp.toUri().toString() + File.separator + POM));
         editor.onNewDynamicDependency(event);

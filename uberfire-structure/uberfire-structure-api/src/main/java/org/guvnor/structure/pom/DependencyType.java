@@ -17,9 +17,7 @@ package org.guvnor.structure.pom;
 /***
  * Types managed by the Pom's event
  */
-public enum DependencyType {
-    JPA,
-    TEST,
-    VALIDATION,
-    SCENARIO_RUNTIME
+public interface DependencyType {
+
+    String getType();
 }

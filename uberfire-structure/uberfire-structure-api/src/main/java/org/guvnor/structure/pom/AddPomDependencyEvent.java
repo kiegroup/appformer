@@ -15,6 +15,7 @@
 package org.guvnor.structure.pom;
 
 import java.util.Set;
+
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.backend.vfs.Path;
@@ -45,6 +46,5 @@ public class AddPomDependencyEvent {
 
     public Set<DependencyType> getDependencyTypes() {
         return types;
-
     }
 }

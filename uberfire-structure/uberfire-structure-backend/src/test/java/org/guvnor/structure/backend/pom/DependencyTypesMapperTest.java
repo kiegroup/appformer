@@ -14,14 +14,16 @@
  */
 package org.guvnor.structure.backend.pom;
 
-import java.util.EnumSet;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+import org.guvnor.structure.pom.types.JPADependencyType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,11 +47,11 @@ public class DependencyTypesMapperTest {
 
     @Test
     public void mappingDependencyTest() {
-        List<DynamicPomDependency> deps = mapper.getDependencies(EnumSet.of(DependencyType.JPA));
+        List<DynamicPomDependency> deps = mapper.getDependencies(new HashSet<>(Arrays.asList(new JPADependencyType())));
         assertThat(deps).isNotEmpty();
         assertThat(deps).hasSize(1);
         Map<DependencyType, List<DynamicPomDependency>> map = new HashMap<>();
-        map.put(DependencyType.JPA,
+        map.put(new JPADependencyType(),
                 deps);
         TestUtil.testJPADep(map);
     }

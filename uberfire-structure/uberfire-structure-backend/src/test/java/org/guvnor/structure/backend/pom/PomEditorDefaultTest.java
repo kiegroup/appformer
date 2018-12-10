@@ -17,7 +17,7 @@ package org.guvnor.structure.backend.pom;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +26,8 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+import org.guvnor.structure.pom.types.JPADependencyType;
+import org.guvnor.structure.pom.types.TestDependencyType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +54,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
                                                 "target/test-classes/dummy");
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(DependencyType.JPA).get(0).getVersion();
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(new JPADependencyType()).get(0).getVersion();
     }
 
     @After
@@ -118,7 +120,7 @@ public class PomEditorDefaultTest {
     @Test
     public void removeDependencyTypeTest() throws Exception {
 
-        Set<DependencyType> deps = EnumSet.of(DependencyType.TEST);
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new TestDependencyType()));
         boolean result = editor.removeDependencyTypes(deps,
                                                       PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                           tmp.toUri().toString() + File.separator + POM));
@@ -186,7 +188,7 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addDepsTest() {
-        boolean result = editor.addDependencies(EnumSet.of(DependencyType.JPA),
+        boolean result = editor.addDependencies(new HashSet<>(Arrays.asList(new JPADependencyType())),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
@@ -206,7 +208,7 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addDuplicatedDepsTest() {
-        boolean result = editor.addDependencies(EnumSet.of(DependencyType.TEST),
+        boolean result = editor.addDependencies(new HashSet<>(Arrays.asList(new TestDependencyType())),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isFalse();
@@ -217,7 +219,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
-        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType()));
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
@@ -235,8 +237,8 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
-        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA,
-                                              DependencyType.TEST);
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType(),
+                                                               new TestDependencyType()));
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
@@ -258,7 +260,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsOld",
                                                 "target/test-classes/dummyInternalDepsOld");
-        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType()));
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
@@ -279,7 +281,7 @@ public class PomEditorDefaultTest {
         org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(POM,
                                                                     tmpRoot + File.separator + "dummyInternalDepsCurrent" + File.separator + POM);
 
-        Set<DependencyType> deps = EnumSet.of(DependencyType.JPA);
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType()));
         boolean result = editor.addDependencies(deps,
                                                 pomPath);
         assertThat(result).isTrue();

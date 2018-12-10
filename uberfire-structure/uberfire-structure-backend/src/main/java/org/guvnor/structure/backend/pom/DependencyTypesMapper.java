@@ -50,7 +50,10 @@ public class DependencyTypesMapper {
     public List<DynamicPomDependency> getDependencies(Set<DependencyType> dependencyTypes) {
         List<DynamicPomDependency> result = new ArrayList<>();
         for (DependencyType type : dependencyTypes) {
-            result.addAll(conf.getMapping().get(type));
+            List<DynamicPomDependency> deps = conf.getMapping().get(type);
+            if (deps != null && !deps.isEmpty()) {
+                result.addAll(deps);
+            }
         }
         return result;
     }

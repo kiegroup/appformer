@@ -29,12 +29,13 @@ import javax.json.JsonReader;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+import org.guvnor.structure.pom.types.DependencyTypeDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Paths;
 
-public class PomJsonReaderDefault implements PomJsonReader{
+public class PomJsonReaderDefault implements PomJsonReader {
 
     private final Logger logger = LoggerFactory.getLogger(PomJsonReaderDefault.class);
     private String kieVersion;
@@ -97,7 +98,7 @@ public class PomJsonReaderDefault implements PomJsonReader{
                 dynamic.add(dynamicDep);
             }
 
-            mapping.put(DependencyType.valueOf(type),
+            mapping.put(new DependencyTypeDefault(type),
                         dynamic);
         }
         return mapping;

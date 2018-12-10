@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+import org.guvnor.structure.pom.types.JPADependencyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
@@ -41,8 +42,8 @@ class TestUtil {
 
     public static void testJPADep(Map<DependencyType, List<DynamicPomDependency>> mapping) {
         mapper = new DependencyTypesMapper();
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(DependencyType.JPA).get(0).getVersion();
-        List<DynamicPomDependency> deps = mapping.get(DependencyType.JPA);
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(new JPADependencyType()).get(0).getVersion();
+        List<DynamicPomDependency> deps = mapping.get(new JPADependencyType());
         assertThat(deps).hasSize(1);
         DynamicPomDependency dep = deps.get(0);
         assertThat(dep.getGroupID()).isEqualToIgnoringCase(GROUP_ID_TEST);

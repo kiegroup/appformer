@@ -21,4 +21,6 @@ import org.uberfire.experimental.definition.annotations.ExperimentalFeature;
  * Enabler to the Pom Dependencies adding as a experimental feature
  * */
 @ExperimentalFeature(scope = ExperimentalFeature.Scope.GLOBAL, nameI18nKey = "experimental_pom_dependencies_adding", descriptionI18nKey = "experimental_pom_dependencies_adding_description")
-public class PomDependencyExperimental {}
+public class PomDependencyExperimental {
+
+}
