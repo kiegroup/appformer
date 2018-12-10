@@ -41,6 +41,7 @@ public class BaseGridColumn<T> implements GridColumn<T> {
     private int index = -1;
     private List<HeaderMetaData> headerMetaData = new ArrayList<HeaderMetaData>();
     private GridColumnRenderer<T> columnRenderer;
+    private ColumnWidthMode columnWidthMode = ColumnWidthMode.FIXED;
 
     protected String placeHolder = null;
 
@@ -58,9 +59,6 @@ public class BaseGridColumn<T> implements GridColumn<T> {
                           final GridColumnRenderer<T> columnRenderer,
                           final double width) {
         Objects.requireNonNull(headerMetaData, "headerMetaData");
-        if (!(headerMetaData.size() > 0)) {
-            throw new IllegalStateException("headerMetaData has at least one entry");
-        }
         Objects.requireNonNull(columnRenderer, "columnRenderer");
         this.headerMetaData.addAll(headerMetaData);
         this.columnRenderer = columnRenderer;
@@ -195,6 +193,16 @@ public class BaseGridColumn<T> implements GridColumn<T> {
 
     public void setPlaceHolder(String placeHolder) {
         this.placeHolder = placeHolder;
+    }
+
+    @Override
+    public ColumnWidthMode getColumnWidthMode() {
+        return columnWidthMode;
+    }
+
+    @Override
+    public void setColumnWidthMode(ColumnWidthMode columnWidthMode) {
+        this.columnWidthMode = columnWidthMode;
     }
 
     @Override

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-structure</artifactId>
-    <version>2.12.0-SNAPSHOT</version>
+    <version>2.13.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-structure-api</artifactId>
@@ -58,17 +58,6 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-server</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-experimental-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-workbench-processors</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
