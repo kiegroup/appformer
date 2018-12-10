@@ -5,7 +5,6 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
-// TODO: create common class for Axis and extend for Y and X
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class C3AxisX {
     

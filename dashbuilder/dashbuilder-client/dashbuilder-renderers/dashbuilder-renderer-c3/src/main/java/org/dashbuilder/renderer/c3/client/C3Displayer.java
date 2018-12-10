@@ -235,8 +235,6 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         return categories;
     }
 
-    // TODO: Format x on tooltip
-    
     /**
      * Extracts the series of the column 1 and other columns
      * @return
