@@ -27,7 +27,7 @@ public class JsNativeEditor {
     private final String componentId;
     private final HTMLElement container;
 
-    public JsNativeEditor(String componentId, final Object self) {
+    public JsNativeEditor(final String componentId, final Object self) {
         this.componentId = componentId;
         this.self = self;
         this.container = (HTMLElement) DomGlobal.document.createElement("div");

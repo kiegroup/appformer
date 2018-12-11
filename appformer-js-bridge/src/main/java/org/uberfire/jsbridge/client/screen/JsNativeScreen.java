@@ -57,9 +57,6 @@ public class JsNativeScreen {
 
         // reset container content's, removing the loading content
         this.elemental2DomUtil.removeAllElementChildren(this.container);
-
-        // re-render with the updated content
-        render();
     }
 
     public HTMLElement getElement() {

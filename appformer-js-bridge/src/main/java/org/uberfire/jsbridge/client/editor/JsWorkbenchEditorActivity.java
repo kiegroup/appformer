@@ -16,27 +16,32 @@
 
 package org.uberfire.jsbridge.client.editor;
 
+import javax.inject.Inject;
+
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.client.mvp.AbstractWorkbenchEditorActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.WorkbenchEditorActivity;
+import org.uberfire.jsbridge.client.loading.AppFormerJsActivityLoader;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.CompassPosition;
-import org.uberfire.workbench.model.Position;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
 
+@AppFormerJsActivityLoader.Shadowed
 public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity implements WorkbenchEditorActivity {
 
-    private final JsNativeEditor editor;
-    private PlaceRequest placeRequest;
+    private JsNativeEditor editor;
 
-    public JsWorkbenchEditorActivity(final JsNativeEditor editor,
-                                     final PlaceManager placeManager) {
+    @Inject
+    public JsWorkbenchEditorActivity(final PlaceManager placeManager) {
         super(placeManager);
+    }
+
+    public JsWorkbenchEditorActivity withEditor(final JsNativeEditor editor) {
         this.editor = editor;
+        return this;
     }
 
     //
@@ -44,42 +49,48 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
 
     @Override
     public void onStartup(final ObservablePath path, final PlaceRequest place) {
-        this.placeRequest = place;
+        super.onStartup(path, place);
         editor.af_onEditorStartup(path, place);
     }
 
     @Override
     public void onOpen() {
+        super.onOpen();
         editor.af_onOpen();
     }
 
     @Override
     public void onSave() {
+        super.onSave();
         editor.af_onSave();
     }
 
     @Override
     public void onFocus() {
+        super.onFocus();
         editor.af_onFocus();
     }
 
     @Override
     public void onLostFocus() {
+        super.onLostFocus();
         editor.af_onLostFocus();
     }
 
     @Override
     public boolean onMayClose() {
-        return editor.af_onMayClose();
+        return super.onMayClose() && editor.af_onMayClose();
     }
 
     @Override
     public void onClose() {
+        super.onClose();
         editor.af_onClose();
     }
 
     @Override
     public void onShutdown() {
+        super.onShutdown();
         editor.af_onShutdown();
     }
 
@@ -88,27 +99,12 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
 
     @Override
     public boolean isDirty() {
-        return editor.af_isDirty();
-    }
-
-    @Override
-    public Position getDefaultPosition() {
-        return CompassPosition.ROOT;
-    }
-
-    @Override
-    public PlaceRequest getOwningPlace() {
-        return null;
+        return super.isDirty() || editor.af_isDirty();
     }
 
     @Override
     public String getTitle() {
         return editor.getTitle();
-    }
-
-    @Override
-    public IsWidget getTitleDecoration() {
-        return null;
     }
 
     @Override
@@ -124,16 +120,6 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
     @Override
     public ToolBar getToolBar() {
         return null; //FIXME: Implement
-    }
-
-    @Override
-    public String contextId() {
-        return null;
-    }
-
-    @Override
-    public PlaceRequest getPlace() {
-        return placeRequest;
     }
 
     @Override

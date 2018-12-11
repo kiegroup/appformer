@@ -24,7 +24,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Qualifier;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -45,6 +47,7 @@ import org.uberfire.client.mvp.WorkbenchEditorActivity;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyActivity;
 import org.uberfire.client.promise.Promises;
+import org.uberfire.jsbridge.client.DependentBeanDefinition;
 import org.uberfire.jsbridge.client.SingletonBeanDefinition;
 import org.uberfire.jsbridge.client.editor.JsNativeEditor;
 import org.uberfire.jsbridge.client.editor.JsWorkbenchEditorActivity;
@@ -106,6 +109,7 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
             throw new IllegalArgumentException("Cannot find component " + componentId);
         }
 
+        //FIXME: Get activity bean from BeanManager to prevent onStartup to be invoked.
         final Activity activity = activityManager.getActivity(new DefaultPlaceRequest(componentId));
 
         JsWorkbenchLazyActivity lazyActivity = (JsWorkbenchLazyActivity) activity;
@@ -292,6 +296,15 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
         return activity;
     }
 
+    @Qualifier
+    public @interface Shadowed {
+
+    }
+
+    @Inject
+    @Shadowed
+    private Instance<JsWorkbenchEditorActivity> jsWorkbenchEditorActivityInstance;
+
     @SuppressWarnings("unchecked")
     private void registerEditor(final Object jsObject,
                                 final String componentId) {
@@ -299,8 +312,8 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
         final JsNativeEditor editor = new JsNativeEditor(componentId, jsObject);
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        final SingletonBeanDefinition activityBean = new SingletonBeanDefinition<>(
-                new JsWorkbenchEditorActivity(editor, placeManager),
+        final DependentBeanDefinition activityBean = new DependentBeanDefinition<>(
+                () -> this.jsWorkbenchEditorActivityInstance.get().withEditor(editor),
                 JsWorkbenchEditorActivity.class,
                 new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
                 editor.getComponentId(),
