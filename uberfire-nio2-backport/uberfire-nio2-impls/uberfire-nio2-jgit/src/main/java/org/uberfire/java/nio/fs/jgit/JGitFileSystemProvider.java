@@ -409,7 +409,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider, Dispos
         fsManager.getOpenFileSystems().forEach(JGitFileSystem::close);
         shutdownSSH();
         forceStopDaemon();
-        fsManager.clear();
+        fsManager.shutdown();
     }
 
     /**

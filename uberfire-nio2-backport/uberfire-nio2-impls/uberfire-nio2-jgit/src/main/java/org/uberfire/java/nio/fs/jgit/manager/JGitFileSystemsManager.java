@@ -20,12 +20,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.uberfire.commons.cluster.ClusterJMSService;
+import org.uberfire.commons.cluster.ClusterService;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemImpl;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemLock;
@@ -36,8 +40,11 @@ import org.uberfire.java.nio.file.extensions.FileSystemHooks;
 import org.uberfire.java.nio.fs.jgit.ws.JGitFileSystemsEventsManager;
 
 import static org.eclipse.jgit.lib.Constants.DOT_GIT_EXT;
+import static org.uberfire.java.nio.fs.jgit.manager.JGitFileSystemManagerMessageWrapper.JGitFileSystemManagerMessage.FS_REMOVED;
 
 public class JGitFileSystemsManager {
+
+    public static final String CHANNEL_NAME = "JGIT_FS_MANAGER_MESSAGE";
 
     private final Set<String> closedFileSystems = new HashSet<>();
 
@@ -51,11 +58,40 @@ public class JGitFileSystemsManager {
 
     final Map<String, JGitFileSystemLock> fileSystemsLocks = new ConcurrentHashMap<>();
 
+    private ClusterService clusterService;
+
+    String nodeId = UUID.randomUUID().toString();
+
     public JGitFileSystemsManager(final JGitFileSystemProvider jGitFileSystemProvider,
                                   final JGitFileSystemProviderConfiguration config) {
         this.jGitFileSystemProvider = jGitFileSystemProvider;
         this.config = config;
         this.fsCache = new JGitFileSystemsCache(config);
+        this.clusterService = createClusterService();
+        if (this.clusterService.isAppFormerClustered()) {
+            setupClusterService();
+        }
+    }
+
+    ClusterJMSService createClusterService() {
+        return new ClusterJMSService();
+    }
+
+    void setupClusterService() {
+        this.clusterService.connect();
+        this.clusterService.createConsumer(ClusterJMSService.DestinationType.PubSub,
+                                           CHANNEL_NAME,
+                                           JGitFileSystemManagerMessageWrapper.class,
+                                           this::consumer);
+    }
+
+    private void consumer(JGitFileSystemManagerMessageWrapper wrapper) {
+        if (!wrapper.getNodeId().equals(nodeId)) {
+            JGitFileSystemManagerMessageWrapper.JGitFileSystemManagerMessage messageType = wrapper.getType();
+            if (messageType == FS_REMOVED) {
+                doRemove(wrapper.getMessage());
+            }
+        }
     }
 
     public void newFileSystem(Supplier<Map<String, String>> fullHostNames,
@@ -144,6 +180,17 @@ public class JGitFileSystemsManager {
     }
 
     public void remove(String realFSKey) {
+        doRemove(realFSKey);
+        if (clusterService.isAppFormerClustered()) {
+            clusterService.broadcast(ClusterService.DestinationType.PubSub,
+                                     CHANNEL_NAME,
+                                     new JGitFileSystemManagerMessageWrapper(nodeId,
+                                                                             FS_REMOVED,
+                                                                             realFSKey));
+        }
+    }
+
+    private void doRemove(String realFSKey) {
         fsCache.remove(realFSKey);
         fileSystemsRoot.remove(realFSKey);
         closedFileSystems.remove(realFSKey);
@@ -153,10 +200,13 @@ public class JGitFileSystemsManager {
         return fsCache.get(fsName);
     }
 
-    public void clear() {
+    public void shutdown() {
         fsCache.clear();
         closedFileSystems.clear();
         fileSystemsRoot.clear();
+        if (this.clusterService.isAppFormerClustered()) {
+            this.clusterService.close();
+        }
     }
 
     public boolean containsKey(String fsName) {

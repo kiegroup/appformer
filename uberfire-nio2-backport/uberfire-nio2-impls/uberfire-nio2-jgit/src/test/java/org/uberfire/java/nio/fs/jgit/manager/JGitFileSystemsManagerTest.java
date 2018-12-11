@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.commons.cluster.ClusterJMSService;
+import org.uberfire.commons.cluster.ClusterService;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemLock;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
@@ -34,6 +36,8 @@ import org.uberfire.java.nio.fs.jgit.ws.JGitFileSystemsEventsManager;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.uberfire.java.nio.fs.jgit.manager.JGitFileSystemManagerMessageWrapper.JGitFileSystemManagerMessage.FS_REMOVED;
+import static org.uberfire.java.nio.fs.jgit.manager.JGitFileSystemsManager.CHANNEL_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JGitFileSystemsManagerTest {
@@ -42,12 +46,15 @@ public class JGitFileSystemsManagerTest {
     private JGitFileSystemProviderConfiguration config;
 
     private JGitFileSystemsManager manager;
+    private ClusterJMSService clusterJMSService;
 
     @Before
     public void setup() {
         config = mock(JGitFileSystemProviderConfiguration.class);
         git = mock(Git.class);
         when(git.getRepository()).thenReturn(mock(Repository.class));
+        clusterJMSService = mock(ClusterJMSService.class);
+        when(clusterJMSService.isAppFormerClustered()).thenReturn(true);
     }
 
     @Test
@@ -80,7 +87,7 @@ public class JGitFileSystemsManagerTest {
 
         assertTrue(!manager.allTheFSAreClosed());
 
-        manager.clear();
+        manager.shutdown();
 
         assertTrue(manager.allTheFSAreClosed());
     }
@@ -152,6 +159,12 @@ public class JGitFileSystemsManagerTest {
         assertFalse(manager.containsKey("fs1"));
         assertFalse(manager.containsRoot("fs1"));
         assertFalse(manager.containsRoot("fs1"));
+
+        verify(clusterJMSService).broadcast(eq(ClusterService.DestinationType.PubSub),
+                                            eq(CHANNEL_NAME),
+                                            eq(new JGitFileSystemManagerMessageWrapper(manager.nodeId,
+                                                                                       FS_REMOVED,
+                                                                                       "fs1")));
     }
 
     private void checkParse(String fsKey,
@@ -164,15 +177,24 @@ public class JGitFileSystemsManagerTest {
                 throw new RuntimeException();
             }
         }
-        manager.clear();
+        manager.shutdown();
     }
 
     private JGitFileSystemsManager createFSManager() {
         return new JGitFileSystemsManager(mock(JGitFileSystemProvider.class),
-                                          config){
+                                          config) {
             @Override
             JGitFileSystemLock createLock(Git git) {
                 return mock(JGitFileSystemLock.class);
+            }
+
+            @Override
+            ClusterJMSService createClusterService() {
+                return clusterJMSService;
+            }
+
+            @Override
+            void setupClusterService() {
             }
         };
     }
