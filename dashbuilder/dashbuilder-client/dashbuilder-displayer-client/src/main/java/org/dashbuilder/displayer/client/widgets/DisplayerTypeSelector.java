@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.displayer.DisplayerSubType;
 import org.dashbuilder.displayer.DisplayerType;
+import org.dashbuilder.displayer.client.RendererManager;
 import org.dashbuilder.displayer.client.events.DisplayerTypeSelectedEvent;
 import org.uberfire.client.mvp.UberView;
 
@@ -42,26 +43,29 @@ public class DisplayerTypeSelector implements IsWidget {
     DisplayerType selectedType = DisplayerType.BARCHART;
     DisplayerSubtypeSelector subtypeSelector;
     Event<DisplayerTypeSelectedEvent> typeSelectedEvent;
+    RendererManager rendererManager;
 
     @Inject
     public DisplayerTypeSelector(View view,
                                  DisplayerSubtypeSelector subtypeSelector,
-                                 Event<DisplayerTypeSelectedEvent> typeSelectedEvent) {
+                                 Event<DisplayerTypeSelectedEvent> typeSelectedEvent,
+                                 RendererManager rendererManager) {
         this.view = view;
         this.subtypeSelector = subtypeSelector;
         this.typeSelectedEvent = typeSelectedEvent;
+        this.rendererManager = rendererManager;
         view.init(this);
         view.clear();
-        view.show(DisplayerType.BARCHART);
-        view.show(DisplayerType.PIECHART);
-        view.show(DisplayerType.LINECHART);
-        view.show(DisplayerType.AREACHART);
-        view.show(DisplayerType.BUBBLECHART);
-        view.show(DisplayerType.METERCHART);
-        view.show(DisplayerType.METRIC);
-        view.show(DisplayerType.MAP);
-        view.show(DisplayerType.TABLE);
-        view.show(DisplayerType.SELECTOR);
+        verifySupportAndShow(DisplayerType.BARCHART);
+        verifySupportAndShow(DisplayerType.PIECHART);
+        verifySupportAndShow(DisplayerType.LINECHART);
+        verifySupportAndShow(DisplayerType.AREACHART);
+        verifySupportAndShow(DisplayerType.BUBBLECHART);
+        verifySupportAndShow(DisplayerType.METERCHART);
+        verifySupportAndShow(DisplayerType.METRIC);
+        verifySupportAndShow(DisplayerType.MAP);
+        verifySupportAndShow(DisplayerType.TABLE);
+        verifySupportAndShow(DisplayerType.SELECTOR);
         view.select(selectedType);
     }
 
@@ -92,5 +96,11 @@ public class DisplayerTypeSelector implements IsWidget {
         selectedType = type;
         subtypeSelector.init(type, null);
         typeSelectedEvent.fire(new DisplayerTypeSelectedEvent(selectedType));
+    }
+    
+    private void verifySupportAndShow(DisplayerType type) {
+        if (rendererManager.isTypeSupported(type)) {
+            view.show(type);
+        }
     }
 }
