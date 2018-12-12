@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.cdi;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -27,39 +25,33 @@ import javax.enterprise.context.Dependent;
 
 import org.jboss.errai.ioc.client.QualifierUtil;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.uberfire.client.mvp.Activity;
+import org.uberfire.client.mvp.WorkbenchEditorActivity;
+import org.uberfire.jsbridge.client.editor.JsWorkbenchEditorActivity;
 
-public class DependentBeanDefinition<T, B extends T> implements SyncBeanDef<T> {
+import static java.util.Arrays.asList;
+import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 
-    private final Supplier<B> factory;
-    private final Class<T> type;
-    private final Set<Annotation> qualifiers;
-    private final String name;
-    private final boolean activated;
+public class EditorActivityBeanDefinition<T, B extends T> implements SyncBeanDef<JsWorkbenchEditorActivity> {
+
+    private final Supplier<JsWorkbenchEditorActivity> factory;
     private final Set<Class<?>> assignableTypes = new HashSet<>();
 
-    public DependentBeanDefinition(final Supplier<B> factory,
-                                   final Class<T> type,
-                                   final Set<Annotation> qualifiers,
-                                   final String name,
-                                   final boolean activated,
-                                   final Class<?>... otherAssignableTypes) {
+    public EditorActivityBeanDefinition(final Supplier<JsWorkbenchEditorActivity> factory) {
         this.factory = factory;
-        this.type = type;
-        this.qualifiers = qualifiers;
-        this.name = name;
-        this.activated = activated;
-        assignableTypes.add(type);
-        assignableTypes.addAll(Arrays.asList(otherAssignableTypes));
+        assignableTypes.add(JsWorkbenchEditorActivity.class);
+        assignableTypes.add(WorkbenchEditorActivity.class);
+        assignableTypes.add(Activity.class);
     }
 
     @Override
-    public Class<T> getType() {
-        return type;
+    public Class<JsWorkbenchEditorActivity> getType() {
+        return JsWorkbenchEditorActivity.class;
     }
 
     @Override
     public Class<?> getBeanClass() {
-        return type;
+        return JsWorkbenchEditorActivity.class;
     }
 
     @Override
@@ -68,18 +60,18 @@ public class DependentBeanDefinition<T, B extends T> implements SyncBeanDef<T> {
     }
 
     @Override
-    public T getInstance() {
+    public JsWorkbenchEditorActivity getInstance() {
         return factory.get();
     }
 
     @Override
-    public T newInstance() {
+    public JsWorkbenchEditorActivity newInstance() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Set<Annotation> getQualifiers() {
-        return qualifiers == null ? Collections.emptySet() : qualifiers;
+        return new HashSet<>(asList(DEFAULT_QUALIFIERS));
     }
 
     @Override
@@ -89,12 +81,12 @@ public class DependentBeanDefinition<T, B extends T> implements SyncBeanDef<T> {
 
     @Override
     public String getName() {
-        return name;
+        return "JsWorkbenchEditorActivityBean";
     }
 
     @Override
     public boolean isActivated() {
-        return activated;
+        return true;
     }
 
     @Override

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.jsbridge.client;
+package org.uberfire.jsbridge.client.cdi;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;

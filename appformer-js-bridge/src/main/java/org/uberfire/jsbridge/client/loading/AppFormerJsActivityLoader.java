@@ -47,8 +47,8 @@ import org.uberfire.client.mvp.WorkbenchEditorActivity;
 import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyActivity;
 import org.uberfire.client.promise.Promises;
-import org.uberfire.jsbridge.client.DependentBeanDefinition;
-import org.uberfire.jsbridge.client.SingletonBeanDefinition;
+import org.uberfire.jsbridge.client.cdi.EditorActivityBeanDefinition;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.uberfire.jsbridge.client.editor.JsNativeEditor;
 import org.uberfire.jsbridge.client.editor.JsWorkbenchEditorActivity;
 import org.uberfire.jsbridge.client.screen.JsNativeScreen;
@@ -312,14 +312,9 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
         final JsNativeEditor editor = new JsNativeEditor(componentId, jsObject);
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
-        final DependentBeanDefinition activityBean = new DependentBeanDefinition<>(
-                () -> this.jsWorkbenchEditorActivityInstance.get().withEditor(editor),
-                JsWorkbenchEditorActivity.class,
-                new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
-                editor.getComponentId(),
-                true,
-                WorkbenchEditorActivity.class,
-                Activity.class);
+        final EditorActivityBeanDefinition activityBean = new EditorActivityBeanDefinition<>(
+                () -> this.jsWorkbenchEditorActivityInstance.get().withEditor(new JsNativeEditor(componentId, jsObject))
+        );
 
         beanManager.registerBean(activityBean);
         beanManager.registerBeanTypeAlias(activityBean, WorkbenchEditorActivity.class);
