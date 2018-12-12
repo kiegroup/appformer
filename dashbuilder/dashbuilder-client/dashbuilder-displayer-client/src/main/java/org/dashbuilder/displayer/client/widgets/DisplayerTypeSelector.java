@@ -15,6 +15,8 @@
  */
 package org.dashbuilder.displayer.client.widgets;
 
+import java.util.Arrays;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -56,16 +58,9 @@ public class DisplayerTypeSelector implements IsWidget {
         this.rendererManager = rendererManager;
         view.init(this);
         view.clear();
-        verifySupportAndShow(DisplayerType.BARCHART);
-        verifySupportAndShow(DisplayerType.PIECHART);
-        verifySupportAndShow(DisplayerType.LINECHART);
-        verifySupportAndShow(DisplayerType.AREACHART);
-        verifySupportAndShow(DisplayerType.BUBBLECHART);
-        verifySupportAndShow(DisplayerType.METERCHART);
-        verifySupportAndShow(DisplayerType.METRIC);
-        verifySupportAndShow(DisplayerType.MAP);
-        verifySupportAndShow(DisplayerType.TABLE);
-        verifySupportAndShow(DisplayerType.SELECTOR);
+        Arrays.stream(DisplayerType.values())
+              .filter(rendererManager::isTypeSupported)
+              .forEach(view::show);
         view.select(selectedType);
     }
 
@@ -98,9 +93,4 @@ public class DisplayerTypeSelector implements IsWidget {
         typeSelectedEvent.fire(new DisplayerTypeSelectedEvent(selectedType));
     }
     
-    private void verifySupportAndShow(DisplayerType type) {
-        if (rendererManager.isTypeSupported(type)) {
-            view.show(type);
-        }
-    }
 }
