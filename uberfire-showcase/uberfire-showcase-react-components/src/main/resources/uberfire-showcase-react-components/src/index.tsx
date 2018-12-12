@@ -7,7 +7,7 @@ import {TemplatedPanel} from "./TemplatedPanel";
 import {ObservablePath} from "uberfire-api-ts-decorators";
 import {PlaceRequest} from "@kiegroup-ts-generated/uberfire-api";
 
-export class StaticReactComponent extends AppFormer.Screen {
+export class SimpleReactComponent extends AppFormer.Screen {
     constructor() {
         super("ReactComponent");
         this.af_isReact = true;
@@ -265,7 +265,7 @@ export class ReactMarkdownEditor extends AppFormerEditors.Editor {
     accept: (filename: string) => filename.split('.').pop() === "md"
 });
 
-AppFormer.register(new StaticReactComponent());
+AppFormer.register(new SimpleReactComponent());
 AppFormer.register(new CompassLayoutJsPerspective());
 AppFormer.register(new ReactTemplatedJsPerspective());
 AppFormer.register(new StringTemplatedJsPerspective());

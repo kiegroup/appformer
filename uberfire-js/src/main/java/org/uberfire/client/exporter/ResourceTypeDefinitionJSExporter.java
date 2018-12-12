@@ -22,7 +22,7 @@ import java.util.HashSet;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.uberfire.jsbridge.client.SingletonBeanDefinition;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.editor.type.JSClientResourceType;

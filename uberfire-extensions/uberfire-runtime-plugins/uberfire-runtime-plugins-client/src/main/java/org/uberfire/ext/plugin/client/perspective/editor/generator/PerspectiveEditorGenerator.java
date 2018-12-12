@@ -27,7 +27,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.uberfire.jsbridge.client.SingletonBeanDefinition;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ioc.client.api.EntryPoint;

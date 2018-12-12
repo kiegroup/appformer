@@ -24,7 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import org.uberfire.jsbridge.client.SingletonBeanDefinition;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.dashbuilder.displayer.client.PerspectiveCoordinator;
 import org.dashbuilder.shared.dashboard.events.DashboardDeletedEvent;
 import org.jboss.errai.ioc.client.container.IOC;
