@@ -16,6 +16,7 @@
 package org.dashbuilder.displayer.client;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ public class RendererManager {
     private Map<DisplayerType, RendererLibrary> renderersDefault = new EnumMap<>(DisplayerType.class);
     private Map<DisplayerType, List<RendererLibrary>> renderersByType = new EnumMap<>(DisplayerType.class);
     private Map<DisplayerSubType, List<RendererLibrary>> renderersBySubType = new EnumMap<>(DisplayerSubType.class);
+    
+    CommonConstants i18n = CommonConstants.INSTANCE;
 
     public RendererManager() {
     }
@@ -106,21 +109,20 @@ public class RendererManager {
     }
 
     public List<RendererLibrary> getRenderersForType(DisplayerType displayerType) {
-        List<RendererLibrary> result = renderersByType.get(displayerType);
-        if (result == null) return new ArrayList<RendererLibrary>();
-        return result;
+        return  renderersByType.getOrDefault(displayerType, new ArrayList<>());
     }
 
     public List<RendererLibrary> getRenderersForType(DisplayerType type, DisplayerSubType subType) {
+        List<RendererLibrary> types  = renderersByType.getOrDefault(type, Collections.emptyList());
+        List<RendererLibrary> subTypes = renderersBySubType.getOrDefault(subType, Collections.emptyList());
         if (type == null) {
-            return subType == null ? renderersList : renderersBySubType.get(subType);
+            return subType == null ? renderersList : subTypes;
         }
         else if (subType == null) {
-            return renderersByType.get(type);
+            return types;
         }
         else {
-            List<RendererLibrary> types  = renderersByType.get(type);
-            List<RendererLibrary> result = new ArrayList<RendererLibrary>(renderersBySubType.get(subType));
+            List<RendererLibrary> result = new ArrayList<RendererLibrary>(subTypes);
             Iterator<RendererLibrary> it = result.iterator();
             while (it.hasNext()) {
                 RendererLibrary rl = it.next();
@@ -135,7 +137,7 @@ public class RendererManager {
     public RendererLibrary getRendererByUUID(String renderer) {
         RendererLibrary lib = _getRendererByUUID(renderer);
         if (lib != null) return lib;
-        throw new RuntimeException(CommonConstants.INSTANCE.rendererliblocator_renderer_not_found(renderer));
+        throw new RuntimeException(i18n.rendererliblocator_renderer_not_found(renderer));
     }
 
     private RendererLibrary _getRendererByUUID(String renderer) {
@@ -153,17 +155,11 @@ public class RendererManager {
                 return lib;
             }
         }
-        throw new RuntimeException(CommonConstants.INSTANCE.rendererliblocator_renderer_not_found(renderer));
+        throw new RuntimeException(i18n.rendererliblocator_renderer_not_found(renderer));
     }
 
     public RendererLibrary getRendererForType(DisplayerType displayerType) {
-
-        // Return the default
-        RendererLibrary defaultRenderer = renderersDefault.get(displayerType);
-        if (defaultRenderer != null) return defaultRenderer;
-
-        // Return the first available if no default has been defined
-        return renderersByType.get(displayerType).get(0);
+        return renderersDefault.getOrDefault(displayerType, renderersByType.get(displayerType).get(0));
     }
 
     public RendererLibrary getRendererForDisplayer(DisplayerSettings target) {
@@ -184,7 +180,7 @@ public class RendererManager {
         }
         // If no default then return the first supported one
         if (!renderersSupported.isEmpty()) return renderersSupported.get(0);
-        throw new RuntimeException("No renderer is available for: " + target.getType());
+        throw new RuntimeException(i18n.renderermanager_renderer_not_available(target.getType().name()));
     }
     
     public boolean isTypeSupported(DisplayerType type) {
