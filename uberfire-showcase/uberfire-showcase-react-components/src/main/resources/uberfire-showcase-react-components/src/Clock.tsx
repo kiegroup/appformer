@@ -43,7 +43,6 @@ export class Clock extends React.Component<Props, State> {
 
     render() {
         return <>
-        <h3>Clock:</h3>
         <span>
             {this.state.time}
         </span>

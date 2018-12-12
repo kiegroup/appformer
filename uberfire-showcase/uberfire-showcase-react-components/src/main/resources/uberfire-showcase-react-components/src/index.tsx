@@ -2,7 +2,7 @@ import * as React from "react";
 import * as AppFormer from 'appformer-js';
 import * as AppFormerEditors from 'appformer-js-editors';
 import {Clock} from "./Clock";
-import {Files} from "./Files";
+import {MarkdownFile} from "./MarkdownFile";
 import {TemplatedPanel} from "./TemplatedPanel";
 import {ObservablePath} from "uberfire-api-ts-decorators";
 import {PlaceRequest} from "@kiegroup-ts-generated/uberfire-api";
@@ -14,9 +14,27 @@ export class StaticReactComponent extends AppFormer.Screen {
         this.af_componentTitle = "React component";
     }
 
+    private openREADME() {
+        (window as any).appformerGwtBridge.goToPath("default://master@uf-playground/README.md");
+    }
+
+    private openTodo() {
+        (window as any).appformerGwtBridge.goToPath("default://master@uf-playground/todo.md");
+    }
+
     af_componentRoot(): AppFormer.Element {
         return <div style={{padding: "10px"}}>
+            <h1>
+                This is a very simple React component.
+                <h6>It features a Clock and links to a Markdown Editor.</h6>
+            </h1>
+
+            <h3 style={{fontWeight: "bold"}}>Clock:</h3>
             <Clock/>
+
+            <h3 style={{fontWeight: "bold"}}>Links:</h3>
+            <button className={"btn btn-primary btn-sm"} onClick={() => this.openREADME()}>README.md</button>
+            <button className={"btn btn-primary btn-sm"} onClick={() => this.openTodo()}>todo.md</button>
         </div>;
     }
 
@@ -224,12 +242,15 @@ export class ReactMarkdownEditor extends AppFormerEditors.Editor {
         this.af_priority = 200000;
     }
 
+    private uri: string;
+
     af_onEditorStartup(path: ObservablePath, place: PlaceRequest): void {
         //FIXME: path and place parameters are not arriving correctly.
+        this.uri = path + ""; //This is a workaround to get the uri
     }
 
     public af_componentRoot(children?: any): AppFormer.Element {
-        return <Files/>
+        return <MarkdownFile uri={this.uri}/>
     }
 }
 
