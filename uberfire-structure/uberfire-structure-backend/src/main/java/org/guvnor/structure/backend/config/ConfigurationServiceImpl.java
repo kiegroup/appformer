@@ -137,22 +137,22 @@ public class ConfigurationServiceImpl implements ConfigurationService,
         }
 
         // enable monitor by default
-        if (System.getProperty(MONITOR_DISABLED) == null) {
-            watchService = fs.newWatchService();
-            configUpdates = new CheckConfigurationUpdates(watchService);
-            final ConfigServiceWatchServiceExecutor configServiceWatchServiceExecutor = getWatchServiceExecutor();
-            jobs.add(executorService.submit(new DescriptiveRunnable() {
-                @Override
-                public String getDescription() {
-                    return configUpdates.getDescription();
-                }
+        // if (System.getProperty(MONITOR_DISABLED) == null) {
+        //     watchService = fs.newWatchService();
+        //     configUpdates = new CheckConfigurationUpdates(watchService);
+        //     final ConfigServiceWatchServiceExecutor configServiceWatchServiceExecutor = getWatchServiceExecutor();
+        //     jobs.add(executorService.submit(new DescriptiveRunnable() {
+        //         @Override
+        //         public String getDescription() {
+        //             return configUpdates.getDescription();
+        //         }
 
-                @Override
-                public void run() {
-                    configUpdates.execute(configServiceWatchServiceExecutor);
-                }
-            }));
-        }
+        //         @Override
+        //         public void run() {
+        //             configUpdates.execute(configServiceWatchServiceExecutor);
+        //         }
+        //     }));
+        // }
     }
 
     @PreDestroy
