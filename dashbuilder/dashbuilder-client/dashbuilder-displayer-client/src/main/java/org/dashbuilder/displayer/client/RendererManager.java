@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import javax.annotation.PostConstruct;
@@ -57,7 +58,7 @@ public class RendererManager {
     }
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         Collection<SyncBeanDef<RendererLibrary>> beanDefs = beanManager.lookupBeans(RendererLibrary.class);
         for (SyncBeanDef<RendererLibrary> beanDef : beanDefs) {
 
@@ -135,9 +136,7 @@ public class RendererManager {
     }
 
     public RendererLibrary getRendererByUUID(String renderer) {
-        RendererLibrary lib = _getRendererByUUID(renderer);
-        if (lib != null) return lib;
-        throw new RuntimeException(i18n.rendererliblocator_renderer_not_found(renderer));
+        return getRendererByOrThrowError(renderer, lib -> lib.getUUID().equals(renderer));
     }
 
     private RendererLibrary _getRendererByUUID(String renderer) {
@@ -150,12 +149,14 @@ public class RendererManager {
     }
 
     public RendererLibrary getRendererByName(String renderer) {
-        for (RendererLibrary lib : renderersList) {
-            if (lib.getName().equals(renderer)) {
-                return lib;
-            }
-        }
-        throw new RuntimeException(i18n.rendererliblocator_renderer_not_found(renderer));
+        return getRendererByOrThrowError(renderer, lib -> lib.getName().equals(renderer));
+    }
+    
+    private RendererLibrary getRendererByOrThrowError(String renderer, Predicate<RendererLibrary> test) {
+        return renderersList.stream()
+                     .filter(test)
+                     .findFirst()
+                     .orElseThrow(() -> new RuntimeException(i18n.rendererliblocator_renderer_not_found(renderer)));
     }
 
     public RendererLibrary getRendererForType(DisplayerType displayerType) {
