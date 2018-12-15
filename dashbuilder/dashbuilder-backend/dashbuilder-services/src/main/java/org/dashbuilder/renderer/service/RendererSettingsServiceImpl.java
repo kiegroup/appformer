@@ -7,13 +7,13 @@ import org.jboss.errai.bus.server.annotations.Service;
 
 @Service
 @ApplicationScoped
-public class RendererSettingsImpl implements RendererSettings {
+public class RendererSettingsServiceImpl implements RendererSettingsService {
 
     String DEFAULT_RENDERER_PROPERTY = "org.dashbuilder.renderer.default";
     
     @Override
     public String userDefaultRenderer() {
-        return System.getProperty(DEFAULT_RENDERER_PROPERTY);
+        return System.getProperty(DEFAULT_RENDERER_PROPERTY, "");
     }
 
 }

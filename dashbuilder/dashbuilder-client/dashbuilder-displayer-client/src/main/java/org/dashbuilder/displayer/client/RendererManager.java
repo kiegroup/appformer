@@ -32,7 +32,7 @@ import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerSubType;
 import org.dashbuilder.displayer.DisplayerType;
 import org.dashbuilder.displayer.client.resources.i18n.CommonConstants;
-import org.dashbuilder.renderer.service.RendererSettings;
+import org.dashbuilder.renderer.service.RendererSettingsService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
@@ -53,24 +53,24 @@ public class RendererManager {
     
     CommonConstants i18n = CommonConstants.INSTANCE;
     
-    @Inject
-    Caller<RendererSettings> rendererSettings;
+    Caller<RendererSettingsService> rendererSettingsService;
 
     public RendererManager() {
     }
 
     @Inject
-    public RendererManager(SyncBeanManager beanManager) {
+    public RendererManager(SyncBeanManager beanManager, Caller<RendererSettingsService> rendererSettingsService) {
         this.beanManager = beanManager;
+        this.rendererSettingsService = rendererSettingsService;
     }
 
     @PostConstruct
     protected void init() {
-        rendererSettings.call((String defaultUUIDOp) -> lookupRenderers(defaultUUIDOp))
-                        .userDefaultRenderer();
+        rendererSettingsService.call((String defaultUUIDOp) -> lookupRenderers(defaultUUIDOp))
+                               .userDefaultRenderer();
     }
 
-    private void lookupRenderers(String defaultUUID) {
+    protected void lookupRenderers(String defaultUUID) {
         Collection<SyncBeanDef<RendererLibrary>> beanDefs = beanManager.lookupBeans(RendererLibrary.class);
         if (defaultUUID != null && ! defaultUUID.isEmpty()) {
             beanDefs.stream()
