@@ -23,6 +23,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.guvnor.structure.pom.AddPomDependencyEvent;
+import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.types.JPADependencyType;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,8 @@ public class PomStructureEditorTest {
                                                 "dummy",
                                                 "target/test-classes/dummy_empty_deps");
         mapper = new DependencyTypesMapper();
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(new JPADependencyType()).get(0).getVersion();
+        DependencyType depType = new JPADependencyType();
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(depType.getType()).get(0).getVersion();
     }
 
     @Test

@@ -14,6 +14,8 @@
  */
 package org.guvnor.structure.pom;
 
+import java.util.Objects;
+
 /***
  * Dependency used to add Maven dependencies on the pom
  */
@@ -45,6 +47,30 @@ public class DynamicPomDependency {
 
     public String getScope() {
         return scope;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DynamicPomDependency)) {
+            return false;
+        }
+        DynamicPomDependency that = (DynamicPomDependency) o;
+        return getGroupID().equals(that.getGroupID()) &&
+                getArtifactID().equals(that.getArtifactID()) &&
+                getVersion().equals(that.getVersion()) &&
+                Objects.equals(getScope(),
+                               that.getScope());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getGroupID(),
+                            getArtifactID(),
+                            getVersion(),
+                            getScope());
     }
 
     @Override

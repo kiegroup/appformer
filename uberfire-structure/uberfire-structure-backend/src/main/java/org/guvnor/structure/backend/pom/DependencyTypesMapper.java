@@ -27,19 +27,18 @@ import org.guvnor.structure.pom.DynamicPomDependency;
  */
 public class DependencyTypesMapper {
 
-    private final static String JSON_POM_DEPS = "DependencyTypesMapper.json";
     private ConfigurationMap conf;
+    private List<DynamicPomDependency> deps;
 
     public DependencyTypesMapper() {
-        PomJsonReader jsonDepsReader = new PomJsonReaderDefault(getClass().getClassLoader().getResourceAsStream(JSON_POM_DEPS));
-        conf = jsonDepsReader.readConfiguration();
+        conf = new ConfigurationMap();
     }
 
     public String getKieVersion() {
         return conf.getKieVersion();
     }
 
-    public Map<DependencyType, List<DynamicPomDependency>> getMapping() {
+    public Map<String, List<DynamicPomDependency>> getMapping() {
         return conf.getMapping();
     }
 
@@ -48,13 +47,16 @@ public class DependencyTypesMapper {
     }
 
     public List<DynamicPomDependency> getDependencies(Set<DependencyType> dependencyTypes) {
-        List<DynamicPomDependency> result = new ArrayList<>();
-        for (DependencyType type : dependencyTypes) {
-            List<DynamicPomDependency> deps = conf.getMapping().get(type);
-            if (deps != null && !deps.isEmpty()) {
-                result.addAll(deps);
+        if (deps == null) {
+            List<DynamicPomDependency> result = new ArrayList<>();
+            for (DependencyType depType : dependencyTypes) {
+                List<DynamicPomDependency> deps = conf.getMapping().get(depType.getType());
+                if (deps != null && !deps.isEmpty()) {
+                    result.addAll(deps);
+                }
             }
+            deps = result;
         }
-        return result;
+        return deps;
     }
 }

@@ -14,10 +14,14 @@
  */
 package org.guvnor.structure.pom;
 
+import java.util.List;
+
 /***
  * Types managed by the Pom's event
  */
 public interface DependencyType {
 
     String getType();
+
+    List<DynamicPomDependency> getDependencies();
 }

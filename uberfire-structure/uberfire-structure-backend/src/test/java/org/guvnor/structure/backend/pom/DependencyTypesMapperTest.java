@@ -40,18 +40,20 @@ public class DependencyTypesMapperTest {
 
     @Test
     public void mappingTest() {
-        Map<DependencyType, List<DynamicPomDependency>> mapping = mapper.getMapping();
+        Map<String, List<DynamicPomDependency>> mapping = mapper.getMapping();
         assertThat(mapping).isNotEmpty();
         TestUtil.testJPADep(mapping);
     }
 
     @Test
     public void mappingDependencyTest() {
-        List<DynamicPomDependency> deps = mapper.getDependencies(new HashSet<>(Arrays.asList(new JPADependencyType())));
+        DependencyType jpa = new JPADependencyType();
+        List<DynamicPomDependency> deps = mapper.getDependencies(new HashSet<>(Arrays.asList(jpa)));
         assertThat(deps).isNotEmpty();
         assertThat(deps).hasSize(1);
-        Map<DependencyType, List<DynamicPomDependency>> map = new HashMap<>();
-        map.put(new JPADependencyType(),
+
+        Map<String, List<DynamicPomDependency>> map = new HashMap<>();
+        map.put(jpa.getType(),
                 deps);
         TestUtil.testJPADep(map);
     }

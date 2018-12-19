@@ -17,28 +17,34 @@ package org.guvnor.structure.backend.pom;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
+import org.guvnor.structure.pom.types.DependencyTypeDefault;
+import org.guvnor.structure.pom.types.JPADependencyType;
+import org.guvnor.structure.pom.types.TestDependencyType;
+import org.guvnor.structure.pom.types.ValidationDependencyType;
 
 /**
- * Configuration loaded form JsonFile
+ * Configuration loaded from classes
  */
 public class ConfigurationMap {
 
-    private Map<DependencyType, List<DynamicPomDependency>> mapping;
+    private Map<String, List<DynamicPomDependency>> mapping;
     private Set<DynamicPomDependency> internalArtifacts;
     private String kieVersion;
 
-    public ConfigurationMap(Map<DependencyType, List<DynamicPomDependency>> mapping,
-                            Set<DynamicPomDependency> internalArtifacts,
-                            String kieVersion) {
-        this.mapping = mapping;
-        this.kieVersion = kieVersion;
-        this.internalArtifacts = internalArtifacts;
+    public ConfigurationMap() {
+
+        DependencyTypeDefault defaultType = new DependencyTypeDefault();
+
+        this.kieVersion = defaultType.getKieVersion();
+        this.internalArtifacts = defaultType.getInternalArtifacts();
+        this.mapping = getDeps();
     }
 
-    public Map<DependencyType, List<DynamicPomDependency>> getMapping() {
+    public Map<String, List<DynamicPomDependency>> getMapping() {
         return mapping;
     }
 
@@ -48,5 +54,29 @@ public class ConfigurationMap {
 
     public String getKieVersion() {
         return kieVersion;
+    }
+
+    public void addDependencies(DependencyType k,
+                                List<DynamicPomDependency> deps) {
+        if (k != null && deps != null && !deps.isEmpty()) {
+            mapping.putIfAbsent(k.getType(),
+                                deps);
+        }
+    }
+
+    private Map<String, List<DynamicPomDependency>> getDeps() {
+        DependencyType jpa = new JPADependencyType();
+        DependencyType test = new TestDependencyType();
+        DependencyType validation = new ValidationDependencyType();
+
+        Map<String, List<DynamicPomDependency>> hashMap = new ConcurrentHashMap() {{
+            put(jpa.getType(),
+                jpa.getDependencies());
+            put(test.getType(),
+                test.getDependencies());
+            put(validation.getType(),
+                validation.getDependencies());
+        }};
+        return hashMap;
     }
 }

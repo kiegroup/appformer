@@ -221,10 +221,6 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
-      <resource>
-        <directory>src/main/filtered-resources</directory>
-        <filtering>true</filtering>
-      </resource>
     </resources>
     <testResources>
       <testResource>

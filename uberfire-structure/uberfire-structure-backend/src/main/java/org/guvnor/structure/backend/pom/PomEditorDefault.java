@@ -77,7 +77,7 @@ public class PomEditorDefault implements PomEditor {
                 model.getDependencies().add(pomDep);
                 pomUpdated = true;
             }
-            if(pomUpdated){
+            if (pomUpdated) {
                 writePOMModelOnFS(filePath,
                                   model);
             }

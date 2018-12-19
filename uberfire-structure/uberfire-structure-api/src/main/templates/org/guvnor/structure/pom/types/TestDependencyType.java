@@ -14,16 +14,21 @@
  */
 package org.guvnor.structure.pom.types;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.guvnor.structure.pom.DependencyType;
+import org.guvnor.structure.pom.DynamicPomDependency;
 
-public class DependencyTypeDefault implements DependencyType {
+public class TestDependencyType implements DependencyType {
 
-    private String type;
+    public static final String type = "TEST";
+    private List<DynamicPomDependency> dependencies;
 
-    public DependencyTypeDefault(String type) {
-        this.type = type;
+    public TestDependencyType() {
+        this.dependencies = getDeps();
     }
 
     @Override
@@ -32,19 +37,32 @@ public class DependencyTypeDefault implements DependencyType {
     }
 
     @Override
+    public List<DynamicPomDependency> getDependencies() {
+        return Collections.unmodifiableList(dependencies);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DependencyTypeDefault)) {
+        if (!(o instanceof TestDependencyType)) {
             return false;
         }
-        DependencyTypeDefault that = (DependencyTypeDefault) o;
+        TestDependencyType that = (TestDependencyType) o;
         return getType().equals(that.getType());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(getType());
+    }
+
+    private List getDeps() {
+        return Arrays.asList(
+                new DynamicPomDependency("junit",
+                                         "junit",
+                                         "${version.junit}",
+                                         "test"));
     }
 }

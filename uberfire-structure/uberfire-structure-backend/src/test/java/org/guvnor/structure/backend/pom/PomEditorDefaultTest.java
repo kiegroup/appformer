@@ -54,7 +54,8 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
                                                 "target/test-classes/dummy");
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(new JPADependencyType()).get(0).getVersion();
+        DependencyType depType = new JPADependencyType();
+        JPA_HIBERNATE_VERSION = mapper.getMapping().get(depType.getType()).get(0).getVersion();
     }
 
     @After

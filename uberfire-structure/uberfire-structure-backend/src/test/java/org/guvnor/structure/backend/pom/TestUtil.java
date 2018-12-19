@@ -36,14 +36,14 @@ class TestUtil {
     public final static String GROUP_ID_TEST = "org.hibernate.javax.persistence";
     public final static String ARTIFACT_ID_TEST = "hibernate-jpa-2.1-api";
     public final static String SCOPE_TEST = "compile";
-    private static DependencyTypesMapper mapper;
+    //private static DependencyTypesMapper mapper;
     private static String JPA_HIBERNATE_VERSION;
     private static Logger logger = LoggerFactory.getLogger(TestUtil.class);
 
-    public static void testJPADep(Map<DependencyType, List<DynamicPomDependency>> mapping) {
-        mapper = new DependencyTypesMapper();
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(new JPADependencyType()).get(0).getVersion();
-        List<DynamicPomDependency> deps = mapping.get(new JPADependencyType());
+    public static void testJPADep(Map<String, List<DynamicPomDependency>> mapping) {
+        DependencyType jpa = new JPADependencyType();
+        JPA_HIBERNATE_VERSION = mapping.get(jpa.getType()).get(0).getVersion();
+        List<DynamicPomDependency> deps = mapping.get(jpa.getType());
         assertThat(deps).hasSize(1);
         DynamicPomDependency dep = deps.get(0);
         assertThat(dep.getGroupID()).isEqualToIgnoringCase(GROUP_ID_TEST);
