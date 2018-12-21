@@ -29,8 +29,12 @@ public class C3AreaChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.Vie
         this.view = view;
         this.view.init(this);
     }
-
     
+    public C3AreaChartDisplayer stacked() {
+        this.setStacked(true);
+        return this;
+    }
+
     @Override
     public DisplayerConstraints createDisplayerConstraints() {
 
