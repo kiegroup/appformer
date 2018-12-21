@@ -45,14 +45,14 @@ public class PomEditorDefault implements PomEditor {
 
     private MavenXpp3Reader reader;
     private MavenXpp3Writer writer;
-    private DependencyTypesMapper mapper;
+    private DynamicDependencyTypeConfigurationMap configurationMap;
     private Set<String> internalGroupIds;
 
-    public PomEditorDefault(DependencyTypesMapper mapper) {
+    public PomEditorDefault(DynamicDependencyTypeConfigurationMap map) {
         reader = new MavenXpp3Reader();
         writer = new MavenXpp3Writer();
-        this.mapper = mapper;
-        internalGroupIds = getInternalGroupIds(this.mapper);
+        this.configurationMap = map;
+        internalGroupIds = getInternalGroupIds();
     }
 
     public boolean addDependency(DynamicPomDependency dep,
@@ -95,7 +95,7 @@ public class PomEditorDefault implements PomEditor {
         if (dependencyTypes.isEmpty()) {
             return false;
         }
-        List<DynamicPomDependency> deps = mapper.getDependencies(dependencyTypes);
+        List<DynamicPomDependency> deps = configurationMap.getDependencies(dependencyTypes);
         boolean result = false;
         try {
             org.uberfire.java.nio.file.Path filePath = Paths.get(pomPath.toURI());
@@ -217,7 +217,7 @@ public class PomEditorDefault implements PomEditor {
         if (dependencyTypes.isEmpty()) {
             return false;
         }
-        return removeDependencies(mapper.getDependencies(dependencyTypes),
+        return removeDependencies(configurationMap.getDependencies(dependencyTypes),
                                   pomPath);
     }
 
@@ -328,8 +328,8 @@ public class PomEditorDefault implements PomEditor {
         return pomDep;
     }
 
-    private Set<String> getInternalGroupIds(DependencyTypesMapper mapper) {
-        Set<DynamicPomDependency> deps = mapper.getInternalArtifacts();
+    private Set<String> getInternalGroupIds() {
+        Set<DynamicPomDependency> deps = configurationMap.getInternalArtifacts();
         Set<String> groups = new HashSet<>(deps.size());
         for (DynamicPomDependency dep : deps) {
             groups.add(dep.getGroupID());

@@ -38,20 +38,20 @@ public class PomStructureEditor {
     private final Logger logger = LoggerFactory.getLogger(PomStructureEditor.class);
     boolean enabledPomDependenciesFeature;
     private PomEditor pomEditor;
-    private DependencyTypesMapper mapper;
+    private DynamicDependencyTypeConfigurationMap configurationMap;
     private BackendExperimentalFeaturesRegistryService experimentalServiceRegistry;
 
     // for test
-    public PomStructureEditor() {
-        mapper = new DependencyTypesMapper();
-        pomEditor = new PomEditorDefault(mapper);
+    public PomStructureEditor(DynamicDependencyTypeConfigurationMap map) {
+        configurationMap = map;
+        pomEditor = new PomEditorDefault(configurationMap);
         enabledPomDependenciesFeature = true;
     }
 
     @Inject
     public PomStructureEditor(BackendExperimentalFeaturesRegistryService experimentalServiceRegistry) {
-        mapper = new DependencyTypesMapper();
-        pomEditor = new PomEditorDefault(mapper);
+        configurationMap = new DynamicDependencyTypeConfigurationMap();
+        pomEditor = new PomEditorDefault(configurationMap);
         this.experimentalServiceRegistry = experimentalServiceRegistry;
     }
 
@@ -64,14 +64,14 @@ public class PomStructureEditor {
             final Set<DependencyType> dependencyTypes = event.getDependencyTypes();
             addDependenciesToPom(projectPath,
                                  dependencyTypes,
-                                 mapper);
+                                 configurationMap);
         }
     }
 
     private void addDependenciesToPom(Path projectPath,
                                       Set<DependencyType> dependencyTypes,
-                                      DependencyTypesMapper mapper) {
-        List<DynamicPomDependency> deps = mapper.getDependencies(dependencyTypes);
+                                      DynamicDependencyTypeConfigurationMap map) {
+        List<DynamicPomDependency> deps = map.getDependencies(dependencyTypes);
         if (!pomEditor.addDependencies(dependencyTypes,
                                        projectPath)) {
             logger.warn("Failed to add dependencies {} to pom.xml located in {}",

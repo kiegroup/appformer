@@ -14,28 +14,31 @@
  */
 package org.guvnor.structure.backend.pom;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
 import org.guvnor.structure.pom.types.DependencyTypeDefault;
-import org.guvnor.structure.pom.types.JPADependencyType;
 import org.guvnor.structure.pom.types.TestDependencyType;
 import org.guvnor.structure.pom.types.ValidationDependencyType;
 
 /**
- * Configuration loaded from classes
+ * Configuration od DynamicDependency types loaded from classes
  */
-public class ConfigurationMap {
+@ApplicationScoped
+public class DynamicDependencyTypeConfigurationMap {
 
     private Map<String, List<DynamicPomDependency>> mapping;
     private Set<DynamicPomDependency> internalArtifacts;
     private String kieVersion;
 
-    public ConfigurationMap() {
+    public DynamicDependencyTypeConfigurationMap() {
 
         DependencyTypeDefault defaultType = new DependencyTypeDefault();
 
@@ -64,14 +67,22 @@ public class ConfigurationMap {
         }
     }
 
+    public List<DynamicPomDependency> getDependencies(Set<DependencyType> dependencyTypes) {
+        List<DynamicPomDependency> result = new ArrayList<>();
+        for (DependencyType depType : dependencyTypes) {
+            List<DynamicPomDependency> deps = mapping.get(depType.getType());
+            if (deps != null && !deps.isEmpty()) {
+                result.addAll(deps);
+            }
+        }
+        return result;
+    }
+
     private Map<String, List<DynamicPomDependency>> getDeps() {
-        DependencyType jpa = new JPADependencyType();
         DependencyType test = new TestDependencyType();
         DependencyType validation = new ValidationDependencyType();
 
         Map<String, List<DynamicPomDependency>> hashMap = new ConcurrentHashMap() {{
-            put(jpa.getType(),
-                jpa.getDependencies());
             put(test.getType(),
                 test.getDependencies());
             put(validation.getType(),

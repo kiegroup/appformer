@@ -24,9 +24,9 @@ import java.util.Set;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.guvnor.structure.backend.pom.types.FakeJPATypeDependency;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
-import org.guvnor.structure.pom.types.JPADependencyType;
 import org.guvnor.structure.pom.types.TestDependencyType;
 import org.junit.After;
 import org.junit.Before;
@@ -42,20 +42,22 @@ public class PomEditorDefaultTest {
 
     private final String POM = "pom.xml";
     private PomEditor editor;
-    private DependencyTypesMapper mapper;
+    private DynamicDependencyTypeConfigurationMap configurationMap;
     private Path tmpRoot, tmp;
     private String JPA_HIBERNATE_VERSION;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new DependencyTypesMapper();
-        editor = new PomEditorDefault(mapper);
+        configurationMap = new DynamicDependencyTypeConfigurationMap();
+        editor = new PomEditorDefault(configurationMap);
         tmpRoot = Files.createTempDirectory("repo");
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
                                                 "target/test-classes/dummy");
-        DependencyType depType = new JPADependencyType();
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(depType.getType()).get(0).getVersion();
+        DependencyType depType = new FakeJPATypeDependency();
+        configurationMap.addDependencies(depType,
+                                         depType.getDependencies());
+        JPA_HIBERNATE_VERSION = configurationMap.getMapping().get(depType.getType()).get(0).getVersion();
     }
 
     @After
@@ -189,7 +191,7 @@ public class PomEditorDefaultTest {
 
     @Test
     public void addDepsTest() {
-        boolean result = editor.addDependencies(new HashSet<>(Arrays.asList(new JPADependencyType())),
+        boolean result = editor.addDependencies(new HashSet<>(Arrays.asList(new FakeJPATypeDependency())),
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
         assertThat(result).isTrue();
@@ -220,7 +222,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
-        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType()));
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new FakeJPATypeDependency()));
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
@@ -238,7 +240,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyOverride",
                                                 "target/test-classes/dummyOverride");
-        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType(),
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new FakeJPATypeDependency(),
                                                                new TestDependencyType()));
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
@@ -261,7 +263,7 @@ public class PomEditorDefaultTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummyInternalDepsOld",
                                                 "target/test-classes/dummyInternalDepsOld");
-        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType()));
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new FakeJPATypeDependency()));
         boolean result = editor.addDependencies(deps,
                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
                                                                     tmp.toUri().toString() + File.separator + POM));
@@ -282,7 +284,7 @@ public class PomEditorDefaultTest {
         org.uberfire.backend.vfs.Path pomPath = PathFactory.newPath(POM,
                                                                     tmpRoot + File.separator + "dummyInternalDepsCurrent" + File.separator + POM);
 
-        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new JPADependencyType()));
+        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new FakeJPATypeDependency()));
         boolean result = editor.addDependencies(deps,
                                                 pomPath);
         assertThat(result).isTrue();
@@ -291,7 +293,7 @@ public class PomEditorDefaultTest {
         Dependency changedDep = getDependency(model.getDependencies(),
                                               "org.kie",
                                               "kie-internal");
-        assertThat(changedDep.getVersion()).isEqualTo(mapper.getKieVersion());
+        assertThat(changedDep.getVersion()).isEqualTo(configurationMap.getKieVersion());
     }
 
     @Test

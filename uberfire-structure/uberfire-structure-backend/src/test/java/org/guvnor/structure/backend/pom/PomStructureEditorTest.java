@@ -22,9 +22,9 @@ import java.util.HashSet;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.guvnor.structure.backend.pom.types.FakeJPATypeDependency;
 import org.guvnor.structure.pom.AddPomDependencyEvent;
 import org.guvnor.structure.pom.DependencyType;
-import org.guvnor.structure.pom.types.JPADependencyType;
 import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.backend.vfs.PathFactory;
@@ -39,7 +39,7 @@ public class PomStructureEditorTest {
     private final String POM = "pom.xml";
     private PomStructureEditor editor;
     private Path tmpRoot, tmp;
-    private DependencyTypesMapper mapper;
+    private DynamicDependencyTypeConfigurationMap configurationMap;
     private String JPA_HIBERNATE_VERSION;
 
     @Before
@@ -48,9 +48,11 @@ public class PomStructureEditorTest {
         tmp = TestUtil.createAndCopyToDirectory(tmpRoot,
                                                 "dummy",
                                                 "target/test-classes/dummy_empty_deps");
-        mapper = new DependencyTypesMapper();
-        DependencyType depType = new JPADependencyType();
-        JPA_HIBERNATE_VERSION = mapper.getMapping().get(depType.getType()).get(0).getVersion();
+        configurationMap = new DynamicDependencyTypeConfigurationMap();
+        DependencyType depType = new FakeJPATypeDependency();
+        configurationMap.addDependencies(depType,
+                                         depType.getDependencies());
+        JPA_HIBERNATE_VERSION = configurationMap.getMapping().get(depType.getType()).get(0).getVersion();
     }
 
     @Test
@@ -59,8 +61,8 @@ public class PomStructureEditorTest {
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         assertThat(model.getDependencies()).hasSize(0);
 
-        editor = new PomStructureEditor();
-        AddPomDependencyEvent event = new AddPomDependencyEvent(new HashSet<>(Arrays.asList(new JPADependencyType())),
+        editor = new PomStructureEditor(configurationMap);
+        AddPomDependencyEvent event = new AddPomDependencyEvent(new HashSet<>(Arrays.asList(new FakeJPATypeDependency())),
                                                                 PathFactory.newPath(tmp.getFileName().toString(),
                                                                                     tmp.toUri().toString() + File.separator + POM));
         editor.onNewDynamicDependency(event);

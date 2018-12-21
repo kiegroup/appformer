@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.guvnor.structure.backend.pom.types.FakeJPATypeDependency;
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
-import org.guvnor.structure.pom.types.JPADependencyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.file.Files;
@@ -36,12 +36,11 @@ class TestUtil {
     public final static String GROUP_ID_TEST = "org.hibernate.javax.persistence";
     public final static String ARTIFACT_ID_TEST = "hibernate-jpa-2.1-api";
     public final static String SCOPE_TEST = "compile";
-    //private static DependencyTypesMapper mapper;
     private static String JPA_HIBERNATE_VERSION;
     private static Logger logger = LoggerFactory.getLogger(TestUtil.class);
 
     public static void testJPADep(Map<String, List<DynamicPomDependency>> mapping) {
-        DependencyType jpa = new JPADependencyType();
+        DependencyType jpa = new FakeJPATypeDependency();
         JPA_HIBERNATE_VERSION = mapping.get(jpa.getType()).get(0).getVersion();
         List<DynamicPomDependency> deps = mapping.get(jpa.getType());
         assertThat(deps).hasSize(1);
