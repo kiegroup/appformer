@@ -49,8 +49,8 @@ public class PomStructureEditor {
     }
 
     @Inject
-    public PomStructureEditor(BackendExperimentalFeaturesRegistryService experimentalServiceRegistry) {
-        configurationMap = new DynamicDependencyTypeConfigurationMap();
+    public PomStructureEditor(BackendExperimentalFeaturesRegistryService experimentalServiceRegistry, DynamicDependencyTypeConfigurationMap configurationMap) {
+        this.configurationMap = configurationMap;
         pomEditor = new PomEditorDefault(configurationMap);
         this.experimentalServiceRegistry = experimentalServiceRegistry;
     }
