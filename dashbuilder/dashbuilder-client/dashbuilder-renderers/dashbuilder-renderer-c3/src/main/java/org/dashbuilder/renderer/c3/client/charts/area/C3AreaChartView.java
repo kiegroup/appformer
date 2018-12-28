@@ -12,6 +12,7 @@ public class C3AreaChartView
 
     @Override
     public void updateChart(C3ChartConf conf) {
+        conf.setOnrendered(() -> fixAreaOpacity()); 
         super.updateChart(conf);
         fixAreaOpacity();
     }
@@ -20,17 +21,18 @@ public class C3AreaChartView
     public String getType() {
         return "area";
     }
-
     
     private void fixAreaOpacity() {
         // This is a workaround for: https://github.com/c3js/c3/issues/2551
-        NodeList<Element> paths = chart.getElement().getElementsByTagName("path");
-        int n = paths.getLength();
-        for (int i = 0; i < n; i++) {
-            Element child = paths.getItem(i);
-            String className = child.getAttribute("class");
-            if (className != null && className.contains("c3-area-")) {
-                child.getStyle().setOpacity(0.2);
+        if (chart != null) {
+            NodeList<Element> paths = chart.getElement().getElementsByTagName("path");
+            int n = paths.getLength();
+            for (int i = 0; i < n; i++) {
+                Element child = paths.getItem(i);
+                String className = child.getAttribute("class");
+                if (className != null && className.contains("c3-area-")) {
+                    child.getStyle().setOpacity(0.2);
+                }
             }
         }
     }
