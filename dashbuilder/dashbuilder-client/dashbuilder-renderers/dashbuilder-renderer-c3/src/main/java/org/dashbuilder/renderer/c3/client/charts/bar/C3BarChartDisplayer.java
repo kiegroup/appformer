@@ -81,6 +81,7 @@ public class C3BarChartDisplayer extends C3XYDisplayer<C3BarChartDisplayer.View>
                 .supportsAttribute(DisplayerAttributeGroupDef.GENERAL_GROUP)
                 .supportsAttribute(DisplayerAttributeDef.CHART_WIDTH)
                 .supportsAttribute(DisplayerAttributeDef.CHART_HEIGHT)
+                .supportsAttribute(DisplayerAttributeDef.CHART_RESIZABLE)
                 .supportsAttribute(DisplayerAttributeDef.CHART_BGCOLOR)
                 .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP)
                 .supportsAttribute(DisplayerAttributeGroupDef.CHART_LEGEND_GROUP)

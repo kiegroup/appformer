@@ -21,7 +21,7 @@ public abstract class C3DisplayerView<P extends C3Displayer>
     
     private Panel container = new FlowPanel();
     private Panel filterPanel = new FlowPanel();
-    private Panel displayerPanel = new FlowPanel();
+    protected Panel displayerPanel = new FlowPanel();
     
     private HTML titleHtml = new HTML();
     private int width;
@@ -93,6 +93,16 @@ public abstract class C3DisplayerView<P extends C3Displayer>
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+    
+    public void setResizable(boolean resizable, int maxWidth, int maxHeight) {
+        if (resizable) {
+            displayerPanel.setWidth("100%");
+            displayerPanel.getElement().getStyle().setProperty("maxWidth", maxWidth + "px");
+            displayerPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
+        } else {
+            displayerPanel.setWidth("");
+        }
     }
     
 }

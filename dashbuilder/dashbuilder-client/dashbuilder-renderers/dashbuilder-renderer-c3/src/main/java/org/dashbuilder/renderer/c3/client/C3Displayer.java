@@ -36,6 +36,7 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisY;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Color;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Legend;
@@ -73,6 +74,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         void noData();
         
         void setSize(int width, int height);
+
+        void setResizable(boolean resizable, int maxWidth, int maxHeight);
 
     }
     
@@ -128,12 +131,15 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
             getView().updateChart(conf);
             updateFilterStatus();
             applyPropertiesToView();
+        
+        if (displayerSettings.isResizable()) {
+            getView().setResizable(displayerSettings.isResizable(),
+                                   displayerSettings.getChartWidth(),
+                                   displayerSettings.getChartHeight());
         }
     }
 
     protected C3ChartConf buildConfiguration() {
-        double width = displayerSettings.getChartWidth();
-        double height = displayerSettings.getChartHeight();
         C3AxisInfo axis = createAxis();
         C3ChartData data = createData();
         C3Point point = createPoint();
@@ -141,8 +147,9 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         C3Legend legend = factory.c3Legend(displayerSettings.isChartShowLegend(), 
                                            getLegendPosition());
         C3Color color = createColor();
+        C3ChartSize size = createSize();
         return factory.c3ChartConf(
-                    factory.c3ChartSize(width, height),
+                    size,
                     data,
                     axis,
                     factory.c3Grid(true, true),
@@ -158,11 +165,20 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         return factory.c3Color(new String[0]);
     }
 
+    protected C3ChartSize createSize() {
+        C3ChartSize size = null;
+        if (! displayerSettings.isResizable()) {
+            size = factory.c3ChartSize(displayerSettings.getChartWidth(), 
+                                       displayerSettings.getChartHeight());
+        } 
+        return size;
+    }
+
     protected C3Padding createPadding() {
         return factory.c3Padding(displayerSettings.getChartMarginTop(), 
-                                displayerSettings.getChartMarginRight(), 
-                                displayerSettings.getChartMarginBottom(), 
-                                displayerSettings.getChartMarginLeft());
+                                 displayerSettings.getChartMarginRight(), 
+                                 displayerSettings.getChartMarginBottom(), 
+                                 displayerSettings.getChartMarginLeft());
     }
 
     protected C3Point createPoint() {
