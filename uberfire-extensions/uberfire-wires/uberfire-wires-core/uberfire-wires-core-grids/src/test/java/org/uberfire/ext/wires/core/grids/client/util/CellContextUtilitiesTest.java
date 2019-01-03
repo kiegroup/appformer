@@ -26,9 +26,10 @@ import com.ait.lienzo.test.LienzoMockitoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
-import org.uberfire.ext.wires.core.grids.client.model.GridRow;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridData;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridRow;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellEditContext;
@@ -37,6 +38,7 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl.BaseGridRendererHelper;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -69,6 +71,9 @@ public class CellContextUtilitiesTest {
 
     @Mock
     private BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation;
+
+    @Captor
+    private ArgumentCaptor<GridBodyCellEditContext> gridBodyCellEditContextCaptor;
 
     private Point2D rp = new Point2D(0, 0);
 
@@ -280,38 +285,79 @@ public class CellContextUtilitiesTest {
 
     @Test
     public void testEditWhenHeaderCellSelected() {
-        final GridColumn.HeaderMetaData headerMetaData = mock(GridColumn.HeaderMetaData.class);
-        final GridColumn<?> gridColumn = mockGridColumn(100.0, Arrays.asList(headerMetaData));
+        final GridColumn.HeaderMetaData headerMetaDataC1 = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn.HeaderMetaData headerMetaDataC2 = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn<?> gridColumnOne = mockGridColumn(100.0, Arrays.asList(headerMetaDataC1));
+        final GridColumn<?> gridColumnTwo = mockGridColumn(100.0, Arrays.asList(headerMetaDataC2));
 
-        doReturn(ci).when(gridRendererHelper).getColumnInformation(50.0);
-        doReturn(gridColumn).when(ci).getColumn();
+        doReturn(0).when(gridColumnOne).getIndex();
+        doReturn(1).when(gridColumnTwo).getIndex();
+
+        final double secondColumnXCoordinate = gridColumnOne.getWidth() + gridColumnTwo.getWidth() / 2;
+
+        doReturn(ci).when(gridRendererHelper).getColumnInformation(secondColumnXCoordinate);
+        doReturn(gridColumnOne.getWidth()).when(gridRendererHelper).getColumnOffset(gridColumnTwo);
+        doReturn(gridColumnTwo).when(ci).getColumn();
         doReturn(0.0).when(ci).getOffsetX();
-        doReturn(0).when(ci).getUiColumnIndex();
+        doReturn(1).when(ci).getUiColumnIndex();
 
-        gridWidget.getModel().appendColumn(gridColumn);
-        gridWidget.getModel().selectHeaderCell(0, 0);
+        doReturn(Arrays.asList(gridColumnOne, gridColumnTwo)).when(ri).getAllColumns();
+
+        gridWidget.getModel().appendColumn(gridColumnOne);
+        gridWidget.getModel().appendColumn(gridColumnTwo);
+        gridWidget.getModel().selectHeaderCell(0, 1);
 
         CellContextUtilities.editSelectedCell(gridWidget);
 
-        verify(headerMetaData).edit(any(GridBodyCellEditContext.class));
+        verify(headerMetaDataC1, never()).edit(any(GridBodyCellEditContext.class));
+        verify(headerMetaDataC2).edit(gridBodyCellEditContextCaptor.capture());
+        final GridBodyCellEditContext gridBodyCellEditContext = gridBodyCellEditContextCaptor.getValue();
+        assertThat(gridBodyCellEditContext)
+                .hasFieldOrPropertyWithValue("columnIndex", 1)
+                .hasFieldOrPropertyWithValue("rowIndex", 0);
+
         verify(gridWidget, never()).startEditingCell(anyInt(), anyInt());
         verify(gridWidget, never()).startEditingCell(any(Point2D.class));
     }
 
     @Test
-    public void testEditWhenDataCellSelected() {
+    public void testEditWhenDataCellSelectedSecondRow() {
         final GridColumn.HeaderMetaData headerMetaData = mock(GridColumn.HeaderMetaData.class);
         final GridColumn<?> gridColumn = mockGridColumn(100.0, Arrays.asList(headerMetaData));
-        final GridRow gridRow = new BaseGridRow();
+
+        doReturn(0).when(gridColumn).getIndex();
 
         gridWidget.getModel().appendColumn(gridColumn);
-        gridWidget.getModel().appendRow(gridRow);
-        gridWidget.getModel().selectCell(0, 0);
+        gridWidget.getModel().appendRow(new BaseGridRow());
+        gridWidget.getModel().appendRow(new BaseGridRow());
+        gridWidget.getModel().selectCell(1, 0);
 
         CellContextUtilities.editSelectedCell(gridWidget);
 
         verify(headerMetaData, never()).edit(any(GridBodyCellEditContext.class));
-        verify(gridWidget).startEditingCell(0, 0);
+        verify(gridWidget).startEditingCell(1, 0);
+    }
+
+    @Test
+    public void testEditWhenDataCellSelectedSecondColumn() {
+        final GridColumn.HeaderMetaData headerMetaDataC1 = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn.HeaderMetaData headerMetaDataC2 = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn<?> gridColumnOne = mockGridColumn(100.0, Arrays.asList(headerMetaDataC1));
+        final GridColumn<?> gridColumnTwo = mockGridColumn(100.0, Arrays.asList(headerMetaDataC2));
+
+        doReturn(0).when(gridColumnOne).getIndex();
+        doReturn(1).when(gridColumnTwo).getIndex();
+
+        gridWidget.getModel().appendColumn(gridColumnOne);
+        gridWidget.getModel().appendColumn(gridColumnTwo);
+        gridWidget.getModel().appendRow(new BaseGridRow());
+        gridWidget.getModel().selectCell(0, 1);
+
+        CellContextUtilities.editSelectedCell(gridWidget);
+
+        verify(headerMetaDataC1, never()).edit(any(GridBodyCellEditContext.class));
+        verify(headerMetaDataC2, never()).edit(any(GridBodyCellEditContext.class));
+        verify(gridWidget).startEditingCell(0, 1);
     }
 
     private GridColumn<?> mockGridColumn(final double width) {
