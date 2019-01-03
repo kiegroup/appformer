@@ -19,29 +19,29 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.uberfire</groupId>
-    <artifactId>uberfire-showcase</artifactId>
+    <artifactId>uberfire-parent</artifactId>
     <version>2.13.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
+  <artifactId>appformer-js-editors</artifactId>
 
-  <artifactId>uberfire-showcase-react-components</artifactId>
   <packaging>jar</packaging>
+  <name>AppFormer JS Editors</name>
 
-  <name>UberFire Showcase React Components</name>
-  <description>UberFire Showcase React Components</description>
+  <description>AppFormer JS Editors</description>
 
   <build>
-  <resources>
-    <resource>
-      <directory>src/main/resources</directory>
-      <excludes>
-        <exclude>**/node_modules/**</exclude>
-        <exclude>**/dist/**</exclude>
-      </excludes>
-    </resource>
-  </resources>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>**/node_modules/**</exclude>
+          <exclude>**/dist/**</exclude>
+        </excludes>
+      </resource>
+    </resources>
   </build>
 
 </project>
