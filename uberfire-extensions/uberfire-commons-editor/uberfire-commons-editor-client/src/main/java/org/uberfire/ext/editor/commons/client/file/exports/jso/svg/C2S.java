@@ -20,20 +20,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.management.Attribute;
-
 import elemental2.core.Array;
 import elemental2.dom.CanvasGradient;
 import elemental2.dom.Element;
 import elemental2.dom.HTMLCanvasElement;
 import elemental2.dom.ImageData;
-import elemental2.dom.Node;
 import elemental2.dom.TextMetrics;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
-import org.jboss.errai.codegen.Parameter;
 
 /**
  * This is a JsInterop class responsible to make the interface to the <b>canvas2svg</b> library,
@@ -52,6 +48,9 @@ class C2S {
         settings.setCtx(nativeContext);
         C2S c2S = new C2S(settings);
         c2S.setImageSmoothingEnabled(false);
+        //setting the viewBox on the svg root, this is necessary to scaling th svg on html
+        final String viewBox = "0 0 " + width + " " + height;
+        c2S.__root.setAttribute("viewBox", viewBox);
         return c2S;
     }
 
@@ -257,7 +256,7 @@ class C2S {
     public Element __currentElement;
 
     @JsProperty
-    public Node __root;
+    public Element __root;
 
     @JsProperty
     public Object __currentElementsToStyle;
