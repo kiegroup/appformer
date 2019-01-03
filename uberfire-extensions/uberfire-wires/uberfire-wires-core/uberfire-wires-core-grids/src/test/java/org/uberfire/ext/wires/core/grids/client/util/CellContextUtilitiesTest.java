@@ -17,6 +17,7 @@
 package org.uberfire.ext.wires.core.grids.client.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ait.lienzo.client.core.shape.Viewport;
@@ -27,7 +28,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
+import org.uberfire.ext.wires.core.grids.client.model.GridRow;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridData;
+import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridRow;
+import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellEditContext;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer;
@@ -35,8 +39,12 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(LienzoMockitoTestRunner.class)
 public class CellContextUtilitiesTest {
@@ -255,6 +263,55 @@ public class CellContextUtilitiesTest {
         assertEquals(100.0,
                      context.getCellWidth(),
                      0.0);
+    }
+
+    @Test
+    public void testEditWhenNoCellSelected() {
+        final GridColumn.HeaderMetaData headerMetaData = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn<?> gridColumn = mockGridColumn(100.0, Arrays.asList(headerMetaData));
+        gridWidget.getModel().appendColumn(gridColumn);
+
+        CellContextUtilities.editSelectedCell(gridWidget);
+
+        verify(headerMetaData, never()).edit(any(GridBodyCellEditContext.class));
+        verify(gridWidget, never()).startEditingCell(anyInt(), anyInt());
+        verify(gridWidget, never()).startEditingCell(any(Point2D.class));
+    }
+
+    @Test
+    public void testEditWhenHeaderCellSelected() {
+        final GridColumn.HeaderMetaData headerMetaData = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn<?> gridColumn = mockGridColumn(100.0, Arrays.asList(headerMetaData));
+
+        doReturn(ci).when(gridRendererHelper).getColumnInformation(50.0);
+        doReturn(gridColumn).when(ci).getColumn();
+        doReturn(0.0).when(ci).getOffsetX();
+        doReturn(0).when(ci).getUiColumnIndex();
+
+        gridWidget.getModel().appendColumn(gridColumn);
+        gridWidget.getModel().selectHeaderCell(0, 0);
+
+        CellContextUtilities.editSelectedCell(gridWidget);
+
+        verify(headerMetaData).edit(any(GridBodyCellEditContext.class));
+        verify(gridWidget, never()).startEditingCell(anyInt(), anyInt());
+        verify(gridWidget, never()).startEditingCell(any(Point2D.class));
+    }
+
+    @Test
+    public void testEditWhenDataCellSelected() {
+        final GridColumn.HeaderMetaData headerMetaData = mock(GridColumn.HeaderMetaData.class);
+        final GridColumn<?> gridColumn = mockGridColumn(100.0, Arrays.asList(headerMetaData));
+        final GridRow gridRow = new BaseGridRow();
+
+        gridWidget.getModel().appendColumn(gridColumn);
+        gridWidget.getModel().appendRow(gridRow);
+        gridWidget.getModel().selectCell(0, 0);
+
+        CellContextUtilities.editSelectedCell(gridWidget);
+
+        verify(headerMetaData, never()).edit(any(GridBodyCellEditContext.class));
+        verify(gridWidget).startEditingCell(0, 0);
     }
 
     private GridColumn<?> mockGridColumn(final double width) {
