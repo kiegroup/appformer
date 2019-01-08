@@ -10,6 +10,7 @@ import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.gwtbootstrap3.client.ui.Label;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
@@ -78,10 +79,11 @@ public abstract class C3DisplayerView<P extends C3Displayer>
     
     @Override
     public void noData() {
-        FlowPanel noDataPanel = new FlowPanel();
+        FlowPanel noDataPanel = GWT.create(FlowPanel.class);
         noDataPanel.setWidth(width + "px");
         noDataPanel.setHeight(height + "px");
-        Label lblNoData = new Label(C3DisplayerConstants.INSTANCE.common_noData());
+        Label lblNoData = GWT.create(Label.class);
+        lblNoData.setText(C3DisplayerConstants.INSTANCE.common_noData());
         noDataPanel.add(lblNoData);
         displayerPanel.clear();
         displayerPanel.add(noDataPanel);
@@ -91,7 +93,6 @@ public abstract class C3DisplayerView<P extends C3Displayer>
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
-        
     }
     
 }
