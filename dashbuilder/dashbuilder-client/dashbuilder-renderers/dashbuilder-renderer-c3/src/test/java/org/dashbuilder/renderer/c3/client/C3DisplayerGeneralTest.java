@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class C3DisplayerGeneralTests extends C3BaseTest {
+public class C3DisplayerGeneralTest extends C3BaseTest {
     
     private static final boolean RECEIVE_NOTIFICATION = true;
     private static final String LEGEND_POSITION = "right";

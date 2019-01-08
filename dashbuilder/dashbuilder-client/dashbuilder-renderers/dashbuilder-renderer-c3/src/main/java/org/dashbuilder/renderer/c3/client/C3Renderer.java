@@ -34,6 +34,7 @@ import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.bar.C3BarChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.bubble.C3BubbleChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.gauge.C3GaugeDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.pie.C3PieChartDisplayer;
 import org.dashbuilder.renderer.c3.client.exports.ResourcesInjector;
@@ -57,7 +58,8 @@ public class C3Renderer extends AbstractRendererLibrary {
                                                                        BARCHART, 
                                                                        PIECHART, 
                                                                        AREACHART, 
-                                                                       BUBBLECHART);
+                                                                       BUBBLECHART,
+                                                                       METERCHART);
     
     @Override
     public String getUUID() {
@@ -104,6 +106,8 @@ public class C3Renderer extends AbstractRendererLibrary {
                 break;
             case BUBBLECHART:
                 displayer = beanManager.lookupBean(C3BubbleChartDisplayer.class).newInstance();
+            case METERCHART:
+                displayer = beanManager.lookupBean(C3GaugeDisplayer.class).newInstance();                
                 break;
             default:
                 return null;
@@ -133,7 +137,7 @@ public class C3Renderer extends AbstractRendererLibrary {
                 displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
                                        .newInstance()
                                        .stacked();
-                break;
+                break;                
             default:
                 displayer = beanManager.lookupBean(C3BarChartDisplayer.class)
                                        .newInstance()
