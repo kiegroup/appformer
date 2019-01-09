@@ -1,4 +1,4 @@
-package org.dashbuilder.renderer.c3.client.charts.gauge;
+package org.dashbuilder.renderer.c3.client.charts.meter;
 
 import java.util.List;
 
@@ -13,8 +13,6 @@ import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
-import org.dashbuilder.renderer.c3.client.C3XYDisplayer;
-import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Color;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Gauge;
@@ -22,10 +20,10 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Threshold;
 
 @Dependent
-public class C3GaugeDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.View> {
+public class C3MeterChartDisplayer extends C3Displayer<C3Displayer.View> {
     
     
-    public interface View extends C3Displayer.View<C3GaugeDisplayer> {
+    public interface View extends C3Displayer.View<C3MeterChartDisplayer> {
 
         String[] getColorPattern();
     }
@@ -33,7 +31,7 @@ public class C3GaugeDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.View> {
     private View view;
     
     @Inject
-    public C3GaugeDisplayer(View view, FilterLabelSet filterLabelSet, C3JsTypesFactory factory) {
+    public C3MeterChartDisplayer(View view, FilterLabelSet filterLabelSet, C3JsTypesFactory factory) {
         super(filterLabelSet, factory);
         this.view = view;
         this.view.init(this);
@@ -84,10 +82,10 @@ public class C3GaugeDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.View> {
     @Override
     protected String[][] createSeries() {
         List<DataColumn> columns = dataSet.getColumns();
-        String[][] output = null;
+        String[][] output = new String[0][0];
         if (columns.size() == 1) {
             output = new String[1][];
-            output[0] = extractedSingleColumnValues(columns.get(0));
+            output[0] = extractSingleColumnValues(columns.get(0));
         } else {
             DataColumn groupsColumn = columns.get(0);
             DataColumn valuesColumn = columns.get(1);
@@ -116,31 +114,38 @@ public class C3GaugeDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.View> {
         return factory.c3Gauge(meterStart, meterEnd);
     }
 
-    private String[][] extractGroupingValues(DataColumn groupsColumn, DataColumn valuesColumn) {
+    String[][] extractGroupingValues(DataColumn groupsColumn, DataColumn valuesColumn) {
         int n = groupsColumn.getValues().size();
         String[][] output = new String[n][2];
         for (int i = 0; i < n; i++) {
             Object group = groupsColumn.getValues().get(i);
             Object value = valuesColumn.getValues().get(i);
+            String groupStr = "", valueStr = "";
             if (group != null) {
-                output[i][0] = group.toString();
-            } 
-            if (value != null) {
-                output[i][1] = value.toString();
+                groupStr = group.toString();
+            } else {
+                
             }
+            if (value != null) {
+                valueStr = value.toString();
+            }
+            output[i][0] = groupStr;
+            output[i][1] = valueStr;
         }
         return output;
     }
 
-    private String[] extractedSingleColumnValues(DataColumn dataColumn) {
+    String[] extractSingleColumnValues(DataColumn dataColumn) {
         List<?> values = dataColumn.getValues();
         String[] data = new String[values.size() + 1];
         data[0] = dataColumn.getId();
         for (int i = 0; i < values.size(); i++) {
             Object value = values.get(i);
+            String valueStr = "";
             if (value != null) {
-                data[i + 1] = values.get(i).toString();
-            }
+                valueStr = values.get(i).toString();
+            } 
+            data[i + 1] = valueStr;
         }
         return data;
     }

@@ -86,6 +86,10 @@ public class C3JsTypesFactory {
         return C3AxisLabel.create(text, position);
     }
     
+    public C3Color c3Color(String[] pattern) {
+        return C3Color.create(pattern, c3Threshold(new int[0]));
+    }
+    
     public C3Color c3Color(String[] pattern, C3Threshold threshold) {
         return C3Color.create(pattern, threshold);
     }

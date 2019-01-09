@@ -155,7 +155,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     }
 
     protected C3Color createColor() {
-        return factory.c3Color(new String[0], null);
+        return factory.c3Color(new String[0]);
     }
 
     protected C3Padding createPadding() {

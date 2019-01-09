@@ -22,7 +22,6 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,6 +48,7 @@ public class C3DisplayerGeneralTest extends C3BaseTest {
                                                                   RECEIVE_NOTIFICATION, 
                                                                   RECEIVE_NOTIFICATION)
                                                         .buildSettings();
+    
     private C3LineChartDisplayer displayer;
     
     @Before 
@@ -108,5 +108,6 @@ public class C3DisplayerGeneralTest extends C3BaseTest {
         C3LineChartDisplayer.View view = displayer.getView();
         verify(view).noData();
     }
+    
 
 }

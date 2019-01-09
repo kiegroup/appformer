@@ -8,6 +8,7 @@ import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.client.AbstractDisplayerTest;
 import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.meter.C3MeterChartDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisY;
@@ -40,6 +41,9 @@ public class C3BaseTest extends AbstractDisplayerTest {
     C3LineChartDisplayer.View c3LineChartview;
     @Mock
     C3AreaChartDisplayer.View c3AreaChartview;
+    @Mock
+    C3MeterChartDisplayer.View c3Meterview;
+
 
     public C3LineChartDisplayer c3LineChartDisplayer(DisplayerSettings settings) {
         c3Factory = mockC3JsTypesFactory();
@@ -49,6 +53,11 @@ public class C3BaseTest extends AbstractDisplayerTest {
     public C3AreaChartDisplayer c3AreaChartDisplayer(DisplayerSettings settings) {
         c3Factory = mockC3JsTypesFactory();
         return initDisplayer(new C3AreaChartDisplayer(c3AreaChartview, filterLabelSet, c3Factory), settings);
+    }
+    
+    public C3MeterChartDisplayer c3MeterChartDisplayer(DisplayerSettings settings) {
+        c3Factory = mockC3JsTypesFactory();
+        return initDisplayer(new C3MeterChartDisplayer(c3Meterview, filterLabelSet, c3Factory), settings);
     }
     
     private C3JsTypesFactory mockC3JsTypesFactory() {
