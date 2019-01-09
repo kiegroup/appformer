@@ -311,8 +311,8 @@ public class GitSSHServiceTest {
         sshService.start();
         assertTrue(sshService.isRunning());
 
-        List<String> ciphersReaded = sshService.getCipherFactoriesNames();
-        List<String> macsReaded = sshService.getMacFactoriesNames();
+        List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
+        List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
         assertThat(ciphersReaded.containsAll(Arrays.asList("aes128-ctr",
@@ -357,8 +357,8 @@ public class GitSSHServiceTest {
         sshService.start();
         assertTrue(sshService.isRunning());
 
-        List<String> ciphersReaded = sshService.getCipherFactoriesNames();
-        List<String> macsReaded = sshService.getMacFactoriesNames();
+        List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
+        List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
         assertThat(ciphersReaded.containsAll(Arrays.asList("aes128-ctr",
@@ -403,8 +403,8 @@ public class GitSSHServiceTest {
         sshService.start();
         assertTrue(sshService.isRunning());
 
-        List<String> ciphersReaded = sshService.getCipherFactoriesNames();
-        List<String> macsReaded = sshService.getMacFactoriesNames();
+        List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
+        List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
         assertThat(ciphersReaded.containsAll(Arrays.asList("aes128-ctr",
@@ -448,8 +448,8 @@ public class GitSSHServiceTest {
         sshService.start();
         assertTrue(sshService.isRunning());
 
-        List<String> ciphersReaded = sshService.getCipherFactoriesNames();
-        List<String> macsReaded = sshService.getMacFactoriesNames();
+        List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
+        List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
         assertThat(ciphersReaded.containsAll(Arrays.asList("aes128-ctr",
@@ -473,4 +473,96 @@ public class GitSSHServiceTest {
 
         assertFalse(sshService.isRunning());
     }
+
+    @Test
+    public void testCheckNullCiphersAndMacs() throws Exception {
+        final GitSSHService sshService = new GitSSHService();
+        final File certDir = createTempDirectory();
+
+        String idleTimeout = "10000";
+        sshService.setup(certDir,
+                         null,
+                         idleTimeout,
+                         "RSA",
+                         mock(ReceivePackFactory.class),
+                         mock(JGitFileSystemProvider.RepositoryResolverImpl.class),
+                         executorService,
+                         null,
+                         null);
+
+        sshService.start();
+        assertTrue(sshService.isRunning());
+
+        List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
+        List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
+
+        assertThat(ciphersReaded).hasSize(7);
+        assertThat(ciphersReaded.containsAll(Arrays.asList("aes128-ctr",
+                                                           "aes192-cbc",
+                                                           "aes192-ctr",
+                                                           "aes256-cbc",
+                                                           "aes256-ctr",
+                                                           "arcfour128",
+                                                           "arcfour256")));
+        assertThat(macsReaded).hasSize(6);
+        assertThat(macsReaded.containsAll(Arrays.asList("HmacMD5",
+                                                        "HmacMD5",
+                                                        "HmacSHA1",
+                                                        "HmacSHA1",
+                                                        "HmacSHA256",
+                                                        "HmacSHA512")));
+
+        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+
+        sshService.stop();
+
+        assertFalse(sshService.isRunning());
+    }
+
+    @Test
+    public void testWithWrongCiphersAndMacs() throws Exception {
+        final GitSSHService sshService = new GitSSHService();
+        final File certDir = createTempDirectory();
+
+        String idleTimeout = "10000";
+        String ciphers = "aes126-cbc,aes124-ctr,aes192-cbc,aes192-ctr,aes255-cbc,aes256-ctr,arcfour128,arcfour256,blowfish-cbc,3des-cbc";
+        sshService.setup(certDir,
+                         null,
+                         idleTimeout,
+                         "RSA",
+                         mock(ReceivePackFactory.class),
+                         mock(JGitFileSystemProvider.RepositoryResolverImpl.class),
+                         executorService,
+                         ciphers,
+                         "");
+
+        sshService.start();
+        assertTrue(sshService.isRunning());
+
+        List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
+        List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
+
+        assertThat(ciphersReaded).hasSize(5);
+        assertThat(ciphersReaded.containsAll(Arrays.asList("aes128-ctr",
+                                                           "aes192-cbc",
+                                                           "aes192-ctr",
+                                                           "aes256-cbc",
+                                                           "aes256-ctr",
+                                                           "arcfour128",
+                                                           "arcfour256")));
+        assertThat(macsReaded).hasSize(6);
+        assertThat(macsReaded.containsAll(Arrays.asList("HmacMD5",
+                                                        "HmacMD5",
+                                                        "HmacSHA1",
+                                                        "HmacSHA1",
+                                                        "HmacSHA256",
+                                                        "HmacSHA512")));
+
+        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+
+        sshService.stop();
+
+        assertFalse(sshService.isRunning());
+    }
+
 }

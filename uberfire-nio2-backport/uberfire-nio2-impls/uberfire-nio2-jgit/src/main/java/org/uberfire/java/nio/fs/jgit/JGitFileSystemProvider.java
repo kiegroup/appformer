@@ -370,7 +370,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider, Dispos
                             new RepositoryResolverImpl<>(),
                             executorService,
                             config.getGitSshCiphers(),
-                            config.getGitSshMACS());
+                            config.getGitSshMACs());
 
         gitSSHService.start();
     }

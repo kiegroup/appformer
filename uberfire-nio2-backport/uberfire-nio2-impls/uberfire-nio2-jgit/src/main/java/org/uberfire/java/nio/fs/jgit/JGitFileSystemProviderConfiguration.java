@@ -115,7 +115,7 @@ public class JGitFileSystemProviderConfiguration {
     private String sshPassphrase;
     private String sshIdleTimeout;
     private String gitSshCiphers;
-    private String gitSshMACS;
+    private String gitSshMACs;
 
     private File gitReposParentDir;
 
@@ -223,7 +223,7 @@ public class JGitFileSystemProviderConfiguration {
         final ConfigProperties.ConfigProperty jgitSshMacs = systemConfig.get(GIT_SSH_MACS, null);
 
         gitSshCiphers = jgitSshCiphers.getValue();
-        gitSshMACS = jgitSshMacs.getValue();
+        gitSshMACs = jgitSshMacs.getValue();
 
         sshOverHttpProxy = sshOverHttpProxyProp.getBooleanValue();
         if (sshOverHttpProxy) {
@@ -452,5 +452,5 @@ public class JGitFileSystemProviderConfiguration {
 
     public String getGitSshCiphers() { return gitSshCiphers; }
 
-    public String getGitSshMACS() { return gitSshMACS; }
+    public String getGitSshMACs() { return gitSshMACs; }
 }
