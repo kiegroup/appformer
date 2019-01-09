@@ -24,17 +24,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import org.apache.sshd.common.NamedResource;
 import org.apache.sshd.common.cipher.BuiltinCiphers;
 import org.apache.sshd.common.mac.BuiltinMacs;
 import org.apache.sshd.common.util.security.SecurityUtils;
-import org.apache.sshd.server.ServerBuilder;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.CachingPublicKeyAuthenticator;
 import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
@@ -59,7 +53,8 @@ public class GitSSHService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GitSSHService.class);
 
-    private static List<BuiltinCiphers> managedCiphers =
+    //aes128-ctr, aes192-ctr, aes256-ctr, arcfour128, arcfour256, aes192-cbc, aes256-cbc
+    private final List<BuiltinCiphers> managedCiphers =
             Collections.unmodifiableList(Arrays.asList(
                     BuiltinCiphers.aes128ctr,
                     BuiltinCiphers.aes192ctr,
@@ -70,7 +65,8 @@ public class GitSSHService {
                     BuiltinCiphers.aes256cbc
             ));
 
-    private static List<BuiltinMacs> managedMACs =
+    // hmac-md5, hmac-md5-96, hmac-sha1, hmac-sha1-96, hmac-sha2-256, hmac-sha2-512
+    private final List<BuiltinMacs> managedMACs =
             Collections.unmodifiableList(Arrays.asList(
                     BuiltinMacs.hmacmd5,
                     BuiltinMacs.hmacsha1,
@@ -94,6 +90,16 @@ public class GitSSHService {
                     .macFactories(
                     setUpBuiltinFactories(false,
                                           checkAndSetGitMacs(macsConfigured))).build();
+    }
+
+    public void setup(final File certDir,
+                      final InetSocketAddress inetSocketAddress,
+                      final String sshIdleTimeout,
+                      final String algorithm,
+                      final ReceivePackFactory receivePackFactory,
+                      final JGitFileSystemProvider.RepositoryResolverImpl<BaseGitCommand> repositoryResolver,
+                      final ExecutorService executorService) {
+        setup(certDir, inetSocketAddress, sshIdleTimeout, algorithm, receivePackFactory, repositoryResolver, executorService, null, null);
     }
 
     public void setup(final File certDir,
@@ -224,7 +230,7 @@ public class GitSSHService {
             List<BuiltinMacs> macs = new ArrayList<>();
             List<String> macsInput = Arrays.asList(gitSshMacs.split(","));
             for (String macCode : macsInput) {
-                BuiltinMacs mac = BuiltinMacs.valueOf(macCode.trim().toLowerCase());
+                BuiltinMacs mac = BuiltinMacs.fromFactoryName(macCode.trim().toLowerCase());
                 if (mac != null && managedMACs.contains(mac)) {
                     macs.add(mac);
                     LOG.info("Added MAC {} to the git ssh configuration. ", mac);
@@ -286,5 +292,13 @@ public class GitSSHService {
 
     public void setSshAuthenticator(SSHAuthenticator sshAuthenticator) {
         this.sshAuthenticator = sshAuthenticator;
+    }
+
+    public List<BuiltinCiphers> getManagedCiphers() {
+        return managedCiphers;
+    }
+
+    public List<BuiltinMacs> getManagedMACs() {
+        return managedMACs;
     }
 }
