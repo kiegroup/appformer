@@ -200,17 +200,15 @@ public class GitSSHService {
         if (gitSshCiphers == null || gitSshCiphers.isEmpty()) {
             return managedCiphers;
         } else {
-
-            List<String> ciphers = Arrays.asList(gitSshCiphers.split(","))
-                    .stream()
-                    .map(String::trim).collect(Collectors.toList());
-
             List<BuiltinCiphers> ciphersHandled = new ArrayList<>();
+            List<String> ciphers = Arrays.asList(gitSshCiphers.split(","));
             for (String cipherCode : ciphers) {
                 BuiltinCiphers cipher = BuiltinCiphers.fromFactoryName(cipherCode.trim().toLowerCase());
                 if (cipher != null && managedCiphers.contains(cipher)) {
                     ciphersHandled.add(cipher);
                     LOG.info("Added Cipher {} to the git ssh configuration. ", cipher);
+                }else{
+                    LOG.info("Cipher {} not handled in git ssh configuration. ", cipher);
                 }
             }
             return ciphersHandled;
@@ -223,15 +221,15 @@ public class GitSSHService {
             return managedMACs;
         } else {
 
-            List<String> macsInput = Arrays.asList(gitSshMacs.split(","))
-                    .stream()
-                    .map(String::trim).collect(Collectors.toList());
-            List<BuiltinMacs> macs = new ArrayList<>(macsInput.size());
+            List<BuiltinMacs> macs = new ArrayList<>();
+            List<String> macsInput = Arrays.asList(gitSshMacs.split(","));
             for (String macCode : macsInput) {
                 BuiltinMacs mac = BuiltinMacs.valueOf(macCode.trim().toLowerCase());
                 if (mac != null && managedMACs.contains(mac)) {
                     macs.add(mac);
                     LOG.info("Added MAC {} to the git ssh configuration. ", mac);
+                }else{
+                    LOG.info("MAC {} not handled in git ssh configuration. ", mac);
                 }
             }
             return macs;
