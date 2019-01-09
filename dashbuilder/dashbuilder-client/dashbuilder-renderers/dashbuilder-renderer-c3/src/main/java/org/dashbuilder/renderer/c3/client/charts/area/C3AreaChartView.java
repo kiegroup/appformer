@@ -8,11 +8,10 @@ import com.google.gwt.dom.client.NodeList;
 
 public class C3AreaChartView 
        extends C3DisplayerView<C3AreaChartDisplayer> 
-       implements C3AreaChartDisplayer.View{
+       implements C3AreaChartDisplayer.View {
 
     @Override
     public void updateChart(C3ChartConf conf) {
-        conf.setOnrendered(() -> fixAreaOpacity()); 
         super.updateChart(conf);
         fixAreaOpacity();
     }
@@ -22,7 +21,8 @@ public class C3AreaChartView
         return "area";
     }
     
-    private void fixAreaOpacity() {
+    @Override
+    public void fixAreaOpacity() {
         // This is a workaround for: https://github.com/c3js/c3/issues/2551
         if (chart != null) {
             NodeList<Element> paths = chart.getElement().getElementsByTagName("path");
