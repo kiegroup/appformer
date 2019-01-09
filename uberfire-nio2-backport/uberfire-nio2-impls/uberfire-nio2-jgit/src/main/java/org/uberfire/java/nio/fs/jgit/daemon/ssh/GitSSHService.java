@@ -53,7 +53,6 @@ public class GitSSHService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GitSSHService.class);
 
-    //aes128-ctr, aes192-ctr, aes256-ctr, arcfour128, arcfour256, aes192-cbc, aes256-cbc
     private final List<BuiltinCiphers> managedCiphers =
             Collections.unmodifiableList(Arrays.asList(
                     BuiltinCiphers.aes128ctr,
@@ -65,7 +64,6 @@ public class GitSSHService {
                     BuiltinCiphers.aes256cbc
             ));
 
-    // hmac-md5, hmac-md5-96, hmac-sha1, hmac-sha1-96, hmac-sha2-256, hmac-sha2-512
     private final List<BuiltinMacs> managedMACs =
             Collections.unmodifiableList(Arrays.asList(
                     BuiltinMacs.hmacmd5,
@@ -214,7 +212,7 @@ public class GitSSHService {
                     ciphersHandled.add(cipher);
                     LOG.info("Added Cipher {} to the git ssh configuration. ", cipher);
                 }else{
-                    LOG.info("Cipher {} not handled in git ssh configuration. ", cipher);
+                    LOG.warn("Cipher {} not handled in git ssh configuration. ", cipher);
                 }
             }
             return ciphersHandled;
@@ -235,7 +233,7 @@ public class GitSSHService {
                     macs.add(mac);
                     LOG.info("Added MAC {} to the git ssh configuration. ", mac);
                 }else{
-                    LOG.info("MAC {} not handled in git ssh configuration. ", mac);
+                    LOG.warn("MAC {} not handled in git ssh configuration. ", mac);
                 }
             }
             return macs;
