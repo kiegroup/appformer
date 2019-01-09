@@ -178,8 +178,7 @@ public class GitSSHService {
         }));
         sshd.setPasswordAuthenticator((username, password, session) -> {
 
-            final FileSystemUser user = getUserPassAuthenticator().authenticate(username,
-                                                                                password);
+            final FileSystemUser user = getUserPassAuthenticator().authenticate(username, password);
 
             if (user == null) {
                 return false;
