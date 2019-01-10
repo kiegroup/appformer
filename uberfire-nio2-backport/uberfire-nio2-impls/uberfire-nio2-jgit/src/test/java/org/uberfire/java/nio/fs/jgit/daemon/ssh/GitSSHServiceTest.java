@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.sshd.common.NamedFactory;
+import org.apache.sshd.common.cipher.BuiltinCiphers;
 import org.apache.sshd.common.cipher.Cipher;
+import org.apache.sshd.common.mac.BuiltinMacs;
 import org.apache.sshd.common.mac.Mac;
 import org.apache.sshd.server.SshServer;
 import org.eclipse.jgit.transport.resolver.ReceivePackFactory;
@@ -294,10 +296,10 @@ public class GitSSHServiceTest {
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
-        assertThat(sshService.getManagedCiphers().containsAll(ciphersReaded));
+        checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
-        assertThat(sshService.getManagedMACs().containsAll(macsReaded));
+        checkMacsName(macsReaded);
 
         assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
 
@@ -331,10 +333,10 @@ public class GitSSHServiceTest {
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
-        assertThat(sshService.getManagedCiphers().containsAll(ciphersReaded));
+        checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
-        assertThat(sshService.getManagedMACs().containsAll(macsReaded));
+        checkMacsName(macsReaded);
 
         assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
 
@@ -368,10 +370,10 @@ public class GitSSHServiceTest {
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
-        assertThat(sshService.getManagedCiphers().containsAll(ciphersReaded));
+        checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
-        assertThat(sshService.getManagedMACs().containsAll(macsReaded));
+        checkMacsName(macsReaded);
 
         assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
 
@@ -403,10 +405,10 @@ public class GitSSHServiceTest {
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
-        assertThat(sshService.getManagedCiphers().containsAll(ciphersReaded));
+        checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
-        assertThat(sshService.getManagedMACs().containsAll(macsReaded));
+        checkMacsName(macsReaded);
 
         assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
 
@@ -438,10 +440,10 @@ public class GitSSHServiceTest {
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(7);
-        assertThat(sshService.getManagedCiphers().containsAll(ciphersReaded));
+        checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
-        assertThat(sshService.getManagedMACs().containsAll(macsReaded));
+        checkMacsName(macsReaded);
 
         assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
 
@@ -474,16 +476,28 @@ public class GitSSHServiceTest {
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
         assertThat(ciphersReaded).hasSize(5);
-        assertThat(sshService.getManagedCiphers().containsAll(ciphersReaded));
+        checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
-        assertThat(sshService.getManagedMACs().containsAll(macsReaded));
+        checkMacsName(macsReaded);
 
         assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
 
         sshService.stop();
 
         assertFalse(sshService.isRunning());
+    }
+
+    private void checkCiphersName(List<String> ciphersReaded){
+        for(String cipher : ciphersReaded){
+            assertThat(BuiltinCiphers.fromFactoryName(cipher) != null);
+        }
+    }
+
+    private void checkMacsName(List<String> macsReaded){
+        for(String mac : macsReaded){
+            assertThat(BuiltinMacs.fromFactoryName(mac) != null);
+        }
     }
 
 }

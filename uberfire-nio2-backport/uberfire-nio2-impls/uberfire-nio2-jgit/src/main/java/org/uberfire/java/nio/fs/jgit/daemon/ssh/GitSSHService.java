@@ -211,7 +211,7 @@ public class GitSSHService {
                 if (cipher != null && managedCiphers.contains(cipher)) {
                     ciphersHandled.add(cipher);
                     LOG.info("Added Cipher {} to the git ssh configuration. ", cipher);
-                }else{
+                } else {
                     LOG.warn("Cipher {} not handled in git ssh configuration. ", cipher);
                 }
             }
@@ -232,7 +232,7 @@ public class GitSSHService {
                 if (mac != null && managedMACs.contains(mac)) {
                     macs.add(mac);
                     LOG.info("Added MAC {} to the git ssh configuration. ", mac);
-                }else{
+                } else {
                     LOG.warn("MAC {} not handled in git ssh configuration. ", mac);
                 }
             }

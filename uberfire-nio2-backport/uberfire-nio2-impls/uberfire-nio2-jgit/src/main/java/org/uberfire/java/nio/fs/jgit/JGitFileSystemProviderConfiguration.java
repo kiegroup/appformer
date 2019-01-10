@@ -74,7 +74,7 @@ public class JGitFileSystemProviderConfiguration {
     public static final String GIT_ENV_KEY_INIT = "init";
     public static final String GIT_ENV_KEY_MIRROR = "mirror";
     public static final String SCHEME = "git";
-    public static final String GIT_SSH_CIPHERS = "org.uberfire.nio.git.ssh.cyphers";
+    public static final String GIT_SSH_CIPHERS = "org.uberfire.nio.git.ssh.ciphers";
     public static final String GIT_SSH_MACS = "org.uberfire.nio.git.ssh.macs";
     public static final int SCHEME_SIZE = (SCHEME + "://").length();
     public static final int DEFAULT_SCHEME_SIZE = ("default://").length();
