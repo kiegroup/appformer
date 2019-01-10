@@ -123,8 +123,7 @@ public class GitSSHService {
         buildSSHServer(gitSshCiphers,
                        gitSshMacs);
 
-        sshd.getProperties().put(SshServer.IDLE_TIMEOUT,
-                                 sshIdleTimeout);
+        sshd.getProperties().put(SshServer.IDLE_TIMEOUT, sshIdleTimeout);
 
         if (inetSocketAddress != null) {
             sshd.setHost(inetSocketAddress.getHostName());
