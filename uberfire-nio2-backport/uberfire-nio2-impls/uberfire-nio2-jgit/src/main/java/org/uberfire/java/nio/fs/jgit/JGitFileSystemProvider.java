@@ -654,7 +654,8 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                    fsName,
                                    credential,
                                    config.isEnableKetch() ? leaders : null,
-                                   config.getHookDir());
+                                   config.getHookDir(),
+                                   config.isSslVerify());
                 } else if (subdirectory != null) {
                     if (isMirror) {
                         throw new UnsupportedOperationException("Cannot make mirror repository when cloning subdirectory.");
@@ -665,14 +666,16 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                                 branches,
                                                 credential,
                                                 leaders,
-                                                config.getHookDir());
+                                                config.getHookDir(),
+                                                config.isSslVerify());
                 } else {
                     git = Git.clone(repoDest,
                                     origin,
                                     isMirror,
                                     credential,
                                     config.isEnableKetch() ? leaders : null,
-                                    config.getHookDir());
+                                    config.getHookDir(),
+                                    config.isSslVerify());
                 }
             } catch (Clone.CloneException ce) {
                 fsManager.remove(fsName);
@@ -681,7 +684,8 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         } else {
             git = Git.createRepository(repoDest,
                                        config.getHookDir(),
-                                       config.isEnableKetch() ? leaders : null);
+                                       config.isEnableKetch() ? leaders : null,
+                                       config.isSslVerify());
         }
         return git;
     }

@@ -31,6 +31,7 @@ import org.eclipse.jgit.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.data.Pair;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 
 import static java.util.Collections.emptyList;
@@ -46,15 +47,31 @@ public class Clone {
     private final boolean isMirror;
     private final KetchLeaderCache leaders;
     private final File hookDir;
+    private final boolean sslVerify;
 
     private Logger logger = LoggerFactory.getLogger(Clone.class);
-
     public Clone(final File directory,
                  final String origin,
                  final boolean isMirror,
                  final CredentialsProvider credentialsProvider,
                  final KetchLeaderCache leaders,
                  final File hookDir) {
+        this(directory,
+             origin,
+             isMirror,
+             credentialsProvider,
+             leaders,
+             hookDir,
+             JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
+    }
+
+    public Clone(final File directory,
+                 final String origin,
+                 final boolean isMirror,
+                 final CredentialsProvider credentialsProvider,
+                 final KetchLeaderCache leaders,
+                 final File hookDir,
+                 final boolean sslVerify) {
         this.repoDir = checkNotNull("directory",
                                     directory);
         this.origin = checkNotEmpty("origin",
@@ -63,6 +80,7 @@ public class Clone {
         this.credentialsProvider = credentialsProvider;
         this.leaders = leaders;
         this.hookDir = hookDir;
+        this.sslVerify = sslVerify;
     }
 
     public Optional<Git> execute() {
@@ -75,7 +93,8 @@ public class Clone {
         }
 
         final Git git = Git.createRepository(repoDir,
-                                             hookDir);
+                                             hookDir,
+                                             sslVerify);
 
         if (git != null) {
             try {
