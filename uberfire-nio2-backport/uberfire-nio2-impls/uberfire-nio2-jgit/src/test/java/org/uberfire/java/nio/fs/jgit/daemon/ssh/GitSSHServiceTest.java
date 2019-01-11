@@ -490,13 +490,13 @@ public class GitSSHServiceTest {
 
     private void checkCiphersName(List<String> ciphersReaded){
         for(String cipher : ciphersReaded){
-            assertThat(BuiltinCiphers.fromFactoryName(cipher) != null);
+            assertThat(BuiltinCiphers.fromFactoryName(cipher)).isNotNull();
         }
     }
 
     private void checkMacsName(List<String> macsReaded){
         for(String mac : macsReaded){
-            assertThat(BuiltinMacs.fromFactoryName(mac) != null);
+            assertThat(BuiltinMacs.fromFactoryName(mac)).isNotNull();
         }
     }
 
