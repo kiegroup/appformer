@@ -59,6 +59,7 @@ import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.java.nio.fs.jgit.util.Git;
+import org.uberfire.mocks.SessionInfoMock;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.security.Resource;
 import org.uberfire.security.authz.AuthorizationManager;
@@ -108,7 +109,6 @@ public class OrganizationalUnitServiceTest {
     @Mock
     private AuthorizationManager authorizationManager;
 
-    @Mock
     private SessionInfo sessionInfo;
 
     @Mock
@@ -127,6 +127,7 @@ public class OrganizationalUnitServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        sessionInfo = new SessionInfoMock();
         backward = new BackwardCompatibleUtil(configurationFactory);
         organizationalUnitFactory = spy(new OrganizationalUnitFactoryImpl(repositoryService,
                                                                           backward,
@@ -149,7 +150,8 @@ public class OrganizationalUnitServiceTest {
                                                                       ioService,
                                                                       configuredRepositories);
 
-        organizationalUnitService.registeredOrganizationalUnits.put("A", orgUnit);
+        organizationalUnitService.registeredOrganizationalUnits.put("A",
+                                                                    orgUnit);
         when(authorizationManager.authorize(any(Resource.class),
                                             any(User.class))).thenReturn(false);
     }
@@ -157,15 +159,28 @@ public class OrganizationalUnitServiceTest {
     @Test
     public void testAllOrgUnits() throws Exception {
         Collection<OrganizationalUnit> orgUnits = organizationalUnitService.getAllOrganizationalUnits();
-        assertEquals(orgUnits.size(),
-                     1);
+        assertEquals(1, orgUnits.size());
     }
 
     @Test
     public void testSecuredOrgUnits() throws Exception {
         Collection<OrganizationalUnit> orgUnits = organizationalUnitService.getOrganizationalUnits();
-        assertEquals(orgUnits.size(),
-                     0);
+        assertEquals(0, orgUnits.size());
+    }
+
+    @Test
+    public void testSecuredOrgUnitsWithPermission() throws Exception {
+        when(authorizationManager.authorize(any(Resource.class),
+                                            any(User.class))).thenReturn(true);
+        Collection<OrganizationalUnit> orgUnits = organizationalUnitService.getOrganizationalUnits();
+        assertEquals(1, orgUnits.size());
+    }
+
+    @Test
+    public void testSecuredOrgUnitsToCollaborators() throws Exception {
+        when(orgUnit.getContributors()).thenReturn(Collections.singletonList(new Contributor("admin", ContributorType.OWNER)));
+        Collection<OrganizationalUnit> orgUnits = organizationalUnitService.getOrganizationalUnits();
+        assertEquals(1, orgUnits.size());
     }
 
     @Test
@@ -184,7 +199,8 @@ public class OrganizationalUnitServiceTest {
     @Test
     public void createValidOrganizationalUnitTest() {
         List<Contributor> contributors = new ArrayList<>();
-        contributors.add(new Contributor("admin", ContributorType.ADMIN));
+        contributors.add(new Contributor("admin",
+                                         ContributorType.ADMIN));
 
         setOUCreationPermission(true);
 
@@ -202,19 +218,24 @@ public class OrganizationalUnitServiceTest {
         assertEquals(contributors,
                      ou.getContributors());
 
-        final URI configFSUri = URI.create(SpacesAPI.resolveConfigFileSystemPath(SpacesAPI.Scheme.DEFAULT, "name"));
+        final URI configFSUri = URI.create(SpacesAPI.resolveConfigFileSystemPath(SpacesAPI.Scheme.DEFAULT,
+                                                                                 "name"));
         final Map<String, Object> env = new HashMap<String, Object>() {{
-            put("init", Boolean.TRUE);
-            put("internal", Boolean.TRUE);
+            put("init",
+                Boolean.TRUE);
+            put("internal",
+                Boolean.TRUE);
         }};
-        verify(ioService).newFileSystem(configFSUri, env);
+        verify(ioService).newFileSystem(configFSUri,
+                                        env);
     }
 
     @Test
     public void removeOrganizationalUnitRemovesRepositories() throws Exception {
         Repository repoA = mock(Repository.class);
         Repository repoB = mock(Repository.class);
-        List<Repository> repos = Arrays.asList(repoA, repoB);
+        List<Repository> repos = Arrays.asList(repoA,
+                                               repoB);
         when(repoA.getAlias()).thenReturn("A");
         when(repoB.getAlias()).thenReturn("B");
 
@@ -242,13 +263,18 @@ public class OrganizationalUnitServiceTest {
 
         organizationalUnitService.removeOrganizationalUnit("A");
 
-        verify(repoService).removeRepositories(eq(space), eq(new HashSet<>(Arrays.asList("A", "B"))));
+        verify(repoService).removeRepositories(eq(space),
+                                               eq(new HashSet<>(Arrays.asList("A",
+                                                                              "B"))));
         ArgumentCaptor<RemoveOrganizationalUnitEvent> eventCaptor = ArgumentCaptor.forClass(RemoveOrganizationalUnitEvent.class);
         verify(removeOrganizationalUnitEvent).fire(eventCaptor.capture());
         RemoveOrganizationalUnitEvent event = eventCaptor.getValue();
-        assertEquals(repos, event.getOrganizationalUnit().getRepositories());
+        assertEquals(repos,
+                     event.getOrganizationalUnit().getRepositories());
         verify(ioService).delete(fsPath);
         verify(directory).delete();
+        assertEquals(repos,
+                     event.getOrganizationalUnit().getRepositories());
     }
 
     private void setOUCreationPermission(final boolean hasPermission) {

@@ -15,25 +15,14 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
-import static org.dashbuilder.displayer.DisplayerSubType.AREA;
-import static org.dashbuilder.displayer.DisplayerSubType.BAR;
-import static org.dashbuilder.displayer.DisplayerSubType.BAR_STACKED;
-import static org.dashbuilder.displayer.DisplayerSubType.COLUMN;
-import static org.dashbuilder.displayer.DisplayerSubType.COLUMN_STACKED;
-import static org.dashbuilder.displayer.DisplayerSubType.DONUT;
-import static org.dashbuilder.displayer.DisplayerSubType.LINE;
-import static org.dashbuilder.displayer.DisplayerSubType.PIE;
-import static org.dashbuilder.displayer.DisplayerSubType.SMOOTH;
-import static org.dashbuilder.displayer.DisplayerType.AREACHART;
-import static org.dashbuilder.displayer.DisplayerType.BARCHART;
-import static org.dashbuilder.displayer.DisplayerType.BUBBLECHART;
-import static org.dashbuilder.displayer.DisplayerType.LINECHART;
-import static org.dashbuilder.displayer.DisplayerType.PIECHART;
+import static org.dashbuilder.displayer.DisplayerSubType.*;
+import static org.dashbuilder.displayer.DisplayerType.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -56,9 +45,20 @@ public class C3Renderer extends AbstractRendererLibrary {
 
     public static final String UUID = "c3";
     
+    @PostConstruct
+    public void prepare() {
+        ResourcesInjector.ensureInjected();
+    }
+    
     @Inject
     protected SyncBeanManager beanManager;
 
+    private static List<DisplayerType> SUPPORTED_TYPES = Arrays.asList(LINECHART, 
+                                                                       BARCHART, 
+                                                                       PIECHART, 
+                                                                       AREACHART, 
+                                                                       BUBBLECHART);
+    
     @Override
     public String getUUID() {
         return UUID;
@@ -77,16 +77,15 @@ public class C3Renderer extends AbstractRendererLibrary {
             case BARCHART:
                 return Arrays.asList(BAR, BAR_STACKED, COLUMN, COLUMN_STACKED);    
             case PIECHART:
-                return Arrays.asList(PIE, DONUT);
+                return Arrays.asList(PIE, DONUT, PIE_3D);
             case AREACHART:
-                return Arrays.asList(AREA);            
+                return Arrays.asList(AREA, AREA_STACKED);            
             default:
                 return Collections.emptyList();
         }
     }
 
     public Displayer lookupDisplayer(DisplayerSettings displayerSettings) {
-        ResourcesInjector.ensureInjected();
         DisplayerType displayerType = displayerSettings.getType();
         DisplayerSubType subtype = displayerSettings.getSubtype();
         C3Displayer displayer;
@@ -163,17 +162,21 @@ public class C3Renderer extends AbstractRendererLibrary {
     }
     
     private C3Displayer getAreaChartForSubType(DisplayerSubType subtype) {
-        return beanManager.lookupBean(C3AreaChartDisplayer.class)
+        C3AreaChartDisplayer areaChartDisplayer = beanManager.lookupBean(C3AreaChartDisplayer.class)
                 .newInstance();
+        if (subtype == AREA_STACKED) {
+            areaChartDisplayer = areaChartDisplayer.stacked();
+        }
+        return areaChartDisplayer;
     }
 
     @Override
     public List<DisplayerType> getSupportedTypes() {
-        return Arrays.asList(LINECHART, BARCHART, PIECHART, AREACHART, BUBBLECHART);
+        return SUPPORTED_TYPES;
     }
     
     @Override
     public boolean isDefault(DisplayerType type) {
-        return false;
+        return SUPPORTED_TYPES.contains(type);
     }
 }

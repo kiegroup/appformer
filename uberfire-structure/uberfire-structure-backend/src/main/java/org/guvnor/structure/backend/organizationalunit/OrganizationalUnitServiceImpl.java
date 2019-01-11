@@ -162,6 +162,10 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         configuredRepositories.reloadRepositories();
     }
 
+    public void updatedOrganizationalUnitEvent(@Observes final UpdatedOrganizationalUnitEvent updatedOrganizationalUnitEvent) {
+        loadOrganizationalUnits();
+    }
+
     public void userRemoved(final @Observes UserDeletedEvent event) {
         final String removedUserIdentifier = event.getIdentifier();
         for (OrganizationalUnit organizationalUnit : getAllOrganizationalUnits()) {
@@ -204,10 +208,10 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
 
     @Override
     public Collection<OrganizationalUnit> getOrganizationalUnits() {
-        ArrayList result = new ArrayList<>();
+        final List<OrganizationalUnit> result = new ArrayList<>();
         for (OrganizationalUnit ou : registeredOrganizationalUnits.values()) {
-            if (authorizationManager.authorize(ou,
-                                               sessionInfo.getIdentity())) {
+            if (authorizationManager.authorize(ou, sessionInfo.getIdentity())
+                    || ou.getContributors().stream().anyMatch(c -> c.getUsername().equals(sessionInfo.getIdentity().getIdentifier()))) {
                 result.add(ou);
             }
         }
@@ -496,7 +500,8 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
             try {
                 configurationService.startBatch();
                 final OrganizationalUnit originalOu = getOrganizationalUnit(groupName);
-                repositoryService.removeRepositories(originalOu.getSpace(), originalOu.getRepositories().stream().map(repo -> repo.getAlias()).collect(Collectors.toSet()));
+                repositoryService.removeRepositories(originalOu.getSpace(),
+                                                     originalOu.getRepositories().stream().map(repo -> repo.getAlias()).collect(Collectors.toSet()));
                 configurationService.removeConfiguration(thisGroupConfig);
                 removedOu = registeredOrganizationalUnits.remove(groupName);
                 removeSpaceDirectory(removedOu.getSpace());
