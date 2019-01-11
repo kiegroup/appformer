@@ -39,7 +39,6 @@ public class CellContextUtilities {
                                  ci,
                                  null,
                                  uiHeaderRowIndex);
-
     }
 
     public static GridBodyCellEditContext makeRenderContext(final GridWidget gridWidget,
@@ -138,7 +137,7 @@ public class CellContextUtilities {
                                                                                            uiHeaderRowIndex);
 
             headerMetaData.edit(context);
-        } else if (gridModel.getSelectedCells().size() == 1) {
+        } else if (gridModel.getSelectedCells().size() > 0) {
 
             final GridData.SelectedCell origin = gridModel.getSelectedCellsOrigin();
             if (origin == null) {
