@@ -58,7 +58,8 @@ public class JGitCloneTest extends AbstractTestInfra {
                                      false,
                                      CredentialsProvider.getDefault(),
                                      null,
-                                     null).execute().get();
+                                     null,
+                                     true).execute().get();
 
         assertThat(cloned).isNotNull();
 
@@ -87,7 +88,8 @@ public class JGitCloneTest extends AbstractTestInfra {
                                      false,
                                      CredentialsProvider.getDefault(),
                                      null,
-                                     null).execute().get();
+                                     null,
+                                     true).execute().get();
 
         assertThat(cloned).isNotNull();
 
@@ -103,22 +105,22 @@ public class JGitCloneTest extends AbstractTestInfra {
                                            null).execute().get())
                 .isInstanceOf(Clone.CloneException.class);
     }
-    
+
     @Test
     public void testCloneWithHookDir() throws IOException, GitAPIException {
-    	final File hooksDir = createTempDirectory();
+        final File hooksDir = createTempDirectory();
 
         writeMockHook(hooksDir, PostCommitHook.NAME);
         writeMockHook(hooksDir, PreCommitHook.NAME);
-    	
-    	final File parentFolder = createTempDirectory();
+
+        final File parentFolder = createTempDirectory();
 
         final File gitSource = new File(parentFolder,
                                         SOURCE_GIT + ".git");
 
         final File gitTarget = new File(parentFolder,
                                         TARGET_GIT + ".git");
-        		
+
 
         final Git origin = setupGitRepo(gitSource, hooksDir);
 
@@ -127,7 +129,8 @@ public class JGitCloneTest extends AbstractTestInfra {
                                      false,
                                      CredentialsProvider.getDefault(),
                                      null,
-                                     hooksDir).execute().get();
+                                     hooksDir,
+                                     true).execute().get();
 
         assertThat(cloned).isNotNull();
 
@@ -137,12 +140,12 @@ public class JGitCloneTest extends AbstractTestInfra {
 
         assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/master");
         assertThat(new ListRefs(cloned.getRepository()).execute().get(1).getName()).isEqualTo("refs/heads/user_branch");
-        
+
         boolean foundPreCommitHook = false;
         boolean foundPostCommitHook = false;
         File[] hooks = new File(cloned.getRepository().getDirectory(), "hooks").listFiles();
-		assertThat(hooks).isNotEmpty().isNotNull();
-		assertThat(hooks.length).isEqualTo(2);
+        assertThat(hooks).isNotEmpty().isNotNull();
+        assertThat(hooks.length).isEqualTo(2);
         for (File hook : hooks) {
             if (hook.getName().equals(PreCommitHook.NAME)) {
                 foundPreCommitHook = hook.canExecute();
@@ -155,7 +158,7 @@ public class JGitCloneTest extends AbstractTestInfra {
     }
 
     private Git setupGitRepo(File gitSource, File hooksDir) throws IOException {
-        final Git origin = new CreateRepository(gitSource, hooksDir).execute().get();
+        final Git origin = new CreateRepository(gitSource, hooksDir, true).execute().get();
 
         new Commit(origin,
                    "user_branch",
