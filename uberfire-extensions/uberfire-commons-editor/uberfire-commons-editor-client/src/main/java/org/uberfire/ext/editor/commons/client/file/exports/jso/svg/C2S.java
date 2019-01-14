@@ -49,9 +49,15 @@ class C2S {
         C2S c2S = new C2S(settings);
         c2S.setImageSmoothingEnabled(false);
         //setting the viewBox on the svg root, this is necessary to scaling th svg on html
-        final String viewBox = "0 0 " + width + " " + height;
-        c2S.__root.setAttribute("viewBox", viewBox);
+        c2S.setViewBox(width, height);
         return c2S;
+    }
+
+    @JsOverlay
+    protected final void setViewBox(double width, double height) {
+        final String viewBox = "0 0 " + width + " " + height;
+        Optional.ofNullable(this.__root)
+                .ifPresent(root -> root.setAttribute("viewBox", viewBox));
     }
 
     protected C2S(C2SSettings options) {
