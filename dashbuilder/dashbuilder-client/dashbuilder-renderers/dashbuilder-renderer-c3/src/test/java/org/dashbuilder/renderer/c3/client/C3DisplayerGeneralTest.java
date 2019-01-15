@@ -8,7 +8,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -109,5 +111,25 @@ public class C3DisplayerGeneralTest extends C3BaseTest {
         verify(view).noData();
     }
     
-
+    @Test
+    public void c3Resizable() {
+        DisplayerSettings resizableSettings = DisplayerSettingsFactory.newBarChartSettings()
+                .dataset(EXPENSES)
+                .group(COLUMN_DATE)
+                .column(COLUMN_DATE)
+                .column(COLUMN_AMOUNT, SUM)
+                .width(SIZE)
+                .height(SIZE)
+                .title(TITLE)
+                .backgroundColor(BLACK)
+                .titleVisible(true)
+                .legendOn(LEGEND_POSITION)
+                .resizableOn(SIZE, SIZE)
+                .buildSettings();
+        displayer = c3LineChartDisplayer(resizableSettings);
+        displayer.draw();
+        C3LineChartDisplayer.View view = displayer.getView();
+        verify(c3Factory, times(0)).c3ChartSize(300, 300);
+        verify(view).setResizable(true, SIZE, SIZE);
+    }
 }
