@@ -40,7 +40,7 @@ public class ClientMustacheTemplateRenderer implements MustacheTemplateRenderer<
 
     @Inject
     public ClientMustacheTemplateRenderer() {
-        this(GWT.create(MustacheSource.class), ScriptInjector::fromString);
+        this(() -> GWT.create(MustacheSource.class), ScriptInjector::fromString);
     }
 
     protected ClientMustacheTemplateRenderer(final Supplier<MustacheSource> sourceSupplier, final Function<String,
