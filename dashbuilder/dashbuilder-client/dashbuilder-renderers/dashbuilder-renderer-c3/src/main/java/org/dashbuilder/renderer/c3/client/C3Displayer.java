@@ -75,7 +75,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         
         void setSize(int width, int height);
 
-        void setResizable(boolean resizable, int maxWidth, int maxHeight);
+        void setResizable(int maxWidth, int maxHeight);
 
     }
     
@@ -127,9 +127,11 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
                               displayerSettings.getChartHeight());
             getView().noData();
         } else {
-            getView().setResizable(displayerSettings.isResizable(),
-                                   displayerSettings.getChartWidth(),
-                                   displayerSettings.getChartHeight());
+            if (displayerSettings.isResizable()) {
+                getView().setResizable(displayerSettings.getChartWidth(),
+                                       displayerSettings.getChartHeight());
+            } 
+
             C3ChartConf conf = buildConfiguration();
             getView().updateChart(conf);
             updateFilterStatus();

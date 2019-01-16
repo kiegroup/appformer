@@ -7,7 +7,6 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3Chart;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.resources.i18n.C3DisplayerConstants;
 import org.dashbuilder.renderer.c3.mutationobserver.MutationObserverFactory;
-import org.dashbuilder.renderer.c3.mutationobserver.MutationObserverInitWrapper;
 import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
@@ -102,13 +101,11 @@ public abstract class C3DisplayerView<P extends C3Displayer>
         this.height = height;
     }
     
-    public void setResizable(boolean resizable, int maxWidth, int maxHeight) {
-        if (resizable) {
-            displayerPanel.setWidth("100%");
-            displayerPanel.getElement().getStyle().setProperty("maxWidth", maxWidth + "px");
-            displayerPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
-            registerMutationObserver();
-        }
+    public void setResizable(int maxWidth, int maxHeight) {
+        displayerPanel.setWidth("100%");
+        displayerPanel.getElement().getStyle().setProperty("maxWidth", maxWidth + "px");
+        displayerPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
+        registerMutationObserver();
     }
     
     private void registerMutationObserver() {

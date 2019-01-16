@@ -35,7 +35,7 @@ public class C3ResizableChartTest extends C3BaseTest {
         displayer.draw();
         C3LineChartDisplayer.View view = displayer.getView();
         verify(c3Factory, times(0)).c3ChartSize(300, 300);
-        verify(view).setResizable(true, SIZE, SIZE);
+        verify(view).setResizable(SIZE, SIZE);
     }
     
     @Test
@@ -52,7 +52,7 @@ public class C3ResizableChartTest extends C3BaseTest {
         displayer.draw();
         C3LineChartDisplayer.View view = displayer.getView();
         verify(c3Factory).c3ChartSize(300, 300);
-        verify(view, times(0)).setResizable(true, SIZE, SIZE);
+        verify(view, times(0)).setResizable(SIZE, SIZE);
     }
 
 }

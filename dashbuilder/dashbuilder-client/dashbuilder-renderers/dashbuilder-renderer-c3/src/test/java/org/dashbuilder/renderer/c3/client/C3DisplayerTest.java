@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class C3DisplayerGeneralTest extends C3BaseTest {
+public class C3DisplayerTest extends C3BaseTest {
     
     private static final boolean RECEIVE_NOTIFICATION = true;
     private static final String LEGEND_POSITION = "right";
@@ -50,7 +50,6 @@ public class C3DisplayerGeneralTest extends C3BaseTest {
                                                                   RECEIVE_NOTIFICATION, 
                                                                   RECEIVE_NOTIFICATION)
                                                         .buildSettings();
-    
     private C3LineChartDisplayer displayer;
     
     @Before 
@@ -110,26 +109,5 @@ public class C3DisplayerGeneralTest extends C3BaseTest {
         C3LineChartDisplayer.View view = displayer.getView();
         verify(view).noData();
     }
-    
-    @Test
-    public void c3Resizable() {
-        DisplayerSettings resizableSettings = DisplayerSettingsFactory.newBarChartSettings()
-                .dataset(EXPENSES)
-                .group(COLUMN_DATE)
-                .column(COLUMN_DATE)
-                .column(COLUMN_AMOUNT, SUM)
-                .width(SIZE)
-                .height(SIZE)
-                .title(TITLE)
-                .backgroundColor(BLACK)
-                .titleVisible(true)
-                .legendOn(LEGEND_POSITION)
-                .resizableOn(SIZE, SIZE)
-                .buildSettings();
-        displayer = c3LineChartDisplayer(resizableSettings);
-        displayer.draw();
-        C3LineChartDisplayer.View view = displayer.getView();
-        verify(c3Factory, times(0)).c3ChartSize(300, 300);
-        verify(view).setResizable(true, SIZE, SIZE);
-    }
+
 }
