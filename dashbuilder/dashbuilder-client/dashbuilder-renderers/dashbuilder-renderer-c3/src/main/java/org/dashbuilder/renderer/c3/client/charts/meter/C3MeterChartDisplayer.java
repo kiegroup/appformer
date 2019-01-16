@@ -120,17 +120,8 @@ public class C3MeterChartDisplayer extends C3Displayer<C3Displayer.View> {
         for (int i = 0; i < n; i++) {
             Object group = groupsColumn.getValues().get(i);
             Object value = valuesColumn.getValues().get(i);
-            String groupStr = "", valueStr = "";
-            if (group != null) {
-                groupStr = group.toString();
-            } else {
-                
-            }
-            if (value != null) {
-                valueStr = value.toString();
-            }
-            output[i][0] = groupStr;
-            output[i][1] = valueStr;
+            output[i][0] = columnValueToString(group);
+            output[i][1] = columnValueToString(value);
         }
         return output;
     }
@@ -141,15 +132,10 @@ public class C3MeterChartDisplayer extends C3Displayer<C3Displayer.View> {
         data[0] = dataColumn.getId();
         for (int i = 0; i < values.size(); i++) {
             Object value = values.get(i);
-            String valueStr = "";
-            if (value != null) {
-                valueStr = values.get(i).toString();
-            } 
-            data[i + 1] = valueStr;
+            data[i + 1] = columnValueToString(value);
         }
         return data;
     }
     
     
-
 }

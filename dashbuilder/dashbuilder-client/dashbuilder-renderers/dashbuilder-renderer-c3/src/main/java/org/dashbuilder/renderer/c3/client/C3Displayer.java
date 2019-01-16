@@ -349,4 +349,8 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         return c3LegendPosition;
     }
     
+    protected String columnValueToString(Object mightBeNull) {
+        return mightBeNull == null ? "" : mightBeNull.toString();
+    }
+    
 }
