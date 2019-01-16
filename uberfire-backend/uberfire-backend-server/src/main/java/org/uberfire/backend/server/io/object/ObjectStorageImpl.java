@@ -74,8 +74,19 @@ public class ObjectStorageImpl implements ObjectStorage {
     @Override
     public <T> void write(final String path,
                           final T value) {
+        this.write(path,
+                   value,
+                   true);
+    }
+
+    @Override
+    public <T> void write(final String path,
+                          final T value,
+                          final boolean lock) {
         try {
-            ioService.startBatch(fileSystem);
+            if (lock) {
+                ioService.startBatch(fileSystem);
+            }
             Path fsPath = fileSystem.getPath(path);
             String content = ServerMarshalling.toJSON(value);
             ioService.write(fsPath,
@@ -83,7 +94,9 @@ public class ObjectStorageImpl implements ObjectStorage {
         } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
-            ioService.endBatch();
+            if (lock) {
+                ioService.endBatch();
+            }
         }
     }
 

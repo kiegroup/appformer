@@ -20,12 +20,15 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.guvnor.structure.contributors.ContributorType;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.organizationalunit.config.RolePermissions;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
+import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.uberfire.backend.server.io.object.ObjectStorage;
+import org.uberfire.io.IOService;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.util.URIUtil;
 
@@ -34,19 +37,25 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     public static final String FILE_FORMAT = ".json";
 
     public static final String BRANCH_PERMISSIONS = "BranchPermissions";
+    public static final String SPACE_INFO = "SpaceInfo";
 
     private ObjectStorage objectStorage;
+    private IOService ioService;
+    private String spaceName;
 
     public SpaceConfigStorageImpl() {
     }
 
     @Inject
-    public SpaceConfigStorageImpl(final ObjectStorage objectStorage) {
+    public SpaceConfigStorageImpl(final ObjectStorage objectStorage,
+                                  final @Named("configIO") IOService ioService) {
         this.objectStorage = objectStorage;
+        this.ioService = ioService;
     }
 
     public void setup(final String spaceName) {
-        objectStorage.init(URI.create(SpacesAPI.resolveConfigFileSystemPath(SpacesAPI.Scheme.DEFAULT, spaceName)));
+        this.spaceName = spaceName;
+        objectStorage.init(getRootURI(spaceName));
     }
 
     @Override
@@ -61,6 +70,11 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         }
 
         return branchPermissions;
+    }
+
+    private URI getRootURI(String spaceName) {
+        return URI.create(SpacesAPI.resolveConfigFileSystemPath(SpacesAPI.Scheme.DEFAULT,
+                                                                spaceName));
     }
 
     @Override
@@ -83,11 +97,53 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
     BranchPermissions getDefaultBranchPermissions(String branchName) {
         final Map<String, RolePermissions> defaultPermissions = new LinkedHashMap<>();
-        defaultPermissions.put(ContributorType.OWNER.name(), new RolePermissions(ContributorType.OWNER.name(), true, true, true, true));
-        defaultPermissions.put(ContributorType.ADMIN.name(), new RolePermissions(ContributorType.ADMIN.name(), true, true, false, true));
-        defaultPermissions.put(ContributorType.CONTRIBUTOR.name(), new RolePermissions(ContributorType.CONTRIBUTOR.name(), true, true, false, false));
+        defaultPermissions.put(ContributorType.OWNER.name(),
+                               new RolePermissions(ContributorType.OWNER.name(),
+                                                   true,
+                                                   true,
+                                                   true,
+                                                   true));
+        defaultPermissions.put(ContributorType.ADMIN.name(),
+                               new RolePermissions(ContributorType.ADMIN.name(),
+                                                   true,
+                                                   true,
+                                                   false,
+                                                   true));
+        defaultPermissions.put(ContributorType.CONTRIBUTOR.name(),
+                               new RolePermissions(ContributorType.CONTRIBUTOR.name(),
+                                                   true,
+                                                   true,
+                                                   false,
+                                                   false));
 
-        return new BranchPermissions(branchName, defaultPermissions);
+        return new BranchPermissions(branchName,
+                                     defaultPermissions);
+    }
+
+    public SpaceInfo loadSpaceInfo() {
+        return objectStorage.read(buildSpaceConfigFilePath(SPACE_INFO));
+    }
+
+    @Override
+    public void saveSpaceInfo(final SpaceInfo spaceInfo) {
+        objectStorage.write(buildSpaceConfigFilePath(SPACE_INFO),
+                            spaceInfo,
+                            false);
+    }
+
+    @Override
+    public void startBatch() {
+        ioService.startBatch(ioService.get(this.getRootURI(spaceName)).getFileSystem());
+    }
+
+    @Override
+    public void endBatch() {
+        ioService.endBatch();
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return this.loadSpaceInfo() != null;
     }
 
     String buildSpaceConfigFilePath(final String configName) {

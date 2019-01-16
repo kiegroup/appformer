@@ -146,7 +146,7 @@ public class RepositoryCopierImpl
                                     final org.uberfire.java.nio.file.Path nioTargetRepositoryRoot,
                                     final org.uberfire.java.nio.file.Path originRepositoryRoot) {
 
-        configuredRepositories.reloadRepositories();
+//        configuredRepositories.reloadRepositories();
 
         final Repository repository = repositoryService.getRepository(targetRoot);
 
@@ -169,7 +169,7 @@ public class RepositoryCopierImpl
                                     final org.uberfire.java.nio.file.Path nioTargetRepositoryRoot,
                                     final org.uberfire.java.nio.file.Path originRepositoryRoot) {
 
-        configuredRepositories.reloadRepositories();
+//        configuredRepositories.reloadRepositories();
 
         final Repository repository = repositoryService.getRepository(space, targetRoot);
 
