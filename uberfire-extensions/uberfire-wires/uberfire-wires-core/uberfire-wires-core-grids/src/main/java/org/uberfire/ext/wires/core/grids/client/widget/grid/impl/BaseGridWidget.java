@@ -37,6 +37,8 @@ import com.ait.lienzo.client.core.shape.Layer;
 import com.ait.lienzo.client.core.shape.Node;
 import com.ait.lienzo.client.core.types.BoundingBox;
 import com.ait.lienzo.client.core.types.Point2D;
+import com.google.gwt.user.client.Window;
+import org.uberfire.ext.wires.core.grids.client.model.GridCell;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
 import org.uberfire.ext.wires.core.grids.client.model.GridRow;
@@ -853,5 +855,11 @@ public class BaseGridWidget extends Group implements GridWidget {
     @Override
     public boolean startEditingCell(final Point2D rp) {
         return cellSelectionManager.startEditingCell(rp);
+    }
+
+    @Override
+    public boolean showContextMenuForCell(int uiRowIndex, int uiColumnIndex) {
+        // no operation by default
+        return false;
     }
 }

@@ -100,6 +100,16 @@ public interface GridWidget extends IPrimitive<Group>,
     boolean isSelected();
 
     /**
+     * Show context menu of a cell at coordinates 'uiRowIndex' and 'uiColumnIndex'.
+     * If the provided Canvas coordinate does not resolve to a cell in the Grid no operation if performed.
+     * @param uiRowIndex Row index of cell to invoke context menu
+     * @param uiColumnIndex Column index of cell to invoke context menu
+     * @return true if menu was shown.
+     */
+    boolean showContextMenuForCell(final int uiRowIndex,
+                                   final int uiColumnIndex);
+
+    /**
      * Returns the {@link CellSelectionManager} associated with the {@link GridWidget}
      * @return
      */
