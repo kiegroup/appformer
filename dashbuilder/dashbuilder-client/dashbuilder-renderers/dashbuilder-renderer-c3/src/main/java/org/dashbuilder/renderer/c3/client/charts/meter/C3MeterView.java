@@ -6,10 +6,13 @@ public class C3MeterView
       extends C3DisplayerView<C3MeterChartDisplayer> 
       implements C3MeterChartDisplayer.View {
 
+    private static final String RED = "#FF0000";
+    private static final String ORANGE = "#F97600";
+    private static final String GREEN = "#60B044";
     String[] colors = {
-            "#60B044",
-            "#F97600",
-            "#FF0000"
+            GREEN,
+            ORANGE,
+            RED
     };
     
     @Override
