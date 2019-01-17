@@ -27,7 +27,7 @@ import org.uberfire.ext.editor.commons.template.TemplateRenderer;
  * See {@linktourl https://github.com/spullara/mustache.java}
  * @param <D> data model to be rendered on the template.
  */
-public interface MustacheTemplateRenderer<D extends Object> extends TemplateRenderer<D> {
+public interface MustacheTemplateRenderer<D> extends TemplateRenderer<D> {
 
     String render(String template, D data);
 }

@@ -20,7 +20,7 @@ package org.uberfire.ext.editor.commons.template;
  * Represents a template engine rendering.
  * @param <D> is the model to rendered on the template.
  */
-public interface TemplateRenderer<D extends Object> {
+public interface TemplateRenderer<D> {
 
     String render(String template, D data);
 }
