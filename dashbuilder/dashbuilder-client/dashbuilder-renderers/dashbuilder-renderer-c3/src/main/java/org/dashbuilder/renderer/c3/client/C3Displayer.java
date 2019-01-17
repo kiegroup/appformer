@@ -54,6 +54,10 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     private static final double DEFAULT_POINT_RADIUS = 2.5;
     private FilterLabelSet filterLabelSet;
     protected C3JsTypesFactory factory;
+    
+    public static final String[] COLOR_PATTERN = {
+                                    "#0088CE", "#CC0000", "#EC7A08", "#3F9C35", "#F0AB00", "#703FEC", "#007A87", "#92D400", "#35CAED",
+                                    "#00659C", "#A30000", "#B35C00", "#B58100", "#6CA100", "#2D7623", "#005C66", "#008BAD", "#40199A"};
 
     public interface View<P extends C3Displayer> extends AbstractGwtDisplayer.View<P> {
 
@@ -162,7 +166,7 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     }
 
     protected C3Color createColor() {
-        return factory.c3Color(new String[0]);
+        return factory.c3Color(COLOR_PATTERN);
     }
 
     protected C3ChartSize createSize() {
