@@ -453,14 +453,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.appformer</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>appformer-js</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-showcase-react-components</artifactId>
-      <version>${project.version}</version>
+      <version>0.1.0-ALPHA</version>
     </dependency>
 
     <dependency>
@@ -488,8 +483,6 @@
             </goals>
             <configuration>
               <sources>
-                <source>../uberfire-showcase-react-components/src/main/java</source>
-                <source>../uberfire-showcase-react-components/src/main/resources</source>
                 <source>../../appformer-js-bridge/src/main/java</source>
                 <source>../../appformer-js-bridge/src/main/resources</source>
                 <!--<source>../../uberfire-api/src/main/java</source>-->
