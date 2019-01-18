@@ -15,8 +15,26 @@
  */
 package org.dashbuilder.renderer.c3.client;
 
-import static org.dashbuilder.displayer.DisplayerSubType.*;
-import static org.dashbuilder.displayer.DisplayerType.*;
+import static org.dashbuilder.displayer.DisplayerSubType.AREA;
+import static org.dashbuilder.displayer.DisplayerSubType.AREA_STACKED;
+import static org.dashbuilder.displayer.DisplayerSubType.BAR;
+import static org.dashbuilder.displayer.DisplayerSubType.BAR_STACKED;
+import static org.dashbuilder.displayer.DisplayerSubType.COLUMN;
+import static org.dashbuilder.displayer.DisplayerSubType.COLUMN_STACKED;
+import static org.dashbuilder.displayer.DisplayerSubType.DONUT;
+import static org.dashbuilder.displayer.DisplayerSubType.LINE;
+import static org.dashbuilder.displayer.DisplayerSubType.MAP_MARKERS;
+import static org.dashbuilder.displayer.DisplayerSubType.MAP_REGIONS;
+import static org.dashbuilder.displayer.DisplayerSubType.PIE;
+import static org.dashbuilder.displayer.DisplayerSubType.PIE_3D;
+import static org.dashbuilder.displayer.DisplayerSubType.SMOOTH;
+import static org.dashbuilder.displayer.DisplayerType.AREACHART;
+import static org.dashbuilder.displayer.DisplayerType.BARCHART;
+import static org.dashbuilder.displayer.DisplayerType.BUBBLECHART;
+import static org.dashbuilder.displayer.DisplayerType.LINECHART;
+import static org.dashbuilder.displayer.DisplayerType.MAP;
+import static org.dashbuilder.displayer.DisplayerType.METERCHART;
+import static org.dashbuilder.displayer.DisplayerType.PIECHART;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +53,7 @@ import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.bar.C3BarChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.bubble.C3BubbleChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.map.D3MapDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.meter.C3MeterChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.pie.C3PieChartDisplayer;
 import org.dashbuilder.renderer.c3.client.exports.ResourcesInjector;
@@ -48,7 +67,8 @@ public class C3Renderer extends AbstractRendererLibrary {
     
     @PostConstruct
     public void prepare() {
-        ResourcesInjector.ensureInjected();
+        ResourcesInjector.ensureC3Injected();
+        ResourcesInjector.ensureD3GeoProjectionInjected();
     }
     
     @Inject
@@ -59,7 +79,8 @@ public class C3Renderer extends AbstractRendererLibrary {
                                                                        PIECHART, 
                                                                        AREACHART, 
                                                                        BUBBLECHART,
-                                                                       METERCHART);
+                                                                       METERCHART,
+                                                                       MAP);
     
     @Override
     public String getUUID() {
@@ -81,7 +102,9 @@ public class C3Renderer extends AbstractRendererLibrary {
             case PIECHART:
                 return Arrays.asList(PIE, DONUT, PIE_3D);
             case AREACHART:
-                return Arrays.asList(AREA, AREA_STACKED);            
+                return Arrays.asList(AREA, AREA_STACKED);
+            case MAP:
+                return Arrays.asList(MAP_MARKERS, MAP_REGIONS);  
             default:
                 return Collections.emptyList();
         }
@@ -90,7 +113,7 @@ public class C3Renderer extends AbstractRendererLibrary {
     public Displayer lookupDisplayer(DisplayerSettings displayerSettings) {
         DisplayerType displayerType = displayerSettings.getType();
         DisplayerSubType subtype = displayerSettings.getSubtype();
-        C3Displayer displayer;
+        C3AbstractDisplayer displayer;
         switch (displayerType) {
             case LINECHART:
                 displayer = getLineChartForSubType(subtype);
@@ -110,8 +133,21 @@ public class C3Renderer extends AbstractRendererLibrary {
             case METERCHART:
                 displayer = beanManager.lookupBean(C3MeterChartDisplayer.class).newInstance();                
                 break;
+            case MAP:
+                displayer = createMapChartForSubType(subtype);                
+                break;                
             default:
                 return null;
+        }
+        return displayer;
+    }
+
+    private D3MapDisplayer createMapChartForSubType(DisplayerSubType subtype) {
+        D3MapDisplayer displayer = beanManager.lookupBean(D3MapDisplayer.class).newInstance();
+        if (subtype == MAP_MARKERS) {
+                displayer =  displayer.markers();
+        } else {
+            displayer = displayer.regions();
         }
         return displayer;
     }

@@ -8,6 +8,8 @@ import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.client.AbstractDisplayerTest;
 import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.map.D3MapDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.map.GeoData;
 import org.dashbuilder.renderer.c3.client.charts.meter.C3MeterChartDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
@@ -43,6 +45,10 @@ public class C3BaseTest extends AbstractDisplayerTest {
     C3AreaChartDisplayer.View c3AreaChartview;
     @Mock
     C3MeterChartDisplayer.View c3Meterview;
+    @Mock 
+    D3MapDisplayer.View d3MapDisplayerView;
+    @Mock
+    GeoData geoData;
 
 
     public C3LineChartDisplayer c3LineChartDisplayer(DisplayerSettings settings) {
@@ -58,6 +64,10 @@ public class C3BaseTest extends AbstractDisplayerTest {
     public C3MeterChartDisplayer c3MeterChartDisplayer(DisplayerSettings settings) {
         c3Factory = mockC3JsTypesFactory();
         return initDisplayer(new C3MeterChartDisplayer(c3Meterview, filterLabelSet, c3Factory), settings);
+    }
+    
+    public D3MapDisplayer d3MapDisplayer(DisplayerSettings settings) {
+        return initDisplayer(new D3MapDisplayer(filterLabelSet, d3MapDisplayerView, geoData), settings);
     }
     
     private C3JsTypesFactory mockC3JsTypesFactory() {

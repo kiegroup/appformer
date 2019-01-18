@@ -8,10 +8,13 @@ public interface NativeLibraryResources extends ClientBundle {
 
     NativeLibraryResources INSTANCE = GWT.create(NativeLibraryResources.class);
 
-    @Source("org/uberfire/client/views/static/d3/d3.min.js")
-    TextResource d3js();
-
-    @Source("js/c3.js")
+    @Source("js/c3.min.js")
     TextResource c3js();
+
+    @Source("js/d3-geo-projection.min.js")
+    TextResource d3geoprojectionjs();    
+    
+    @Source("json/countries.geo.json")
+    TextResource countriesgeojson();    
 
 }

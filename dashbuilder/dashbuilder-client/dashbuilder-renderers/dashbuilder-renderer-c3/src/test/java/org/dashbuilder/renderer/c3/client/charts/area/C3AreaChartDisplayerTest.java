@@ -49,7 +49,7 @@ public class C3AreaChartDisplayerTest extends C3BaseTest {
     }
     
     @Test
-    public void fixAreaCallbackRegistered() {
+    public void fixAreaCallbackRegisteredTest() {
         verify(c3Conf).setOnrendered(displayer.fixAreaOpacityCallback);
     }
     

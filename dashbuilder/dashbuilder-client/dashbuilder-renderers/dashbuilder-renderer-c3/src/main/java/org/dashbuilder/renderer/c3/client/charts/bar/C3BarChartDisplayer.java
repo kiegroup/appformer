@@ -12,9 +12,11 @@ import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.C3XYDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.CommonC3DisplayerConstants;
-import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Tick;
+
+import com.google.gwt.i18n.client.NumberFormat;
 
 @Dependent
 public class C3BarChartDisplayer extends C3XYDisplayer<C3BarChartDisplayer.View> {
@@ -84,6 +86,17 @@ public class C3BarChartDisplayer extends C3XYDisplayer<C3BarChartDisplayer.View>
         C3AxisInfo axis = super.createAxis();
         axis.setRotated(isRotated());
         return axis;
+    }
+    
+    protected C3Tick createTickX() {
+        return factory.createC3Tick(f -> {
+            try {
+                double doubleFormat = Double.parseDouble(f);
+                return NumberFormat.getFormat("#,###.##").format(doubleFormat);
+            } catch(NumberFormatException e) {
+                return f;
+            }
+        });
     }
 
     public boolean isRotated() {
