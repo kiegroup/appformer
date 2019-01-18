@@ -1,7 +1,0 @@
-{
-  "name": "appformer-js-editors",
-  "type": "lib",
-  "main": "./dist/index.js",
-  "components": [],
-  "decorators": {}
-}
