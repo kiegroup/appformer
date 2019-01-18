@@ -230,8 +230,8 @@ public class PomEditorDefaultTest {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         Dependency changedDep = getDependency(model.getDependencies(),
-                                              "org.hibernate.javax.persistence",
-                                              "hibernate-jpa-2.1-api");
+                                              "org.fake.javax",
+                                              "fake-jpa-api");
         assertThat(changedDep.getVersion()).isEqualTo(JPA_HIBERNATE_VERSION);
     }
 
@@ -249,8 +249,8 @@ public class PomEditorDefaultTest {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         Dependency changedDep = getDependency(model.getDependencies(),
-                                              "org.hibernate.javax.persistence",
-                                              "hibernate-jpa-2.1-api");
+                                              "org.fake.javax",
+                                              "fake-jpa-api");
         assertThat(changedDep.getVersion()).isEqualTo(JPA_HIBERNATE_VERSION);
         changedDep = getDependency(model.getDependencies(),
                                    "junit",

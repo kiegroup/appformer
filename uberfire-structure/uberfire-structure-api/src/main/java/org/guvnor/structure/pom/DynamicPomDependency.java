@@ -57,20 +57,28 @@ public class DynamicPomDependency {
         if (!(o instanceof DynamicPomDependency)) {
             return false;
         }
+
         DynamicPomDependency that = (DynamicPomDependency) o;
-        return getGroupID().equals(that.getGroupID()) &&
-                getArtifactID().equals(that.getArtifactID()) &&
-                getVersion().equals(that.getVersion()) &&
-                Objects.equals(getScope(),
-                               that.getScope());
+
+        if (!getGroupID().equals(that.getGroupID())) {
+            return false;
+        }
+        if (!getArtifactID().equals(that.getArtifactID())) {
+            return false;
+        }
+        if (!getVersion().equals(that.getVersion())) {
+            return false;
+        }
+        return getScope() != null ? getScope().equals(that.getScope()) : that.getScope() == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getGroupID(),
-                            getArtifactID(),
-                            getVersion(),
-                            getScope());
+        int result = getGroupID().hashCode();
+        result = 31 * result + getArtifactID().hashCode();
+        result = 31 * result + getVersion().hashCode();
+        result = 31 * result + (getScope() != null ? getScope().hashCode() : 0);
+        return result;
     }
 
     @Override

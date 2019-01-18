@@ -3,7 +3,6 @@ package org.guvnor.structure.backend.pom.types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.guvnor.structure.pom.DependencyType;
 import org.guvnor.structure.pom.DynamicPomDependency;
@@ -35,16 +34,22 @@ public class FakeJPATypeDependency implements DependencyType {
         if (!(o instanceof FakeJPATypeDependency)) {
             return false;
         }
+
         FakeJPATypeDependency that = (FakeJPATypeDependency) o;
-        return Objects.equals(getType(),
-                              that.getType());
+
+        return getDependencies().equals(that.getDependencies());
+    }
+
+    @Override
+    public int hashCode() {
+        return getDependencies().hashCode();
     }
 
     private List getDeps() {
         return Arrays.asList(
-                new DynamicPomDependency("org.hibernate.javax.persistence",
-                                         "hibernate-jpa-2.1-api",
-                                         "${version.org.hibernate.javax.persistence.hibernate-jpa-2.1-api}",
+                new DynamicPomDependency("org.fake.javax",
+                                         "fake-jpa-api",
+                                         "0.1.RELEASE",
                                          "compile"));
     }
 }

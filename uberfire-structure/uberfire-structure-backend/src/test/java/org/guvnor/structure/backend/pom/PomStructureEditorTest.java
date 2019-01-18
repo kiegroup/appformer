@@ -40,7 +40,7 @@ public class PomStructureEditorTest {
     private PomStructureEditor editor;
     private Path tmpRoot, tmp;
     private DynamicDependencyTypeConfigurationMap configurationMap;
-    private String JPA_HIBERNATE_VERSION;
+    private String FAKE_DEPENDENCY_VERSION;
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class PomStructureEditorTest {
         DependencyType depType = new FakeJPATypeDependency();
         configurationMap.addDependencies(depType,
                                          depType.getDependencies());
-        JPA_HIBERNATE_VERSION = configurationMap.getMapping().get(depType.getType()).get(0).getVersion();
+        FAKE_DEPENDENCY_VERSION = configurationMap.getMapping().get(depType.getType()).get(0).getVersion();
     }
 
     @Test
@@ -70,9 +70,9 @@ public class PomStructureEditorTest {
         model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
         assertThat(model.getDependencies()).hasSize(1);
         Dependency dep = model.getDependencies().get(0);
-        assertThat(dep.getGroupId()).containsOnlyOnce("org.hibernate.javax.persistence");
-        assertThat(dep.getArtifactId()).containsOnlyOnce("hibernate-jpa-2.1-api");
-        assertThat(dep.getVersion()).containsOnlyOnce(JPA_HIBERNATE_VERSION);
+        assertThat(dep.getGroupId()).containsOnlyOnce("org.fake.javax");
+        assertThat(dep.getArtifactId()).containsOnlyOnce("fake-jpa-api");
+        assertThat(dep.getVersion()).containsOnlyOnce(FAKE_DEPENDENCY_VERSION);
     }
 }
 
