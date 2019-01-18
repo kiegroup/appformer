@@ -44,7 +44,7 @@ public class PomEditorDefaultTest {
     private PomEditor editor;
     private DynamicDependencyTypeConfigurationMap configurationMap;
     private Path tmpRoot, tmp;
-    private String JPA_HIBERNATE_VERSION;
+    private String FAKE_DEPENDENCY_VERSION;
 
     @Before
     public void setUp() throws Exception {
@@ -57,7 +57,7 @@ public class PomEditorDefaultTest {
         DependencyType depType = new FakeJPATypeDependency();
         configurationMap.addDependencies(depType,
                                          depType.getDependencies());
-        JPA_HIBERNATE_VERSION = configurationMap.getMapping().get(depType.getType()).get(0).getVersion();
+        FAKE_DEPENDENCY_VERSION = configurationMap.getMapping().get(depType.getType()).get(0).getVersion();
     }
 
     @After
@@ -232,7 +232,7 @@ public class PomEditorDefaultTest {
         Dependency changedDep = getDependency(model.getDependencies(),
                                               "org.fake.javax",
                                               "fake-jpa-api");
-        assertThat(changedDep.getVersion()).isEqualTo(JPA_HIBERNATE_VERSION);
+        assertThat(changedDep.getVersion()).isEqualTo(FAKE_DEPENDENCY_VERSION);
     }
 
     @Test
@@ -251,7 +251,7 @@ public class PomEditorDefaultTest {
         Dependency changedDep = getDependency(model.getDependencies(),
                                               "org.fake.javax",
                                               "fake-jpa-api");
-        assertThat(changedDep.getVersion()).isEqualTo(JPA_HIBERNATE_VERSION);
+        assertThat(changedDep.getVersion()).isEqualTo(FAKE_DEPENDENCY_VERSION);
         changedDep = getDependency(model.getDependencies(),
                                    "junit",
                                    "junit");
