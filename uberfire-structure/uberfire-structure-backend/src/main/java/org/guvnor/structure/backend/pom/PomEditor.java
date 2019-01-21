@@ -14,7 +14,6 @@
  */
 package org.guvnor.structure.backend.pom;
 
-import java.util.List;
 import java.util.Set;
 
 import org.guvnor.structure.pom.DependencyType;
@@ -32,12 +31,4 @@ public interface PomEditor {
     boolean addDependencies(Set<DependencyType> dependencyTypes,
                             Path pomPath);
 
-    boolean removeDependency(DynamicPomDependency dep,
-                             Path pomPath);
-
-    boolean removeDependencyTypes(Set<DependencyType> dependencyTypes,
-                                  Path pomPath);
-
-    boolean removeDependencies(List<DynamicPomDependency> deps,
-                               Path pomPath);
 }

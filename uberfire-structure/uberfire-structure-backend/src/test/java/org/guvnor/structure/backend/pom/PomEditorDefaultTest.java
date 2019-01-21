@@ -83,55 +83,7 @@ public class PomEditorDefaultTest {
         return dependency;
     }
 
-    @Test
-    public void removeDepTest() throws Exception {
-        DynamicPomDependency dep = new DynamicPomDependency("org.springframework",
-                                                            "spring-aop",
-                                                            "4.3.8.RELEASE",
-                                                            "");
-        boolean result = editor.removeDependency(dep,
-                                                 PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                     tmp.toUri().toString() + File.separator + POM));
-        assertThat(result).isTrue();
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        assertThat(model.getDependencies()).hasSize(1);
-    }
 
-    @Test
-    public void removeDepsTest() throws Exception {
-        DynamicPomDependency dep = new DynamicPomDependency("org.springframework",
-                                                            "spring-aop",
-                                                            "4.3.8.RELEASE",
-                                                            "");
-
-        DynamicPomDependency depTwo = new DynamicPomDependency("junit",
-                                                               "junit",
-                                                               "4.12",
-                                                               "");
-        List<DynamicPomDependency> deps = Arrays.asList(dep,
-                                                        depTwo);
-        boolean result = editor.removeDependencies(deps,
-                                                   PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                       tmp.toUri().toString() + File.separator + POM));
-        assertThat(result).isTrue();
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        assertThat(model.getDependencies()).hasSize(0);
-    }
-
-    @Test
-    public void removeDependencyTypeTest() throws Exception {
-
-        Set<DependencyType> deps = new HashSet<>(Arrays.asList(new TestDependencyType()));
-        boolean result = editor.removeDependencyTypes(deps,
-                                                      PathFactory.newPath(tmp.toAbsolutePath().toString() + File.separator + POM,
-                                                                          tmp.toUri().toString() + File.separator + POM));
-        assertThat(result).isTrue();
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        Model model = reader.read(new ByteArrayInputStream(Files.readAllBytes(Paths.get(tmp.toAbsolutePath().toString() + File.separator + POM))));
-        assertThat(model.getDependencies()).hasSize(1);
-    }
 
     @Test
     public void addEmptyDepTest() {

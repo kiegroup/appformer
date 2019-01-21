@@ -143,112 +143,6 @@ public class PomEditorDefault implements PomEditor {
         return result;
     }
 
-    @Override
-    public boolean removeDependency(DynamicPomDependency dep,
-                                    Path pomPath) {
-
-        boolean pomUpdated = false;
-        try {
-            org.uberfire.java.nio.file.Path filePath = getPomPath(pomPath);
-            Model model = getPOMModel(filePath);
-            List<Dependency> depsFromPom = model.getDependencies();
-            if (removeDynamicDep(depsFromPom,
-                                 dep)) {
-                pomUpdated = updatePomModelOnFS(filePath,
-                                                model,
-                                                depsFromPom);
-            }
-        } catch (Exception ex) {
-            logger.error("Error while removing a dependency {}:{} {} {}",
-                         dep.getArtifactID(),
-                         dep.getGroupID(),
-                         ex.getMessage(),
-                         ex);
-            pomUpdated = false;
-        }
-        return pomUpdated;
-    }
-
-    @Override
-    public boolean removeDependencies(List<DynamicPomDependency> deps,
-                                      Path pomPath) {
-
-        if (deps.isEmpty()) {
-            return false;
-        }
-        boolean pomUpdated = false;
-        try {
-            org.uberfire.java.nio.file.Path filePath = getPomPath(pomPath);
-            Model model = getPOMModel(filePath);
-            List<Dependency> depsFromPom = model.getDependencies();
-            Map<String, String> dynamicKeys = getKeysFromDynamicDependencies(deps);
-            if (removeDynamicDeps(depsFromPom,
-                                  dynamicKeys)) {
-                pomUpdated = updatePomModelOnFS(filePath,
-                                                model,
-                                                depsFromPom);
-            }
-        } catch (Exception ex) {
-            logger.error("Error while removing dependencies [{}] {} {}",
-                         deps,
-                         ex.getMessage(),
-                         ex);
-            pomUpdated = false;
-        }
-        return pomUpdated;
-    }
-
-    private org.uberfire.java.nio.file.Path getPomPath(Path pomPath) {
-        return Paths.get(pomPath.toURI());
-    }
-
-    private boolean updatePomModelOnFS(org.uberfire.java.nio.file.Path filePath,
-                                       Model model,
-                                       List<Dependency> depsFromPom) throws IOException {
-        model.setDependencies(depsFromPom);
-        writePOMModelOnFS(filePath,
-                          model);
-        return true;
-    }
-
-    @Override
-    public boolean removeDependencyTypes(Set<DependencyType> dependencyTypes,
-                                         Path pomPath) {
-        if (dependencyTypes.isEmpty()) {
-            return false;
-        }
-        return removeDependencies(configurationMap.getDependencies(dependencyTypes),
-                                  pomPath);
-    }
-
-    private boolean removeDynamicDep(List<Dependency> depsFromPom,
-                                     DynamicPomDependency dep) {
-        boolean result = false;
-        for (Dependency depFromPom : depsFromPom) {
-            if (depFromPom.getGroupId().equals(dep.getGroupID()) && depFromPom.getArtifactId().equals(dep.getArtifactID()) && depFromPom.getVersion().equals(dep.getVersion())) {
-                depsFromPom.remove(depFromPom);
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
-    private boolean removeDynamicDeps(List<Dependency> depsFromPom,
-                                      Map<String, String> dymanicKeys) {
-        boolean result = false;
-        List<Dependency> depsToRemove = new ArrayList<>(depsFromPom.size());
-        for (Dependency depFromPom : depsFromPom) {
-            if (dymanicKeys.containsKey(getKeyFromDependency(depFromPom))) {
-                depsToRemove.add(depFromPom);
-                result = true;
-            }
-        }
-        if (result) {
-            depsFromPom.removeAll(depsToRemove);
-        }
-        return result;
-    }
 
     private Dependency getMavenPomDep(DynamicPomDependency dep,
                                       boolean internalArtifact,
@@ -274,11 +168,6 @@ public class PomEditorDefault implements PomEditor {
         return sb.toString();
     }
 
-    private String getKeyFromDependency(Dependency dep) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(dep.getGroupId()).append(DELIMITER).append(dep.getArtifactId()).toString();
-        return sb.toString();
-    }
 
     private Map<String, String> getKeysFromDependencies(List<Dependency> deps) {
         Map<String, String> depsMap = new HashMap<>(deps.size());
@@ -291,16 +180,6 @@ public class PomEditorDefault implements PomEditor {
         return depsMap;
     }
 
-    private Map<String, String> getKeysFromDynamicDependencies(List<DynamicPomDependency> deps) {
-        Map<String, String> depsMap = new HashMap<>(deps.size());
-        for (DynamicPomDependency dep : deps) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(dep.getGroupID()).append(DELIMITER).append(dep.getArtifactID());
-            depsMap.put(sb.toString(),
-                        dep.getVersion());
-        }
-        return depsMap;
-    }
 
     private void writePOMModelOnFS(org.uberfire.java.nio.file.Path filePath,
                                    Model model) throws IOException {
