@@ -451,13 +451,7 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-model</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.webjars.npm</groupId>
-      <artifactId>appformer-js</artifactId>
-      <version>0.1.0-ALPHA</version>
-    </dependency>
-
+    
   </dependencies>
 
   <build>
