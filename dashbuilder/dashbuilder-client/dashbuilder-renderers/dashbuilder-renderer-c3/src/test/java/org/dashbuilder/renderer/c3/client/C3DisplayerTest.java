@@ -8,7 +8,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -22,11 +24,10 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class C3DisplayerGeneralTests extends C3BaseTest {
+public class C3DisplayerTest extends C3BaseTest {
     
     private static final boolean RECEIVE_NOTIFICATION = true;
     private static final String LEGEND_POSITION = "right";
