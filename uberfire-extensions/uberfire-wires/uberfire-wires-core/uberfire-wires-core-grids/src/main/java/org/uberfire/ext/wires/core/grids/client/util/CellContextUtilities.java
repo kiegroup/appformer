@@ -30,22 +30,59 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl
 
 public class CellContextUtilities {
 
-    public static GridBodyCellEditContext makeRenderContext(final GridWidget gridWidget,
-                                                            final BaseGridRendererHelper.RenderingInformation ri,
-                                                            final BaseGridRendererHelper.ColumnInformation ci,
-                                                            final int uiHeaderRowIndex) {
-        return makeRenderContext(gridWidget,
-                                 ri,
-                                 ci,
-                                 null,
-                                 uiHeaderRowIndex);
+    public static GridBodyCellEditContext makeCellRenderContext(final GridWidget gridWidget,
+                                                                final BaseGridRendererHelper.RenderingInformation ri,
+                                                                final BaseGridRendererHelper.ColumnInformation ci,
+                                                                final int uiRowIndex) {
+        final GridColumn<?> column = ci.getColumn();
+        final GridRenderer renderer = gridWidget.getRenderer();
+
+        final Group header = gridWidget.getHeader();
+        final double headerRowsYOffset = ri.getHeaderRowsYOffset();
+        final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
+        final double headerRowHeight = ri.getHeaderRowsHeight() / column.getHeaderMetaData().size();
+
+        final double cellX = gridWidget.getAbsoluteX() + ci.getOffsetX();
+        final double cellY = gridWidget.getAbsoluteY() + headerMinY + (headerRowHeight * gridWidget.getModel().getHeaderRowCount());
+
+        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
+        final double floatingX = floatingBlockInformation.getX();
+        final double floatingWidth = floatingBlockInformation.getWidth();
+        final double clipMinX = gridWidget.getAbsoluteX() + floatingX + floatingWidth;
+        final double clipMinY = gridWidget.getAbsoluteY();
+
+        final double blockCellWidth = column.getWidth();
+
+        return new GridBodyCellEditContext(cellX,
+                                           cellY,
+                                           blockCellWidth,
+                                           headerRowHeight,
+                                           clipMinY,
+                                           clipMinX,
+                                           uiRowIndex,
+                                           ci.getUiColumnIndex(),
+                                           floatingBlockInformation.getColumns().contains(column),
+                                           gridWidget.getViewport().getTransform(),
+                                           renderer,
+                                           Optional.empty());
     }
 
-    public static GridBodyCellEditContext makeRenderContext(final GridWidget gridWidget,
-                                                            final BaseGridRendererHelper.RenderingInformation ri,
-                                                            final BaseGridRendererHelper.ColumnInformation ci,
-                                                            final Point2D rp,
-                                                            final int uiHeaderRowIndex) {
+    public static GridBodyCellEditContext makeHeaderCellRenderContext(final GridWidget gridWidget,
+                                                                      final BaseGridRendererHelper.RenderingInformation ri,
+                                                                      final BaseGridRendererHelper.ColumnInformation ci,
+                                                                      final int uiHeaderRowIndex) {
+        return makeHeaderCellRenderContext(gridWidget,
+                                           ri,
+                                           ci,
+                                           null,
+                                           uiHeaderRowIndex);
+    }
+
+    public static GridBodyCellEditContext makeHeaderCellRenderContext(final GridWidget gridWidget,
+                                                                      final BaseGridRendererHelper.RenderingInformation ri,
+                                                                      final BaseGridRendererHelper.ColumnInformation ci,
+                                                                      final Point2D rp,
+                                                                      final int uiHeaderRowIndex) {
         final GridColumn<?> column = ci.getColumn();
         final GridRenderer renderer = gridWidget.getRenderer();
 
@@ -130,11 +167,10 @@ public class CellContextUtilities {
             final double columnXCoordinate = rendererHelper.getColumnOffset(column) + column.getWidth() / 2;
             final BaseGridRendererHelper.ColumnInformation ci = rendererHelper.getColumnInformation(columnXCoordinate);
 
-            final GridBodyCellEditContext context = CellContextUtilities.makeRenderContext(gridWidget,
-                                                                                           ri,
-                                                                                           ci,
-                                                                                           null,
-                                                                                           uiHeaderRowIndex);
+            final GridBodyCellEditContext context = CellContextUtilities.makeHeaderCellRenderContext(gridWidget,
+                                                                                                     ri,
+                                                                                                     ci,
+                                                                                                     uiHeaderRowIndex);
 
             headerMetaData.edit(context);
         } else if (gridModel.getSelectedCells().size() > 0) {
