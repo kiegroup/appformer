@@ -41,9 +41,16 @@ public class CellContextUtilities {
         final double headerRowsYOffset = ri.getHeaderRowsYOffset();
         final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
         final double headerRowHeight = ri.getHeaderRowsHeight() / column.getHeaderMetaData().size();
+        final double headerRowsHeight = (headerRowHeight * column.getHeaderMetaData().size());
 
-        final double cellX = gridWidget.getAbsoluteX() + ci.getOffsetX();
-        final double cellY = gridWidget.getAbsoluteY() + headerMinY + (headerRowHeight * gridWidget.getModel().getHeaderRowCount());
+        double rowsHeight = 0;
+        for (int i = 0; i < uiRowIndex; i++) {
+            rowsHeight += gridWidget.getModel().getRow(i).getHeight();
+        }
+
+        final double cellX = gridWidget.getAbsoluteX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
+        final double lastCellYMiddle = gridWidget.getModel().getRow(uiRowIndex).getHeight() / 2;
+        final double cellY = gridWidget.getAbsoluteY() + headerMinY + headerRowsHeight + rowsHeight + lastCellYMiddle;
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
         final double floatingX = floatingBlockInformation.getX();
