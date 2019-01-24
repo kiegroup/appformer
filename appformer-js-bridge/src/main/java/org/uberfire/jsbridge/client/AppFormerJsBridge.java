@@ -62,9 +62,9 @@ public class AppFormerJsBridge {
         final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
 
         //FIXME: Load React from local instead of CDN.
-        ScriptInjector.fromUrl("https://unpkg.com/react@16/umd/react.production.min.js")
+        ScriptInjector.fromUrl("/" + gwtModuleName + "/react.production.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
-                .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl("https://unpkg.com/react-dom@16/umd/react-dom.production.min.js")
+                .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
                         .setCallback(callback.withSuccess((v1) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)

@@ -96,7 +96,50 @@
                   <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
               </execution>
+              <execution>
+                <id>unpack-react</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.webjars.npm</groupId>
+                      <artifactId>react</artifactId>
+                      <version>${version.org.webjars.npm.react}</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.outputDirectory}/react</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                </configuration>
+              </execution>
+              <execution>
+                <id>unpack-react-dom</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.webjars.npm</groupId>
+                      <artifactId>react-dom</artifactId>
+                      <version>${version.org.webjars.npm.react-dom}</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.outputDirectory}/react-dom</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                </configuration>
+              </execution>
             </executions>
+
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -115,6 +158,42 @@
                       <directory>${project.build.outputDirectory}/appformer-js/META-INF/resources/webjars/appformer-js/${version.org.webjars.npm.appformer-js}/dist</directory>
                       <includes>
                         <include>appformer.js</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-react</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.outputDirectory}/react/META-INF/resources/webjars/react/${version.org.webjars.npm.react}/umd</directory>
+                      <includes>
+                        <include>react.production.min.js</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-react-dom</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.outputDirectory}/react-dom/META-INF/resources/webjars/react-dom/${version.org.webjars.npm.react-dom}/umd</directory>
+                      <includes>
+                        <include>react-dom.production.min.js</include>
                       </includes>
                     </resource>
                   </resources>
