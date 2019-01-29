@@ -858,7 +858,8 @@ public class BaseGridWidget extends Group implements GridWidget {
     }
 
     @Override
-    public boolean showContextMenuForCell(int uiRowIndex, int uiColumnIndex) {
+    public boolean showContextMenuForCell(final int uiRowIndex,
+                                          final int uiColumnIndex) {
         // no operation by default
         return false;
     }

@@ -95,7 +95,7 @@ public class CellContextUtilitiesTest {
     }
 
     @Test
-    public void testMakeRenderContextNoBlockMultipleColumns() {
+    public void testMakeHeaderRenderContextNoBlockMultipleColumns() {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(50.0);
@@ -125,7 +125,79 @@ public class CellContextUtilitiesTest {
     }
 
     @Test
-    public void testMakeRenderContextLeadBlock() {
+    public void testMakeCellRenderContextOneRow() {
+        final double headerRowsHeight = 100.0;
+        final BaseGridRow row = new BaseGridRow();
+        final List<GridColumn<?>> allColumns = new ArrayList<>();
+        final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
+        final GridColumn<?> uiColumn2 = mockGridColumn(60.0);
+        final GridColumn<?> uiColumn3 = mockGridColumn(100.0);
+        allColumns.add(uiColumn1);
+        allColumns.add(uiColumn2);
+        allColumns.add(uiColumn3);
+        gridWidget.getModel().appendRow(row);
+
+        doReturn(allColumns).when(ri).getAllColumns();
+        doReturn(headerRowsHeight).when(ri).getHeaderRowsHeight();
+        doReturn(uiColumn2).when(ci).getColumn();
+        doReturn(25.0).when(ci).getOffsetX();
+        doReturn(1).when(ci).getUiColumnIndex();
+
+        final GridBodyCellEditContext context = CellContextUtilities.makeCellRenderContext(gridWidget,
+                                                                                           ri,
+                                                                                           ci,
+                                                                                           0);
+
+        assertNotNull(context);
+        assertThat(context.getAbsoluteCellX())
+                .as("Should be column offset plus half of column width")
+                .isEqualTo(55.0);
+
+        assertThat(context.getAbsoluteCellY())
+                .as("Should be half of the only row height plus headers height")
+                .isEqualTo(headerRowsHeight + row.getHeight() / 2);
+    }
+
+    @Test
+    public void testMakeCellRenderContextThreeRows() {
+        final double headerRowsHeight = 100.0;
+        final BaseGridRow row1 = new BaseGridRow();
+        final BaseGridRow row2 = new BaseGridRow();
+        final BaseGridRow row3 = new BaseGridRow();
+        final List<GridColumn<?>> allColumns = new ArrayList<>();
+        final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
+        final GridColumn<?> uiColumn2 = mockGridColumn(60.0);
+        final GridColumn<?> uiColumn3 = mockGridColumn(100.0);
+        allColumns.add(uiColumn1);
+        allColumns.add(uiColumn2);
+        allColumns.add(uiColumn3);
+        gridWidget.getModel().appendRow(row1);
+        gridWidget.getModel().appendRow(row2);
+        gridWidget.getModel().appendRow(row3);
+
+        doReturn(allColumns).when(ri).getAllColumns();
+        doReturn(headerRowsHeight).when(ri).getHeaderRowsHeight();
+        doReturn(uiColumn3).when(ci).getColumn();
+        doReturn(25.0).when(ci).getOffsetX();
+        doReturn(3).when(ci).getUiColumnIndex();
+
+        final GridBodyCellEditContext context = CellContextUtilities.makeCellRenderContext(gridWidget,
+                                                                                           ri,
+                                                                                           ci,
+                                                                                           2);
+
+        assertNotNull(context);
+        assertThat(context.getAbsoluteCellX())
+                .as("Should be column offset plus half of column width")
+                .isEqualTo(75.0);
+
+        assertThat(context.getAbsoluteCellY())
+                .as("Should be half of the only row height plus headers height")
+                .isEqualTo(headerRowsHeight + row1.getHeight() + row2.getHeight() + row3.getHeight() / 2);
+    }
+
+    @Test
+    public void testMakeHeaderRenderContextLeadBlock() {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(50.0,
@@ -154,7 +226,7 @@ public class CellContextUtilitiesTest {
     }
 
     @Test
-    public void testMakeRenderContextLeadBlockWithExtraLeadNonBlockColumn() {
+    public void testMakeHeaderRenderContextLeadBlockWithExtraLeadNonBlockColumn() {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(50.0);
@@ -185,7 +257,7 @@ public class CellContextUtilitiesTest {
     }
 
     @Test
-    public void testMakeRenderContextTailBlock() {
+    public void testMakeHeaderRenderContextTailBlock() {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(50.0,
@@ -214,7 +286,7 @@ public class CellContextUtilitiesTest {
     }
 
     @Test
-    public void testMakeRenderContextTailBlockWithExtraTailNonBlockColumn() {
+    public void testMakeHeaderRenderContextTailBlockWithExtraTailNonBlockColumn() {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(50.0,
@@ -245,7 +317,7 @@ public class CellContextUtilitiesTest {
     }
 
     @Test
-    public void testMakeRenderContextNoBlock() {
+    public void testMakeHeaderRenderContextNoBlock() {
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final GridColumn<?> uiColumn = mockGridColumn(100.0);
         allColumns.add(uiColumn);
