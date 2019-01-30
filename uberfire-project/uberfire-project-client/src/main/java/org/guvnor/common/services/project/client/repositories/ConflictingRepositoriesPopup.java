@@ -101,7 +101,7 @@ public class ConflictingRepositoriesPopup
     }
 
     private void safeExecute(final Command command) {
-        if(command != null) {
+        if (command != null) {
             command.execute();
         }
     }

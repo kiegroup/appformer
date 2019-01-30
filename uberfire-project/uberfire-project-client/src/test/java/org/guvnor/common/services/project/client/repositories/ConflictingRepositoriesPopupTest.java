@@ -16,6 +16,7 @@
 
 package org.guvnor.common.services.project.client.repositories;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -147,9 +148,8 @@ public class ConflictingRepositoriesPopupTest {
         final GAV gav = mock(GAV.class);
 
         final Set<MavenRepositoryMetadata> metadata = new HashSet<MavenRepositoryMetadata>();
-        final Set<Role> roles = new HashSet<Role>() {{
-            add(new RoleImpl(AppRoles.ADMIN.getName()));
-        }};
+        final Set<Role> roles = Collections.singleton(new RoleImpl(AppRoles.ADMIN.getName()));
+
         when(user.getRoles()).thenReturn(roles);
 
         presenter.setContent(gav, metadata, okCommand, overrideCommand);
