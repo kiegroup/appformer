@@ -187,7 +187,7 @@ public class MetadataIndexEngineBatchTest {
     public void indexIsReadyForOtherIndexerDuringCommit() throws Exception {
         when(provider.isFreshIndex(cluster)).thenReturn(false);
         // Simulate commit in progress by making lock appear held.
-        when(lock.isLockedBy(any())).then(inv -> TEST_INDEXER.equals(inv.getArgumentAt(0, String.class)));
+        when(lock.isLockedBy(any())).then(inv -> TEST_INDEXER.equals(inv.getArgument(0)));
 
         indexEngine.startBatch(cluster);
 

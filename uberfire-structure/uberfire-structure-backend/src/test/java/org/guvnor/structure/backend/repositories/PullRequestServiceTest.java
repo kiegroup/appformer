@@ -77,10 +77,8 @@ public class PullRequestServiceTest {
                                                   spaces);
 
         doAnswer(invocationOnMock -> {
-            String key = invocationOnMock.getArgumentAt(0,
-                                                        String.class);
-            GitMetadataImpl metadata = invocationOnMock.getArgumentAt(1,
-                                                                      GitMetadataImpl.class);
+            String key = invocationOnMock.getArgument(0);
+            GitMetadataImpl metadata = invocationOnMock.getArgument(1);
             metadatas.put(key,
                           metadata);
             return null;
@@ -88,14 +86,12 @@ public class PullRequestServiceTest {
                                any());
 
         doAnswer(invocationOnMock -> {
-            String key = invocationOnMock.getArgumentAt(0,
-                                                        String.class);
+            String key = invocationOnMock.getArgument(0);
             return metadatas.get(key);
         }).when(storage).read(anyString());
 
         doAnswer(invocationOnMock -> {
-            String key = invocationOnMock.getArgumentAt(0,
-                                                        String.class);
+            String key = invocationOnMock.getArgument(0);
             return metadatas.remove(key);
         }).when(storage).delete(anyString());
 

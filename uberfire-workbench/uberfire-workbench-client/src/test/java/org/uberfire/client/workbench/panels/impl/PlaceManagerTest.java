@@ -172,8 +172,7 @@ public class PlaceManagerTest {
         when(kansasActivity.preferredHeight()).thenReturn(456);
 
         when(placeHistoryHandler.getPerspectiveFromPlace(any()))
-                .thenAnswer(i -> i.getArgumentAt(0,
-                                                 PlaceRequest.class));
+                .thenAnswer(i -> i.getArgument(0));
         // arrange for the mock PerspectiveManager to invoke the doWhenFinished callbacks
         doAnswer(new Answer<Void>() {
             @SuppressWarnings({"rawtypes", "unchecked"})

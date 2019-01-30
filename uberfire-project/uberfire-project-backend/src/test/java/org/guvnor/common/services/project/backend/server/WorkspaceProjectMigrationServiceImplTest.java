@@ -139,9 +139,9 @@ public class WorkspaceProjectMigrationServiceImplTest {
             }
         }).when(ioService).get(any(URI.class));
 
-        when(pathUtil.normalizePath(any())).then(inv -> inv.getArgumentAt(0, Path.class));
+        when(pathUtil.normalizePath(any())).then(inv -> inv.getArgument(0));
         when(pathUtil.convert(any(Path.class))).then(inv -> {
-            final Path path = inv.getArgumentAt(0, Path.class);
+            final Path path = inv.getArgument(0);
 
             final org.uberfire.java.nio.file.Path retVal = mock(org.uberfire.java.nio.file.Path.class);
             when(retVal.toUri()).then(inv1 -> URI.create(path.toURI()));

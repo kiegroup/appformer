@@ -69,11 +69,11 @@ public class OrganizationalUnitFactoryImplTest {
 
     @Before
     public void setup() {
-        doAnswer(invocationOnMock -> invocationOnMock.getArgumentAt(0, ConfigGroup.class)).when(backward).compat(any());
+        doAnswer(invocationOnMock -> invocationOnMock.getArgument(0)).when(backward).compat(any());
         doAnswer(invocationOnMock -> {
             final Repository repository = mock(Repository.class);
-            doReturn(invocationOnMock.getArgumentAt(0, Space.class)).when(repository).getSpace();
-            doReturn(invocationOnMock.getArgumentAt(1, String.class)).when(repository).getAlias();
+            doReturn(invocationOnMock.getArgument(0)).when(repository).getSpace();
+            doReturn(invocationOnMock.getArgument(1)).when(repository).getAlias();
             return repository;
         }).when(repositoryService).getRepositoryFromSpace(any(Space.class), anyString());
 
