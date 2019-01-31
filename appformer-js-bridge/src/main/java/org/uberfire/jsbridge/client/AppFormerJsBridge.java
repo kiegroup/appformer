@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.Callback;
@@ -62,13 +61,13 @@ public class AppFormerJsBridge {
         final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
 
         //FIXME: Load React from local instead of CDN.
-        ScriptInjector.fromUrl("/" + gwtModuleName + "/react.production.min.js")
+        ScriptInjector.fromUrl(gwtModuleName + "/react.production.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
-                .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/react-dom.production.min.js")
+                .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl(gwtModuleName + "/react-dom.production.min.js")
                         .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback(callback.withSuccess((v1) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/appformer.js")
+                        .setCallback(callback.withSuccess((v1) -> ScriptInjector.fromUrl(gwtModuleName + "/appformer.js")
                                 .setWindow(ScriptInjector.TOP_WINDOW)
-                                .setCallback(callback.withSuccess((v2) -> ScriptInjector.fromUrl("/" + gwtModuleName + "/AppFormerComponentsRegistry.js")
+                                .setCallback(callback.withSuccess((v2) -> ScriptInjector.fromUrl(gwtModuleName + "/AppFormerComponentsRegistry.js")
                                         .setWindow(ScriptInjector.TOP_WINDOW)
                                         .setCallback(callback.withSuccess((v3) -> {
                                             try {
@@ -120,7 +119,7 @@ public class AppFormerJsBridge {
     public void goToPath(final String uri) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
-        PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length -1], uri); //FIXME: Not good
+        PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length - 1], uri); //FIXME: Not good
         placeManager.goTo(path);
     }
 

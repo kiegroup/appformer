@@ -141,30 +141,23 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
         }
 
         loadedScripts.add(scriptFilename.get());
-        final String scriptUrl = "/" + gwtModuleName + "/" + scriptFilename.get();
+        final String scriptUrl = gwtModuleName + "/" + scriptFilename.get();
 
         return promises.resolve().<Void>then(l -> new Promise<>((res, rej) -> {
-            //FIXME: Timer is here for demo purposes only
-            com.google.gwt.user.client.Timer timer = new com.google.gwt.user.client.Timer() {
-                @Override
-                public void run() {
-                    ScriptInjector.fromUrl(scriptUrl)
-                            .setWindow(ScriptInjector.TOP_WINDOW)
-                            .setCallback(new Callback<Void, Exception>() {
-                                @Override
-                                public void onFailure(final Exception e1) {
-                                    rej.onInvoke(e1);
-                                }
+            ScriptInjector.fromUrl(scriptUrl)
+                    .setWindow(ScriptInjector.TOP_WINDOW)
+                    .setCallback(new Callback<Void, Exception>() {
+                        @Override
+                        public void onFailure(final Exception e1) {
+                            rej.onInvoke(e1);
+                        }
 
-                                @Override
-                                public void onSuccess(final Void v) {
-                                    res.onInvoke(v);
-                                }
-                            })
-                            .inject();
-                }
-            };
-            timer.schedule(1500);
+                        @Override
+                        public void onSuccess(final Void v) {
+                            res.onInvoke(v);
+                        }
+                    })
+                    .inject();
         })).catch_(e -> {
             DomGlobal.console.info("Error loading script for " + componentId);
             return promises.reject(e);
