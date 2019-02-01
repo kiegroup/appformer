@@ -319,6 +319,7 @@ public abstract class AbstractDisplayer<V extends AbstractDisplayer.View> implem
                     @Override
                     public boolean onError(final ClientRuntimeError error) {
                         showError(error);
+                        drawn = false;
                         return false;
                     }
                 });
