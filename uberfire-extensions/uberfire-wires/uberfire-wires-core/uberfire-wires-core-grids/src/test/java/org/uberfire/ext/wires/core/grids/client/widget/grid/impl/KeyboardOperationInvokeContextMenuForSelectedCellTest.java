@@ -61,7 +61,7 @@ public class KeyboardOperationInvokeContextMenuForSelectedCellTest {
     public void testKeysThatFireOperation() {
         assertThat(testedOperation.isControlKeyDown()).isEqualTo(KeyboardOperation.TriStateBoolean.TRUE);
         assertThat(testedOperation.isShiftKeyDown()).isEqualTo(KeyboardOperation.TriStateBoolean.DONT_CARE);
-        assertThat(testedOperation.getKeyCode()).isEqualTo(KeyCodes.KEY_M);
+        assertThat(testedOperation.getKeyCode()).isEqualTo(KeyCodes.KEY_SPACE);
     }
 
     @Test

@@ -35,7 +35,7 @@ public class KeyboardOperationInvokeContextMenuForSelectedCell extends BaseKeybo
 
     @Override
     public int getKeyCode() {
-        return KeyCodes.KEY_M;
+        return KeyCodes.KEY_SPACE;
     }
 
     @Override
