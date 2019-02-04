@@ -1,5 +1,6 @@
 package org.dashbuilder.renderer.service;
 
+import org.dashbuilder.renderer.RendererSettings;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**

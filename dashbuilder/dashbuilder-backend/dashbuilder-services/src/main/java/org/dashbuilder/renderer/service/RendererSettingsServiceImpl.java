@@ -4,6 +4,7 @@ package org.dashbuilder.renderer.service;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
+import org.dashbuilder.renderer.RendererSettings;
 import org.jboss.errai.bus.server.annotations.Service;
 
 @Service

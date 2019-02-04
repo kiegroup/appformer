@@ -1,4 +1,4 @@
-package org.dashbuilder.renderer.service;
+package org.dashbuilder.renderer;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
