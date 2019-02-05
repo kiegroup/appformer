@@ -79,8 +79,7 @@ public class RendererManager {
         Collection<SyncBeanDef<RendererLibrary>> beanDefs = beanManager.lookupBeans(RendererLibrary.class);
         
         if (onlyOffline) {
-            beanDefs = beanDefs.stream().filter(bd -> bd.getInstance().isOffline())
-                                         .collect(Collectors.toList());
+            beanDefs = beanDefs.stream().filter(bd -> bd.getInstance().isOffline()).collect(Collectors.toList());
         }
         
         if (defaultUUID != null && ! defaultUUID.isEmpty()) {

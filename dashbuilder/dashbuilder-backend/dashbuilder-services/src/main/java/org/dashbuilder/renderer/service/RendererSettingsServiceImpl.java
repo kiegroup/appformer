@@ -15,17 +15,10 @@ public class RendererSettingsServiceImpl implements RendererSettingsService {
     
     @PostConstruct
     public void loadSettings() {
-        settings = new RendererSettings();
         String defaultRenderer = System.getProperty(DEFAULT_RENDERER_PROPERTY, "");
         String offlineStr = System.getProperty(OFFLINE_RENDERER_PROPERTY, "false");
-        boolean offline;
-        try {
-            offline = Boolean.parseBoolean(offlineStr);
-        } catch(Exception e) {
-            offline = false;
-        }
-        settings.setDefaultRenderer(defaultRenderer);
-        settings.setOffline(offline);
+        boolean offline=  Boolean.parseBoolean(offlineStr);
+        settings = new RendererSettings(defaultRenderer, offline);
     }
     
     @Override

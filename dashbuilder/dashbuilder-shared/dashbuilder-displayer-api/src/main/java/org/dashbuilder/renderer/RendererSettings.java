@@ -3,32 +3,45 @@ package org.dashbuilder.renderer;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
- *  Renderer Settings:
- *  <ul><li><b>Offline</b>: Only renderers that can work without an internet connection will be available</li>
- *  <li><b>Default Renderer</b>: Set the UUID of the renderer that should be used by default</li>
- *  </ul>
+ * Hold Renderer Settings.
+ * 
  */
 @Portable
 public class RendererSettings {
 
-    private String defaultRenderer;
-    private boolean offline;
+    private final String defaultRenderer;
+    private final boolean offline;
 
-    public void setDefaultRenderer(String defaultRenderer) {
-        this.defaultRenderer = defaultRenderer;
-        
+    public RendererSettings() {
+        this.defaultRenderer = "";
+        this.offline = false;
     }
 
-    public void setOffline(boolean offline) {
+
+    public RendererSettings(String defaultRenderer, boolean offline) {
+        this.defaultRenderer = defaultRenderer;
         this.offline = offline;
     }
+    
 
+    /**
+     * The UUID of the renderer that should be used by default. <br>
+     * It can be set using <i>org.dashbuilder.renderer.default</i>.
+     * 
+     * @return The selected default renderer UUID
+     */
     public String getDefaultRenderer() {
         return defaultRenderer;
     }
 
+    /**
+     * When true renderers that can't work offline are discarded. <br>
+     * It can be set <i>org.dashbuilder.renderer.offline</i>. 
+     * 
+     * @return The offline flag value
+     */
     public boolean isOffline() {
         return offline;
     }
-    
+
 }

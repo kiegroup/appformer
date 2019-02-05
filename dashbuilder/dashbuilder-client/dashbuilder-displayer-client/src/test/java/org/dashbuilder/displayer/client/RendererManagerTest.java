@@ -193,7 +193,6 @@ public class RendererManagerTest {
         assertNull(rendererManager.getDefaultRenderer(LINECHART));
     }
     
-    
     @Test
     public void defaultRendererSetByUserTest() {
         when(rendererSettings.getDefaultRenderer()).thenReturn(REND2_UUID);
