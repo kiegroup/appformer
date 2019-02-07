@@ -20,13 +20,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AbstractDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
+import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Column;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
@@ -52,10 +55,17 @@ public class PagedTable<T>
     public Select pageSizesSelector;
 
     @UiField
+    public Column dataGridContainer;
+
+    @UiField
     public Column topToolbar;
+
+    @UiField
+    public Button expandDataGridWidthButton;
 
     protected boolean showPageSizesSelector = false;
     private int pageSize;
+    private boolean showExpandDataGridWidthButton = true;
     private AbstractDataProvider<T> dataProvider;
 
     public PagedTable() {
@@ -121,6 +131,7 @@ public class PagedTable<T>
         dataGrid.addRedrawHandler(() -> Scheduler.get().scheduleDeferred(() -> setTableHeight()));
         dataGrid.getElement().getStyle().setMarginBottom(0,
                                                          Style.Unit.PX);
+        initExpandButton();
     }
 
     protected static native int getTableHeight(final JavaScriptObject grid,
@@ -153,6 +164,40 @@ public class PagedTable<T>
         return this.pager.getPageStart();
     }
 
+    public void showExpandDataGridWidthButton(boolean enable){
+        this.showExpandDataGridWidthButton = enable;
+    }
+
+    public void initExpandButton() {
+        expandDataGridWidthButton.setVisible(false);
+        expandDataGridWidthButton.addClickHandler((ClickEvent event) -> {
+            if (!expandDataGridWidthButton.isActive()) {
+                setExpandDataGridWidthButtonOpened();
+            } else {
+                setExpandDataGridWidthButtonClosed();
+            }
+        });
+    }
+
+    protected void enableExpandButton(boolean enabled) {
+        expandDataGridWidthButton.setVisible(enabled);
+        if (enabled) {
+            expandDataGridWidthButton.getElement().setAttribute("aria-pressed", "false");
+            expandDataGridWidthButton.setActive(false);
+            setExpandDataGridWidthButtonClosed();
+        }
+    }
+
+    protected void setExpandDataGridWidthButtonClosed() {
+        dataGridContainer.setWidth("100%");
+        expandDataGridWidthButton.setIcon(IconType.CARET_RIGHT);
+    }
+
+    protected void setExpandDataGridWidthButtonOpened() {
+        dataGridContainer.setWidth(dataGrid.getColumnCount() * 120 + "px");
+        expandDataGridWidthButton.setIcon(IconType.CARET_LEFT);
+    }
+
     public final void loadPageSizePreferences() {
         pageSize = getPageSizeStored();
         this.dataGrid.setPageStart(0);
@@ -170,6 +215,10 @@ public class PagedTable<T>
         if (height.equals(dataGrid.getElement().getStyle().getHeight()) == false) {
             this.dataGrid.setHeight(height);
             this.dataGrid.redraw();
+        }
+        if(showExpandDataGridWidthButton) {
+            dataGridContainer.setWidth("100%");
+            enableExpandButton(dataGrid.getColumnCount() * 120 > dataGridContainer.getOffsetWidth());
         }
     }
 

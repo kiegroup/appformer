@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
 
 package org.uberfire.ext.widgets.common.client.tables;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Image;
 import org.gwtbootstrap3.client.ui.Label;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.html.Text;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.junit.Test;
@@ -113,5 +116,53 @@ public class PagedTableTest {
 
         verify(select).setValue(String.valueOf(DEFAULT_PAGE_SIZE));
         verify(select).addValueChangeHandler(any());
+    }
+
+    @Test
+    public void testShowExpandDataGridButtonOpened() throws Exception {
+        Element expandDataGridWidthButtonElementMock = mock(Element.class);
+
+        final int PAGE_SIZE = 10;
+        final int COLUMN_COUNT = 3;
+
+        PagedTable pagedTable = new PagedTable(PAGE_SIZE, null, null, false, false, false);
+        pagedTable.dataGrid = spy(pagedTable.dataGrid);
+        pagedTable.expandDataGridWidthButton = mock(Button.class);
+        pagedTable.dataGridContainer = mock(Column.class);
+
+
+        when(pagedTable.dataGrid.getColumnCount()).thenReturn(COLUMN_COUNT);
+        when(pagedTable.dataGridContainer.getOffsetWidth()).thenReturn(COLUMN_COUNT * 120 - 5);
+        when(pagedTable.expandDataGridWidthButton.getElement()).thenReturn(expandDataGridWidthButtonElementMock);
+        pagedTable.enableExpandButton(true);
+        pagedTable.setTableHeight();
+
+        verify(pagedTable.expandDataGridWidthButton,times(2)).setVisible(true);
+        verify(expandDataGridWidthButtonElementMock,times(2)).setAttribute("aria-pressed", "false");
+        verify(pagedTable.dataGridContainer,times(3)).setWidth("100%");
+        verify(pagedTable.expandDataGridWidthButton,times(2)).setIcon(IconType.CARET_RIGHT);
+
+    }
+
+    @Test
+    public void testHideExpandDataGridButton() throws Exception {
+        Element expandDataGridWidthButtonElementMock = mock(Element.class);
+
+        final int PAGE_SIZE = 10;
+        final int COLUMN_COUNT = 3;
+
+        PagedTable pagedTable = new PagedTable(PAGE_SIZE, null, null, false, false, false);
+        pagedTable.dataGrid = spy(pagedTable.dataGrid);
+        pagedTable.expandDataGridWidthButton = mock(Button.class);
+        pagedTable.dataGridContainer = mock(Column.class);
+
+        when(pagedTable.dataGrid.getColumnCount()).thenReturn(COLUMN_COUNT);
+        when(pagedTable.dataGridContainer.getOffsetWidth()).thenReturn(COLUMN_COUNT * 120 + 5);
+        when(pagedTable.expandDataGridWidthButton.getElement()).thenReturn(expandDataGridWidthButtonElementMock);
+        pagedTable.enableExpandButton(true);
+        pagedTable.setTableHeight();
+
+        verify(pagedTable.expandDataGridWidthButton).setVisible(false);
+
     }
 }

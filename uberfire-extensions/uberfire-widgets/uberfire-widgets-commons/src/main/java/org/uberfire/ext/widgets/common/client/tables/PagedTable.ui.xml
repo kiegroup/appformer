@@ -75,11 +75,12 @@
         <bh:Div ui:field="rightToolbar" pull="RIGHT">
           <g:FlowPanel width="100%" ui:field="rightActionsToolbar" addStyleNames="{style.rightToolBar}"/>
           <b:Button ui:field="columnPickerButton" dataToggle="BUTTON" icon="COLUMNS"/>
+          <b:Button ui:field="expandDataGridWidthButton" dataToggle="BUTTON" icon="CARET_RIGHT"/>
         </bh:Div>
       </b:Column>
     </b:Row>
     <b:Row>
-      <b:Column size="MD_12">
+      <b:Column size="MD_12" ui:field="dataGridContainer">
         <bg:DataGrid ui:field="dataGrid"/>
       </b:Column>
     </b:Row>
