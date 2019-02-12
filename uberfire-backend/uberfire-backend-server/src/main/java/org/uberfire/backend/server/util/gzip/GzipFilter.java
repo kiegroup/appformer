@@ -27,6 +27,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static java.lang.Boolean.TRUE;
+
 public class GzipFilter implements Filter {
 
     static final String GZIP = "gzip";
@@ -40,6 +42,12 @@ public class GzipFilter implements Filter {
     public void doFilter(final ServletRequest req,
                          final ServletResponse res,
                          final FilterChain chain) throws IOException, ServletException {
+
+        final String skip = System.getProperty("skip-gzip-compression");
+        if (skip != null && Boolean.valueOf(skip)) {
+            chain.doFilter(req, res);
+            return;
+        }
 
         if (!(req instanceof HttpServletRequest)) {
             return;
