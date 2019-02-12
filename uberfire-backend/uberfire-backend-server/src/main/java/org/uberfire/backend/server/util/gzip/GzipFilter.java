@@ -43,8 +43,8 @@ public class GzipFilter implements Filter {
                          final ServletResponse res,
                          final FilterChain chain) throws IOException, ServletException {
 
-        final String disable = System.getProperty("org.uberfire.gzip.disable");
-        if (disable != null && !disable.equals("false")) {
+        final String enabled = System.getProperty("org.uberfire.gzip.enable");
+        if (enabled != null && !enabled.equals("true")) {
             chain.doFilter(req, res);
             return;
         }
