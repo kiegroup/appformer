@@ -27,13 +27,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static java.lang.Boolean.TRUE;
+import static javax.ws.rs.core.HttpHeaders.ACCEPT_ENCODING;
 
 public class GzipFilter implements Filter {
 
     static final String GZIP = "gzip";
 
-    private static final String ACCEPT_ENCODING_HEADER = "Accept-Encoding";
+    static final String ORG_UBERFIRE_GZIP_ENABLE = "org.uberfire.gzip.enable";
 
     public void init(final FilterConfig filterConfig) {
         // Empty on purpose
@@ -43,32 +43,56 @@ public class GzipFilter implements Filter {
                          final ServletResponse res,
                          final FilterChain chain) throws IOException, ServletException {
 
-        final String enabled = System.getProperty("org.uberfire.gzip.enable");
-        if (enabled != null && !enabled.equals("true")) {
-            chain.doFilter(req, res);
-            return;
+        switch (getAction(req)) {
+            case HALT:
+                break;
+            case DO_NOT_ACCEPT_GZIP:
+            case DO_NOT_COMPRESS:
+                chain.doFilter(req, res);
+                break;
+            case COMPRESS:
+                compressAndContinue(req, (HttpServletResponse) res, chain);
+                break;
         }
+    }
 
-        if (!(req instanceof HttpServletRequest)) {
-            return;
-        }
+    void compressAndContinue(final ServletRequest req,
+                             final HttpServletResponse res,
+                             final FilterChain chain) throws IOException, ServletException {
 
-        final HttpServletRequest request = (HttpServletRequest) req;
-        final HttpServletResponse response = (HttpServletResponse) res;
-
-        final String acceptEncodingHeader = request.getHeader(ACCEPT_ENCODING_HEADER);
-        if (acceptEncodingHeader == null || !acceptEncodingHeader.contains(GZIP)) {
-            chain.doFilter(req, res);
-            return;
-        }
-
-        final GzipHttpServletResponseWrapper wResponse = new GzipHttpServletResponseWrapper(response);
+        final GzipHttpServletResponseWrapper wResponse = new GzipHttpServletResponseWrapper(res);
         chain.doFilter(req, wResponse);
         wResponse.close();
     }
 
+    Action getAction(final ServletRequest req) {
+
+        final String enabled = System.getProperty(ORG_UBERFIRE_GZIP_ENABLE);
+        if (enabled != null && !enabled.equals("true")) {
+            return Action.DO_NOT_COMPRESS;
+        }
+
+        if (!(req instanceof HttpServletRequest)) {
+            return Action.HALT;
+        }
+
+        final String acceptEncodingHeader = ((HttpServletRequest) req).getHeader(ACCEPT_ENCODING);
+        if (acceptEncodingHeader == null || !acceptEncodingHeader.contains(GZIP)) {
+            return Action.DO_NOT_ACCEPT_GZIP;
+        }
+
+        return Action.COMPRESS;
+    }
+
     public void destroy() {
         // Empty on purpose
+    }
+
+    enum Action {
+        HALT,
+        DO_NOT_COMPRESS,
+        DO_NOT_ACCEPT_GZIP,
+        COMPRESS;
     }
 }
 
