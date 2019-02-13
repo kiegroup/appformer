@@ -33,7 +33,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import elemental2.dom.DomGlobal;
 import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -96,7 +95,8 @@ public class ActivityBeansCache {
 
             validateUniqueness(id);
 
-            put(activityBean, id);
+            activitiesById.put(id,
+                               activityBean);
 
             if (isSplashScreen(activityBean.getQualifiers())) {
                 splashActivities.add((SplashScreenActivity) activityBean.getInstance());
@@ -112,8 +112,11 @@ public class ActivityBeansCache {
         this.resourceTypeManagerCache.sortResourceActivitiesByPriority();
     }
 
-    private void put(SyncBeanDef<Activity> activityBean, String id) {
-        activitiesById.put(id, activityBean);
+    private void put(final SyncBeanDef<Activity> activityBean,
+                     final String id) {
+
+        activitiesById.put(id,
+                           activityBean);
     }
 
     private void addResourceActivity(SyncBeanDef<Activity> activityBean,
@@ -156,7 +159,8 @@ public class ActivityBeansCache {
 
         validateUniqueness(id);
 
-        put(activityBean, id);
+        activitiesById.put(id,
+                           activityBean);
         newWorkbenchScreenEventEvent.fire(new NewWorkbenchScreenEvent(id));
     }
 
@@ -174,7 +178,8 @@ public class ActivityBeansCache {
 
         validateUniqueness(id);
 
-        put(activityBean, id);
+        activitiesById.put(id,
+                           activityBean);
         newPerspectiveEventEvent.fire(new NewPerspectiveEvent(id));
     }
 
@@ -184,12 +189,12 @@ public class ActivityBeansCache {
     public void addNewEditorActivity(final SyncBeanDef<Activity> activityBean,
                                      String priority,
                                      String resourceTypeName) {
-
         final String id = activityBean.getName();
 
         validateUniqueness(id);
 
-        put(activityBean, id);
+        activitiesById.put(id,
+                           activityBean);
 
         this.resourceTypeManagerCache.addResourceActivity(new ActivityAndMetaInfo(iocManager,
                                                                                   activityBean,
@@ -215,7 +220,8 @@ public class ActivityBeansCache {
 
         validateUniqueness(id);
 
-        put(activityBean, id);
+        activitiesById.put(id,
+                           activityBean);
         splashActivities.add((SplashScreenActivity) activityBean.getInstance());
     }
 

@@ -118,7 +118,7 @@ public class AppFormerJsBridge {
     public void goToPath(final String uri) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
-        PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length - 1], uri); //FIXME: Not good
+        final PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length - 1], uri); //FIXME: Not good
         placeManager.goTo(path);
     }
 

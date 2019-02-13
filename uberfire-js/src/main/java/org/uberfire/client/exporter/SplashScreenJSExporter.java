@@ -81,13 +81,13 @@ public class SplashScreenJSExporter implements UberfireJSExporter {
                                               splashView);
         final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
         final SingletonBeanDefinition<JSSplashScreenActivity, JSSplashScreenActivity> beanDef =
-                new SingletonBeanDefinition<JSSplashScreenActivity, JSSplashScreenActivity>(activity,
-                                                                                     JSSplashScreenActivity.class,
-                                                                                     qualifiers,
-                                                                                     newNativePlugin.getId(),
-                                                                                     true,
-                                                                                     SplashScreenActivity.class,
-                                                                                     Activity.class);
+                new SingletonBeanDefinition<>(activity,
+                                              JSSplashScreenActivity.class,
+                                              qualifiers,
+                                              newNativePlugin.getId(),
+                                              true,
+                                              SplashScreenActivity.class,
+                                              Activity.class);
         beanManager.registerBean(beanDef);
         beanManager.registerBeanTypeAlias(beanDef,
                                           SplashScreenActivity.class);

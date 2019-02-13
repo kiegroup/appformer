@@ -67,7 +67,6 @@ public class DefaultBeanFactory
         WorkbenchPanelPresenter panel = newWorkbenchPanel(root);
         if (panel instanceof TemplatedWorkbenchPanelPresenter) {
 
-            // FIXME: Eder review
             final TemplatedActivity templatedActivity;
             if (activity instanceof JsWorkbenchLazyPerspective) {
                 templatedActivity = (TemplatedActivity) ((JsWorkbenchLazyPerspective) activity).get();

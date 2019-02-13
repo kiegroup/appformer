@@ -16,13 +16,11 @@
 
 package org.uberfire.backend.vfs;
 
-import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsType;
 
 @JsType
 public interface Path extends Comparable<Path> {
 
-    @JsMethod
     String getFileName();
 
     String toURI();

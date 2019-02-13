@@ -40,15 +40,14 @@ public class ImmutableWorkbenchPanelPresenter extends AbstractWorkbenchPanelPres
     }
 
     @Override
-    public void addPart(WorkbenchPartPresenter part) {
+    public void addPart(final WorkbenchPartPresenter part) {
         this.addPart(part, null);
     }
 
     @Override
-    public void addPart(WorkbenchPartPresenter part,
-                        String contextId) {
-        SinglePartPanelHelper h = createSinglePartPanelHelper();
-        if (h.hasNoParts()) {
+    public void addPart(final WorkbenchPartPresenter part,
+                        final String contextId) {
+        if (createSinglePartPanelHelper().hasNoParts()) {
             super.addPart(part, contextId);
         }
     }

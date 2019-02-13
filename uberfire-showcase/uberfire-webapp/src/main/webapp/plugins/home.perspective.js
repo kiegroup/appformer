@@ -17,7 +17,7 @@
 $registerPerspective({
     id: "Home",
     is_default: true,
-    panel_type: "org.uberfire.client.workbench.panels.impl.MultiListWorkbenchPanelPresenter",
+    panel_type: "org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter",
     view: {
         parts: [
             {

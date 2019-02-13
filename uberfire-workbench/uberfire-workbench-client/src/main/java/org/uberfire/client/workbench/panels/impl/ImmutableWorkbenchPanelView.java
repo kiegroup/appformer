@@ -75,7 +75,7 @@ public class ImmutableWorkbenchPanelView
 
     @Override
     public boolean selectPart(final PartDefinition part) {
-        PartDefinition currentPartDefinition = getCurrentPartDefinition();
+        final PartDefinition currentPartDefinition = getCurrentPartDefinition();
         if (currentPartDefinition != null && currentPartDefinition.equals(part)) {
             return true;
         }

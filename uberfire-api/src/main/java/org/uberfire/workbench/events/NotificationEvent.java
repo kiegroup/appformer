@@ -17,7 +17,6 @@ package org.uberfire.workbench.events;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.workbench.model.Notification;
 
 /**
  * An event to show a notification pop-up in the Workbench

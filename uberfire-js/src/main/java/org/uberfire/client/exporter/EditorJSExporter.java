@@ -81,7 +81,7 @@ public class EditorJSExporter implements UberfireJSExporter {
                                         placeManager);
 
         final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
-        final SingletonBeanDefinition<JSEditorActivity, JSEditorActivity> beanDef = new SingletonBeanDefinition<JSEditorActivity, JSEditorActivity>(
+        final SingletonBeanDefinition<JSEditorActivity, JSEditorActivity> beanDef = new SingletonBeanDefinition<>(
                 activity,
                 JSEditorActivity.class,
                 qualifiers,

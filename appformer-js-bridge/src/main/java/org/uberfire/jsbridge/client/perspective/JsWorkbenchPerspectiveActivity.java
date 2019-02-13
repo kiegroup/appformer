@@ -113,12 +113,10 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
 
         realPerspective.view().parts().stream()
                 .map(part -> new JsWorkbenchPartConverter(part).toPartDefinition())
-                .collect(toList())
                 .forEach(rootPanel::addPart);
 
         realPerspective.view().panels().stream()
                 .map(panel -> new JsWorkbenchPanelConverter(panel).toPanelDefinition())
-                .collect(toList())
                 .forEach(panel -> rootPanel.insertChild(panel.getPosition(), panel));
 
         return def;

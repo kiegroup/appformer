@@ -79,13 +79,13 @@ public class PluginJSExporter implements UberfireJSExporter {
 
         final Set<Annotation> qualifiers = new HashSet<Annotation>(Arrays.asList(DEFAULT_QUALIFIERS));
         final SingletonBeanDefinition<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity> beanDef =
-                new SingletonBeanDefinition<JSWorkbenchScreenActivity, JSWorkbenchScreenActivity>(activity,
-                                                                                           JSWorkbenchScreenActivity.class,
-                                                                                           qualifiers,
-                                                                                           newNativePlugin.getId(),
-                                                                                           true,
-                                                                                           WorkbenchScreenActivity.class,
-                                                                                           Activity.class);
+                new SingletonBeanDefinition<>(activity,
+                                              JSWorkbenchScreenActivity.class,
+                                              qualifiers,
+                                              newNativePlugin.getId(),
+                                              true,
+                                              WorkbenchScreenActivity.class,
+                                              Activity.class);
         beanManager.registerBean(beanDef);
         beanManager.registerBeanTypeAlias(beanDef,
                                           WorkbenchScreenActivity.class);

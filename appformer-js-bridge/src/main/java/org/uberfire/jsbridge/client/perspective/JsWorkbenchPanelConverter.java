@@ -47,12 +47,10 @@ public class JsWorkbenchPanelConverter {
 
         nativePanel.view().parts().stream()
                 .map(part -> new JsWorkbenchPartConverter(part).toPartDefinition())
-                .collect(toList())
                 .forEach(newPanel::addPart);
 
         nativePanel.view().panels().stream()
                 .map(panel -> new JsWorkbenchPanelConverter(panel).toPanelDefinition())
-                .collect(toList())
                 .forEach(panel -> newPanel.insertChild(panel.getPosition(), panel));
 
         return newPanel;
