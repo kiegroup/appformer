@@ -60,7 +60,6 @@ public class AppFormerJsBridge {
         final Consumer<Exception> onError = ex -> workbench.removeStartupBlocker(AppFormerJsBridge.class);
         final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
 
-        //FIXME: Load React from local instead of CDN.
         ScriptInjector.fromUrl(gwtModuleName + "/react.production.min.js")
                 .setWindow(ScriptInjector.TOP_WINDOW)
                 .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl(gwtModuleName + "/react-dom.production.min.js")

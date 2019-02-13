@@ -374,7 +374,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <!--<scope>provided</scope>-->
+      <scope>provided</scope>
     </dependency>
 
     <!-- Uberfire Docks -->
@@ -498,8 +498,6 @@
               <sources>
                 <source>../../appformer-js-bridge/src/main/java</source>
                 <source>../../appformer-js-bridge/src/main/resources</source>
-                <!--<source>../../uberfire-api/src/main/java</source>-->
-                <!--<source>../../uberfire-api/src/main/resources</source>-->
               </sources>
             </configuration>
           </execution>
