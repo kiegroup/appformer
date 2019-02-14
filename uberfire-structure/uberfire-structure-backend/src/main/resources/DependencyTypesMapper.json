@@ -1,0 +1,10 @@
+{
+  "dependencies":[
+    {
+      "type":"JPA",
+      "deps":[
+            {"groupId":"javax.persistence", "artifactId":"javax.persistence-api", "version":"2.2", "scope":""}
+      ]
+    }
+  ]
+}

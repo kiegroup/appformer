@@ -5,7 +5,7 @@
   <parent>
     <artifactId>dashbuilder-renderers</artifactId>
     <groupId>org.dashbuilder</groupId>
-    <version>2.13.0-SNAPSHOT</version>
+    <version>2.15.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -15,18 +15,8 @@
   <name>Dashbuilder Renderer C3</name>
   <description>Dashbuilder Renderer for the C3 Chart API</description>
 
-  <properties>
-    <version.org.webjars.bower.d3js>5.5.0</version.org.webjars.bower.d3js>
-    <version.org.webjars.bower.c3>0.6.6</version.org.webjars.bower.c3>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>d3js</artifactId>
-        <version>${version.org.webjars.bower.d3js}</version>
-      </dependency>
       <dependency>
         <groupId>org.webjars</groupId>
         <artifactId>c3</artifactId>
@@ -36,10 +26,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>d3js</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>c3</artifactId>
@@ -77,6 +63,11 @@
       <groupId>com.google.elemental2</groupId>
       <artifactId>elemental2-core</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>com.google.elemental2</groupId>
+      <artifactId>elemental2-dom</artifactId>
+    </dependency>    
 
     <dependency>
       <groupId>com.google.jsinterop</groupId>
@@ -106,6 +97,22 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-common</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-workbench-client-views-patternfly</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwtbootstrap3</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
@@ -147,27 +154,6 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-d3</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.webjars</groupId>
-                  <artifactId>d3js</artifactId>
-                  <version>${version.org.webjars.bower.d3js}</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>${project.build.directory}/d3js</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>true</overWriteSnapshots>
-            </configuration>
-          </execution>
-          <execution>
             <id>unpack-c3</id>
             <phase>process-resources</phase>
             <goals>
@@ -195,24 +181,6 @@
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-d3js-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}/org/dashbuilder/renderer/c3/client/exports/js</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/d3js/META-INF/resources/webjars/d3js/${version.org.webjars.bower.d3js}/</directory>
-                  <includes>
-                    <include>d3.min.js</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy-c3-resources-js</id>
             <phase>process-resources</phase>
             <goals>
@@ -225,24 +193,6 @@
                   <directory>${project.build.directory}/c3/META-INF/resources/webjars/c3/${version.org.webjars.bower.c3}</directory>
                   <includes>
                     <include>c3.js</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-c3-resources-css</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}/org/dashbuilder/renderer/c3/client/exports/css</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/c3/META-INF/resources/webjars/c3/${version.org.webjars.bower.c3}</directory>
-                  <includes>
-                    <include>c3.min.css</include>
                   </includes>
                 </resource>
               </resources>

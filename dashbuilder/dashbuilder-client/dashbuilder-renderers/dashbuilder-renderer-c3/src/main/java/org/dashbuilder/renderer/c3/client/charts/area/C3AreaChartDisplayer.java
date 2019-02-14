@@ -11,6 +11,9 @@ import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.C3XYDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.CommonC3DisplayerConstants;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf.RenderedCallback;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 
 
@@ -19,9 +22,13 @@ public class C3AreaChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.Vie
     
     
     public interface View extends C3Displayer.View<C3AreaChartDisplayer> {
+        
+        public void fixAreaOpacity();
     }
     
     private View view;
+    
+    RenderedCallback fixAreaOpacityCallback = () -> getView().fixAreaOpacity();
     
     @Inject
     public C3AreaChartDisplayer(View view, FilterLabelSet filterLabelSet, C3JsTypesFactory factory) {
@@ -29,8 +36,19 @@ public class C3AreaChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.Vie
         this.view = view;
         this.view.init(this);
     }
-
     
+    public C3AreaChartDisplayer stacked() {
+        this.setStacked(true);
+        return this;
+    }
+    
+    @Override
+    protected C3ChartConf buildConfiguration() {
+        C3ChartConf conf = super.buildConfiguration();
+        conf.setOnrendered(fixAreaOpacityCallback);
+        return conf;
+    }
+
     @Override
     public DisplayerConstraints createDisplayerConstraints() {
 
@@ -48,19 +66,8 @@ public class C3AreaChartDisplayer extends C3XYDisplayer<C3AreaChartDisplayer.Vie
                         ColumnType.LABEL,
                         ColumnType.NUMBER});
 
-        return new DisplayerConstraints(lookupConstraints)
-                .supportsAttribute(DisplayerAttributeDef.TYPE)
+        return new CommonC3DisplayerConstants(lookupConstraints).create()
                 .supportsAttribute(DisplayerAttributeDef.SUBTYPE)
-                .supportsAttribute(DisplayerAttributeDef.RENDERER)
-                .supportsAttribute(DisplayerAttributeGroupDef.COLUMNS_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.FILTER_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.REFRESH_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.GENERAL_GROUP)
-                .supportsAttribute(DisplayerAttributeDef.CHART_WIDTH)
-                .supportsAttribute(DisplayerAttributeDef.CHART_HEIGHT)
-                .supportsAttribute(DisplayerAttributeDef.CHART_BGCOLOR)
-                .supportsAttribute(DisplayerAttributeGroupDef.CHART_MARGIN_GROUP)
-                .supportsAttribute(DisplayerAttributeGroupDef.CHART_LEGEND_GROUP )
                 .supportsAttribute(DisplayerAttributeGroupDef.AXIS_GROUP);
     }
 

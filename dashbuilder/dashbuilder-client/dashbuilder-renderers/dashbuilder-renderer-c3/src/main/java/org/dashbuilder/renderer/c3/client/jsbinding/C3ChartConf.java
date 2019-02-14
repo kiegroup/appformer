@@ -2,6 +2,7 @@ package org.dashbuilder.renderer.c3.client.jsbinding;
 
 import com.google.gwt.user.client.Element;
 
+import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -21,7 +22,8 @@ public class C3ChartConf {
                                      C3Transition transition,
                                      C3Point point,
                                      C3Padding padding,
-                                     C3Legend legend) {
+                                     C3Legend legend,
+                                     C3Color color) {
         C3ChartConf instance = new C3ChartConf();
         instance.setSize(size);
         instance.setData(data);
@@ -31,6 +33,7 @@ public class C3ChartConf {
         instance.setPoint(point);
         instance.setPadding(padding);
         instance.setLegend(legend);
+        instance.setColor(color);
         return instance;
     }
     
@@ -62,6 +65,24 @@ public class C3ChartConf {
     public native void setPadding(C3Padding padding);
 
     @JsProperty
-    public native void setLegend(C3Legend legend);    
+    public native void setLegend(C3Legend legend);
+    
+    @JsProperty
+    public native void setOnrendered(RenderedCallback callback);
+    
+    
+    @JsFunction
+    @FunctionalInterface
+    public interface RenderedCallback {
+        
+        void callback();
+    
+    }
+    
+    @JsProperty
+    public native void setColor(C3Color color);    
+    
+    @JsProperty
+    public native void setGauge(C3Gauge gauge);  
     
 }

@@ -35,6 +35,8 @@ import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisY;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartData;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Color;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartSize;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3DataInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3Legend;
@@ -52,6 +54,10 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
     private static final double DEFAULT_POINT_RADIUS = 2.5;
     private FilterLabelSet filterLabelSet;
     protected C3JsTypesFactory factory;
+    
+    public static final String[] COLOR_PATTERN = {
+                                    "#0088CE", "#CC0000", "#EC7A08", "#3F9C35", "#F0AB00", "#703FEC", "#007A87", "#92D400", "#35CAED",
+                                    "#00659C", "#A30000", "#B35C00", "#B58100", "#6CA100", "#2D7623", "#005C66", "#008BAD", "#40199A"};
 
     public interface View<P extends C3Displayer> extends AbstractGwtDisplayer.View<P> {
 
@@ -68,6 +74,12 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         void setFilterLabelSet(FilterLabelSet filterLabelSet);
         
         void setBackgroundColor(String color);
+        
+        void noData();
+        
+        void setSize(int width, int height);
+
+        void setResizable(int maxWidth, int maxHeight);
 
     }
     
@@ -114,38 +126,63 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
 
     @Override
     protected void updateVisualization() {
-        C3ChartConf conf = buildConfiguration();
-        getView().updateChart(conf);
-        updateFilterStatus();
-        applyPropertiesToView();
+        if(dataSet.getRowCount() == 0) {
+            getView().setSize(displayerSettings.getChartWidth(), 
+                              displayerSettings.getChartHeight());
+            getView().noData();
+        } else {
+            if (displayerSettings.isResizable()) {
+                getView().setResizable(displayerSettings.getChartWidth(),
+                                       displayerSettings.getChartHeight());
+            } 
+
+            C3ChartConf conf = buildConfiguration();
+            getView().updateChart(conf);
+            updateFilterStatus();
+            applyPropertiesToView();
+        }
     }
 
     protected C3ChartConf buildConfiguration() {
-        double width = displayerSettings.getChartWidth();
-        double height = displayerSettings.getChartHeight();
         C3AxisInfo axis = createAxis();
         C3ChartData data = createData();
         C3Point point = createPoint();
         C3Padding padding = createPadding();
         C3Legend legend = factory.c3Legend(displayerSettings.isChartShowLegend(), 
                                            getLegendPosition());
+        C3Color color = createColor();
+        C3ChartSize size = createSize();
         return factory.c3ChartConf(
-                    factory.c3ChartSize(width, height),
+                    size,
                     data,
                     axis,
                     factory.c3Grid(true, true),
                     factory.c3Transition(0),
                     point,
                     padding, 
-                    legend
+                    legend,
+                    color
                 );
+    }
+
+    protected C3Color createColor() {
+        return factory.c3Color(COLOR_PATTERN);
+    }
+
+    protected C3ChartSize createSize() {
+        C3ChartSize size = null;
+        if (! displayerSettings.isResizable()) {
+            size = factory.c3ChartSize(displayerSettings.getChartWidth(), 
+                                       displayerSettings.getChartHeight());
+        } 
+        return size;
     }
 
     protected C3Padding createPadding() {
         return factory.c3Padding(displayerSettings.getChartMarginTop(), 
-                                displayerSettings.getChartMarginRight(), 
-                                displayerSettings.getChartMarginBottom(), 
-                                displayerSettings.getChartMarginLeft());
+                                 displayerSettings.getChartMarginRight(), 
+                                 displayerSettings.getChartMarginBottom(), 
+                                 displayerSettings.getChartMarginLeft());
     }
 
     protected C3Point createPoint() {
@@ -330,6 +367,10 @@ public abstract class C3Displayer<V extends C3Displayer.View> extends AbstractGw
         Position legendPosition = displayerSettings.getChartLegendPosition();
         String c3LegendPosition = C3Legend.convertPosition(legendPosition);
         return c3LegendPosition;
+    }
+    
+    protected String columnValueToString(Object mightBeNull) {
+        return mightBeNull == null ? "" : mightBeNull.toString();
     }
     
 }

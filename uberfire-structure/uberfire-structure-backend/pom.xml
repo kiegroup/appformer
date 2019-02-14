@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-structure</artifactId>
-    <version>2.13.0-SNAPSHOT</version>
+    <version>2.15.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-structure-backend</artifactId>
@@ -33,6 +33,10 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-jgit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -161,6 +165,15 @@
     </dependency>
 
     <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-security-management-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-security-management-backend</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
     </dependency>
@@ -185,12 +198,6 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-nio2-jgit</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-metadata-commons-io</artifactId>
       <scope>test</scope>
     </dependency>
@@ -199,6 +206,17 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-fs</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- arquillian tests -->

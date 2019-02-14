@@ -368,7 +368,9 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider, Dispos
                             config.getSshAlgorithm(),
                             receivePackFactory,
                             new RepositoryResolverImpl<>(),
-                            executorService);
+                            executorService,
+                            config.getGitSshCiphers(),
+                            config.getGitSshMACs());
 
         gitSSHService.start();
     }
@@ -586,7 +588,8 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider, Dispos
                                    fsName,
                                    credential,
                                    config.isEnableKetch() ? leaders : null,
-                                   config.getHookDir());
+                                   config.getHookDir(),
+                                   config.isSslVerify());
                 } else if (subdirectory != null) {
                     if (isMirror) {
                         throw new UnsupportedOperationException("Cannot make mirror repository when cloning subdirectory.");
@@ -597,14 +600,16 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider, Dispos
                                                 branches,
                                                 credential,
                                                 leaders,
-                                                config.getHookDir());
+                                                config.getHookDir(),
+                                                config.isSslVerify());
                 } else {
                     git = Git.clone(repoDest,
                                     origin,
                                     isMirror,
                                     credential,
                                     config.isEnableKetch() ? leaders : null,
-                                    config.getHookDir());
+                                    config.getHookDir(),
+                                    config.isSslVerify());
                 }
             } catch (Clone.CloneException ce) {
                 fsManager.remove(fsName);
@@ -613,7 +618,8 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider, Dispos
         } else {
             git = Git.createRepository(repoDest,
                                        config.getHookDir(),
-                                       config.isEnableKetch() ? leaders : null);
+                                       config.isEnableKetch() ? leaders : null,
+                                       config.isSslVerify());
         }
         return git;
     }
