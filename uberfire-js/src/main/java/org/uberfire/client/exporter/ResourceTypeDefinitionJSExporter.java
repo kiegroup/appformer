@@ -16,19 +16,19 @@
 
 package org.uberfire.client.exporter;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.editor.type.JSClientResourceType;
 import org.uberfire.client.editor.type.JSNativeClientResourceType;
 import org.uberfire.client.plugin.JSNativePlugin;
 import org.uberfire.client.workbench.type.ClientResourceType;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.uberfire.workbench.category.Category;
 import org.uberfire.workbench.category.Others;
 

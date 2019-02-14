@@ -20,10 +20,10 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
@@ -33,6 +33,7 @@ import org.uberfire.client.mvp.WorkbenchScreenActivity;
 import org.uberfire.client.plugin.JSNativePlugin;
 import org.uberfire.client.screen.JSNativeScreen;
 import org.uberfire.client.screen.JSWorkbenchScreenActivity;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 

@@ -16,13 +16,12 @@
 
 package org.uberfire.client.exporter;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -30,6 +29,7 @@ import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.perspective.JSNativePerspective;
 import org.uberfire.client.perspective.JSWorkbenchPerspectiveActivity;
 import org.uberfire.client.plugin.JSNativePlugin;
+import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 
 import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 

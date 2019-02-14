@@ -1,13 +1,11 @@
 package org.uberfire.jsbridge.client.perspective;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import elemental2.dom.Attr;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
-import elemental2.dom.NamedNodeMap;
 import elemental2.dom.Node;
 import jsinterop.base.Js;
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;

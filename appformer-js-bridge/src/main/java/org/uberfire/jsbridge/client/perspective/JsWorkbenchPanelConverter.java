@@ -7,8 +7,6 @@ import org.uberfire.workbench.model.PanelDefinition;
 import org.uberfire.workbench.model.impl.ContextDefinitionImpl;
 import org.uberfire.workbench.model.impl.PanelDefinitionImpl;
 
-import static java.util.stream.Collectors.toList;
-
 public class JsWorkbenchPanelConverter {
 
     private final JsNativePanel nativePanel;

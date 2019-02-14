@@ -15,8 +15,6 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
 
-import static java.util.stream.Collectors.toList;
-
 public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspectiveActivity {
 
     private JsNativePerspective realPerspective;
