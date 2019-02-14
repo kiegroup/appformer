@@ -175,7 +175,11 @@ public class DisplayerEditor implements IsWidget {
         initSettingsEditor();
         gotoLastSection();
         showDisplayer();
-        currentRenderer = rendererManager.getDefaultRenderer(displayerSettings.getType()).getUUID();
+        
+        currentRenderer = displayerSettings.getRenderer(); 
+        if (currentRenderer == null || currentRenderer.trim().isEmpty()) {
+            currentRenderer = rendererManager.getDefaultRenderer(displayerSettings.getType()).getUUID();
+        }
     }
 
     protected boolean supportsHtmlTemplate() {
