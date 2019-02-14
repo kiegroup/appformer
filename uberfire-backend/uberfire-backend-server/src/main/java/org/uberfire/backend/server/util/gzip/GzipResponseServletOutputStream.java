@@ -47,7 +47,7 @@ class GzipResponseServletOutputStream extends ServletOutputStream {
     @Override
     public void close() throws IOException {
         if (closed) {
-            throw new IOException("Output stream already closed.");
+            return;
         }
 
         gzipStream.finish();
@@ -65,7 +65,7 @@ class GzipResponseServletOutputStream extends ServletOutputStream {
     @Override
     public void flush() throws IOException {
         if (closed) {
-            throw new IOException("Output stream already closed.");
+            return;
         }
 
         gzipStream.flush();

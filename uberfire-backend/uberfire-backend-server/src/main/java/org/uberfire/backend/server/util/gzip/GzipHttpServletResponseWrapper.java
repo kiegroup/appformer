@@ -73,6 +73,7 @@ class GzipHttpServletResponseWrapper extends HttpServletResponseWrapper {
 
     @Override
     public void setContentLength(final int length) {
+        // Empty on purpose
     }
 
     private ServletOutputStream createOutputStream() throws IOException {
