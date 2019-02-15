@@ -25,8 +25,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.gwtbootstrap3.client.ui.Button;
@@ -44,7 +42,7 @@ public class UberfireColumnPicker<T> {
     protected final PopupPanel popup = GWT.create(PopupPanel.class);
     protected List<ColumnChangedHandler> columnChangedHandler = new ArrayList<>();
 
-    protected DataGrid<T> getDataGrid(){
+    protected DataGrid<T> getDataGrid() {
         return dataGrid;
     }
 
@@ -139,8 +137,9 @@ public class UberfireColumnPicker<T> {
             columnMetaList.add(columnMeta);
         }
         if (columnMeta.isVisible()) {
-            dataGrid.addColumn(columnMeta.getColumn(),
-                               columnMeta.getHeader());
+            dataGrid.insertColumn(getVisibleColumnIndex(columnMeta),
+                                  columnMeta.getColumn(),
+                                  columnMeta.getHeader());
         }
     }
 
@@ -215,7 +214,7 @@ public class UberfireColumnPicker<T> {
             if (addThisColumnToPopup(columnMeta)) {
                 final CheckBox checkBox = GWT.create(CheckBox.class);
                 checkBox.setText((String) columnMeta.getHeader().getValue());
-                checkBox.setName((String)columnMeta.getHeader().getValue());
+                checkBox.setName((String) columnMeta.getHeader().getValue());
                 checkBox.setValue(columnMeta.isVisible());
                 checkBox.addValueChangeHandler(handler -> addColumnOnDataGrid(handler.getValue(), columnMeta));
 
@@ -284,6 +283,12 @@ public class UberfireColumnPicker<T> {
     }
 
     protected void loadGlobalGridPreferences() {
+    }
 
+    public int getDataGridMinWidth() {
+        return -1;
+    }
+
+    public void setDefaultColumnWidthSize(int defaultColumSize) {
     }
 }
