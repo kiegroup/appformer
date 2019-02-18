@@ -18,7 +18,6 @@ package org.dashbuilder.displayer.client.widgets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -231,6 +230,10 @@ public class DisplayerEditor implements IsWidget {
     public Displayer getDisplayer() {
         return displayer;
     }
+    
+    public String getCurrentRenderer() {
+        return currentRenderer;
+    }
 
     public DisplayerTypeSelector getTypeSelector() {
         return typeSelector;
@@ -383,7 +386,7 @@ public class DisplayerEditor implements IsWidget {
         displayerSettings = event.getDisplayerSettings();
         initDisplayer();
         showDisplayer();
-        if (newRenderer != null && ! currentRenderer.equals(newRenderer)) {
+        if (newRenderer != null && !currentRenderer.equals(newRenderer)) {
             initSettingsEditor();
             currentRenderer = newRenderer;
         }
