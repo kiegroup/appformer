@@ -18,6 +18,8 @@ package org.dashbuilder.displayer.client.widgets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -381,7 +383,7 @@ public class DisplayerEditor implements IsWidget {
         displayerSettings = event.getDisplayerSettings();
         initDisplayer();
         showDisplayer();
-        if (! currentRenderer.equals(newRenderer)) {
+        if (newRenderer != null && ! currentRenderer.equals(newRenderer)) {
             initSettingsEditor();
             currentRenderer = newRenderer;
         }
