@@ -85,7 +85,6 @@ public class BasicAuthSecurityFilter implements Filter {
         if (isExceptionPath(request)) {
             chain.doFilter(request, response);
             return;
-
         }
 
         HttpSession session = request.getSession(false);
@@ -123,6 +122,10 @@ public class BasicAuthSecurityFilter implements Filter {
 
         while (requestURI != null && requestURI.endsWith("/")) {
             requestURI = requestURI.substring(0, requestURI.length() - 1);
+        }
+
+        if (requestURI != null && requestURI.startsWith(request.getContextPath())) {
+            requestURI = requestURI.replaceFirst(request.getContextPath(), "");
         }
 
         return excludedPaths.contains(requestURI);
