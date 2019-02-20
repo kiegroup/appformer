@@ -209,6 +209,14 @@ public class UberfireColumnPickerTest {
         assertEquals("age", columnPicker.getDataGrid().getColumn(1).getDataStoreName());
         assertEquals("etc", columnPicker.getDataGrid().getColumn(2).getDataStoreName());
         assertEquals("actions", columnPicker.getDataGrid().getColumn(3).getDataStoreName());
+
+        columnPicker.removeColumn(age);
+
+        assertEquals(3, columnPicker.getDataGrid().getColumnCount());
+        assertEquals("name", columnPicker.getDataGrid().getColumn(0).getDataStoreName());
+        assertEquals("etc", columnPicker.getDataGrid().getColumn(1).getDataStoreName());
+        assertEquals("actions", columnPicker.getDataGrid().getColumn(2).getDataStoreName());
+
     }
 }
 

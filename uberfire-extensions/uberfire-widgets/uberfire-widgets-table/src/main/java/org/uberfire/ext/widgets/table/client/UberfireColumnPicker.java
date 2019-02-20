@@ -147,8 +147,11 @@ public class UberfireColumnPicker<T> {
     protected void sortAndAddColumns(List<ColumnMeta<T>> columnMetas) {
         // Sort based on preferences applied
         Collections.sort(columnMetas);
+        List<ColumnMeta<T>> currentColumnMetas = new ArrayList<>();
+        currentColumnMetas.addAll(columnMetas);
+
         //Add the columns based on the preferences
-        for (ColumnMeta meta : columnMetas) {
+        for (ColumnMeta meta : currentColumnMetas) {
             addColumn(meta);
         }
     }
