@@ -116,7 +116,7 @@ public class CellContextUtilitiesTest {
                                                                                                    0);
 
         assertNotNull(context);
-        assertEquals(25.0,
+        assertEquals(50.0,
                      context.getAbsoluteCellX(),
                      0.0);
         assertEquals(50.0,
@@ -217,7 +217,7 @@ public class CellContextUtilitiesTest {
                                                                                                    0);
 
         assertNotNull(context);
-        assertEquals(0.0,
+        assertEquals(25.0,
                      context.getAbsoluteCellX(),
                      0.0);
         assertEquals(75.0,
@@ -248,7 +248,7 @@ public class CellContextUtilitiesTest {
                                                                                                    0);
 
         assertNotNull(context);
-        assertEquals(25.0,
+        assertEquals(62.5,
                      context.getAbsoluteCellX(),
                      0.0);
         assertEquals(125.0,
@@ -277,7 +277,7 @@ public class CellContextUtilitiesTest {
                                                                                                    0);
 
         assertNotNull(context);
-        assertEquals(0.0,
+        assertEquals(12.5,
                      context.getAbsoluteCellX(),
                      0.0);
         assertEquals(75.0,
@@ -308,7 +308,7 @@ public class CellContextUtilitiesTest {
                                                                                                    0);
 
         assertNotNull(context);
-        assertEquals(0.0,
+        assertEquals(12.5,
                      context.getAbsoluteCellX(),
                      0.0);
         assertEquals(75.0,
@@ -334,7 +334,7 @@ public class CellContextUtilitiesTest {
                                                                                                    0);
 
         assertNotNull(context);
-        assertEquals(0.0,
+        assertEquals(50.0,
                      context.getAbsoluteCellX(),
                      0.0);
         assertEquals(100.0,

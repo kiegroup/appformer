@@ -37,10 +37,7 @@ public class CellContextUtilities {
         final GridColumn<?> column = ci.getColumn();
         final GridRenderer renderer = gridWidget.getRenderer();
 
-        final Group header = gridWidget.getHeader();
-        final double headerRowsYOffset = ri.getHeaderRowsYOffset();
-        final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
-        final double headerRowHeight = ri.getHeaderRowsHeight() / column.getHeaderMetaData().size();
+        final double headerRowHeight = getHeaderRowHeight(ri, column);
         final double headerRowsHeight = (headerRowHeight * column.getHeaderMetaData().size());
 
         double rowsHeight = 0;
@@ -48,22 +45,22 @@ public class CellContextUtilities {
             rowsHeight += gridWidget.getModel().getRow(i).getHeight();
         }
 
-        final double cellX = gridWidget.getAbsoluteX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
-        final double lastCellYMiddle = gridWidget.getModel().getRow(uiRowIndex).getHeight() / 2;
-        final double cellY = gridWidget.getAbsoluteY() + headerMinY + headerRowsHeight + rowsHeight + lastCellYMiddle;
+        final double lastRowYMiddle = gridWidget.getModel().getRow(uiRowIndex).getHeight() / 2;
+
+        final double cellX = getCellX(gridWidget, ci);
+        final double cellY = getHeaderY(gridWidget, ri) + headerRowsHeight + rowsHeight + lastRowYMiddle;
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
-        final double floatingX = floatingBlockInformation.getX();
-        final double floatingWidth = floatingBlockInformation.getWidth();
-        final double clipMinX = gridWidget.getAbsoluteX() + floatingX + floatingWidth;
-        final double clipMinY = gridWidget.getAbsoluteY();
+
+        final double clipMinX = getClipMinX(gridWidget, floatingBlockInformation);
+        final double clipMinY = getClipMinY(gridWidget);
 
         final double blockCellWidth = column.getWidth();
 
         return new GridBodyCellEditContext(cellX,
                                            cellY,
                                            blockCellWidth,
-                                           headerRowHeight,
+                                           getHeaderRowHeight(ri, column),
                                            clipMinY,
                                            clipMinX,
                                            uiRowIndex,
@@ -93,19 +90,15 @@ public class CellContextUtilities {
         final GridColumn<?> column = ci.getColumn();
         final GridRenderer renderer = gridWidget.getRenderer();
 
-        final Group header = gridWidget.getHeader();
-        final double headerRowsYOffset = ri.getHeaderRowsYOffset();
-        final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
-        final double headerRowHeight = ri.getHeaderRowsHeight() / column.getHeaderMetaData().size();
+        final double headerRowHeight = getHeaderRowHeight(ri, column);
 
-        final double cellX = gridWidget.getAbsoluteX() + ci.getOffsetX();
-        final double cellY = gridWidget.getAbsoluteY() + headerMinY + (headerRowHeight * uiHeaderRowIndex);
+        final double cellX = getCellX(gridWidget, ci);
+        final double cellY = getHeaderY(gridWidget, ri) + (headerRowHeight * uiHeaderRowIndex);
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
-        final double floatingX = floatingBlockInformation.getX();
-        final double floatingWidth = floatingBlockInformation.getWidth();
-        final double clipMinX = gridWidget.getAbsoluteX() + floatingX + floatingWidth;
-        final double clipMinY = gridWidget.getAbsoluteY();
+
+        final double clipMinX = getClipMinX(gridWidget, floatingBlockInformation);
+        final double clipMinY = getClipMinY(gridWidget);
 
         //Check and adjust for blocks of columns sharing equal HeaderMetaData
         double blockCellX = cellX;
@@ -199,5 +192,35 @@ public class CellContextUtilities {
             return false;
         }
         return clickedHeaderMetaData.equals(columnHeaderMetaData.get(uiHeaderRowIndex));
+    }
+
+    private static double getCellX(final GridWidget gridWidget,
+                                   final BaseGridRendererHelper.ColumnInformation ci) {
+
+        return gridWidget.getAbsoluteX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
+    }
+
+    private static double getHeaderY(final GridWidget gridWidget,
+                                     final BaseGridRendererHelper.RenderingInformation ri) {
+        final Group header = gridWidget.getHeader();
+        final double headerRowsYOffset = ri.getHeaderRowsYOffset();
+        final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
+        return gridWidget.getAbsoluteY() + headerMinY;
+    }
+
+    private static double getHeaderRowHeight(final BaseGridRendererHelper.RenderingInformation ri,
+                                             final GridColumn<?> column) {
+        return ri.getHeaderRowsHeight() / column.getHeaderMetaData().size();
+    }
+
+    private static double getClipMinX(final GridWidget gridWidget,
+                                      final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation) {
+        final double floatingX = floatingBlockInformation.getX();
+        final double floatingWidth = floatingBlockInformation.getWidth();
+        return gridWidget.getAbsoluteX() + floatingX + floatingWidth;
+    }
+
+    private static double getClipMinY(final GridWidget gridWidget) {
+        return gridWidget.getAbsoluteY();
     }
 }
