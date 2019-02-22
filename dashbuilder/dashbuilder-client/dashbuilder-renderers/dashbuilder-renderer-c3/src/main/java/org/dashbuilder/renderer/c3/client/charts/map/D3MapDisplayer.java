@@ -16,6 +16,7 @@ import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3AbstractDisplayer;
+import org.dashbuilder.renderer.c3.client.charts.map.geojson.CountriesGeoJsonService;
 
 @Dependent
 public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
@@ -23,7 +24,7 @@ public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
     View view;
     private boolean markers;
     private boolean regions;
-    private GeoData geoData;
+    private CountriesGeoJsonService geoService;
     private D3MapConf conf;
 
     public interface View extends C3AbstractDisplayer.View<D3MapDisplayer> {
@@ -43,11 +44,11 @@ public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
     }
     
     @Inject
-    public D3MapDisplayer(FilterLabelSet filterLabelSet, View view, GeoData geoData) {
+    public D3MapDisplayer(FilterLabelSet filterLabelSet, View view, CountriesGeoJsonService countriesGeoJsonService) {
         super(filterLabelSet);
         view.init(this);
         this.view = view;
-        this.geoData = geoData;
+        this.geoService = countriesGeoJsonService;
     }
     
     @Override
@@ -88,7 +89,7 @@ public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
         Map<String, Double> data = retrieveData(dataSet);
         String backgroundColor = displayerSettings.getChartBackgroundColor();
         String columnName = getDataColumnName();
-        conf = D3MapConf.of(columnName, data, markers, regions, backgroundColor, geoData, this::format, this::selectLocation);
+        conf = D3MapConf.of(columnName, data, markers, regions, backgroundColor, geoService, this::format, this::selectLocation);
         getView().createMap(conf);
     }
 

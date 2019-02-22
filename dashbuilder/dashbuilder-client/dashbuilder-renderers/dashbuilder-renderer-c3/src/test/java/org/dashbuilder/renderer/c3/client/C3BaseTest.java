@@ -9,7 +9,7 @@ import org.dashbuilder.displayer.client.AbstractDisplayerTest;
 import org.dashbuilder.renderer.c3.client.charts.area.C3AreaChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.line.C3LineChartDisplayer;
 import org.dashbuilder.renderer.c3.client.charts.map.D3MapDisplayer;
-import org.dashbuilder.renderer.c3.client.charts.map.GeoData;
+import org.dashbuilder.renderer.c3.client.charts.map.geojson.CountriesGeoJsonService;
 import org.dashbuilder.renderer.c3.client.charts.meter.C3MeterChartDisplayer;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisInfo;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
@@ -48,7 +48,7 @@ public class C3BaseTest extends AbstractDisplayerTest {
     @Mock 
     D3MapDisplayer.View d3MapDisplayerView;
     @Mock
-    GeoData geoData;
+    CountriesGeoJsonService geoService;
 
 
     public C3LineChartDisplayer c3LineChartDisplayer(DisplayerSettings settings) {
@@ -67,7 +67,7 @@ public class C3BaseTest extends AbstractDisplayerTest {
     }
     
     public D3MapDisplayer d3MapDisplayer(DisplayerSettings settings) {
-        return initDisplayer(new D3MapDisplayer(filterLabelSet, d3MapDisplayerView, geoData), settings);
+        return initDisplayer(new D3MapDisplayer(filterLabelSet, d3MapDisplayerView, geoService), settings);
     }
     
     private C3JsTypesFactory mockC3JsTypesFactory() {

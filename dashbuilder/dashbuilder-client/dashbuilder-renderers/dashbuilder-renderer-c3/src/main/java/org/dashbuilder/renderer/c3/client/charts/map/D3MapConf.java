@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.dashbuilder.renderer.c3.client.charts.map.geojson.CountriesGeoJsonService;
+
 public class D3MapConf {
     
     private String title;
@@ -11,20 +13,20 @@ public class D3MapConf {
     private boolean markers;
     private boolean regions;
     private String backgroundColor = "#DDDDFF";
-    private GeoData geoData;
+    private CountriesGeoJsonService countriesGeoJsonService;
     private Function<Double, String> formatter;
     private Consumer<String> pathClickHandler;
     
     
     public D3MapConf(String title, Map<String, Double> data, boolean markers, boolean regions, String backgroundColor,
-                                  GeoData geoData, Function<Double, String> formatter,  Consumer<String> pathClickHandler) {
+                                  CountriesGeoJsonService countriesGeoJsonService, Function<Double, String> formatter,  Consumer<String> pathClickHandler) {
         this.title = title;
         this.data = data;
         this.markers = markers;
         this.regions = regions;
         this.backgroundColor = backgroundColor;
         this.formatter = formatter;
-        this.geoData = geoData;
+        this.countriesGeoJsonService = countriesGeoJsonService;
         this.pathClickHandler = pathClickHandler;
     }
 
@@ -33,10 +35,10 @@ public class D3MapConf {
                               boolean markers, 
                               boolean regions,
                               String backgroundColor,
-                              GeoData geoData,
+                              CountriesGeoJsonService countriesGeoJsonService,
                               Function<Double, String> formatter,
                               Consumer<String> pathClickHandler) {
-        return new D3MapConf(title, data, markers, regions, backgroundColor, geoData, formatter, pathClickHandler);
+        return new D3MapConf(title, data, markers, regions, backgroundColor, countriesGeoJsonService, formatter, pathClickHandler);
     }
 
     public boolean isMarkers() {
@@ -63,8 +65,8 @@ public class D3MapConf {
         return formatter;
     }
 
-    public GeoData getGeoData() {
-        return geoData;
+    public CountriesGeoJsonService getCountriesGeoJsonService() {
+        return countriesGeoJsonService;
     }
 
     public Consumer<String> getPathClickHandler() {
