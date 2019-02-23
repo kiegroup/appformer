@@ -15,7 +15,7 @@ import org.dashbuilder.renderer.c3.client.jsbinding.geojson.FeatureCollection;
 
 public class CountriesGeoJsonServiceImpl implements CountriesGeoJsonService {
     
-    private final static String COUNTRY_NAME_PROPERTY = "name";
+    final static String COUNTRY_NAME_PROPERTY = "name";
     
     @Inject
     GeoJsonLoader geoJsonLoader;
@@ -33,7 +33,7 @@ public class CountriesGeoJsonServiceImpl implements CountriesGeoJsonService {
     
     @Override
     public String getCountryName(Feature country) {
-        Object name = country.getProperties().get(COUNTRY_NAME_PROPERTY);
+        Object name = country == null ? null : country.getProperties().get(COUNTRY_NAME_PROPERTY);
         if (name != null) {
             return name.toString();
         }
@@ -43,7 +43,7 @@ public class CountriesGeoJsonServiceImpl implements CountriesGeoJsonService {
     @Override
     public String getCountryNameByCode(String code) {
         return Arrays.stream(featureCollection.getFeatures())
-                  .filter(f -> code.equalsIgnoreCase(f.getId()))
+                  .filter(f -> f.getId().equalsIgnoreCase(code))
                   .map(this::getCountryName)
                   .findFirst().orElse("");
     }
@@ -61,6 +61,10 @@ public class CountriesGeoJsonServiceImpl implements CountriesGeoJsonService {
 
     @Override
     public Optional<Entry<String, Double>> entryByCountry(Map<String, Double> data, Feature value) {
+        if (value == null) {
+            return Optional.empty();
+        }
+
         String countryID = value.getId();
         String countryName = getCountryName(value);
         

@@ -79,8 +79,8 @@ public class D3Map implements IsElement {
         Element mapSVG = DomGlobal.document.createElementNS("http://www.w3.org/2000/svg", "svg");
         Selection d3Selection = d3.select(mapSVG);
         D3PathGenerator pathGenerator = createPathGenerator();
-
-        IntSummaryStatistics statistics = data.values().stream().mapToInt(v -> v.intValue()).summaryStatistics();
+        IntSummaryStatistics statistics = data.values().stream()
+                                                                                .mapToInt(v -> v.intValue()).summaryStatistics();
         Integer[] domain = new Integer[] { statistics.getMin(), statistics.getMax() };
         colorScale = d3.scaleQuantize().domain(domain).range(COLORS_SCHEME);
 
@@ -98,9 +98,13 @@ public class D3Map implements IsElement {
 
     private D3 createMap(Selection d3Selection, D3PathGenerator pathGenerator) {
         Feature[] countriesFeatures = countriesGeoJsonService.getCountries();
-        return d3Selection.attr("width", width).attr("height", height).style("background", conf.getBackgroundColor())
-                .append("g").attr("class", "countries").selectAll("path").data(countriesFeatures).enter().append("path")
-                .attr("d", pathGenerator);
+        return d3Selection.attr("width", width).attr("height", height)
+                                     .style("background", conf.getBackgroundColor())
+                                      .append("g").attr("class", "countries")
+                                                          .selectAll("path")
+                                                          .data(countriesFeatures)
+                                                          .enter().append("path")
+                                                          .attr("d", pathGenerator);
     }
 
     private void createLegend(D3 d3Selection) {
@@ -112,21 +116,25 @@ public class D3Map implements IsElement {
         String translate = "translate(0, " + (height - legendSize - 2) + ")";
         D3 legendGroup = d3Selection.append("g").attr("transform", translate);
 
-        legendGroup.append("text").attr("class", "map-legend-caption").attr("x", 0).attr("y", titleSize * -1)
-                .text(conf.getTitle());
+        legendGroup.append("text").attr("class", "map-legend-caption")
+                                                    .attr("x", 0).attr("y", titleSize * -1)
+                                                    .text(conf.getTitle());
 
         D3 legendValuesGroup = legendGroup.append("g");
 
-        legendValuesGroup.selectAll("rect").data(colorScale.range()).enter().append("rect")
-                .attr("height", legendSquareSize).attr("width", legendSquareSize)
-                .attr("y", (d, i, el) -> rectPos.getAndAdd(legendSquareSize)).attr("fill", (d, i, el) -> d)
-                .append("svg:title").text((d, i, el) -> {
-                    return String.join(" - ", getFormattedBoundaryValues((String) d));
-                });
+        legendValuesGroup.selectAll("rect")
+                                      .data(colorScale.range()).enter().append("rect")
+                                      .attr("height", legendSquareSize).attr("width", legendSquareSize)
+                                      .attr("y", (d, i, el) -> rectPos.getAndAdd(legendSquareSize))
+                                      .attr("fill", (d, i, el) -> d)
+                                      .append("svg:title")
+                                              .text((d, i, el) ->
+                                                  String.join(" - ", getFormattedBoundaryValues(d))
+                                        );
         legendValuesGroup.selectAll("text").data(colorScale.range()).enter().append("text")
                 .attr("class", "map-legend-val").attr("x", legendSquareSize + 2)
                 .attr("y", (d, i, el) -> textPos.getAndAdd(legendSquareSize)).text((d, i, el) -> {
-                    String[] values = getFormattedBoundaryValues((String) d);
+                    String[] values = getFormattedBoundaryValues(d);
                     return "< " + values[1];
                 });
     }
@@ -205,8 +213,9 @@ public class D3Map implements IsElement {
         double w = (double) width;
         double h = (double) height;
         D3Projection projection = D3Projection.Builder.get().geoNaturalEarth2().scale(w / 5.5d)
-                .translate(new double[] { w / 2d, h / 2d });
-        D3PathGenerator pathGenerator = D3PathGenerator.Builder.get().geoPath().projection(projection);
+                                                                                         .translate(new double[] { w / 2d, h / 2d });
+        D3PathGenerator pathGenerator = D3PathGenerator.Builder.get().geoPath()
+                                                                                                              .projection(projection);
         return pathGenerator;
     }
 
@@ -218,7 +227,7 @@ public class D3Map implements IsElement {
         }
     }
 
-    private String[] getFormattedBoundaryValues(String color) {
+    private String[] getFormattedBoundaryValues(Object color) {
         Object[] values = colorScale.invertExtent(color);
         String minStr = String.valueOf(values[1]);
         String maxStr = String.valueOf(values[1]);
