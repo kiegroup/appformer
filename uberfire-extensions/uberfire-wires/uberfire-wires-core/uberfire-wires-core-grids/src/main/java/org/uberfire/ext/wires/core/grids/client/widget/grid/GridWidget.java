@@ -139,20 +139,4 @@ public interface GridWidget extends IPrimitive<Group>,
     default boolean onDragHandle(final INodeXYEvent event) {
         return false;
     }
-
-    /**
-     * Returns the Grid's absolute X coordinate relative to the Layer on which it is placed.
-     * The absolute coordinate only differs to the relative {@link IPrimitive#getX()} method
-     * return value when a Grid is nested inside a {@link GroupOf}.
-     * @return The absolute X coordinate of the Grid.
-     */
-    double getAbsoluteX();
-
-    /**
-     * Returns the Grid's absolute Y coordinate relative to the Layer on which it is placed.
-     * The absolute coordinate only differs to the relative {@link IPrimitive#getY()} method
-     * return value when a Grid is nested inside a {@link GroupOf}.
-     * @return The absolute Y coordinate of the Grid.
-     */
-    double getAbsoluteY();
 }

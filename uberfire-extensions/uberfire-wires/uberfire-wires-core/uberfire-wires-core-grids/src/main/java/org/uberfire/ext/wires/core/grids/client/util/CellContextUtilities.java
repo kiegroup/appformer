@@ -197,7 +197,7 @@ public class CellContextUtilities {
     private static double getCellX(final GridWidget gridWidget,
                                    final BaseGridRendererHelper.ColumnInformation ci) {
 
-        return gridWidget.getAbsoluteX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
+        return gridWidget.getComputedLocation().getX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
     }
 
     private static double getHeaderY(final GridWidget gridWidget,
@@ -205,7 +205,7 @@ public class CellContextUtilities {
         final Group header = gridWidget.getHeader();
         final double headerRowsYOffset = ri.getHeaderRowsYOffset();
         final double headerMinY = (header == null ? headerRowsYOffset : header.getY() + headerRowsYOffset);
-        return gridWidget.getAbsoluteY() + headerMinY;
+        return gridWidget.getComputedLocation().getY() + headerMinY;
     }
 
     private static double getHeaderRowHeight(final BaseGridRendererHelper.RenderingInformation ri,
@@ -217,10 +217,10 @@ public class CellContextUtilities {
                                       final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation) {
         final double floatingX = floatingBlockInformation.getX();
         final double floatingWidth = floatingBlockInformation.getWidth();
-        return gridWidget.getAbsoluteX() + floatingX + floatingWidth;
+        return gridWidget.getComputedLocation().getX() + floatingX + floatingWidth;
     }
 
     private static double getClipMinY(final GridWidget gridWidget) {
-        return gridWidget.getAbsoluteY();
+        return gridWidget.getComputedLocation().getY();
     }
 }

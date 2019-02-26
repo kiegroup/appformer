@@ -76,9 +76,11 @@ public class CellContextUtilitiesTest {
     private ArgumentCaptor<GridBodyCellEditContext> gridBodyCellEditContextCaptor;
 
     private Point2D rp = new Point2D(0, 0);
+    private Point2D computedLocation = new Point2D(0, 0);
 
     @Before
     public void setup() {
+        doReturn(computedLocation).when(gridWidget).getComputedLocation();
         doReturn(gridRenderer).when(gridWidget).getRenderer();
         doReturn(gridRendererHelper).when(gridWidget).getRendererHelper();
         doReturn(ri).when(gridRendererHelper).getRenderingInformation();
