@@ -35,7 +35,8 @@ public class D3Map implements IsElement {
      */
     private static final int D3_COLOR_SCHEME_TOTAL = 7;
     /**
-     * In Marks map the max radius proportion based on the map width. For example, if 20, then the radius of markers can't be bigger than width / 20.
+     * In Marks map the max radius proportion based on the map width. 
+     * For example, if 20, then the radius of markers can't be bigger than width / 20.
      */
     private static final int RADIUS_PROPORTION = 20;
     /**
@@ -133,10 +134,7 @@ public class D3Map implements IsElement {
                                         );
         legendValuesGroup.selectAll("text").data(colorScale.range()).enter().append("text")
                 .attr("class", "map-legend-val").attr("x", legendSquareSize + 2)
-                .attr("y", (d, i, el) -> textPos.getAndAdd(legendSquareSize)).text((d, i, el) -> {
-                    String[] values = getFormattedBoundaryValues(d);
-                    return "< " + values[1];
-                });
+                .attr("y", (d, i, el) -> textPos.getAndAdd(legendSquareSize)).text( (d, i, el) -> buildLegendValue(d, i));
     }
 
     private void fillRegions(D3 map) {
@@ -226,10 +224,21 @@ public class D3Map implements IsElement {
             DomGlobal.document.body.appendChild(tooltipElement);
         }
     }
+    
+    private String buildLegendValue(Object d, int index) {
+        String[] values = getFormattedBoundaryValues(d);
+        int totalLegendColors = colorScale.range().length;
+        if (values[0].equals(values[1])) {
+           return values[0]; 
+        } else if (index + 1 == totalLegendColors) {
+            return "> " + values[0];
+        }
+        return "< " + values[1];
+    }    
 
     private String[] getFormattedBoundaryValues(Object color) {
         Object[] values = colorScale.invertExtent(color);
-        String minStr = String.valueOf(values[1]);
+        String minStr = String.valueOf(values[0]);
         String maxStr = String.valueOf(values[1]);
         double max = Double.parseDouble(maxStr);
         double min = Double.parseDouble(minStr);

@@ -68,7 +68,6 @@ public class C3Renderer extends AbstractRendererLibrary {
     @PostConstruct
     public void prepare() {
         ResourcesInjector.ensureC3Injected();
-        ResourcesInjector.ensureD3GeoProjectionInjected();
     }
     
     @Inject
@@ -143,6 +142,7 @@ public class C3Renderer extends AbstractRendererLibrary {
     }
 
     private D3MapDisplayer createMapChartForSubType(DisplayerSubType subtype) {
+        ResourcesInjector.ensureD3GeoProjectionInjected();
         D3MapDisplayer displayer = beanManager.lookupBean(D3MapDisplayer.class).newInstance();
         if (subtype == MAP_MARKERS) {
                 displayer =  displayer.markers();
