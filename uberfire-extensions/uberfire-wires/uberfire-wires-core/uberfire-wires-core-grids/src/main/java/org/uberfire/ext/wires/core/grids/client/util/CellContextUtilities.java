@@ -196,7 +196,6 @@ public class CellContextUtilities {
 
     private static double getCellX(final GridWidget gridWidget,
                                    final BaseGridRendererHelper.ColumnInformation ci) {
-
         return gridWidget.getComputedLocation().getX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
     }
 
@@ -210,6 +209,9 @@ public class CellContextUtilities {
 
     private static double getHeaderRowHeight(final BaseGridRendererHelper.RenderingInformation ri,
                                              final GridColumn<?> column) {
+        if (column.getHeaderMetaData() == null || column.getHeaderMetaData().size() == 0) {
+            return 0.0;
+        }
         return ri.getHeaderRowsHeight() / column.getHeaderMetaData().size();
     }
 
