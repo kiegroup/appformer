@@ -16,6 +16,7 @@
 
 package org.uberfire.client.views.pfly.widgets;
 
+import java.util.Map;
 import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -39,6 +40,12 @@ public class Select implements IsElement,
 
     @Inject
     private org.jboss.errai.common.client.dom.Select select;
+
+    private Map<String,String> aliasMap ;
+
+    public void setAliasMap(Map<String, String> aliasMap) {
+        this.aliasMap = aliasMap;
+    }
 
     @Override
     public HTMLElement getElement() {
@@ -71,7 +78,13 @@ public class Select implements IsElement,
                           final String value,
                           final Boolean selected) {
         final Option option = (Option) document.createElement("option");
-        option.setText(text);
+
+        if (aliasMap != null) {
+            option.setText(aliasMap.get(text));
+        } else {
+            option.setText(text);
+        }
+
         option.setValue(value);
         option.setSelected(selected);
         if (isNullOrEmpty(subText) == false) {
