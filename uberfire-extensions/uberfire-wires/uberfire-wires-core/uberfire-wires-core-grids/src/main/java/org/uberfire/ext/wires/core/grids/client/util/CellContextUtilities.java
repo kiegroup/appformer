@@ -47,7 +47,7 @@ public class CellContextUtilities {
 
         final double lastRowYMiddle = gridWidget.getModel().getRow(uiRowIndex).getHeight() / 2;
 
-        final double cellX = getCellX(gridWidget, ci);
+        final double cellX = getCellX(gridWidget, ci) + ci.getColumn().getWidth() / 2;
         final double cellY = getHeaderY(gridWidget, ri) + headerRowsHeight + rowsHeight + lastRowYMiddle;
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
@@ -93,7 +93,7 @@ public class CellContextUtilities {
         final double headerRowHeight = getHeaderRowHeight(ri, column);
 
         final double cellX = getCellX(gridWidget, ci);
-        final double cellY = getHeaderY(gridWidget, ri) + (headerRowHeight * uiHeaderRowIndex);
+        final double cellY = getHeaderY(gridWidget, ri) + (headerRowHeight * uiHeaderRowIndex) + headerRowHeight / 2;
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
 
@@ -101,7 +101,6 @@ public class CellContextUtilities {
         final double clipMinY = getClipMinY(gridWidget);
 
         //Check and adjust for blocks of columns sharing equal HeaderMetaData
-        double blockCellX = cellX;
         double blockCellWidth = column.getWidth();
         final List<GridColumn<?>> gridColumns = ri.getAllColumns();
         final GridColumn.HeaderMetaData clicked = column.getHeaderMetaData().get(uiHeaderRowIndex);
@@ -113,7 +112,6 @@ public class CellContextUtilities {
             while (uiLeadColumnIndex >= 0 && isSameHeaderMetaData(clicked,
                                                                   lead.getHeaderMetaData(),
                                                                   uiHeaderRowIndex)) {
-                blockCellX = blockCellX - lead.getWidth();
                 blockCellWidth = blockCellWidth + lead.getWidth();
                 if (--uiLeadColumnIndex >= 0) {
                     lead = gridColumns.get(uiLeadColumnIndex);
@@ -136,7 +134,7 @@ public class CellContextUtilities {
             }
         }
 
-        return new GridBodyCellEditContext(blockCellX,
+        return new GridBodyCellEditContext(cellX + blockCellWidth / 2,
                                            cellY,
                                            blockCellWidth,
                                            headerRowHeight,
@@ -196,7 +194,7 @@ public class CellContextUtilities {
 
     private static double getCellX(final GridWidget gridWidget,
                                    final BaseGridRendererHelper.ColumnInformation ci) {
-        return gridWidget.getComputedLocation().getX() + ci.getOffsetX() + ci.getColumn().getWidth() / 2;
+        return gridWidget.getComputedLocation().getX() + ci.getOffsetX();
     }
 
     private static double getHeaderY(final GridWidget gridWidget,
