@@ -18,11 +18,13 @@ package org.uberfire.ext.wires.core.grids.client.util;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.types.Point2D;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
+import org.uberfire.ext.wires.core.grids.client.model.GridRow;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellEditContext;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer;
@@ -36,31 +38,24 @@ public class CellContextUtilities {
                                                                 final int uiRowIndex) {
         final GridColumn<?> column = ci.getColumn();
         final GridRenderer renderer = gridWidget.getRenderer();
+        final GridRow gridRow = gridWidget.getModel().getRow(uiRowIndex);
+        final double headerRowsHeight = ri.getHeaderRowsHeight();
+        final double rowYOffset = gridWidget.getRendererHelper().getRowOffset(gridRow);
 
-        final double headerRowHeight = getHeaderRowHeight(ri, column);
-        final double headerRowsHeight = (headerRowHeight * column.getHeaderMetaData().size());
-
-        double rowsHeight = 0;
-        for (int i = 0; i < uiRowIndex; i++) {
-            rowsHeight += gridWidget.getModel().getRow(i).getHeight();
-        }
-
-        final double lastRowYMiddle = gridWidget.getModel().getRow(uiRowIndex).getHeight() / 2;
-
-        final double cellX = getCellX(gridWidget, ci) + ci.getColumn().getWidth() / 2;
-        final double cellY = getHeaderY(gridWidget, ri) + headerRowsHeight + rowsHeight + lastRowYMiddle;
+        final double cellX = getCellX(gridWidget, ci);
+        final double cellY = getHeaderY(gridWidget, ri) + headerRowsHeight + rowYOffset;
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
-
         final double clipMinX = getClipMinX(gridWidget, floatingBlockInformation);
         final double clipMinY = getClipMinY(gridWidget);
 
         final double blockCellWidth = column.getWidth();
+        final double blockCellHeight = gridRow.getHeight();
 
         return new GridBodyCellEditContext(cellX,
                                            cellY,
                                            blockCellWidth,
-                                           getHeaderRowHeight(ri, column),
+                                           blockCellHeight,
                                            clipMinY,
                                            clipMinX,
                                            uiRowIndex,
@@ -89,52 +84,32 @@ public class CellContextUtilities {
                                                                       final int uiHeaderRowIndex) {
         final GridColumn<?> column = ci.getColumn();
         final GridRenderer renderer = gridWidget.getRenderer();
-
         final double headerRowHeight = getHeaderRowHeight(ri, column);
 
         final double cellX = getCellX(gridWidget, ci);
-        final double cellY = getHeaderY(gridWidget, ri) + (headerRowHeight * uiHeaderRowIndex) + headerRowHeight / 2;
+        final double cellY = getHeaderY(gridWidget, ri) + (headerRowHeight * uiHeaderRowIndex);
 
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = ri.getFloatingBlockInformation();
-
         final double clipMinX = getClipMinX(gridWidget, floatingBlockInformation);
         final double clipMinY = getClipMinY(gridWidget);
 
-        //Check and adjust for blocks of columns sharing equal HeaderMetaData
-        double blockCellWidth = column.getWidth();
         final List<GridColumn<?>> gridColumns = ri.getAllColumns();
-        final GridColumn.HeaderMetaData clicked = column.getHeaderMetaData().get(uiHeaderRowIndex);
+        final GridColumn.HeaderMetaData headerMetaData = column.getHeaderMetaData().get(uiHeaderRowIndex);
+        final int blockStartColumnIndex = ColumnIndexUtilities.getHeaderBlockStartColumnIndex(gridColumns,
+                                                                                              headerMetaData,
+                                                                                              uiHeaderRowIndex,
+                                                                                              ci.getUiColumnIndex());
+        final int blockEndColumnIndex = ColumnIndexUtilities.getHeaderBlockEndColumnIndex(gridColumns,
+                                                                                          headerMetaData,
+                                                                                          uiHeaderRowIndex,
+                                                                                          ci.getUiColumnIndex());
 
-        //Walk backwards to block start
-        if (ci.getUiColumnIndex() > 0) {
-            int uiLeadColumnIndex = ci.getUiColumnIndex() - 1;
-            GridColumn<?> lead = gridColumns.get(uiLeadColumnIndex);
-            while (uiLeadColumnIndex >= 0 && isSameHeaderMetaData(clicked,
-                                                                  lead.getHeaderMetaData(),
-                                                                  uiHeaderRowIndex)) {
-                blockCellWidth = blockCellWidth + lead.getWidth();
-                if (--uiLeadColumnIndex >= 0) {
-                    lead = gridColumns.get(uiLeadColumnIndex);
-                }
-            }
-        }
+        final double blockCellWidth = IntStream.rangeClosed(blockStartColumnIndex,
+                                                            blockEndColumnIndex)
+                .mapToDouble(uiHeaderColumnIndex -> gridColumns.get(uiHeaderColumnIndex).getWidth())
+                .sum();
 
-        //Walk forwards to block end
-        if (ci.getUiColumnIndex() < gridColumns.size() - 1) {
-            int uiTailColumnIndex = ci.getUiColumnIndex() + 1;
-            GridColumn<?> tail = gridColumns.get(uiTailColumnIndex);
-            while (uiTailColumnIndex < gridColumns.size() && isSameHeaderMetaData(clicked,
-                                                                                  tail.getHeaderMetaData(),
-                                                                                  uiHeaderRowIndex)) {
-                blockCellWidth = blockCellWidth + tail.getWidth();
-                tail = gridColumns.get(uiTailColumnIndex);
-                if (++uiTailColumnIndex < gridColumns.size()) {
-                    tail = gridColumns.get(uiTailColumnIndex);
-                }
-            }
-        }
-
-        return new GridBodyCellEditContext(cellX + blockCellWidth / 2,
+        return new GridBodyCellEditContext(cellX,
                                            cellY,
                                            blockCellWidth,
                                            headerRowHeight,
@@ -172,7 +147,6 @@ public class CellContextUtilities {
 
             headerMetaData.edit(context);
         } else if (gridModel.getSelectedCells().size() > 0) {
-
             final GridData.SelectedCell origin = gridModel.getSelectedCellsOrigin();
             if (origin == null) {
                 return;
@@ -181,15 +155,6 @@ public class CellContextUtilities {
                                         ColumnIndexUtilities.findUiColumnIndex(gridModel.getColumns(),
                                                                                origin.getColumnIndex()));
         }
-    }
-
-    private static boolean isSameHeaderMetaData(final GridColumn.HeaderMetaData clickedHeaderMetaData,
-                                                final List<GridColumn.HeaderMetaData> columnHeaderMetaData,
-                                                final int uiHeaderRowIndex) {
-        if (uiHeaderRowIndex > columnHeaderMetaData.size() - 1) {
-            return false;
-        }
-        return clickedHeaderMetaData.equals(columnHeaderMetaData.get(uiHeaderRowIndex));
     }
 
     private static double getCellX(final GridWidget gridWidget,
