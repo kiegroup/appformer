@@ -29,11 +29,11 @@ import org.uberfire.jsbridge.client.loading.LazyLoadingScreen;
 
 public class JsNativeScreen {
 
+    private JavaScriptObject self;
     private final String componentId;
     private final HTMLElement container;
 
     private final Consumer<String> lazyLoadParentScript;
-    private JavaScriptObject self;
     private boolean loaded;
 
     private final Elemental2DomUtil elemental2DomUtil;
@@ -52,11 +52,11 @@ public class JsNativeScreen {
     }
 
     public void updateRealContent(final JavaScriptObject jsObject) {
-        this.loaded = true;
-        this.self = jsObject;
+        loaded = true;
+        self = jsObject;
 
         // reset container content's, removing the loading content
-        this.elemental2DomUtil.removeAllElementChildren(this.container);
+        elemental2DomUtil.removeAllElementChildren(container);
     }
 
     public HTMLElement getElement() {
@@ -65,7 +65,7 @@ public class JsNativeScreen {
     }
 
     public void render() {
-        if (this.screenLoaded()) {
+        if (screenLoaded()) {
             renderNative();
         } else {
             lazyLoadParentScript.accept(componentId);
@@ -73,7 +73,7 @@ public class JsNativeScreen {
     }
 
     public boolean screenLoaded() {
-        return this.loaded;
+        return loaded;
     }
 
     private HTMLElement createContainerForLoadingScreen(final Widget loadingWidget,
@@ -88,21 +88,7 @@ public class JsNativeScreen {
         return container;
     }
 
-    // ===== Native calls
-
-    public native void renderNative() /*-{
-        $wnd.AppFormer.render(
-                this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self.af_componentRoot(),
-                this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
-    }-*/;
-
-    private native void unmount() /*-{
-        if (this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self.af_isReact) {
-            $wnd.ReactDOM.unmountComponentAtNode(this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
-        }
-    }-*/;
-
-    // ========== Properties
+    // Properties
 
     public String componentTitle() {
         final String title = (String) get("af_componentTitle");
@@ -117,7 +103,11 @@ public class JsNativeScreen {
         return (JsObject) get("af_subscriptions");
     }
 
-    // ========== Lifecycle
+    public String getComponentId() {
+        return componentId;
+    }
+
+    // Lifecycle
 
     public void onStartup(final JsPlaceRequest placeRequest) {
         run("af_onStartup", placeRequest);
@@ -149,50 +139,58 @@ public class JsNativeScreen {
     }
 
     private Object get(final String property) {
-        if (!this.screenLoaded()) {
+        if (!screenLoaded()) {
             return null;
         }
         return getNative(property);
+    }
+
+    private Object run(final String functionName) {
+        if (!screenLoaded()) {
+            return null;
+        }
+        return runNative(functionName);
+    }
+
+    private Object run(final String functionName, final Object arg1) {
+        if (!screenLoaded()) {
+            return null;
+        }
+        return runNative(functionName, arg1);
+    }
+
+    public boolean defines(final String property) {
+        if (!screenLoaded()) {
+            return false;
+        }
+        return definesNative(property);
     }
 
     private native Object getNative(final String property)  /*-{
         return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[property];
     }-*/;
 
-    private Object run(final String functionName) {
-        if (!this.screenLoaded()) {
-            return null;
-        }
-        return runNative(functionName);
-    }
-
     private native Object runNative(final String functionName) /*-{
         return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName]();
     }-*/;
-
-    private Object run(final String functionName, final Object arg1) {
-        if (!this.screenLoaded()) {
-            return null;
-        }
-        return runNative(functionName, arg1);
-    }
 
     private native Object runNative(final String functionName, final Object arg1) /*-{
         return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName] && this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[functionName](arg1);
     }-*/;
 
-    public boolean defines(final String property) {
-        if (!this.screenLoaded()) {
-            return false;
-        }
-        return definesNative(property);
-    }
-
     private native boolean definesNative(final String property) /*-{
         return this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self[property] !== undefined;
     }-*/;
 
-    public String getComponentId() {
-        return componentId;
-    }
+    public native void renderNative() /*-{
+        $wnd.AppFormer.render(
+                this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self.af_componentRoot(),
+                this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
+    }-*/;
+
+    private native void unmount() /*-{
+        if (this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::self.af_isReact) {
+            $wnd.ReactDOM.unmountComponentAtNode(this.@org.uberfire.jsbridge.client.screen.JsNativeScreen::container);
+        }
+    }-*/;
 }

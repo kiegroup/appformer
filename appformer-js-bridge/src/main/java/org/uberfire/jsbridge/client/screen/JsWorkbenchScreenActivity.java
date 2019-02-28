@@ -18,7 +18,6 @@ package org.uberfire.jsbridge.client.screen;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -64,17 +63,15 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
         this.invocationsPostponer.executeAll();
     }
 
-    //
-    //
-    //LIFECYCLE
+    // Lifecycle
 
     @Override
     public void onStartup(final PlaceRequest place) {
 
         this.place = place;
 
-        if (!this.screen.screenLoaded()) {
-            this.invocationsPostponer.postpone(() -> this.onStartup(place));
+        if (!screen.screenLoaded()) {
+            invocationsPostponer.postpone(() -> this.onStartup(place));
             return;
         }
 
@@ -88,8 +85,8 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
         // render no matter if the script was loaded or not, even if the call results in a blank screen being rendered.
         screen.render();
 
-        if (!this.screen.screenLoaded()) {
-            this.invocationsPostponer.postpone(this::onOpen);
+        if (!screen.screenLoaded()) {
+            invocationsPostponer.postpone(this::onOpen);
             return;
         }
 
@@ -110,7 +107,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
     @Override
     public boolean onMayClose() {
 
-        if (this.screen.screenLoaded()) {
+        if (screen.screenLoaded()) {
             return screen.onMayClose();
         }
 
@@ -122,7 +119,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
         this.invocationsPostponer.clear();
 
-        if (this.screen.screenLoaded()) {
+        if (screen.screenLoaded()) {
             this.unsubscribeFromAllEvents();
             screen.onShutdown();
         }
@@ -130,19 +127,20 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
     @Override
     public void onFocus() {
-        if (this.screen.screenLoaded()) {
+        if (screen.screenLoaded()) {
             screen.onFocus();
         }
     }
 
     @Override
     public void onLostFocus() {
-        if (this.screen.screenLoaded()) {
+        if (screen.screenLoaded()) {
             screen.onLostFocus();
         }
     }
 
-    // PROPERTIES
+    // Properties
+
     @Override
     public String getTitle() {
         return screen.componentTitle();
@@ -203,13 +201,13 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
         return -1;
     }
 
-    //
-    //
-    //CDI Events Subscriptions
+    // CDI Events Subscriptions
 
     private void registerSubscriptions() {
-        DomGlobal.console.info("Registering event subscriptions for " + this.getIdentifier() + "...");
-        final Map<String, Object> subscriptions = Js.cast(this.screen.subscriptions());
+
+        DomGlobal.console.debug("Registering event subscriptions for " + this.getIdentifier() + "...");
+
+        final Map<String, Object> subscriptions = Js.cast(screen.subscriptions());
 
         subscriptions.forEach((callback, eventFqcn, self) -> {
             //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
@@ -217,50 +215,29 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
             final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
                 public void fireEvent(final Object event) {
-                    callNative(callback, Marshalling.toJSON(event));
+                    callWithParsedJsonObject(callback, Marshalling.toJSON(event));
                 }
             });
 
             //Subscribes to client-sent events.
             this.subscriptions.add(subscription);
 
-            //TODO: Handle local-only events
+            //TODO: Handle local-only events?
             //Forwards server-sent events to the local subscription.
             ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
             return null;
         });
     }
 
-    public native static void callNative(final Object func, final String jsonArg) /*-{
-        func(JSON.parse(jsonArg)); //FIXME: Unmarshall!
+    public native static void callWithParsedJsonObject(final Object func, final String jsonArg) /*-{
+        func(JSON.parse(jsonArg));
     }-*/;
 
     private void unsubscribeFromAllEvents() {
-        DomGlobal.console.info("Removing event subscriptions for " + this.getIdentifier() + "...");
+
+        DomGlobal.console.debug("Removing event subscriptions for " + this.getIdentifier() + "...");
+
         this.subscriptions.forEach(Subscription::remove);
         this.subscriptions = new ArrayList<>();
-    }
-
-    public class InvocationPostponer {
-
-        private final Stack<Runnable> invocations;
-
-        public InvocationPostponer() {
-            this.invocations = new Stack<>();
-        }
-
-        public void postpone(final Runnable invocation) {
-            this.invocations.push(invocation);
-        }
-
-        public void executeAll() {
-            while (!this.invocations.isEmpty()) {
-                this.invocations.pop().run();
-            }
-        }
-
-        public void clear() {
-            this.invocations.clear();
-        }
     }
 }

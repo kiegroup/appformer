@@ -50,7 +50,7 @@ public class JsPlaceRequest extends JavaScriptObject {
         return this.identifier;
     }-*/;
 
-    public final native void setIdentifier(String newIdentifier) /*-{
+    public final native void setIdentifier(final String newIdentifier) /*-{
         this.identifier = newIdentifier;
     }-*/;
 
@@ -58,18 +58,7 @@ public class JsPlaceRequest extends JavaScriptObject {
         return this.params;
     }-*/;
 
-    public final native void setParams(JavaScriptObject newParams) /*-{
+    public final native void setParams(final JavaScriptObject newParams) /*-{
         this.params = newParams;
     }-*/;
-
-    public final PlaceRequest toPlaceRequest() {
-        JSONObject rawParams = new JSONObject(getParams());
-        Map<String, String> params = new HashMap<String, String>();
-        for (String key : rawParams.keySet()) {
-            params.put(key,
-                       rawParams.get(key).isString().stringValue());
-        }
-        return new DefaultPlaceRequest(getIdentifier(),
-                                       params);
-    }
 }

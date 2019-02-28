@@ -44,8 +44,7 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
         return this;
     }
 
-    //
-    //Lifecycle
+    // Lifecycle
 
     @Override
     public void onStartup(final ObservablePath path, final PlaceRequest place) {
@@ -94,8 +93,7 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
         editor.af_onShutdown();
     }
 
-    //
-    //Properties
+    // Properties
 
     @Override
     public boolean isDirty() {
@@ -104,7 +102,7 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
 
     @Override
     public String getTitle() {
-        return editor.getTitle();
+        return editor.af_componentTitle();
     }
 
     @Override
@@ -114,12 +112,12 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
 
     @Override
     public Menus getMenus() {
-        return null; //FIXME: Implement
+        return null; //TODO: Implement?
     }
 
     @Override
     public ToolBar getToolBar() {
-        return null; //FIXME: Implement
+        return null; //TODO: Implement?
     }
 
     @Override

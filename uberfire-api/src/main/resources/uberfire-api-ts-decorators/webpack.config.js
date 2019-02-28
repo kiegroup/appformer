@@ -29,7 +29,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: [".tsx", ".ts", ".js", ".jsx"],
+        extensions: [".tsx", ".ts", ".js"],
         modules: [path.resolve("./node_modules"), path.resolve("./src")]
     },
     plugins: [

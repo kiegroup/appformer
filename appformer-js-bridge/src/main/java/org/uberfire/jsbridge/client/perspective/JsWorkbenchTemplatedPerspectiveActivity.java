@@ -12,7 +12,6 @@ import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.TemplatedActivity;
 import org.uberfire.client.workbench.panels.impl.TemplatedWorkbenchPanelPresenter;
-import org.uberfire.commons.data.Pair;
 import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -28,7 +27,6 @@ import org.uberfire.workbench.model.menu.Menus;
 import org.uberfire.workbench.model.toolbar.ToolBar;
 
 import static java.util.stream.Collectors.toMap;
-import static org.uberfire.commons.data.Pair.newPair;
 import static org.uberfire.workbench.model.PanelDefinition.PARENT_CHOOSES_TYPE;
 
 public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPerspectiveActivity implements TemplatedActivity {
@@ -36,7 +34,6 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
     private static final String UF_PERSPECTIVE_COMPONENT = "uf-perspective-component";
     private static final String UF_PERSPECTIVE_CONTAINER = "uf-perspective-container";
     private static final String STARTUP_PARAM_ATTR = "data-startup-";
-    private static final String AF_JS_COMPONENT = "af-js-component";
 
     private final String componentId;
     private final boolean isDefault;
@@ -62,12 +59,13 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
         this.componentContainersById = new HashMap<>();
     }
 
-    // ====== Perspective lifecycle
+    // Lifecycle
+
     @Override
     public void onStartup(final PlaceRequest place) {
         this.place = place;
         super.onStartup(place);
-        this.realPerspective.onStartup();
+        realPerspective.onStartup();
     }
 
     @Override
@@ -75,17 +73,17 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
         super.onOpen();
 
         // update local references to the DOM elements
-        this.realPerspective.renderNative(this.container);
-        this.componentContainersById = loadTemplateComponents(this.container);
+        realPerspective.renderNative(container);
+        componentContainersById = loadTemplateComponents(container);
 
-        this.realPerspective.onOpen();
+        realPerspective.onOpen();
         placeManager.executeOnOpenCallbacks(place);
     }
 
     @Override
     public void onClose() {
         super.onClose();
-        this.realPerspective.onClose(this.container);
+        realPerspective.onClose(container);
         placeManager.executeOnCloseCallbacks(place);
     }
 
@@ -94,9 +92,9 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
         super.onShutdown();
         this.realPerspective.onShutdown();
     }
-    // ======
 
-    // ====== Perspective methods
+    // Properties
+
     @Override
     public ResourceType getResourceType() {
         return ActivityResourceType.PERSPECTIVE;
@@ -104,12 +102,12 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
 
     @Override
     public String getIdentifier() {
-        return this.componentId;
+        return componentId;
     }
 
     @Override
     public boolean isDefault() {
-        return this.isDefault;
+        return isDefault;
     }
 
     @Override
@@ -129,55 +127,47 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
 
     @Override
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
-        final PerspectiveDefinition p = new PerspectiveDefinitionImpl(TemplatedWorkbenchPanelPresenter.class.getName());
-        p.setName(realPerspective.name());
+        final PerspectiveDefinition perspectiveDefinition = new PerspectiveDefinitionImpl(TemplatedWorkbenchPanelPresenter.class.getName());
+        perspectiveDefinition.setName(realPerspective.name());
 
-        this.componentContainersById.forEach((key, value) -> {
+        componentContainersById.forEach((key, value) -> {
 
             final Map<String, String> placeParams = retrieveStartUpParams(value);
-            final PanelDefinition panelDefinition2 = new PanelDefinitionImpl(PARENT_CHOOSES_TYPE);
+            final PanelDefinition panelDefinition = new PanelDefinitionImpl(PARENT_CHOOSES_TYPE);
 
-            panelDefinition2.addPart(new PartDefinitionImpl(new DefaultPlaceRequest(key, placeParams)));
-            p.getRoot().appendChild(new NamedPosition(key), panelDefinition2);
+            panelDefinition.addPart(new PartDefinitionImpl(new DefaultPlaceRequest(key, placeParams)));
+            perspectiveDefinition.getRoot().appendChild(new NamedPosition(key), panelDefinition);
         });
 
-        return p;
+        return perspectiveDefinition;
     }
 
-    // ======
+    // Templated interface methods
 
-    // ====== Templated interface methods
     @Override
-    public org.jboss.errai.common.client.dom.HTMLElement resolvePosition(NamedPosition p) {
-
-        final String fieldName = p.getName();
-        final HTMLElement element = this.componentContainersById.get(fieldName);
-        if (element == null) {
-            return null;
-        }
-
-        return Js.cast(element);
+    public org.jboss.errai.common.client.dom.HTMLElement resolvePosition(final NamedPosition namedPosition) {
+        final String fieldName = namedPosition.getName();
+        final HTMLElement element = componentContainersById.get(fieldName);
+        return element == null ? null : Js.cast(element);
     }
 
     @Override
     public org.jboss.errai.common.client.dom.HTMLElement getRootElement() {
-        return Js.cast(this.container);
+        return Js.cast(container);
     }
-    // ======
 
     private Map<String, HTMLElement> loadTemplateComponents(final HTMLElement container) {
 
-        final Map<String, HTMLElement> templateComponents = this.realPerspective.getContainerComponents(container)
+        final Map<String, HTMLElement> templateComponents = realPerspective.getContainerComponents(container)
                 .stream()
-                .map(element -> newPair(element.getAttribute(AF_JS_COMPONENT), element))
-                .collect(toMap(Pair::getK1, Pair::getK2));
+                .collect(toMap(e -> e.getAttribute("af-js-component"), e -> e));
 
-        templateComponents.values().forEach(component -> this.deepMarkComponentContainers(component, container));
+        templateComponents.values().forEach(component -> this.recursivelyMarkComponentContainers(container, component));
 
         return templateComponents;
     }
 
-    private void deepMarkComponentContainers(final Node leaf, final Node root) {
+    private void recursivelyMarkComponentContainers(final Node root, final Node leaf) {
 
         // Run through every node between the root container and the component node marking it as an uf-perspective-component.
         // This is needed to make the TemplatedPresenter display the correct elements in the screen when it opens.
@@ -195,7 +185,7 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
             htmlElement.classList.add(UF_PERSPECTIVE_COMPONENT);
         }
 
-        deepMarkComponentContainers(leaf.parentNode, root);
+        recursivelyMarkComponentContainers(root, leaf.parentNode);
     }
 
     private Map<String, String> retrieveStartUpParams(final HTMLElement component) {

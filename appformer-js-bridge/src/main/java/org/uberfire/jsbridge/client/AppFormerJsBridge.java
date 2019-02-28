@@ -118,7 +118,7 @@ public class AppFormerJsBridge {
     public void goToPath(final String uri) {
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
-        final PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length - 1], uri); //FIXME: Not good
+        final PathFactory.PathImpl path = new PathFactory.PathImpl(uri.split("//")[uri.split("//").length - 1], uri); //TODO: Un-expose PathImpl constructor?
         placeManager.goTo(path);
     }
 
@@ -142,13 +142,13 @@ public class AppFormerJsBridge {
 
     public Promise<Object> rpc(final String path, final Object[] params) {
 
-        //FIXME: Marshall/unmarshall is happening twice
+        //TODO: Marshall/unmarshall is happening twice?
         return new Promise<>((res, rej) -> {
 
             final String[] parts = path.split("\\|");
             final String serviceFqcn = parts[0];
             final String method = parts[1];
-            final Annotation[] qualifiers = {}; //FIXME: Support qualifiers?
+            final Annotation[] qualifiers = {}; //TODO: Support qualifiers?
 
             final Function<Object, Object> jsonToGwt = object -> {
                 try {
@@ -174,7 +174,7 @@ public class AppFormerJsBridge {
         });
     }
 
-    class CallbackProducer<T> {
+    private static class CallbackProducer<T> {
 
         private final Consumer<Exception> onFailure;
 

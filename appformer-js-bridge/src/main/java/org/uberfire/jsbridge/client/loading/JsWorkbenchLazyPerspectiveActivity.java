@@ -52,43 +52,43 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     }
 
     @Override
-    public void updateRealContent(final JavaScriptObject backedPerspective) {
+    public void updateRealContent(final JavaScriptObject backedPerspectiveJsObject) {
 
         this.loaded = true;
 
-        final JsNativePerspective jsPerspective = new JsNativePerspective(backedPerspective);
+        final JsNativePerspective jsPerspective = new JsNativePerspective(backedPerspectiveJsObject);
         if (jsPerspective.isTemplated()) {
-            this.backedPerspective = new JsWorkbenchTemplatedPerspectiveActivity(this.getIdentifier(),
-                                                                                 this.isDefault(),
-                                                                                 jsPerspective,
-                                                                                 placeManager);
+            backedPerspective = new JsWorkbenchTemplatedPerspectiveActivity(getIdentifier(),
+                                                                            isDefault(),
+                                                                            jsPerspective,
+                                                                            placeManager);
         } else {
-            this.backedPerspective = new JsWorkbenchPerspectiveActivity(jsPerspective,
-                                                                        super.placeManager,
-                                                                        this.isDefault());
+            backedPerspective = new JsWorkbenchPerspectiveActivity(jsPerspective,
+                                                                   placeManager,
+                                                                   isDefault());
         }
 
-        if (this.activityManager.isStarted(this)) {
+        if (activityManager.isStarted(this)) {
             // current activity is started, need to move the backed perspective to started state
-            this.backedPerspective.onStartup(this.place);
+            backedPerspective.onStartup(place);
         }
 
-        if (this.open) {
+        if (open) {
             // lazy perspective is opened, need to move the backed perspective to open state and refresh the page
-            this.backedPerspective.onOpen();
-            super.placeManager.goTo(new ForcedPlaceRequest(this.backedPerspectiveId));
+            backedPerspective.onOpen();
+            placeManager.goTo(new ForcedPlaceRequest(backedPerspectiveId));
         }
     }
 
     @Override
     public PerspectiveActivity get() {
-        if (this.isPerspectiveLoaded()) {
-            return this.backedPerspective;
+        if (isPerspectiveLoaded()) {
+            return backedPerspective;
         }
         return this;
     }
 
-    // ===== LIFECYCLE
+    // Lifecycle
 
     @Override
     public void onStartup(final PlaceRequest place) {
@@ -105,13 +105,13 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public void onOpen() {
 
-        if (this.isPerspectiveLoaded()) {
-            this.backedPerspective.onOpen();
+        if (isPerspectiveLoaded()) {
+            backedPerspective.onOpen();
         } else {
             super.onOpen();
 
             // trigger backed perspective loading
-            this.lazyLoadingParentScript.accept(this.backedPerspectiveId);
+            lazyLoadingParentScript.accept(backedPerspectiveId);
         }
 
         placeManager.executeOnOpenCallbacks(place);
@@ -120,8 +120,8 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public void onClose() {
 
-        if (this.isPerspectiveLoaded()) {
-            this.backedPerspective.onClose();
+        if (isPerspectiveLoaded()) {
+            backedPerspective.onClose();
         } else {
             super.onClose();
         }
@@ -132,14 +132,14 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public void onShutdown() {
 
-        if (this.isPerspectiveLoaded()) {
-            this.backedPerspective.onShutdown();
+        if (isPerspectiveLoaded()) {
+            backedPerspective.onShutdown();
             return;
         }
         super.onShutdown();
     }
 
-    // ===== API
+    // Properties
 
     @Override
     public ResourceType getResourceType() {
@@ -148,21 +148,21 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
     @Override
     public String getIdentifier() {
-        return this.backedPerspectiveId;
+        return backedPerspectiveId;
     }
 
     @Override
     public boolean isDefault() {
         // we ignore the isDefault() property of the backed perspective,
         // it shouldn't be different than the one configured for the lazy one
-        return this.configuredIsDefault;
+        return configuredIsDefault;
     }
 
     @Override
     public boolean isTransient() {
 
-        if (this.isPerspectiveLoaded()) {
-            return this.backedPerspective.isTransient();
+        if (isPerspectiveLoaded()) {
+            return backedPerspective.isTransient();
         }
 
         // lazy perspectives are always transient.
@@ -172,16 +172,16 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
     @Override
     public Menus getMenus() {
-        if (this.isPerspectiveLoaded()) {
-            return this.backedPerspective.getMenus();
+        if (isPerspectiveLoaded()) {
+            return backedPerspective.getMenus();
         }
         return super.getMenus();
     }
 
     @Override
     public ToolBar getToolBar() {
-        if (this.isPerspectiveLoaded()) {
-            return this.backedPerspective.getToolBar();
+        if (isPerspectiveLoaded()) {
+            return backedPerspective.getToolBar();
         }
         return super.getToolBar();
     }
@@ -189,15 +189,15 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
 
-        if (this.isPerspectiveLoaded()) {
-            return this.backedPerspective.getDefaultPerspectiveLayout();
+        if (isPerspectiveLoaded()) {
+            return backedPerspective.getDefaultPerspectiveLayout();
         }
 
         return buildEmptyDefinition();
     }
 
     private boolean isPerspectiveLoaded() {
-        return this.loaded;
+        return loaded;
     }
 
     private PerspectiveDefinition buildEmptyDefinition() {

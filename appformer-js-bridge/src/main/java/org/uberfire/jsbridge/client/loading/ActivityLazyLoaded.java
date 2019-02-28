@@ -10,7 +10,9 @@ public class ActivityLazyLoaded implements UberFireEvent {
     private final String identifier;
     private final Activity activity;
 
-    public ActivityLazyLoaded(final String identifier, final Activity activity) {
+    public ActivityLazyLoaded(final String identifier,
+                              final Activity activity) {
+        
         this.identifier = identifier;
         this.activity = activity;
     }
@@ -38,7 +40,6 @@ public class ActivityLazyLoaded implements UberFireEvent {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(identifier, activity);
     }
 

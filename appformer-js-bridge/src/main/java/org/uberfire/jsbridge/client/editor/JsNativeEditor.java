@@ -41,19 +41,15 @@ public class JsNativeEditor {
         return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_isDirty"]();
     }-*/;
 
-    public HTMLElement getElement() {
-        return container;
-    }
-
-    public native int getPriority() /*-{
+    public native int af_priority() /*-{
         return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_priority"];
     }-*/;
 
-    public native String getTitle() /*-{
+    public native String af_componentTitle() /*-{
         return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_componentTitle"];
     }-*/;
 
-    public native String[] getResourceTypes() /*-{
+    public native String[] af_resourceTypes() /*-{
         return this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::self["af_resourceTypes"];
     }-*/;
 
@@ -114,4 +110,8 @@ public class JsNativeEditor {
             $wnd.ReactDOM.unmountComponentAtNode(this.@org.uberfire.jsbridge.client.editor.JsNativeEditor::container);
         }
     }-*/;
+
+    public HTMLElement getElement() {
+        return container;
+    }
 }
