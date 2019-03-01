@@ -28,7 +28,7 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
         this.isDefault = isDefault;
     }
 
-    // TODO: subscriptions?
+    // TODO: CDI Event subscriptions?
 
     /**
      * This method is called when this perspective is instantiated

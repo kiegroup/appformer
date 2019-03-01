@@ -33,6 +33,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.ScriptInjector;
 import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
+import elemental2.promise.Promise.PromiseExecutorCallbackFn.RejectCallbackFn;
+import elemental2.promise.Promise.PromiseExecutorCallbackFn.ResolveCallbackFn;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -55,6 +57,7 @@ import org.uberfire.jsbridge.client.screen.JsNativeScreen;
 import org.uberfire.jsbridge.client.screen.JsWorkbenchScreenActivity;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static com.google.gwt.core.client.ScriptInjector.TOP_WINDOW;
 import static java.util.Arrays.stream;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
@@ -64,20 +67,14 @@ import static org.jboss.errai.ioc.client.QualifierUtil.DEFAULT_QUALIFIERS;
 @EntryPoint
 public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActivityLoader {
 
-    @Inject
-    private Promises promises;
-
-    @Inject
-    private ActivityManager activityManager;
-
-    @Inject
-    private ActivityBeansCache activityBeansCache;
-
-    @Inject
-    private PlaceManager placeManager;
-
-    @Inject
-    private LazyLoadingScreen lazyLoadingScreen;
+    private final Promises promises;
+    private final ActivityManager activityManager;
+    private final ActivityBeansCache activityBeansCache;
+    private final PlaceManager placeManager;
+    private final LazyLoadingScreen lazyLoadingScreen;
+    private final Event<ActivityLazyLoaded> activityLazyLoadedEvent;
+    private final Instance<JsWorkbenchEditorActivity> jsWorkbenchEditorActivityInstance;
+    private final AppFormerComponentsRegistry appFormerComponentsRegistry;
 
     private final Map<String, String> components = new HashMap<>();
     private final Set<String> loadedScripts = new HashSet<>();
@@ -86,21 +83,38 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
     private String gwtModuleName;
 
     @Inject
-    private Event<ActivityLazyLoaded> activityLazyLoadedEvent;
+    public AppFormerJsActivityLoader(final Promises promises,
+                                     final ActivityManager activityManager,
+                                     final ActivityBeansCache activityBeansCache,
+                                     final PlaceManager placeManager,
+                                     final LazyLoadingScreen lazyLoadingScreen,
+                                     final Event<ActivityLazyLoaded> activityLazyLoadedEvent,
+                                     final @Shadowed Instance<JsWorkbenchEditorActivity> jsWorkbenchEditorActivityInstance,
+                                     final AppFormerComponentsRegistry appFormerComponentsRegistry) {
+
+        this.promises = promises;
+        this.activityManager = activityManager;
+        this.activityBeansCache = activityBeansCache;
+        this.placeManager = placeManager;
+        this.lazyLoadingScreen = lazyLoadingScreen;
+        this.activityLazyLoadedEvent = activityLazyLoadedEvent;
+        this.jsWorkbenchEditorActivityInstance = jsWorkbenchEditorActivityInstance;
+        this.appFormerComponentsRegistry = appFormerComponentsRegistry;
+    }
 
     public void init(final String gwtModuleName) {
         this.gwtModuleName = gwtModuleName;
 
-        stream(AppFormerComponentsRegistry.keys())
-                .map(componentId -> new AppFormerComponentsRegistry.Entry(componentId, AppFormerComponentsRegistry.get(componentId)))
+        stream(appFormerComponentsRegistry.keys())
+                .map(componentId -> new AppFormerComponentsRegistry.Entry(componentId, appFormerComponentsRegistry.get(componentId)))
                 .forEach(this::registerComponent);
     }
 
     public void onComponentLoaded(final Object jsObject) {
 
-        final String componentId = extractId(jsObject);
+        final String componentId = extractComponentId(jsObject);
 
-        if (this.editors.containsKey(componentId)) {
+        if (editors.containsKey(componentId)) {
             registerEditor(jsObject, componentId);
             return;
         }
@@ -109,115 +123,140 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
             throw new IllegalArgumentException("Cannot find component " + componentId);
         }
 
-        //FIXME: Get activity bean from BeanManager to prevent onStartup to be invoked.
-        final Activity activity = activityManager.getActivity(new DefaultPlaceRequest(componentId));
-
-        JsWorkbenchLazyActivity lazyActivity = (JsWorkbenchLazyActivity) activity;
-        lazyActivity.updateRealContent((JavaScriptObject) jsObject);
+        final Activity activity = updateRealContent((JavaScriptObject) jsObject, componentId);
 
         activityLazyLoadedEvent.fire(new ActivityLazyLoaded(componentId, activity));
     }
 
-    //TODO this should be unified with JSWorkbenchScreenActivity getIdentifier
-    public native String extractId(final Object object)  /*-{
+    Activity updateRealContent(final JavaScriptObject jsObject,
+                               final String componentId) {
+
+        //FIXME: Get activity bean from BeanManager to prevent onStartup to be invoked.
+        final Activity activity = activityManager.getActivity(new DefaultPlaceRequest(componentId));
+
+        final JsWorkbenchLazyActivity lazyActivity = (JsWorkbenchLazyActivity) activity;
+        lazyActivity.updateRealContent(jsObject);
+        return activity;
+    }
+
+    public native String extractComponentId(final Object object)  /*-{
         return object['af_componentId'];
     }-*/;
 
-    private Promise<Void> loadScriptFor(final String componentId) {
+    Promise<Void> loadScriptFor(final String componentId) {
 
-        final Optional<String> editorScriptUrl = ofNullable(editors.get(componentId))
-                .map(AppFormerComponentsRegistry.Entry::getSource);
+        final Optional<String> scriptFilename = getScriptFileName(componentId);
 
-        final Optional<String> scriptFilename = editorScriptUrl.isPresent()
-                ? editorScriptUrl
-                : Optional.ofNullable(components.get(componentId));
-
+        //Script not found
         if (!scriptFilename.isPresent()) {
             throw new RuntimeException("No script found for " + componentId);
         }
 
+        //Already loaded
         if (loadedScripts.contains(scriptFilename.get())) {
             return promises.resolve();
         }
 
         loadedScripts.add(scriptFilename.get());
-        final String scriptUrl = gwtModuleName + "/" + scriptFilename.get();
 
-        return promises.resolve().<Void>then(l -> new Promise<>((res, rej) -> {
-            ScriptInjector.fromUrl(scriptUrl)
-                    .setWindow(ScriptInjector.TOP_WINDOW)
-                    .setCallback(new Callback<Void, Exception>() {
-                        @Override
-                        public void onFailure(final Exception e1) {
-                            rej.onInvoke(e1);
-                        }
-
-                        @Override
-                        public void onSuccess(final Void v) {
-                            res.onInvoke(v);
-                        }
-                    })
-                    .inject();
-        })).catch_(e -> {
+        return loadScript(gwtModuleName + "/" + scriptFilename.get()).catch_(e -> {
             DomGlobal.console.info("Error loading script for " + componentId);
+            loadedScripts.remove(scriptFilename.get());
             return promises.reject(e);
         });
     }
 
-    private void registerComponent(final AppFormerComponentsRegistry.Entry registryEntry) {
+    Optional<String> getScriptFileName(final String componentId) {
+
+        final Optional<String> editorScriptUrl = ofNullable(editors.get(componentId))
+                .map(AppFormerComponentsRegistry.Entry::getSource);
+
+        return editorScriptUrl.isPresent()
+                ? editorScriptUrl
+                : ofNullable(components.get(componentId));
+    }
+
+    Promise<Void> loadScript(final String scriptUrl) {
+        return promises.create((res, rej) -> ScriptInjector.fromUrl(scriptUrl)
+                .setWindow(TOP_WINDOW)
+                .setCallback(getScriptInjectionCallback(res, rej))
+                .inject());
+    }
+
+    private Callback<Void, Exception> getScriptInjectionCallback(final ResolveCallbackFn<Void> res,
+                                                                 final RejectCallbackFn rej) {
+        return new Callback<Void, Exception>() {
+            @Override
+            public void onFailure(final Exception e1) {
+                rej.onInvoke(e1);
+            }
+
+            @Override
+            public void onSuccess(final Void v) {
+                res.onInvoke(v);
+            }
+        };
+    }
+
+    void registerComponent(final AppFormerComponentsRegistry.Entry registryEntry) {
         switch (registryEntry.getType()) {
             case PERSPECTIVE:
                 registerPerspective(registryEntry);
+                components.put(registryEntry.getComponentId(), registryEntry.getSource());
                 break;
             case SCREEN:
                 registerScreen(registryEntry);
+                components.put(registryEntry.getComponentId(), registryEntry.getSource());
                 break;
             case EDITOR:
                 registerEditor(registryEntry);
                 break;
-            default:
-                throw new IllegalArgumentException("Don't know how to register component " + registryEntry.getComponentId());
         }
     }
 
     public boolean triggerLoadOfMatchingEditors(final Path path,
                                                 final Runnable successCallback) {
 
-        if (path == null) {
+        if (path == null || path.toURI() == null) {
             return false;
         }
 
-        final List<Promise<Void>> matchingEditors = this.editors.values().stream()
-                .filter(e -> {
-                    final String matches = e.getParams().get("matches");
-                    final String regex = matches.substring(1, matches.length() - 1); //FIXME: Temporary workaround to remove extra quotes
-                    return path.toURI().matches(regex);
-                })
-                .filter(e -> !this.loadedScripts.contains(e.getSource()))
+        final List<Promise<Void>> loadingMatchingEditors = loadMatchingEditors(path.toURI());
+
+        if (loadingMatchingEditors.size() <= 0) {
+            return false;
+        }
+
+        finishLoadingMatchingEditors(loadingMatchingEditors, successCallback);
+        return true;
+    }
+
+    List<Promise<Void>> loadMatchingEditors(final String uri) {
+        return editors.values().stream()
+                .filter(e -> e.matches(uri))
+                .filter(e -> !loadedScripts.contains(e.getSource()))
                 .map(e -> this.loadScriptFor(e.getComponentId()))
                 .collect(toList());
+    }
 
-        if (matchingEditors.size() <= 0) {
-            return false;
-        }
+    protected void finishLoadingMatchingEditors(final List<Promise<Void>> loadingMatchingEditors,
+                                                final Runnable successCallback) {
 
-        this.promises.resolve().then(i -> promises.all(matchingEditors, identity()).then(s -> {
+        this.promises.resolve().then(i -> promises.all(loadingMatchingEditors, identity()).then(s -> {
             successCallback.run();
             return this.promises.resolve();
         })).catch_(e -> {
             //If something goes wrong, it's a no-op.
             return this.promises.resolve();
         });
-
-        return true;
     }
 
-    private void registerEditor(final AppFormerComponentsRegistry.Entry registryEntry) {
+    void registerEditor(final AppFormerComponentsRegistry.Entry registryEntry) {
         this.editors.put(registryEntry.getComponentId(), registryEntry);
     }
 
     @SuppressWarnings("unchecked")
-    private void registerScreen(final AppFormerComponentsRegistry.Entry registryEntry) {
+    void registerScreen(final AppFormerComponentsRegistry.Entry registryEntry) {
 
         final JsNativeScreen newScreen = new JsNativeScreen(registryEntry.getComponentId(), this::loadScriptFor, lazyLoadingScreen);
         final JsWorkbenchScreenActivity activity = new JsWorkbenchScreenActivity(newScreen, placeManager);
@@ -233,7 +272,6 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
                 JsWorkbenchLazyActivity.class,
                 Activity.class);
 
-        components.put(registryEntry.getComponentId(), registryEntry.getSource());
         activityBeansCache.addNewScreenActivity(activityBean);
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
@@ -244,25 +282,13 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
     }
 
     @SuppressWarnings("unchecked")
-    private void registerPerspective(final AppFormerComponentsRegistry.Entry registryEntry) {
-        final String componentId = registryEntry.getComponentId();
+    void registerPerspective(final AppFormerComponentsRegistry.Entry registryEntry) {
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
 
         final PlaceManager placeManager = beanManager.lookupBean(PlaceManager.class).getInstance();
         final ActivityManager activityManager = beanManager.lookupBean(ActivityManager.class).getInstance();
-
-        final PerspectiveActivity activity = registerPerspectiveActivity(registryEntry, placeManager, activityManager, beanManager);
-
-        components.put(componentId, registryEntry.getSource());
-        activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(activity.getIdentifier()).iterator().next());
-    }
-
-    private PerspectiveActivity registerPerspectiveActivity(final AppFormerComponentsRegistry.Entry registryEntry,
-                                                            final PlaceManager placeManager,
-                                                            final ActivityManager activityManager,
-                                                            final SyncBeanManager beanManager) {
 
         final JsWorkbenchLazyPerspectiveActivity activity = new JsWorkbenchLazyPerspectiveActivity(registryEntry,
                                                                                                    placeManager,
@@ -286,7 +312,7 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
         beanManager.registerBeanTypeAlias(activityBean, JsWorkbenchLazyActivity.class);
         beanManager.registerBeanTypeAlias(activityBean, Activity.class);
 
-        return activity;
+        activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(((PerspectiveActivity) activity).getIdentifier()).iterator().next());
     }
 
     @Qualifier
@@ -294,19 +320,15 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
 
     }
 
-    @Inject
-    @Shadowed
-    private Instance<JsWorkbenchEditorActivity> jsWorkbenchEditorActivityInstance;
-
     @SuppressWarnings("unchecked")
-    private void registerEditor(final Object jsObject,
-                                final String componentId) {
+    void registerEditor(final Object jsObject,
+                        final String componentId) {
 
         final JsNativeEditor editor = new JsNativeEditor(componentId, jsObject);
 
         final SyncBeanManager beanManager = IOC.getBeanManager();
         final EditorActivityBeanDefinition activityBean = new EditorActivityBeanDefinition<>(
-                () -> this.jsWorkbenchEditorActivityInstance.get().withEditor(new JsNativeEditor(componentId, jsObject))
+                () -> jsWorkbenchEditorActivityInstance.get().withEditor(new JsNativeEditor(componentId, jsObject))
         );
 
         beanManager.registerBean(activityBean);

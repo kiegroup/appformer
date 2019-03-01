@@ -272,9 +272,7 @@ public class PlaceManagerImpl
             return;
         }
 
-        final ResolvedRequest resolved = resolveActivity(place, () -> {
-            this.closePlace(new DefaultPlaceRequest("LazyLoadingScreen"), () -> this.goTo(place));
-        });
+        final ResolvedRequest resolved = resolveActivity(place);
 
         if (resolved.getActivity() != null) {
             final Activity activity = resolved.getActivity();
@@ -393,8 +391,7 @@ public class PlaceManagerImpl
      * TODO (UF-94) : make this simpler. with enough tests in place, we should experiment with doing the recursive
      * lookup automatically.
      */
-    private ResolvedRequest resolveActivity(final PlaceRequest place,
-                                            final Runnable lazyLoadingSuccessCallback) {
+    private ResolvedRequest resolveActivity(final PlaceRequest place) {
 
         final PlaceRequest resolvedPlaceRequest = resolvePlaceRequest(place);
 
@@ -404,7 +401,7 @@ public class PlaceManagerImpl
             return existingDestination;
         }
 
-        if (appFormerActivityLoader.triggerLoadOfMatchingEditors(place.getPath(), lazyLoadingSuccessCallback)) {
+        if (appFormerActivityLoader.triggerLoadOfMatchingEditors(place.getPath(), () -> closeLazyLoadingScreenAndGoToPlace(place))) {
             return new ResolvedRequest(null, new DefaultPlaceRequest("LazyLoadingScreen"));
         }
 
@@ -438,6 +435,10 @@ public class PlaceManagerImpl
                                         unambigousActivity);
         return new ResolvedRequest(unambigousActivity,
                                    resolvedPlaceRequest);
+    }
+
+    private void closeLazyLoadingScreenAndGoToPlace(final PlaceRequest place) {
+        this.closePlace(new DefaultPlaceRequest("LazyLoadingScreen"), () -> this.goTo(place));
     }
 
     private PlaceRequest resolvePlaceRequest(PlaceRequest place) {
@@ -490,9 +491,7 @@ public class PlaceManagerImpl
             return;
         }
 
-        final ResolvedRequest resolved = resolveActivity(place, () -> {
-            this.closePlace(new DefaultPlaceRequest("LazyLoadingScreen"), () -> this.goTo(place));
-        });
+        final ResolvedRequest resolved = resolveActivity(place);
 
         if (resolved.getActivity() != null) {
             final Activity activity = resolved.getActivity();

@@ -2,9 +2,9 @@ package org.uberfire.jsbridge.client.loading;
 
 import javax.annotation.PostConstruct;
 
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
@@ -15,7 +15,7 @@ import org.uberfire.workbench.model.menu.Menus;
 
 @Templated("lazy-loading.html")
 @WorkbenchScreen(identifier = LazyLoadingScreen.IDENTIFIER)
-public class LazyLoadingScreen extends Composite {
+public class LazyLoadingScreen implements IsElement {
 
     public static final String IDENTIFIER = "LazyLoadingScreen";
 
@@ -37,7 +37,7 @@ public class LazyLoadingScreen extends Composite {
     }
 
     @WorkbenchPartView
-    public IsWidget getView() {
+    public org.jboss.errai.common.client.api.elemental2.IsElement getView() {
         return this;
     }
 

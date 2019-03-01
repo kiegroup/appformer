@@ -143,35 +143,36 @@ public class AppFormerJsBridge {
     public Promise<Object> rpc(final String path, final Object[] params) {
 
         //TODO: Marshall/unmarshall is happening twice?
-        return new Promise<>((res, rej) -> {
 
-            final String[] parts = path.split("\\|");
-            final String serviceFqcn = parts[0];
-            final String method = parts[1];
-            final Annotation[] qualifiers = {}; //TODO: Support qualifiers?
+        final String[] parts = path.split("\\|");
+        final String serviceFqcn = parts[0];
+        final String method = parts[1];
+        final Annotation[] qualifiers = {}; //TODO: Support qualifiers?
 
-            final Function<Object, Object> jsonToGwt = object -> {
-                try {
-                    return Marshalling.fromJSON((String) object);
-                } catch (final Exception e) {
-                    DomGlobal.console.info("Error converting JS obj to GWT obj", e);
-                    throw e;
-                }
-            };
+        final Function<Object, Object> jsonToGwt = object -> {
+            try {
+                return Marshalling.fromJSON((String) object);
+            } catch (final Exception e) {
+                DomGlobal.console.info("Error converting JS obj to GWT obj", e);
+                throw e;
+            }
+        };
 
-            final Function<Object, Object> gwtToJson = value -> value != null
-                    ? Marshalling.toJSON(value)
-                    : null;
+        final Function<Object, Object> gwtToJson = value -> value != null
+                ? Marshalling.toJSON(value)
+                : null;
 
-            final Object[] gwtParams = stream(params).map(jsonToGwt).toArray();
+        final Object[] gwtParams = stream(params).map(jsonToGwt).toArray();
 
-            MessageBuilder.createCall()
-                    .call(serviceFqcn)
-                    .endpoint(method, qualifiers, gwtParams)
-                    .respondTo(Object.class, value -> res.onInvoke(gwtToJson.apply(value)))
-                    .errorsHandledBy((e, a) -> true)
-                    .sendNowWith(ErraiBus.get());
-        });
+        return new Promise<>((res, rej) -> MessageBuilder.createCall()
+                .call(serviceFqcn)
+                .endpoint(method, qualifiers, gwtParams)
+                .respondTo(Object.class, value -> res.onInvoke(gwtToJson.apply(value)))
+                .errorsHandledBy((e, a) -> {
+                    rej.onInvoke(e);
+                    return true;
+                })
+                .sendNowWith(ErraiBus.get()));
     }
 
     private static class CallbackProducer<T> {

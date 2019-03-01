@@ -46,7 +46,7 @@ public class JsNativeScreen {
         this.componentId = componentId;
 
         this.elemental2DomUtil = new Elemental2DomUtil();
-        this.container = createContainerForLoadingScreen(lazyScreen.asWidget(), this.elemental2DomUtil);
+        this.container = createContainerForLoadingScreen(lazyScreen.getElement());
 
         this.lazyLoadParentScript = lazyLoadParentScript;
     }
@@ -76,14 +76,13 @@ public class JsNativeScreen {
         return loaded;
     }
 
-    private HTMLElement createContainerForLoadingScreen(final Widget loadingWidget,
-                                                        final Elemental2DomUtil elemental2DomUtil) {
+    private HTMLElement createContainerForLoadingScreen(final HTMLElement loadingWidget) {
 
         final HTMLElement container = (HTMLElement) DomGlobal.document.createElement("div");
         container.classList.add("js-screen-container");
 
         // while loading, this screen will render the loadingWidget's content
-        elemental2DomUtil.appendWidgetToElement(container, loadingWidget);
+        container.appendChild(loadingWidget);
 
         return container;
     }

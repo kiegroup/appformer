@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
 
@@ -12,20 +14,17 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
-public final class AppFormerComponentsRegistry {
+@ApplicationScoped
+public class AppFormerComponentsRegistry {
 
-    private AppFormerComponentsRegistry() {
-        // do nothing
-    }
-
-    public static native String[] keys() /*-{
+    public native String[] keys() /*-{
         if (typeof $wnd.AppFormerComponentsRegistry === "undefined") {
             return [];
         }
         return Object.keys($wnd.AppFormerComponentsRegistry);
     }-*/;
 
-    public static native JavaScriptObject get(final String key) /*-{
+    public native JavaScriptObject get(final String key) /*-{
         if (typeof $wnd.AppFormerComponentsRegistry[key] === "undefined") {
             return null;
         }
@@ -35,15 +34,21 @@ public final class AppFormerComponentsRegistry {
     public static class Entry {
 
         private final String componentId;
+
         private final JavaScriptObject self;
 
-        public Entry(final String componentId, final JavaScriptObject self) {
+        public Entry(final String componentId,
+                     final JavaScriptObject self) {
 
             checkNotNull(componentId);
             checkNotNull(self);
 
             this.componentId = componentId;
             this.self = self;
+        }
+
+        JavaScriptObject getSelf() {
+            return self;
         }
 
         public String getComponentId() {
@@ -75,6 +80,12 @@ public final class AppFormerComponentsRegistry {
         private native Object get(final String key) /*-{
             return this.@org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.Entry::self[key];
         }-*/;
+
+        public boolean matches(final String uri) {
+            final String matches = getParams().get("matches");
+            final String regex = matches.substring(1, matches.length() - 1); //FIXME: Temporary workaround to remove extra quotes
+            return uri.matches(regex);
+        }
 
         public enum Type {
             PERSPECTIVE,

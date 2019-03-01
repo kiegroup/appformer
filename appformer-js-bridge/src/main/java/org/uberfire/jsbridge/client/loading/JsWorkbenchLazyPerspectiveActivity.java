@@ -9,6 +9,7 @@ import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyPerspective;
 import org.uberfire.client.workbench.panels.impl.ImmutableWorkbenchPanelPresenter;
+import org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.Entry.PerspectiveParams;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchPerspectiveActivity;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchTemplatedPerspectiveActivity;
 import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
@@ -45,8 +46,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
         this.backedPerspectiveId = registryEntry.getComponentId();
         this.lazyLoadingParentScript = lazyLoadingParentScript;
 
-        this.configuredIsDefault = new AppFormerComponentsRegistry.Entry.PerspectiveParams(registryEntry.getParams())
-                .isDefault().orElse(super.isDefault());
+        this.configuredIsDefault = new PerspectiveParams(registryEntry.getParams()).isDefault().orElse(super.isDefault());
 
         this.loaded = false;
     }
@@ -70,12 +70,12 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
         if (activityManager.isStarted(this)) {
             // current activity is started, need to move the backed perspective to started state
-            backedPerspective.onStartup(place);
+            getBackedPerspective().onStartup(place);
         }
 
         if (open) {
             // lazy perspective is opened, need to move the backed perspective to open state and refresh the page
-            backedPerspective.onOpen();
+            getBackedPerspective().onOpen();
             placeManager.goTo(new ForcedPlaceRequest(backedPerspectiveId));
         }
     }
@@ -83,7 +83,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public PerspectiveActivity get() {
         if (isPerspectiveLoaded()) {
-            return backedPerspective;
+            return getBackedPerspective();
         }
         return this;
     }
@@ -96,7 +96,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
         this.place = place;
 
         if (isPerspectiveLoaded()) {
-            this.backedPerspective.onStartup(place);
+            getBackedPerspective().onStartup(place);
             return;
         }
         super.onStartup(place);
@@ -106,12 +106,10 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     public void onOpen() {
 
         if (isPerspectiveLoaded()) {
-            backedPerspective.onOpen();
+            getBackedPerspective().onOpen();
         } else {
             super.onOpen();
-
-            // trigger backed perspective loading
-            lazyLoadingParentScript.accept(backedPerspectiveId);
+            onLoaded(); // trigger backed perspective loading
         }
 
         placeManager.executeOnOpenCallbacks(place);
@@ -121,7 +119,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     public void onClose() {
 
         if (isPerspectiveLoaded()) {
-            backedPerspective.onClose();
+            getBackedPerspective().onClose();
         } else {
             super.onClose();
         }
@@ -133,13 +131,21 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     public void onShutdown() {
 
         if (isPerspectiveLoaded()) {
-            backedPerspective.onShutdown();
+            getBackedPerspective().onShutdown();
             return;
         }
         super.onShutdown();
     }
 
+    void onLoaded() {
+        lazyLoadingParentScript.accept(backedPerspectiveId);
+    }
+
     // Properties
+
+    PerspectiveActivity getBackedPerspective() {
+        return backedPerspective;
+    }
 
     @Override
     public ResourceType getResourceType() {
@@ -162,7 +168,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     public boolean isTransient() {
 
         if (isPerspectiveLoaded()) {
-            return backedPerspective.isTransient();
+            return getBackedPerspective().isTransient();
         }
 
         // lazy perspectives are always transient.
@@ -173,7 +179,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public Menus getMenus() {
         if (isPerspectiveLoaded()) {
-            return backedPerspective.getMenus();
+            return getBackedPerspective().getMenus();
         }
         return super.getMenus();
     }
@@ -181,7 +187,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     @Override
     public ToolBar getToolBar() {
         if (isPerspectiveLoaded()) {
-            return backedPerspective.getToolBar();
+            return getBackedPerspective().getToolBar();
         }
         return super.getToolBar();
     }
@@ -190,13 +196,13 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     public PerspectiveDefinition getDefaultPerspectiveLayout() {
 
         if (isPerspectiveLoaded()) {
-            return backedPerspective.getDefaultPerspectiveLayout();
+            return getBackedPerspective().getDefaultPerspectiveLayout();
         }
 
         return buildEmptyDefinition();
     }
 
-    private boolean isPerspectiveLoaded() {
+    boolean isPerspectiveLoaded() {
         return loaded;
     }
 
