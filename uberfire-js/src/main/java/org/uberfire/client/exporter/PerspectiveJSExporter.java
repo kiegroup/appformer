@@ -49,7 +49,7 @@ public class PerspectiveJSExporter implements UberfireJSExporter {
 
             final JSWorkbenchPerspectiveActivity activity = new JSWorkbenchPerspectiveActivity(newNativePerspective);
 
-            beanManager.registerBean(new SingletonBeanDefinition<>(activity,
+            beanManager.registerBean(new SingletonBeanDefinition<PerspectiveActivity, JSWorkbenchPerspectiveActivity>(activity,
                                                                    PerspectiveActivity.class,
                                                                    new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
                                                                    newNativePerspective.getId(),

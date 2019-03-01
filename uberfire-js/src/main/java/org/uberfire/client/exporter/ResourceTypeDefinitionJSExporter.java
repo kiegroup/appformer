@@ -48,7 +48,7 @@ public class ResourceTypeDefinitionJSExporter implements UberfireJSExporter {
             newNativeClientResourceType.build(obj);
             JSClientResourceType jsClientResourceType = new JSClientResourceType(newNativeClientResourceType,
                                                                                  category);
-            beanManager.registerBean(new SingletonBeanDefinition<>(jsClientResourceType,
+            beanManager.registerBean(new SingletonBeanDefinition<ClientResourceType, JSClientResourceType>(jsClientResourceType,
                                                                    ClientResourceType.class,
                                                                    new HashSet<>(Arrays.asList(DEFAULT_QUALIFIERS)),
                                                                    jsClientResourceType.getId(),
