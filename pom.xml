@@ -739,6 +739,7 @@
         <dependency>
           <groupId>org.appformer</groupId>
           <artifactId>ts-exporter</artifactId>
+          <version>${version.org.appformer.ts-exporter}</version>
         </dependency>
       </dependencies>
     </profile>

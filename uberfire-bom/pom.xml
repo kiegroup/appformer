@@ -1794,7 +1794,6 @@
         <type>war</type>
       </dependency>
 
-
       <dependency>
         <groupId>org.uberfire</groupId>
         <artifactId>appformer-js-bridge</artifactId>
@@ -1808,11 +1807,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <dependency>
-        <groupId>org.appformer</groupId>
-        <artifactId>ts-exporter</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-      </dependency>
     </dependencies>
 
   </dependencyManagement>
