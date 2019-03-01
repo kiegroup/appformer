@@ -1811,4 +1811,24 @@
 
   </dependencyManagement>
 
+  <profiles>
+    <profile>
+      <id>ts-exporter-build</id>
+      <activation>
+        <property>
+          <name>ts-exporter-build</name>
+        </property>
+      </activation>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.appformer</groupId>
+            <artifactId>ts-exporter</artifactId>
+            <version>1.0.0</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+  </profiles>
+
 </project>
