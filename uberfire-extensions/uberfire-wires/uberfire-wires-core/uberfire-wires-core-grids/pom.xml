@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-wires-core</artifactId>
-    <version>2.15.1-SNAPSHOT</version>
+    <version>2.15.0.Final</version>
   </parent>
 
   <artifactId>uberfire-wires-core-grids</artifactId>
