@@ -169,12 +169,12 @@
                 <configuration>
                   <artifactItems>
                     <artifactItem>
-                      <groupId>org.webjars.npm</groupId>
+                      <groupId>org.appformer</groupId>
                       <artifactId>appformer-js</artifactId>
-                      <version>${version.org.webjars.npm.appformer-js}</version>
+                      <version>${version.org.appformer.appformer-js}</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
-                      <outputDirectory>${project.build.outputDirectory}/appformer-js</outputDirectory>
+                      <outputDirectory>${project.build.directory}/appformer-js</outputDirectory>
                     </artifactItem>
                   </artifactItems>
                   <includes>**/appformer.js</includes>
@@ -196,7 +196,7 @@
                       <version>${version.org.webjars.npm.react}</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
-                      <outputDirectory>${project.build.outputDirectory}/react</outputDirectory>
+                      <outputDirectory>${project.build.directory}/react</outputDirectory>
                     </artifactItem>
                   </artifactItems>
                   <overWriteReleases>false</overWriteReleases>
@@ -217,7 +217,7 @@
                       <version>${version.org.webjars.npm.react-dom}</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
-                      <outputDirectory>${project.build.outputDirectory}/react-dom</outputDirectory>
+                      <outputDirectory>${project.build.directory}/react-dom</outputDirectory>
                     </artifactItem>
                   </artifactItems>
                   <overWriteReleases>false</overWriteReleases>
@@ -241,7 +241,7 @@
                   <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.build.outputDirectory}/appformer-js/META-INF/resources/webjars/appformer-js/${version.org.webjars.npm.appformer-js}/dist</directory>
+                      <directory>${project.build.directory}/appformer-js/META-INF/resources/webjars/appformer-js/${version.org.appformer.appformer-js}</directory>
                       <includes>
                         <include>appformer.js</include>
                       </includes>
@@ -259,7 +259,7 @@
                   <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.build.outputDirectory}/react/META-INF/resources/webjars/react/${version.org.webjars.npm.react}/umd</directory>
+                      <directory>${project.build.directory}/react/META-INF/resources/webjars/react/${version.org.webjars.npm.react}/umd</directory>
                       <includes>
                         <include>react.production.min.js</include>
                       </includes>
@@ -277,7 +277,7 @@
                   <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.build.outputDirectory}/react-dom/META-INF/resources/webjars/react-dom/${version.org.webjars.npm.react-dom}/umd</directory>
+                      <directory>${project.build.directory}/react-dom/META-INF/resources/webjars/react-dom/${version.org.webjars.npm.react-dom}/umd</directory>
                       <includes>
                         <include>react-dom.production.min.js</include>
                       </includes>
