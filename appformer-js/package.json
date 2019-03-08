@@ -20,8 +20,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
     "init": "yarn -f",
-    "republish-local": "npm unpublish --force -reg http://localhost:4873 && npm publish -reg http://localhost:4873",
-    "build": "yarn run lint && npm test && webpack --mode production"
+    "build": "yarn run lint && yarn test && webpack --mode production"
   },
   "babel": {
     "presets": [
