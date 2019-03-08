@@ -24,6 +24,6 @@ public interface FetchPolyfillClientBundle extends ClientBundle {
 
     FetchPolyfillClientBundle INSTANCE = GWT.create(FetchPolyfillClientBundle.class);
 
-    @Source("org/uberfire/client/views/static/whatwg-fetch/fetch.js")
+    @Source("org/uberfire/client/views/static/whatwg-fetch/fetch.umd.js")
     TextResource fetchPolyfill();
 }

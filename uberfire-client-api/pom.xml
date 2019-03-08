@@ -175,9 +175,9 @@
               <outputDirectory>${project.build.outputDirectory}/org/uberfire/client/views/static/whatwg-fetch</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${project.build.directory}/whatwg-fetch/META-INF/resources/webjars/whatwg-fetch/${version.org.webjars.npm.whatwg-fetch}</directory>
+                  <directory>${project.build.directory}/whatwg-fetch/META-INF/resources/webjars/whatwg-fetch/${version.org.webjars.npm.whatwg-fetch}/dist</directory>
                   <includes>
-                    <include>fetch.js</include>
+                    <include>fetch.umd.js</include>
                   </includes>
                 </resource>
               </resources>
