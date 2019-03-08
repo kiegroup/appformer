@@ -236,7 +236,7 @@
             <artifactId>maven-resources-plugin</artifactId>
             <executions>
               <execution>
-                <id>copy-appformer-js-resources</id>
+                <id>copy-appformer-js</id>
                 <phase>process-resources</phase>
                 <goals>
                   <goal>copy-resources</goal>
@@ -245,7 +245,7 @@
                   <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.build.directory}/appformer-js/META-INF/resources/webjars/appformer-js/${version.org.appformer.appformer-js}</directory>
+                      <directory>${project.build.directory}/appformer-js/META-INF/resources/webjars/appformer-js/${project.version}</directory>
                       <includes>
                         <include>appformer.js</include>
                       </includes>
