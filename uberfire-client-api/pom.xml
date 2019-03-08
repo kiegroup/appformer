@@ -120,6 +120,27 @@
               <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
           </execution>
+          <execution>
+            <id>unpack-whatwg-fetch</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars.npm</groupId>
+                  <artifactId>whatwg-fetch</artifactId>
+                  <version>${version.org.webjars.npm.whatwg-fetch}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/whatwg-fetch</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -139,6 +160,24 @@
                   <directory>${project.build.directory}/bluebird/META-INF/resources/webjars/bluebird/${version.org.webjars.bower.bluebird}/js/browser</directory>
                   <includes>
                     <include>bluebird.min.js</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-whatwg-fetch-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/org/uberfire/client/views/static/whatwg-fetch</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/whatwg-fetch/META-INF/resources/webjars/whatwg-fetch/${version.org.webjars.npm.whatwg-fetch}</directory>
+                  <includes>
+                    <include>fetch.js</include>
                   </includes>
                 </resource>
               </resources>
