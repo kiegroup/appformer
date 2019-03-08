@@ -144,6 +144,11 @@
       <artifactId>gwtmockito</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>appformer-js</artifactId>
+    </dependency>
+
   </dependencies>
 
   <profiles>
@@ -169,9 +174,8 @@
                 <configuration>
                   <artifactItems>
                     <artifactItem>
-                      <groupId>org.appformer</groupId>
+                      <groupId>org.uberfire</groupId>
                       <artifactId>appformer-js</artifactId>
-                      <version>${version.org.appformer.appformer-js}</version>
                       <type>jar</type>
                       <overWrite>true</overWrite>
                       <outputDirectory>${project.build.directory}/appformer-js</outputDirectory>

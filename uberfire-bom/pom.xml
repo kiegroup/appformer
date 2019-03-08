@@ -1807,6 +1807,12 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <dependency>
+        <groupId>org.uberfire</groupId>
+        <artifactId>appformer-js</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
