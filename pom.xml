@@ -733,15 +733,6 @@
 
   <profiles>
     <profile>
-      <id>ts-exporter-build</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.appformer</groupId>
-          <artifactId>ts-exporter</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>fullProfile</id>
       <activation>
         <property>
