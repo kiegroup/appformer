@@ -81,6 +81,10 @@
                                     <directory>dist/</directory>
                                     <filtering>false</filtering>
                                 </resource>
+                                <resource>
+                                    <directory>.</directory>
+                                    <includes>package.json</includes>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
