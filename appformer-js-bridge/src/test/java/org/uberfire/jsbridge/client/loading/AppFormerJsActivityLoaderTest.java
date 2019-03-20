@@ -3,11 +3,13 @@ package org.uberfire.jsbridge.client.loading;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.Instance;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import elemental2.promise.Promise;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +20,12 @@ import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.ActivityManager;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.jsbridge.JsWorkbenchLazyActivity;
+import org.uberfire.jsbridge.client.screen.JsWorkbenchScreenActivity;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.promise.SyncPromises;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -48,6 +53,9 @@ public class AppFormerJsActivityLoaderTest {
     private AppFormerComponentsRegistry appFormerComponentsRegistry;
 
     @Mock
+    private ActivityManager activityManager;
+
+    @Mock
     private EventSourceMock<ActivityLazyLoaded> activityLazyLoadedEvent;
 
     private SyncPromises promises = new SyncPromises();
@@ -57,7 +65,7 @@ public class AppFormerJsActivityLoaderTest {
     public void before() {
         appFormerJsActivityLoader = spy(new AppFormerJsActivityLoader(
                 promises,
-                mock(ActivityManager.class),
+                activityManager,
                 mock(ActivityBeansCache.class),
                 mock(PlaceManager.class),
                 mock(LazyLoadingScreen.class),
@@ -179,6 +187,18 @@ public class AppFormerJsActivityLoaderTest {
     }
 
     @Test
+    public void updateRealContent() {
+        final JavaScriptObject jsObject = mock(JavaScriptObject.class);
+        final JsWorkbenchScreenActivity activity = mock(JsWorkbenchScreenActivity.class);
+        doReturn(activity).when(activityManager).getActivity(any());
+
+        final Activity foo = appFormerJsActivityLoader.updateRealContent(jsObject, "foo");
+
+        assertEquals(foo, activity);
+        verify((JsWorkbenchLazyActivity) foo).updateRealContent(jsObject);
+    }
+
+    @Test
     public void getScriptFileName_unexistent() {
         assertEquals(Optional.empty(), appFormerJsActivityLoader.getScriptFileName("my-component"));
     }
@@ -229,6 +249,20 @@ public class AppFormerJsActivityLoaderTest {
         assertTrue(appFormerJsActivityLoader.triggerLoadOfMatchingEditors(new PathFactory.PathImpl("foo.txt", "default://foo.txt"), null));
 
         verify(appFormerJsActivityLoader).finishLoadingMatchingEditors(loadingEditors, null);
+    }
+
+    @Test
+    public void finishLoadingMatchingEditors_success() {
+        final List<Promise<Void>> ps = asList(promises.resolve(), promises.resolve());
+        final AtomicBoolean pass = new AtomicBoolean(false);
+        appFormerJsActivityLoader.finishLoadingMatchingEditors(ps, () -> pass.set(true));
+        assertTrue(pass.get());
+    }
+
+    @Test
+    public void finishLoadingMatchingEditors_failure() {
+        final List<Promise<Void>> ps = asList(promises.resolve(), promises.reject(null));
+        appFormerJsActivityLoader.finishLoadingMatchingEditors(ps, Assert::fail);
     }
 
     @Test

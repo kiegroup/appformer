@@ -54,7 +54,6 @@ public class AppFormerJsBridge {
 
     public void init(final String gwtModuleName) {
 
-
         workbench.addStartupBlocker(AppFormerJsBridge.class);
 
         FetchPolyfillBootstrapper.ensurePromiseApiIsAvailable();
@@ -202,9 +201,3 @@ public class AppFormerJsBridge {
         }
     }
 }
-
-
-
-
-
-

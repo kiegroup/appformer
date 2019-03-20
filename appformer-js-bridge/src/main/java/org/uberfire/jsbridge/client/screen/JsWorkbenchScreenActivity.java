@@ -21,9 +21,6 @@ import java.util.List;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
-import elemental2.core.Map;
-import elemental2.dom.DomGlobal;
-import jsinterop.base.Js;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.Subscription;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
@@ -46,7 +43,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
     private PlaceRequest place;
     private JsNativeScreen screen;
-    private List<Subscription> subscriptions;
+    List<Subscription> subscriptions;
 
     public JsWorkbenchScreenActivity(final JsNativeScreen screen,
                                      final PlaceManager placeManager) {
@@ -203,40 +200,35 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
     // CDI Events Subscriptions
 
-    private void registerSubscriptions() {
+    void registerSubscriptions() {
+        screen.subscriptions().forEach(this::registerSubscription);
+    }
 
-        DomGlobal.console.debug("Registering event subscriptions for " + this.getIdentifier() + "...");
+    //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
+    //FIXME: Marshall/unmarshall is happening twice
+    Void registerSubscription(final Object callback, final String eventFqcn, final Object obj) {
+        subscriptions.add(getSubscription(callback, eventFqcn));
+        subscribeOnErraiBus(eventFqcn);
+        return null;
+    }
 
-        final Map<String, Object> subscriptions = Js.cast(screen.subscriptions());
+    void subscribeOnErraiBus(final String eventFqcn) {
+        ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
+    }
 
-        subscriptions.forEach((callback, eventFqcn, self) -> {
-            //TODO: Parent classes of "eventFqcn" should be subscribed to as well?
-            //FIXME: Marshall/unmarshall is happening twice
-
-            final Subscription subscription = CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
-                public void fireEvent(final Object event) {
-                    callWithParsedJsonObject(callback, Marshalling.toJSON(event));
-                }
-            });
-
-            //Subscribes to client-sent events.
-            this.subscriptions.add(subscription);
-
-            //TODO: Handle local-only events?
-            //Forwards server-sent events to the local subscription.
-            ErraiBus.get().subscribe("cdi.event:" + eventFqcn, CDI.ROUTING_CALLBACK);
-            return null;
+    Subscription getSubscription(final Object callback, final String eventFqcn) {
+        return CDI.subscribe(eventFqcn, new AbstractCDIEventCallback<Object>() {
+            public void fireEvent(final Object event) {
+                callWithParsedJsonObject(callback, Marshalling.toJSON(event));
+            }
         });
     }
 
-    public native static void callWithParsedJsonObject(final Object func, final String jsonArg) /*-{
+    public native void callWithParsedJsonObject(final Object func, final String jsonArg) /*-{
         func(JSON.parse(jsonArg));
     }-*/;
 
     private void unsubscribeFromAllEvents() {
-
-        DomGlobal.console.debug("Removing event subscriptions for " + this.getIdentifier() + "...");
-
         this.subscriptions.forEach(Subscription::remove);
         this.subscriptions = new ArrayList<>();
     }

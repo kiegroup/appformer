@@ -2,19 +2,21 @@ package org.uberfire.jsbridge.client.loading;
 
 import java.util.function.Consumer;
 
-import com.google.gwt.place.shared.Place;
+import com.google.gwt.core.client.JavaScriptObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.client.mvp.ActivityManager;
+import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.jsbridge.client.perspective.JsWorkbenchPerspectiveActivity;
+import org.uberfire.jsbridge.client.perspective.jsnative.JsNativePerspective;
 import org.uberfire.mvp.PlaceRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -162,5 +164,53 @@ public class JsWorkbenchLazyPerspectiveActivityTest {
         jsWorkbenchLazyPerspectiveActivity.onShutdown();
 
         verify(backedPerspective, never()).onShutdown();
+    }
+
+    @Test
+    public void updateRealContent() {
+        jsWorkbenchLazyPerspectiveActivity.onStartup(mock(PlaceRequest.class));
+        jsWorkbenchLazyPerspectiveActivity.onOpen();
+
+        final PerspectiveActivity perspectiveActivity = mock(PerspectiveActivity.class);
+        doReturn(perspectiveActivity).when(jsWorkbenchLazyPerspectiveActivity).getBackedPerspective(any());
+        doReturn(true).when(activityManager).isStarted(any());
+
+        jsWorkbenchLazyPerspectiveActivity.updateRealContent(mock(JavaScriptObject.class));
+
+        assertEquals(perspectiveActivity, jsWorkbenchLazyPerspectiveActivity.backedPerspective);
+        verify(perspectiveActivity).onStartup(any());
+        verify(perspectiveActivity).onOpen();
+        verify(placeManager).goTo((PlaceRequest) any());
+    }
+
+    @Test
+    public void updateRealContent_notStarted() {
+        jsWorkbenchLazyPerspectiveActivity.onStartup(mock(PlaceRequest.class));
+        jsWorkbenchLazyPerspectiveActivity.onOpen();
+
+        final PerspectiveActivity perspectiveActivity = mock(PerspectiveActivity.class);
+        doReturn(perspectiveActivity).when(jsWorkbenchLazyPerspectiveActivity).getBackedPerspective(any());
+        doReturn(false).when(activityManager).isStarted(any());
+
+        jsWorkbenchLazyPerspectiveActivity.updateRealContent(mock(JavaScriptObject.class));
+
+        assertEquals(perspectiveActivity, jsWorkbenchLazyPerspectiveActivity.backedPerspective);
+        verify(perspectiveActivity, never()).onStartup(any());
+        verify(perspectiveActivity).onOpen();
+        verify(placeManager).goTo((PlaceRequest) any());
+    }
+
+    @Test
+    public void updateRealContent_notOpen() {
+        final PerspectiveActivity perspectiveActivity = mock(PerspectiveActivity.class);
+        doReturn(perspectiveActivity).when(jsWorkbenchLazyPerspectiveActivity).getBackedPerspective(any());
+        doReturn(false).when(activityManager).isStarted(any());
+
+        jsWorkbenchLazyPerspectiveActivity.updateRealContent(mock(JavaScriptObject.class));
+
+        assertEquals(perspectiveActivity, jsWorkbenchLazyPerspectiveActivity.backedPerspective);
+        verify(perspectiveActivity, never()).onStartup(any());
+        verify(perspectiveActivity, never()).onOpen();
+        verify(placeManager, never()).goTo((PlaceRequest) any());
     }
 }

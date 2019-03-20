@@ -30,7 +30,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
     private final String backedPerspectiveId;
     private final boolean configuredIsDefault;
-    private PerspectiveActivity backedPerspective;
+    PerspectiveActivity backedPerspective;
 
     private boolean loaded;
     private final Consumer<String> lazyLoadingParentScript;
@@ -56,17 +56,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
         this.loaded = true;
 
-        final JsNativePerspective jsPerspective = new JsNativePerspective(backedPerspectiveJsObject);
-        if (jsPerspective.isTemplated()) {
-            backedPerspective = new JsWorkbenchTemplatedPerspectiveActivity(getIdentifier(),
-                                                                            isDefault(),
-                                                                            jsPerspective,
-                                                                            placeManager);
-        } else {
-            backedPerspective = new JsWorkbenchPerspectiveActivity(jsPerspective,
-                                                                   placeManager,
-                                                                   isDefault());
-        }
+        backedPerspective = getBackedPerspective(backedPerspectiveJsObject);
 
         if (activityManager.isStarted(this)) {
             // current activity is started, need to move the backed perspective to started state
@@ -77,6 +67,20 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
             // lazy perspective is opened, need to move the backed perspective to open state and refresh the page
             getBackedPerspective().onOpen();
             placeManager.goTo(new ForcedPlaceRequest(backedPerspectiveId));
+        }
+    }
+
+    PerspectiveActivity getBackedPerspective(final JavaScriptObject backedPerspectiveJsObject) {
+        final JsNativePerspective jsPerspective = new JsNativePerspective(backedPerspectiveJsObject);
+        if (jsPerspective.isTemplated()) {
+            return new JsWorkbenchTemplatedPerspectiveActivity(getIdentifier(),
+                                                               isDefault(),
+                                                               jsPerspective,
+                                                               placeManager);
+        } else {
+            return new JsWorkbenchPerspectiveActivity(jsPerspective,
+                                                      placeManager,
+                                                      isDefault());
         }
     }
 

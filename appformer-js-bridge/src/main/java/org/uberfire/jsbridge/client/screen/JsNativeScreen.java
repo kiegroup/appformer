@@ -16,6 +16,7 @@
 
 package org.uberfire.jsbridge.client.screen;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.JsObject;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
+import jsinterop.base.Js;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.uberfire.jsbridge.client.JsPlaceRequest;
 import org.uberfire.jsbridge.client.loading.LazyLoadingScreen;
@@ -98,8 +100,8 @@ public class JsNativeScreen {
         return (String) get("af_componentContextId");
     }
 
-    public JsObject subscriptions() {
-        return (JsObject) get("af_subscriptions");
+    public elemental2.core.Map<String, Object> subscriptions() {
+        return Js.cast(get("af_subscriptions"));
     }
 
     public String getComponentId() {

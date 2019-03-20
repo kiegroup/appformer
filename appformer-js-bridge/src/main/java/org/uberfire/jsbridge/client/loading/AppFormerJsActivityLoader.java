@@ -295,7 +295,6 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
                                                                                                    activityManager,
                                                                                                    this::loadScriptFor);
 
-        //FIXME: Check if this bean is being registered correctly. Startup/Shutdown is begin called as if they were Open/Close.
         final SingletonBeanDefinition<JsWorkbenchLazyPerspectiveActivity, JsWorkbenchLazyPerspectiveActivity> activityBean = new SingletonBeanDefinition<>(
                 activity,
                 JsWorkbenchLazyPerspectiveActivity.class,
@@ -306,7 +305,6 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
                 JsWorkbenchLazyActivity.class,
                 Activity.class);
 
-        //FIXME: For some reason, using the injected activityBeansCache yields an error saying that the perspective has already been registered.
         beanManager.registerBean(activityBean);
         beanManager.registerBeanTypeAlias(activityBean, PerspectiveActivity.class);
         beanManager.registerBeanTypeAlias(activityBean, JsWorkbenchLazyActivity.class);
