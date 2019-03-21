@@ -464,6 +464,12 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-marshalling</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>appformer-js-bridge</artifactId>
+      <scope>provided</scope>
+    </dependency>
     
   </dependencies>
 
