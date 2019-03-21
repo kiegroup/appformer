@@ -163,8 +163,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
     @Override
     public boolean isDefault() {
-        // we ignore the isDefault() property of the backed perspective,
-        // it shouldn't be different than the one configured for the lazy one
+        // we ignore the isDefault() property of the backed perspective.
         return configuredIsDefault;
     }
 
