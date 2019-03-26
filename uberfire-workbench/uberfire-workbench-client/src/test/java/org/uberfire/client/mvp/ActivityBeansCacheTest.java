@@ -67,11 +67,13 @@ public class ActivityBeansCacheTest {
     public void setUp() {
         resourceTypeManagerCache = new ResourceTypeManagerCache(categoriesManagerCache);
 
-        cache = new ActivityBeansCache(iocManager,
+        cache = spy(new ActivityBeansCache(iocManager,
                                        newPerspectiveEventEvent,
                                        newWorkbenchScreenEvent,
                                        resourceTypeManagerCache,
-                                       experimentalActivitiesAuthorizationManager);
+                                       experimentalActivitiesAuthorizationManager));
+
+        doNothing().when(cache).registerGwtEditorProvider();
     }
 
     @Test
@@ -83,7 +85,21 @@ public class ActivityBeansCacheTest {
 
         assertEquals(cache.getMockDef(),
                      cache.getActivity(cache.getIdMock()));
-        assertTrue(cache.getSplashScreens().contains(cache.getSplashScreenActivity()));
+        assertTrue(cache.getSplashScreens().contains(cache.getActivity()));
+    }
+
+    @Test
+    public void initShouldCacheClientEditors() throws Exception {
+        ActivityBeansCacheUnitTestWrapper cache = spy(new ActivityBeansCacheUnitTestWrapper());
+        cache.mockClientEditorBehaviour();
+
+        cache.init();
+
+        verify(cache).registerGwtClientBean(eq("mockDef1"), any());
+
+        assertEquals(cache.getMockDef(),
+                     cache.getActivity(cache.getIdMock()));
+        assertTrue(cache.getActivitiesById().contains(cache.getActivity().getIdentifier()));
     }
 
     @Test
@@ -253,4 +269,10 @@ public class ActivityBeansCacheTest {
         assertEquals(perspectiveActivities.size(),
                      1);
     }
+
+    @Test
+    public void getActivitiesNull() {
+        assertNull(cache.getActivity((String) null));
+    }
+
 }

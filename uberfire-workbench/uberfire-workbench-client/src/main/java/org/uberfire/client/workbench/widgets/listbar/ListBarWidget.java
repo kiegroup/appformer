@@ -69,4 +69,6 @@ public interface ListBarWidget extends MultiPartWidget {
      * Disable support to close parts.
      */
     void disableClosePart();
+
+    void disableExpandPart();
 }

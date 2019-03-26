@@ -210,7 +210,7 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-security-client</artifactId>
+      <artifactId>uberfire-security-client-backend</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -364,7 +364,7 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-preferences-client</artifactId>
+      <artifactId>uberfire-preferences-client-backend</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -536,7 +536,7 @@
 
             <!-- UF-ext -->
             <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-preferences-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-preferences-ui-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-client</compileSourcesArtifact>
