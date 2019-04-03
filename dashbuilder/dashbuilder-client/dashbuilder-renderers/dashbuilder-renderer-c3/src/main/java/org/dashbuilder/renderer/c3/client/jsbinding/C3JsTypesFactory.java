@@ -33,7 +33,7 @@ public class C3JsTypesFactory {
         instance.setFormat(callback);
         return instance;
     }
-
+    
     public C3Grid c3Grid(boolean showX, boolean showY) {
         return C3Grid.create(C3GridConf.create(showX), 
                              C3GridConf.create(showY));
