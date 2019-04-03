@@ -116,5 +116,10 @@ public class C3JsTypesFactory {
     public C3Gauge c3Gauge(int min, int max) {
         return C3Gauge.create(min, max);
     }
+    
+    public C3Tooltip c3Tooltip(C3Format.FormatCallback callback) {
+        C3Format format = C3Format.create(callback);
+        return C3Tooltip.create(format);
+    }    
 
 }
