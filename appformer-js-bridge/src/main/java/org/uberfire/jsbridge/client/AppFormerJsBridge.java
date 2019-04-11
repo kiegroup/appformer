@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.ScriptInjector;
 import elemental2.dom.DomGlobal;
+import elemental2.promise.IThenable;
 import elemental2.promise.Promise;
 import org.jboss.errai.bus.client.ErraiBus;
 import org.jboss.errai.bus.client.api.base.MessageBuilder;
@@ -37,6 +38,7 @@ import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.client.fetch.FetchPolyfillBootstrapper;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.promise.Promises;
 import org.uberfire.client.workbench.Workbench;
 import org.uberfire.jsbridge.client.loading.AppFormerJsActivityLoader;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -46,11 +48,19 @@ import static java.util.Arrays.stream;
 @Dependent
 public class AppFormerJsBridge {
 
-    @Inject
-    private Workbench workbench;
+    private final Workbench workbench;
+    private final AppFormerJsActivityLoader appFormerJsLoader;
+    private final Promises promises;
 
     @Inject
-    private AppFormerJsActivityLoader appFormerJsLoader;
+    public AppFormerJsBridge(final Workbench workbench,
+                             final AppFormerJsActivityLoader appFormerJsLoader,
+                             final Promises promises) {
+
+        this.workbench = workbench;
+        this.appFormerJsLoader = appFormerJsLoader;
+        this.promises = promises;
+    }
 
     public void init(final String gwtModuleName) {
 
@@ -58,30 +68,51 @@ public class AppFormerJsBridge {
 
         FetchPolyfillBootstrapper.ensurePromiseApiIsAvailable();
 
+        exposeBridgeAsNativeJs();
+
+        loadAppFormerJsAndReactScripts(gwtModuleName).then(i -> {
+            try {
+                appFormerJsLoader.init(gwtModuleName);
+            } finally {
+                workbench.removeStartupBlocker(AppFormerJsBridge.class);
+            }
+
+            return promises.resolve();
+        }).catch_(e -> {
+            workbench.removeStartupBlocker(AppFormerJsBridge.class);
+            return promises.resolve();
+        });
+    }
+
+    public void exposeBridgeAsNativeJs() {
         exposeBridge();
+    }
 
-        final Consumer<Exception> onError = ex -> workbench.removeStartupBlocker(AppFormerJsBridge.class);
-        final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
+    public Promise<Void> loadAppFormerJsAndReactScripts(final String gwtModuleName) {
+        return promises.create((res, rej) -> {
 
-        ScriptInjector.fromUrl(gwtModuleName + "/react.production.min.js")
-                .setWindow(ScriptInjector.TOP_WINDOW)
-                .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl(gwtModuleName + "/react-dom.production.min.js")
-                        .setWindow(ScriptInjector.TOP_WINDOW)
-                        .setCallback(callback.withSuccess((v1) -> ScriptInjector.fromUrl(gwtModuleName + "/appformer.js")
-                                .setWindow(ScriptInjector.TOP_WINDOW)
-                                .setCallback(callback.withSuccess((v2) -> ScriptInjector.fromUrl(gwtModuleName + "/AppFormerComponentsRegistry.js")
-                                        .setWindow(ScriptInjector.TOP_WINDOW)
-                                        .setCallback(callback.withSuccess((v3) -> {
-                                            try {
-                                                appFormerJsLoader.init(gwtModuleName);
-                                            } finally {
-                                                workbench.removeStartupBlocker(AppFormerJsBridge.class);
-                                            }
-                                        }))
-                                        .inject()))
-                                .inject()))
-                        .inject()))
-                .inject();
+            final Consumer<Exception> onError = ex -> {
+                workbench.removeStartupBlocker(AppFormerJsBridge.class);
+                rej.onInvoke(null);
+            };
+
+            final CallbackProducer<Void> callback = new CallbackProducer<>(onError);
+            ScriptInjector.fromUrl(gwtModuleName + "/react.production.min.js")
+                    .setWindow(ScriptInjector.TOP_WINDOW)
+                    .setCallback(callback.withSuccess((v) -> ScriptInjector.fromUrl(gwtModuleName + "/react-dom.production.min.js")
+                            .setWindow(ScriptInjector.TOP_WINDOW)
+                            .setCallback(callback.withSuccess((v1) -> ScriptInjector.fromUrl(gwtModuleName + "/appformer.js")
+                                    .setWindow(ScriptInjector.TOP_WINDOW)
+                                    .setCallback(callback.withSuccess((v2) -> ScriptInjector.fromUrl(gwtModuleName + "/AppFormerComponentsRegistry.js")
+                                            .setWindow(ScriptInjector.TOP_WINDOW)
+                                            .setCallback(callback.withSuccess((v3) -> {
+                                                res.onInvoke((IThenable<Void>) null);
+                                            }))
+                                            .inject()))
+                                    .inject()))
+                            .inject()))
+                    .inject();
+        });
     }
 
     private native void exposeBridge() /*-{

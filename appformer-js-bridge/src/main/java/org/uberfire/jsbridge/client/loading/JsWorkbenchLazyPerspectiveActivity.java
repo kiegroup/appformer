@@ -72,7 +72,7 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
 
     PerspectiveActivity getBackedPerspective(final JavaScriptObject backedPerspectiveJsObject) {
         final JsNativePerspective jsPerspective = new JsNativePerspective(backedPerspectiveJsObject);
-        if (jsPerspective.isTemplated()) {
+        if (isPerspectiveTemplated(jsPerspective)) {
             return new JsWorkbenchTemplatedPerspectiveActivity(getIdentifier(),
                                                                isDefault(),
                                                                jsPerspective,
@@ -82,6 +82,10 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
                                                       placeManager,
                                                       isDefault());
         }
+    }
+
+    public boolean isPerspectiveTemplated(final JsNativePerspective jsPerspective) {
+        return jsPerspective.isTemplated();
     }
 
     @Override

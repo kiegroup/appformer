@@ -67,7 +67,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
         this.place = place;
 
-        if (!screen.screenLoaded()) {
+        if (!isScreenLoaded()) {
             invocationsPostponer.postpone(() -> this.onStartup(place));
             return;
         }
@@ -76,13 +76,17 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
         screen.onStartup(JsPlaceRequest.fromPlaceRequest(place));
     }
 
+    public boolean isScreenLoaded() {
+        return screen.screenLoaded();
+    }
+
     @Override
     public void onOpen() {
 
         // render no matter if the script was loaded or not, even if the call results in a blank screen being rendered.
         screen.render();
 
-        if (!screen.screenLoaded()) {
+        if (!isScreenLoaded()) {
             invocationsPostponer.postpone(this::onOpen);
             return;
         }
@@ -94,7 +98,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
     @Override
     public void onClose() {
 
-        if (this.screen.screenLoaded()) {
+        if (isScreenLoaded()) {
             screen.onClose();
         }
 
@@ -104,7 +108,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
     @Override
     public boolean onMayClose() {
 
-        if (screen.screenLoaded()) {
+        if (isScreenLoaded()) {
             return screen.onMayClose();
         }
 
@@ -116,7 +120,7 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
         this.invocationsPostponer.clear();
 
-        if (screen.screenLoaded()) {
+        if (isScreenLoaded()) {
             this.unsubscribeFromAllEvents();
             screen.onShutdown();
         }
@@ -124,14 +128,14 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
 
     @Override
     public void onFocus() {
-        if (screen.screenLoaded()) {
+        if (isScreenLoaded()) {
             screen.onFocus();
         }
     }
 
     @Override
     public void onLostFocus() {
-        if (screen.screenLoaded()) {
+        if (isScreenLoaded()) {
             screen.onLostFocus();
         }
     }

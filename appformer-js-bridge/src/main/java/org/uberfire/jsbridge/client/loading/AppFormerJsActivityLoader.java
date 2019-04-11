@@ -37,6 +37,7 @@ import elemental2.promise.Promise.PromiseExecutorCallbackFn.RejectCallbackFn;
 import elemental2.promise.Promise.PromiseExecutorCallbackFn.ResolveCallbackFn;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.IOC;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.Activity;
@@ -78,7 +79,7 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
 
     private final Map<String, String> components = new HashMap<>();
     private final Set<String> loadedScripts = new HashSet<>();
-    private final Map<String, AppFormerComponentsRegistry.Entry> editors = new HashMap<>();
+    final Map<String, AppFormerComponentsRegistry.Entry> editors = new HashMap<>();
 
     private String gwtModuleName;
 
@@ -106,8 +107,12 @@ public class AppFormerJsActivityLoader implements PlaceManagerImpl.AppFormerActi
         this.gwtModuleName = gwtModuleName;
 
         stream(appFormerComponentsRegistry.keys())
-                .map(componentId -> new AppFormerComponentsRegistry.Entry(componentId, appFormerComponentsRegistry.get(componentId)))
+                .map(this::newRegistryEntry)
                 .forEach(this::registerComponent);
+    }
+
+    AppFormerComponentsRegistry.Entry newRegistryEntry(final String componentId) {
+        return new AppFormerComponentsRegistry.Entry(componentId, appFormerComponentsRegistry.get(componentId));
     }
 
     public void onComponentLoaded(final Object jsObject) {
