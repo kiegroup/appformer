@@ -9,9 +9,12 @@ import elemental2.dom.DOMTokenList;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLDocument;
+import org.jboss.errai.enterprise.client.cdi.api.CDI;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.jboss.errai.marshalling.client.Marshalling;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +23,7 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.fetch.FetchPolyfillBootstrapper;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -33,9 +37,11 @@ import org.uberfire.jsbridge.client.AppFormerJsBridge;
 import org.uberfire.jsbridge.client.cdi.SingletonBeanDefinition;
 import org.uberfire.jsbridge.client.screen.JsWorkbenchScreenActivity;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.promise.SyncPromises;
 
 import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -46,12 +52,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.Entry.Type.EDITOR;
 import static org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.Entry.Type.PERSPECTIVE;
 import static org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.Entry.Type.SCREEN;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({IOC.class, FetchPolyfillBootstrapper.class})
+@PrepareForTest({IOC.class, CDI.class, Marshalling.class, FetchPolyfillBootstrapper.class})
 public class AppFormerJsLifecycleIT {
 
     @Mock
@@ -62,6 +69,9 @@ public class AppFormerJsLifecycleIT {
 
     @Mock
     private PlaceManager placeManager;
+
+    @Mock
+    private TranslationService translationService;
 
     @Mock
     private LazyLoadingScreen lazyLoadingScreen;
@@ -96,7 +106,58 @@ public class AppFormerJsLifecycleIT {
     }
 
     @Test
-    public void initWithErrorWhileLoadingScripts() {
+    public void testGoTo() {
+        doNothing().when(placeManager).goTo((PlaceRequest) any());
+        final SyncBeanManager beanManager = ensureSetupBeanManager();
+        ensureBeanManagerHas(beanManager, PlaceManager.class, placeManager);
+
+        appFormerJsBridge.goTo("SomePlace");
+
+        verify(placeManager).goTo((PlaceRequest) any());
+    }
+
+    @Test
+    public void testGoToPath() {
+        doNothing().when(placeManager).goTo((Path) any());
+        final SyncBeanManager beanManager = ensureSetupBeanManager();
+        ensureBeanManagerHas(beanManager, PlaceManager.class, placeManager);
+
+        appFormerJsBridge.goToPath("SomeUri");
+
+        verify(placeManager).goTo((Path) any());
+    }
+
+    @Test
+    public void testFireEvent() {
+        PowerMockito.mockStatic(CDI.class);
+        PowerMockito.doNothing().when(CDI.class);
+        CDI.fireEvent(any());
+
+        PowerMockito.mockStatic(Marshalling.class);
+        PowerMockito.when(Marshalling.fromJSON((String) any())).thenReturn("MarshalledEvent");
+
+        appFormerJsBridge.fireEvent("{\"foo\": \"bar\"}");
+
+        PowerMockito.verifyStatic(Marshalling.class);
+        Marshalling.fromJSON("{\"foo\": \"bar\"}");
+        PowerMockito.verifyStatic(CDI.class);
+        CDI.fireEvent("MarshalledEvent");
+    }
+
+    @Test
+    public void testTranslate() {
+        doReturn("translated!").when(translationService).format("key");
+        final SyncBeanManager beanManager = ensureSetupBeanManager();
+        ensureBeanManagerHas(beanManager, TranslationService.class, translationService);
+
+        final String translated = appFormerJsBridge.translate("key", new String[]{});
+
+        assertEquals("translated!", translated);
+        verify(translationService).format("key");
+    }
+
+    @Test
+    public void testInitWithErrorWhileLoadingScripts() {
         ensureFetchApiPolyfillIsLoaded();
         ensureBridgeWillBeExposed();
         ensureScriptWontLoadForModule("ModuleWithError");
@@ -106,7 +167,6 @@ public class AppFormerJsLifecycleIT {
         verify(workbench).addStartupBlocker(AppFormerJsBridge.class);
         verify(appFormerJsActivityLoader, never()).init(anyString());
         verify(workbench).removeStartupBlocker(AppFormerJsBridge.class);
-
     }
 
     @Test
@@ -234,7 +294,6 @@ public class AppFormerJsLifecycleIT {
     private void ensureScriptWontLoadForModule(final String module) {
         doReturn(promises.reject(null)).when(appFormerJsBridge).loadAppFormerJsAndReactScripts(module);
     }
-
 
     private JavaScriptObject ensureActivityRepresentsRegisteredComponent(final Activity activity, final String id) {
         final JavaScriptObject screenJsObject = mock(JavaScriptObject.class);
