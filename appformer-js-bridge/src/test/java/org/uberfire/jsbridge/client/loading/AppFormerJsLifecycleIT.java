@@ -24,7 +24,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.client.fetch.FetchPolyfillBootstrapper;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.ActivityManager;
@@ -58,7 +57,7 @@ import static org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.E
 import static org.uberfire.jsbridge.client.loading.AppFormerComponentsRegistry.Entry.Type.SCREEN;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({IOC.class, CDI.class, Marshalling.class, FetchPolyfillBootstrapper.class})
+@PrepareForTest({IOC.class, CDI.class, Marshalling.class})
 public class AppFormerJsLifecycleIT {
 
     @Mock
@@ -158,7 +157,6 @@ public class AppFormerJsLifecycleIT {
 
     @Test
     public void testInitWithErrorWhileLoadingScripts() {
-        ensureFetchApiPolyfillIsLoaded();
         ensureBridgeWillBeExposed();
         ensureScriptWontLoadForModule("ModuleWithError");
 
@@ -177,7 +175,6 @@ public class AppFormerJsLifecycleIT {
         //Init
         ensureComponentIsInAppFormerComponentsRegistry("foo-screen", SCREEN);
         ensureDomGlobalCanCreateDivs();
-        ensureFetchApiPolyfillIsLoaded();
         ensureScriptsWillLoadForModule("ScreenTestModule");
         ensureBridgeWillBeExposed();
         final SyncBeanManager beanManager = ensureSetupBeanManager();
@@ -214,7 +211,6 @@ public class AppFormerJsLifecycleIT {
         //Init
         ensureComponentIsInAppFormerComponentsRegistry("foo-perspective", PERSPECTIVE);
         ensureDomGlobalCanCreateDivs();
-        ensureFetchApiPolyfillIsLoaded();
         ensureScriptsWillLoadForModule("PerspectiveTestModule");
         ensureBridgeWillBeExposed();
         final SyncBeanManager beanManager = ensureSetupBeanManager();
@@ -254,7 +250,6 @@ public class AppFormerJsLifecycleIT {
         //Init
         ensureComponentIsInAppFormerComponentsRegistry("foo-editor", EDITOR);
         ensureDomGlobalCanCreateDivs();
-        ensureFetchApiPolyfillIsLoaded();
         ensureScriptsWillLoadForModule("EditorTestModule");
         ensureBridgeWillBeExposed();
 
@@ -275,12 +270,6 @@ public class AppFormerJsLifecycleIT {
 
     private void ensureBeanManagerHasBeansForName(final SyncBeanManager beanManager, final String name) {
         doReturn(singletonList(mock(SyncBeanDef.class))).when(beanManager).lookupBeans(name);
-    }
-
-    private void ensureFetchApiPolyfillIsLoaded() {
-        PowerMockito.mockStatic(FetchPolyfillBootstrapper.class);
-        PowerMockito.doNothing().when(FetchPolyfillBootstrapper.class);
-        FetchPolyfillBootstrapper.ensurePromiseApiIsAvailable();
     }
 
     private void ensureBridgeWillBeExposed() {

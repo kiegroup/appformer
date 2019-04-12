@@ -36,7 +36,6 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.marshalling.client.Marshalling;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.uberfire.backend.vfs.PathFactory;
-import org.uberfire.client.fetch.FetchPolyfillBootstrapper;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.promise.Promises;
 import org.uberfire.client.workbench.Workbench;
@@ -65,8 +64,6 @@ public class AppFormerJsBridge {
     public void init(final String gwtModuleName) {
 
         workbench.addStartupBlocker(AppFormerJsBridge.class);
-
-        FetchPolyfillBootstrapper.ensurePromiseApiIsAvailable();
 
         exposeBridgeAsNativeJs();
 
