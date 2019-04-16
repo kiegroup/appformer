@@ -17,11 +17,16 @@ package org.uberfire.ext.wires.core.grids.client.widget.dom.single.impl;
 
 import java.util.function.Consumer;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.ui.Widget;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.impl.BaseDOMElement;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.single.SingletonDOMElementFactory;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.keyboard.KeyDownHandlerCommon;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLayerRedrawManager;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLienzoPanel;
@@ -73,6 +78,26 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
     }
 
     @Override
+    public E createDomElement(final GridLayer gridLayer,
+                              final GridWidget gridWidget,
+                              final GridBodyCellRenderContext context) {
+        this.widget = createWidget();
+        this.widget.addDomHandler(new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this, context),
+                                  KeyDownEvent.getType());
+        this.e = createDomElementInternal();
+        widget.addDomHandler((e) -> e.stopPropagation(), MouseDownEvent.getType());
+        widget.addDomHandler(new BlurHandler() {
+            @Override
+            public void onBlur(final BlurEvent event) {
+                flush();
+                gridLayer.batch();
+                gridPanel.setFocus(true);
+            }
+        }, BlurEvent.getType());
+        return e;
+    }
+
+    @Override
     public void destroyResources() {
         if (e != null) {
             e.detach();
@@ -94,4 +119,6 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
     }
 
     protected abstract T getValue();
+
+    protected abstract E createDomElementInternal();
 }

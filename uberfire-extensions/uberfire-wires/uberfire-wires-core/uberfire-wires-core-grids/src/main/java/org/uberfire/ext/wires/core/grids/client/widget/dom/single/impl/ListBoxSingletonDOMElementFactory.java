@@ -15,10 +15,7 @@
  */
 package org.uberfire.ext.wires.core.grids.client.widget.dom.single.impl;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.user.client.ui.ListBox;
-import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.impl.ListBoxDOMElement;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
@@ -46,29 +43,17 @@ public class ListBoxSingletonDOMElementFactory extends BaseSingletonDOMElementFa
     }
 
     @Override
-    public ListBoxDOMElement createDomElement(final GridLayer gridLayer,
-                                              final GridWidget gridWidget,
-                                              final GridBodyCellRenderContext context) {
-        this.widget = createWidget();
-        this.e = new ListBoxDOMElement(widget,
-                                       gridLayer,
-                                       gridWidget);
-        widget.addBlurHandler(new BlurHandler() {
-            @Override
-            public void onBlur(final BlurEvent event) {
-                destroyResources();
-                gridLayer.batch();
-                gridPanel.setFocus(true);
-            }
-        });
-        return e;
-    }
-
-    @Override
     protected String getValue() {
         if (widget != null) {
             return widget.getValue(widget.getSelectedIndex());
         }
         return null;
+    }
+
+    @Override
+    protected ListBoxDOMElement createDomElementInternal() {
+        return new ListBoxDOMElement(widget,
+                                     gridLayer,
+                                     gridWidget);
     }
 }
