@@ -18,7 +18,6 @@ package org.uberfire.ext.wires.core.grids.client.widget.dom.single.impl;
 import java.util.function.Consumer;
 
 import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.user.client.ui.Widget;
@@ -81,19 +80,21 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
     public E createDomElement(final GridLayer gridLayer,
                               final GridWidget gridWidget,
                               final GridBodyCellRenderContext context) {
-        this.widget = createWidget();
-        this.widget.addDomHandler(new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this, context),
-                                  KeyDownEvent.getType());
-        this.e = createDomElementInternal();
-        widget.addDomHandler((e) -> e.stopPropagation(), MouseDownEvent.getType());
-        widget.addDomHandler(new BlurHandler() {
-            @Override
-            public void onBlur(final BlurEvent event) {
-                flush();
-                gridLayer.batch();
-                gridPanel.setFocus(true);
-            }
-        }, BlurEvent.getType());
+        widget = createWidget();
+        e = createDomElementInternal();
+
+        widget.addDomHandler(new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this, context),
+                             KeyDownEvent.getType());
+        widget.addDomHandler((e) -> e.stopPropagation(),
+                             KeyDownEvent.getType());
+        widget.addDomHandler((e) -> e.stopPropagation(),
+                             MouseDownEvent.getType());
+        widget.addDomHandler((e) ->
+                             {
+                                 flush();
+                                 gridLayer.batch();
+                                 gridPanel.setFocus(true);
+                             }, BlurEvent.getType());
         return e;
     }
 

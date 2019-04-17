@@ -36,10 +36,7 @@ public class ListBoxSingletonDOMElementFactory extends BaseSingletonDOMElementFa
 
     @Override
     public ListBox createWidget() {
-        return new ListBox() {{
-            addKeyDownHandler((e) -> e.stopPropagation());
-            addMouseDownHandler((e) -> e.stopPropagation());
-        }};
+        return new ListBox();
     }
 
     @Override
