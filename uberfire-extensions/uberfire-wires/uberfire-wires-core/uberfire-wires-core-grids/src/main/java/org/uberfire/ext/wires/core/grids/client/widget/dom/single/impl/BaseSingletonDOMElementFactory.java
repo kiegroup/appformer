@@ -83,7 +83,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
         widget = createWidget();
         e = createDomElementInternal();
 
-        widget.addDomHandler(new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this, context),
+        widget.addDomHandler(destroyOrFlushkeyDownHandler(context),
                              KeyDownEvent.getType());
         widget.addDomHandler((e) -> e.stopPropagation(),
                              KeyDownEvent.getType());
@@ -117,6 +117,10 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
             widget = null;
             e = null;
         }
+    }
+
+    private KeyDownHandlerCommon destroyOrFlushkeyDownHandler(final GridBodyCellRenderContext context) {
+        return new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this, context);
     }
 
     protected abstract T getValue();
