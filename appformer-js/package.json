@@ -1,6 +1,6 @@
 {
   "name": "appformer-js",
-  "version": "7.19.0-SNAPSHOT",
+  "version": "0.0.0",
   "description": "",
   "license": "Apache-2.0",
   "main": "./dist/appformer.js",
