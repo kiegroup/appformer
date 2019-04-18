@@ -158,17 +158,19 @@ public class C3MeterChartDisplayer extends C3Displayer<C3Displayer.View> {
         return data;
     }
     
-    private Object formatTooltip(Long value, Object threshold, String data) {
+    protected Object formatTooltip(Long value, Object threshold, String data) {
         List<DataColumn> columns = dataSet.getColumns();
         int size = columns.size();
-        DataColumn targetColumn;
         if (size == 1) {
-            targetColumn = columns.get(0);
-        } else if(size > 1) {
-            targetColumn = columns.get(1);
-        } else {
-            return value;
+            return formatValueForColumn(value, columns.get(0));
         }
+        if (size > 1) {
+            return formatValueForColumn(value, columns.get(1));
+        } 
+        return value;
+    }
+
+    private Object formatValueForColumn(Long value, DataColumn targetColumn) {
         String pattern = displayerSettings.getColumnSettings(targetColumn).getValuePattern();
         return getFormatter().formatNumber(pattern, value);
     }
