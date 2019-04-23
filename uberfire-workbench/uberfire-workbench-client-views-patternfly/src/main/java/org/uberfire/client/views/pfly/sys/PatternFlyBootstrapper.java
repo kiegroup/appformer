@@ -26,8 +26,6 @@ import static org.uberfire.client.views.pfly.sys.MomentUtils.setMomentLocale;
  */
 public class PatternFlyBootstrapper {
 
-    private static boolean isjQueryLoaded = false;
-
     private static boolean isPrettifyLoaded = false;
 
     private static boolean isBootstrapSelectLoaded = false;
@@ -45,11 +43,10 @@ public class PatternFlyBootstrapper {
      * GWTBootstrap 3 widgets should call this before creating their first such widget.
      */
     public static void ensurejQueryIsAvailable() {
-        if (!isjQueryLoaded) {
+        if (!isjQueryLoaded()) {
             ScriptInjector.fromString(GwtBootstrap3ClientBundle.INSTANCE.jQuery().getText())
                     .setWindow(ScriptInjector.TOP_WINDOW)
                     .inject();
-            isjQueryLoaded = true;
         }
     }
 
@@ -110,5 +107,13 @@ public class PatternFlyBootstrapper {
             isD3Loaded = true;
         }
     }
+
+    /**
+     * Checks to see if jQuery is already present.
+     * @return true is jQuery is loaded, false otherwise.
+     */
+    private static native boolean isjQueryLoaded() /*-{
+        return (typeof $wnd['jQuery'] !== 'undefined');
+    }-*/;
 }
 
