@@ -65,8 +65,9 @@ public abstract class BaseSingletonDOMElementFactoryTest {
     }
 
     @Test
-    public void testCreateDomElement() {
+    public void testRegisterHandlers() {
         testedFactory.createDomElement(gridLayerMock, gridWidgetMock);
+        testedFactory.registerHandlers(testedFactory.widget, testedFactory.e);
 
         verify(testedFactory.widget, times(4)).addDomHandler(handlerCaptor.capture(), any(DomEvent.Type.class));
 
