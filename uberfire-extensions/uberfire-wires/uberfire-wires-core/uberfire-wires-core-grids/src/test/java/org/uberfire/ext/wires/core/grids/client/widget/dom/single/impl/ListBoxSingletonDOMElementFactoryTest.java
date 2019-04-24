@@ -49,7 +49,7 @@ public class ListBoxSingletonDOMElementFactoryTest extends BaseSingletonDOMEleme
         when(listBoxMock.getValue(anyInt())).thenReturn(VALUE);
 
         doReturn(listBoxMock).when(factory).createWidget();
-        doReturn(domElementMock).when(factory).createDomElementInternal();
+        doReturn(domElementMock).when(factory).createDomElementInternal(listBoxMock, gridLayerMock, gridWidgetMock);
 
         return factory;
     }

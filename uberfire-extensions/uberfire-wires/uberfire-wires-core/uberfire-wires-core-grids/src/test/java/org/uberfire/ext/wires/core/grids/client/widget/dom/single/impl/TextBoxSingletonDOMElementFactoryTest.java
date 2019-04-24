@@ -47,7 +47,7 @@ public class TextBoxSingletonDOMElementFactoryTest extends BaseSingletonDOMEleme
         when(textBoxMock.getValue()).thenReturn(VALUE);
 
         doReturn(textBoxMock).when(factory).createWidget();
-        doReturn(domElementMock).when(factory).createDomElementInternal();
+        doReturn(domElementMock).when(factory).createDomElementInternal(textBoxMock, gridLayerMock, gridWidgetMock);
 
         return factory;
     }

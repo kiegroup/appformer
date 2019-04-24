@@ -82,7 +82,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
     public E createDomElement(final GridLayer gridLayer,
                               final GridWidget gridWidget) {
         widget = createWidget();
-        e = createDomElementInternal();
+        e = createDomElementInternal(widget, gridLayer, gridWidget);
 
         return e;
     }
@@ -133,5 +133,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
 
     protected abstract T getValue();
 
-    protected abstract E createDomElementInternal();
+    protected abstract E createDomElementInternal(final W widget,
+                                                  final GridLayer gridLayer,
+                                                  final GridWidget gridWidget);
 }

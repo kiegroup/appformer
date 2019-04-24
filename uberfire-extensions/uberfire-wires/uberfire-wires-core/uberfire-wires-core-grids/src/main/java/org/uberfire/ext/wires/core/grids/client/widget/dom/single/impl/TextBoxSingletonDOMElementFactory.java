@@ -48,7 +48,9 @@ public class TextBoxSingletonDOMElementFactory extends BaseSingletonDOMElementFa
     }
 
     @Override
-    protected TextBoxDOMElement createDomElementInternal() {
+    protected TextBoxDOMElement createDomElementInternal(final TextBox widget,
+                                                         final GridLayer gridLayer,
+                                                         final GridWidget gridWidget) {
         return new TextBoxDOMElement(widget,
                                      gridLayer,
                                      gridWidget);

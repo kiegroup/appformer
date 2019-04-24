@@ -48,7 +48,9 @@ public class ListBoxSingletonDOMElementFactory extends BaseSingletonDOMElementFa
     }
 
     @Override
-    protected ListBoxDOMElement createDomElementInternal() {
+    protected ListBoxDOMElement createDomElementInternal(final ListBox widget,
+                                                         final GridLayer gridLayer,
+                                                         final GridWidget gridWidget) {
         return new ListBoxDOMElement(widget,
                                      gridLayer,
                                      gridWidget);
