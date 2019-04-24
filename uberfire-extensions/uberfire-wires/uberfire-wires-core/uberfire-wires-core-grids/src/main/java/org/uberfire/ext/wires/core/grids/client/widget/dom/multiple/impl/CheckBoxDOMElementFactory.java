@@ -45,12 +45,12 @@ public class CheckBoxDOMElementFactory extends BaseDOMElementFactory<Boolean, Ch
         final CheckBoxDOMElement e = new CheckBoxDOMElement(widget,
                                                             gridLayer,
                                                             gridWidget);
-        registerDomHandlers(widget, e);
+        registerHandlers(widget, e);
         return e;
     }
 
     @Override
-    public void registerDomHandlers(final CheckBox widget, final CheckBoxDOMElement widgetDomElement) {
+    public void registerHandlers(final CheckBox widget, final CheckBoxDOMElement widgetDomElement) {
         widget.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(final ClickEvent event) {

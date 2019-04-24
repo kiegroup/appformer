@@ -46,12 +46,12 @@ public interface DOMElementFactory<W, E> extends HasDOMElementResources {
                        final GridWidget gridWidget);
 
     /**
-     * Register DOM handlers for the widget. The set of handlers may differ per each Factory. Common handlers
+     * Register handlers for the widget. The set of handlers may differ per each Factory. Common handlers
      * registered in this method are KeyDownHandler, BlurHandler, ... .
      * @param widget
      * @param widgetDomElement
      */
-    void registerDomHandlers(final W widget, final E widgetDomElement);
+    void registerHandlers(final W widget, final E widgetDomElement);
 
     /**
      * Initialises a DOMElement for a cell and attach it to the GWT container.

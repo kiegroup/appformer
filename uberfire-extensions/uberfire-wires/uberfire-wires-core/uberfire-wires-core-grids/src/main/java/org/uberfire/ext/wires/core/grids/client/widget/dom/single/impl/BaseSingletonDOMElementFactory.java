@@ -66,7 +66,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
             public void execute() {
                 final E domElement = createDomElement(gridLayer,
                                                       gridWidget);
-                registerDomHandlers(widget, domElement);
+                registerHandlers(widget, domElement);
 
                 domElement.setContext(context);
                 domElement.initialise(context);
@@ -88,7 +88,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
     }
 
     @Override
-    public void registerDomHandlers(final W widget, final E widgetDomElement) {
+    public void registerHandlers(final W widget, final E widgetDomElement) {
         widget.addDomHandler(destroyOrFlushKeyDownHandler(),
                              KeyDownEvent.getType());
         widget.addDomHandler((e) -> e.stopPropagation(),
