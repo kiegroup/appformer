@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.client.api.*;
-import org.uberfire.ext.layout.editor.client.components.columns.ComponentColumn;
 import org.uberfire.ext.layout.editor.client.components.rows.RowDnDEvent;
 import org.uberfire.ext.layout.editor.client.event.LayoutEditorElementSelectEvent;
 import org.uberfire.ext.layout.editor.client.event.LayoutElementClearAllPropertiesEvent;
@@ -34,13 +33,18 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.uberfire.ext.layout.editor.client.api.LayoutEditorElementType.*;
 
 @ApplicationScoped
 public class LayoutEditorPropertiesPresenter {
+
+    private static final String PART_ROOT = "Root";
 
     public interface View extends UberElement<LayoutEditorPropertiesPresenter> {
 
@@ -63,6 +67,13 @@ public class LayoutEditorPropertiesPresenter {
         String getLayoutElementTypeComponent();
 
         void setClearPropertiesEnabled(boolean enabled);
+
+        void noParts();
+
+        /**
+         * @param parts
+         */
+        void showParts(List<String> parts);
     }
 
     private View view;
@@ -170,18 +181,18 @@ public class LayoutEditorPropertiesPresenter {
         if (layoutEditor != null) {
             String elementId = layoutElement.getId();
             elementSelector.setSelectedItem(elementId);
-
-            LayoutElementPropertiesPresenter presenter = presenterMap.get(elementId);
-            if (presenter == null) {
-                propertiesPresenter = beanManager.lookupBean(LayoutElementPropertiesPresenter.class).newInstance();
-                propertiesPresenter.edit(layoutElement);
-                presenterMap.put(layoutElement.getId(), propertiesPresenter);
-                view.showElement(propertiesPresenter.getView());
-            } else if (presenter != propertiesPresenter) {
-                propertiesPresenter.getLayoutElement().setSelected(false);
-                propertiesPresenter = presenter;
-                view.showElement(propertiesPresenter.getView());
-            }
+            fillElementParts(layoutElement);
+            updateCurrentPropertiesPresenter(elementId, layoutElement);
+            view.showElement(propertiesPresenter.getView());
+            updateClearElementStatus();
+        }
+    }
+    
+    public void edit(LayoutEditorElementPart layoutElementPart) {
+        if (layoutEditor != null) {
+            String elementPartId = layoutElementPart.getParent().getId() + "." + layoutElementPart.getId();
+            updateCurrentPropertiesPresenter(elementPartId, layoutElementPart);
+            view.showElement(propertiesPresenter.getView());
             updateClearElementStatus();
         }
     }
@@ -259,15 +270,10 @@ public class LayoutEditorPropertiesPresenter {
     // View actions
 
     void onElementSelected() {
-        String elementId = selectionHandler.getSelectedKey();
-        for (LayoutEditorElement element : layoutEditor.getLayoutElements()) {
-            if (element.getId().equals(elementId)) {
-                this.edit(element);
-                return;
-            }
-        }
+        LayoutEditorElement selectedElement = getSelectedElement();
+        this.edit(selectedElement);
     }
-
+    
     // LayoutElementPropertiesPresenter events
 
     void onLayoutPropertyChangedEvent(@Observes LayoutElementPropertyChangedEvent event) {
@@ -285,6 +291,17 @@ public class LayoutEditorPropertiesPresenter {
         this.edit(element);
     }
 
+    public void onPartSelected(String partId) {
+        LayoutEditorElement selectedElement = getSelectedElement();
+        if (PART_ROOT.equals(partId)) {
+            this.edit(selectedElement);
+        } else {
+            selectedElement.getLayoutEditorElementParts().stream()
+                                                         .filter(p -> p.getId().equals(partId))
+                                                         .findFirst().ifPresent(this::edit);
+        }
+    }
+
     void onComponentDropped(@Observes ComponentDropEvent event) {
         this.reset();
     }
@@ -295,5 +312,40 @@ public class LayoutEditorPropertiesPresenter {
 
     void onRowsSwap(@Observes RowDnDEvent rowDndEvent) {
         this.reset();
+    }
+    
+    private void fillElementParts(LayoutEditorElement element) {
+        List<LayoutEditorElementPart> currentLayoutElementParts = element.getLayoutEditorElementParts();
+        if (currentLayoutElementParts.isEmpty()) {
+            view.noParts();
+        } else {
+            List<String> parts = new ArrayList<>();
+            parts.add(PART_ROOT);
+            currentLayoutElementParts.stream().map(LayoutEditorElementPart::getId)
+                                             .forEach(parts::add);
+            view.showParts(parts);
+        }
+    }
+    
+    private void updateCurrentPropertiesPresenter(String elementId, LayoutElementWithProperties layoutElement) {
+        LayoutElementPropertiesPresenter presenter = presenterMap.get(elementId);
+        if (presenter == null) {
+            propertiesPresenter = beanManager.lookupBean(LayoutElementPropertiesPresenter.class).newInstance();
+            propertiesPresenter.edit(layoutElement);
+            presenterMap.put(elementId, propertiesPresenter);
+        } else if (presenter != propertiesPresenter) {
+            propertiesPresenter.getLayoutElement().setSelected(false);
+            propertiesPresenter = presenter;
+        }
+    }
+    
+    private LayoutEditorElement getSelectedElement() {
+        String elementId = selectionHandler.getSelectedKey();
+        for (LayoutEditorElement element : layoutEditor.getLayoutElements()) {
+            if (element.getId().equals(elementId)) {
+                return element;
+            }
+        }
+        return null;
     }
 }

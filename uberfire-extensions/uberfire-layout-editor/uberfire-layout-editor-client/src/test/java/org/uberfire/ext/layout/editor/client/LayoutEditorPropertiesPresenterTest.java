@@ -154,6 +154,18 @@ public class LayoutEditorPropertiesPresenterTest {
         @Override public HTMLElement getElement() {
             return null;
         }
+
+        @Override
+        public void noParts() {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void showParts(List<String> parts) {
+            // TODO Auto-generated method stub
+            
+        }
     });
 
     @Mock

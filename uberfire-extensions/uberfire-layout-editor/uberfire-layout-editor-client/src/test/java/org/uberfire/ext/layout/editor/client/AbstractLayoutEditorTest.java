@@ -25,6 +25,9 @@ import javax.enterprise.inject.Instance;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -155,7 +158,8 @@ public abstract class AbstractLayoutEditorTest {
                                                                       dragHelper,
                                                                       mock(Event.class),
                                                                       columnSelectedEvent,
-                                                                      columnUnselectedEvent) {
+                                                                      columnUnselectedEvent,
+                                                                      mock(ManagedInstance.class)) {
                     @Override
                     protected boolean hasConfiguration() {
                         return false;

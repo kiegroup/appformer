@@ -17,7 +17,7 @@ package org.uberfire.ext.layout.editor.client.infra;
 
 import org.uberfire.ext.layout.editor.api.css.*;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
-import org.uberfire.ext.layout.editor.client.api.LayoutEditorElement;
+import org.uberfire.ext.layout.editor.client.api.LayoutElementWithProperties;
 import org.uberfire.ext.layout.editor.client.components.container.Container;
 import org.uberfire.ext.layout.editor.client.components.rows.Row;
 import org.uberfire.ext.layout.editor.client.resources.i18n.CssAllowedValueConstants;
@@ -118,7 +118,7 @@ public class LayoutEditorCssHelper {
         return new PropertyEditorCategory(name);
     }
 
-    public PropertyEditorFieldInfo createField(LayoutEditorElement element, CssProperty property) {
+    public PropertyEditorFieldInfo createField(LayoutElementWithProperties element, CssProperty property) {
         return createField(element.getProperties(), property);
     }
 
