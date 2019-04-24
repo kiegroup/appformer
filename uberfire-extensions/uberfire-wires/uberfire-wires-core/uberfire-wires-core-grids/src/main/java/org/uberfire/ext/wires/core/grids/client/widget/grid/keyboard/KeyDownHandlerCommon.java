@@ -95,8 +95,11 @@ public class KeyDownHandlerCommon implements KeyDownHandler {
     }
 
     private void flush(final KeyDownEvent e) {
+        final int keyCode = e.getNativeKeyCode();
+        final boolean isShiftKeyDown = e.isShiftKeyDown();
+
         gridCell.flush();
-        moveSelection(e);
+        moveSelection(keyCode, isShiftKeyDown);
         e.preventDefault();
 
         reset();
@@ -107,11 +110,9 @@ public class KeyDownHandlerCommon implements KeyDownHandler {
         gridPanel.setFocus(true);
         gridLayer.batch();
     }
-
-    protected void moveSelection(final KeyDownEvent e) {
-        final int keyCode = e.getNativeKeyCode();
-        final boolean isShiftKeyDown = e.isShiftKeyDown();
-
+/**/
+    protected void moveSelection(final int keyCode,
+                                 final boolean isShiftKeyDown) {
         final Optional<Integer> dx = getDelta(keyCode,
                                               KeyCodes.KEY_TAB,
                                               isShiftKeyDown);
