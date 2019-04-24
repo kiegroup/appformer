@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.impl.BaseDOMElement;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.keyboard.KeyDownHandlerCommon;
@@ -53,9 +52,6 @@ public abstract class BaseSingletonDOMElementFactoryTest {
     @Mock
     protected GridWidget gridWidgetMock;
 
-    @Mock
-    private GridBodyCellRenderContext contextMock;
-
     private BaseSingletonDOMElementFactory testedFactory;
 
     @Captor
@@ -70,7 +66,7 @@ public abstract class BaseSingletonDOMElementFactoryTest {
 
     @Test
     public void testCreateDomElement() {
-        testedFactory.createDomElement(gridLayerMock, gridWidgetMock, contextMock);
+        testedFactory.createDomElement(gridLayerMock, gridWidgetMock);
 
         verify(testedFactory.widget, times(4)).addDomHandler(handlerCaptor.capture(), any(DomEvent.Type.class));
 

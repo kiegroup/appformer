@@ -43,8 +43,7 @@ public interface DOMElementFactory<W, E> extends HasDOMElementResources {
      * @return
      */
     E createDomElement(final GridLayer gridLayer,
-                       final GridWidget gridWidget,
-                       final GridBodyCellRenderContext context);
+                       final GridWidget gridWidget);
 
     /**
      * Register DOM handlers for the widget. The set of handlers may differ per each Factory. Common handlers

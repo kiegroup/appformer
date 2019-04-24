@@ -18,7 +18,6 @@ package org.uberfire.ext.wires.core.grids.client.widget.dom.multiple.impl;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import org.gwtbootstrap3.client.ui.TextBox;
-import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.impl.TextBoxDOMElement;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
@@ -41,8 +40,7 @@ public class TextBoxDOMElementFactory extends BaseDOMElementFactory<String, Text
 
     @Override
     public TextBoxDOMElement createDomElement(final GridLayer gridLayer,
-                                              final GridWidget gridWidget,
-                                              final GridBodyCellRenderContext context) {
+                                              final GridWidget gridWidget) {
         final TextBox widget = createWidget();
         final TextBoxDOMElement e = new TextBoxDOMElement(widget,
                                                           gridLayer,

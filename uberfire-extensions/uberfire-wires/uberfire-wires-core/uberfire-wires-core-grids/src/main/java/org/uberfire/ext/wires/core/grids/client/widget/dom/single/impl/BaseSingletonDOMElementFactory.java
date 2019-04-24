@@ -65,8 +65,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
             @Override
             public void execute() {
                 final E domElement = createDomElement(gridLayer,
-                                                      gridWidget,
-                                                      context);
+                                                      gridWidget);
                 registerDomHandlers(widget, domElement);
 
                 domElement.setContext(context);
@@ -81,8 +80,7 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
 
     @Override
     public E createDomElement(final GridLayer gridLayer,
-                              final GridWidget gridWidget,
-                              final GridBodyCellRenderContext context) {
+                              final GridWidget gridWidget) {
         widget = createWidget();
         e = createDomElementInternal();
 
