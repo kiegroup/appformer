@@ -47,13 +47,18 @@ public class TextBoxDOMElementFactory extends BaseDOMElementFactory<String, Text
         final TextBoxDOMElement e = new TextBoxDOMElement(widget,
                                                           gridLayer,
                                                           gridWidget);
+        registerDomHandlers(widget, e);
+        return e;
+    }
+
+    @Override
+    public void registerDomHandlers(final TextBox widget, final TextBoxDOMElement widgetDomElement) {
         widget.addBlurHandler(new BlurHandler() {
             @Override
             public void onBlur(final BlurEvent event) {
-                e.flush(widget.getValue());
+                widgetDomElement.flush(widget.getValue());
                 gridLayer.batch();
             }
         });
-        return e;
     }
 }

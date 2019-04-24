@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.Widget;
 import org.uberfire.ext.wires.core.grids.client.widget.context.GridBodyCellRenderContext;
 import org.uberfire.ext.wires.core.grids.client.widget.dom.impl.BaseDOMElement;
@@ -66,6 +67,8 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
                 final E domElement = createDomElement(gridLayer,
                                                       gridWidget,
                                                       context);
+                registerDomHandlers(widget, domElement);
+
                 domElement.setContext(context);
                 domElement.initialise(context);
                 onCreation.accept(domElement);
@@ -83,19 +86,26 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
         widget = createWidget();
         e = createDomElementInternal();
 
-        widget.addDomHandler(destroyOrFlushkeyDownHandler(context),
+        return e;
+    }
+
+    @Override
+    public void registerDomHandlers(final W widget, final E widgetDomElement) {
+        widget.addDomHandler(destroyOrFlushKeyDownHandler(),
                              KeyDownEvent.getType());
         widget.addDomHandler((e) -> e.stopPropagation(),
                              KeyDownEvent.getType());
         widget.addDomHandler((e) -> e.stopPropagation(),
                              MouseDownEvent.getType());
-        widget.addDomHandler((e) ->
-                             {
-                                 flush();
-                                 gridLayer.batch();
-                                 gridPanel.setFocus(true);
-                             }, BlurEvent.getType());
-        return e;
+
+        if (widget instanceof Focusable) {
+            widget.addDomHandler((e) ->
+                                 {
+                                     flush();
+                                     gridLayer.batch();
+                                     gridPanel.setFocus(true);
+                                 }, BlurEvent.getType());
+        }
     }
 
     @Override
@@ -119,8 +129,8 @@ public abstract class BaseSingletonDOMElementFactory<T, W extends Widget, E exte
         }
     }
 
-    private KeyDownHandlerCommon destroyOrFlushkeyDownHandler(final GridBodyCellRenderContext context) {
-        return new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this, context);
+    protected KeyDownHandlerCommon destroyOrFlushKeyDownHandler() {
+        return new KeyDownHandlerCommon(gridPanel, gridLayer, gridWidget, this);
     }
 
     protected abstract T getValue();

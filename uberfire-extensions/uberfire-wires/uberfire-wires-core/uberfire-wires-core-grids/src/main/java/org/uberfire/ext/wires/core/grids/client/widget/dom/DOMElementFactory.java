@@ -40,12 +40,19 @@ public interface DOMElementFactory<W, E> extends HasDOMElementResources {
      * Creates a DOMElement.
      * @param gridLayer The Lienzo layer on which the Grid Widget is attached. DOMElements may need to redraw the Layer when their state changes.
      * @param gridWidget The GridWidget to which this DOMElement is to be associated.
-     * @param context The render context of the cell.
      * @return
      */
     E createDomElement(final GridLayer gridLayer,
                        final GridWidget gridWidget,
                        final GridBodyCellRenderContext context);
+
+    /**
+     * Register DOM handlers for the widget. The set of handlers may differ per each Factory. Common handlers
+     * registered in this method are KeyDownHandler, BlurHandler, ... .
+     * @param widget
+     * @param widgetDomElement
+     */
+    void registerDomHandlers(final W widget, final E widgetDomElement);
 
     /**
      * Initialises a DOMElement for a cell and attach it to the GWT container.
