@@ -18,6 +18,7 @@ package org.uberfire.jsbridge.client.screen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -168,8 +169,8 @@ public class JsWorkbenchScreenActivity extends AbstractWorkbenchScreenActivity i
     }
 
     @Override
-    public Menus getMenus() {
-        return null;
+    public void getMenus(final Consumer<Menus> consumer) {
+        consumer.accept(null);
     }
 
     @Override

@@ -16,6 +16,8 @@
 
 package org.uberfire.jsbridge.client.perspective;
 
+import java.util.function.Consumer;
+
 import org.uberfire.client.mvp.AbstractWorkbenchPerspectiveActivity;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.jsbridge.client.perspective.jsnative.JsNativeContextDisplay;
@@ -102,8 +104,8 @@ public class JsWorkbenchPerspectiveActivity extends AbstractWorkbenchPerspective
     }
 
     @Override
-    public Menus getMenus() {
-        return realPerspective.menus();
+    public void getMenus(final Consumer<Menus> consumer) {
+        consumer.accept(realPerspective.menus());
     }
 
     @Override

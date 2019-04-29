@@ -18,6 +18,7 @@ package org.uberfire.jsbridge.client.perspective;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import elemental2.dom.Attr;
 import elemental2.dom.DomGlobal;
@@ -132,8 +133,8 @@ public class JsWorkbenchTemplatedPerspectiveActivity extends AbstractWorkbenchPe
     }
 
     @Override
-    public Menus getMenus() {
-        return realPerspective.menus();
+    public void getMenus(final Consumer<Menus> consumer) {
+        consumer.accept(realPerspective.menus());
     }
 
     @Override

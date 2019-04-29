@@ -16,6 +16,8 @@
 
 package org.uberfire.jsbridge.client.editor;
 
+import java.util.function.Consumer;
+
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -111,8 +113,8 @@ public class JsWorkbenchEditorActivity extends AbstractWorkbenchEditorActivity i
     }
 
     @Override
-    public Menus getMenus() {
-        return null; //TODO: Implement?
+    public void getMenus(final Consumer<Menus> consumer) {
+        consumer.accept(null);
     }
 
     @Override

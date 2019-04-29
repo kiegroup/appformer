@@ -200,11 +200,12 @@ public class JsWorkbenchLazyPerspectiveActivity extends AbstractWorkbenchPerspec
     }
 
     @Override
-    public Menus getMenus() {
+    public void getMenus(final Consumer<Menus> consumer) {
         if (isPerspectiveLoaded()) {
-            return getBackedPerspective().getMenus();
+            getBackedPerspective().getMenus(consumer);
+        } else {
+            super.getMenus(consumer);
         }
-        return super.getMenus();
     }
 
     @Override
