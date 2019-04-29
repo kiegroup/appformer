@@ -470,7 +470,6 @@
       <artifactId>appformer-js-bridge</artifactId>
       <scope>provided</scope>
     </dependency>
-    
   </dependencies>
 
   <build>
