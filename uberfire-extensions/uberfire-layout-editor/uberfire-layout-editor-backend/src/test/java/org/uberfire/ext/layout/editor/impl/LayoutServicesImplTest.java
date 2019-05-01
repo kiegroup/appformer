@@ -49,6 +49,7 @@ public class LayoutServicesImplTest {
         String expected = loadSample("12withHTMLComponent.txt");
         LayoutTemplate template = layoutServices.convertLayoutFromString(expected);
         String actual = layoutServices.convertLayoutToString(template);
+        System.out.println(actual);
         assertEquals(expected,
                      actual);
     }
@@ -65,6 +66,15 @@ public class LayoutServicesImplTest {
     @Test
     public void layoutMarshallerSubColumns() {
         String expected = loadSample("SubColumnsLayout.txt");
+        LayoutTemplate template = layoutServices.convertLayoutFromString(expected);
+        String actual = layoutServices.convertLayoutToString(template);
+        assertEquals(expected,
+                     actual);
+    }
+    
+    @Test
+    public void layoutMarshallerComponentWithParts() {
+        String expected = loadSample("LayoutWithComponentWithParts.txt");
         LayoutTemplate template = layoutServices.convertLayoutFromString(expected);
         String actual = layoutServices.convertLayoutToString(template);
         assertEquals(expected,

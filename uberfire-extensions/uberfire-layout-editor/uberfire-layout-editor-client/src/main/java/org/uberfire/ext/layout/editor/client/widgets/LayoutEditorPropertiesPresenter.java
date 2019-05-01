@@ -44,7 +44,7 @@ import static org.uberfire.ext.layout.editor.client.api.LayoutEditorElementType.
 @ApplicationScoped
 public class LayoutEditorPropertiesPresenter {
 
-    private static final String PART_ROOT = "Root";
+    public static final String PART_ROOT = "Root";
 
     public interface View extends UberElement<LayoutEditorPropertiesPresenter> {
 
@@ -70,9 +70,6 @@ public class LayoutEditorPropertiesPresenter {
 
         void noParts();
 
-        /**
-         * @param parts
-         */
         void showParts(List<String> parts);
     }
 
@@ -163,6 +160,10 @@ public class LayoutEditorPropertiesPresenter {
 
     public LiveSearchService<String> getSearchService() {
         return searchService;
+    }
+    
+    public void setSelectionHandler(SingleLiveSearchSelectionHandler<String> selectionHandler) {
+        this.selectionHandler = selectionHandler;
     }
 
     public void edit(LayoutEditor layoutEditor) {
@@ -314,7 +315,7 @@ public class LayoutEditorPropertiesPresenter {
         this.reset();
     }
     
-    private void fillElementParts(LayoutEditorElement element) {
+    protected void fillElementParts(LayoutEditorElement element) {
         List<LayoutEditorElementPart> currentLayoutElementParts = element.getLayoutEditorElementParts();
         if (currentLayoutElementParts.isEmpty()) {
             view.noParts();

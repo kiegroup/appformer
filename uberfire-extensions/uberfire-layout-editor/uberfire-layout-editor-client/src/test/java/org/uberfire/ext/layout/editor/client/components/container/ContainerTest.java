@@ -187,6 +187,9 @@ public class ContainerTest extends AbstractLayoutEditorTest {
 
         assertEquals(expected,
                      actual);
+        System.out.println(convertLayoutToString(expected));
+        System.out.println("\n--\n");
+        System.out.println(convertLayoutToString(actual));
         assertEquals(convertLayoutToString(expected),
                      convertLayoutToString(actual));
     }

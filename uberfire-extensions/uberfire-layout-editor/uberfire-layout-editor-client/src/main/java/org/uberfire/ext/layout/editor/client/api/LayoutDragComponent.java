@@ -85,7 +85,7 @@ public interface LayoutDragComponent {
     }
 
     /**
-     * Get a specific part of this widget. Usually called after getShowWidget.
+     * Get a specific part of this widget.
      * 
      * @param partId
      * @param componentContext
