@@ -49,7 +49,6 @@ public class LayoutServicesImplTest {
         String expected = loadSample("12withHTMLComponent.txt");
         LayoutTemplate template = layoutServices.convertLayoutFromString(expected);
         String actual = layoutServices.convertLayoutToString(template);
-        System.out.println(actual);
         assertEquals(expected,
                      actual);
     }

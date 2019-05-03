@@ -16,9 +16,11 @@
 
 package org.uberfire.ext.layout.editor.api.editor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +35,7 @@ public class LayoutComponent {
 
     private Map<String, String> properties = new HashMap<>();
     
-    private Set<LayoutComponentPart> parts = new HashSet<>();
+    private List<LayoutComponentPart> parts = new ArrayList<>();
     
     public LayoutComponent() {
     }
@@ -86,8 +88,8 @@ public class LayoutComponent {
         parts.removeIf(p -> condition.test(p.getPartId()));
     }
     
-    public Set<LayoutComponentPart> getParts() {
-        return Collections.unmodifiableSet(parts);
+    public List<LayoutComponentPart> getParts() {
+        return Collections.unmodifiableList(parts);
     }
 
     @Override

@@ -19,6 +19,7 @@ package org.uberfire.ext.layout.editor.client.components.columns;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class ComponentColumnTest extends AbstractLayoutEditorTest {
     @Test
     public void emptyPartsWontBreakTest() throws Exception {
         LayoutTemplate layout = loadLayout(SINGLE_ROW_COMPONENT_LAYOUT);
-        Set<LayoutComponentPart> parts = layout.getRows().get(0)
+        List<LayoutComponentPart> parts = layout.getRows().get(0)
                                                .getLayoutColumns().get(0)
                                                .getLayoutComponents().get(0)
                                                .getParts();
@@ -47,7 +48,7 @@ public class ComponentColumnTest extends AbstractLayoutEditorTest {
     @Test
     public void partsLoadingTest() throws Exception {
         LayoutTemplate layout = loadLayout(SINGLE_ROW_COMPONENT_LAYOUT_WITH_PARTS);
-        Set<LayoutComponentPart> parts = layout.getRows().get(0)
+        List<LayoutComponentPart> parts = layout.getRows().get(0)
                                                .getLayoutColumns().get(0)
                                                .getLayoutComponents().get(0)
                                                .getParts();
