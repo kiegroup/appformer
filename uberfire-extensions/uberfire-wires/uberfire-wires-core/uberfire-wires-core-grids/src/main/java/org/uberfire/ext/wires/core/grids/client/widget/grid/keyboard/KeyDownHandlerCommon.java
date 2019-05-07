@@ -110,7 +110,7 @@ public class KeyDownHandlerCommon implements KeyDownHandler {
         gridPanel.setFocus(true);
         gridLayer.batch();
     }
-/**/
+
     protected void moveSelection(final int keyCode,
                                  final boolean isShiftKeyDown) {
         final Optional<Integer> dx = getDelta(keyCode,
