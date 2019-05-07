@@ -26,7 +26,9 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystemMetadata;
+import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.attribute.FileAttribute;
 
@@ -121,6 +123,38 @@ public class GitIOServiceDotFileTest extends CommonIOExceptionsServiceDotFileTes
         assertNotNull(iterator.next());
 
         assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void testGetFileSystemInvalidURI() {
+        URI uri = URI.create("git://" + new Date().getTime() + "-repo-test");
+        FileSystem fs = ioService().getFileSystem(uri);
+
+        assertNull(fs);
+    }
+
+    @Test(expected = FileSystemAlreadyExistsException.class)
+    public void testCreateFileSystemTwice() {
+        URI uri = URI.create("git://" + new Date().getTime() + "-repo-test");
+        ioService().newFileSystem(uri, new HashMap<>());
+        ioService().newFileSystem(uri, new HashMap<>());
+    }
+
+    @Test
+    public void testGetOrNewFileSystem() {
+        URI uri = URI.create("git://" + new Date().getTime() + "-repo-test");
+        FileSystem fs1 = ioService().getOrNewFileSystem(uri, new HashMap<>());
+        FileSystem fs2 = ioService().getOrNewFileSystem(uri, new HashMap<>());
+
+        assertNotNull(fs1);
+        assertNotNull(fs2);
+        assertEquals(fs1, fs2);
+
+        uri = URI.create("git://" + new Date().getTime() + "-repo-test");
+        FileSystem fs3 = ioService().getOrNewFileSystem(uri, new HashMap<>());
+
+        assertNotNull(fs3);
+        assertNotEquals(fs1, fs3);
     }
 
     @Test
