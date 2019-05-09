@@ -66,8 +66,11 @@ public class LayoutComponentPart {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = ~~result;
         result = prime * result + ((partId == null) ? 0 : partId.hashCode());
+        result = ~~result;
         result = prime * result + ((cssProperties == null) ? 0 : cssProperties.hashCode());
+        result = ~~result;
         return result;
     }
 

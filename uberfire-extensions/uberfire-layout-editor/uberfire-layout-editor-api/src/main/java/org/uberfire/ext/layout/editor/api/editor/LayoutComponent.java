@@ -96,9 +96,13 @@ public class LayoutComponent {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = ~~result;
         result = prime * result + ((dragTypeName == null) ? 0 : dragTypeName.hashCode());
+        result = ~~result;
         result = prime * result + ((parts == null) ? 0 : parts.hashCode());
+        result = ~~result;
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        result = ~~result;
         return result;
     }
 

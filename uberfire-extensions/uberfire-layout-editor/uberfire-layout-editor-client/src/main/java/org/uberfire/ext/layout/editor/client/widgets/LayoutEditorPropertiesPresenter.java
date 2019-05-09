@@ -16,6 +16,8 @@
 package org.uberfire.ext.layout.editor.client.widgets;
 
 import com.google.gwt.user.client.ui.IsWidget;
+
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.client.api.*;
@@ -74,7 +76,7 @@ public class LayoutEditorPropertiesPresenter {
     }
 
     private View view;
-    private SyncBeanManager beanManager;
+    private ManagedInstance<LayoutElementPropertiesPresenter> layoutElementPropertiesPresenterInstance;
     private LiveSearchDropDown<String> elementSelector;
     private LayoutEditor layoutEditor;
     private LayoutElementPropertiesPresenter propertiesPresenter;
@@ -133,10 +135,10 @@ public class LayoutEditorPropertiesPresenter {
 
     @Inject
     public LayoutEditorPropertiesPresenter(final View view,
-            SyncBeanManager beanManager,
+            ManagedInstance<LayoutElementPropertiesPresenter> layoutElementPropertiesPresenterInstance,
             LiveSearchDropDown elementSelector) {
         this.view = view;
-        this.beanManager = beanManager;
+        this.layoutElementPropertiesPresenterInstance = layoutElementPropertiesPresenterInstance;
         this.elementSelector = elementSelector;
         view.init(this);
     }
@@ -201,7 +203,6 @@ public class LayoutEditorPropertiesPresenter {
     public void dispose() {
         this.propertiesPresenter = null;
         elementSelector.clear();
-        presenterMap.values().stream().forEach(beanManager::destroyBean);
         presenterMap.clear();
         view.dispose();
     }
@@ -331,7 +332,7 @@ public class LayoutEditorPropertiesPresenter {
     private void updateCurrentPropertiesPresenter(String elementId, LayoutElementWithProperties layoutElement) {
         LayoutElementPropertiesPresenter presenter = presenterMap.get(elementId);
         if (presenter == null) {
-            propertiesPresenter = beanManager.lookupBean(LayoutElementPropertiesPresenter.class).newInstance();
+            propertiesPresenter = layoutElementPropertiesPresenterInstance.get();
             propertiesPresenter.edit(layoutElement);
             presenterMap.put(elementId, propertiesPresenter);
         } else if (presenter != propertiesPresenter) {

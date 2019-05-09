@@ -18,6 +18,7 @@ package org.uberfire.ext.layout.editor.client;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
@@ -234,7 +235,7 @@ public class LayoutEditorPropertiesPresenterTest {
     });
 
     @Mock
-    private SyncBeanManager beanManager;
+    private ManagedInstance<LayoutElementPropertiesPresenter> layoutElementPropertiesPresenterInstance;
 
     @Mock
     private LayoutEditor layoutEditor;
@@ -263,14 +264,12 @@ public class LayoutEditorPropertiesPresenterTest {
 
     @Before
     public void initialize() {
-        SyncBeanDef elementPresenterBean = mock(SyncBeanDef.class);
-        when(beanManager.lookupBean(LayoutElementPropertiesPresenter.class)).thenReturn(elementPresenterBean);
-        when(elementPresenterBean.newInstance()).thenReturn(elementPropertiesPresenter);
+        when(layoutElementPropertiesPresenterInstance.get()).thenReturn(elementPropertiesPresenter);
         when(layoutEditor.getLayoutElements()).thenReturn(Arrays.asList(container, 
                                                                         row1, column1, column2, 
                                                                         row2, column3, rowcol3, column4, column5, columnWithParts));
 
-        presenter = new LayoutEditorPropertiesPresenter(view, beanManager, elementSelector);
+        presenter = new LayoutEditorPropertiesPresenter(view, layoutElementPropertiesPresenterInstance, elementSelector);
     }
 
     @Test
