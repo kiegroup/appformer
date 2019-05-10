@@ -96,7 +96,7 @@ public abstract class C3AbstractDisplayerView<P extends C3AbstractDisplayer>
         dataTable.clear();
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
-                dataTable.setWidget(i, j, new Text(data[i][j]));
+                dataTable.setWidget(j, i, new Text(data[i][j]));
             }
         }
     }
