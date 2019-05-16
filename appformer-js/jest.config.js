@@ -15,7 +15,23 @@
  */
 
 module.exports = {
-  reporters: ["default", "jest-junit"],
+  reporters: [
+        "default",
+                [
+                  "jest-junit",
+                   {
+                    titleTemplate: (vars) => {
+                            var str = vars.title.toLowerCase();
+                            str = str.split(' ');
+                            for (var i = 0; i < str.length; i++) {
+                                str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+                            }
+                            return str.join('');
+                        }
+
+                    }
+                ]
+  ],
   moduleDirectories: ["node_modules", "src"],
   moduleFileExtensions: ["js", "jsx", "ts", "tsx"],
   testRegex: "/__tests__/.*\\.test\\.(jsx?|tsx?)$",
