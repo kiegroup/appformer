@@ -20,6 +20,14 @@ module.exports = {
                 [
                   "jest-junit",
                    {
+                   /*
+                    * Removes spaces from test titles and makes first
+                    * letter of each word capitalized.
+                    *
+                    * unit test -> UnitTest
+                    *
+                    * See junit.xml report for resulting look.
+                    */
                     titleTemplate: (vars) => {
                             var str = vars.title.toLowerCase();
                             str = str.split(' ');
