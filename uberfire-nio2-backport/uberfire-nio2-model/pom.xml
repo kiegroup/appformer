@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-nio2-backport</artifactId>
-    <version>2.20.0-SNAPSHOT</version>
+    <version>2.21.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-nio2-model</artifactId>
@@ -31,6 +31,10 @@
   <description>Uberfire NIO.2 :: Model</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-security-server</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-commons</artifactId>
