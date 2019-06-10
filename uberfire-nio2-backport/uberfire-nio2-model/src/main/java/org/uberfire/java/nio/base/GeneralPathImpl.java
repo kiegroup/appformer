@@ -100,7 +100,7 @@ public class GeneralPathImpl
                                  final String host,
                                  final boolean isRoot) {
 
-        final boolean isRooted = isRoot ? true : path.startsWith("/");
+        final boolean isRooted = isRoot ? true : path.startsWith("/") || path.startsWith("\\");
         final Matcher hasWindowsDrive = WINDOWS_DRIVER.matcher(path);
 
         final boolean isAbsolute;

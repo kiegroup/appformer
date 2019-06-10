@@ -128,7 +128,12 @@ public class SimpleFileSystemProvider implements FileSystemProvider {
         checkCondition("uri scheme not supported",
                        uri.getScheme().equals(getScheme()) || uri.getScheme().equals("default"));
 
-        return getDefaultFileSystem().getPath(uri.getPath());
+        // replace URI path separator for fs dependant separator
+        String path = uri.getPath().replace("/", getDefaultFileSystem().getSeparator());
+        if(path.startsWith(BaseSimpleFileSystem.WINDOWS_SEPARATOR_STRING)) {
+             path = uri.getAuthority() + path;
+        }
+        return getDefaultFileSystem().getPath(path);
     }
 
     @Override

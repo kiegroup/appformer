@@ -291,7 +291,7 @@ public abstract class AbstractPath<FS extends FileSystem>
 
     private String toURIString() {
         if (usesWindowsFormat) {
-            return encodePath("/" + toString().replace("\\",
+            return encodePath(toString().replace("\\",
                                                        "/"));
         }
         return encodePath(new String(path));
