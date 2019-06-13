@@ -76,7 +76,7 @@ public class SystemConfigProducerTest {
                              any(CreationalContext.class)))
                 .thenReturn(ioServiceMock);
 
-        when(ioServiceMock.getOrNewFileSystem(any(URI.class),
+        when(ioServiceMock.newFileSystem(any(URI.class),
                                          any(Map.class)))
                 .thenReturn(fs);
 

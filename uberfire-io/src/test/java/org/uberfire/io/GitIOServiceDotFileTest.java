@@ -141,23 +141,6 @@ public class GitIOServiceDotFileTest extends CommonIOExceptionsServiceDotFileTes
     }
 
     @Test
-    public void testGetOrNewFileSystem() {
-        URI uri = URI.create("git://" + new Date().getTime() + "-repo-test");
-        FileSystem fs1 = ioService().getOrNewFileSystem(uri, new HashMap<>());
-        FileSystem fs2 = ioService().getOrNewFileSystem(uri, new HashMap<>());
-
-        assertNotNull(fs1);
-        assertNotNull(fs2);
-        assertEquals(fs1, fs2);
-
-        uri = URI.create("git://" + new Date().getTime() + "-repo-test");
-        FileSystem fs3 = ioService().getOrNewFileSystem(uri, new HashMap<>());
-
-        assertNotNull(fs3);
-        assertNotEquals(fs1, fs3);
-    }
-
-    @Test
     public void testRoot() throws IOException {
         final Path path = getRootPath();
 

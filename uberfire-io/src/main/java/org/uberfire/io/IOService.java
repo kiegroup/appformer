@@ -84,19 +84,6 @@ public interface IOService extends PriorityDisposable {
             throws IllegalArgumentException, FileSystemAlreadyExistsException,
             ProviderNotFoundException, IOException, SecurityException;
 
-    default FileSystem getOrNewFileSystem(final URI uri, final Map<String, ?> env)
-    throws IllegalArgumentException, ProviderNotFoundException, IOException, SecurityException {
-        FileSystem fileSystem;
-
-        try {
-            fileSystem = newFileSystem(uri, env);
-        } catch (FileSystemAlreadyExistsException e) {
-            fileSystem = getFileSystem(uri);
-        }
-
-        return fileSystem;
-    }
-
     void onNewFileSystem(final NewFileSystemListener listener);
 
     InputStream newInputStream(final Path path,

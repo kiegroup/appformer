@@ -58,6 +58,7 @@ import org.uberfire.io.impl.IOServiceNio2WrapperImpl;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.base.FileSystemState;
 import org.uberfire.java.nio.file.FileStore;
+import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.InvalidPathException;
@@ -379,7 +380,13 @@ public class SystemConfigProducer implements Extension {
                     put("internal", Boolean.TRUE);
                 }};
 
-                FileSystem fs = ioService.getOrNewFileSystem(uri, env);
+                FileSystem fs;
+                try {
+                    fs = ioService.newFileSystem(uri, env);
+                } catch (FileSystemAlreadyExistsException e) {
+                    fs = ioService.getFileSystem(uri);
+                }
+
                 PriorityDisposableRegistry.register(beanName, fs);
 
                 return fs;
