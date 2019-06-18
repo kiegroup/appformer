@@ -48,7 +48,6 @@ import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.guvnor.structure.server.config.ConfigGroup;
 import org.guvnor.structure.server.config.ConfigItem;
 import org.guvnor.structure.server.config.ConfigType;
@@ -225,13 +224,19 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
                 .collect(Collectors.toList());
     }
 
-    private boolean isDeleted(String spaceName) {
+    protected boolean isDeleted(String spaceName) {
         List<ConfigGroup> spaceConfigurations = this.configurationService.getConfiguration(ConfigType.SPACE);
         return spaceConfigurations.stream()
                 .filter(spaceConfiguration -> spaceConfiguration.getName().equalsIgnoreCase(spaceName) &&
                         spaceConfiguration.getConfigItem(DELETED) != null)
                 .findFirst()
                 .isPresent();
+    }
+
+    public void onRemoveOrganizationalUnit(@Observes RemoveOrganizationalUnitEvent event) {
+        if (event.getOrganizationalUnit() != null && event.getOrganizationalUnit().getSpace() != null) {
+            this.spaceConfigStorageRegistry.remove(event.getOrganizationalUnit().getSpace().getName());
+        }
     }
 
     @Override

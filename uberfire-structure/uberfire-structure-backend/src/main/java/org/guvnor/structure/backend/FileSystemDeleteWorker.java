@@ -2,7 +2,6 @@ package org.guvnor.structure.backend;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +10,6 @@ import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -38,7 +36,6 @@ import org.uberfire.java.nio.fs.jgit.FileSystemLock;
 import org.uberfire.java.nio.fs.jgit.FileSystemLockManager;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.spaces.Space;
-import org.uberfire.spaces.SpacesAPI;
 
 import static java.util.stream.Collectors.toList;
 import static org.uberfire.backend.server.util.Paths.convert;
@@ -194,14 +191,6 @@ public class FileSystemDeleteWorker {
                          FileUtils.RECURSIVE | FileUtils.SKIP_MISSING | FileUtils.RETRY);
     }
 
-    public void onRemoveOrganizationalUnit(@Observes RemoveOrganizationalUnitEvent event) {
-        if (event.getOrganizationalUnit() != null && event.getOrganizationalUnit().getSpace() != null) {
-            logger.debug("Removing {}",
-                         event.getOrganizationalUnit().getSpace().getName());
-            this.registry.remove(event.getOrganizationalUnit().getSpace().getName());
-        }
-    }
-
     protected File getSpacePath(JGitPathImpl configPath) {
         final JGitPathImpl configGitPath = configPath;
         return configGitPath.getFileSystem()
@@ -210,11 +199,6 @@ public class FileSystemDeleteWorker {
                 .getDirectory()     // system.git
                 .getParentFile()    // system
                 .getParentFile();   //.niogit
-    }
-
-    private URI getConfigPathUri(Space space) {
-        return URI.create(SpacesAPI.resolveConfigFileSystemPath(SpacesAPI.Scheme.DEFAULT,
-                                                                space.getName()));
     }
 
     protected void removeRepository(final Repository repo) {

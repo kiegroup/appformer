@@ -38,6 +38,7 @@ import org.guvnor.structure.organizationalunit.UpdatedOrganizationalUnitEvent;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
+import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.security.OrganizationalUnitAction;
@@ -139,6 +140,8 @@ public class OrganizationalUnitServiceTest {
             return spaceConfigStorage;
         }).when(spaceConfigStorageRegistry).get(any());
 
+        doAnswer(invocationOnMock -> true).when(spaceConfigStorageRegistry).exist(anyString());
+
         sessionInfo = new SessionInfoMock();
         organizationalUnitFactory = spy(new OrganizationalUnitFactoryImpl(repositoryService,
                                                                           spacesAPI));
@@ -160,6 +163,8 @@ public class OrganizationalUnitServiceTest {
 
         when(authorizationManager.authorize(any(Resource.class),
                                             any(User.class))).thenReturn(false);
+
+        doAnswer(invocation -> false).when(organizationalUnitService).isDeleted(any());
 
         doReturn(Paths.get("src/test/resources/niogit").toFile().toPath()).when(organizationalUnitService).getNiogitPath();
     }
@@ -281,9 +286,18 @@ public class OrganizationalUnitServiceTest {
         RemoveOrganizationalUnitEvent event = eventCaptor.getValue();
         assertEquals(repos,
                      event.getOrganizationalUnit().getRepositories());
-        verify(spaceConfigStorageRegistry).remove("A");
-        assertEquals(repos,
-                     event.getOrganizationalUnit().getRepositories());
+    }
+
+    @Test
+    public void testOnRemoveOrgUnit() {
+
+        String spaceName = "A";
+        OrganizationalUnit organizationalUnit = new OrganizationalUnitImpl(spaceName,
+                                                                           "groupId");
+        RemoveOrganizationalUnitEvent event = new RemoveOrganizationalUnitEvent(organizationalUnit,
+                                                                                "admin");
+        this.organizationalUnitService.onRemoveOrganizationalUnit(event);
+        verify(this.spaceConfigStorageRegistry).remove(spaceName);
     }
 
     private void setOUCreationPermission(final boolean hasPermission) {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.enterprise.event.Event;
 
+import org.guvnor.structure.backend.organizationalunit.config.SpaceConfigStorageImpl;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.RemoveOrganizationalUnitEvent;
@@ -67,6 +68,8 @@ public class FileSystemDeleteWorkerTest {
                                                      this.removeOrganizationalUnitEvent,
                                                      this.configurationService));
 
+
+
         doAnswer(invocation -> null).when(ioService).delete(any());
         doAnswer(invocation -> null).when(worker).removeRepository(any());
         doAnswer(invocation -> null).when(worker).delete(any());
@@ -79,16 +82,22 @@ public class FileSystemDeleteWorkerTest {
         JGitPathImpl configPath = mock(JGitPathImpl.class,
                                        RETURNS_DEEP_STUBS);
 
-        Path deletePath = mock(Path.class);
-
         Space space = mock(Space.class);
+
+        Path deletePath = mock(Path.class,
+                               RETURNS_DEEP_STUBS);
+
+        when(configPath.getFileSystem().getPath(anyString())).thenReturn(deletePath);
+
+        SpaceConfigStorageImpl configStorage = mock(SpaceConfigStorageImpl.class);
+        when(configStorage.getPath()).thenReturn(configPath);
+
+        when(registry.get(any())).thenReturn(configStorage);
 
         doReturn(Collections.singletonList(mock(Repository.class)))
                 .when(this.repoService)
                 .getAllRepositories(eq(space),
                                     eq(true));
-
-        when(configPath.getFileSystem().getPath(anyString())).thenReturn(deletePath);
 
         doReturn(configPath).when(ioService).get(any());
 
