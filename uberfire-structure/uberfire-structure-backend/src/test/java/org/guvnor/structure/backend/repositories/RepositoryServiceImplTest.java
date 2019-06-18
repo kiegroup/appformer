@@ -113,7 +113,6 @@ public class RepositoryServiceImplTest {
         doAnswer(invocationOnMock -> {
             final SpaceConfigStorage spaceConfigStorage = mock(SpaceConfigStorage.class);
             doReturn(new SpaceInfo((String) invocationOnMock.getArguments()[0],
-                                   false,
                                    "defaultGroupId",
                                    Collections.emptyList(),
                                    new ArrayList<>(Arrays.asList(new RepositoryInfo("alias",

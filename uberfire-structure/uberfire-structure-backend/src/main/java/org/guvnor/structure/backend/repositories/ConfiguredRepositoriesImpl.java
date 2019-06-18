@@ -16,6 +16,7 @@
 
 package org.guvnor.structure.backend.repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -89,9 +90,13 @@ public class ConfiguredRepositoriesImpl implements ConfiguredRepositories {
     }
 
     private List<RepositoryInfo> getAllRepositoryInfo(Space space) {
-        return this.spaceConfigStorage.get(space.getName())
-                .loadSpaceInfo()
-                .getRepositories();
+        try {
+            return this.spaceConfigStorage.get(space.getName())
+                    .loadSpaceInfo()
+                    .getRepositories();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     private Predicate<RepositoryInfo> getRepository(String alias,

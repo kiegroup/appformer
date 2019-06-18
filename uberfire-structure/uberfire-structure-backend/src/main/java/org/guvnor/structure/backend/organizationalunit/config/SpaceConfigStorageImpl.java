@@ -29,6 +29,7 @@ import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.Path;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.util.URIUtil;
 
@@ -142,6 +143,11 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     }
 
     @Override
+    public void close() {
+        this.objectStorage.close();
+    }
+
+    @Override
     public boolean isInitialized() {
         return this.loadSpaceInfo() != null;
     }
@@ -163,5 +169,15 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
     private String encode(final String text) {
         return URIUtil.encodeQueryString(text);
+    }
+
+    public Path getPath() {
+        final URI configPathURI = getConfigPathUri();
+        return ioService.get(configPathURI);
+    }
+
+    private URI getConfigPathUri() {
+        return URI.create(SpacesAPI.resolveConfigFileSystemPath(SpacesAPI.Scheme.DEFAULT,
+                                                                this.spaceName));
     }
 }

@@ -77,4 +77,6 @@ public interface ObjectStorage {
      */
     Path getPath(String first,
                  String... path);
+
+    void close();
 }

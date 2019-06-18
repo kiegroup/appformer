@@ -39,4 +39,7 @@ public interface SpaceConfigStorage {
     void startBatch();
 
     void endBatch();
+
+    void close();
+
 }

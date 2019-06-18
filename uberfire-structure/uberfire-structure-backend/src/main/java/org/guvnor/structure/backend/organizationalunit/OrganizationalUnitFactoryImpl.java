@@ -47,8 +47,7 @@ public class OrganizationalUnitFactoryImpl implements OrganizationalUnitFactory 
     public OrganizationalUnit newOrganizationalUnit(final SpaceInfo spaceInfo) {
 
         OrganizationalUnitImpl organizationalUnit = new OrganizationalUnitImpl(spaceInfo.getName(),
-                                                                               spaceInfo.getDefaultGroupId(),
-                                                                               spaceInfo.isDeleted());
+                                                                               spaceInfo.getDefaultGroupId());
 
         final List<RepositoryInfo> repositories = spaceInfo.getRepositories();
         if (repositories != null) {

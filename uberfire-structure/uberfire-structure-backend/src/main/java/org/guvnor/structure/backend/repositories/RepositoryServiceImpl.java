@@ -37,6 +37,7 @@ import org.guvnor.structure.organizationalunit.config.RepositoryConfiguration;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
+import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.GitMetadataStore;
 import org.guvnor.structure.repositories.NewRepositoryEvent;
 import org.guvnor.structure.repositories.Repository;
@@ -59,6 +60,7 @@ import org.uberfire.ext.editor.commons.version.impl.PortableVersionRecord;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.version.VersionAttributeView;
 import org.uberfire.java.nio.base.version.VersionRecord;
+import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
@@ -439,6 +441,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                                                                                          alias);
 
             if (repo != null) {
+                this.close(repo.getDefaultBranch());
                 notification.accept(repo);
             }
 
@@ -455,6 +458,14 @@ public class RepositoryServiceImpl implements RepositoryService {
                 configStorage.endBatch();
             }
         }
+    }
+
+    private void close(Optional<Branch> defaultBranch) {
+        defaultBranch.ifPresent(branch -> {
+            FileSystem fs = convert(branch.getPath()).getFileSystem();
+            fs.close();
+            fs.dispose();
+        });
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -494,7 +505,7 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     protected void saveRepositoryConfig(String space,
-                                      org.guvnor.structure.organizationalunit.config.RepositoryInfo config) {
+                                        org.guvnor.structure.organizationalunit.config.RepositoryInfo config) {
         SpaceConfigStorage conf = this.spaceConfigStorage.get(space);
         SpaceInfo spaceInfo = conf.loadSpaceInfo();
         spaceInfo.removeRepository(config.getName());

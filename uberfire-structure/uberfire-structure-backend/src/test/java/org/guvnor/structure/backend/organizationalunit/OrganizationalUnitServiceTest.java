@@ -130,7 +130,6 @@ public class OrganizationalUnitServiceTest {
         doAnswer(invocationOnMock -> {
             final SpaceConfigStorage spaceConfigStorage = mock(SpaceConfigStorage.class);
             doReturn(new SpaceInfo((String) invocationOnMock.getArguments()[0],
-                                   false,
                                    "defaultGroupId",
                                    Collections.emptyList(),
                                    Collections.emptyList(),
@@ -156,7 +155,8 @@ public class OrganizationalUnitServiceTest {
                                                                           ioService,
                                                                           spaceConfigStorageRegistry,
                                                                           systemFS,
-                                                                          spaceContributorsUpdatedEvent));
+                                                                          spaceContributorsUpdatedEvent,
+                                                                          configurationService));
 
         when(authorizationManager.authorize(any(Resource.class),
                                             any(User.class))).thenReturn(false);

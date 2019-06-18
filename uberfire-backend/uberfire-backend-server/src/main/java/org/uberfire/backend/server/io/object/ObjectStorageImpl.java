@@ -112,6 +112,12 @@ public class ObjectStorageImpl implements ObjectStorage {
                                        paths);
     }
 
+    @Override
+    public void close() {
+        this.fileSystem.close();
+        this.fileSystem.dispose();
+    }
+
     private void initializeMarshaller() {
         MappingContextSingleton.get();
     }

@@ -42,6 +42,7 @@ public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistr
 
     @Override
     public SpaceConfigStorage get(final String spaceName) {
+
         return storageBySpaceName.computeIfAbsent(spaceName,
                                                   name -> {
                                                       final SpaceConfigStorage spaceConfigStorage = spaceConfigStorages.get();
@@ -52,8 +53,14 @@ public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistr
 
     @Override
     public void remove(String spaceName) {
-        if (this.storageBySpaceName.containsKey(spaceName)) {
+        if (this.exist(spaceName)) {
+            this.storageBySpaceName.get(spaceName).close();
             this.storageBySpaceName.remove(spaceName);
         }
+    }
+
+    @Override
+    public boolean exist(String spaceName) {
+        return this.storageBySpaceName.containsKey(spaceName);
     }
 }

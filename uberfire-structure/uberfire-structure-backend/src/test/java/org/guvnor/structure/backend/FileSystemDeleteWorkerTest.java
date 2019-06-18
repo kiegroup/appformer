@@ -2,17 +2,21 @@ package org.guvnor.structure.backend;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.enterprise.event.Event;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
+import org.guvnor.structure.organizationalunit.RemoveOrganizationalUnitEvent;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.server.config.ConfigurationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +50,12 @@ public class FileSystemDeleteWorkerTest {
     @Mock
     private SpaceConfigStorageRegistry registry;
 
+    @Mock
+    private Event<RemoveOrganizationalUnitEvent> removeOrganizationalUnitEvent;
+
+    @Mock
+    private ConfigurationService configurationService;
+
     @Before
     public void setUp() throws IOException {
 
@@ -53,11 +63,14 @@ public class FileSystemDeleteWorkerTest {
                                                      this.ouService,
                                                      this.repoService,
                                                      this.systemFs,
-                                                     this.registry));
+                                                     this.registry,
+                                                     this.removeOrganizationalUnitEvent,
+                                                     this.configurationService));
 
         doAnswer(invocation -> null).when(ioService).delete(any());
         doAnswer(invocation -> null).when(worker).removeRepository(any());
         doAnswer(invocation -> null).when(worker).delete(any());
+        doAnswer(invocation -> null).when(removeOrganizationalUnitEvent).fire(any());
     }
 
     @Test
@@ -111,6 +124,20 @@ public class FileSystemDeleteWorkerTest {
                times(1)).removeSpaceDirectory(ou1.getSpace());
         verify(this.worker,
                times(1)).removeSpaceDirectory(ou2.getSpace());
+        verify(this.removeOrganizationalUnitEvent,
+               times(1)).fire(any());
+    }
+
+    @Test
+    public void testRemoveZeroDeletedSpaces() {
+
+        doAnswer(invocation -> null).when(worker).removeSpaceDirectory(any());
+        doReturn(new ArrayList<>()).when(this.ouService).getAllDeletedOrganizationalUnit();
+        this.worker.removeAllDeletedSpaces();
+        verify(this.worker,
+               never()).removeSpaceDirectory(any());
+        verify(this.removeOrganizationalUnitEvent,
+               never()).fire(any());
     }
 
     @Test

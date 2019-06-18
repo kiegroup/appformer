@@ -21,4 +21,6 @@ public interface SpaceConfigStorageRegistry {
     SpaceConfigStorage get(final String spaceName);
 
     void remove(final String spaceName);
+
+    boolean exist(String name);
 }

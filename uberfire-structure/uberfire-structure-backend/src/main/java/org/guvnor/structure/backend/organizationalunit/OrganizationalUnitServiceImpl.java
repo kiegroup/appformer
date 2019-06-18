@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -45,8 +45,14 @@ import org.guvnor.structure.organizationalunit.config.RepositoryInfo;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
+import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.repositories.impl.git.GitRepository;
+import org.guvnor.structure.server.config.ConfigGroup;
+import org.guvnor.structure.server.config.ConfigItem;
+import org.guvnor.structure.server.config.ConfigType;
+import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.structure.server.organizationalunit.OrganizationalUnitFactory;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.uberfire.ext.security.management.api.event.UserDeletedEvent;
@@ -62,6 +68,8 @@ import org.uberfire.spaces.SpacesAPI;
 @ApplicationScoped
 public class OrganizationalUnitServiceImpl implements OrganizationalUnitService {
 
+    public static final String DEFAULT_GROUP_ID = "defaultGroupId";
+    public static final String DELETED = "deleted";
     private OrganizationalUnitFactory organizationalUnitFactory;
 
     private Event<NewOrganizationalUnitEvent> newOrganizationalUnitEvent;
@@ -89,6 +97,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
     private FileSystem systemFS;
 
     private Event<SpaceContributorsUpdatedEvent> spaceContributorsUpdatedEvent;
+    private ConfigurationService configurationService;
 
     public OrganizationalUnitServiceImpl() {
     }
@@ -107,7 +116,8 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
                                          @Named("ioStrategy") final IOService ioService,
                                          final SpaceConfigStorageRegistry spaceConfigStorageRegistry,
                                          final @Named("systemFS") FileSystem systemFS,
-                                         Event<SpaceContributorsUpdatedEvent> spaceContributorsUpdatedEvent) {
+                                         final Event<SpaceContributorsUpdatedEvent> spaceContributorsUpdatedEvent,
+                                         final ConfigurationService configurationService) {
         this.organizationalUnitFactory = organizationalUnitFactory;
         this.repositoryService = repositoryService;
         this.newOrganizationalUnitEvent = newOrganizationalUnitEvent;
@@ -122,6 +132,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         this.spaceConfigStorageRegistry = spaceConfigStorageRegistry;
         this.systemFS = systemFS;
         this.spaceContributorsUpdatedEvent = spaceContributorsUpdatedEvent;
+        this.configurationService = configurationService;
     }
 
     public void userRemoved(final @Observes UserDeletedEvent event) {
@@ -154,12 +165,20 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
     @Override
     public OrganizationalUnit getOrganizationalUnit(final String name,
                                                     final boolean includeDeleted) {
-        SpaceInfo spaceInfo = spaceConfigStorageRegistry.get(name).loadSpaceInfo();
-        if (spaceInfo != null && (includeDeleted || !spaceInfo.isDeleted())) {
-            return organizationalUnitFactory.newOrganizationalUnit(spaceInfo);
+        if (spaceConfigStorageRegistry.exist(name) && !isDeleted(name)) {
+            SpaceInfo spaceInfo = this.spaceConfigStorageRegistry.get(name).loadSpaceInfo();
+            if (spaceInfo != null) {
+                return organizationalUnitFactory.newOrganizationalUnit(spaceInfo);
+            }
         } else {
-            return null;
+            if (includeDeleted) {
+                return this.getAllDeletedOrganizationalUnit()
+                        .stream()
+                        .filter(organizationalUnit -> organizationalUnit.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+            }
         }
+
+        return null;
     }
 
     @Override
@@ -169,24 +188,26 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
 
     @Override
     public Collection<OrganizationalUnit> getAllOrganizationalUnits(final boolean includeDeleted) {
-        return this.getAllOrganizationalUnits((spaceConfigStorage ->
-                includeDeleted || !spaceConfigStorage.loadSpaceInfo().isDeleted()));
-    }
-
-    public Collection<OrganizationalUnit> getAllOrganizationalUnits(final Function<SpaceConfigStorage, Boolean> function) {
         final List<OrganizationalUnit> spaces = new ArrayList<>();
 
         try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(getNiogitPath())) {
             for (java.nio.file.Path spacePath : stream) {
                 final File spaceDirectory = spacePath.toFile();
 
-                if (spaceDirectory.isDirectory() && !spaceDirectory.getName().equals("system")) {
+                if (spaceDirectory.isDirectory() && !spaceDirectory.getName().equals("system") && !isDeleted(spaceDirectory.getName())) {
                     SpaceConfigStorage configStorage = this.spaceConfigStorageRegistry.get(spaceDirectory.getName());
-                    if ( configStorage.isInitialized() && function.apply(configStorage)) {
-                        spaces.add(getOrganizationalUnit(spaceDirectory.getName(),
-                                                         true));
+                    if (configStorage.isInitialized()) {
+                        OrganizationalUnit ou = getOrganizationalUnit(spaceDirectory.getName(),
+                                                                      false);
+                        if (ou != null) {
+                            spaces.add(ou);
+                        }
                     }
                 }
+            }
+
+            if (includeDeleted) {
+                spaces.addAll(this.getAllDeletedOrganizationalUnit());
             }
 
             return spaces;
@@ -197,9 +218,20 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
 
     @Override
     public Collection<OrganizationalUnit> getAllDeletedOrganizationalUnit() {
-        return this.getAllOrganizationalUnits(spaceConfigStorage ->
-                                                      spaceConfigStorage.isInitialized()
-                                                              && spaceConfigStorage.loadSpaceInfo().isDeleted());
+        List<ConfigGroup> spaceConfiguration = this.configurationService.getConfiguration(ConfigType.SPACE);
+        return spaceConfiguration.stream()
+                .filter(configGroup -> Optional.ofNullable(configGroup.getConfigItem(DELETED)).isPresent())
+                .map(configGroup -> this.createDeletedOrganizationalUnit(configGroup))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isDeleted(String spaceName) {
+        List<ConfigGroup> spaceConfigurations = this.configurationService.getConfiguration(ConfigType.SPACE);
+        return spaceConfigurations.stream()
+                .filter(spaceConfiguration -> spaceConfiguration.getName().equalsIgnoreCase(spaceName) &&
+                        spaceConfiguration.getConfigItem(DELETED) != null)
+                .findFirst()
+                .isPresent();
     }
 
     @Override
@@ -262,7 +294,6 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         try {
             String _defaultGroupId = defaultGroupId == null || defaultGroupId.trim().isEmpty() ? getSanitizedDefaultGroupId(name) : defaultGroupId;
             final SpaceInfo spaceInfo = new SpaceInfo(name,
-                                                      false,
                                                       _defaultGroupId,
                                                       contributors,
                                                       getRepositoryAliases(repositories),
@@ -452,19 +483,28 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         if (organizationalUnit != null) {
             repositoryService.removeRepositories(organizationalUnit.getSpace(),
                                                  organizationalUnit.getRepositories().stream().map(repo -> repo.getAlias()).collect(Collectors.toSet()));
-
-            removeSpaceDirectory(organizationalUnit.getSpace());
+            removeSpaceDirectory(organizationalUnit);
             removeOrganizationalUnitEvent.fire(new RemoveOrganizationalUnitEvent(organizationalUnit,
                                                                                  getUserInfo(sessionInfo)));
         }
     }
 
-    private void removeSpaceDirectory(final Space space) {
-        SpaceConfigStorage configStorage = this.spaceConfigStorageRegistry.get(space.getName());
-        SpaceInfo spaceInfo = configStorage.loadSpaceInfo();
-        spaceInfo.setDeleted(true);
-        configStorage.saveSpaceInfo(spaceInfo);
-        this.spaceConfigStorageRegistry.remove(space.getName());
+    private void removeSpaceDirectory(final OrganizationalUnit organizationalUnit) {
+
+        this.configurationService.startBatch();
+        ConfigGroup configGroup = new ConfigGroup();
+        configGroup.setType(ConfigType.SPACE);
+        configGroup.setName(organizationalUnit.getSpace().getName());
+        ConfigItem<Boolean> deletedConfigItem = new ConfigItem<>();
+        deletedConfigItem.setName(DELETED);
+        deletedConfigItem.setValue(true);
+        configGroup.addConfigItem(deletedConfigItem);
+        ConfigItem<String> defaultGroupIdConfigItem = new ConfigItem<>();
+        defaultGroupIdConfigItem.setName(DEFAULT_GROUP_ID);
+        defaultGroupIdConfigItem.setValue(organizationalUnit.getDefaultGroupId());
+        configGroup.addConfigItem(defaultGroupIdConfigItem);
+        this.configurationService.addConfiguration(configGroup);
+        this.configurationService.endBatch();
     }
 
     @Override
@@ -531,7 +571,14 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
     boolean spaceDirectoryExists(String spaceName) {
         SpaceConfigStorage configStorage = this.spaceConfigStorageRegistry.get(spaceName);
         return getNiogitPath().resolve(spaceName).toFile().exists() &&
-                configStorage.isInitialized() &&
-                configStorage.loadSpaceInfo().isDeleted();
+                configStorage.isInitialized();
+    }
+
+    private OrganizationalUnit createDeletedOrganizationalUnit(ConfigGroup configGroup) {
+        String spaceName = configGroup.getName();
+        String defaultGroupId = configGroup.getConfigItemValue(DEFAULT_GROUP_ID);
+        return new OrganizationalUnitImpl(spaceName,
+                                          defaultGroupId,
+                                          true);
     }
 }
