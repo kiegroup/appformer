@@ -28,6 +28,8 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class RepositoryInfo {
 
+    private static final String CONTRIBUTORS = "contributors";
+    private static final String SECURITY_GROUPS = "security:groups";
     private String name;
     private boolean deleted;
     private RepositoryConfiguration configuration;
@@ -59,7 +61,7 @@ public class RepositoryInfo {
 
     public List<Contributor> getContributors() {
         return this.configuration.get(List.class,
-                                      "contributors",
+                                      CONTRIBUTORS,
                                       new ArrayList<Contributor>());
     }
 
@@ -71,7 +73,7 @@ public class RepositoryInfo {
 
     public List<String> getSecurityGroups() {
         return this.configuration.get(List.class,
-                                      "security:groups",
+                                      SECURITY_GROUPS,
                                       new ArrayList());
     }
 

@@ -22,6 +22,8 @@ import java.util.concurrent.Executors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.commons.async.DescriptiveThreadFactory;
 
 /**
@@ -29,6 +31,8 @@ import org.uberfire.commons.async.DescriptiveThreadFactory;
  * but it could change if any other container gets under support. They are in different variables on purpose.
  */
 public class ExecutorServiceProducer {
+
+    private Logger logger = LoggerFactory.getLogger(ExecutorServiceProducer.class);
 
     private final ExecutorService executorService;
     private final ExecutorService unmanagedExecutorService;
@@ -43,12 +47,24 @@ public class ExecutorServiceProducer {
 
     protected ExecutorService buildFixedThreadPoolExecutorService(String key) {
         String stringProperty = System.getProperty(key);
-        int threadLimit = stringProperty == null ? 0 : Integer.valueOf(stringProperty);
+        int threadLimit = stringProperty == null ? 0 : toInteger(stringProperty);
         if (threadLimit > 0) {
             return Executors.newFixedThreadPool(threadLimit,
                                                 new DescriptiveThreadFactory());
         } else {
             return Executors.newCachedThreadPool(new DescriptiveThreadFactory());
+        }
+    }
+
+    private Integer toInteger(String stringProperty) {
+        try {
+            return Integer.valueOf(stringProperty);
+        } catch (NumberFormatException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Property {} is invalid, defaulting to 0",
+                             stringProperty);
+            }
+            return 0;
         }
     }
 

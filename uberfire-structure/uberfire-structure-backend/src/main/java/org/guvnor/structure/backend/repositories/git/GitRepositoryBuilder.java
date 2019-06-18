@@ -37,7 +37,6 @@ import org.guvnor.structure.repositories.RepositoryExternalUpdateEvent;
 import org.guvnor.structure.repositories.impl.DefaultPublicURI;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.guvnor.structure.server.config.PasswordService;
-import org.guvnor.structure.server.config.SecureConfigItem;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileSystem;
@@ -51,6 +50,8 @@ import static org.uberfire.backend.server.util.Paths.convert;
 
 public class GitRepositoryBuilder {
 
+    private static final String SECURE_PREFIX = "secure:";
+    public static final String PROTOCOL_SEPARATOR = "://";
     private final IOService ioService;
     private final PasswordService secureService;
     private SpacesAPI spacesAPI;
@@ -103,7 +104,7 @@ public class GitRepositoryBuilder {
         final List<PublicURI> publicURIs = new ArrayList<>(uris.length);
 
         for (final String s : uris) {
-            final int protocolStart = s.indexOf("://");
+            final int protocolStart = s.indexOf(PROTOCOL_SEPARATOR);
             publicURIs.add(getPublicURI(s,
                                         protocolStart));
         }
@@ -130,8 +131,8 @@ public class GitRepositoryBuilder {
     private void addEnvironmentParameters(final Map<String, Object> items) {
         for (final Map.Entry<String, Object> item : items.entrySet()) {
             String key = item.getKey();
-            if (key.startsWith("secure:")) {
-                repo.addEnvironmentParameter(key.substring(key.indexOf("secure:")),
+            if (key.startsWith(SECURE_PREFIX)) {
+                repo.addEnvironmentParameter(key.substring(key.indexOf(SECURE_PREFIX)),
                                              secureService.decrypt(item.getValue().toString()));
             } else {
                 repo.addEnvironmentParameter(key,

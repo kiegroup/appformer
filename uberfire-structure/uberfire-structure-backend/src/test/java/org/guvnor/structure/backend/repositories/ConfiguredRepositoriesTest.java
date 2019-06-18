@@ -71,18 +71,18 @@ public class ConfiguredRepositoriesTest {
         ArrayList<RepositoryInfo> repositoriesSpace1 = new ArrayList<>();
         repositoriesSpace1.add(addRepository(SPACE1,
                                              REPO1S1,
-                                             createAdminContributor("admin1"),
+                                             createAdminContributors("admin1"),
                                              "master"));
         repositoriesSpace1.add(addRepository(SPACE1,
                                              REPO2S1,
-                                             createAdminContributor("admin1"),
+                                             createAdminContributors("admin1"),
                                              "master",
                                              "dev",
                                              "release"));
 
         SpaceInfo space1 = new SpaceInfo(SPACE1.getName(),
                                          "com.space1",
-                                         createAdminContributor("admin1"),
+                                         createAdminContributors("admin1"),
                                          repositoriesSpace1,
                                          Collections.emptyList());
 
@@ -106,7 +106,7 @@ public class ConfiguredRepositoriesTest {
 
         SpaceInfo space2 = new SpaceInfo(SPACE2.getName(),
                                          "com.space2",
-                                         createAdminContributor("admin2"),
+                                         createAdminContributors("admin2"),
                                          repositoriesSpace2,
                                          Collections.emptyList());
 
@@ -129,7 +129,7 @@ public class ConfiguredRepositoriesTest {
                                                                 spaceConfigStorageRegistry);
     }
 
-    private List<Contributor> createAdminContributor(String... username) {
+    private List<Contributor> createAdminContributors(String... username) {
         List<Contributor> contributors = new ArrayList<>();
         for (int i = 0; i < username.length; i++) {
             contributors.add(new Contributor(username[i],

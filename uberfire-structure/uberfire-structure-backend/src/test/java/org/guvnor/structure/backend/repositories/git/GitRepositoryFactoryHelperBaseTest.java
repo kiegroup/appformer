@@ -127,40 +127,6 @@ public abstract class GitRepositoryFactoryHelperBaseTest {
                                                 this.getConfig()));
     }
 
-    /**
-     * This test is ignored for now. As physical deletion doesn't exist right now this test is not valid.
-     * It will never try to replace an existent project because before it could do this a new name will be asigned.
-     */
-    @Test
-    @Ignore
-    public void testNewRepositoryDontReplaceIfExists() {
-
-        rootDirectories.add(createPath("default://master@uf-playground"));
-
-        RepositoryConfiguration config = this.getConfig();
-        config.add("replaceIfExists",
-                   true);
-
-        RepositoryInfo repositoryInfo = new RepositoryInfo("test",
-                                                           false,
-                                                           config);
-
-        final IOService service = getServiceToTest();
-
-        when(service.newFileSystem(any(URI.class),
-                                   anyMap()))
-                .thenThrow(FileSystemAlreadyExistsException.class);
-        when(service.getFileSystem(any(URI.class))).thenReturn(fileSystem);
-
-        helper.newRepository(repositoryInfo);
-
-        verify(service,
-               never()).delete(any(Path.class));
-        verify(service,
-               times(1)).newFileSystem(any(URI.class),
-                                       anyMap());
-    }
-
     @Test
     public void testNewRepositoryReplaceIfExists() {
 
