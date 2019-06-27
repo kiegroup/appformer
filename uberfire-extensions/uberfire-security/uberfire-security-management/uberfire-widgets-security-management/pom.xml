@@ -72,6 +72,12 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-security-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-security-client-backend</artifactId>
       <scope>provided</scope>
     </dependency>
