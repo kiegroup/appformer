@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder;
+package org.dashbuilder.migration;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
@@ -44,9 +44,9 @@ import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemImpl;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DashbuilderMigrationServiceTest {
+public class DashbuilderDataMigrationTest {
 
-    private DashbuilderMigrationService migrationService;
+    private DashbuilderDataMigration dashbuilderDataMigration;
     private IOService ioService;
     private FileSystem sourceFS;
     private FileSystem targetFS;
@@ -58,8 +58,8 @@ public class DashbuilderMigrationServiceTest {
         sourceFS = createTempFileSystem();
         targetFS = createTempFileSystem();
 
-        migrationService = spy(
-            new DashbuilderMigrationService(
+        dashbuilderDataMigration = spy(
+            new DashbuilderDataMigration(
                 ioService,
                 null,
                 null,
@@ -71,23 +71,23 @@ public class DashbuilderMigrationServiceTest {
     public void testMigrateNull() {
         checkInitialCondition();
 
-        migrationService.migrateDatasets(null, null);
-        migrationService.migratePerspectives(null, null);
-        migrationService.migrateNavigation(null, null);
+        dashbuilderDataMigration.migrateDatasets(null, null);
+        dashbuilderDataMigration.migratePerspectives(null, null);
+        dashbuilderDataMigration.migrateNavigation(null, null);
 
-        migrationService.migrateDatasets(sourceFS, null);
+        dashbuilderDataMigration.migrateDatasets(sourceFS, null);
         checkInitialCondition();
-        migrationService.migrateDatasets(null, targetFS);
-        checkInitialCondition();
-
-        migrationService.migratePerspectives(sourceFS, null);
-        checkInitialCondition();
-        migrationService.migratePerspectives(null, targetFS);
+        dashbuilderDataMigration.migrateDatasets(null, targetFS);
         checkInitialCondition();
 
-        migrationService.migrateNavigation(sourceFS, null);
+        dashbuilderDataMigration.migratePerspectives(sourceFS, null);
         checkInitialCondition();
-        migrationService.migrateNavigation(null, targetFS);
+        dashbuilderDataMigration.migratePerspectives(null, targetFS);
+        checkInitialCondition();
+
+        dashbuilderDataMigration.migrateNavigation(sourceFS, null);
+        checkInitialCondition();
+        dashbuilderDataMigration.migrateNavigation(null, targetFS);
         checkInitialCondition();
     }
 
@@ -95,13 +95,13 @@ public class DashbuilderMigrationServiceTest {
     public void testMigrateEmpty() {
         checkInitialCondition();
 
-        migrationService.migrateDatasets(sourceFS, targetFS);
+        dashbuilderDataMigration.migrateDatasets(sourceFS, targetFS);
         checkInitialCondition();
 
-        migrationService.migratePerspectives(sourceFS, targetFS);
+        dashbuilderDataMigration.migratePerspectives(sourceFS, targetFS);
         checkInitialCondition();
 
-        migrationService.migrateNavigation(sourceFS, targetFS);
+        dashbuilderDataMigration.migrateNavigation(sourceFS, targetFS);
         checkInitialCondition();
     }
 
@@ -111,7 +111,7 @@ public class DashbuilderMigrationServiceTest {
 
         createFiles(sourceFS);
 
-        migrationService.migrateDatasets(sourceFS, targetFS);
+        dashbuilderDataMigration.migrateDatasets(sourceFS, targetFS);
 
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);
@@ -139,7 +139,7 @@ public class DashbuilderMigrationServiceTest {
 
         createFiles(sourceFS);
 
-        migrationService.migratePerspectives(sourceFS, targetFS);
+        dashbuilderDataMigration.migratePerspectives(sourceFS, targetFS);
 
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);
@@ -167,7 +167,7 @@ public class DashbuilderMigrationServiceTest {
 
         createFiles(sourceFS);
 
-        migrationService.migrateNavigation(sourceFS, targetFS);
+        dashbuilderDataMigration.migrateNavigation(sourceFS, targetFS);
 
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);

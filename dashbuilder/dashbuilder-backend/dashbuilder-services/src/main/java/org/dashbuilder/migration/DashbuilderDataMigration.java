@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder;
+package org.dashbuilder.migration;
 
 import java.util.HashMap;
 import java.util.function.Predicate;
@@ -47,8 +47,8 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 
 @ApplicationScoped
 @Startup
-public class DashbuilderMigrationService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DashbuilderMigrationService.class);
+public class DashbuilderDataMigration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DashbuilderDataMigration.class);
 
     private IOService ioService;
     private FileSystem datasetsFS;
@@ -56,12 +56,12 @@ public class DashbuilderMigrationService {
     private FileSystem perspectivesFS;
     private FileSystem navigationFS;
 
-    public DashbuilderMigrationService() {
+    public DashbuilderDataMigration() {
 
     }
 
     @Inject
-    public DashbuilderMigrationService(
+    public DashbuilderDataMigration(
             final @Named("ioStrategy") IOService ioService,
             final @Named("datasetsFS") FileSystem datasetsFS,
             final @Named("pluginsFS") FileSystem pluginsFS,
