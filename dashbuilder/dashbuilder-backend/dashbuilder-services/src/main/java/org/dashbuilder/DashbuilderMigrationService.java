@@ -77,25 +77,43 @@ public class DashbuilderMigrationService {
 
     @PostConstruct
     private void init() {
+        migrateDatasets();
+        migratePerspectives();
+        migrateNavigation();
+    }
+
+    private void migrateDatasets() {
+        FileSystem oldDatasetsFS;
         URI uri = new SpacesAPIImpl().resolveFileSystemURI(
                 SpacesAPI.Scheme.DEFAULT,
                 SpacesAPI.DEFAULT_SPACE,
                 "datasets");
-        FileSystem oldDatasetsFS;
+
         try {
-            oldDatasetsFS = ioService.newFileSystem(uri, new HashMap<String, Object>());
+            oldDatasetsFS = ioService.newFileSystem(
+                    uri,
+                    new HashMap<String, Object>() {{
+                        put("init", Boolean.TRUE);
+                    }});
         } catch (FileSystemAlreadyExistsException e) {
             oldDatasetsFS = ioService.getFileSystem(uri);
         }
+
         migrateDatasets(oldDatasetsFS, datasetsFS);
+
         Path oldDatasetsRoot = getRoot(oldDatasetsFS);
         if (oldDatasetsRoot != null) {
             JGitFileSystem fs = (JGitFileSystem) oldDatasetsFS;
             Path path = Paths.get("file://" + fs.getGit().getRepository().getDirectory().getAbsolutePath());
             Files.delete(path, StandardDeleteOption.NON_EMPTY_DIRECTORIES);
         }
+    }
 
+    private void migratePerspectives() {
         migratePerspectives(pluginsFS, perspectivesFS);
+    }
+
+    private void migrateNavigation() {
         migrateNavigation(pluginsFS, navigationFS);
     }
 
