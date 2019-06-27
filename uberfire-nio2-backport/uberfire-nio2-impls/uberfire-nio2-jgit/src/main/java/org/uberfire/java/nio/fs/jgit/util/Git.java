@@ -37,6 +37,7 @@ import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RefSpec;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.java.nio.base.FileDiff;
+import org.uberfire.java.nio.base.TextualDiff;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.java.nio.fs.jgit.util.commands.Clone;
@@ -251,6 +252,12 @@ public interface Git {
 
     List<FileDiff> diffRefs(final String branchA,
                             final String branchB);
+
+    List<TextualDiff> textualDiffRefs(final String branchA,
+                                      final String branchB);
+
+    List<String> conflictBranchesChecker(final String branchA,
+                                         final String branchB);
 
     void squash(final String branch,
                 final String startCommit,

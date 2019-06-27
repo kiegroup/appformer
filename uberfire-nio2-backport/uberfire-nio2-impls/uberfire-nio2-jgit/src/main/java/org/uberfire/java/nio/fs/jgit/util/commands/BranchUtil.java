@@ -21,6 +21,11 @@ import java.util.List;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
+import org.uberfire.java.nio.fs.jgit.util.Git;
+import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 
 public class BranchUtil {
 
@@ -42,5 +47,34 @@ public class BranchUtil {
                 .setBranchNames(toDelete)
                 .setForce(true)
                 .call();
+    }
+
+    public static void existsBranch(final Git git,
+                                    final String branch) {
+        if (git.getRef(branch) == null) {
+            throw new GitException(String.format("Branch <<%s>> does not exists",
+                                                 branch));
+        }
+    }
+
+    public static RevCommit getCommonAncestor(final Git git,
+                                              final String branchA,
+                                              final String branchB) {
+
+        try (final RevWalk revWalk = new RevWalk(git.getRepository())) {
+            final RevCommit lastSourceCommit = git.getLastCommit(branchA);
+            final RevCommit lastTargetCommit = git.getLastCommit(branchB);
+
+            final RevCommit commitA = revWalk.lookupCommit(lastSourceCommit);
+            final RevCommit commitB = revWalk.lookupCommit(lastTargetCommit);
+
+            revWalk.setRevFilter(RevFilter.MERGE_BASE);
+            revWalk.markStart(commitA);
+            revWalk.markStart(commitB);
+            return revWalk.next();
+        } catch (Exception e) {
+            throw new GitException("Problem when trying to get common ancestor",
+                                   e);
+        }
     }
 }

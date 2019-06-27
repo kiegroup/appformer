@@ -89,7 +89,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
     }
 
     @Test
-    public void testDiffWithRemovedFile() throws IOException {
+    public void testDiffWithRemovedFile() {
         new Commit(git, DEVELOP_BRANCH, "name", "name@example.com", "Removing file",
                    null, null, false,
                    new HashMap<String, File>() {{
@@ -245,12 +245,5 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
         List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, "nonExistentBranch").execute();
 
         assertThat(fileDiffs).isEmpty();
-    }
-
-    private static String multiline(String prefix, String... lines) {
-        return Arrays.stream(lines)
-                .map(s -> prefix + s)
-                .reduce((s1, s2) -> s1 + "\n" + s2)
-                .orElse("");
     }
 }

@@ -22,13 +22,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jgit.lib.AnyObjectId;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.merge.ThreeWayMerger;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.fs.jgit.util.Git;
@@ -66,18 +63,19 @@ public class Merge {
 
     public List<String> execute() {
 
-        existsBranch(git,
-                     sourceBranch);
-        existsBranch(git,
-                     targetBranch);
+        BranchUtil.existsBranch(git,
+                                sourceBranch);
+        BranchUtil.existsBranch(git,
+                                targetBranch);
 
         final Repository repo = git.getRepository();
 
         final RevCommit lastSourceCommit = git.getLastCommit(sourceBranch);
         final RevCommit lastTargetCommit = git.getLastCommit(targetBranch);
 
-        final RevCommit commonAncestor = getCommonAncestor(lastSourceCommit,
-                                                           lastTargetCommit);
+        final RevCommit commonAncestor = BranchUtil.getCommonAncestor(git,
+                                                                      sourceBranch,
+                                                                      targetBranch);
         final List<RevCommit> commits = git.listCommits(commonAncestor,
                                                         lastSourceCommit);
 
@@ -125,31 +123,6 @@ public class Merge {
             throw new GitException(String.format("Cannot merge braches from <%s> to <%s>, merge conflicts",
                                                  sourceBranch,
                                                  targetBranch),
-                                   e);
-        }
-    }
-
-    private void existsBranch(final Git git,
-                              final String branch) {
-        if (git.getRef(branch) == null) {
-            throw new GitException(String.format("Branch <<%s>> does not exists",
-                                                 branch));
-        }
-    }
-
-    private RevCommit getCommonAncestor(final ObjectId rightCommit,
-                                        final ObjectId leftCommit) {
-
-        try (final RevWalk revWalk = new RevWalk(git.getRepository())) {
-            final RevCommit commitA = revWalk.lookupCommit(rightCommit);
-            final RevCommit commitB = revWalk.lookupCommit(leftCommit);
-
-            revWalk.setRevFilter(RevFilter.MERGE_BASE);
-            revWalk.markStart(commitA);
-            revWalk.markStart(commitB);
-            return revWalk.next();
-        } catch (Exception e) {
-            throw new GitException("Problem when trying to get common ancestor",
                                    e);
         }
     }

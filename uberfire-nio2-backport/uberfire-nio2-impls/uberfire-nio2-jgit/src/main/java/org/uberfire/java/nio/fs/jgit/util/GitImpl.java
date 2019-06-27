@@ -52,11 +52,13 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.commons.config.ConfigProperties;
 import org.uberfire.commons.data.Pair;
 import org.uberfire.java.nio.base.FileDiff;
+import org.uberfire.java.nio.base.TextualDiff;
 import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.java.nio.fs.jgit.util.commands.BlobAsInputStream;
 import org.uberfire.java.nio.fs.jgit.util.commands.CherryPick;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
+import org.uberfire.java.nio.fs.jgit.util.commands.ConflictBranchesChecker;
 import org.uberfire.java.nio.fs.jgit.util.commands.ConvertRefTree;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.DeleteBranch;
@@ -80,6 +82,7 @@ import org.uberfire.java.nio.fs.jgit.util.commands.ResolveRevCommit;
 import org.uberfire.java.nio.fs.jgit.util.commands.SimpleRefUpdateCommand;
 import org.uberfire.java.nio.fs.jgit.util.commands.Squash;
 import org.uberfire.java.nio.fs.jgit.util.commands.SyncRemote;
+import org.uberfire.java.nio.fs.jgit.util.commands.TextualDiffBranches;
 import org.uberfire.java.nio.fs.jgit.util.commands.UpdateRemoteConfig;
 import org.uberfire.java.nio.fs.jgit.util.model.CommitContent;
 import org.uberfire.java.nio.fs.jgit.util.model.CommitHistory;
@@ -294,6 +297,21 @@ public class GitImpl implements Git {
         return new DiffBranches(this,
                                 branchA,
                                 branchB).execute();
+    }
+
+    @Override
+    public List<TextualDiff> textualDiffRefs(final String branchA,
+                                             final String branchB) {
+        return new TextualDiffBranches(this,
+                                       branchA,
+                                       branchB).execute();
+    }
+
+    @Override
+    public List<String> conflictBranchesChecker(String branchA, String branchB) {
+        return new ConflictBranchesChecker(this,
+                                           branchA,
+                                           branchB).execute();
     }
 
     @Override
