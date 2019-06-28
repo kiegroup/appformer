@@ -1,11 +1,11 @@
 /*
- * 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.repositories;
+package org.guvnor.structure.repositories.changerequest;
 
+import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class PullRequestAlreadyExistsException extends RuntimeException {
+public class ChangeRequestListUpdatedEvent {
 
-    public PullRequestAlreadyExistsException() {
-        super();
+    private final String repositoryId;
+
+    public ChangeRequestListUpdatedEvent(final @MapsTo("repositoryId") String repository) {
+        this.repositoryId = repository;
     }
 
-    public PullRequestAlreadyExistsException(PullRequest pullRequest) {
-        super("The pull request already exists = " + pullRequest);
+    public String getRepositoryId() {
+        return repositoryId;
     }
 }
