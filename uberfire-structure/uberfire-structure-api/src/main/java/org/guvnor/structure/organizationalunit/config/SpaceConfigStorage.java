@@ -16,6 +16,10 @@
 
 package org.guvnor.structure.organizationalunit.config;
 
+import java.util.List;
+
+import org.guvnor.structure.repositories.changerequest.ChangeRequest;
+
 public interface SpaceConfigStorage {
 
     void setup(final String spaceName);
@@ -42,4 +46,20 @@ public interface SpaceConfigStorage {
 
     void close();
 
+    List<ChangeRequest> loadChangeRequests(final String repositoryAlias);
+
+    ChangeRequest loadChangeRequest(final String repositoryAlias,
+                                    final Long changeRequestId);
+
+    void saveChangeRequest(final String repositoryAlias,
+                           final ChangeRequest changeRequest);
+
+    void deleteAllChangeRequests(final String repositoryAlias);
+
+    void deleteChangeRequest(final String repositoryAlias,
+                             final Long changeRequestId);
+
+    void deleteRepository(final String repositoryAlias);
+
+    List<Long> getChangeRequestIds(final String repositoryAlias);
 }

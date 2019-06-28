@@ -443,6 +443,8 @@ public class RepositoryServiceImpl implements RepositoryService {
             if (repo != null) {
                 this.close(repo.getDefaultBranch());
                 notification.accept(repo);
+
+                configStorage.deleteRepository(repo.getAlias());
             }
 
             //Remove reference to Repository from Organizational Units

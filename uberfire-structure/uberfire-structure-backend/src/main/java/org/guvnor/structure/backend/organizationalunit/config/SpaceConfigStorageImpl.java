@@ -17,8 +17,12 @@
 package org.guvnor.structure.backend.organizationalunit.config;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -27,11 +31,21 @@ import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.organizationalunit.config.RolePermissions;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
+import org.guvnor.structure.repositories.changerequest.ChangeRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.IOException;
+import org.uberfire.java.nio.file.FileVisitResult;
 import org.uberfire.java.nio.file.Path;
+import org.uberfire.java.nio.file.SimpleFileVisitor;
+import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.util.URIUtil;
+
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
+import static org.uberfire.java.nio.file.Files.walkFileTree;
 
 public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
@@ -39,6 +53,11 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
     public static final String BRANCH_PERMISSIONS = "BranchPermissions";
     public static final String SPACE_INFO = "SpaceInfo";
+
+    private static final String CHANGE_REQUESTS_FOLDER = "change_requests";
+    private static final String CHANGE_REQUESTS_FILE = "information.cr";
+
+    private static final Logger logger = LoggerFactory.getLogger(SpaceConfigStorageImpl.class);
 
     private ObjectStorage objectStorage;
     private IOService ioService;
@@ -94,6 +113,90 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         objectStorage.delete(buildBranchConfigFilePath(branchName,
                                                        projectIdentifier,
                                                        BRANCH_PERMISSIONS));
+    }
+
+    @Override
+    public List<ChangeRequest> loadChangeRequests(final String repositoryAlias) {
+        return getChangeRequestIds(repositoryAlias).stream()
+                .map(changeRequestId -> loadChangeRequest(repositoryAlias, changeRequestId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ChangeRequest loadChangeRequest(final String repositoryAlias,
+                                           final Long changeRequestId) {
+        return objectStorage.read(buildChangeRequestsFilePath(repositoryAlias,
+                                                              changeRequestId));
+    }
+
+    @Override
+    public void saveChangeRequest(final String repositoryAlias,
+                                  final ChangeRequest changeRequest) {
+        objectStorage.write(buildChangeRequestsFilePath(repositoryAlias,
+                                                        changeRequest.getId()),
+                            changeRequest);
+    }
+
+    @Override
+    public void deleteAllChangeRequests(final String repositoryAlias) {
+        getChangeRequestPaths(repositoryAlias).forEach(changeRequestPath ->
+                                                               objectStorage.delete(changeRequestPath.toString()));
+    }
+
+    @Override
+    public void deleteChangeRequest(final String repositoryAlias,
+                                    final Long changeRequestId) {
+        objectStorage.delete(buildChangeRequestsFilePath(repositoryAlias,
+                                                         changeRequestId));
+    }
+
+    @Override
+    public void deleteRepository(final String repositoryAlias) {
+        deleteAllChangeRequests(repositoryAlias);
+        objectStorage.delete(buildRepositoryFolderPath(repositoryAlias));
+    }
+
+    @Override
+    public List<Long> getChangeRequestIds(String repositoryAlias) {
+        return getChangeRequestPaths(repositoryAlias)
+                .stream()
+                .map(Path::getParent)
+                .map(path -> Long.valueOf(path.getFileName().toString()))
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private List<Path> getChangeRequestPaths(final String repositoryAlias) {
+        List<Path> changeRequestPaths = new ArrayList<>();
+
+        final String repositoryPathStr = buildRepositoryFolderPath(repositoryAlias);
+
+        if (objectStorage.exists(repositoryPathStr)) {
+            Path repositoryPath = objectStorage.getPath(repositoryPathStr);
+
+            walkFileTree(repositoryPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    try {
+                        checkNotNull("file",
+                                     file);
+                        checkNotNull("attrs",
+                                     attrs);
+
+                        if (file.getFileName().toString().equals(CHANGE_REQUESTS_FILE) && attrs.isRegularFile()) {
+                            changeRequestPaths.add(file);
+                        }
+                    } catch (Exception ex) {
+                        logger.error("An unexpected exception was thrown: ", ex);
+                        return FileVisitResult.TERMINATE;
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+
+        return changeRequestPaths;
     }
 
     BranchPermissions getDefaultBranchPermissions(String branchName) {
@@ -165,6 +268,24 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
                                      final String projectIdentifier,
                                      final String configName) {
         return "/config/" + encode(projectIdentifier) + "/" + encode(branchName) + "/" + configName + FILE_FORMAT;
+    }
+
+    private String buildRepositoryFolderPath(final String repositoryAlias) {
+        return String.format("/%s", encode(repositoryAlias));
+    }
+
+    private String buildChangeRequestsFolderPath(final String repositoryAlias) {
+        return String.format("%s/%s",
+                             buildRepositoryFolderPath(repositoryAlias),
+                             CHANGE_REQUESTS_FOLDER);
+    }
+
+    private String buildChangeRequestsFilePath(final String repositoryAlias,
+                                               final long changeRequestId) {
+        return String.format("%s/%s/%s",
+                             buildChangeRequestsFolderPath(repositoryAlias),
+                             changeRequestId,
+                             CHANGE_REQUESTS_FILE);
     }
 
     private String encode(final String text) {
