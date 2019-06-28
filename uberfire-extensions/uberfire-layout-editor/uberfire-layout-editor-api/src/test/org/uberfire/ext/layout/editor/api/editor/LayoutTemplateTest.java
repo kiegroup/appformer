@@ -40,7 +40,7 @@ public class LayoutTemplateTest {
         
         assertTrue(template.contains(component));
         
-        assertTrue(! template.contains(otherComponent));
+        assertTrue(!template.contains(otherComponent));
     }
 
 }
