@@ -364,7 +364,7 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-preferences-client-backend</artifactId>
+      <artifactId>uberfire-preferences-client</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -494,6 +494,20 @@
       <artifactId>gwtbootstrap3</artifactId>
     </dependency>
 
+    <!-- Uberfire SSH -->
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-ssh-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-ssh-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-ssh-backend</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -536,7 +550,7 @@
 
             <!-- UF-ext -->
             <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
-            <compileSourcesArtifact>org.uberfire:uberfire-preferences-client-backend</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-preferences-ui-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-client</compileSourcesArtifact>
@@ -566,6 +580,10 @@
             <!-- Uberfire Experimentals -->
             <compileSourcesArtifact>org.uberfire:uberfire-experimental-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-experimental-client</compileSourcesArtifact>
+
+            <compileSourcesArtifact>org.uberfire:uberfire-ssh-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-ssh-api</compileSourcesArtifact>
+
           </compileSourcesArtifacts>
         </configuration>
         <executions>
