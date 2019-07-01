@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -437,13 +438,9 @@ public class RepositoryServiceImpl implements RepositoryService {
                 configStorage.startBatch();
             }
 
-            Repository repo = this.configuredRepositories.getRepositoryByRepositoryAlias(orgUnit.getSpace(),
-                                                                                         alias);
-
-            if (repo != null) {
-                this.close(repo.getDefaultBranch());
-                notification.accept(repo);
-            }
+            Optional<Repository> repo = Optional.ofNullable(this.configuredRepositories.getRepositoryByRepositoryAlias(orgUnit.getSpace(),
+                                                                                                                       alias));
+            repo.ifPresent(r -> this.close(r.getDefaultBranch()));
 
             //Remove reference to Repository from Organizational Units
             for (Repository repository : orgUnit.getRepositories()) {
@@ -453,6 +450,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                     metadataStore.delete(alias);
                 }
             }
+            repo.ifPresent(r -> notification.accept(r));
         } finally {
             if (lock) {
                 configStorage.endBatch();
