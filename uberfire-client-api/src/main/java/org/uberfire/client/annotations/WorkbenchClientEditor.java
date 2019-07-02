@@ -21,11 +21,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.inject.Qualifier;
-
-import org.uberfire.client.workbench.type.ClientResourceType;
-
 /**
+ * 
+ * This annotation works like {@code @WorkbenchEditor}, and can be used for editors client side only editors.
+ * 
  * Classes annotated with this are considered WorkbenchParts that perform some
  * "editor" function for the specified file-type.
  * <p>
