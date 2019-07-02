@@ -425,7 +425,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
     }
 
-    private void doRemoveRepository(final OrganizationalUnit orgUnit,
+    protected void doRemoveRepository(final OrganizationalUnit orgUnit,
                                     final String alias,
                                     final Optional<org.guvnor.structure.organizationalunit.config.RepositoryInfo> thisRepositoryConfig,
                                     final Consumer<Repository> notification,
@@ -458,7 +458,7 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
     }
 
-    private void close(Optional<Branch> defaultBranch) {
+    protected void close(Optional<Branch> defaultBranch) {
         defaultBranch.ifPresent(branch -> {
             FileSystem fs = convert(branch.getPath()).getFileSystem();
             fs.close();
