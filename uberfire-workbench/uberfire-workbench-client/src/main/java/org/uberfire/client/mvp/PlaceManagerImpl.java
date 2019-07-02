@@ -234,6 +234,16 @@ public class PlaceManagerImpl
                                                     UnanchoredStaticWorkbenchPanelPresenter.class.getName()));
     }
 
+    @Override
+    public void goTo(final PlaceRequest place,
+                     final elemental2.dom.HTMLElement addTo) {
+        closeOpenPlacesAt(panelsOfThisHTMLElement(addTo));
+
+        goToTargetPanel(place,
+                        panelManager.addCustomPanel(addTo,
+                                                    UnanchoredStaticWorkbenchPanelPresenter.class.getName()));
+    }
+
     private void closeOpenPlacesAt(Predicate<CustomPanelDefinition> filterPanels) {
         new HashSet<>(customPanels.values()).stream()
                 .filter(filterPanels)
@@ -247,6 +257,10 @@ public class PlaceManagerImpl
 
     private Predicate<CustomPanelDefinition> panelsOfThisHasWidgets(HasWidgets addTo) {
         return p -> p.getHasWidgetsContainer().isPresent() && p.getHasWidgetsContainer().get().equals(addTo);
+    }
+
+    private Predicate<CustomPanelDefinition> panelsOfThisHTMLElement(elemental2.dom.HTMLElement addTo) {
+        return p -> p.getElemental2HtmlElementContainer().isPresent() && p.getElemental2HtmlElementContainer().get().equals(addTo);
     }
 
     private void goToTargetPanel(final PlaceRequest place,
@@ -470,7 +484,11 @@ public class PlaceManagerImpl
                 if (pr instanceof PathPlaceRequest) {
                     final Path visiblePath = ((PathPlaceRequest) pr).getPath();
                     final String visiblePathURI = visiblePath.toURI();
-                    if ((visiblePathURI != null && visiblePathURI.compareTo(path.toURI()) == 0) || visiblePath.compareTo(path) == 0) {
+                    final String prHash = pr.getParameter("hash", "");
+                    final String placeHash = place.getParameter("hash", "");
+                    if (prHash.equals(placeHash) &&
+                            ((visiblePathURI != null && visiblePathURI.compareTo(path.toURI()) == 0)
+                                    || visiblePath.compareTo(path) == 0)) {
                         return new ResolvedRequest(getActivity(pr),
                                                    pr);
                     }

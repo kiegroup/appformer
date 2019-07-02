@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,6 +88,8 @@ public class PanelManagerTest {
     SimpleWorkbenchPanelPresenter workbenchPanelPresenter;
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     LayoutSelection layoutSelection;
+    @Mock
+    Elemental2DomUtil elemental2DomUtil;
 
     private PanelManagerImpl panelManager;
 
@@ -148,7 +151,8 @@ public class PanelManagerTest {
                                                 null,
                                                 null,
                                                 layoutSelection,
-                                                beanFactory));
+                                                beanFactory,
+                                                elemental2DomUtil));
         panelManager.setRoot(testPerspectiveActivity,
                              testPerspectiveDef.getRoot());
 
