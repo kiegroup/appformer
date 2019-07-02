@@ -83,11 +83,11 @@ public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistr
         return this.storageBySpaceName.containsKey(spaceName);
     }
 
-    private class SpaceStorageBatchImpl implements SpaceConfigStorageBatch {
+    public static class SpaceStorageBatchImpl implements SpaceConfigStorageBatch {
 
         private SpaceConfigStorage spaceConfigStorage;
 
-        SpaceStorageBatchImpl(SpaceConfigStorage spaceConfigStorage) {
+        public SpaceStorageBatchImpl(SpaceConfigStorage spaceConfigStorage) {
             this.spaceConfigStorage = spaceConfigStorage;
         }
 
@@ -104,7 +104,7 @@ public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistr
         }
     }
 
-    private class SpaceConfigStorageBatchContextImpl implements SpaceConfigStorageBatch.SpaceConfigStorageBatchContext {
+    private static class SpaceConfigStorageBatchContextImpl implements SpaceConfigStorageBatch.SpaceConfigStorageBatchContext {
 
         private SpaceConfigStorage spaceConfigStorage;
         private SpaceInfo info;
