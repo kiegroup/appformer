@@ -36,6 +36,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-services-api</artifactId>
     </dependency>
@@ -124,6 +129,11 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-model</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-nio2-jgit</artifactId>
     </dependency>
 
     <dependency>
