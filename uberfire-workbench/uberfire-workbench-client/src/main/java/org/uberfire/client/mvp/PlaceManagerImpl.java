@@ -1178,6 +1178,10 @@ public class PlaceManagerImpl
         }
 
         if (activity.isType(ActivityResourceType.SCREEN.name()) || activity.isType(ActivityResourceType.EDITOR.name())) {
+            if (Boolean.valueOf(place.getParameter("readOnly", "false"))){
+                return true;
+            }
+
             WorkbenchActivity activity1 = (WorkbenchActivity) activity;
             if (onMayCloseList.containsKey(place) || activity1.onMayClose()) {
                 return true;
