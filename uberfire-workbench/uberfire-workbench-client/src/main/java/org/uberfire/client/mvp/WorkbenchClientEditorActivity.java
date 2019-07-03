@@ -25,8 +25,18 @@ import org.uberfire.workbench.model.ActivityResourceType;
  */
 public interface WorkbenchClientEditorActivity extends WorkbenchActivity {
 
+    /**
+     * Set the editor content
+     * @param value
+     *  The the editor content
+     */
     void setContent(String value);
 
+    /**
+     * Get the editor content
+     * 
+     * @return
+     */
     Promise<String> getContent();
 
     boolean isDirty();

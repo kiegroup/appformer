@@ -20,15 +20,12 @@ import java.util.Collection;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 
-import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.preferences.shared.PreferenceScope;
 import org.uberfire.preferences.shared.bean.BasePreference;
 import org.uberfire.preferences.shared.bean.BasePreferencePortable;
-import org.uberfire.preferences.shared.bean.PreferenceBeanServerStore;
 import org.uberfire.preferences.shared.bean.PreferenceBeanStore;
 import org.uberfire.preferences.shared.impl.PreferenceScopeResolutionStrategyInfo;
 
@@ -43,7 +40,7 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
     public <U extends BasePreference<U>, T extends BasePreferencePortable<U>> void load(final T emptyPortablePreference,
                                                                                         final ParameterizedCommand<T> successCallback,
                                                                                         final ParameterizedCommand<Throwable> errorCallback) {
-
+        // loads the default value, without a backend it won't consult the preference storage
         successCallback.execute((T) emptyPortablePreference.defaultValue((U) emptyPortablePreference));
     }
 
@@ -52,6 +49,7 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
                                                                                         final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo,
                                                                                         final ParameterizedCommand<T> successCallback,
                                                                                         final ParameterizedCommand<Throwable> errorCallback) {
+        // loads the default value, without a backend it won't consult the preference storage
         successCallback.execute((T) emptyPortablePreference.defaultValue((U) emptyPortablePreference));
     }
 
@@ -59,7 +57,8 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
     public <U extends BasePreference<U>, T extends BasePreferencePortable<U>> void save(final T portablePreference,
                                                                                         final Command successCallback,
                                                                                         final ParameterizedCommand<Throwable> errorCallback) {
-
+        // just call success callback because there's nothing to do, no backend means no save in our case
+        callSuccessCallback(successCallback);
     }
 
     @Override
@@ -67,7 +66,8 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
                                                                                         final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo,
                                                                                         final Command successCallback,
                                                                                         final ParameterizedCommand<Throwable> errorCallback) {
-
+        // just call success callback because there's nothing to do, no backend means no save in our case
+        callSuccessCallback(successCallback);
     }
 
     @Override
@@ -75,14 +75,16 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
                                                                                         PreferenceScope scope,
                                                                                         Command successCallback,
                                                                                         ParameterizedCommand<Throwable> errorCallback) {
-
+        // just call success callback because there's nothing to do, no backend means no save in our case
+        callSuccessCallback(successCallback);
     }
 
     @Override
     public void save(final Collection<BasePreferencePortable<? extends BasePreference<?>>> portablePreferences,
                      final Command successCallback,
                      final ParameterizedCommand<Throwable> errorCallback) {
-
+        // just call success callback because there's nothing to do, no backend means no save in our case
+        callSuccessCallback(successCallback);
     }
 
     @Override
@@ -90,7 +92,8 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
                      final PreferenceScopeResolutionStrategyInfo scopeResolutionStrategyInfo,
                      final Command successCallback,
                      final ParameterizedCommand<Throwable> errorCallback) {
-
+        // just call success callback because there's nothing to do, no backend means no save in our case
+        callSuccessCallback(successCallback);
     }
 
     @Override
@@ -98,6 +101,13 @@ public class PreferenceBeanStoreClientImpl implements PreferenceBeanStore {
                      PreferenceScope scope,
                      Command successCallback,
                      ParameterizedCommand<Throwable> errorCallback) {
-
+        // just call success callback because there's nothing to do, no backend means no save in our case
+        callSuccessCallback(successCallback);
+    }
+    
+    private void callSuccessCallback(final Command successCallback) {
+        if (successCallback != null) {
+            successCallback.execute();
+        }
     }
 }

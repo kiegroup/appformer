@@ -366,7 +366,7 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-preferences-client</artifactId>
+      <artifactId>uberfire-preferences-client-backend</artifactId>
       <scope>provided</scope>
     </dependency>
 

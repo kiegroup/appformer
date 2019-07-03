@@ -37,6 +37,7 @@ import org.jboss.errai.ioc.client.api.EnabledByProperty;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.client.util.GWTEditorNativeRegister;
 import org.uberfire.client.workbench.annotations.AssociatedResources;
 import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
@@ -123,59 +124,12 @@ public class ActivityBeansCache {
     }
 
     void registerGwtEditorProvider() {
-        nativeRegisterGwtEditorProvider();
+        GWTEditorNativeRegister.nativeRegisterGwtEditorProvider();
     }
-
-    private native void nativeRegisterGwtEditorProvider() /*-{
-
-    console.log("registerGWTEditorProvider");
-
-        $wnd.gwtEditorBeans = new Map();
-        $wnd.resolveEditor = function (id) {
-            return $wnd.gwtEditorBeans.get(id);
-        };
-
-        $wnd.GWTEditor = function (instance) {
-            this.instance = instance;
-        };
-
-        $wnd.GWTEditor.prototype.isDirty = function () {
-            return this.instance.@org.uberfire.client.mvp.WorkbenchClientEditorActivity::isDirty();
-        };
-
-        $wnd.GWTEditor.prototype.onOpen = function () {
-            this.instance.@org.uberfire.client.mvp.WorkbenchClientEditorActivity::onOpen()();
-        };
-
-        $wnd.GWTEditor.prototype.setContent = function (value) {
-            this.instance.@org.uberfire.client.mvp.WorkbenchClientEditorActivity::setContent(Ljava/lang/String;)(value);
-        };
-
-        $wnd.GWTEditor.prototype.getContent = function () {
-            return this.instance.@org.uberfire.client.mvp.WorkbenchClientEditorActivity::getContent()();
-        };
-
-        $wnd.GWTEditor.prototype.getView = function () {
-            return this.instance.@org.uberfire.client.mvp.WorkbenchClientEditorActivity::getWidgetElement()();
-        };
-
-        $wnd.GWTEditorSuplier = function (bean) {
-            this.bean = bean;
-        };
-
-        $wnd.GWTEditorSuplier.prototype.get = function () {
-            return new $wnd.GWTEditor(this.bean.@org.jboss.errai.ioc.client.container.SyncBeanDef::newInstance()());
-        }
-
-    }-*/;
 
     void registerGwtClientBean(final String id, final SyncBeanDef<Activity> activityBean) {
-        nativeRegisterGwtClientBean(id, activityBean);
+        GWTEditorNativeRegister.nativeRegisterGwtClientBean(id, activityBean);
     }
-
-    private native void nativeRegisterGwtClientBean(final String id, final SyncBeanDef<Activity> activityBean) /*-{
-        $wnd.gwtEditorBeans.set(id, new $wnd.GWTEditorSuplier(activityBean));
-    }-*/;
 
     private void addResourceActivity(SyncBeanDef<Activity> activityBean,
                                      Pair<Integer, List<String>> metaInfo) {

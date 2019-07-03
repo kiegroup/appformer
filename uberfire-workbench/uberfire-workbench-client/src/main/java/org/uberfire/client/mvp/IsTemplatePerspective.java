@@ -24,6 +24,9 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+/**
+ *  Identifies a template perspective
+ */
 @Qualifier
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)

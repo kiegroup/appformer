@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * This annotation works like {@code @WorkbenchEditor}, and can be used for editors client side only editors.
+ * This annotation works like {@code @WorkbenchEditor}, and should be used for client side only editors.
  * 
  * Classes annotated with this are considered WorkbenchParts that perform some
  * "editor" function for the specified file-type.

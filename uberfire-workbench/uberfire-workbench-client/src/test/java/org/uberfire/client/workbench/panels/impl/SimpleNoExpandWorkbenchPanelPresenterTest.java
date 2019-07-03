@@ -78,8 +78,5 @@ public class SimpleNoExpandWorkbenchPanelPresenterTest extends AbstractDockingWo
         presenter.addPart(workbenchPartPresenter);
         verify(placeManager).tryClosePlace(any(), any());
     }
-
-
-    
     
 }

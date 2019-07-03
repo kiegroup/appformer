@@ -24,6 +24,9 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+/**
+ * Identifies client editors
+ */
 @Qualifier
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
