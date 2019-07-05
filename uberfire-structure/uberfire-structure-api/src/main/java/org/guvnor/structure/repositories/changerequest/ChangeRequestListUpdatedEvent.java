@@ -24,8 +24,8 @@ public class ChangeRequestListUpdatedEvent {
 
     private final String repositoryId;
 
-    public ChangeRequestListUpdatedEvent(final @MapsTo("repositoryId") String repository) {
-        this.repositoryId = repository;
+    public ChangeRequestListUpdatedEvent(final @MapsTo("repositoryId") String repositoryId) {
+        this.repositoryId = repositoryId;
     }
 
     public String getRepositoryId() {

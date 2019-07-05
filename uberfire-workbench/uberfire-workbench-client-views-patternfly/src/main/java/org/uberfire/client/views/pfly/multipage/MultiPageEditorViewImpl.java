@@ -19,6 +19,7 @@ package org.uberfire.client.views.pfly.multipage;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.shared.event.TabShowEvent;
 import org.gwtbootstrap3.client.shared.event.TabShowHandler;
@@ -60,8 +61,16 @@ public class MultiPageEditorViewImpl extends ResizeTabPanel implements MultiPage
             }
         });
 
+        Window.addResizeHandler(event -> {
+            superOnResize();
+        });
+
         this.tabBar.addStyleName("nav-tabs-pf");
         this.addStyleName("uf-multi-page-editor");
+    }
+
+    private void superOnResize(){
+        super.onResize();
     }
 
     public void addPage(final Page page) {
