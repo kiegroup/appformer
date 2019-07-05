@@ -45,6 +45,7 @@ import org.uberfire.ext.editor.commons.client.event.ConcurrentDeleteAcceptedEven
 import org.uberfire.ext.editor.commons.client.event.ConcurrentDeleteIgnoredEvent;
 import org.uberfire.ext.editor.commons.client.event.ConcurrentRenameAcceptedEvent;
 import org.uberfire.ext.editor.commons.client.event.ConcurrentRenameIgnoredEvent;
+import org.uberfire.ext.editor.commons.client.file.popups.DeletePopUpPresenter;
 import org.uberfire.ext.editor.commons.client.history.VersionRecordManager;
 import org.uberfire.ext.editor.commons.client.menu.BasicFileMenuBuilder;
 import org.uberfire.ext.editor.commons.client.menu.DownloadMenuItem;
@@ -130,6 +131,9 @@ public abstract class BaseEditor<T, M> {
 
     @Inject
     protected Promises promises;
+
+    @Inject
+    protected DeletePopUpPresenter deletePopUpPresenter;
 
     protected Set<MenuItems> menuItems = new HashSet<>();
 
@@ -402,15 +406,7 @@ public abstract class BaseEditor<T, M> {
             }
         });
 
-        path.onConcurrentDelete(new ParameterizedCommand<ObservablePath.OnConcurrentDelete>() {
-            @Override
-            public void execute(final ObservablePath.OnConcurrentDelete info) {
-                newConcurrentDelete(info.getPath(),
-                                    info.getIdentity(),
-                                    onConcurrentDeleteIgnoreCommand(path),
-                                    onConcurrentDeleteCloseCommand(path)).show();
-            }
-        });
+        path.onConcurrentDelete(this::onConcurrentDelete);
     }
 
     Command onConcurrentRenameIgnoreCommand(final ObservablePath path) {
@@ -427,18 +423,33 @@ public abstract class BaseEditor<T, M> {
         };
     }
 
+    void onConcurrentDelete(final ObservablePath.OnConcurrentDelete info) {
+        newConcurrentDelete(info.getPath(),
+                            info.getIdentity(),
+                            onConcurrentDeleteIgnoreCommand(path),
+                            onConcurrentDeleteCloseCommand(path)).show();
+    }
+
     Command onConcurrentDeleteIgnoreCommand(final ObservablePath path) {
         return () -> {
             disableMenus();
+            disableDeletePopup();
             concurrentDeleteIgnoredEvent.fire(new ConcurrentDeleteIgnoredEvent(path));
         };
     }
 
     Command onConcurrentDeleteCloseCommand(final ObservablePath path) {
         return () -> {
+            disableDeletePopup();
             placeManager.closePlace(place);
             concurrentDeleteAcceptedEvent.fire(new ConcurrentDeleteAcceptedEvent(path));
         };
+    }
+
+    private void disableDeletePopup() {
+        if(deletePopUpPresenter.isOpened()) {
+            deletePopUpPresenter.cancel();
+        }
     }
 
     private void onDelete() {
