@@ -16,17 +16,18 @@
 
 package org.uberfire.client.util;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.uberfire.client.mvp.Activity;
 
 /**
  *  Call native Javascript to register GWT Editors
  */
+@ApplicationScoped
 public class GWTEditorNativeRegister {
     
-    private GWTEditorNativeRegister() {}
-    
-    public static native void nativeRegisterGwtEditorProvider() /*-{
+    public native void nativeRegisterGwtEditorProvider() /*-{
 
         console.log("registerGWTEditorProvider");
 
@@ -69,7 +70,7 @@ public class GWTEditorNativeRegister {
 
     }-*/;
     
-    public static native void nativeRegisterGwtClientBean(final String id, final SyncBeanDef<Activity> activityBean) /*-{
+    public native void nativeRegisterGwtClientBean(final String id, final SyncBeanDef<Activity> activityBean) /*-{
         $wnd.gwtEditorBeans.set(id, new $wnd.GWTEditorSuplier(activityBean));
     }-*/;
 

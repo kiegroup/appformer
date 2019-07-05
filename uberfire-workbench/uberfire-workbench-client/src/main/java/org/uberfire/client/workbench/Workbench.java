@@ -326,14 +326,6 @@ public class Workbench {
         }
         // The home perspective has always priority over the default
         return homePerspective != null ? homePerspective : defaultPerspective;
-
-//        FIXME: put a flag for AFJS mode
-//        // Check access rights
-//        if (targetPerspective != null && authorizationManager.authorize(targetPerspective,
-//                                                                        identity)) {
-//            return targetPerspective;
-//        }
-//        return null;
     }
 
     @Produces

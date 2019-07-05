@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.client.util.GWTEditorNativeRegister;
 import org.uberfire.client.workbench.events.NewPerspectiveEvent;
 import org.uberfire.client.workbench.events.NewWorkbenchScreenEvent;
 import org.uberfire.client.workbench.type.ClientResourceType;
@@ -60,6 +61,9 @@ public class ActivityBeansCacheTest {
     @Mock
     private ExperimentalActivitiesAuthorizationManager experimentalActivitiesAuthorizationManager;
 
+    @Mock
+    private GWTEditorNativeRegister gwtEditorNativeRegister;
+
     @InjectMocks
     ActivityBeansCache cache;
 
@@ -71,7 +75,8 @@ public class ActivityBeansCacheTest {
                                        newPerspectiveEventEvent,
                                        newWorkbenchScreenEvent,
                                        resourceTypeManagerCache,
-                                       experimentalActivitiesAuthorizationManager));
+                                       experimentalActivitiesAuthorizationManager,
+                                       gwtEditorNativeRegister));
 
         doNothing().when(cache).registerGwtEditorProvider();
     }

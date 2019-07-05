@@ -68,6 +68,7 @@ public class ActivityBeansCache {
     private Event<NewWorkbenchScreenEvent> newWorkbenchScreenEventEvent;
     protected ResourceTypeManagerCache resourceTypeManagerCache;
     private ExperimentalActivitiesAuthorizationManager experimentalActivitiesAuthorizationManager;
+    private GWTEditorNativeRegister gwtEditorNativeRegister;
 
     public ActivityBeansCache() {
     }
@@ -77,12 +78,14 @@ public class ActivityBeansCache {
                               Event<NewPerspectiveEvent> newPerspectiveEventEvent,
                               Event<NewWorkbenchScreenEvent> newWorkbenchScreenEventEvent,
                               ResourceTypeManagerCache resourceTypeManagerCache,
-                              ExperimentalActivitiesAuthorizationManager experimentalActivitiesAuthorizationManager) {
+                              ExperimentalActivitiesAuthorizationManager experimentalActivitiesAuthorizationManager,
+                              GWTEditorNativeRegister gwtEditorNativeRegister) {
         this.iocManager = iocManager;
         this.newPerspectiveEventEvent = newPerspectiveEventEvent;
         this.newWorkbenchScreenEventEvent = newWorkbenchScreenEventEvent;
         this.resourceTypeManagerCache = resourceTypeManagerCache;
         this.experimentalActivitiesAuthorizationManager = experimentalActivitiesAuthorizationManager;
+        this.gwtEditorNativeRegister = gwtEditorNativeRegister;
     }
 
     @PostConstruct
@@ -124,11 +127,11 @@ public class ActivityBeansCache {
     }
 
     void registerGwtEditorProvider() {
-        GWTEditorNativeRegister.nativeRegisterGwtEditorProvider();
+        gwtEditorNativeRegister.nativeRegisterGwtEditorProvider();
     }
 
     void registerGwtClientBean(final String id, final SyncBeanDef<Activity> activityBean) {
-        GWTEditorNativeRegister.nativeRegisterGwtClientBean(id, activityBean);
+        gwtEditorNativeRegister.nativeRegisterGwtClientBean(id, activityBean);
     }
 
     private void addResourceActivity(SyncBeanDef<Activity> activityBean,
