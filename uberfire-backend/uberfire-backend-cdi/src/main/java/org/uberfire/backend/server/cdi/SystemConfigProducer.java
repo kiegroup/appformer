@@ -371,9 +371,7 @@ public class SystemConfigProducer implements Extension {
                                                                         IOService.class,
                                                                         _ctx);
 
-                URI uri = spaces.resolveFileSystemURI(SpacesAPI.Scheme.DEFAULT,
-                                                      space,
-                                                      fsName);
+                URI uri = resolveFSURI(spaces, space, fsName);
 
                 HashMap<String, Object> env = new HashMap<String, Object>() {{
                     put("init", Boolean.TRUE);
@@ -405,6 +403,12 @@ public class SystemConfigProducer implements Extension {
                 ctx.release();
             }
         };
+    }
+
+    URI resolveFSURI(SpacesAPI spaces, Space space, String fsName) {
+        return spaces.resolveFileSystemURI(SpacesAPI.Scheme.GIT,
+                                                          space,
+                                                          fsName);
     }
 
     SpacesAPI getSpaces(BeanManager bm) {

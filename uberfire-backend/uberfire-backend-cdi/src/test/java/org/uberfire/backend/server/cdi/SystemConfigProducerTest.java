@@ -68,6 +68,16 @@ public class SystemConfigProducerTest {
     }
 
     @Test
+    public void systemConfigFSShouldUseGITasScheme() {
+
+        SpacesAPI spacesAPI = mock(SpacesAPI.class);
+
+        producer.resolveFSURI(spacesAPI, SpacesAPI.DEFAULT_SPACE, "system");
+
+        verify(spacesAPI).resolveFileSystemURI(SpacesAPI.Scheme.GIT,SpacesAPI.DEFAULT_SPACE, "system" );
+    }
+
+    @Test
     public void createAndDestroyFSShouldRegisterUnregisterOnPriorityDisposableRegistry() {
 
         when(bm.getBeans("configIO")).thenReturn(configIOBeans);
