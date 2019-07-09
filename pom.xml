@@ -816,7 +816,6 @@
 
   <modules>
     <module>uberfire-archetype</module>
-    <module>uberfire-bom</module>
     <module>uberfire-commons</module>
     <module>uberfire-api</module>
     <module>uberfire-client-api</module>
