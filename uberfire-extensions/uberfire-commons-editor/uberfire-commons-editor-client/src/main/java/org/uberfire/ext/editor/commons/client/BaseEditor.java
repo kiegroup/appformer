@@ -200,7 +200,8 @@ public abstract class BaseEditor<T, M> {
 
         baseView.showLoading();
 
-        this.isReadOnly = getPlaceReadOnlyProperty(this.place);
+        this.isReadOnly = this.place.getParameter("readOnly",
+                                                  null) == null ? false : true;
 
         versionRecordManager.init(
                 this.place.getParameter("version",
@@ -356,20 +357,13 @@ public abstract class BaseEditor<T, M> {
     }
 
     private void selectVersion(VersionRecord versionRecord) {
-        boolean placeReadOnlyProperty = getPlaceReadOnlyProperty(this.place);
-
         baseView.showBusyIndicator(CommonConstants.INSTANCE.Loading());
 
-        isReadOnly = placeReadOnlyProperty || !versionRecordManager.isLatest(versionRecord);
+        isReadOnly = !versionRecordManager.isLatest(versionRecord);
 
         versionRecordManager.setVersion(versionRecord.id());
 
         loadContent();
-    }
-
-    private boolean getPlaceReadOnlyProperty(PlaceRequest placeRequest) {
-        return placeRequest.getParameter("readOnly",
-                                         null) != null;
     }
 
     public void setOriginalHash(Integer originalHash) {
