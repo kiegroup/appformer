@@ -53,14 +53,28 @@ public class Diff2Html extends Composite {
     }-*/;
 
     public native void draw() /*-{
+        // the format of the input data: 'diff' or 'json', default is 'diff'
         var inputFormat = "diff";
+        // 'lines' for matching lines, 'words' for matching lines and words or 'none', default is none (avoids OOM)
         var matching = "none";
+        // show a file list before the diff: true or false, default is false
         var showFiles = false;
-
+        // the id of the div in which the diff will be drawn
         var containerId = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::containerId;
+        // the format of the output data: 'line-by-line' or 'side-by-side', default is 'line-by-line'
         var outputFormat = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::outputFormat.toString();
-
+        // indicates if the code is highlighted
         var highlightCode = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::highlightCode;
+        // similarity threshold for word matching, default is 0.25
+        var matchWordsThreshold = 0.25;
+        // perform at most this much comparisons for line matching a block of changes, default is 2500
+        var matchingMaxComparisons = 2500;
+        // maximum number os characters of the bigger line in a block to apply comparison, default is 200
+        var maxLineSizeInBlockForComparison = 200;
+        // only perform diff changes highlight if lines are smaller than this, default is 10000
+        var maxLineLengthHighlight = 10000;
+        // render nothing if the diff shows no change in its comparison: true or false, default is false
+        var renderNothingWhenEmpty = false;
 
         var viewer = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::viewer;
 
@@ -68,7 +82,12 @@ public class Diff2Html extends Composite {
             inputFormat: inputFormat,
             showFiles: showFiles,
             matching: matching,
-            outputFormat: outputFormat
+            outputFormat: outputFormat,
+            matchWordsThreshold: matchWordsThreshold,
+            matchingMaxComparisons: matchingMaxComparisons,
+            maxLineSizeInBlockForComparison: maxLineSizeInBlockForComparison,
+            maxLineLengthHighlight: maxLineLengthHighlight,
+            renderNothingWhenEmpty: renderNothingWhenEmpty
         });
 
         if (highlightCode) {
