@@ -324,6 +324,7 @@ public class ActivityBeansCache {
     }
 
     public void noOp() {
+        // intentionally left empty, can be called to activate this bean in a CDI context
     }
 
     public class EditorResourceTypeNotFound extends RuntimeException {
