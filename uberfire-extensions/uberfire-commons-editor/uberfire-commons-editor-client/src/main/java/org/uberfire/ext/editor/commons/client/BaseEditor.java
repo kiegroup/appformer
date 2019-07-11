@@ -16,18 +16,6 @@
 
 package org.uberfire.ext.editor.commons.client;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.IsWidget;
 import elemental2.promise.Promise;
@@ -67,16 +55,15 @@ import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.COPY;
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.DELETE;
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.DOWNLOAD;
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.HISTORY;
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.RENAME;
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.SAVE;
-import static org.uberfire.ext.editor.commons.client.menu.MenuItems.VALIDATE;
-import static org.uberfire.ext.widgets.common.client.common.ConcurrentChangePopup.newConcurrentDelete;
-import static org.uberfire.ext.widgets.common.client.common.ConcurrentChangePopup.newConcurrentRename;
-import static org.uberfire.ext.widgets.common.client.common.ConcurrentChangePopup.newConcurrentUpdate;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static org.uberfire.ext.editor.commons.client.menu.MenuItems.*;
+import static org.uberfire.ext.widgets.common.client.common.ConcurrentChangePopup.*;
 
 public abstract class BaseEditor<T, M> {
 
@@ -447,7 +434,7 @@ public abstract class BaseEditor<T, M> {
     }
 
     private void disableDeletePopup() {
-        if(deletePopUpPresenter.isOpened()) {
+        if (deletePopUpPresenter.isOpened()) {
             deletePopUpPresenter.cancel();
         }
     }
