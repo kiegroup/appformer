@@ -194,11 +194,22 @@ public class RepositoryServiceCallerMock
                                            String alias,
                                            RepositoryEnvironmentConfigurations configurations,
                                            Collection<Contributor> contributors) throws RepositoryAlreadyExistsException {
+            return createRepository(organizationalUnit, scheme, alias, configurations, contributors, true);
+        }
+
+        @Override
+        public Repository createRepository(OrganizationalUnit organizationalUnit,
+                                           String scheme,
+                                           String alias,
+                                           RepositoryEnvironmentConfigurations configurations,
+                                           Collection<Contributor> contributors,
+                                           boolean lock) throws RepositoryAlreadyExistsException {
             Repository result = repositoryService.createRepository(organizationalUnit,
                                                                    scheme,
                                                                    alias,
                                                                    configurations,
-                                                                   contributors);
+                                                                   contributors,
+                                                                   lock);
             remoteCallback.callback(result);
             return null;
         }

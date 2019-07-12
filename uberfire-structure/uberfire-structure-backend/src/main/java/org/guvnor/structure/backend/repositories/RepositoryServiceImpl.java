@@ -15,19 +15,6 @@
 
 package org.guvnor.structure.backend.repositories;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.project.events.RepositoryContributorsUpdatedEvent;
 import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
@@ -38,16 +25,7 @@ import org.guvnor.structure.organizationalunit.config.RepositoryConfiguration;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
-import org.guvnor.structure.repositories.Branch;
-import org.guvnor.structure.repositories.GitMetadataStore;
-import org.guvnor.structure.repositories.NewRepositoryEvent;
-import org.guvnor.structure.repositories.Repository;
-import org.guvnor.structure.repositories.RepositoryAlreadyExistsException;
-import org.guvnor.structure.repositories.RepositoryEnvironmentConfiguration;
-import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
-import org.guvnor.structure.repositories.RepositoryInfo;
-import org.guvnor.structure.repositories.RepositoryRemovedEvent;
-import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.repositories.*;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.structure.server.repositories.RepositoryFactory;
@@ -65,6 +43,13 @@ import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
+import java.util.function.Consumer;
 
 import static org.guvnor.structure.repositories.EnvironmentParameters.SCHEME;
 import static org.uberfire.backend.server.util.Paths.convert;
@@ -320,28 +305,39 @@ public class RepositoryServiceImpl implements RepositoryService {
                                        final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
                                        final Collection<Contributor> contributors) throws RepositoryAlreadyExistsException {
 
+        return createRepository(organizationalUnit, scheme, alias, repositoryEnvironmentConfigurations, contributors, true);
+    }
+
+    @Override
+    public Repository createRepository(final OrganizationalUnit organizationalUnit,
+                                       final String scheme,
+                                       final String alias,
+                                       final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
+                                       final Collection<Contributor> contributors,
+                                       final boolean lock) throws RepositoryAlreadyExistsException {
         try {
             repositoryEnvironmentConfigurations.setSpace(organizationalUnit.getName());
 
             Space space = spacesAPI.getSpace(organizationalUnit.getName());
             String newAlias = createFreshRepositoryAlias(alias,
-                                                         space);
+                    space);
 
             final Repository repository = createRepository(scheme,
-                                                           newAlias,
-                                                           new Space(organizationalUnit.getName()),
-                                                           repositoryEnvironmentConfigurations,
-                                                           contributors);
+                    newAlias,
+                    new Space(organizationalUnit.getName()),
+                    repositoryEnvironmentConfigurations,
+                    contributors,
+                    lock);
+
             if (organizationalUnit != null && repository != null) {
                 organizationalUnitService.addRepository(organizationalUnit,
-                                                        repository);
+                        repository);
             }
             metadataStore.write(newAlias,
-                                (String) repositoryEnvironmentConfigurations.getOrigin());
+                    (String) repositoryEnvironmentConfigurations.getOrigin());
             return repository;
         } catch (final Exception e) {
-            logger.error("Error during create repository",
-                         e);
+            logger.error("Error during create repository", e);
             throw ExceptionUtilities.handleException(e);
         }
     }
@@ -375,88 +371,77 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Override
     public void removeRepository(final Space space,
                                  final String alias) {
-        final Optional<org.guvnor.structure.organizationalunit.config.RepositoryInfo> config = findRepositoryConfig(space.getName(),
-                                                                                                                    alias);
 
-        try {
-            OrganizationalUnit orgUnit = Optional
-                    .ofNullable(organizationalUnitService.getOrganizationalUnit(space.getName()))
-                    .orElseThrow(() -> new IllegalArgumentException(String
-                                                                            .format("The given space [%s] does not exist.",
-                                                                                    space.getName())));
-            doRemoveRepository(orgUnit,
-                               alias,
-                               config,
-                               repo -> repositoryRemovedEvent.fire(new RepositoryRemovedEvent(repo)),
-                               true);
-        } catch (final Exception e) {
-            logger.error("Error during remove repository",
-                         e);
-            throw new RuntimeException(e);
-        }
+        spaceConfigStorage.getBatch(space.getName())
+                .run(context-> {
+
+                    final Optional<org.guvnor.structure.organizationalunit.config.RepositoryInfo> config = findRepositoryConfig(space.getName(), alias);
+
+                    try {
+                        OrganizationalUnit orgUnit = Optional
+                                .ofNullable(organizationalUnitService.getOrganizationalUnit(space.getName()))
+                                .orElseThrow(() -> new IllegalArgumentException(String
+                                        .format("The given space [%s] does not exist.",
+                                                space.getName())));
+                        doRemoveRepository(orgUnit,
+                                alias,
+                                config,
+                                repo -> repositoryRemovedEvent.fire(new RepositoryRemovedEvent(repo)));
+                    } catch (final Exception e) {
+                        logger.error("Error during remove repository", e);
+                        throw new RuntimeException(e);
+                    }
+
+                    return null;
+                });
     }
 
     @Override
     public void removeRepositories(final Space space,
                                    final Set<String> aliases) {
-        SpaceConfigStorage configStorage = this.spaceConfigStorage.get(space.getName());
-        try {
-            configStorage.startBatch();
-            OrganizationalUnit orgUnit = Optional
-                    .ofNullable(organizationalUnitService.getOrganizationalUnit(space.getName()))
-                    .orElseThrow(() -> new IllegalArgumentException(String.format("The given space [%s] does not exist.",
-                                                                                  space.getName())));
+        spaceConfigStorage.getBatch(space.getName())
+                .run(context-> {
+                    try {
+                        OrganizationalUnit orgUnit = Optional
+                                .ofNullable(organizationalUnitService.getOrganizationalUnit(space.getName()))
+                                .orElseThrow(() -> new IllegalArgumentException(String.format("The given space [%s] does not exist.",
+                                        space.getName())));
 
-            for (final String alias : aliases) {
-                doRemoveRepository(orgUnit,
-                                   alias,
-                                   findRepositoryConfig(space.getName(),
-                                                        alias),
-                                   repo -> {
-                                   },
-                                   false);
-            }
-        } catch (final Exception e) {
-            logger.error("Error while removing repositories",
-                         e);
-            throw new RuntimeException(e);
-        } finally {
-            configStorage.endBatch();
-        }
+                        for (final String alias : aliases) {
+                            doRemoveRepository(orgUnit,
+                                    alias,
+                                    findRepositoryConfig(space.getName(),
+                                            alias),
+                                    repo -> {
+                                    });
+                        }
+                    } catch (final Exception e) {
+                        logger.error("Error while removing repositories", e);
+                        throw new RuntimeException(e);
+                    }
+
+                    return null;
+                });
     }
 
     private void doRemoveRepository(final OrganizationalUnit orgUnit,
                                     final String alias,
                                     final Optional<org.guvnor.structure.organizationalunit.config.RepositoryInfo> thisRepositoryConfig,
-                                    final Consumer<Repository> notification,
-                                    final boolean lock) {
+                                    final Consumer<Repository> notification) {
 
-        SpaceConfigStorage configStorage = this.spaceConfigStorage.get(orgUnit.getName());
+        Repository repo = this.configuredRepositories.getRepositoryByRepositoryAlias(orgUnit.getSpace(), alias);
 
-        try {
-            if (lock) {
-                configStorage.startBatch();
-            }
+        if (repo != null) {
+            this.close(repo.getDefaultBranch());
+            notification.accept(repo);
+        }
 
-            Repository repo = this.configuredRepositories.getRepositoryByRepositoryAlias(orgUnit.getSpace(),
-                                                                                         alias);
-
-            if (repo != null) {
-                this.close(repo.getDefaultBranch());
-                notification.accept(repo);
-            }
-
-            //Remove reference to Repository from Organizational Units
-            for (Repository repository : orgUnit.getRepositories()) {
-                if (repository.getAlias().equals(alias)) {
-                    organizationalUnitService.removeRepository(orgUnit,
-                                                               repository);
-                    metadataStore.delete(alias);
-                }
-            }
-        } finally {
-            if (lock) {
-                configStorage.endBatch();
+        //Remove reference to Repository from Organizational Units
+        for (Repository repository : orgUnit.getRepositories()) {
+            if (repository.getAlias().equals(alias)) {
+                organizationalUnitService.removeRepository(orgUnit,
+                        repository);
+                metadataStore.delete(alias);
             }
         }
     }
@@ -551,7 +536,8 @@ public class RepositoryServiceImpl implements RepositoryService {
                                         final String alias,
                                         final Space space,
                                         final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
-                                        final Collection<Contributor> contributors) {
+                                        final Collection<Contributor> contributors,
+                                        final boolean lock) {
 
         if (configuredRepositories.containsAlias(space,
                                                  alias)) {
@@ -561,17 +547,17 @@ public class RepositoryServiceImpl implements RepositoryService {
         Repository repo = null;
         SpaceConfigStorage configStorage = this.spaceConfigStorage.get(space.getName());
         try {
-            configStorage.startBatch();
+            if(lock) {
+                configStorage.startBatch();
+            }
             RepositoryConfiguration configuration = new RepositoryConfiguration();
 
-            configuration.add("security:groups",
-                              new ArrayList<String>());
-            configuration.add("contributors",
-                              contributors);
+            configuration.add("security:groups", new ArrayList<String>());
+
+            configuration.add("contributors", contributors);
 
             if (!repositoryEnvironmentConfigurations.containsConfiguration(SCHEME)) {
-                configuration.add(SCHEME,
-                                  scheme);
+                configuration.add(SCHEME, scheme);
             }
 
             for (final RepositoryEnvironmentConfiguration configEntry : repositoryEnvironmentConfigurations.getConfigurationList()) {
@@ -589,7 +575,9 @@ public class RepositoryServiceImpl implements RepositoryService {
                          e);
             throw ExceptionUtilities.handleException(e);
         } finally {
-            configStorage.endBatch();
+            if(lock) {
+                configStorage.endBatch();
+            }
             if (repo != null) {
                 event.fire(new NewRepositoryEvent(repo));
             }
