@@ -119,7 +119,7 @@ public class KeyCloakGroupManager extends BaseKeyCloakManager implements GroupMa
             final RoleRepresentation roleRepresentation = new RoleRepresentation();
             roleRepresentation.setName(entity.getName());
             roleRepresentation.setDescription(entity.getName());
-            roleRepresentation.setScopeParamRequired(false);
+            roleRepresentation.setScopeParamRequired(new Boolean(false));
             roleRepresentation.setId(entity.getName());
             roleRepresentation.setComposite(false);
             final ClientResponse response = (ClientResponse) rolesResource.create(roleRepresentation);
