@@ -27,16 +27,12 @@ public class Diff2Html extends Composite {
 
     private String diffText;
 
-    private boolean highlightCode;
-
     private JavaScriptObject viewer;
 
     public Diff2Html(final String containerId,
                      final DiffOutputFormat outputFormat,
-                     final String diffText,
-                     final boolean highlightCode) {
+                     final String diffText) {
         this.diffText = diffText;
-        this.highlightCode = highlightCode;
         this.outputFormat = outputFormat;
         this.setupContainerId(containerId);
         this.initialize();
@@ -63,8 +59,6 @@ public class Diff2Html extends Composite {
         var containerId = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::containerId;
         // the format of the output data: 'line-by-line' or 'side-by-side', default is 'line-by-line'
         var outputFormat = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::outputFormat.toString();
-        // indicates if the code is highlighted
-        var highlightCode = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::highlightCode;
         // similarity threshold for word matching, default is 0.25
         var matchWordsThreshold = 0.25;
         // perform at most this much comparisons for line matching a block of changes, default is 2500
@@ -75,6 +69,8 @@ public class Diff2Html extends Composite {
         var maxLineLengthHighlight = 10000;
         // render nothing if the diff shows no change in its comparison: true or false, default is false
         var renderNothingWhenEmpty = false;
+        // scroll both panes in side-by-side mode: true or false, default is false
+        var synchronisedScroll = true;
 
         var viewer = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::viewer;
 
@@ -87,11 +83,32 @@ public class Diff2Html extends Composite {
             matchingMaxComparisons: matchingMaxComparisons,
             maxLineSizeInBlockForComparison: maxLineSizeInBlockForComparison,
             maxLineLengthHighlight: maxLineLengthHighlight,
-            renderNothingWhenEmpty: renderNothingWhenEmpty
+            renderNothingWhenEmpty: renderNothingWhenEmpty,
+            synchronisedScroll: synchronisedScroll
         });
+    }-*/;
 
-        if (highlightCode) {
-            viewer.highlightCode(containerId);
+    public native void highlightCode() /*-{
+        var viewer = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::viewer;
+        var containerId = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::containerId;
+        viewer.highlightCode(containerId);
+    }-*/;
+
+    public native void configContainerHeight(final int maxHeight) /*-{
+        var containerId = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::containerId;
+        var outputFormat = this.@org.uberfire.ext.widgets.common.client.diff2html.Diff2Html::outputFormat.toString();
+
+        var rowHeight = 18;
+        var tableRowsCount;
+
+        if (outputFormat === "line-by-line") {
+            tableRowsCount = $wnd.jQuery(containerId + " .d2h-file-diff .d2h-diff-table >tbody >tr").length;
+        } else {
+            tableRowsCount = $wnd.jQuery(containerId + " .d2h-file-side-diff .d2h-diff-table >tbody >tr").length / 2;
+        }
+
+        if (maxHeight <= tableRowsCount * rowHeight) {
+            $wnd.jQuery(containerId).find('.d2h-wrapper').css({"height": maxHeight + "px"});
         }
     }-*/;
 }
