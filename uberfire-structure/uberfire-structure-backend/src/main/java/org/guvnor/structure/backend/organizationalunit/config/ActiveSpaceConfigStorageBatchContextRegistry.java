@@ -45,16 +45,19 @@ public class ActiveSpaceConfigStorageBatchContextRegistry {
 
         private final SpaceConfigStorage spaceConfigStorage;
         private final Object owner;
-        private final SpaceInfo info;
+        private SpaceInfo info;
 
         public SpaceConfigStorageBatchContextImpl(SpaceConfigStorage spaceConfigStorage, Object owner) {
             this.spaceConfigStorage = spaceConfigStorage;
             this.owner = owner;
-            this.info = spaceConfigStorage.loadSpaceInfo();
         }
 
         @Override
         public SpaceInfo getSpaceInfo() {
+            if (info == null) {
+                info = spaceConfigStorage.loadSpaceInfo();
+            }
+
             return info;
         }
 

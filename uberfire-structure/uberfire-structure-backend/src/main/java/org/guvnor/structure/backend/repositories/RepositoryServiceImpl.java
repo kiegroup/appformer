@@ -541,14 +541,13 @@ public class RepositoryServiceImpl implements RepositoryService {
                                         final Space space,
                                         final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
                                         final Collection<Contributor> contributors) {
-
-        if (configuredRepositories.containsAlias(space,
-                                                 alias)) {
-            throw new RepositoryAlreadyExistsException(alias);
-        }
-
         return this.spaceConfigStorage.getBatch(space.getName())
                 .run(context -> {
+                    if (configuredRepositories.containsAlias(space,
+                                                             alias)) {
+                        throw new RepositoryAlreadyExistsException(alias);
+                    }
+
                     Repository repo = null;
                     try {
                         RepositoryConfiguration configuration = new RepositoryConfiguration();
