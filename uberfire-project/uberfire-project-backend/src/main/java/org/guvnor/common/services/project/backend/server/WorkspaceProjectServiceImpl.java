@@ -183,8 +183,7 @@ public class WorkspaceProjectServiceImpl
                                                               "git",
                                                               repositoryAlias,
                                                               new RepositoryEnvironmentConfigurations(),
-                                                              contributors != null ? contributors : Collections.emptyList(),
-                                                              false);
+                                                              contributors != null ? contributors : Collections.emptyList());
 
                     if (!repository.getDefaultBranch().isPresent()) {
                         throw new IllegalStateException("New repository should always have a branch.");

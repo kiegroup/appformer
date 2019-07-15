@@ -15,6 +15,19 @@
 
 package org.guvnor.structure.backend.repositories;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.project.events.RepositoryContributorsUpdatedEvent;
 import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
@@ -22,10 +35,18 @@ import org.guvnor.structure.contributors.Contributor;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.config.RepositoryConfiguration;
-import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
-import org.guvnor.structure.repositories.*;
+import org.guvnor.structure.repositories.Branch;
+import org.guvnor.structure.repositories.GitMetadataStore;
+import org.guvnor.structure.repositories.NewRepositoryEvent;
+import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryAlreadyExistsException;
+import org.guvnor.structure.repositories.RepositoryEnvironmentConfiguration;
+import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
+import org.guvnor.structure.repositories.RepositoryInfo;
+import org.guvnor.structure.repositories.RepositoryRemovedEvent;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.structure.server.repositories.RepositoryFactory;
@@ -43,13 +64,6 @@ import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.*;
-import java.util.function.Consumer;
 
 import static org.guvnor.structure.repositories.EnvironmentParameters.SCHEME;
 import static org.uberfire.backend.server.util.Paths.convert;
@@ -305,39 +319,29 @@ public class RepositoryServiceImpl implements RepositoryService {
                                        final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
                                        final Collection<Contributor> contributors) throws RepositoryAlreadyExistsException {
 
-        return createRepository(organizationalUnit, scheme, alias, repositoryEnvironmentConfigurations, contributors, true);
-    }
-
-    @Override
-    public Repository createRepository(final OrganizationalUnit organizationalUnit,
-                                       final String scheme,
-                                       final String alias,
-                                       final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
-                                       final Collection<Contributor> contributors,
-                                       final boolean lock) throws RepositoryAlreadyExistsException {
         try {
             repositoryEnvironmentConfigurations.setSpace(organizationalUnit.getName());
 
             Space space = spacesAPI.getSpace(organizationalUnit.getName());
             String newAlias = createFreshRepositoryAlias(alias,
-                    space);
+                                                         space);
 
             final Repository repository = createRepository(scheme,
-                    newAlias,
-                    new Space(organizationalUnit.getName()),
-                    repositoryEnvironmentConfigurations,
-                    contributors,
-                    lock);
-
+                                                           newAlias,
+                                                           new Space(organizationalUnit.getName()),
+                                                           repositoryEnvironmentConfigurations,
+                                                           contributors);
             if (organizationalUnit != null && repository != null) {
                 organizationalUnitService.addRepository(organizationalUnit,
-                        repository);
+                                                        repository);
             }
             metadataStore.write(newAlias,
-                    (String) repositoryEnvironmentConfigurations.getOrigin());
+                                (String) repositoryEnvironmentConfigurations.getOrigin(),
+                                false);
             return repository;
         } catch (final Exception e) {
-            logger.error("Error during create repository", e);
+            logger.error("Error during create repository",
+                         e);
             throw ExceptionUtilities.handleException(e);
         }
     }
@@ -536,52 +540,44 @@ public class RepositoryServiceImpl implements RepositoryService {
                                         final String alias,
                                         final Space space,
                                         final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations,
-                                        final Collection<Contributor> contributors,
-                                        final boolean lock) {
+                                        final Collection<Contributor> contributors) {
 
         if (configuredRepositories.containsAlias(space,
                                                  alias)) {
             throw new RepositoryAlreadyExistsException(alias);
         }
 
-        Repository repo = null;
-        SpaceConfigStorage configStorage = this.spaceConfigStorage.get(space.getName());
-        try {
-            if(lock) {
-                configStorage.startBatch();
-            }
-            RepositoryConfiguration configuration = new RepositoryConfiguration();
+        return this.spaceConfigStorage.getBatch(space.getName())
+                .run(context -> {
+                    Repository repo = null;
+                    try {
+                        RepositoryConfiguration configuration = new RepositoryConfiguration();
 
-            configuration.add("security:groups", new ArrayList<String>());
+                        configuration.add("security:groups", new ArrayList<String>());
+                        configuration.add("contributors", contributors);
 
-            configuration.add("contributors", contributors);
+                        if (!repositoryEnvironmentConfigurations.containsConfiguration(SCHEME)) {
+                            configuration.add(SCHEME, scheme);
+                        }
 
-            if (!repositoryEnvironmentConfigurations.containsConfiguration(SCHEME)) {
-                configuration.add(SCHEME, scheme);
-            }
+                        for (final RepositoryEnvironmentConfiguration configEntry : repositoryEnvironmentConfigurations.getConfigurationList()) {
+                            addConfiguration(configuration, configEntry);
+                        }
 
-            for (final RepositoryEnvironmentConfiguration configEntry : repositoryEnvironmentConfigurations.getConfigurationList()) {
-                addConfiguration(configuration,
-                                 configEntry);
-            }
-
-            org.guvnor.structure.organizationalunit.config.RepositoryInfo repositoryInfo = new org.guvnor.structure.organizationalunit.config.RepositoryInfo(alias,
-                                                                                                                                                             false,
-                                                                                                                                                             configuration);
-            repo = createRepository(repositoryInfo);
-            return repo;
-        } catch (final Exception e) {
-            logger.error("Error during create repository",
-                         e);
-            throw ExceptionUtilities.handleException(e);
-        } finally {
-            if(lock) {
-                configStorage.endBatch();
-            }
-            if (repo != null) {
-                event.fire(new NewRepositoryEvent(repo));
-            }
-        }
+                        org.guvnor.structure.organizationalunit.config.RepositoryInfo repositoryInfo = new org.guvnor.structure.organizationalunit.config.RepositoryInfo(alias,
+                                                                                                                                                                         false,
+                                                                                                                                                                         configuration);
+                        repo = createRepository(repositoryInfo);
+                        return repo;
+                    } catch (final Exception e) {
+                        logger.error("Error during create repository", e);
+                        throw ExceptionUtilities.handleException(e);
+                    } finally {
+                        if (repo != null) {
+                            event.fire(new NewRepositoryEvent(repo));
+                        }
+                    }
+                });
     }
 
     private Repository createRepository(org.guvnor.structure.organizationalunit.config.RepositoryInfo repositoryConfiguration) {

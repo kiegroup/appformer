@@ -130,8 +130,7 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                                            anyString(),
                                            anyString(),
                                            any(),
-                                           any(),
-                                           anyBoolean())).thenReturn(repository);
+                                           any())).thenReturn(repository);
 
         doReturn(moduleService).when(moduleServices).get();
 
@@ -165,8 +164,7 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                                                    eq("git"),
                                                    eq("myproject"),
                                                    any(),
-                                                   any(),
-                                                   eq(false));
+                                                   any());
         verify(spaceConfigStorage).endBatch();
     }
 
@@ -188,8 +186,7 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                                                    eq("git"),
                                                    eq("myproject"),
                                                    any(),
-                                                   any(),
-                                                   eq(false));
+                                                   any());
         verify(spaceConfigStorage).endBatch();
     }
 
@@ -210,8 +207,7 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                                            eq("git"),
                                            eq("myproject"),
                                            any(),
-                                           any(),
-                                           eq(false));
+                                           any());
         verify(spaceConfigStorage).endBatch();
     }
 

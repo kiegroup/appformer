@@ -364,7 +364,7 @@ public class WorkspaceProjectServiceImplTest {
                                                      any()))
                 .thenReturn(this.repository1);
 
-        when(repositoryService.createRepository(any(), anyString(), anyString(), any(), any(), anyBoolean())).thenReturn(repository2);
+        when(repositoryService.createRepository(any(), anyString(), anyString(), any(), any())).thenReturn(repository2);
 
         doReturn(Optional.of(mock(Branch.class))).when(repository2).getDefaultBranch();
         when(repository2.getAlias()).thenReturn(repository1);

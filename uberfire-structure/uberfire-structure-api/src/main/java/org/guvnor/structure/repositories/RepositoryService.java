@@ -97,14 +97,6 @@ public interface RepositoryService {
                                 final RepositoryEnvironmentConfigurations configurations,
                                 final Collection<Contributor> contributors) throws RepositoryAlreadyExistsException;
 
-    Repository createRepository(final OrganizationalUnit organizationalUnit,
-                                final String scheme,
-                                final String alias,
-                                final RepositoryEnvironmentConfigurations configurations,
-                                final Collection<Contributor> contributors,
-                                final boolean lock) throws RepositoryAlreadyExistsException;
-
-
     String normalizeRepositoryName(final String name);
 
     boolean validateRepositoryName(final String name);
