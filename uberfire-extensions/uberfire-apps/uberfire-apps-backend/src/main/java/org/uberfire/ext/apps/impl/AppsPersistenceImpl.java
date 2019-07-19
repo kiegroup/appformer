@@ -107,20 +107,21 @@ public class AppsPersistenceImpl implements AppsPersistenceAPI {
     private List<Directory> extractAllChildDirectories(Directory parent,
                                                        Path dir) {
 
-        List<Directory> childs = new ArrayList<Directory>();
+        List<Directory> childs = new ArrayList<>();
 
         if (ioService.exists(dir) && Files.isDirectory(dir)) {
-            final DirectoryStream<Path> paths = ioService.newDirectoryStream(dir);
-            for (Path childPath : paths) {
-                if (Files.isDirectory(childPath)) {
-                    final Directory child = getDirectory(childPath.getFileName().toString(),
-                                                         childPath.toString(),
-                                                         childPath.toUri().toString(),
-                                                         parent);
-                    final List<Directory> childsOfChilds = extractAllChildDirectories(child,
-                                                                                      childPath);
-                    child.addChildDirectories(childsOfChilds);
-                    childs.add(child);
+            try (final DirectoryStream<Path> paths = ioService.newDirectoryStream(dir)) {
+                for (Path childPath : paths) {
+                    if (Files.isDirectory(childPath)) {
+                        final Directory child = getDirectory(childPath.getFileName().toString(),
+                                                             childPath.toString(),
+                                                             childPath.toUri().toString(),
+                                                             parent);
+                        final List<Directory> childsOfChilds = extractAllChildDirectories(child,
+                                                                                          childPath);
+                        child.addChildDirectories(childsOfChilds);
+                        childs.add(child);
+                    }
                 }
             }
         }
@@ -168,17 +169,18 @@ public class AppsPersistenceImpl implements AppsPersistenceAPI {
                 return dir;
             } else {
                 Path desiredPath = null;
-                final DirectoryStream<Path> paths = ioService.newDirectoryStream(dir);
-                for (Path path : paths) {
-                    if (Files.isDirectory(path)) {
-                        desiredPath = recursiveSearchForDir(path,
-                                                            parentDirectory);
+                try (final DirectoryStream<Path> paths = ioService.newDirectoryStream(dir)) {
+                    for (Path path : paths) {
+                        if (Files.isDirectory(path)) {
+                            desiredPath = recursiveSearchForDir(path,
+                                                                parentDirectory);
+                        }
+                        if (desiredPath != null) {
+                            break;
+                        }
                     }
-                    if (desiredPath != null) {
-                        break;
-                    }
+                    return desiredPath;
                 }
-                return desiredPath;
             }
         }
         return null;
