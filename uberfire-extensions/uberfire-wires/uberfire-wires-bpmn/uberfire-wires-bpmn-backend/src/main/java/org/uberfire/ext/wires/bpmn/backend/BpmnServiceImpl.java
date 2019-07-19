@@ -195,13 +195,13 @@ public class BpmnServiceImpl implements BpmnService {
     @PostConstruct
     public void setup() {
         try {
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("init",
+                           Boolean.TRUE);
+            parameters.put("internal",
+                           Boolean.TRUE);
             fileSystem = ioService.newFileSystem(URI.create("default://bpmn"),
-                                                 new HashMap<String, Object>() {{
-                                                     put("init",
-                                                         Boolean.TRUE);
-                                                     put("internal",
-                                                         Boolean.TRUE);
-                                                 }});
+                                                 parameters);
         } catch (final FileSystemAlreadyExistsException e) {
             fileSystem = ioService.getFileSystem(URI.create("default://bpmn"));
         }
@@ -215,19 +215,17 @@ public class BpmnServiceImpl implements BpmnService {
 
     @Override
     public List<Path> listFiles() {
-        final DirectoryStream<org.uberfire.java.nio.file.Path> stream = ioService.newDirectoryStream(root,
-                                                                                                     new DirectoryStream.Filter<org.uberfire.java.nio.file.Path>() {
-                                                                                                         @Override
-                                                                                                         public boolean accept(org.uberfire.java.nio.file.Path entry) throws IOException {
-                                                                                                             return typeDefinition.accept(Paths.convert(entry));
-                                                                                                         }
-                                                                                                     });
-        final List<Path> files = new ArrayList<Path>();
-        final Iterator<org.uberfire.java.nio.file.Path> itr = stream.iterator();
-        while (itr.hasNext()) {
-            files.add(Paths.convert(itr.next()));
+        try (final DirectoryStream<org.uberfire.java.nio.file.Path> stream = ioService.newDirectoryStream(root,
+                                                                                                          // Path filter callback
+                                                                                                          pathEntry -> typeDefinition.accept(Paths.convert(pathEntry)))) {
+            final List<Path> files = new ArrayList<>();
+            final Iterator<org.uberfire.java.nio.file.Path> itr = stream.iterator();
+            while (itr.hasNext()) {
+                files.add(Paths.convert(itr.next()));
+            }
+
+            return files;
         }
-        return files;
     }
 
     @Override
