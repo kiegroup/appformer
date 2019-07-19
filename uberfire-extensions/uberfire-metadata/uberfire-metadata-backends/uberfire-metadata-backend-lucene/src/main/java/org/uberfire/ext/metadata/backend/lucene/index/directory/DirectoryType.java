@@ -37,10 +37,7 @@ public enum DirectoryType {
         public LuceneIndex newIndex(final KCluster cluster,
                                     final IndexWriterConfig config) {
             final Directory directory = new Directory(new RAMDirectory(),
-                                                      new DeleteCommand() {
-                                                          @Override
-                                                          public void execute(org.apache.lucene.store.Directory directory) {
-                                                          }
+                                                      deleteDirectory -> {
                                                       },
                                                       true);
             return new DirectoryLuceneIndex(cluster,
@@ -54,26 +51,22 @@ public enum DirectoryType {
                                     final IndexWriterConfig config) {
 
             final File clusterDir = clusterDir(cluster.getClusterId());
-            final NIOFSDirectory luceneDir;
-            try {
-                luceneDir = new NIOFSDirectory(clusterDir.toPath());
+            try (final NIOFSDirectory luceneDir = new NIOFSDirectory(clusterDir.toPath())) {
+                final Directory directory = new Directory(luceneDir,
+                                                          // Delete Command Callback
+                                                          deleteDirectory -> {
+                                                              close((NIOFSDirectory) deleteDirectory);
+                                                              FileDeleteStrategy.FORCE.deleteQuietly(clusterDir);
+                                                          },
+                                                          freshIndex(clusterDir));
+
+                return new DirectoryLuceneIndex(cluster,
+                                                directory,
+                                                config);
             } catch (IOException e) {
                 throw new org.uberfire.java.nio.IOException(e);
             }
 
-            final Directory directory = new Directory(luceneDir,
-                                                      new DeleteCommand() {
-                                                          @Override
-                                                          public void execute(org.apache.lucene.store.Directory directory) {
-                                                              close((NIOFSDirectory) directory);
-                                                              FileDeleteStrategy.FORCE.deleteQuietly(clusterDir);
-                                                          }
-                                                      },
-                                                      freshIndex(clusterDir));
-
-            return new DirectoryLuceneIndex(cluster,
-                                            directory,
-                                            config);
         }
     },
     MMAP {
@@ -81,25 +74,20 @@ public enum DirectoryType {
         public LuceneIndex newIndex(final KCluster cluster,
                                     final IndexWriterConfig config) {
             final File clusterDir = clusterDir(cluster.getClusterId());
-            final MMapDirectory luceneDir;
-            try {
-                luceneDir = new MMapDirectory(clusterDir.toPath());
+            try (final MMapDirectory luceneDir = new MMapDirectory(clusterDir.toPath())) {
+                final Directory directory = new Directory(luceneDir,
+                                                          // Delete Command Callback
+                                                          deleteDirectory -> {
+                                                              close((MMapDirectory) deleteDirectory);
+                                                              FileDeleteStrategy.FORCE.deleteQuietly(clusterDir);
+                                                          },
+                                                          freshIndex(clusterDir));
+                return new DirectoryLuceneIndex(cluster,
+                                                directory,
+                                                config);
             } catch (IOException e) {
                 throw new org.uberfire.java.nio.IOException(e);
             }
-            final Directory directory = new Directory(luceneDir,
-                                                      new DeleteCommand() {
-                                                          @Override
-                                                          public void execute(org.apache.lucene.store.Directory directory) {
-                                                              close((MMapDirectory) directory);
-                                                              FileDeleteStrategy.FORCE.deleteQuietly(clusterDir);
-                                                          }
-                                                      },
-                                                      freshIndex(clusterDir));
-
-            return new DirectoryLuceneIndex(cluster,
-                                            directory,
-                                            config);
         }
     };
 
