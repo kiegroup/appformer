@@ -123,17 +123,23 @@ public class PluginMediaServlet
 
         resp.setContentType(mime);
 
-        final OutputStream out = resp.getOutputStream();
-
-        byte[] buf = new byte[1024];
-        int count = 0;
-        while ((count = in.read(buf)) >= 0) {
-            out.write(buf,
-                      0,
-                      count);
+        try (final OutputStream out = resp.getOutputStream()) {
+            byte[] buf = new byte[1024];
+            int count;
+            while ((count = in.read(buf)) >= 0) {
+                out.write(buf,
+                          0,
+                          count);
+            }
+        } catch (IOException e) {
+            throw new IOException(e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                // noop -ignore
+            }
         }
-        out.close();
-        in.close();
     }
 
     @Override
