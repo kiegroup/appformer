@@ -45,19 +45,36 @@ public class TextualDiffBranches {
     private final Git git;
     private final String branchA;
     private final String branchB;
+    private final String commitIdBranchA;
+    private final String commitIdBranchB;
 
     private static final String DIFF_REGEX_DELIMITER = "diff --git.*";
     private static final String DIFF_KEY = "diff --git a/%s b/%s";
 
-    public TextualDiffBranches(Git git,
-                               String branchA,
-                               String branchB) {
+    public TextualDiffBranches(final Git git,
+                               final String branchA,
+                               final String branchB) {
+        this(git,
+             branchA,
+             branchB,
+             null,
+             null);
+    }
+
+    public TextualDiffBranches(final Git git,
+                               final String branchA,
+                               final String branchB,
+                               final String commitIdBranchA,
+                               final String commitIdBranchB) {
         this.git = checkNotNull("git",
                                 git);
         this.branchA = checkNotEmpty("branchA",
                                      branchA);
         this.branchB = checkNotEmpty("branchB",
                                      branchB);
+
+        this.commitIdBranchA = commitIdBranchA;
+        this.commitIdBranchB = commitIdBranchB;
     }
 
     public List<TextualDiff> execute() {
@@ -70,9 +87,17 @@ public class TextualDiffBranches {
 
         try (final ObjectReader reader = git.getRepository().newObjectReader()) {
 
-            final RevCommit commonAncestor = BranchUtil.getCommonAncestor(this.git,
-                                                                          this.branchA,
-                                                                          this.branchB);
+            final RevCommit commitA = this.commitIdBranchA != null ?
+                    new GetCommit(git, commitIdBranchA).execute() :
+                    git.getLastCommit(branchA);
+
+            final RevCommit commitB = this.commitIdBranchB != null ?
+                    new GetCommit(git, commitIdBranchB).execute() :
+                    git.getLastCommit(branchB);
+
+            final RevCommit commonAncestor = new GetCommonAncestorCommit(git,
+                                                                         commitA,
+                                                                         commitB).execute();
 
             CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
             oldTreeIter.reset(reader,
@@ -80,7 +105,7 @@ public class TextualDiffBranches {
 
             CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
             newTreeIter.reset(reader,
-                              git.getTreeFromRef(this.branchB));
+                              commitB.getTree());
 
             OutputStream out = new ByteArrayOutputStream();
             List<DiffEntry> diffEntries = new CustomDiffCommand(git)

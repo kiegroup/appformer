@@ -73,9 +73,9 @@ public class Merge {
         final RevCommit lastSourceCommit = git.getLastCommit(sourceBranch);
         final RevCommit lastTargetCommit = git.getLastCommit(targetBranch);
 
-        final RevCommit commonAncestor = BranchUtil.getCommonAncestor(git,
-                                                                      sourceBranch,
-                                                                      targetBranch);
+        final RevCommit commonAncestor = new GetCommonAncestorCommit(git,
+                                                                     lastSourceCommit,
+                                                                     lastTargetCommit).execute();
         final List<RevCommit> commits = git.listCommits(commonAncestor,
                                                         lastSourceCommit);
 
@@ -115,12 +115,12 @@ public class Merge {
             boolean canMerge = merger.merge(sourceCommitTree,
                                             targetCommitTree);
             if (!canMerge) {
-                throw new GitException(String.format("Cannot merge braches from <%s> to <%s>, merge conflicts",
+                throw new GitException(String.format("Cannot merge branches from <%s> to <%s>, merge conflicts",
                                                      sourceBranch,
                                                      targetBranch));
             }
         } catch (IOException e) {
-            throw new GitException(String.format("Cannot merge braches from <%s> to <%s>, merge conflicts",
+            throw new GitException(String.format("Cannot merge branches from <%s> to <%s>, merge conflicts",
                                                  sourceBranch,
                                                  targetBranch),
                                    e);

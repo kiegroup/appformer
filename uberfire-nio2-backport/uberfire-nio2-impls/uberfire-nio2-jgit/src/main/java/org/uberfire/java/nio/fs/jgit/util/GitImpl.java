@@ -65,6 +65,8 @@ import org.uberfire.java.nio.fs.jgit.util.commands.DeleteBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.DiffBranches;
 import org.uberfire.java.nio.fs.jgit.util.commands.Fetch;
 import org.uberfire.java.nio.fs.jgit.util.commands.GarbageCollector;
+import org.uberfire.java.nio.fs.jgit.util.commands.GetCommit;
+import org.uberfire.java.nio.fs.jgit.util.commands.GetCommonAncestorCommit;
 import org.uberfire.java.nio.fs.jgit.util.commands.GetFirstCommit;
 import org.uberfire.java.nio.fs.jgit.util.commands.GetLastCommit;
 import org.uberfire.java.nio.fs.jgit.util.commands.GetPathInfo;
@@ -191,11 +193,26 @@ public class GitImpl implements Git {
     }
 
     @Override
+    public RevCommit getCommonAncestorCommit(final String branchA,
+                                             final String branchB) {
+        return new GetCommonAncestorCommit(this,
+                                           getLastCommit(branchA),
+                                           getLastCommit(branchB)).execute();
+    }
+
+    @Override
     public CommitHistory listCommits(final Ref ref,
                                      final String path) throws IOException, GitAPIException {
         return new ListCommits(this,
                                ref,
                                path).execute();
+    }
+
+    @Override
+    public List<RevCommit> listCommits(final String startCommitId,
+                                       final String endCommitId) {
+        return listCommits(new GetCommit(this, startCommitId).execute(),
+                           new GetCommit(this, endCommitId).execute());
     }
 
     @Override
@@ -308,7 +325,20 @@ public class GitImpl implements Git {
     }
 
     @Override
-    public List<String> conflictBranchesChecker(String branchA, String branchB) {
+    public List<TextualDiff> textualDiffRefs(final String branchA,
+                                             final String branchB,
+                                             final String commitIdBranchA,
+                                             final String commitIdBranchB) {
+        return new TextualDiffBranches(this,
+                                       branchA,
+                                       branchB,
+                                       commitIdBranchA,
+                                       commitIdBranchB).execute();
+    }
+
+    @Override
+    public List<String> conflictBranchesChecker(final String branchA,
+                                                final String branchB) {
         return new ConflictBranchesChecker(this,
                                            branchA,
                                            branchB).execute();

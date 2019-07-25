@@ -53,24 +53,29 @@ public class ConflictBranchesChecker {
     public List<String> execute() {
         BranchUtil.existsBranch(this.git,
                                 this.branchA);
+
         BranchUtil.existsBranch(this.git,
                                 this.branchB);
 
         List<String> result = new ArrayList<>();
 
         try {
-            final RevCommit sourceCommitTree = git.getLastCommit(this.branchA);
-            final RevCommit targetCommitTree = git.getLastCommit(this.branchB);
-            final RevCommit commonAncestor = BranchUtil.getCommonAncestor(this.git,
-                                                                          this.branchA,
-                                                                          this.branchB);
+            final RevCommit commitA = new GetLastCommit(git,
+                                                        branchA).execute();
+
+            final RevCommit commitB = new GetLastCommit(git,
+                                                        branchB).execute();
+
+            final RevCommit commonAncestor = new GetCommonAncestorCommit(git,
+                                                                         commitA,
+                                                                         commitB).execute();
 
             ThreeWayMerger merger = MergeStrategy.RECURSIVE.newMerger(git.getRepository(),
                                                                       true);
             merger.setBase(commonAncestor);
 
-            boolean canMerge = merger.merge(sourceCommitTree,
-                                            targetCommitTree);
+            boolean canMerge = merger.merge(commitA,
+                                            commitB);
 
             if (!canMerge) {
                 ResolveMerger resolveMerger = (ResolveMerger) merger;

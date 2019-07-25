@@ -222,8 +222,14 @@ public interface Git {
 
     RevCommit getLastCommit(final Ref ref) throws IOException;
 
+    RevCommit getCommonAncestorCommit(final String branchA,
+                                      final String branchB);
+
     CommitHistory listCommits(final Ref ref,
                               final String path) throws IOException, GitAPIException;
+
+    List<RevCommit> listCommits(final String startCommitId,
+                                final String endCommitId);
 
     List<RevCommit> listCommits(final ObjectId startRange,
                                 final ObjectId endRange);
@@ -255,6 +261,11 @@ public interface Git {
 
     List<TextualDiff> textualDiffRefs(final String branchA,
                                       final String branchB);
+
+    List<TextualDiff> textualDiffRefs(final String branchA,
+                                      final String branchB,
+                                      final String commitIdBranchA,
+                                      final String commitIdBranchB);
 
     List<String> conflictBranchesChecker(final String branchA,
                                          final String branchB);
