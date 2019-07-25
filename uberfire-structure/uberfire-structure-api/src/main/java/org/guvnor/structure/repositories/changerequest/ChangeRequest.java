@@ -16,9 +16,7 @@
 
 package org.guvnor.structure.repositories.changerequest;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
@@ -30,45 +28,45 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 @Portable
 public class ChangeRequest {
 
-    private long id;
+    private Long id;
     private String spaceName;
     private String repositoryAlias;
     private String sourceBranch;
     private String targetBranch;
     private ChangeRequestStatus status;
-    private String author;
+    private String authorId;
     private String summary;
     private String description;
     private Date createdDate;
     private Integer changedFilesCount;
-    private List<ChangeRequestComment> comments;
+    private Integer commentsCount;
+    private String commonCommitId;
+    private String lastCommitId;
+    private Boolean conflict;
 
-    public ChangeRequest() {
-
-    }
-
-    public ChangeRequest(final String spaceName,
+    public ChangeRequest(final long id,
+                         final String spaceName,
                          final String repositoryAlias,
                          final String sourceBranch,
                          final String targetBranch,
-                         final String author,
+                         final ChangeRequestStatus status,
+                         final String authorId,
                          final String summary,
                          final String description,
                          final Date createdDate,
-                         final Integer changedFilesCount,
-                         final List<ChangeRequestComment> comments) {
-        this(0L,
+                         final String commonCommitId) {
+        this(id,
              spaceName,
              repositoryAlias,
              sourceBranch,
              targetBranch,
-             ChangeRequestStatus.OPEN,
-             author,
+             status,
+             authorId,
              summary,
              description,
              createdDate,
-             changedFilesCount,
-             comments);
+             commonCommitId,
+             null);
     }
 
     public ChangeRequest(final long id,
@@ -76,38 +74,48 @@ public class ChangeRequest {
                          final String repositoryAlias,
                          final String sourceBranch,
                          final String targetBranch,
-                         final String author,
+                         final ChangeRequestStatus status,
+                         final String authorId,
                          final String summary,
                          final String description,
-                         final Integer changedFilesCount) {
+                         final Date createdDate,
+                         final String commonCommitId,
+                         final String lastCommitId) {
         this(id,
              spaceName,
              repositoryAlias,
              sourceBranch,
              targetBranch,
-             ChangeRequestStatus.OPEN,
-             author,
+             status,
+             authorId,
              summary,
              description,
-             new Date(),
-             changedFilesCount,
-             new ArrayList<>());
+             createdDate,
+             0,
+             0,
+             commonCommitId,
+             lastCommitId,
+             false);
     }
 
-    public ChangeRequest(@MapsTo("id") final long id,
+    public ChangeRequest(@MapsTo("id") final Long id,
                          @MapsTo("spaceName") final String spaceName,
                          @MapsTo("repositoryAlias") final String repositoryAlias,
                          @MapsTo("sourceBranch") final String sourceBranch,
                          @MapsTo("targetBranch") final String targetBranch,
                          @MapsTo("status") final ChangeRequestStatus status,
-                         @MapsTo("author") final String author,
+                         @MapsTo("authorId") final String authorId,
                          @MapsTo("summary") final String summary,
                          @MapsTo("description") final String description,
                          @MapsTo("createdDate") final Date createdDate,
                          @MapsTo("changedFilesCount") final Integer changedFilesCount,
-                         @MapsTo("comments") final List<ChangeRequestComment> comments) {
+                         @MapsTo("commentsCount") final Integer commentsCount,
+                         @MapsTo("commonCommitId") final String commonCommitId,
+                         @MapsTo("lastCommitId") final String lastCommitId,
+                         @MapsTo("conflict") final Boolean conflict) {
 
-        this.id = id;
+        this.id = checkNotNull("id",
+                               id);
         this.spaceName = checkNotEmpty("spaceName",
                                        spaceName);
         this.repositoryAlias = checkNotEmpty("repositoryAlias",
@@ -118,8 +126,8 @@ public class ChangeRequest {
                                           targetBranch);
         this.status = checkNotNull("status",
                                    status);
-        this.author = checkNotEmpty("author",
-                                    author);
+        this.authorId = checkNotEmpty("authorId",
+                                      authorId);
         this.summary = checkNotEmpty("summary",
                                      summary);
         this.description = checkNotEmpty("description",
@@ -128,8 +136,13 @@ public class ChangeRequest {
                                         createdDate);
         this.changedFilesCount = checkNotNull("changedFilesCount",
                                               changedFilesCount);
-        this.comments = checkNotNull("comments",
-                                     comments);
+        this.commentsCount = checkNotNull("commentsCount",
+                                          commentsCount);
+        this.commonCommitId = checkNotEmpty("commonCommitId",
+                                            commonCommitId);
+        this.lastCommitId = lastCommitId; // can be null
+        this.conflict = checkNotNull("conflict",
+                                     conflict);
     }
 
     public long getId() {
@@ -156,8 +169,8 @@ public class ChangeRequest {
         return this.status;
     }
 
-    public String getAuthor() {
-        return this.author;
+    public String getAuthorId() {
+        return this.authorId;
     }
 
     public String getSummary() {
@@ -176,8 +189,20 @@ public class ChangeRequest {
         return this.changedFilesCount;
     }
 
-    public List<ChangeRequestComment> getComments() {
-        return this.comments;
+    public Integer getCommentsCount() {
+        return this.commentsCount;
+    }
+
+    public String getCommonCommitId() {
+        return commonCommitId;
+    }
+
+    public String getLastCommitId() {
+        return lastCommitId;
+    }
+
+    public Boolean isConflict() {
+        return conflict;
     }
 
     @Override
@@ -194,22 +219,39 @@ public class ChangeRequest {
             return false;
         }
         ChangeRequest that = (ChangeRequest) o;
-        return id == that.id &&
+        return id.equals(that.id) &&
                 spaceName.equals(that.spaceName) &&
                 repositoryAlias.equals(that.repositoryAlias) &&
                 sourceBranch.equals(that.sourceBranch) &&
                 targetBranch.equals(that.targetBranch) &&
                 status == that.status &&
-                author.equals(that.author) &&
+                authorId.equals(that.authorId) &&
                 summary.equals(that.summary) &&
                 description.equals(that.description) &&
                 createdDate.equals(that.createdDate) &&
                 changedFilesCount.equals(that.changedFilesCount) &&
-                comments.equals(that.comments);
+                commentsCount.equals(that.commentsCount) &&
+                commonCommitId.equals(that.commonCommitId) &&
+                lastCommitId.equals(that.lastCommitId) &&
+                conflict.equals(that.conflict);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, spaceName, repositoryAlias, sourceBranch, targetBranch, status, author, summary, description, createdDate, changedFilesCount, comments);
+        return Objects.hash(id,
+                            spaceName,
+                            repositoryAlias,
+                            sourceBranch,
+                            targetBranch,
+                            status,
+                            authorId,
+                            summary,
+                            description,
+                            createdDate,
+                            changedFilesCount,
+                            commentsCount,
+                            commonCommitId,
+                            lastCommitId,
+                            conflict);
     }
 }

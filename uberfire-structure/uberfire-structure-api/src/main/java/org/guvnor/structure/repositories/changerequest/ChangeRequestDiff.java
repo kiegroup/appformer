@@ -36,10 +36,6 @@ public class ChangeRequestDiff {
     private String diffText;
     private Boolean conflict;
 
-    public ChangeRequestDiff() {
-
-    }
-
     public ChangeRequestDiff(@MapsTo("oldFilePath") final Path oldFilePath,
                              @MapsTo("newFilePath") final Path newFilePath,
                              @MapsTo("changeType") final ChangeType changeType,
