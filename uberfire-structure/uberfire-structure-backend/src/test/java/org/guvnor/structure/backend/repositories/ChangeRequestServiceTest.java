@@ -19,21 +19,25 @@ package org.guvnor.structure.backend.repositories;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.enterprise.event.Event;
 
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.changerequest.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
 import org.guvnor.structure.repositories.changerequest.ChangeRequestDiff;
 import org.guvnor.structure.repositories.changerequest.ChangeRequestListUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.ChangeRequestStatus;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestUpdatedEvent;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,16 +47,20 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.java.nio.base.TextualDiff;
 import org.uberfire.java.nio.fs.jgit.util.Git;
+import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -77,6 +85,9 @@ public class ChangeRequestServiceTest {
     private Event<ChangeRequestListUpdatedEvent> changeRequestListUpdatedEvent;
 
     @Mock
+    private Event<ChangeRequestUpdatedEvent> changeRequestUpdatedEvent;
+
+    @Mock
     private BranchAccessAuthorizer branchAccessAuthorizer;
 
     @Mock
@@ -88,14 +99,47 @@ public class ChangeRequestServiceTest {
     @Mock
     private Repository repository;
 
+    @Mock
+    private Branch sourceBranch;
+
+    @Mock
+    private Branch targetBranch;
+
+    @Mock
+    private Branch hiddenBranch;
+
+    @Mock
+    private Git git;
+
+    @Mock
+    private RevCommit commonCommit;
+
+    @Mock
+    private RevCommit lastCommit;
+
     @Before
     public void setUp() {
         Space mySpace = mock(Space.class);
+
+        doReturn("authorId").when(user).getIdentifier();
 
         doReturn(spaceConfigStorage).when(spaceConfigStorageRegistry).get("mySpace");
         doReturn(mySpace).when(spaces).getSpace("mySpace");
         doReturn(repository).when(repositoryService).getRepositoryFromSpace(mySpace,
                                                                             "myRepository");
+
+        doReturn("myRepository").when(repository).getAlias();
+        doReturn(mySpace).when(repository).getSpace();
+        doReturn("mySpace").when(mySpace).getName();
+
+        doReturn(Optional.of(sourceBranch)).when(repository).getBranch("sourceBranch");
+        doReturn(Optional.of(targetBranch)).when(repository).getBranch("targetBranch");
+        doReturn(Optional.of(hiddenBranch)).when(repository).getBranch("hiddenBranch");
+
+        doReturn(commonCommit).when(git).getCommonAncestorCommit("sourceBranch",
+                                                                 "targetBranch");
+
+        doReturn(lastCommit).when(git).getLastCommit(anyString());
 
         doReturn(true).when(branchAccessAuthorizer).authorize(anyString(),
                                                               anyString(),
@@ -108,8 +152,12 @@ public class ChangeRequestServiceTest {
                                                         repositoryService,
                                                         spaces,
                                                         changeRequestListUpdatedEvent,
+                                                        changeRequestUpdatedEvent,
                                                         branchAccessAuthorizer,
                                                         user));
+
+        doReturn(git).when(service).getGitFromBranch(sourceBranch);
+        doReturn(git).when(service).getGitFromBranch(hiddenBranch);
     }
 
     @Test
@@ -120,10 +168,8 @@ public class ChangeRequestServiceTest {
                                                                      "myRepository",
                                                                      "sourceBranch",
                                                                      "targetBranch",
-                                                                     "author",
                                                                      "summary",
-                                                                     "description",
-                                                                     10);
+                                                                     "description");
 
         assertThat(newChangeRequest.getId()).isEqualTo(1L);
         verify(spaceConfigStorageRegistry.get("mySpace")).saveChangeRequest("myRepository",
@@ -140,13 +186,10 @@ public class ChangeRequestServiceTest {
                                                                      "myRepository",
                                                                      "sourceBranch",
                                                                      "targetBranch",
-                                                                     "author",
                                                                      "summary",
-                                                                     "description",
-                                                                     10);
+                                                                     "description");
 
         assertThat(newChangeRequest.getId()).isEqualTo(11L);
-        assertThat(newChangeRequest.getComments().size()).isEqualTo(0);
         assertThat(newChangeRequest.getStatus()).isEqualTo(ChangeRequestStatus.OPEN);
         verify(spaceConfigStorageRegistry.get("mySpace")).saveChangeRequest("myRepository",
                                                                             newChangeRequest);
@@ -159,15 +202,13 @@ public class ChangeRequestServiceTest {
                                     "myOtherRepository",
                                     "sourceBranch",
                                     "targetBranch",
-                                    "author",
                                     "summary",
-                                    "description",
-                                    1);
+                                    "description");
     }
 
     @Test
     public void getChangeRequestsTest() {
-        List<ChangeRequest> crList = Collections.nCopies(5, mock(ChangeRequest.class));
+        List<ChangeRequest> crList = Collections.nCopies(5, createCommonChangeRequest());
 
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
         List<ChangeRequest> actualList = service.getChangeRequests("mySpace",
@@ -211,15 +252,10 @@ public class ChangeRequestServiceTest {
                                                               eq("branch"),
                                                               any());
 
-        ChangeRequest cr1 = mock(ChangeRequest.class);
-        ChangeRequest cr2 = mock(ChangeRequest.class);
-        ChangeRequest cr3 = mock(ChangeRequest.class);
-        ChangeRequest cr4 = mock(ChangeRequest.class);
-
-        doReturn("hiddenBranch").when(cr1).getTargetBranch();
-        doReturn("hiddenBranch").when(cr2).getTargetBranch();
-        doReturn("branch").when(cr3).getTargetBranch();
-        doReturn("branch").when(cr4).getTargetBranch();
+        ChangeRequest cr1 = createCommonChangeRequestWithTargetBranch("hiddenBranch");
+        ChangeRequest cr2 = createCommonChangeRequestWithTargetBranch("hiddenBranch");
+        ChangeRequest cr3 = createCommonChangeRequestWithTargetBranch("targetBranch");
+        ChangeRequest cr4 = createCommonChangeRequestWithTargetBranch("targetBranch");
 
         List<ChangeRequest> crList = Arrays.asList(cr1, cr2, cr3, cr4);
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
@@ -233,15 +269,10 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void getChangeRequestsWithFilterTest() {
-        ChangeRequest cr1 = mock(ChangeRequest.class);
-        ChangeRequest cr2 = mock(ChangeRequest.class);
-        ChangeRequest cr3 = mock(ChangeRequest.class);
-        ChangeRequest cr4 = mock(ChangeRequest.class);
-
-        doReturn("findme").when(cr1).getSummary();
-        doReturn("findus").when(cr2).getSummary();
-        doReturn("hidden").when(cr3).getSummary();
-        doReturn("hidden").when(cr4).getSummary();
+        ChangeRequest cr1 = createCommonChangeRequestWithSummary("findme");
+        ChangeRequest cr2 = createCommonChangeRequestWithSummary("findme");
+        ChangeRequest cr3 = createCommonChangeRequestWithSummary("hidden");
+        ChangeRequest cr4 = createCommonChangeRequestWithSummary("hidden");
 
         List<ChangeRequest> crList = Arrays.asList(cr1, cr2, cr3, cr4);
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
@@ -256,22 +287,20 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void getChangeRequestsWithStatusTest() {
-        ChangeRequest cr1 = mock(ChangeRequest.class);
-        ChangeRequest cr2 = mock(ChangeRequest.class);
-        ChangeRequest cr3 = mock(ChangeRequest.class);
-        ChangeRequest cr4 = mock(ChangeRequest.class);
-
-        doReturn(ChangeRequestStatus.OPEN).when(cr1).getStatus();
-        doReturn(ChangeRequestStatus.CLOSED).when(cr2).getStatus();
-        doReturn(ChangeRequestStatus.ACCEPTED).when(cr3).getStatus();
-        doReturn(ChangeRequestStatus.OPEN).when(cr4).getStatus();
+        ChangeRequest cr1 = createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN);
+        ChangeRequest cr2 = createCommonChangeRequestWithStatus(ChangeRequestStatus.REJECTED);
+        ChangeRequest cr3 = createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED);
+        ChangeRequest cr4 = createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN);
 
         List<ChangeRequest> crList = Arrays.asList(cr1, cr2, cr3, cr4);
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
+            add(ChangeRequestStatus.OPEN);
+        }};
 
         List<ChangeRequest> actualList = service.getChangeRequests("mySpace",
                                                                    "myRepository",
-                                                                   ChangeRequestStatus.OPEN);
+                                                                   statusList);
 
         assertThat(actualList).isNotEmpty();
         assertThat(actualList).hasSize(2);
@@ -279,27 +308,24 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void getChangeRequestsWithStatusAndFilterTest() {
-        ChangeRequest cr1 = mock(ChangeRequest.class);
-        ChangeRequest cr2 = mock(ChangeRequest.class);
-        ChangeRequest cr3 = mock(ChangeRequest.class);
-        ChangeRequest cr4 = mock(ChangeRequest.class);
-
-        doReturn(ChangeRequestStatus.OPEN).when(cr1).getStatus();
-        doReturn(ChangeRequestStatus.CLOSED).when(cr2).getStatus();
-        doReturn(ChangeRequestStatus.ACCEPTED).when(cr3).getStatus();
-        doReturn(ChangeRequestStatus.OPEN).when(cr4).getStatus();
-
-        doReturn("findme").when(cr1).getSummary();
-        doReturn("findme").when(cr2).getSummary();
-        doReturn("findme").when(cr3).getSummary();
-        doReturn("findme").when(cr4).getSummary();
+        ChangeRequest cr1 = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.OPEN,
+                                                                       "findme");
+        ChangeRequest cr2 = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.REJECTED,
+                                                                       "findme");
+        ChangeRequest cr3 = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.ACCEPTED,
+                                                                       "findme");
+        ChangeRequest cr4 = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.OPEN,
+                                                                       "findme");
 
         List<ChangeRequest> crList = Arrays.asList(cr1, cr2, cr3, cr4);
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
+            add(ChangeRequestStatus.OPEN);
+        }};
 
         List<ChangeRequest> actualList = service.getChangeRequests("mySpace",
                                                                    "myRepository",
-                                                                   ChangeRequestStatus.OPEN,
+                                                                   statusList,
                                                                    "find");
 
         assertThat(actualList).isNotEmpty();
@@ -308,11 +334,11 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void getChangeRequestsPaginatedWithFilterTest() {
-        ChangeRequest crsWithFilter = mock(ChangeRequest.class);
-        doReturn("findme").when(crsWithFilter).getSummary();
+        ChangeRequest crsWithFilter = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.OPEN,
+                                                                                 "findme");
 
-        ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn("hidden").when(crsHidden).getSummary();
+        ChangeRequest crsHidden = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.OPEN,
+                                                                             "hidden");
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(26, crsWithFilter));
@@ -351,24 +377,23 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void getChangeRequestsPaginatedWithStatusAndFilterTest() {
-        ChangeRequest crsWithStatusAndFilter = mock(ChangeRequest.class);
-        doReturn("findme").when(crsWithStatusAndFilter).getSummary();
-        doReturn(ChangeRequestStatus.ACCEPTED).when(crsWithStatusAndFilter).getStatus();
+        ChangeRequest crsWithStatusAndFilter = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.ACCEPTED,
+                                                                                          "findme");
 
-        ChangeRequest crsOnlyFilter = mock(ChangeRequest.class);
-        doReturn("findme").when(crsOnlyFilter).getSummary();
+        ChangeRequest crsOnlyFilter = createCommonChangeRequestWithSummary("findme");
 
-        ChangeRequest crsOnlyStatus = mock(ChangeRequest.class);
-        doReturn(ChangeRequestStatus.ACCEPTED).when(crsOnlyStatus).getStatus();
+        ChangeRequest crsOnlyStatus = createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED);
 
-        ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn("hidden").when(crsHidden).getSummary();
+        ChangeRequest crsHidden = createCommonChangeRequestWithSummary("hidden");
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(20, crsOnlyStatus));
             addAll(Collections.nCopies(26, crsWithStatusAndFilter));
             addAll(Collections.nCopies(20, crsOnlyFilter));
             addAll(Collections.nCopies(30, crsHidden));
+        }};
+        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
+            add(ChangeRequestStatus.ACCEPTED);
         }};
 
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
@@ -377,7 +402,7 @@ public class ChangeRequestServiceTest {
                                                                    "myRepository",
                                                                    0,
                                                                    10,
-                                                                   ChangeRequestStatus.ACCEPTED,
+                                                                   statusList,
                                                                    "find");
 
         assertThat(actualList).isNotEmpty();
@@ -387,7 +412,7 @@ public class ChangeRequestServiceTest {
                                                "myRepository",
                                                1,
                                                10,
-                                               ChangeRequestStatus.ACCEPTED,
+                                               statusList,
                                                "find");
 
         assertThat(actualList).isNotEmpty();
@@ -397,7 +422,7 @@ public class ChangeRequestServiceTest {
                                                "myRepository",
                                                2,
                                                10,
-                                               ChangeRequestStatus.ACCEPTED,
+                                               statusList,
                                                "find");
 
         assertThat(actualList).isNotEmpty();
@@ -406,15 +431,10 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void getChangeRequestTest() {
-        ChangeRequest cr1 = mock(ChangeRequest.class);
-        ChangeRequest cr2 = mock(ChangeRequest.class);
-        ChangeRequest cr3 = mock(ChangeRequest.class);
-        ChangeRequest cr4 = mock(ChangeRequest.class);
-
-        doReturn(1L).when(cr1).getId();
-        doReturn(2L).when(cr2).getId();
-        doReturn(3L).when(cr3).getId();
-        doReturn(4L).when(cr4).getId();
+        ChangeRequest cr1 = createCommonChangeRequestWithId(1L);
+        ChangeRequest cr2 = createCommonChangeRequestWithId(2L);
+        ChangeRequest cr3 = createCommonChangeRequestWithId(3L);
+        ChangeRequest cr4 = createCommonChangeRequestWithId(4L);
 
         List<ChangeRequest> crList = Arrays.asList(cr1, cr2, cr3, cr4);
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
@@ -435,7 +455,7 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void countChangeRequestsTest() {
-        List<ChangeRequest> crList = Collections.nCopies(15, mock(ChangeRequest.class));
+        List<ChangeRequest> crList = Collections.nCopies(15, createCommonChangeRequest());
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
         int count = service.countChangeRequests("mySpace",
@@ -446,33 +466,34 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void countChangeRequestsWithStatusTest() {
-        ChangeRequest crsWithStatus = mock(ChangeRequest.class);
-        doReturn(ChangeRequestStatus.OPEN).when(crsWithStatus).getStatus();
+        ChangeRequest crsWithStatus = createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN);
 
         ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn(ChangeRequestStatus.CLOSED).when(crsHidden).getStatus();
+        doReturn(ChangeRequestStatus.REJECTED).when(crsHidden).getStatus();
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(26, crsWithStatus));
             addAll(Collections.nCopies(30, crsHidden));
         }};
 
+        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
+            add(ChangeRequestStatus.OPEN);
+        }};
+
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
         int count = service.countChangeRequests("mySpace",
                                                 "myRepository",
-                                                ChangeRequestStatus.OPEN);
+                                                statusList);
 
         assertEquals(26, count);
     }
 
     @Test
     public void countChangeRequestsWithFilterTest() {
-        ChangeRequest crsWithFilter = mock(ChangeRequest.class);
-        doReturn("findme").when(crsWithFilter).getSummary();
+        ChangeRequest crsWithFilter = createCommonChangeRequestWithSummary("findme");
 
-        ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn("hidden").when(crsHidden).getSummary();
+        ChangeRequest crsHidden = createCommonChangeRequestWithSummary("hidden");
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(26, crsWithFilter));
@@ -490,65 +511,73 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void countChangeRequestsWithStatusAndFilterTest() {
-        ChangeRequest crsWithFilter = mock(ChangeRequest.class);
-        doReturn("findme").when(crsWithFilter).getSummary();
+        ChangeRequest crsWithFilter = createCommonChangeRequestWithSummary("findme");
 
-        ChangeRequest crsWithStatus = mock(ChangeRequest.class);
-        doReturn(ChangeRequestStatus.OPEN).when(crsWithStatus).getStatus();
+        ChangeRequest crsWithStatus = createCommonChangeRequestWithStatus(ChangeRequestStatus.REJECTED);
 
-        ChangeRequest crsWithStatusAndFilter = mock(ChangeRequest.class);
-        doReturn(ChangeRequestStatus.OPEN).when(crsWithStatusAndFilter).getStatus();
-        doReturn("findme").when(crsWithStatusAndFilter).getSummary();
+        ChangeRequest crsWithStatusAndFilter = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.REJECTED,
+                                                                                          "findme");
 
-        ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn("hidden").when(crsHidden).getSummary();
+        ChangeRequest crsHidden = createCommonChangeRequestWithSummary("hidden");
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(26, crsWithFilter));
+            addAll(Collections.nCopies(5, crsWithStatus));
             addAll(Collections.nCopies(30, crsHidden));
             addAll(Collections.nCopies(18, crsWithStatusAndFilter));
+        }};
+
+        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
+            add(ChangeRequestStatus.REJECTED);
         }};
 
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
         int count = service.countChangeRequests("mySpace",
                                                 "myRepository",
-                                                ChangeRequestStatus.OPEN,
+                                                statusList,
                                                 "me");
 
         assertEquals(18, count);
     }
 
     @Test
-    public void getDiffTestNoResults() {
-        Branch sourceBranch = mock(Branch.class);
-        Git git = mock(Git.class);
-
-        doReturn(git).when(service).getGitFromBranch(sourceBranch);
+    public void getDiffTestNoResultsTest() {
         doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
                                                                             anyString());
         doReturn(Collections.emptyList()).when(git).textualDiffRefs(anyString(),
                                                                     anyString());
-        doReturn(Optional.of(sourceBranch)).when(repository).getBranch("branchA");
-        doReturn(Optional.of(mock(Branch.class))).when(repository).getBranch("branchB");
 
         List<ChangeRequestDiff> diffs = service.getDiff("mySpace",
                                                         "myRepository",
-                                                        "branchA",
-                                                        "branchB");
+                                                        "sourceBranch",
+                                                        "targetBranch");
 
         assertThat(diffs).isEmpty();
     }
 
     @Test
-    public void getDiffTestWithResults() {
-        Branch sourceBranch = mock(Branch.class);
+    public void getDiffTestNoResultsForChangeRequestTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequest());
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(Collections.emptyList()).when(git).textualDiffRefs(anyString(),
+                                                                    anyString());
+
+        List<ChangeRequestDiff> diffs = service.getDiff("mySpace",
+                                                        "myRepository",
+                                                        1L);
+
+        assertThat(diffs).isEmpty();
+    }
+
+    @Test
+    public void getDiffTestWithResultsTest() {
         doReturn(mock(Path.class)).when(sourceBranch).getPath();
 
-        Branch targetBranch = mock(Branch.class);
         doReturn(mock(Path.class)).when(targetBranch).getPath();
-
-        Git git = mock(Git.class);
 
         TextualDiff textualDiff = new TextualDiff("old/file/path",
                                                   "new/file/path",
@@ -559,18 +588,48 @@ public class ChangeRequestServiceTest {
 
         List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
 
-        doReturn(git).when(service).getGitFromBranch(sourceBranch);
         doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
                                                                             anyString());
         doReturn(diffList).when(git).textualDiffRefs(anyString(),
+                                                     anyString(),
+                                                     anyString(),
                                                      anyString());
-        doReturn(Optional.of(sourceBranch)).when(repository).getBranch("branchA");
-        doReturn(Optional.of(targetBranch)).when(repository).getBranch("branchB");
-
         List<ChangeRequestDiff> diffs = service.getDiff("mySpace",
                                                         "myRepository",
-                                                        "branchA",
-                                                        "branchB");
+                                                        "sourceBranch",
+                                                        "targetBranch");
+
+        assertThat(diffs).isNotEmpty();
+        assertThat(diffs).hasSize(10);
+    }
+
+    @Test
+    public void getDiffTestWithResultsForChangeRequestTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequest());
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        doReturn(mock(Path.class)).when(sourceBranch).getPath();
+
+        doReturn(mock(Path.class)).when(targetBranch).getPath();
+
+        TextualDiff textualDiff = new TextualDiff("old/file/path",
+                                                  "new/file/path",
+                                                  "ADD",
+                                                  10,
+                                                  10,
+                                                  "diff text");
+
+        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(diffList).when(git).textualDiffRefs(anyString(),
+                                                     anyString(),
+                                                     anyString(),
+                                                     anyString());
+        List<ChangeRequestDiff> diffs = service.getDiff("mySpace",
+                                                        "myRepository",
+                                                        1L);
 
         assertThat(diffs).isNotEmpty();
         assertThat(diffs).hasSize(10);
@@ -586,19 +645,23 @@ public class ChangeRequestServiceTest {
                         "branchB");
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void getDiffTestInvalidChangeRequestTest() {
+        service.getDiff("mySpace",
+                        "myRepository",
+                        10L);
+    }
+
     @Test
     public void deleteChangeRequestsTest() {
-        ChangeRequest crs = mock(ChangeRequest.class);
-        doReturn("branch").when(crs).getSourceBranch();
-        doReturn("hiddenBranch").when(crs).getTargetBranch();
-
+        ChangeRequest crs = createCommonChangeRequestWithTargetBranch("hiddenBranch");
         List<ChangeRequest> crList = Collections.nCopies(10, crs);
 
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
         service.deleteChangeRequests("mySpace",
                                      "myRepository",
-                                     "branch");
+                                     "sourceBranch");
 
         verify(spaceConfigStorage, times(10)).deleteChangeRequest(anyString(),
                                                                   anyLong());
@@ -606,17 +669,18 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void deleteChangeRequestsSomeTest() {
-        ChangeRequest crsSourceBranch = mock(ChangeRequest.class);
-        doReturn("branch").when(crsSourceBranch).getSourceBranch();
-        doReturn("hiddenBranch").when(crsSourceBranch).getTargetBranch();
+        ChangeRequest crsSourceBranch = createCommonChangeRequestWithSourceTargetBranch("branch",
+                                                                                        "hiddenBranch");
 
-        ChangeRequest crsTargetBranch = mock(ChangeRequest.class);
-        doReturn("hiddenBranch").when(crsTargetBranch).getSourceBranch();
-        doReturn("branch").when(crsTargetBranch).getTargetBranch();
+        ChangeRequest crsTargetBranch = createCommonChangeRequestWithSourceTargetBranch("hiddenBranch",
+                                                                                        "branch");
 
-        ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn("hiddenBranch").when(crsHidden).getSourceBranch();
-        doReturn("hiddenBranch").when(crsHidden).getTargetBranch();
+        ChangeRequest crsHidden = createCommonChangeRequestWithSourceTargetBranch("hiddenBranch",
+                                                                                  "hiddenBranch");
+
+        Branch branch = mock(Branch.class);
+        doReturn(Optional.of(branch)).when(repository).getBranch("branch");
+        doReturn(git).when(service).getGitFromBranch(branch);
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(10, crsSourceBranch));
@@ -636,9 +700,8 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void deleteChangeRequestsNoneTest() {
-        ChangeRequest crs = mock(ChangeRequest.class);
-        doReturn("hiddenBranch").when(crs).getSourceBranch();
-        doReturn("hiddenBranch").when(crs).getTargetBranch();
+        ChangeRequest crs = createCommonChangeRequestWithSourceTargetBranch("hiddenBranch",
+                                                                            "hiddenBranch");
 
         List<ChangeRequest> crList = Collections.nCopies(10, crs);
 
@@ -650,5 +713,373 @@ public class ChangeRequestServiceTest {
 
         verify(spaceConfigStorage, never()).deleteChangeRequest(anyString(),
                                                                 anyLong());
+    }
+
+    @Test
+    public void rejectChangeRequestTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.rejectChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void rejectChangeRequestWhenChangeRequestNotOpenTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.rejectChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
+    }
+
+    @Test
+    public void acceptChangeRequestCannotMergeWithSquashTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        TextualDiff textualDiff = new TextualDiff("old/file/path",
+                                                  "new/file/path",
+                                                  "ADD",
+                                                  10,
+                                                  10,
+                                                  "diff text");
+
+        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(diffList).when(git).textualDiffRefs(anyString(),
+                                                     anyString(),
+                                                     anyString(),
+                                                     anyString());
+
+        List<RevCommit> commits = Collections.nCopies(1, mock(RevCommit.class));
+        doReturn(commits).when(git).listCommits(anyString(),
+                                                anyString());
+
+        doThrow(GitException.class).when(git).merge(anyString(),
+                                                    anyString());
+
+        boolean result = service.acceptChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(git).merge(anyString(),
+                          anyString());
+
+        verify(spaceConfigStorage, never()).saveChangeRequest(eq("myRepository"),
+                                                              any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void acceptChangeRequestSuccessWithSquashTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        TextualDiff textualDiff = new TextualDiff("old/file/path",
+                                                  "new/file/path",
+                                                  "ADD",
+                                                  10,
+                                                  10,
+                                                  "diff text");
+
+        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(diffList).when(git).textualDiffRefs(anyString(),
+                                                     anyString(),
+                                                     anyString(),
+                                                     anyString());
+
+        List<RevCommit> commits = Collections.nCopies(3, mock(RevCommit.class));
+        doReturn(commits).when(git).listCommits(anyString(),
+                                                anyString());
+
+        boolean result = service.acceptChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(git).squash(anyString(),
+                           anyString(),
+                           anyString());
+
+        verify(git).merge(anyString(),
+                          anyString());
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void acceptChangeRequestSuccessWithNoSquashTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        TextualDiff textualDiff = new TextualDiff("old/file/path",
+                                                  "new/file/path",
+                                                  "ADD",
+                                                  10,
+                                                  10,
+                                                  "diff text");
+
+        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(diffList).when(git).textualDiffRefs(anyString(),
+                                                     anyString(),
+                                                     anyString(),
+                                                     anyString());
+
+        List<RevCommit> commits = Collections.nCopies(1, mock(RevCommit.class));
+        doReturn(commits).when(git).listCommits(anyString(),
+                                                anyString());
+
+        boolean result = service.acceptChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(git, never()).squash(anyString(),
+                                    anyString(),
+                                    anyString());
+
+        verify(git).merge(anyString(),
+                          anyString());
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void acceptChangeRequestWhenEmptyCommitsTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        TextualDiff textualDiff = new TextualDiff("old/file/path",
+                                                  "new/file/path",
+                                                  "ADD",
+                                                  10,
+                                                  10,
+                                                  "diff text");
+
+        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(diffList).when(git).textualDiffRefs(anyString(),
+                                                     anyString(),
+                                                     anyString(),
+                                                     anyString());
+
+        doReturn(Collections.emptyList()).when(git).listCommits(anyString(),
+                                                                anyString());
+
+        boolean result = service.acceptChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+        verify(spaceConfigStorage, never()).saveChangeRequest(eq("myRepository"),
+                                                              any(ChangeRequest.class));
+        verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void acceptChangeRequestWhenEmptyDiffsTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        boolean result = service.acceptChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+        verify(spaceConfigStorage, never()).saveChangeRequest(eq("myRepository"),
+                                                              any(ChangeRequest.class));
+        verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertTrue(result);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void acceptChangeRequestWhenChangeRequestNotOpenTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.acceptChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
+    }
+
+    @Test
+    public void updateChangeRequestSummaryTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.updateChangeRequestSummary("mySpace",
+                                           "myRepository",
+                                           1L,
+                                           "newSummary");
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+    }
+
+    @Test
+    public void updateChangeRequestDescriptionTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.updateChangeRequestDescription("mySpace",
+                                               "myRepository",
+                                               1L,
+                                               "newDescription");
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+    }
+
+    @Test
+    public void getCommentsTest() {
+        List<ChangeRequestComment> commentList = Collections.nCopies(3, mock(ChangeRequestComment.class));
+        doReturn(commentList).when(spaceConfigStorage).loadChangeRequestComments("myRepository", 1L);
+
+        List<ChangeRequestComment> comments = service.getComments("mySpace",
+                                                                  "myRepository",
+                                                                  1L);
+
+        assertThat(comments).hasSize(3);
+    }
+
+    @Test
+    public void addCommentTest() {
+        doReturn(Collections.emptyList()).when(spaceConfigStorage).getChangeRequestCommentIds("myRepository", 1L);
+
+        service.addComment("mySpace",
+                           "myRepository",
+                           1L,
+                           "myComment");
+
+        verify(spaceConfigStorageRegistry.get("mySpace")).saveChangeRequestComment(eq("myRepository"),
+                                                                                   eq(1L),
+                                                                                   any(ChangeRequestComment.class));
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+    }
+
+    @Test
+    public void deleteCommentTest() {
+        service.deleteComment("mySpace",
+                              "myRepository",
+                              1L,
+                              1L);
+
+        verify(spaceConfigStorageRegistry.get("mySpace")).deleteChangeRequestComment(eq("myRepository"),
+                                                                                     eq(1L),
+                                                                                     eq(1L));
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+    }
+
+    private ChangeRequest createCommonChangeRequestWithFields(final Long id,
+                                                              final String sourceBranch,
+                                                              final String targetBranch,
+                                                              final ChangeRequestStatus status,
+                                                              final String summary) {
+        return new ChangeRequest(id,
+                                 "mySpace",
+                                 "myRepository",
+                                 sourceBranch,
+                                 targetBranch,
+                                 status,
+                                 "author",
+                                 summary,
+                                 "description",
+                                 new Date(),
+                                 "commonCommitId",
+                                 null);
+    }
+
+    private ChangeRequest createCommonChangeRequest() {
+        return createCommonChangeRequestWithFields(1L,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   ChangeRequestStatus.OPEN,
+                                                   "summary");
+    }
+
+    private ChangeRequest createCommonChangeRequestWithId(final Long id) {
+        return createCommonChangeRequestWithFields(id,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   ChangeRequestStatus.OPEN,
+                                                   "summary");
+    }
+
+    private ChangeRequest createCommonChangeRequestWithStatus(final ChangeRequestStatus status) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   status,
+                                                   "summary");
+    }
+
+    private ChangeRequest createCommonChangeRequestWithSummary(final String summary) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   ChangeRequestStatus.OPEN,
+                                                   summary);
+    }
+
+    private ChangeRequest createCommonChangeRequestWithSourceBranch(final String sourceBranch) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   sourceBranch,
+                                                   "targetBranch",
+                                                   ChangeRequestStatus.OPEN,
+                                                   "summary");
+    }
+
+    private ChangeRequest createCommonChangeRequestWithTargetBranch(final String targetBranch) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   "sourceBranch",
+                                                   targetBranch,
+                                                   ChangeRequestStatus.OPEN,
+                                                   "summary");
+    }
+
+    private ChangeRequest createCommonChangeRequestWithSourceTargetBranch(final String sourceBranch,
+                                                                          final String targetBranch) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   sourceBranch,
+                                                   targetBranch,
+                                                   ChangeRequestStatus.OPEN,
+                                                   "summary");
+    }
+
+    private ChangeRequest createCommonChangeRequestWithStatusSummary(final ChangeRequestStatus status,
+                                                                     final String summary) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   status,
+                                                   summary);
     }
 }
