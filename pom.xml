@@ -21,14 +21,14 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-parent</artifactId>
-    <version>7.24.0-SNAPSHOT</version>
+    <version>7.25.0-SNAPSHOT</version>
     <!-- Keep in sync with the parent version of uberfire-bom/pom.xml -->
   </parent>
 
 
   <groupId>org.uberfire</groupId>
   <artifactId>uberfire-parent</artifactId>
-  <version>2.21.0-SNAPSHOT</version>
+  <version>2.22.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UberFire parent</name>
@@ -51,7 +51,7 @@
 
   <properties>
     <uberfire.version>${project.version}</uberfire.version>
-    <version.org.kie>7.24.0-SNAPSHOT</version.org.kie>
+    <version.org.kie>7.25.0-SNAPSHOT</version.org.kie>
     <version.org.kie.soup>${version.org.kie}</version.org.kie.soup>
     <version.com.allen-sauer.gwt.dnd>3.3.3</version.com.allen-sauer.gwt.dnd>
     <version.com.google.elemental2>1.0.0-beta-1</version.com.google.elemental2>
@@ -84,6 +84,7 @@
     <version.org.webjars.bower.d3js>5.5.0</version.org.webjars.bower.d3js>
     <version.org.webjars.bower.c3>0.6.6</version.org.webjars.bower.c3>
     <version.org.webjars.bower.d3geoprojection>2.5.1</version.org.webjars.bower.d3geoprojection>
+    <version.org.webjars.bower.jqueryui>1.12.1</version.org.webjars.bower.jqueryui>
 
     <version.org.jboss.byteman>3.0.10</version.org.jboss.byteman>
     <version.org.jboss.jboss-dmr>1.4.1.Final</version.org.jboss.jboss-dmr>
@@ -155,7 +156,6 @@
     <version.org.jboss.shrinkwrap>1.2.6</version.org.jboss.shrinkwrap>
 
     <version.org.jboss.marshalling.api>1.2.3.GA</version.org.jboss.marshalling.api>
-
   </properties>
 
   <repositories>
@@ -562,7 +562,6 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
-
       </plugins>
 
     </pluginManagement>
@@ -808,6 +807,87 @@
                 <phase>package</phase>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>run-code-coverage</id>
+      <properties>
+        <jacoco.excludes>*Lexer</jacoco.excludes>
+        <jacoco.exec.file>${project.build.directory}/jacoco.exec</jacoco.exec.file>
+      </properties>
+
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.agent</artifactId>
+            <classifier>runtime</classifier>
+            <version>${version.jacoco.plugin}</version>
+            <scope>test</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.jacoco</groupId>
+          <artifactId>org.jacoco.agent</artifactId>
+          <classifier>runtime</classifier>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>${version.jacoco.plugin}</version>
+              <configuration>
+                <append>true</append>
+                <destFile>${jacoco.exec.file}</destFile>
+                <excludes>
+                  <exclude>${jacoco.excludes}</exclude>
+                </excludes>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>default-instrument</id>
+                  <goals>
+                    <goal>instrument</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>default-restore-instrumented-classes</id>
+                  <goals>
+                    <goal>restore-instrumented-classes</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <groupId>net.ltgt.gwt.maven</groupId>
+              <artifactId>gwt-maven-plugin</artifactId>
+              <configuration>
+                <skipCompilation>true</skipCompilation>
+              </configuration>
+            </plugin>
+            <plugin>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <systemPropertyVariables>
+                  <jacoco-agent.destfile>${jacoco.exec.file}</jacoco-agent.destfile>
+                </systemPropertyVariables>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>

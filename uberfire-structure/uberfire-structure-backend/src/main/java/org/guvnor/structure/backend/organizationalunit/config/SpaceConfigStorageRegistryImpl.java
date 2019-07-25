@@ -17,13 +17,19 @@
 package org.guvnor.structure.backend.organizationalunit.config;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
+import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageBatch;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
+
+import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 @ApplicationScoped
 public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistry {
@@ -52,6 +58,18 @@ public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistr
     }
 
     @Override
+    public SpaceConfigStorageBatch getBatch(String spaceName) {
+
+        Optional<SpaceConfigStorage> optional = Optional.ofNullable(get(spaceName));
+
+        if (optional.isPresent()) {
+            return new SpaceStorageBatchImpl(optional.get());
+        }
+
+        throw new IllegalArgumentException("Cannot find Space '" + spaceName + "'");
+    }
+
+    @Override
     public void remove(String spaceName) {
         if (this.exist(spaceName)) {
             this.storageBySpaceName.get(spaceName).close();
@@ -62,5 +80,38 @@ public class SpaceConfigStorageRegistryImpl implements SpaceConfigStorageRegistr
     @Override
     public boolean exist(String spaceName) {
         return this.storageBySpaceName.containsKey(spaceName);
+    }
+
+    public static class SpaceStorageBatchImpl implements SpaceConfigStorageBatch {
+
+        private SpaceConfigStorage spaceConfigStorage;
+
+        public SpaceStorageBatchImpl(SpaceConfigStorage spaceConfigStorage) {
+            this.spaceConfigStorage = spaceConfigStorage;
+        }
+
+        @Override
+        public <T> T run(final Function<SpaceConfigStorageBatchContext, T> function) {
+            checkNotNull("function", function);
+
+            final SpaceConfigStorageBatchContext context = ActiveSpaceConfigStorageBatchContextRegistry.getCurrentBatch(spaceConfigStorage, this);
+
+            try {
+                if (isMine(context)) {
+                    spaceConfigStorage.startBatch();
+                }
+
+                return function.apply(context);
+            } finally {
+                if (isMine(context)) {
+                    spaceConfigStorage.endBatch();
+                    ActiveSpaceConfigStorageBatchContextRegistry.clearCurrentBatch();
+                }
+            }
+        }
+
+        private boolean isMine(SpaceConfigStorageBatchContext context) {
+            return context.getOwner().equals(this);
+        }
     }
 }
