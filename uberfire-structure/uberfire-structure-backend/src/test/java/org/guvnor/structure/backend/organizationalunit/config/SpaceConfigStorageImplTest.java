@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.repositories.changerequest.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -164,14 +165,22 @@ public class SpaceConfigStorageImplTest {
     @Test
     public void deleteAllChangeRequestsTest() {
         final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments"));
+
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/information.cr")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/2.comment")));
 
         doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/2/comments");
         doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/2/comments");
 
         spaceConfigStorage.deleteAllChangeRequests("MyProject");
 
+        verify(objectStorage).delete(eq("/MyProject/change_requests/2/comments/1.comment"));
+        verify(objectStorage).delete(eq("/MyProject/change_requests/2/comments/2.comment"));
         verify(objectStorage).delete(eq("/MyProject/change_requests/1/information.cr"));
         verify(objectStorage).delete(eq("/MyProject/change_requests/2/information.cr"));
     }
@@ -187,14 +196,22 @@ public class SpaceConfigStorageImplTest {
     @Test
     public void deleteRepositoryTest() {
         final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments"));
+
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/information.cr")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/2.comment")));
 
         doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/2/comments");
         doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/2/comments");
 
         spaceConfigStorage.deleteRepository("MyProject");
 
+        verify(objectStorage).delete(eq("/MyProject/change_requests/2/comments/1.comment"));
+        verify(objectStorage).delete(eq("/MyProject/change_requests/2/comments/2.comment"));
         verify(objectStorage).delete(eq("/MyProject/change_requests/1/information.cr"));
         verify(objectStorage).delete(eq("/MyProject/change_requests/2/information.cr"));
         verify(objectStorage).delete(eq("/MyProject"));
@@ -225,6 +242,139 @@ public class SpaceConfigStorageImplTest {
         doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
 
         final List<Long> ids = spaceConfigStorage.getChangeRequestIds("MyOtherProject");
+
+        assertSame(0, ids.size());
+    }
+
+    @Test
+    public void loadChangeRequestCommentsTest() {
+        final List<Long> ids = new ArrayList<Long>() {{
+            add(1L);
+            add(2L);
+        }};
+
+        final ChangeRequestComment expectedChangeRequestComment0 = mock(ChangeRequestComment.class);
+        final ChangeRequestComment expectedChangeRequestComment1 = mock(ChangeRequestComment.class);
+
+        doReturn(ids).when(spaceConfigStorage).getChangeRequestCommentIds("MyProject", 1L);
+
+        doReturn(expectedChangeRequestComment0).when(objectStorage).read("/MyProject/change_requests/1/comments/1.comment");
+        doReturn(expectedChangeRequestComment1).when(objectStorage).read("/MyProject/change_requests/1/comments/2.comment");
+
+        final List<ChangeRequestComment> comments = spaceConfigStorage.loadChangeRequestComments("MyProject", 1L);
+
+        assertSame(expectedChangeRequestComment0,
+                   comments.get(0));
+
+        assertSame(expectedChangeRequestComment1,
+                   comments.get(1));
+    }
+
+    @Test
+    public void loadChangeRequestCommentTest() {
+        final ChangeRequestComment expectedChangeRequestComment = mock(ChangeRequestComment.class);
+
+        doReturn(expectedChangeRequestComment).when(objectStorage).read("/MyProject/change_requests/1/comments/1.comment");
+
+        final ChangeRequestComment changeRequestComment = spaceConfigStorage.loadChangeRequestComment("MyProject", 1L, 1L);
+
+        assertSame(expectedChangeRequestComment,
+                   changeRequestComment);
+    }
+
+    @Test
+    public void saveChangeRequestCommentTest() {
+        final ChangeRequestComment changeRequestComment = mock(ChangeRequestComment.class);
+
+        doReturn(1L).when(changeRequestComment).getId();
+
+        spaceConfigStorage.saveChangeRequestComment("MyProject", 1L, changeRequestComment);
+
+        verify(objectStorage).write(eq("/MyProject/change_requests/1/comments/1.comment"),
+                                    same(changeRequestComment));
+    }
+
+    @Test
+    public void deleteAllChangeRequestCommentsTest() {
+        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
+
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/2.comment")));
+
+        doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
+        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
+
+        spaceConfigStorage.deleteAllChangeRequestComments("MyProject", 1L);
+
+        verify(objectStorage).delete(eq("/MyProject/change_requests/1/comments/1.comment"));
+        verify(objectStorage).delete(eq("/MyProject/change_requests/1/comments/2.comment"));
+    }
+
+    @Test
+    public void deleteChangeRequestCommentTest() {
+        spaceConfigStorage.deleteChangeRequestComment("MyProject", 1L, 1L);
+
+        verify(objectStorage).delete(eq("/MyProject/change_requests/1/comments/1.comment"));
+    }
+
+    @Test
+    public void getChangeRequestCommentIdsTest() {
+        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
+
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/30.comment")));
+
+        doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
+        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
+
+        final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyProject", 1L);
+
+        assertSame(1L, ids.get(0));
+        assertSame(20L, ids.get(1));
+        assertSame(30L, ids.get(2));
+    }
+
+    @Test
+    public void getChangeRequestCommentIdsNoResultsOtherChangeRequestTest() {
+        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
+
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/30.comment")));
+
+        doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
+        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
+
+        final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyProject", 2L);
+
+        assertSame(0, ids.size());
+    }
+
+    @Test
+    public void getChangeRequestCommentIdsNoResultsOtherProjectTest() {
+        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
+
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/30.comment")));
+
+        doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
+        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
+
+        final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyOtherProject", 1L);
 
         assertSame(0, ids.size());
     }

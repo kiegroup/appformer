@@ -26,12 +26,14 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FilenameUtils;
 import org.guvnor.structure.contributors.ContributorType;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.organizationalunit.config.RolePermissions;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.guvnor.structure.repositories.changerequest.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.io.object.ObjectStorage;
@@ -56,6 +58,9 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
     private static final String CHANGE_REQUESTS_FOLDER = "change_requests";
     private static final String CHANGE_REQUESTS_FILE = "information.cr";
+    private static final String CHANGE_REQUEST_COMMENTS_FOLDER = "comments";
+    private static final String CHANGE_REQUEST_COMMENT_FILE_EXT = "comment";
+
 
     private static final Logger logger = LoggerFactory.getLogger(SpaceConfigStorageImpl.class);
 
@@ -116,6 +121,12 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     }
 
     @Override
+    public void deleteRepository(final String repositoryAlias) {
+        deleteAllChangeRequests(repositoryAlias);
+        objectStorage.delete(buildRepositoryFolderPath(repositoryAlias));
+    }
+
+    @Override
     public List<ChangeRequest> loadChangeRequests(final String repositoryAlias) {
         return getChangeRequestIds(repositoryAlias).stream()
                 .map(changeRequestId -> loadChangeRequest(repositoryAlias, changeRequestId))
@@ -125,35 +136,31 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     @Override
     public ChangeRequest loadChangeRequest(final String repositoryAlias,
                                            final Long changeRequestId) {
-        return objectStorage.read(buildChangeRequestsFilePath(repositoryAlias,
-                                                              changeRequestId));
+        return objectStorage.read(buildChangeRequestFilePath(repositoryAlias,
+                                                             changeRequestId));
     }
 
     @Override
     public void saveChangeRequest(final String repositoryAlias,
                                   final ChangeRequest changeRequest) {
-        objectStorage.write(buildChangeRequestsFilePath(repositoryAlias,
-                                                        changeRequest.getId()),
+        objectStorage.write(buildChangeRequestFilePath(repositoryAlias,
+                                                       changeRequest.getId()),
                             changeRequest);
     }
 
     @Override
     public void deleteAllChangeRequests(final String repositoryAlias) {
-        getChangeRequestPaths(repositoryAlias).forEach(changeRequestPath ->
-                                                               objectStorage.delete(changeRequestPath.toString()));
+        getChangeRequestIds(repositoryAlias).forEach(changeRequestId -> deleteChangeRequest(repositoryAlias,
+                                                                                            changeRequestId));
     }
 
     @Override
     public void deleteChangeRequest(final String repositoryAlias,
                                     final Long changeRequestId) {
-        objectStorage.delete(buildChangeRequestsFilePath(repositoryAlias,
-                                                         changeRequestId));
-    }
-
-    @Override
-    public void deleteRepository(final String repositoryAlias) {
-        deleteAllChangeRequests(repositoryAlias);
-        objectStorage.delete(buildRepositoryFolderPath(repositoryAlias));
+        deleteAllChangeRequestComments(repositoryAlias,
+                                       changeRequestId);
+        objectStorage.delete(buildChangeRequestFilePath(repositoryAlias,
+                                                        changeRequestId));
     }
 
     @Override
@@ -161,7 +168,73 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         return getChangeRequestPaths(repositoryAlias)
                 .stream()
                 .map(Path::getParent)
-                .map(path -> Long.valueOf(path.getFileName().toString()))
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .map(Long::valueOf)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ChangeRequestComment> loadChangeRequestComments(final String repositoryAlias,
+                                                                final Long changeRequestId) {
+        return getChangeRequestCommentIds(repositoryAlias,
+                                          changeRequestId)
+                .stream()
+                .map(changeRequestCommentId -> loadChangeRequestComment(repositoryAlias,
+                                                                        changeRequestId,
+                                                                        changeRequestCommentId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ChangeRequestComment loadChangeRequestComment(final String repositoryAlias,
+                                                         final Long changeRequestId,
+                                                         final Long changeRequestCommentId) {
+        return objectStorage.read(buildChangeRequestCommentFilePath(repositoryAlias,
+                                                                    changeRequestId,
+                                                                    changeRequestCommentId));
+    }
+
+    @Override
+    public void saveChangeRequestComment(final String repositoryAlias,
+                                         final Long changeRequestId,
+                                         final ChangeRequestComment changeRequestComment) {
+        objectStorage.write(buildChangeRequestCommentFilePath(repositoryAlias,
+                                                              changeRequestId,
+                                                              changeRequestComment.getId()),
+                            changeRequestComment);
+    }
+
+    @Override
+    public void deleteAllChangeRequestComments(final String repositoryAlias,
+                                               final Long changeRequestId) {
+        getChangeRequestCommentIds(repositoryAlias,
+                                   changeRequestId)
+                .forEach(changeRequestCommentId -> deleteChangeRequestComment(repositoryAlias,
+                                                                              changeRequestId,
+                                                                              changeRequestCommentId));
+    }
+
+    @Override
+    public void deleteChangeRequestComment(final String repositoryAlias,
+                                           final Long changeRequestId,
+                                           final Long changeRequestCommentId) {
+        objectStorage.delete(buildChangeRequestCommentFilePath(repositoryAlias,
+                                                               changeRequestId,
+                                                               changeRequestCommentId));
+    }
+
+    @Override
+    public List<Long> getChangeRequestCommentIds(final String repositoryAlias,
+                                                 final Long changeRequestId) {
+        return getChangeRequestCommentPaths(repositoryAlias,
+                                            changeRequestId)
+                .stream()
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .map(FilenameUtils::getBaseName)
+                .map(Long::valueOf)
                 .sorted()
                 .collect(Collectors.toList());
     }
@@ -197,6 +270,43 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         }
 
         return changeRequestPaths;
+    }
+
+    private List<Path> getChangeRequestCommentPaths(final String repositoryAlias,
+                                                    final Long changeRequestId) {
+        List<Path> changeRequestCommentPaths = new ArrayList<>();
+
+        final String changeRequestPathStr = buildChangeRequestCommentFolderPath(repositoryAlias,
+                                                                                changeRequestId);
+
+        if (objectStorage.exists(changeRequestPathStr)) {
+            Path changeRequestPath = objectStorage.getPath(changeRequestPathStr);
+
+            walkFileTree(changeRequestPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    try {
+                        checkNotNull("file",
+                                     file);
+                        checkNotNull("attrs",
+                                     attrs);
+
+                        final String extension = FilenameUtils.getExtension(file.getFileName().toString());
+
+                        if (extension.equals(CHANGE_REQUEST_COMMENT_FILE_EXT) && attrs.isRegularFile()) {
+                            changeRequestCommentPaths.add(file);
+                        }
+                    } catch (Exception ex) {
+                        logger.error("An unexpected exception was thrown: ", ex);
+                        return FileVisitResult.TERMINATE;
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+
+        return changeRequestCommentPaths;
     }
 
     BranchPermissions getDefaultBranchPermissions(String branchName) {
@@ -280,12 +390,30 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
                              CHANGE_REQUESTS_FOLDER);
     }
 
-    private String buildChangeRequestsFilePath(final String repositoryAlias,
-                                               final long changeRequestId) {
+    private String buildChangeRequestFilePath(final String repositoryAlias,
+                                              final Long changeRequestId) {
         return String.format("%s/%s/%s",
                              buildChangeRequestsFolderPath(repositoryAlias),
                              changeRequestId,
                              CHANGE_REQUESTS_FILE);
+    }
+
+    private String buildChangeRequestCommentFolderPath(final String repositoryAlias,
+                                                       final Long changeRequestId) {
+        return String.format("%s/%s/%s",
+                             buildChangeRequestsFolderPath(repositoryAlias),
+                             changeRequestId,
+                             CHANGE_REQUEST_COMMENTS_FOLDER);
+    }
+
+    private String buildChangeRequestCommentFilePath(final String repositoryAlias,
+                                                     final Long changeRequestId,
+                                                     final Long changeRequestCommentId) {
+        return String.format("%s/%s.%s",
+                             buildChangeRequestCommentFolderPath(repositoryAlias,
+                                                                 changeRequestId),
+                             changeRequestCommentId,
+                             CHANGE_REQUEST_COMMENT_FILE_EXT);
     }
 
     private String encode(final String text) {
