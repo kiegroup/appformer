@@ -20,7 +20,8 @@ import java.util.function.Consumer;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerI18n;
 import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.navigation.event.NavTreeLoadedEvent;
-import org.dashbuilder.client.navigation.event.PerspectivePluginsChangedEvent;
+import org.dashbuilder.navigation.event.NavTreeChangedEvent;
+import org.dashbuilder.navigation.event.PerspectivePluginsChangedEvent;
 import org.dashbuilder.client.navigation.widget.editor.NavTreeEditor;
 import org.dashbuilder.navigation.NavTree;
 import org.jboss.errai.common.client.api.IsElement;
@@ -108,6 +109,12 @@ public class NavigationExplorerScreen {
 
     void onPerspectivesChanged(@Observes PerspectivePluginsChangedEvent event) {
         NavTree navTree = navigationManager.getNavTree();
+        navTreeEditor.edit(navTree);
+    }
+
+    public void onNavTreeChanged(@Observes final NavTreeChangedEvent event) {
+        NavTree navTree = event.getNavTree();
+        navigationManager.update(navTree);
         navTreeEditor.edit(navTree);
     }
 

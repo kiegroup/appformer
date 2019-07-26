@@ -37,6 +37,7 @@ import org.dashbuilder.client.navigation.widget.NavMenuBarWidget;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.navigation.NavItem;
 import org.dashbuilder.navigation.NavTree;
+import org.dashbuilder.navigation.event.NavTreeChangedEvent;
 import org.dashbuilder.navigation.workbench.NavWorkbenchCtx;
 import org.gwtbootstrap3.client.ui.Label;
 import org.jboss.errai.common.client.dom.DOMUtil;

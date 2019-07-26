@@ -19,7 +19,7 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerI18n;
 import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.navigation.event.NavTreeLoadedEvent;
-import org.dashbuilder.client.navigation.event.PerspectivePluginsChangedEvent;
+import org.dashbuilder.navigation.event.PerspectivePluginsChangedEvent;
 import org.dashbuilder.client.navigation.widget.editor.NavItemEditorSettings;
 import org.dashbuilder.client.navigation.widget.editor.NavTreeEditor;
 import org.dashbuilder.navigation.NavTree;

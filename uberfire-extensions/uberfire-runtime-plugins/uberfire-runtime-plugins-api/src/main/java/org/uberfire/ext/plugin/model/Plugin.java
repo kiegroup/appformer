@@ -22,6 +22,7 @@ import org.uberfire.backend.vfs.Path;
 @Portable
 public class Plugin extends Activity {
 
+    public static String FILE_EXT = ".plugin";
     private Path path;
 
     public Plugin() {

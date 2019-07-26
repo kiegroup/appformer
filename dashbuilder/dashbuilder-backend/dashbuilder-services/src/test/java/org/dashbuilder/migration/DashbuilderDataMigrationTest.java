@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,6 @@ import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.SimpleFileVisitor;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
-import org.uberfire.java.nio.fs.jgit.JGitFileSystemImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashbuilderDataMigrationTest {
@@ -55,8 +55,8 @@ public class DashbuilderDataMigrationTest {
     public void setup() {
         ioService = new IOServiceDotFileImpl();
 
-        sourceFS = createTempFileSystem();
-        targetFS = createTempFileSystem();
+        sourceFS = createFileSystem();
+        targetFS = createFileSystem();
 
         dashbuilderDataMigration = spy(
             new DashbuilderDataMigration(
@@ -229,9 +229,9 @@ public class DashbuilderDataMigrationTest {
         ioService.write(path.resolve("perspective_layout2.txt"), "test");
     }
 
-    private FileSystem createTempFileSystem() {
+    private FileSystem createFileSystem() {
         return ioService.newFileSystem(
-            URI.create("git://temp" + new Date().getTime()),
+            URI.create("git://migration/temp" + new Date().getTime()),
             new HashMap<String, Object>() {{
                 put("init", Boolean.TRUE);
             }});
@@ -244,7 +244,22 @@ public class DashbuilderDataMigrationTest {
             if (uri.getScheme().equals("git")) {
                 JGitFileSystem fs = (JGitFileSystem) ioService.getFileSystem(uri);
                 fs.getGit().getRepository().getDirectory().delete();
+                deleteFileSystem(fs);
             }
+        }
+    }
+
+    private void deleteFileSystem(FileSystem fs) {
+        try {
+            FileUtils.deleteDirectory(
+                ((JGitFileSystem) fs).getGit()
+                .getRepository()
+                .getDirectory()
+                .getAbsoluteFile()
+                .getParentFile());
+
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
         }
     }
 }

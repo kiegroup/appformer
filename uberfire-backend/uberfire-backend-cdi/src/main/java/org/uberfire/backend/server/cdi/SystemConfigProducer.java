@@ -60,7 +60,6 @@ import org.uberfire.java.nio.base.FileSystemState;
 import org.uberfire.java.nio.file.FileStore;
 import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.FileSystem;
-import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
 import org.uberfire.java.nio.file.InvalidPathException;
 import org.uberfire.java.nio.file.LockableFileSystem;
 import org.uberfire.java.nio.file.Path;
@@ -93,13 +92,13 @@ public class SystemConfigProducer implements Extension {
 
     public void processSystemFSProducer(@Observes ProcessProducer<?, FileSystem> pp) {
         if (pp.getAnnotatedMember().getJavaMember().getName().equals("systemFS")) {
-            ioStrategyBeanNotFound = false;
+            systemFSNotExists = false;
         }
     }
 
     public void processPluginsFSProducer(@Observes ProcessProducer<?, FileSystem> pp) {
         if (pp.getAnnotatedMember().getJavaMember().getName().equals("pluginsFS")) {
-            ioStrategyBeanNotFound = false;
+            pluginsFSNotExists = false;
         }
     }
 
@@ -120,6 +119,7 @@ public class SystemConfigProducer implements Extension {
             navigationFSNotExists = false;
         }
     }
+
     public void processIOServiceProducer(@Observes ProcessProducer<?, IOService> pp) {
         if (pp.getAnnotatedMember().getJavaMember().getName().equals("ioStrategy")) {
             ioStrategyBeanNotFound = false;
@@ -286,6 +286,7 @@ public class SystemConfigProducer implements Extension {
                                          "navigationFS",
                                          "navigation"));
     }
+
     void buildSystemFS(final AfterBeanDiscovery abd,
                        final BeanManager bm) {
         final InjectionTarget<DummyFileSystem> it = bm.createInjectionTarget(bm.createAnnotatedType(DummyFileSystem.class));
