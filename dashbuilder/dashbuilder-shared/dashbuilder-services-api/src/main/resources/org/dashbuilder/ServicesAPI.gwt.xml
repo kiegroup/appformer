@@ -25,6 +25,6 @@
   <source path='navigation'/>
   <source path='perspectives'/>
   <source path='renderer'/>
-  <source path='data'/>
+  <source path='transfer'/>
 
 </module>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data;
+package org.dashbuilder.transfer;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -287,11 +287,17 @@ public class DataTransferServicesImpl implements DataTransferServices {
 
         Path source = Paths.get(URI.create(sourceLocation));
 
-        Path target = fileSystem.getRootDirectories()
-            .iterator()
-            .next()
-            .resolve(FILE_PATH)
-            .resolve(EXPORT_FILE_NAME);
+        Path target = Paths.get(
+        	URI.create(
+        		new StringBuilder()
+        			.append(SpacesAPI.Scheme.GIT)
+		        	.append("://")
+		        	.append(fileSystem.getName())
+		        	.append(File.separator)
+		        	.append(FILE_PATH)
+		        	.append(File.separator)
+		            .append(EXPORT_FILE_NAME)
+		            .toString()));
 
         ioService.write(target, Files.readAllBytes(source));
 

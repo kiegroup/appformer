@@ -40,7 +40,6 @@
     <module>dashbuilder-renderers</module>
     <module>dashbuilder-navigation-client</module>
     <module>dashbuilder-cms-client</module>
-    <module>dashbuilder-data-transfer-client</module>
   </modules>
 
   <dependencyManagement>

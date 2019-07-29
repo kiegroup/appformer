@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data.perspectives;
+package org.dashbuilder.client.cms.perspective;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.dashbuilder.data.screens.DataTransferScreen;
+import org.dashbuilder.client.cms.screen.transfer.DataTransferScreen;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;

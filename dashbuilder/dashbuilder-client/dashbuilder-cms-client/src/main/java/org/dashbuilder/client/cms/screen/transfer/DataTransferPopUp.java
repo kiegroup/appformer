@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data.screens;
+package org.dashbuilder.client.cms.screen.transfer;
 
 import java.util.List;
 

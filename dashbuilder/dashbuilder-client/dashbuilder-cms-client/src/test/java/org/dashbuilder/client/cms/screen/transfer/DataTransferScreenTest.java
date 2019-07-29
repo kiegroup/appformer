@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data.screens;
+package org.dashbuilder.client.cms.screen.transfer;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dashbuilder.data.DataTransferServices;
+import org.dashbuilder.transfer.DataTransferServices;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

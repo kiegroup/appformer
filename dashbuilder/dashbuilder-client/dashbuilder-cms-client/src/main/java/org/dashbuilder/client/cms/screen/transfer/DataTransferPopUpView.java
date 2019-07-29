@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data.screens;
+package org.dashbuilder.client.cms.screen.transfer;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 
 import com.google.gwt.user.client.DOM;
 
-import org.dashbuilder.data.resources.i18n.DataTransferConstants;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 
 import com.google.gwt.dom.client.Element;
 import elemental2.dom.HTMLDivElement;
@@ -46,7 +46,7 @@ public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement 
 
     private DataTransferPopUp presenter;
     private BaseModal modal;
-    private DataTransferConstants i18n = DataTransferConstants.INSTANCE;
+    private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private HTMLDivElement root;
     private HTMLDivElement body;
     private HTMLParagraphElement filesImportedCount;

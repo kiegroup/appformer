@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data;
+package org.dashbuilder.client.cms;
 
-import java.util.List;
+import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.ui.shared.api.annotations.Bundle;
 
-import org.jboss.errai.bus.server.annotations.Remote;
+@EntryPoint
+@Bundle("resources/i18n/ContentManagerConstants.properties")
+public class ContentManagerEntryPoint {
 
-@Remote
-public interface DataTransferServices {
-
-    public static String FILE_PATH = "dashbuilder-data-transfer";
-    public static String EXPORT_FILE_NAME = "export.zip";
-    public static String IMPORT_FILE_NAME = "import.zip";
-
-    public String doExport() throws Exception;
-    public List<String> doImport() throws Exception;
 }

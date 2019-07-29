@@ -43,16 +43,6 @@
 
     <dependency>
       <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-data-transfer-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
-      <artifactId>dashbuilder-data-transfer-client</artifactId>
-      <classifier>sources</classifier>
-    </dependency>
-
-    <dependency>
-      <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-dataset-client</artifactId>
     </dependency>
     <dependency>

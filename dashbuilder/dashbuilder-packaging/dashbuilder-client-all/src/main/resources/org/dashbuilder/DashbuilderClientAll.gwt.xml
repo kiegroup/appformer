@@ -33,6 +33,5 @@
   <inherits name="org.dashbuilder.NavigationClient"/>
   <inherits name="org.dashbuilder.ContentManagerClient"/>
   <inherits name="org.dashbuilder.renderer.DefaultRenderer"/>
-  <inherits name="org.dashbuilder.DataTransfer"/>
 
 </module>

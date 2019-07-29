@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data.screens;
+package org.dashbuilder.client.cms.screen.transfer;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -31,7 +31,7 @@ import org.dashbuilder.common.client.backend.PathUrlFactory;
 import org.dashbuilder.common.client.editor.file.FileUploadEditor;
 import org.dashbuilder.common.client.editor.file.FileUploadEditor.FileUploadEditorCallback;
 import org.dashbuilder.common.client.event.ValueChangeEvent;
-import org.dashbuilder.data.resources.i18n.DataTransferConstants;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -47,7 +47,7 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
 
     private static Logger LOGGER = LoggerFactory.getLogger(DataTransferView.class);
     private DataTransferScreen presenter;
-    private DataTransferConstants i18n = DataTransferConstants.INSTANCE;
+    private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private HTMLDivElement root;
     private HTMLDivElement fileUploadContainer;
     private HTMLButtonElement btnImport;

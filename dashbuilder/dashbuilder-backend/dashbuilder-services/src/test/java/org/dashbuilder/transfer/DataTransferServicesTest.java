@@ -1,4 +1,4 @@
-package org.dashbuilder.data;
+package org.dashbuilder.transfer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

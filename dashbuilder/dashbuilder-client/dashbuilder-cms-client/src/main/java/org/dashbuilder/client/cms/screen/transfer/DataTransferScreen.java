@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.data.screens;
+package org.dashbuilder.client.cms.screen.transfer;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -32,8 +32,8 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElemental;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.lifecycle.OnStartup;
-import org.dashbuilder.data.DataTransferServices;
-import org.dashbuilder.data.resources.i18n.DataTransferConstants;
+import org.dashbuilder.transfer.DataTransferServices;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 
 @ApplicationScoped
 @WorkbenchScreen(identifier = DataTransferScreen.ID)
@@ -42,7 +42,7 @@ public class DataTransferScreen {
     public static final String ID = "DataTransferScreen";
     private View view;
     private Caller<DataTransferServices> dataTransferServices;
-    private DataTransferConstants i18n = DataTransferConstants.INSTANCE;
+    private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private DataTransferPopUp popUp;
 
     public DataTransferScreen() {
