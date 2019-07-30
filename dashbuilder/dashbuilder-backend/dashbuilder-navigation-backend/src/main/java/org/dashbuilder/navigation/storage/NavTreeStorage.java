@@ -31,7 +31,7 @@ import org.uberfire.java.nio.file.Path;
 @ApplicationScoped
 public class NavTreeStorage {
 
-    public static String NAV_TREE_FILE_NAME = "navtree.json";
+    public static final String NAV_TREE_FILE_NAME = "navtree.json";
     private IOService ioService;
     private NavTreeJSONMarshaller jsonMarshaller;
     private Path root;

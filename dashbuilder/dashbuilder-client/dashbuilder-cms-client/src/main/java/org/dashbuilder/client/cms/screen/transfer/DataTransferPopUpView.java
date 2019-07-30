@@ -44,7 +44,6 @@ import jsinterop.base.Js;
 @Dependent
 public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement {
 
-    private DataTransferPopUp presenter;
     private BaseModal modal;
     private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private HTMLDivElement root;
@@ -73,8 +72,6 @@ public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement 
 
     @Override
     public void init(DataTransferPopUp presenter) {
-        this.presenter = presenter;
-
         modal = new CommonModalBuilder()
             .addHeader(i18n.dataTransferPopUpViewTitle())
             .addBody(body)

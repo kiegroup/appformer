@@ -372,16 +372,16 @@ public class SystemConfigProducer implements Extension {
                                                                         IOService.class,
                                                                         _ctx);
 
-                URI uri = resolveFSURI(spaces, space, fsName);
-
-                HashMap<String, Object> env = new HashMap<String, Object>() {{
-                    put("init", Boolean.TRUE);
-                    put("internal", Boolean.TRUE);
-                }};
-
                 FileSystem fs;
+                URI uri = resolveFSURI(spaces, space, fsName);
                 try {
-                    fs = ioService.newFileSystem(uri, env);
+                    fs = ioService.newFileSystem(
+                        uri,
+                        new HashMap<String, Object>() {{
+                            put("init", Boolean.TRUE);
+                            put("internal", Boolean.TRUE);
+                        }});
+
                 } catch (FileSystemAlreadyExistsException e) {
                     fs = ioService.getFileSystem(uri);
                 }

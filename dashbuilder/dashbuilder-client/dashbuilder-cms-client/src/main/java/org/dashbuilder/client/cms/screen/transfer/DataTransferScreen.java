@@ -30,8 +30,6 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElemental;
-import org.uberfire.lifecycle.OnOpen;
-import org.uberfire.lifecycle.OnStartup;
 import org.dashbuilder.transfer.DataTransferServices;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 
@@ -72,14 +70,6 @@ public class DataTransferScreen {
     @PostConstruct
     public void init() {
         view.init(this);
-    }
-
-    @OnOpen
-    public void onOpen() {
-    }
-
-    @OnStartup
-    public void onStartup() {
     }
 
     public void doExport() {

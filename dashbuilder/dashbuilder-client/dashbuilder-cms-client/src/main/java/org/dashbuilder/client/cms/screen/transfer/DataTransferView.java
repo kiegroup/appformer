@@ -45,13 +45,12 @@ import org.uberfire.workbench.events.NotificationEvent;
 @Templated
 public class DataTransferView implements DataTransferScreen.View, IsElement {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(DataTransferView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataTransferView.class);
     private DataTransferScreen presenter;
     private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private HTMLDivElement root;
     private HTMLDivElement fileUploadContainer;
     private HTMLButtonElement btnImport;
-    private HTMLButtonElement btnExport;
     private FileUploadEditor fileUploadEditor;
     private Elemental2DomUtil elem2Dom;
     private Event<NotificationEvent> workbenchNotification;
@@ -74,7 +73,6 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
         this.root = root;
         this.fileUploadContainer = fileUploadContainer;
         this.btnImport = btnImport;
-        this.btnExport = btnExport;
         this.fileUploadEditor = fileUploadEditor;
         this.elem2Dom = elem2Dom;
         this.workbenchNotification = workbenchNotification;

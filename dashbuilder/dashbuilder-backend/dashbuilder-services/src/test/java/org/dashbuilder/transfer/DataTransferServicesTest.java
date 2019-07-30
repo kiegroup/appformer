@@ -71,9 +71,10 @@ public class DataTransferServicesTest {
         navigationFS = createFileSystem("navigation");
         systemFS = createFileSystem("system");
 
-        when(dataSetDefRegistryCDI.getDataSetDefJsonMarshaller())
-            .thenReturn(
-                mock(DataSetDefJSONMarshaller.class));
+        when(
+            dataSetDefRegistryCDI.getDataSetDefJsonMarshaller())
+                .thenReturn(
+                    mock(DataSetDefJSONMarshaller.class));
 
         dataTransferServices = new DataTransferServicesImpl(
             ioService,
@@ -103,19 +104,19 @@ public class DataTransferServicesTest {
 
         assertTrue(exportPath.equals(getExpectedExportFileSystemPath()));
 
-        assertEquals(getFiles(systemFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add(getExpectedExportFilePath());
             add("/readme.md");
-        }});
+        }}, getFiles(systemFS));
 
         ZipInputStream zis = getZipInputStream();
 
-        assertEquals(getFiles(zis), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add(datasetsFS.getName() + "/readme.md");
             add(perspectivesFS.getName() + "/readme.md");
             add(navigationFS.getName() + "/readme.md");
             add("VERSION");
-        }});
+        }}, getFiles(zis));
     }
 
     @Test
@@ -130,14 +131,14 @@ public class DataTransferServicesTest {
 
         assertTrue(exportPath.equals(getExpectedExportFileSystemPath()));
 
-        assertEquals(getFiles(systemFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add(getExpectedExportFilePath());
             add("/readme.md");
-        }});
+        }}, getFiles(systemFS));
 
         ZipInputStream zis = getZipInputStream();
 
-        assertEquals(getFiles(zis), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add(datasetsFS.getName() + "/definitions/dataset1.csv");
             add(datasetsFS.getName() + "/definitions/dataset1.dset");
             add(datasetsFS.getName() + "/readme.md");
@@ -147,30 +148,30 @@ public class DataTransferServicesTest {
             add(navigationFS.getName() + "/navtree.json");
             add(navigationFS.getName() + "/readme.md");
             add("VERSION");
-        }});
+        }}, getFiles(zis));
     }
 
     @Test
     public void testDoImportNoZip() throws Exception {
         List<String> filesImported = dataTransferServices.doImport();
 
-        assertEquals(filesImported, new ArrayList<String>());
+        assertEquals(new ArrayList<String>(), filesImported);
 
-        assertEquals(getFiles(datasetsFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(datasetsFS));
 
-        assertEquals(getFiles(perspectivesFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(perspectivesFS));
 
-        assertEquals(getFiles(navigationFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(navigationFS));
 
-        assertEquals(getFiles(systemFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(systemFS));
 
         verify(dataSetDefRegisteredEvent, times(0)).fire(any());
         verify(pluginAddedEvent, times(0)).fire(any());
@@ -183,24 +184,24 @@ public class DataTransferServicesTest {
 
         List<String> filesImported = dataTransferServices.doImport();
 
-        assertEquals(filesImported, new ArrayList<String>());
+        assertEquals(new ArrayList<String>(), filesImported);
 
-        assertEquals(getFiles(datasetsFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(datasetsFS));
 
-        assertEquals(getFiles(perspectivesFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(perspectivesFS));
 
-        assertEquals(getFiles(navigationFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, getFiles(navigationFS));
 
-        assertEquals(getFiles(systemFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add(getExpectedImportFilePath());
             add("/readme.md");
-        }});
+        }}, getFiles(systemFS));
 
         verify(dataSetDefRegisteredEvent, times(0)).fire(any());
         verify(pluginAddedEvent, times(0)).fire(any());
@@ -213,7 +214,7 @@ public class DataTransferServicesTest {
 
         List<String> filesImported = dataTransferServices.doImport();
 
-        assertEquals(filesImported, new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("dashbuilder/datasets/definitions/7e68d20d-6807-4b86-8737-1d429afe9dbc.csv");
             add("dashbuilder/datasets/definitions/7e68d20d-6807-4b86-8737-1d429afe9dbc.dset");
             add("dashbuilder/datasets/definitions/8060a7f1-ef03-4ce9-a0a8-266301e79ff6.csv");
@@ -234,9 +235,9 @@ public class DataTransferServicesTest {
             add("dashbuilder/perspectives/readme.md");
             add("dashbuilder/navigation/navigation/navtree.json");
             add("dashbuilder/navigation/readme.md");
-        }});
+        }}, filesImported);
 
-        assertEquals(getFiles(datasetsFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/definitions/7e68d20d-6807-4b86-8737-1d429afe9dbc.csv");
             add("/definitions/7e68d20d-6807-4b86-8737-1d429afe9dbc.dset");
             add("/definitions/8060a7f1-ef03-4ce9-a0a8-266301e79ff6.csv");
@@ -246,9 +247,9 @@ public class DataTransferServicesTest {
             add("/definitions/eb241039-1792-4d08-9596-b6c8d27dfe6b.csv");
             add("/definitions/eb241039-1792-4d08-9596-b6c8d27dfe6b.dset");
             add("/readme.md");
-        }});
+        }}, getFiles(datasetsFS));
 
-        assertEquals(getFiles(perspectivesFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/page1/perspective_layout");
             add("/page1/perspective_layout.plugin");
             add("/page2/perspective_layout");
@@ -258,17 +259,17 @@ public class DataTransferServicesTest {
             add("/page4/perspective_layout");
             add("/page4/perspective_layout.plugin");
             add("/readme.md");
-        }});
+        }}, getFiles(perspectivesFS));
 
-        assertEquals(getFiles(navigationFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add("/navigation/navtree.json");
             add("/readme.md");
-        }});
+        }}, getFiles(navigationFS));
 
-        assertEquals(getFiles(systemFS), new ArrayList<String>() {{
+        assertEquals(new ArrayList<String>() {{
             add(getExpectedImportFilePath());
             add("/readme.md");
-        }});
+        }}, getFiles(systemFS));
 
         verify(dataSetDefRegisteredEvent, times(4)).fire(any());
         verify(pluginAddedEvent, times(4)).fire(any());

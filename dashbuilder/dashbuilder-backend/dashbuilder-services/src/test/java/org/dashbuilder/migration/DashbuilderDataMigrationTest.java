@@ -116,12 +116,12 @@ public class DashbuilderDataMigrationTest {
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);
 
-        assertEquals(sourceFiles.size(), 1);
-        assertEquals(targetFiles.size(), 8);
-        assertEquals(sourceFiles, new ArrayList<String>() {{
+        assertEquals(1, sourceFiles.size());
+        assertEquals(8, targetFiles.size());
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
-        assertEquals(targetFiles, new ArrayList<String>() {{
+        }}, sourceFiles);
+        assertEquals(new ArrayList<String>() {{
             add("/bbb.txt");
             add("/dataset1.csv");
             add("/definitions/dataset2.dset");
@@ -130,7 +130,7 @@ public class DashbuilderDataMigrationTest {
             add("/perspective_layout2.txt");
             add("/perspective_layouts/aaa.txt");
             add("/readme.md");
-        }});
+        }}, targetFiles);
     }
 
     @Test
@@ -144,21 +144,21 @@ public class DashbuilderDataMigrationTest {
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);
 
-        assertEquals(sourceFiles.size(), 6);
-        assertEquals(targetFiles.size(), 3);
-        assertEquals(sourceFiles, new ArrayList<String>() {{
+        assertEquals(6, sourceFiles.size());
+        assertEquals(3, targetFiles.size());
+        assertEquals(new ArrayList<String>() {{
             add("/bbb.txt");
             add("/dataset1.csv");
             add("/definitions/dataset2.dset");
             add("/navtree.json");
             add("/perspective_layouts/aaa.txt");
             add("/readme.md");
-        }});
-        assertEquals(targetFiles, new ArrayList<String>() {{
+        }}, sourceFiles);
+        assertEquals(new ArrayList<String>() {{
             add("/page-abc/perspective_layout.json");
             add("/perspective_layout2.txt");
             add("/readme.md");
-        }});
+        }}, targetFiles);
     }
 
     @Test
@@ -172,9 +172,9 @@ public class DashbuilderDataMigrationTest {
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);
 
-        assertEquals(sourceFiles.size(), 7);
-        assertEquals(targetFiles.size(), 2);
-        assertEquals(sourceFiles, new ArrayList<String>() {{
+        assertEquals(7, sourceFiles.size());
+        assertEquals(2, targetFiles.size());
+        assertEquals(new ArrayList<String>() {{
             add("/bbb.txt");
             add("/dataset1.csv");
             add("/definitions/dataset2.dset");
@@ -182,25 +182,25 @@ public class DashbuilderDataMigrationTest {
             add("/perspective_layout2.txt");
             add("/perspective_layouts/aaa.txt");
             add("/readme.md");
-        }});
-        assertEquals(targetFiles, new ArrayList<String>() {{
+        }}, sourceFiles);
+        assertEquals(new ArrayList<String>() {{
             add("/navtree.json");
             add("/readme.md");
-        }});
+        }}, targetFiles);
     }
 
     private void checkInitialCondition() {
         List<String> sourceFiles = getFiles(sourceFS);
         List<String> targetFiles = getFiles(targetFS);
 
-        assertEquals(sourceFiles.size(), 1);
-        assertEquals(targetFiles.size(), 1);
-        assertEquals(sourceFiles, new ArrayList<String>() {{
+        assertEquals(1, sourceFiles.size());
+        assertEquals(1, targetFiles.size());
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
-        assertEquals(targetFiles, new ArrayList<String>() {{
+        }}, sourceFiles);
+        assertEquals(new ArrayList<String>() {{
             add("/readme.md");
-        }});
+        }}, targetFiles);
     }
 
     private List<String> getFiles(FileSystem fs) {

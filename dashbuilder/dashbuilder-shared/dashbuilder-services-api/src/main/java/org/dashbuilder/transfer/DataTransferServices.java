@@ -23,9 +23,9 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface DataTransferServices {
 
-    public static String FILE_PATH = "dashbuilder-data-transfer";
-    public static String EXPORT_FILE_NAME = "export.zip";
-    public static String IMPORT_FILE_NAME = "import.zip";
+    public static final String FILE_PATH = "dashbuilder-data-transfer";
+    public static final String EXPORT_FILE_NAME = "export.zip";
+    public static final String IMPORT_FILE_NAME = "import.zip";
 
     public String doExport() throws Exception;
     public List<String> doImport() throws Exception;
