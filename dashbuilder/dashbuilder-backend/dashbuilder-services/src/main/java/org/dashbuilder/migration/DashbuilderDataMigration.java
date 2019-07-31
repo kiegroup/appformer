@@ -28,6 +28,7 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
+import org.uberfire.commons.cluster.ClusterParameters;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.Path;
@@ -54,6 +55,8 @@ public class DashbuilderDataMigration {
     private FileSystem perspectivesFS;
     private FileSystem navigationFS;
 
+    private ClusterParameters clusterParameters = new ClusterParameters();
+
     public DashbuilderDataMigration() {
 
     }
@@ -76,12 +79,15 @@ public class DashbuilderDataMigration {
     @PostConstruct
     private void init() {
         try{
-            migrateDatasets();
-            migratePerspectives();
-            migrateNavigation();
+            if (!clusterParameters.isAppFormerClustered()) {
+                migrateDatasets();
+                migratePerspectives();
+                migrateNavigation();
+            }
         }
         catch (Exception e) {
             LOGGER.error("Failed during dashbuilder migration process.");
+            LOGGER.debug("Error during dashbuilder migration", e);
         }
     }
 
@@ -124,6 +130,7 @@ public class DashbuilderDataMigration {
 
                 } catch (Exception e) {
                     LOGGER.error("Failed to remove the datasets git repository.");
+                    LOGGER.debug("Error during dashbuilder migration", e);
                 }
 
             }
