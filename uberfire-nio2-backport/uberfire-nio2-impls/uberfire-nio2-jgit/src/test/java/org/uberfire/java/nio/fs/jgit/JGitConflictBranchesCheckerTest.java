@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.GitImpl;
-import org.uberfire.java.nio.fs.jgit.util.commands.ConflictBranchesChecker;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateRepository;
 
@@ -71,7 +70,7 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedMaster", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2ChangedMaster", "Line3", "Line4")));
 
-        List<String> conflicts = new ConflictBranchesChecker(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isNotEmpty();
         assertThat(conflicts).hasSize(2);
@@ -89,7 +88,7 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedMaster", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2", "Line3", "Line4ChangedMaster")));
 
-        List<String> conflicts = new ConflictBranchesChecker(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isNotEmpty();
         assertThat(conflicts).hasSize(1);
@@ -106,7 +105,7 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2", "Line3", "Line4ChangedMaster")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2", "Line3", "Line4ChangedMaster")));
 
-        List<String> conflicts = new ConflictBranchesChecker(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isEmpty();
     }

@@ -18,7 +18,6 @@ package org.uberfire.java.nio.fs.jgit;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +32,6 @@ import org.uberfire.java.nio.fs.jgit.util.GitImpl;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateRepository;
-import org.uberfire.java.nio.fs.jgit.util.commands.DiffBranches;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -73,7 +71,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(2);
@@ -96,7 +94,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
                        put(TXT_FILES.get(0), null);
                    }}).execute();
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(1);
@@ -116,7 +114,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2Changed", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2Changed", "Line3", "Line4")));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(2);
@@ -132,7 +130,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file",
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1),"Line1Changed", "Line2", "Line3", "Line4")));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(1);
@@ -150,7 +148,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file",
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1),"Line1", "Line2", "Line3", "Line4Changed")));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(1);
@@ -168,7 +166,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file",
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1),"Line1", "Line2Changed", "Line3Changed", "Line4")));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(1);
@@ -186,7 +184,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file",
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1),"Line1Changed", "Line2", "Line3", "Line4Changed")));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(2);
@@ -222,7 +220,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Adding file3",
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)));
 
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(3);
@@ -242,7 +240,7 @@ public class JGitDiffBranchesTest extends AbstractTestInfra {
 
     @Test
     public void testDiffWithNonExistentBranch() {
-        List<FileDiff> fileDiffs = new DiffBranches(git, MASTER_BRANCH, "nonExistentBranch").execute();
+        List<FileDiff> fileDiffs = git.diffRefs(MASTER_BRANCH, "nonExistentBranch");
 
         assertThat(fileDiffs).isEmpty();
     }

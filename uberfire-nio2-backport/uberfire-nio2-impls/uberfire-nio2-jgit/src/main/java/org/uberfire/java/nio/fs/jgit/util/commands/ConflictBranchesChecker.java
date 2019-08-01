@@ -60,15 +60,11 @@ public class ConflictBranchesChecker {
         List<String> result = new ArrayList<>();
 
         try {
-            final RevCommit commitA = new GetLastCommit(git,
-                                                        branchA).execute();
+            final RevCommit commitA = git.getLastCommit(branchA);
+            final RevCommit commitB = git.getLastCommit(branchB);
 
-            final RevCommit commitB = new GetLastCommit(git,
-                                                        branchB).execute();
-
-            final RevCommit commonAncestor = new GetCommonAncestorCommit(git,
-                                                                         commitA,
-                                                                         commitB).execute();
+            final RevCommit commonAncestor = git.getCommonAncestorCommit(branchA,
+                                                                         branchB);
 
             ThreeWayMerger merger = MergeStrategy.RECURSIVE.newMerger(git.getRepository(),
                                                                       true);

@@ -218,6 +218,8 @@ public interface Git {
 
     void gc();
 
+    RevCommit getCommit(final String commitId);
+
     RevCommit getLastCommit(final String refName);
 
     RevCommit getLastCommit(final Ref ref) throws IOException;

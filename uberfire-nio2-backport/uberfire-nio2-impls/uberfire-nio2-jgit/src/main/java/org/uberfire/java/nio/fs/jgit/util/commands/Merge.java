@@ -73,9 +73,8 @@ public class Merge {
         final RevCommit lastSourceCommit = git.getLastCommit(sourceBranch);
         final RevCommit lastTargetCommit = git.getLastCommit(targetBranch);
 
-        final RevCommit commonAncestor = new GetCommonAncestorCommit(git,
-                                                                     lastSourceCommit,
-                                                                     lastTargetCommit).execute();
+        final RevCommit commonAncestor = git.getCommonAncestorCommit(sourceBranch,
+                                                                     targetBranch);
         final List<RevCommit> commits = git.listCommits(commonAncestor,
                                                         lastSourceCommit);
 

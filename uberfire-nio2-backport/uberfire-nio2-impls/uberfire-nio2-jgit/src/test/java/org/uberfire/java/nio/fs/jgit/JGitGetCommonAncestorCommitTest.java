@@ -26,8 +26,6 @@ import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.GitImpl;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateRepository;
-import org.uberfire.java.nio.fs.jgit.util.commands.GetCommonAncestorCommit;
-import org.uberfire.java.nio.fs.jgit.util.commands.GetLastCommit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +49,7 @@ public class JGitGetCommonAncestorCommitTest extends AbstractTestInfra {
     public void successTest() throws IOException {
         commit(git, MASTER_BRANCH, "Adding file", content("file.txt", "file content"));
 
-        RevCommit expectedCommonAncestorCommit = new GetLastCommit(git, MASTER_BRANCH).execute();
+        RevCommit expectedCommonAncestorCommit = git.getLastCommit(MASTER_BRANCH);
 
         new CreateBranch((GitImpl) git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
 
@@ -61,10 +59,11 @@ public class JGitGetCommonAncestorCommitTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file", content("file.txt", "file content 3"));
         commit(git, DEVELOP_BRANCH, "Updating file", content("file.txt", "file content 4"));
 
-        RevCommit lastMasterCommit = new GetLastCommit(git, MASTER_BRANCH).execute();
-        RevCommit lastDevCommit = new GetLastCommit(git, DEVELOP_BRANCH).execute();
+        RevCommit lastMasterCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit lastDevCommit = git.getLastCommit(DEVELOP_BRANCH);
 
-        RevCommit actualCommonAncestorCommit = new GetCommonAncestorCommit(git, lastMasterCommit, lastDevCommit).execute();
+        RevCommit actualCommonAncestorCommit = git.getCommonAncestorCommit(lastMasterCommit.getName(),
+                                                                           lastDevCommit.getName());
 
         assertThat(actualCommonAncestorCommit.getName()).isEqualTo(expectedCommonAncestorCommit.getName());
     }

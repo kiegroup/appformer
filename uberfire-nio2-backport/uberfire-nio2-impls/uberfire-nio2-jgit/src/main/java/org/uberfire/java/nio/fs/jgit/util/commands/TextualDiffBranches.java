@@ -88,20 +88,17 @@ public class TextualDiffBranches {
         try (final ObjectReader reader = git.getRepository().newObjectReader()) {
 
             final RevCommit commitA = this.commitIdBranchA != null ?
-                    new GetCommit(git, commitIdBranchA).execute() :
-                    git.getLastCommit(branchA);
+                    git.getCommit(commitIdBranchA) :
+                    git.getCommonAncestorCommit(branchA,
+                                                branchB);
 
             final RevCommit commitB = this.commitIdBranchB != null ?
-                    new GetCommit(git, commitIdBranchB).execute() :
+                    git.getCommit(commitIdBranchB) :
                     git.getLastCommit(branchB);
-
-            final RevCommit commonAncestor = new GetCommonAncestorCommit(git,
-                                                                         commitA,
-                                                                         commitB).execute();
 
             CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
             oldTreeIter.reset(reader,
-                              commonAncestor.getTree());
+                              commitA.getTree());
 
             CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
             newTreeIter.reset(reader,
@@ -114,24 +111,33 @@ public class TextualDiffBranches {
                     .setOutputStream(out)
                     .call();
 
-            List<String> parts = TextualDiffBranches.splitWithDelimiters(String.valueOf(out), DIFF_REGEX_DELIMITER);
+            List<String> parts = TextualDiffBranches.splitWithDelimiters(String.valueOf(out),
+                                                                         DIFF_REGEX_DELIMITER);
 
             Map<String, String> diffMap = new HashMap<>();
-            for (int i = 0; i < parts.size(); i += 2) {
-                diffMap.put(parts.get(i), parts.get(i + 1));
+            for (int i = 1, j = 0; i < parts.size(); i += 2, j++) {
+                String diffKey = buildDiffKey(diffEntries.get(j).getChangeType(),
+                                              diffEntries.get(j).getOldPath(),
+                                              diffEntries.get(j).getNewPath());
+
+                diffMap.put(diffKey, parts.get(i));
             }
 
             return diffEntries.stream()
                     .map(entry -> getFileHeader(formatter, entry))
                     .map(header -> {
-                        int linesAdded = header.toEditList().stream().mapToInt(elem -> elem.getEndB() - elem.getBeginB()).sum();
-                        int linesDeleted = header.toEditList().stream().mapToInt(elem -> elem.getEndA() - elem.getBeginA()).sum();
+                        int linesAdded = header.toEditList()
+                                .stream().mapToInt(elem -> elem.getEndB() - elem.getBeginB()).sum();
+
+                        int linesDeleted = header.toEditList()
+                                .stream().mapToInt(elem -> elem.getEndA() - elem.getBeginA()).sum();
 
                         DiffEntry.ChangeType changeType = header.getChangeType();
-                        String oldPath = changeType != DiffEntry.ChangeType.ADD ? header.getOldPath() : header.getNewPath();
-                        String newPath = changeType != DiffEntry.ChangeType.DELETE ? header.getNewPath() : header.getOldPath();
 
-                        String diffKey = String.format(DIFF_KEY, oldPath, newPath);
+                        String diffKey = buildDiffKey(changeType,
+                                                      header.getOldPath(),
+                                                      header.getNewPath());
+
                         String diffText = diffKey + diffMap.get(diffKey);
 
                         return new TextualDiff(header.getOldPath(),
@@ -144,6 +150,14 @@ public class TextualDiffBranches {
         } catch (final Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private String buildDiffKey(final DiffEntry.ChangeType changeType,
+                                final String oldPath,
+                                final String newPath) {
+        return String.format(DIFF_KEY,
+                             changeType != DiffEntry.ChangeType.ADD ? oldPath : newPath,
+                             changeType != DiffEntry.ChangeType.DELETE ? newPath : oldPath);
     }
 
     private DiffFormatter createFormatter() {

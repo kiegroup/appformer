@@ -24,8 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateRepository;
-import org.uberfire.java.nio.fs.jgit.util.commands.GetCommit;
-import org.uberfire.java.nio.fs.jgit.util.commands.GetLastCommit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,16 +46,16 @@ public class JGitGetCommitTest extends AbstractTestInfra {
     public void successTest() throws IOException {
         commit(git, MASTER_BRANCH, "Adding file", content("file.txt", "file content"));
 
-        RevCommit lastCommit = new GetLastCommit(git, MASTER_BRANCH).execute();
+        RevCommit lastCommit = git.getLastCommit(MASTER_BRANCH);
 
-        RevCommit commit = new GetCommit(git, lastCommit.getName()).execute();
+        RevCommit commit = git.getCommit(lastCommit.getName());
 
         assertThat(commit.getName()).isEqualTo(lastCommit.getName());
     }
 
     @Test
     public void notFoundTest() {
-        RevCommit commit = new GetCommit(git, "non-existent-commit-id").execute();
+        RevCommit commit = git.getCommit("non-existent-commit-id");
 
         assertThat(commit).isNull();
     }

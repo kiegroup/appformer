@@ -180,6 +180,12 @@ public class GitImpl implements Git {
     }
 
     @Override
+    public RevCommit getCommit(final String commitId) {
+        return new GetCommit(this,
+                             commitId).execute();
+    }
+
+    @Override
     public RevCommit getLastCommit(final String refName) {
         return retryIfNeeded(RuntimeException.class,
                              () -> new GetLastCommit(this,
@@ -368,7 +374,7 @@ public class GitImpl implements Git {
                           branchName,
                           commitInfo,
                           amend,
-                          null,
+                          originId,
                           content).execute();
     }
 
