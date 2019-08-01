@@ -48,7 +48,7 @@ public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement 
     private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private HTMLDivElement root;
     private HTMLDivElement body;
-    private HTMLParagraphElement filesImportedCount;
+    private HTMLParagraphElement filesImportedMessage;
     private HTMLUListElement filesImportedList;
     private Elemental2DomUtil elem2Dom;
 
@@ -59,13 +59,13 @@ public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement 
     public DataTransferPopUpView(
             final @DataField HTMLDivElement root,
             final @DataField HTMLDivElement body,
-            final @DataField HTMLParagraphElement filesImportedCount,
+            final @DataField HTMLParagraphElement filesImportedMessage,
             final @DataField HTMLUListElement filesImportedList,
             final Elemental2DomUtil elem2Dom) {
 
         this.root = root;
         this.body = body;
-        this.filesImportedCount = filesImportedCount;
+        this.filesImportedMessage = filesImportedMessage;
         this.filesImportedList = filesImportedList;
         this.elem2Dom = elem2Dom;
     }
@@ -87,14 +87,20 @@ public class DataTransferPopUpView implements DataTransferPopUp.View, IsElement 
     public void show(List<String> filesImported) {
         modal.setTitle(i18n.dataTransferPopUpViewTitle());
         elem2Dom.removeAllElementChildren(filesImportedList);
-        filesImportedCount.textContent = i18n.importResultMessage(filesImported.size());
-
-        filesImported.forEach(fileImported -> {
-            Element element = DOM.createElement("li");
-            element.setClassName("list-group-item");
-            element.setInnerText(fileImported);
-            filesImportedList.appendChild((Node) Js.cast(element));
-        });
+        int size = filesImported.size();
+        
+        if (size == 0) {
+            filesImportedMessage.textContent = i18n.importResultMessageNoData();
+        
+        } else {
+            filesImportedMessage.textContent = i18n.importResultMessageOK(size);      
+            filesImported.forEach(fileImported -> {
+                Element element = DOM.createElement("li");
+                element.setClassName("list-group-item");
+                element.setInnerText(fileImported);
+                filesImportedList.appendChild((Node) Js.cast(element));
+            });
+        }
 
         modal.show();
     }

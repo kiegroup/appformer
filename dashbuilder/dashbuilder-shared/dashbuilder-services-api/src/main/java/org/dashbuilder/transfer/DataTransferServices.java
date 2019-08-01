@@ -27,6 +27,6 @@ public interface DataTransferServices {
     public static final String EXPORT_FILE_NAME = "export.zip";
     public static final String IMPORT_FILE_NAME = "import.zip";
 
-    public String doExport() throws Exception;
+    public String doExport() throws java.io.IOException;
     public List<String> doImport() throws Exception;
 }

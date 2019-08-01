@@ -170,4 +170,10 @@ public class FileUploadEditorView extends Composite implements FileUploadEditor.
         errorTooltip.setTitle("");
         return this;
     }
+    
+    @Override
+    public FileUploadEditor.View setAccept(String type) {
+        fileUpload.setAccept(type);
+        return this;
+    }
 }

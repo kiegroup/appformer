@@ -25,7 +25,6 @@ import java.util.zip.ZipOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.List;
@@ -109,7 +108,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
     }
 
     @Override
-    public String doExport() throws Exception {
+    public String doExport() throws java.io.IOException {
         String zipLocation = new StringBuilder()
             .append(System.getProperty("java.io.tmpdir"))
             .append(File.separator)
@@ -354,7 +353,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
         });
     }
 
-    private void zipFile(File file, String path, ZipOutputStream zos) throws FileNotFoundException, java.io.IOException {
+    private void zipFile(File file, String path, ZipOutputStream zos) throws java.io.IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
             ZipEntry zipEntry = new ZipEntry(path);
             zos.putNextEntry(zipEntry);

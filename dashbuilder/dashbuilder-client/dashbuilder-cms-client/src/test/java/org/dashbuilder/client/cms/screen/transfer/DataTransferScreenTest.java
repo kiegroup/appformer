@@ -35,17 +35,17 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 public class DataTransferScreenTest {
 
     @Mock
-    DataTransferScreen.View view;
+    private DataTransferScreen.View view;
 
     @Mock
-    DataTransferServices dataTransferServices;
+    private DataTransferServices dataTransferServices;
 
     @Mock
-    DataTransferPopUp dataTransferPopUp;
+    private DataTransferPopUp dataTransferPopUp;
 
-    DataTransferScreen dataTransferScreen;
+    private DataTransferScreen dataTransferScreen;
 
-    CallerMock<DataTransferServices> dataTransferServicesCaller;
+    private CallerMock<DataTransferServices> dataTransferServicesCaller;
 
     @Before
     public void prepare() {

@@ -94,7 +94,9 @@ public interface ContentManagerConstants extends Messages {
 
     String dataTransferPopUpViewTitle();
 
-    String importResultMessage(int count);
+    String importResultMessageOK(int count);
+    
+    String importResultMessageNoData();
 
     String exportOK();
 

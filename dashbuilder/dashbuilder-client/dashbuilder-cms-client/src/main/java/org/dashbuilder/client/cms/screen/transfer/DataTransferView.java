@@ -87,6 +87,8 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
 
         elem2Dom.appendWidgetToElement(fileUploadContainer, fileUploadEditor.asWidget());
 
+        fileUploadEditor.setAccept(".zip");
+        
         fileUploadEditor.configure("fileUpload", new FileUploadEditorCallback() {
             @Override
             public String getUploadFileUrl() {

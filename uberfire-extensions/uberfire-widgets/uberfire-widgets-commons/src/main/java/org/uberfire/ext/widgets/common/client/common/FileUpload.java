@@ -106,6 +106,10 @@ public class FileUpload
     public String getFilename() {
         return file.getValue();
     }
+    
+    public void setAccept(String type) {
+        file.getElement().setAttribute("accept", type);
+    }
 
     public void setEnabled(boolean b) {
         if (uploadButton == null) {
