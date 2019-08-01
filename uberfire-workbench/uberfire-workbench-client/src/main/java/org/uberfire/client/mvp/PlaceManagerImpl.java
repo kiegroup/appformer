@@ -490,11 +490,7 @@ public class PlaceManagerImpl implements PlaceManager {
                 if (pr instanceof PathPlaceRequest) {
                     final Path visiblePath = ((PathPlaceRequest) pr).getPath();
                     final String visiblePathURI = visiblePath.toURI();
-                    final String prHash = pr.getParameter("hash", "");
-                    final String placeHash = place.getParameter("hash", "");
-                    if (prHash.equals(placeHash) &&
-                            ((visiblePathURI != null && visiblePathURI.compareTo(path.toURI()) == 0)
-                                    || visiblePath.compareTo(path) == 0)) {
+                    if ((visiblePathURI != null && visiblePathURI.compareTo(path.toURI()) == 0) || visiblePath.compareTo(path) == 0) {
                         return new ResolvedRequest(getActivity(pr),
                                                    pr);
                     }

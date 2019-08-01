@@ -233,15 +233,15 @@ public interface ChangeRequestService {
                                 final Long changeRequestId);
 
     /**
-     * Tries to revert the change request.
+     * Reverts the change request.
      * @param spaceName the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
      * @return True if the revert operation succeeded, otherwise false.
      */
-    Boolean tryRevertChangeRequest(final String spaceName,
-                                   final String repositoryAlias,
-                                   final Long changeRequestId);
+    Boolean revertChangeRequest(final String spaceName,
+                                final String repositoryAlias,
+                                final Long changeRequestId);
 
     /**
      * Updates the change request summary.
@@ -272,11 +272,26 @@ public interface ChangeRequestService {
      * @param spaceName the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
+     * @param page the desired page
+     * @param pageSize the size of the page
      * @return The list of comments
      */
     List<ChangeRequestComment> getComments(final String spaceName,
                                            final String repositoryAlias,
-                                           final Long changeRequestId);
+                                           final Long changeRequestId,
+                                           final Integer page,
+                                           final Integer pageSize);
+
+    /**
+     * Retrieves the number of comments associated with the given change request.
+     * @param spaceName the space containing the origin repository
+     * @param repositoryAlias the repository alias
+     * @param changeRequestId the id of the change request
+     * @return The number of comments.
+     */
+    Integer countChangeRequestComments(final String spaceName,
+                                       final String repositoryAlias,
+                                       final Long changeRequestId);
 
     /**
      * Adds a comment to the change request comment list.

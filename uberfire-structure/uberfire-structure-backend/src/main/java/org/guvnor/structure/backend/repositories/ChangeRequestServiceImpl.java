@@ -55,6 +55,9 @@ import org.uberfire.java.nio.base.TextualDiff;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
+import org.uberfire.java.nio.fs.jgit.util.model.CommitInfo;
+import org.uberfire.java.nio.fs.jgit.util.model.RevertCommitContent;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.SpacesAPI;
 
 import static java.lang.Integer.min;
@@ -72,7 +75,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     private final Event<ChangeRequestListUpdatedEvent> changeRequestListUpdatedEvent;
     private final Event<ChangeRequestUpdatedEvent> changeRequestUpdatedEvent;
     private final BranchAccessAuthorizer branchAccessAuthorizer;
-    private final User user;
+    private final SessionInfo sessionInfo;
 
     private Logger logger = LoggerFactory.getLogger(ChangeRequestServiceImpl.class);
 
@@ -83,14 +86,14 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                     final Event<ChangeRequestListUpdatedEvent> changeRequestListUpdatedEvent,
                                     final Event<ChangeRequestUpdatedEvent> changeRequestUpdatedEvent,
                                     final BranchAccessAuthorizer branchAccessAuthorizer,
-                                    final User user) {
+                                    final SessionInfo sessionInfo) {
         this.spaceConfigStorageRegistry = spaceConfigStorageRegistry;
         this.repositoryService = repositoryService;
         this.spaces = spaces;
         this.changeRequestListUpdatedEvent = changeRequestListUpdatedEvent;
         this.changeRequestUpdatedEvent = changeRequestUpdatedEvent;
         this.branchAccessAuthorizer = branchAccessAuthorizer;
-        this.user = user;
+        this.sessionInfo = sessionInfo;
     }
 
     @Override
@@ -121,7 +124,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                  sourceBranch,
                                                                  targetBranch,
                                                                  ChangeRequestStatus.OPEN,
-                                                                 user.getIdentifier(),
+                                                                 sessionInfo.getIdentity().getIdentifier(),
                                                                  summary,
                                                                  description,
                                                                  new Date(),
@@ -203,7 +206,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                              elem -> composeSearchableElement(elem)
                                                                                      .contains(filter.toLowerCase()));
 
-        return paginate(changeRequests, page, pageSize);
+        return paginateChangeRequests(changeRequests, page, pageSize);
     }
 
     @Override
@@ -219,13 +222,14 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("pageSize", pageSize);
         checkNotEmpty("statusList", statusList);
 
-        final List<ChangeRequest> changeRequests = getFilteredChangeRequests(spaceName,
-                                                                             repositoryAlias,
-                                                                             elem -> statusList.contains(elem.getStatus()) &&
-                                                                                     composeSearchableElement(elem)
-                                                                                             .contains(filter.toLowerCase()));
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequests(spaceName,
+                                          repositoryAlias,
+                                          elem -> statusList.contains(elem.getStatus()) &&
+                                                  composeSearchableElement(elem)
+                                                          .contains(filter.toLowerCase()));
 
-        return paginate(changeRequests, page, pageSize);
+        return paginateChangeRequests(changeRequests, page, pageSize);
     }
 
     @Override
@@ -236,9 +240,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("changeRequestId", changeRequestId);
 
-        final List<ChangeRequest> changeRequests = this.getFilteredChangeRequests(spaceName,
-                                                                                  repositoryAlias,
-                                                                                  elem -> elem.getId() == changeRequestId);
+        final List<ChangeRequest> changeRequests =
+                this.getFilteredChangeRequests(spaceName,
+                                               repositoryAlias,
+                                               elem -> elem.getId() == changeRequestId);
 
         if (changeRequests.size() == 0) {
             throw new NoSuchElementException("The Change Request with ID #" + changeRequestId + " not found");
@@ -353,17 +358,17 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("changeRequestId", changeRequestId);
 
-        final ChangeRequest oldChangeRequest = this.getChangeRequest(spaceName,
-                                                                     repositoryAlias,
-                                                                     changeRequestId);
+        final ChangeRequest changeRequest = this.getChangeRequest(spaceName,
+                                                                  repositoryAlias,
+                                                                  changeRequestId);
 
-        if (oldChangeRequest.getStatus() != ChangeRequestStatus.OPEN) {
+        if (changeRequest.getStatus() != ChangeRequestStatus.OPEN) {
             throw new IllegalStateException("Cannot reject a change request that is not opened");
         }
 
         this.updateChangeRequestStatus(spaceName,
                                        repositoryAlias,
-                                       oldChangeRequest,
+                                       changeRequest,
                                        ChangeRequestStatus.REJECTED);
     }
 
@@ -375,65 +380,63 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("changeRequestId", changeRequestId);
 
-        final ChangeRequest oldChangeRequest = this.getChangeRequest(spaceName,
-                                                                     repositoryAlias,
-                                                                     changeRequestId);
+        final ChangeRequest changeRequest = this.getChangeRequest(spaceName,
+                                                                  repositoryAlias,
+                                                                  changeRequestId);
 
-        if (oldChangeRequest.getStatus() != ChangeRequestStatus.OPEN) {
+        if (changeRequest.getStatus() != ChangeRequestStatus.OPEN) {
             throw new IllegalStateException("Cannot accept a change request that is not opened");
         }
-
-        final String sourceBranchName = oldChangeRequest.getSourceBranch();
-        final String targetBranchName = oldChangeRequest.getTargetBranch();
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
 
-        final Branch sourceBranch = repository.getBranch(sourceBranchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + sourceBranchName + " does not exist"));
-        repository.getBranch(targetBranchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + targetBranchName + " does not exist"));
+        boolean isDone = false;
 
-        final Git git = getGitFromBranch(sourceBranch);
-
-        try {
-            if (!isChangeRequestDiffEmpty(repository, oldChangeRequest)) {
-                final String lastCommitId = getLastCommitId(repository,
-                                                            sourceBranchName);
-                final List<RevCommit> commits = git.listCommits(oldChangeRequest.getCommonCommitId(),
-                                                                lastCommitId);
-
-                if (!commits.isEmpty()) {
-                    if (commits.size() > 1) {
-                        git.squash(sourceBranchName,
-                                   commits.get(commits.size() - 1).getName(),
-                                   "Squash commits for merging operation.");
-                    }
-
-                    git.merge(sourceBranchName,
-                              targetBranchName);
-
-                    this.updateChangeRequestStatus(spaceName,
-                                                   repositoryAlias,
-                                                   oldChangeRequest,
-                                                   ChangeRequestStatus.ACCEPTED);
-                }
-            }
-
-            return true;
-        } catch (GitException e) {
-            logger.debug(String.format("Cannot merge change request %s: %s", changeRequestId, e));
+        if (!isChangeRequestDiffEmpty(repository,
+                                      changeRequest)) {
+            isDone = trySquashAndMergeChangeRequest(repository,
+                                                    changeRequest);
         }
 
-        return false;
+        if (isDone) {
+            this.updateChangeRequestStatus(spaceName,
+                                           repositoryAlias,
+                                           changeRequest,
+                                           ChangeRequestStatus.ACCEPTED);
+        }
+
+        return isDone;
     }
 
     @Override
-    public Boolean tryRevertChangeRequest(final String spaceName,
-                                          final String repositoryAlias,
-                                          final Long changeRequestId) {
-        //TODO: [caponetto]
-        return false;
+    public Boolean revertChangeRequest(final String spaceName,
+                                       final String repositoryAlias,
+                                       final Long changeRequestId) {
+        checkNotEmpty("spaceName", spaceName);
+        checkNotEmpty("repositoryAlias", repositoryAlias);
+        checkNotNull("changeRequestId", changeRequestId);
+
+        final ChangeRequest changeRequest = this.getChangeRequest(spaceName,
+                                                                  repositoryAlias,
+                                                                  changeRequestId);
+
+        if (changeRequest.getStatus() != ChangeRequestStatus.ACCEPTED) {
+            throw new IllegalStateException("Cannot revert a change request that is not accepted");
+        }
+
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
+
+        boolean isDone = tryRevertChangeRequest(repository,
+                                                changeRequest);
+
+        this.updateChangeRequestStatus(spaceName,
+                                       repositoryAlias,
+                                       changeRequest,
+                                       isDone ? ChangeRequestStatus.REVERTED : ChangeRequestStatus.REVERT_FAILED);
+
+        return isDone;
     }
 
     @Override
@@ -509,13 +512,35 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     @Override
     public List<ChangeRequestComment> getComments(final String spaceName,
                                                   final String repositoryAlias,
-                                                  final Long changeRequestId) {
+                                                  final Long changeRequestId,
+                                                  final Integer page,
+                                                  final Integer pageSize) {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("changeRequestId", changeRequestId);
 
-        return spaceConfigStorageRegistry.get(spaceName).loadChangeRequestComments(repositoryAlias,
-                                                                                   changeRequestId);
+        final List<ChangeRequestComment> comments =
+                spaceConfigStorageRegistry.get(spaceName).loadChangeRequestComments(repositoryAlias,
+                                                                                    changeRequestId)
+                        .stream()
+                        .sorted(Comparator.comparing(ChangeRequestComment::getCreatedDate).reversed())
+                        .collect(Collectors.toList());
+
+        return paginateComments(comments,
+                                page,
+                                pageSize);
+    }
+
+    @Override
+    public Integer countChangeRequestComments(final String spaceName,
+                                              final String repositoryAlias,
+                                              final Long changeRequestId) {
+        checkNotEmpty("spaceName", spaceName);
+        checkNotEmpty("repositoryAlias", repositoryAlias);
+        checkNotNull("changeRequestId", changeRequestId);
+
+        return spaceConfigStorageRegistry.get(spaceName).getChangeRequestCommentIds(repositoryAlias,
+                                                                                    changeRequestId).size();
     }
 
     @Override
@@ -535,7 +560,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                  changeRequestId);
 
         final ChangeRequestComment newComment = new ChangeRequestComment(commentId,
-                                                                         user.getIdentifier(),
+                                                                         sessionInfo.getIdentity().getIdentifier(),
                                                                          new Date(),
                                                                          text);
 
@@ -567,10 +592,6 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                      changeRequestId));
     }
 
-    Git getGitFromBranch(final Branch branch) {
-        return ((JGitPathImpl) Paths.convert(branch.getPath())).getFileSystem().getGit();
-    }
-
     private org.uberfire.backend.vfs.Path createPath(final String branchPath,
                                                      final String filePath) {
         return PathFactory.newPath(filePath,
@@ -582,7 +603,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         Repository repository = repositoryService.getRepositoryFromSpace(spaces.getSpace(spaceName), repositoryAlias);
 
         if (repository == null) {
-            throw new NoSuchElementException("The repository " + repositoryAlias + " was not found in the space " + spaceName);
+            final String msg = String.format("The repository %s was not found in the space %s",
+                                             repositoryAlias,
+                                             spaceName);
+
+            throw new NoSuchElementException(msg);
         }
 
         return repository;
@@ -595,13 +620,14 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
 
         return spaceConfigStorageRegistry.get(spaceName).loadChangeRequests(repositoryAlias)
                 .stream()
-                .filter(elem -> branchAccessAuthorizer.authorize(user.getIdentifier(),
+                .filter(elem -> branchAccessAuthorizer.authorize(sessionInfo.getIdentity().getIdentifier(),
                                                                  spaceName,
                                                                  repository.getIdentifier(),
                                                                  repository.getAlias(),
                                                                  elem.getTargetBranch(),
                                                                  BranchAccessAuthorizer.AccessType.READ))
                 .filter(filter)
+                .sorted(Comparator.comparing(ChangeRequest::getCreatedDate).reversed())
                 .map(elem -> new ChangeRequest(elem.getId(),
                                                elem.getSpaceName(),
                                                elem.getRepositoryAlias(),
@@ -613,7 +639,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                elem.getDescription(),
                                                elem.getCreatedDate(),
                                                countChangeRequestDiffs(repository, elem),
-                                               countChangeRequestComments(repository, elem),
+                                               countChangeRequestComments(spaceName, repositoryAlias, elem.getId()),
                                                elem.getCommonCommitId(),
                                                elem.getLastCommitId(),
                                                !isChangeRequestConflictFree(repository, elem)))
@@ -624,9 +650,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         return ("#" + element.getId() + " " + element.getSummary()).toLowerCase();
     }
 
-    private List<ChangeRequest> paginate(final List<ChangeRequest> changeRequests,
-                                         final Integer page,
-                                         final Integer pageSize) {
+    private List<ChangeRequest> paginateChangeRequests(final List<ChangeRequest> changeRequests,
+                                                       final Integer page,
+                                                       final Integer pageSize) {
         if (page == 0 && pageSize == 0) {
             return changeRequests;
         }
@@ -649,6 +675,31 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         return paginatedChangeRequests;
     }
 
+    private List<ChangeRequestComment> paginateComments(final List<ChangeRequestComment> comments,
+                                                        final Integer page,
+                                                        final Integer pageSize) {
+        if (page == 0 && pageSize == 0) {
+            return comments;
+        }
+
+        final Map<Integer, List<ChangeRequestComment>> map = IntStream.iterate(0,
+                                                                               i -> i + pageSize)
+                .limit((comments.size() + pageSize - 1) / pageSize)
+                .boxed()
+                .collect(toMap(i -> i / pageSize,
+                               i -> comments.subList(i,
+                                                     min(i + pageSize,
+                                                         comments.size()))));
+
+        List<ChangeRequestComment> paginatedComments = new ArrayList<>();
+
+        if (map.containsKey(page)) {
+            paginatedComments.addAll(map.get(page));
+        }
+
+        return paginatedComments;
+    }
+
     private long generateChangeRequestId(final String spaceName,
                                          final String repositoryAlias) {
         Optional<Long> maxId = spaceConfigStorageRegistry.get(spaceName)
@@ -656,13 +707,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                 .stream()
                 .max(Long::compare);
 
-        long nextId = 1L;
-
-        if (maxId.isPresent()) {
-            nextId = maxId.get() + 1;
-        }
-
-        return nextId;
+        return maxId.orElse(0L) + 1;
     }
 
     private long generateCommentId(final String spaceName,
@@ -674,13 +719,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                 .stream()
                 .max(Long::compare);
 
-        long nextId = 1L;
-
-        if (maxId.isPresent()) {
-            nextId = maxId.get() + 1;
-        }
-
-        return nextId;
+        return maxId.orElse(0L) + 1;
     }
 
     private void updateChangeRequestStatus(final String spaceName,
@@ -716,10 +755,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
 
     private String getLastCommitId(final Repository repository,
                                    final String branchName) {
-        final Branch branch = repository.getBranch(branchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + branchName + " does not exist"));
-
-        final Git git = getGitFromBranch(branch);
+        final Git git = getGitFromBranch(repository,
+                                         branchName);
 
         final RevCommit lastCommit = git.getLastCommit(branchName);
 
@@ -733,13 +770,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     private String getCommonCommitId(final Repository repository,
                                      final String sourceBranchName,
                                      final String targetBranchName) {
-        final Branch sourceBranch = repository.getBranch(sourceBranchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + sourceBranchName + " does not exist"));
-
-        repository.getBranch(targetBranchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + targetBranchName + " does not exist"));
-
-        final Git git = getGitFromBranch(sourceBranch);
+        final Git git = getGitFromBranch(repository,
+                                         sourceBranchName);
 
         RevCommit commonAncestorCommit = null;
 
@@ -748,7 +780,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                targetBranchName);
         } catch (GitException e) {
             logger.error(String.format("Failed to get common commit for branches %s and %s: %s",
-                                       sourceBranch,
+                                       sourceBranchName,
                                        targetBranchName,
                                        e));
         }
@@ -799,7 +831,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         final Optional<Branch> targetBranch = repository.getBranch(targetBranchName);
 
         if (sourceBranch.isPresent() && targetBranch.isPresent()) {
-            final Git git = getGitFromBranch(sourceBranch.get());
+            final Git git = getGitFromBranch(repository,
+                                             sourceBranchName);
 
             return git.textualDiffRefs(targetBranchName,
                                        sourceBranchName,
@@ -817,13 +850,6 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                               changeRequest.getTargetBranch(),
                               changeRequest.getCommonCommitId(),
                               changeRequest.getLastCommitId()).size();
-    }
-
-    private int countChangeRequestComments(final Repository repository,
-                                           final ChangeRequest changeRequest) {
-        return getComments(repository.getSpace().getName(),
-                           repository.getAlias(),
-                           changeRequest.getId()).size();
     }
 
     private boolean isChangeRequestDiffEmpty(final Repository repository,
@@ -846,12 +872,145 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         final Optional<Branch> targetBranch = repository.getBranch(targetBranchName);
 
         if (sourceBranch.isPresent() && targetBranch.isPresent()) {
-            final Git git = getGitFromBranch(sourceBranch.get());
+            final Git git = getGitFromBranch(repository,
+                                             sourceBranchName);
 
             return git.conflictBranchesChecker(targetBranchName,
                                                sourceBranchName);
         }
 
         return Collections.emptyList();
+    }
+
+    private CommitInfo createRevertCommitInfo(final String message) {
+        return new CommitInfo(sessionInfo.getId(),
+                              sessionInfo.getIdentity().getIdentifier(),
+                              sessionInfo.getIdentity().getProperty(User.StandardUserProperties.EMAIL),
+                              message,
+                              null,
+                              new Date());
+    }
+
+    private boolean trySquashAndMergeChangeRequest(final Repository repository,
+                                                   final ChangeRequest changeRequest) {
+
+        final String sourceBranchName = changeRequest.getSourceBranch();
+        final String targetBranchName = changeRequest.getTargetBranch();
+
+        final Git git = getGitFromBranch(repository,
+                                         sourceBranchName);
+
+        boolean isDone = false;
+
+        try {
+            final String lastCommitId = getLastCommitId(repository,
+                                                        sourceBranchName);
+
+            final List<RevCommit> commits = git.listCommits(changeRequest.getCommonCommitId(),
+                                                            lastCommitId);
+
+            if (!commits.isEmpty()) {
+                final String startCommitId = commits.get(commits.size() - 1).getName();
+                final String commitMsg = String.format("Squash & Merge - change request #%s",
+                                                       changeRequest.getId());
+                git.squash(sourceBranchName,
+                           startCommitId,
+                           commitMsg);
+
+                git.merge(sourceBranchName,
+                          targetBranchName);
+
+                isDone = true;
+            }
+        } catch (GitException e) {
+            logger.debug(String.format("Cannot merge change request %s: %s", changeRequest.getId(), e));
+        }
+
+        return isDone;
+    }
+
+    private boolean tryRevertChangeRequest(final Repository repository,
+                                           final ChangeRequest changeRequest) {
+        final String targetBranchName = changeRequest.getTargetBranch();
+
+        final String lastTargetCommitId = getLastCommitId(repository,
+                                                          targetBranchName);
+
+        boolean isDone = false;
+
+        if (changeRequest.getLastCommitId().equals(lastTargetCommitId)) {
+            final Git git = getGitFromBranch(repository,
+                                             targetBranchName);
+
+            try {
+                final RevCommit startCommit = getFirstCommitParent(git.getLastCommit(targetBranchName));
+                final String commitMsg = String.format("Revert - change request #%s", changeRequest.getId());
+
+                isDone = git.commit(targetBranchName,
+                                    createRevertCommitInfo(commitMsg),
+                                    false,
+                                    startCommit,
+                                    new RevertCommitContent(targetBranchName));
+
+                if (isDone) {
+                    fixSourceBranchAfterRevert(changeRequest.getId(),
+                                               git,
+                                               changeRequest.getSourceBranch(),
+                                               targetBranchName);
+                }
+            } catch (Exception e) {
+                logger.debug(String.format("Failed to revert change request #%s: %s.",
+                                           changeRequest.getId(),
+                                           e));
+            }
+        }
+
+        return isDone;
+    }
+
+    private void fixSourceBranchAfterRevert(final Long changeRequestId,
+                                            final Git git,
+                                            final String sourceBranchName,
+                                            final String targetBranchName) {
+        final String tempBranchName = String.format("%s_%s_cr%s_revert_fix",
+                                                    targetBranchName,
+                                                    sourceBranchName,
+                                                    changeRequestId);
+
+        try {
+            git.createRef(targetBranchName,
+                          tempBranchName);
+
+            final RevCommit startCommit = getFirstCommitParent(git.getLastCommit(tempBranchName));
+            final String commitMsg = String.format("Revert fix - change request #%s", changeRequestId);
+
+            git.commit(tempBranchName,
+                       createRevertCommitInfo(commitMsg),
+                       false,
+                       startCommit,
+                       new RevertCommitContent(tempBranchName));
+
+            git.merge(tempBranchName,
+                      sourceBranchName);
+        } catch (Exception e) {
+            logger.error(String.format("Unable to fix source branch %s after reverting change request #%s: %s",
+                                       sourceBranchName,
+                                       changeRequestId,
+                                       e));
+        } finally {
+            git.deleteRef(git.getRef(tempBranchName));
+        }
+    }
+
+    Git getGitFromBranch(final Repository repository,
+                         final String branchName) {
+        final Branch branch = repository.getBranch(branchName)
+                .orElseThrow(() -> new IllegalStateException("The branch " + branchName + " does not exist"));
+
+        return ((JGitPathImpl) Paths.convert(branch.getPath())).getFileSystem().getGit();
+    }
+
+    RevCommit getFirstCommitParent(final RevCommit commit) {
+        return commit.getParent(0);
     }
 }

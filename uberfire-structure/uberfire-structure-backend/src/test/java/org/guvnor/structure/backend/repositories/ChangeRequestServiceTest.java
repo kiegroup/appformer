@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import javax.enterprise.event.Event;
 
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
@@ -48,6 +49,9 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.java.nio.base.TextualDiff;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
+import org.uberfire.java.nio.fs.jgit.util.model.CommitInfo;
+import org.uberfire.java.nio.fs.jgit.util.model.RevertCommitContent;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
@@ -56,6 +60,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -91,7 +96,7 @@ public class ChangeRequestServiceTest {
     private BranchAccessAuthorizer branchAccessAuthorizer;
 
     @Mock
-    private User user;
+    private SessionInfo sessionInfo;
 
     @Mock
     private SpaceConfigStorage spaceConfigStorage;
@@ -121,6 +126,9 @@ public class ChangeRequestServiceTest {
     public void setUp() {
         Space mySpace = mock(Space.class);
 
+        User user = mock(User.class);
+
+        doReturn(user).when(sessionInfo).getIdentity();
         doReturn("authorId").when(user).getIdentifier();
 
         doReturn(spaceConfigStorage).when(spaceConfigStorageRegistry).get("mySpace");
@@ -154,10 +162,11 @@ public class ChangeRequestServiceTest {
                                                         changeRequestListUpdatedEvent,
                                                         changeRequestUpdatedEvent,
                                                         branchAccessAuthorizer,
-                                                        user));
+                                                        sessionInfo));
 
-        doReturn(git).when(service).getGitFromBranch(sourceBranch);
-        doReturn(git).when(service).getGitFromBranch(hiddenBranch);
+        doReturn(git).when(service).getGitFromBranch(repository, "sourceBranch");
+        doReturn(git).when(service).getGitFromBranch(repository, "targetBranch");
+        doReturn(git).when(service).getGitFromBranch(repository, "hiddenBranch");
     }
 
     @Test
@@ -542,6 +551,30 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
+    public void countChangeRequestCommentsTest() {
+        List<ChangeRequestComment> comments = Collections.nCopies(15, mock(ChangeRequestComment.class));
+        doReturn(comments).when(spaceConfigStorage).getChangeRequestCommentIds("myRepository", 1L);
+
+        int count = service.countChangeRequestComments("mySpace",
+                                                       "myRepository",
+                                                       1L);
+
+        assertEquals(15, count);
+    }
+
+    @Test
+    public void countChangeRequestCommentsEmptyListTest() {
+        List<ChangeRequestComment> comments = Collections.nCopies(15, mock(ChangeRequestComment.class));
+        doReturn(comments).when(spaceConfigStorage).getChangeRequestCommentIds("myRepository", 2L);
+
+        int count = service.countChangeRequestComments("mySpace",
+                                                       "myRepository",
+                                                       1L);
+
+        assertEquals(0, count);
+    }
+
+    @Test
     public void getDiffTestNoResultsTest() {
         doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
                                                                             anyString());
@@ -678,9 +711,8 @@ public class ChangeRequestServiceTest {
         ChangeRequest crsHidden = createCommonChangeRequestWithSourceTargetBranch("hiddenBranch",
                                                                                   "hiddenBranch");
 
-        Branch branch = mock(Branch.class);
-        doReturn(Optional.of(branch)).when(repository).getBranch("branch");
-        doReturn(git).when(service).getGitFromBranch(branch);
+        doReturn(Optional.of(mock(Branch.class))).when(repository).getBranch("branch");
+        doReturn(git).when(service).getGitFromBranch(repository, "branch");
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(10, crsSourceBranch));
@@ -782,7 +814,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void acceptChangeRequestSuccessWithSquashTest() {
+    public void acceptChangeRequestSuccessWithSquashManyCommitsTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -826,7 +858,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void acceptChangeRequestSuccessWithNoSquashTest() {
+    public void acceptChangeRequestSuccessWithSquashOneCommitTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -854,9 +886,9 @@ public class ChangeRequestServiceTest {
                                                      "myRepository",
                                                      1L);
 
-        verify(git, never()).squash(anyString(),
-                                    anyString(),
-                                    anyString());
+        verify(git).squash(anyString(),
+                           anyString(),
+                           anyString());
 
         verify(git).merge(anyString(),
                           anyString());
@@ -900,7 +932,7 @@ public class ChangeRequestServiceTest {
                                                               any(ChangeRequest.class));
         verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
 
-        assertTrue(result);
+        assertFalse(result);
     }
 
     @Test
@@ -915,7 +947,7 @@ public class ChangeRequestServiceTest {
                                                               any(ChangeRequest.class));
         verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
 
-        assertTrue(result);
+        assertFalse(result);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -926,6 +958,147 @@ public class ChangeRequestServiceTest {
         service.acceptChangeRequest("mySpace",
                                     "myRepository",
                                     1L);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void revertChangeRequestWhenChangeRequestNotAcceptedTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.REJECTED));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.revertChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
+    }
+
+    @Test
+    public void revertChangeRequestFailWhenNotLastCommitTest() {
+        final String lastCommitId = "abcde12";
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
+                                                                                                            lastCommitId));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        doReturn(Collections.nCopies(5, mock(RevCommit.class))).when(git).listCommits(anyString(),
+                                                                                      anyString());
+
+        boolean result = service.revertChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(git, never()).commit(anyString(),
+                                    any(CommitInfo.class),
+                                    anyBoolean(),
+                                    any(RevCommit.class),
+                                    any(RevertCommitContent.class));
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void revertChangeRequestSuccessTest() {
+        final String lastCommitId = "0000000000000000000000000000000000000000";
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
+                                                                                                            lastCommitId));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        RevCommit commit = mock(RevCommit.class);
+        doReturn(commit).when(git).getLastCommit("targetBranch");
+        doReturn(commit).when(service).getFirstCommitParent(any(RevCommit.class));
+
+        doReturn(true).when(git).commit(eq("targetBranch"),
+                                        any(CommitInfo.class),
+                                        eq(false),
+                                        any(RevCommit.class),
+                                        any(RevertCommitContent.class));
+
+        boolean result = service.revertChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(git, times(2)).commit(anyString(),
+                                     any(CommitInfo.class),
+                                     anyBoolean(),
+                                     any(RevCommit.class),
+                                     any(RevertCommitContent.class));
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void revertChangeRequestSuccessFixSourceTest() {
+        final String lastCommitId = "0000000000000000000000000000000000000000";
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
+                                                                                                            lastCommitId));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        RevCommit commit = mock(RevCommit.class);
+        doReturn(commit).when(git).getLastCommit("targetBranch");
+        doReturn(commit).when(service).getFirstCommitParent(any(RevCommit.class));
+
+        doReturn(true).when(git).commit(eq("targetBranch"),
+                                        any(CommitInfo.class),
+                                        eq(false),
+                                        any(RevCommit.class),
+                                        any(RevertCommitContent.class));
+
+        boolean result = service.revertChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+
+        verify(git).createRef(anyString(),
+                              anyString());
+
+        verify(git, times(2)).commit(anyString(),
+                                     any(CommitInfo.class),
+                                     anyBoolean(),
+                                     any(RevCommit.class),
+                                     any(RevertCommitContent.class));
+
+        verify(git).merge(anyString(),
+                          anyString());
+
+        verify(git).deleteRef(any(Ref.class));
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void revertChangeRequestFailedCommitTest() {
+        final String lastCommitId = "0000000000000000000000000000000000000000";
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
+                                                                                                            lastCommitId));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        doReturn(false).when(git).commit(eq("targetBranch"),
+                                         any(CommitInfo.class),
+                                         eq(false),
+                                         any(RevCommit.class),
+                                         any(RevertCommitContent.class));
+
+        boolean result = service.revertChangeRequest("mySpace",
+                                                     "myRepository",
+                                                     1L);
+
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+
+        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+
+        assertFalse(result);
     }
 
     @Test
@@ -959,15 +1132,54 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void getCommentsTest() {
-        List<ChangeRequestComment> commentList = Collections.nCopies(3, mock(ChangeRequestComment.class));
+    public void getCommentsAllTest() {
+        ChangeRequestComment comment = new ChangeRequestComment(1L, "author", new Date(), "text");
+        List<ChangeRequestComment> commentList = Collections.nCopies(3, comment);
         doReturn(commentList).when(spaceConfigStorage).loadChangeRequestComments("myRepository", 1L);
 
         List<ChangeRequestComment> comments = service.getComments("mySpace",
                                                                   "myRepository",
-                                                                  1L);
+                                                                  1L,
+                                                                  0,
+                                                                  0);
 
         assertThat(comments).hasSize(3);
+    }
+
+    @Test
+    public void getCommentsPaginatedTest() {
+        ChangeRequestComment comment = new ChangeRequestComment(1L, "author", new Date(), "text");
+        List<ChangeRequestComment> commentList = Collections.nCopies(25, comment);
+        doReturn(commentList).when(spaceConfigStorage).loadChangeRequestComments("myRepository", 1L);
+
+        int page0Size = service.getComments("mySpace",
+                                            "myRepository",
+                                            1L,
+                                            0,
+                                            10).size();
+
+        int page1Size = service.getComments("mySpace",
+                                            "myRepository",
+                                            1L,
+                                            1,
+                                            10).size();
+
+        int page2Size = service.getComments("mySpace",
+                                            "myRepository",
+                                            1L,
+                                            2,
+                                            10).size();
+
+        int page3Size = service.getComments("mySpace",
+                                            "myRepository",
+                                            1L,
+                                            3,
+                                            10).size();
+
+        assertThat(page0Size).isEqualTo(10);
+        assertThat(page1Size).isEqualTo(10);
+        assertThat(page2Size).isEqualTo(5);
+        assertThat(page3Size).isEqualTo(0);
     }
 
     @Test
@@ -1002,7 +1214,8 @@ public class ChangeRequestServiceTest {
                                                               final String sourceBranch,
                                                               final String targetBranch,
                                                               final ChangeRequestStatus status,
-                                                              final String summary) {
+                                                              final String summary,
+                                                              final String lastCommitId) {
         return new ChangeRequest(id,
                                  "mySpace",
                                  "myRepository",
@@ -1014,7 +1227,7 @@ public class ChangeRequestServiceTest {
                                  "description",
                                  new Date(),
                                  "commonCommitId",
-                                 null);
+                                 lastCommitId);
     }
 
     private ChangeRequest createCommonChangeRequest() {
@@ -1022,7 +1235,8 @@ public class ChangeRequestServiceTest {
                                                    "sourceBranch",
                                                    "targetBranch",
                                                    ChangeRequestStatus.OPEN,
-                                                   "summary");
+                                                   "summary",
+                                                   null);
     }
 
     private ChangeRequest createCommonChangeRequestWithId(final Long id) {
@@ -1030,7 +1244,8 @@ public class ChangeRequestServiceTest {
                                                    "sourceBranch",
                                                    "targetBranch",
                                                    ChangeRequestStatus.OPEN,
-                                                   "summary");
+                                                   "summary",
+                                                   null);
     }
 
     private ChangeRequest createCommonChangeRequestWithStatus(final ChangeRequestStatus status) {
@@ -1038,7 +1253,8 @@ public class ChangeRequestServiceTest {
                                                    "sourceBranch",
                                                    "targetBranch",
                                                    status,
-                                                   "summary");
+                                                   "summary",
+                                                   null);
     }
 
     private ChangeRequest createCommonChangeRequestWithSummary(final String summary) {
@@ -1046,7 +1262,8 @@ public class ChangeRequestServiceTest {
                                                    "sourceBranch",
                                                    "targetBranch",
                                                    ChangeRequestStatus.OPEN,
-                                                   summary);
+                                                   summary,
+                                                   null);
     }
 
     private ChangeRequest createCommonChangeRequestWithSourceBranch(final String sourceBranch) {
@@ -1054,7 +1271,8 @@ public class ChangeRequestServiceTest {
                                                    sourceBranch,
                                                    "targetBranch",
                                                    ChangeRequestStatus.OPEN,
-                                                   "summary");
+                                                   "summary",
+                                                   null);
     }
 
     private ChangeRequest createCommonChangeRequestWithTargetBranch(final String targetBranch) {
@@ -1062,7 +1280,18 @@ public class ChangeRequestServiceTest {
                                                    "sourceBranch",
                                                    targetBranch,
                                                    ChangeRequestStatus.OPEN,
-                                                   "summary");
+                                                   "summary",
+                                                   null);
+    }
+
+    private ChangeRequest createCommonChangeRequestWithStatusLastCommitId(final ChangeRequestStatus status,
+                                                                          final String lastCommitId) {
+        return createCommonChangeRequestWithFields(1L,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   status,
+                                                   "summary",
+                                                   lastCommitId);
     }
 
     private ChangeRequest createCommonChangeRequestWithSourceTargetBranch(final String sourceBranch,
@@ -1071,7 +1300,8 @@ public class ChangeRequestServiceTest {
                                                    sourceBranch,
                                                    targetBranch,
                                                    ChangeRequestStatus.OPEN,
-                                                   "summary");
+                                                   "summary",
+                                                   null);
     }
 
     private ChangeRequest createCommonChangeRequestWithStatusSummary(final ChangeRequestStatus status,
@@ -1080,6 +1310,7 @@ public class ChangeRequestServiceTest {
                                                    "sourceBranch",
                                                    "targetBranch",
                                                    status,
-                                                   summary);
+                                                   summary,
+                                                   null);
     }
 }

@@ -209,7 +209,7 @@ public class ProjectController {
 
         return checkBranchPermission(project,
                                      branch,
-                                     RolePermissions::canWrite);
+                                     RolePermissions::canRead);
     }
 
     boolean userIsAtLeast(final ContributorType type,

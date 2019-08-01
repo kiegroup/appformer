@@ -16,6 +16,8 @@
 
 package org.guvnor.structure.repositories.changerequest;
 
+import java.util.Objects;
+
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
@@ -30,5 +32,22 @@ public class ChangeRequestListUpdatedEvent {
 
     public String getRepositoryId() {
         return repositoryId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChangeRequestListUpdatedEvent that = (ChangeRequestListUpdatedEvent) o;
+        return repositoryId.equals(that.repositoryId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(repositoryId);
     }
 }
