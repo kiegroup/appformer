@@ -144,7 +144,7 @@ public final class BatchIndex {
                     if (!indexDisposed.get()) {
                         logInformation("Starting indexing of " + cluster.getClusterId() + " ...");
 
-                        if(batchIndexListener != null) {
+                        if (batchIndexListener != null) {
                             batchIndexListener.notifyIndexIngStarted(cluster, rootPath);
                         }
 
@@ -152,7 +152,7 @@ public final class BatchIndex {
                         .thenRun(() -> {
                             logInformation("Completed indexing of " + cluster.getClusterId());
 
-                            if(batchIndexListener != null) {
+                            if (batchIndexListener != null) {
                                 batchIndexListener.notifyIndexIngFinished(cluster, rootPath);
                             }
 
