@@ -19,6 +19,7 @@ package org.dashbuilder.client.cms.screen.transfer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class DataTransferScreenTest {
 
     @Test
     public void doExportFailureTest() throws Exception {
-        Exception exception = new Exception();
+        IOException exception = new IOException();
         when(dataTransferServices.doExport()).thenThrow(exception);
         dataTransferScreen.doExport();
         verify(dataTransferServices).doExport();
