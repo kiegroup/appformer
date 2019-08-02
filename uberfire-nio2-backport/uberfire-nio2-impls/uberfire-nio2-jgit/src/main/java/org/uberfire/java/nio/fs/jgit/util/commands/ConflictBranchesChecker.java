@@ -76,7 +76,10 @@ public class ConflictBranchesChecker {
             if (!canMerge) {
                 ResolveMerger resolveMerger = (ResolveMerger) merger;
                 Map<String, MergeResult<?>> mergeResults = resolveMerger.getMergeResults();
-                result.addAll(mergeResults.keySet().stream().sorted(String::compareToIgnoreCase).collect(Collectors.toList()));
+                result.addAll(mergeResults.keySet()
+                                      .stream()
+                                      .sorted(String::compareToIgnoreCase)
+                                      .collect(Collectors.toList()));
             }
         } catch (IOException e) {
             throw new GitException(

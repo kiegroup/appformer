@@ -31,12 +31,13 @@ public interface ChangeRequestService {
 
     /**
      * Creates a change request and stores it into the tracking system.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param sourceBranch the branch where you want to get pulled
-     * @param targetBranch the branch where you want impact your changes
-     * @param summary the short summary of the change request
-     * @param description the description of the change request
+     * @param sourceBranch    the branch where you want to get pulled
+     * @param targetBranch    the branch where you want impact your changes
+     * @param summary         the short summary of the change request
+     * @param description     the description of the change request
      * @return The object that represents the change request.
      */
     ChangeRequest createChangeRequest(final String spaceName,
@@ -48,7 +49,8 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
      * @return The list of change requests.
      */
@@ -57,9 +59,10 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param filter a string to filter the results
+     * @param filter          a string to filter the results
      * @return The list of change requests.
      */
     List<ChangeRequest> getChangeRequests(final String spaceName,
@@ -68,9 +71,10 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param statusList change request status to filter the results
+     * @param statusList      change request status to filter the results
      * @return The list of change requests.
      */
     List<ChangeRequest> getChangeRequests(final String spaceName,
@@ -79,10 +83,11 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param statusList change request status to filter the results
-     * @param filter a string to filter the results
+     * @param statusList      change request status to filter the results
+     * @param filter          a string to filter the results
      * @return The list of change requests.
      */
     List<ChangeRequest> getChangeRequests(final String spaceName,
@@ -92,11 +97,12 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param page the desired page
-     * @param pageSize the size of the page
-     * @param filter a string to filter the results
+     * @param page            the desired page
+     * @param pageSize        the size of the page
+     * @param filter          a string to filter the results
      * @return The list of change requests.
      */
     List<ChangeRequest> getChangeRequests(final String spaceName,
@@ -107,12 +113,13 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param page the desired page
-     * @param pageSize the size of the page
-     * @param statusList change request status to filter the results
-     * @param filter a string to filter the results
+     * @param page            the desired page
+     * @param pageSize        the size of the page
+     * @param statusList      change request status to filter the results
+     * @param filter          a string to filter the results
      * @return The list of change requests.
      */
     List<ChangeRequest> getChangeRequests(final String spaceName,
@@ -124,7 +131,8 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the change request with the given id.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
      * @return The change request.
@@ -135,7 +143,8 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the number of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
      * @return The number of change requests.
      */
@@ -144,9 +153,10 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the number of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param statusList change request status to filter the results
+     * @param statusList      change request status to filter the results
      * @return The number of change requests.
      */
     Integer countChangeRequests(final String spaceName,
@@ -155,9 +165,10 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the number of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param filter a string to filter the results
+     * @param filter          a string to filter the results
      * @return The number of change requests.
      */
     Integer countChangeRequests(final String spaceName,
@@ -166,10 +177,11 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the number of change requests that the user is able to visualize.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
-     * @param statusList change request status to filter the results
-     * @param filter a string to filter the results
+     * @param statusList      change request status to filter the results
+     * @param filter          a string to filter the results
      * @return The number of change requests.
      */
     Integer countChangeRequests(final String spaceName,
@@ -179,8 +191,9 @@ public interface ChangeRequestService {
 
     /**
      * Obtains differences between branches.
-     * @param spaceName the space containing the origin repository
-     * @param repositoryAlias the origin repository
+     *
+     * @param spaceName        the space containing the origin repository
+     * @param repositoryAlias  the origin repository
      * @param sourceBranchName the source branch
      * @param targetBranchName the target branch
      * @return The list of differences between files.
@@ -192,7 +205,8 @@ public interface ChangeRequestService {
 
     /**
      * Obtains differences between branches involved in the given change request.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the origin repository
      * @param changeRequestId the id of the change request
      * @return The list of differences between files.
@@ -203,8 +217,9 @@ public interface ChangeRequestService {
 
     /**
      * Deletes all change requests associated with the given branch.
-     * @param spaceName the space containing the origin repository
-     * @param repositoryAlias the origin repository
+     *
+     * @param spaceName            the space containing the origin repository
+     * @param repositoryAlias      the origin repository
      * @param associatedBranchName branch name
      */
     void deleteChangeRequests(final String spaceName,
@@ -213,7 +228,8 @@ public interface ChangeRequestService {
 
     /**
      * Rejects the change request.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
      */
@@ -223,7 +239,8 @@ public interface ChangeRequestService {
 
     /**
      * Accepts the change request.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
      * @return True if the accept operation succeeded, otherwise false.
@@ -234,7 +251,8 @@ public interface ChangeRequestService {
 
     /**
      * Reverts the change request.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
      * @return True if the revert operation succeeded, otherwise false.
@@ -245,10 +263,11 @@ public interface ChangeRequestService {
 
     /**
      * Updates the change request summary.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
-     * @param updatedSummary updated summary of the change request
+     * @param updatedSummary  updated summary of the change request
      */
     void updateChangeRequestSummary(final String spaceName,
                                     final String repositoryAlias,
@@ -257,9 +276,10 @@ public interface ChangeRequestService {
 
     /**
      * Updates the change request description.
-     * @param spaceName the space containing the origin repository
-     * @param repositoryAlias the repository used as a filter
-     * @param changeRequestId the id of the change request
+     *
+     * @param spaceName          the space containing the origin repository
+     * @param repositoryAlias    the repository used as a filter
+     * @param changeRequestId    the id of the change request
      * @param updatedDescription updated description of the change request
      */
     void updateChangeRequestDescription(final String spaceName,
@@ -269,11 +289,12 @@ public interface ChangeRequestService {
 
     /**
      * Obtains all the comments associated with a change request.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
-     * @param page the desired page
-     * @param pageSize the size of the page
+     * @param page            the desired page
+     * @param pageSize        the size of the page
      * @return The list of comments
      */
     List<ChangeRequestComment> getComments(final String spaceName,
@@ -284,7 +305,8 @@ public interface ChangeRequestService {
 
     /**
      * Retrieves the number of comments associated with the given change request.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository alias
      * @param changeRequestId the id of the change request
      * @return The number of comments.
@@ -295,10 +317,11 @@ public interface ChangeRequestService {
 
     /**
      * Adds a comment to the change request comment list.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
-     * @param text the comment text
+     * @param text            the comment text
      */
     void addComment(final String spaceName,
                     final String repositoryAlias,
@@ -307,10 +330,11 @@ public interface ChangeRequestService {
 
     /**
      * Deletes a comment from the change request comment list.
-     * @param spaceName the space containing the origin repository
+     *
+     * @param spaceName       the space containing the origin repository
      * @param repositoryAlias the repository used as a filter
      * @param changeRequestId the id of the change request
-     * @param commentId the id of the comment
+     * @param commentId       the id of the comment
      */
     void deleteComment(final String spaceName,
                        final String repositoryAlias,
