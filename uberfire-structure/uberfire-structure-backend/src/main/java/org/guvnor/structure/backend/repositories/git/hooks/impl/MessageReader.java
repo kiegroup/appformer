@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.Dependent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -66,7 +67,7 @@ public class MessageReader {
 
                 bundleName = FilenameUtils.getBaseName(bundleFile.getName());
             } else {
-                LOG.error("Invalid bundle '" + bundleParam + "': file doesn't exist");
+                LOG.error("Invalid bundle '{}': file doesn't exist", bundleParam);
             }
         }
     }
@@ -75,25 +76,31 @@ public class MessageReader {
         String result = null;
 
         if (bundlePath != null && bundleName != null) {
+            // Setting up the bundle classloader based on the path specified on the param
             try {
-
-                // Setting up the bundle classloader based on the path specified on the param
                 URL[] urls = new URL[]{bundlePath.toUri().toURL()};
-
-                ClassLoader bundleClassLoader = new URLClassLoader(urls);
-
-                // Getting the bundle from the current generated classloader
-                ResourceBundle bundle = ResourceBundle.getBundle(bundleName, localeSupplier.get(), bundleClassLoader);
-
-                result = bundle.getString(String.valueOf(exitCode));
+                result = getStringFromBundle(urls, exitCode);
             } catch (MissingResourceException e) {
-                LOG.info("Cannot find key for code '" + exitCode + "' bundle '" + bundlePath.resolve(bundleName).toString() + "'");
+                LOG.info("Cannot find key for code '{}' bundle '{}'", exitCode, bundlePath.resolve(bundleName).toString());
             } catch (MalformedURLException e) {
-                LOG.warn("Cannot load bundle '" + bundlePath.resolve(bundleName).toString() + "': ", e);
+                LOG.warn("Cannot load bundle '{}': ", bundlePath.resolve(bundleName).toString(), e);
             }
         }
-
         return Optional.ofNullable(result);
+    }
+
+    private String getStringFromBundle(URL[] urls, int exitCode) {
+        try (URLClassLoader bundleClassLoader = new URLClassLoader(urls)) {
+
+            // Getting the bundle from the current generated classloader
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName, localeSupplier.get(), bundleClassLoader);
+
+            return bundle.getString(String.valueOf(exitCode));
+        } catch (IOException e) {
+            LOG.error("Error while resolving message. {}", e);
+        }
+
+        return null;
     }
 
 }
