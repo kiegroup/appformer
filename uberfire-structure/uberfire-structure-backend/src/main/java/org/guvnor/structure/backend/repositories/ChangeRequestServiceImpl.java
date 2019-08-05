@@ -1,11 +1,11 @@
 /*
- * 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,14 +37,18 @@ import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.repositories.changerequest.ChangeRequest;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestDiff;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestListUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.ChangeRequestService;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestStatus;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestUpdatedEvent;
-import org.guvnor.structure.repositories.changerequest.ChangeType;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestAlreadyOpenException;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCountSummary;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatus;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeType;
+import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestCommentList;
+import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestList;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.slf4j.Logger;
@@ -109,6 +113,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("targetBranch", targetBranch);
         checkNotEmpty("summary", summary);
         checkNotEmpty("description", description);
+
+        checkChangeRequestAlreadyOpen(spaceName,
+                                      repositoryAlias,
+                                      sourceBranch,
+                                      targetBranch);
 
         final Repository repository = resolveRepository(spaceName, repositoryAlias);
 
@@ -191,11 +200,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public List<ChangeRequest> getChangeRequests(final String spaceName,
-                                                 final String repositoryAlias,
-                                                 final Integer page,
-                                                 final Integer pageSize,
-                                                 final String filter) {
+    public PaginatedChangeRequestList getChangeRequests(final String spaceName,
+                                                        final String repositoryAlias,
+                                                        final Integer page,
+                                                        final Integer pageSize,
+                                                        final String filter) {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("page", page);
@@ -206,16 +215,23 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                              elem -> composeSearchableElement(elem)
                                                                                      .contains(filter.toLowerCase()));
 
-        return paginateChangeRequests(changeRequests, page, pageSize);
+        final List<ChangeRequest> paginatedChangeRequests = paginateChangeRequests(changeRequests,
+                                                                                   page,
+                                                                                   pageSize);
+
+        return new PaginatedChangeRequestList(paginatedChangeRequests,
+                                              page,
+                                              pageSize,
+                                              changeRequests.size());
     }
 
     @Override
-    public List<ChangeRequest> getChangeRequests(final String spaceName,
-                                                 final String repositoryAlias,
-                                                 final Integer page,
-                                                 final Integer pageSize,
-                                                 final List<ChangeRequestStatus> statusList,
-                                                 final String filter) {
+    public PaginatedChangeRequestList getChangeRequests(final String spaceName,
+                                                        final String repositoryAlias,
+                                                        final Integer page,
+                                                        final Integer pageSize,
+                                                        final List<ChangeRequestStatus> statusList,
+                                                        final String filter) {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("page", page);
@@ -229,7 +245,14 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                   composeSearchableElement(elem)
                                                           .contains(filter.toLowerCase()));
 
-        return paginateChangeRequests(changeRequests, page, pageSize);
+        final List<ChangeRequest> paginatedChangeRequests = paginateChangeRequests(changeRequests,
+                                                                                   page,
+                                                                                   pageSize);
+
+        return new PaginatedChangeRequestList(paginatedChangeRequests,
+                                              page,
+                                              pageSize,
+                                              changeRequests.size());
     }
 
     @Override
@@ -253,12 +276,21 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public Integer countChangeRequests(final String spaceName,
-                                       final String repositoryAlias) {
+    public ChangeRequestCountSummary countChangeRequests(final String spaceName,
+                                                         final String repositoryAlias) {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
 
-        return getChangeRequests(spaceName, repositoryAlias).size();
+        final List<ChangeRequest> changeRequests = getChangeRequests(spaceName,
+                                                                     repositoryAlias);
+
+        final Integer total = changeRequests.size();
+        final long open = changeRequests.stream()
+                .filter(elem -> elem.getStatus() == ChangeRequestStatus.OPEN)
+                .count();
+
+        return new ChangeRequestCountSummary(total,
+                                             (int) open);
     }
 
     @Override
@@ -510,11 +542,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public List<ChangeRequestComment> getComments(final String spaceName,
-                                                  final String repositoryAlias,
-                                                  final Long changeRequestId,
-                                                  final Integer page,
-                                                  final Integer pageSize) {
+    public PaginatedChangeRequestCommentList getComments(final String spaceName,
+                                                         final String repositoryAlias,
+                                                         final Long changeRequestId,
+                                                         final Integer page,
+                                                         final Integer pageSize) {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("changeRequestId", changeRequestId);
@@ -526,9 +558,14 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                         .sorted(Comparator.comparing(ChangeRequestComment::getCreatedDate).reversed())
                         .collect(Collectors.toList());
 
-        return paginateComments(comments,
-                                page,
-                                pageSize);
+        final List<ChangeRequestComment> paginatedList = paginateComments(comments,
+                                                                          page,
+                                                                          pageSize);
+
+        return new PaginatedChangeRequestCommentList(paginatedList,
+                                                     page,
+                                                     pageSize,
+                                                     comments.size());
     }
 
     @Override
@@ -999,6 +1036,22 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                        e));
         } finally {
             git.deleteRef(git.getRef(tempBranchName));
+        }
+    }
+
+    private void checkChangeRequestAlreadyOpen(final String spaceName,
+                                               final String repositoryAlias,
+                                               final String sourceBranchName,
+                                               final String targetBranchName) {
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequests(spaceName,
+                                          repositoryAlias,
+                                          elem -> elem.getSourceBranch().equals(sourceBranchName)
+                                                  && elem.getTargetBranch().equals(targetBranchName)
+                                                  && elem.getStatus() == ChangeRequestStatus.OPEN);
+
+        if (!changeRequests.isEmpty()) {
+            throw new ChangeRequestAlreadyOpenException(changeRequests.get(0).getId());
         }
     }
 

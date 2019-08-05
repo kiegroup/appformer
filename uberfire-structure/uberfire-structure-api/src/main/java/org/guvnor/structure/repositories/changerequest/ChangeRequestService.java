@@ -1,11 +1,11 @@
 /*
- * 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,12 @@ package org.guvnor.structure.repositories.changerequest;
 
 import java.util.List;
 
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCountSummary;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatus;
+import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestCommentList;
+import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestList;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**
@@ -105,11 +111,11 @@ public interface ChangeRequestService {
      * @param filter          a string to filter the results
      * @return The list of change requests.
      */
-    List<ChangeRequest> getChangeRequests(final String spaceName,
-                                          final String repositoryAlias,
-                                          final Integer page,
-                                          final Integer pageSize,
-                                          final String filter);
+    PaginatedChangeRequestList getChangeRequests(final String spaceName,
+                                                 final String repositoryAlias,
+                                                 final Integer page,
+                                                 final Integer pageSize,
+                                                 final String filter);
 
     /**
      * Retrieves the list of change requests that the user is able to visualize.
@@ -122,12 +128,12 @@ public interface ChangeRequestService {
      * @param filter          a string to filter the results
      * @return The list of change requests.
      */
-    List<ChangeRequest> getChangeRequests(final String spaceName,
-                                          final String repositoryAlias,
-                                          final Integer page,
-                                          final Integer pageSize,
-                                          final List<ChangeRequestStatus> statusList,
-                                          final String filter);
+    PaginatedChangeRequestList getChangeRequests(final String spaceName,
+                                                 final String repositoryAlias,
+                                                 final Integer page,
+                                                 final Integer pageSize,
+                                                 final List<ChangeRequestStatus> statusList,
+                                                 final String filter);
 
     /**
      * Retrieves the change request with the given id.
@@ -148,8 +154,8 @@ public interface ChangeRequestService {
      * @param repositoryAlias the repository alias
      * @return The number of change requests.
      */
-    Integer countChangeRequests(final String spaceName,
-                                final String repositoryAlias);
+    ChangeRequestCountSummary countChangeRequests(final String spaceName,
+                                                  final String repositoryAlias);
 
     /**
      * Retrieves the number of change requests that the user is able to visualize.
@@ -297,11 +303,11 @@ public interface ChangeRequestService {
      * @param pageSize        the size of the page
      * @return The list of comments
      */
-    List<ChangeRequestComment> getComments(final String spaceName,
-                                           final String repositoryAlias,
-                                           final Long changeRequestId,
-                                           final Integer page,
-                                           final Integer pageSize);
+    PaginatedChangeRequestCommentList getComments(final String spaceName,
+                                                  final String repositoryAlias,
+                                                  final Long changeRequestId,
+                                                  final Integer page,
+                                                  final Integer pageSize);
 
     /**
      * Retrieves the number of comments associated with the given change request.

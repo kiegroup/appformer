@@ -1,11 +1,11 @@
 /*
- * 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,12 +33,16 @@ import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.repositories.changerequest.ChangeRequest;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestDiff;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestListUpdatedEvent;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestStatus;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestAlreadyOpenException;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCountSummary;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatus;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestCommentList;
+import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestList;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -205,6 +209,19 @@ public class ChangeRequestServiceTest {
         verify(changeRequestListUpdatedEvent).fire(any(ChangeRequestListUpdatedEvent.class));
     }
 
+    @Test(expected = ChangeRequestAlreadyOpenException.class)
+    public void createChangeRequestWhenAlreadyOpenTest() {
+        List<ChangeRequest> crList = Collections.singletonList(createCommonChangeRequest());
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.createChangeRequest("mySpace",
+                                    "myRepository",
+                                    "sourceBranch",
+                                    "targetBranch",
+                                    "summary",
+                                    "description");
+    }
+
     @Test(expected = NoSuchElementException.class)
     public void createChangeRequestInvalidRepositoryTest() {
         service.createChangeRequest("mySpace",
@@ -356,14 +373,14 @@ public class ChangeRequestServiceTest {
 
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
-        List<ChangeRequest> actualList = service.getChangeRequests("mySpace",
-                                                                   "myRepository",
-                                                                   0,
-                                                                   10,
-                                                                   "find");
+        PaginatedChangeRequestList actualList = service.getChangeRequests("mySpace",
+                                                                          "myRepository",
+                                                                          0,
+                                                                          10,
+                                                                          "find");
 
-        assertThat(actualList).isNotEmpty();
-        assertThat(actualList).hasSize(10);
+        assertThat(actualList.getChangeRequests()).isNotEmpty();
+        assertEquals((int) actualList.getChangeRequests().size(), 10);
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -371,8 +388,8 @@ public class ChangeRequestServiceTest {
                                                10,
                                                "find");
 
-        assertThat(actualList).isNotEmpty();
-        assertThat(actualList).hasSize(10);
+        assertThat(actualList.getChangeRequests()).isNotEmpty();
+        assertEquals((int) actualList.getChangeRequests().size(), 10);
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -380,8 +397,8 @@ public class ChangeRequestServiceTest {
                                                10,
                                                "find");
 
-        assertThat(actualList).isNotEmpty();
-        assertThat(actualList).hasSize(6);
+        assertThat(actualList.getChangeRequests()).isNotEmpty();
+        assertEquals((int) actualList.getChangeRequests().size(), 6);
     }
 
     @Test
@@ -407,15 +424,15 @@ public class ChangeRequestServiceTest {
 
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
-        List<ChangeRequest> actualList = service.getChangeRequests("mySpace",
-                                                                   "myRepository",
-                                                                   0,
-                                                                   10,
-                                                                   statusList,
-                                                                   "find");
+        PaginatedChangeRequestList actualList = service.getChangeRequests("mySpace",
+                                                                          "myRepository",
+                                                                          0,
+                                                                          10,
+                                                                          statusList,
+                                                                          "find");
 
-        assertThat(actualList).isNotEmpty();
-        assertThat(actualList).hasSize(10);
+        assertThat(actualList.getChangeRequests()).isNotEmpty();
+        assertEquals((int) actualList.getChangeRequests().size(), 10);
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -424,8 +441,8 @@ public class ChangeRequestServiceTest {
                                                statusList,
                                                "find");
 
-        assertThat(actualList).isNotEmpty();
-        assertThat(actualList).hasSize(10);
+        assertThat(actualList.getChangeRequests()).isNotEmpty();
+        assertEquals((int) actualList.getChangeRequests().size(), 10);
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -434,8 +451,8 @@ public class ChangeRequestServiceTest {
                                                statusList,
                                                "find");
 
-        assertThat(actualList).isNotEmpty();
-        assertThat(actualList).hasSize(6);
+        assertThat(actualList.getChangeRequests()).isNotEmpty();
+        assertEquals((int) actualList.getChangeRequests().size(), 6);
     }
 
     @Test
@@ -464,13 +481,17 @@ public class ChangeRequestServiceTest {
 
     @Test
     public void countChangeRequestsTest() {
-        List<ChangeRequest> crList = Collections.nCopies(15, createCommonChangeRequest());
+        List<ChangeRequest> crList = new ArrayList<>();
+        crList.addAll(Collections.nCopies(15, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN)));
+        crList.addAll(Collections.nCopies(5, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED)));
+
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
-        int count = service.countChangeRequests("mySpace",
-                                                "myRepository");
+        ChangeRequestCountSummary countSummary = service.countChangeRequests("mySpace",
+                                                                             "myRepository");
 
-        assertEquals(15, count);
+        assertEquals(15, (int) countSummary.getOpen());
+        assertEquals(20, (int) countSummary.getTotal());
     }
 
     @Test
@@ -1137,13 +1158,13 @@ public class ChangeRequestServiceTest {
         List<ChangeRequestComment> commentList = Collections.nCopies(3, comment);
         doReturn(commentList).when(spaceConfigStorage).loadChangeRequestComments("myRepository", 1L);
 
-        List<ChangeRequestComment> comments = service.getComments("mySpace",
-                                                                  "myRepository",
-                                                                  1L,
-                                                                  0,
-                                                                  0);
+        PaginatedChangeRequestCommentList paginatedList = service.getComments("mySpace",
+                                                                              "myRepository",
+                                                                              1L,
+                                                                              0,
+                                                                              0);
 
-        assertThat(comments).hasSize(3);
+        assertEquals((int) paginatedList.getChangeRequestComments().size(), 3);
     }
 
     @Test
@@ -1156,30 +1177,30 @@ public class ChangeRequestServiceTest {
                                             "myRepository",
                                             1L,
                                             0,
-                                            10).size();
+                                            10).getChangeRequestComments().size();
 
         int page1Size = service.getComments("mySpace",
                                             "myRepository",
                                             1L,
                                             1,
-                                            10).size();
+                                            10).getChangeRequestComments().size();
 
         int page2Size = service.getComments("mySpace",
                                             "myRepository",
                                             1L,
                                             2,
-                                            10).size();
+                                            10).getChangeRequestComments().size();
 
         int page3Size = service.getComments("mySpace",
                                             "myRepository",
                                             1L,
                                             3,
-                                            10).size();
+                                            10).getChangeRequestComments().size();
 
-        assertThat(page0Size).isEqualTo(10);
-        assertThat(page1Size).isEqualTo(10);
-        assertThat(page2Size).isEqualTo(5);
-        assertThat(page3Size).isEqualTo(0);
+        assertEquals(page0Size, 10);
+        assertEquals(page1Size, 10);
+        assertEquals(page2Size, 5);
+        assertEquals(page3Size, 0);
     }
 
     @Test

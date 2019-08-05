@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.repositories.changerequest;
+package org.guvnor.structure.repositories.changerequest.portable;
 
 import java.util.Objects;
 

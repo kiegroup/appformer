@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.repositories.changerequest;
+package org.guvnor.structure.repositories.changerequest.portable;
 
 import java.util.Objects;
 
@@ -22,16 +22,17 @@ import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class ChangeRequestListUpdatedEvent {
+public class ChangeRequestAlreadyOpenException extends RuntimeException {
 
-    private final String repositoryId;
+    private Long changeRequestId;
 
-    public ChangeRequestListUpdatedEvent(final @MapsTo("repositoryId") String repositoryId) {
-        this.repositoryId = repositoryId;
+    public ChangeRequestAlreadyOpenException(@MapsTo("changeRequestId") final Long changeRequestId) {
+        super("Change request already open with id #" + changeRequestId);
+        this.changeRequestId = changeRequestId;
     }
 
-    public String getRepositoryId() {
-        return repositoryId;
+    public Long getChangeRequestId() {
+        return changeRequestId;
     }
 
     @Override
@@ -42,12 +43,12 @@ public class ChangeRequestListUpdatedEvent {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ChangeRequestListUpdatedEvent that = (ChangeRequestListUpdatedEvent) o;
-        return repositoryId.equals(that.repositoryId);
+        ChangeRequestAlreadyOpenException that = (ChangeRequestAlreadyOpenException) o;
+        return changeRequestId.equals(that.changeRequestId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(repositoryId);
+        return Objects.hash(changeRequestId);
     }
 }

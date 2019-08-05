@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
-import org.guvnor.structure.repositories.changerequest.ChangeRequest;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

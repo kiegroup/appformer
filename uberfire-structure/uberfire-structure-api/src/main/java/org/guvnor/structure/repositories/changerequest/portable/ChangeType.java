@@ -1,11 +1,11 @@
 /*
- * 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.repositories.changerequest;
+package org.guvnor.structure.repositories.changerequest.portable;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
- * Represents change request status.
- * OPEN: when the CR is created.
- * ACCEPTED: when the changes are accepted and merged.
- * REJECTED: when reviewers have rejected the changes.
- * REVERTED: when the CR was accepted and then reverted.
- * REVERT_FAILED: when an attempt to revert the CR has failed.
+ * Represents the type of the change.
+ * ADD: when the file is added.
+ * MODIFY: when the file is modified.
+ * DELETE: when the file is deleted.
+ * RENAME: when the file is renamed.
+ * COPY: when the file is copied.
  */
 @Portable
-public enum ChangeRequestStatus {
-    ACCEPTED,
-    REJECTED,
-    OPEN,
-    REVERTED,
-    REVERT_FAILED
+public enum ChangeType {
+    ADD,
+    MODIFY,
+    DELETE,
+    RENAME,
+    COPY
 }

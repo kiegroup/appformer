@@ -18,8 +18,8 @@ package org.guvnor.structure.organizationalunit.config;
 
 import java.util.List;
 
-import org.guvnor.structure.repositories.changerequest.ChangeRequest;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
 
 public interface SpaceConfigStorage {
 

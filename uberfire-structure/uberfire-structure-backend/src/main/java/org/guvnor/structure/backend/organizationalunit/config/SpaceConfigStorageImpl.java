@@ -32,8 +32,8 @@ import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.organizationalunit.config.RolePermissions;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
-import org.guvnor.structure.repositories.changerequest.ChangeRequest;
-import org.guvnor.structure.repositories.changerequest.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.io.object.ObjectStorage;
@@ -165,14 +165,37 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
     @Override
     public List<Long> getChangeRequestIds(String repositoryAlias) {
-        return getChangeRequestPaths(repositoryAlias)
-                .stream()
-                .map(Path::getParent)
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .map(Long::valueOf)
-                .sorted()
-                .collect(Collectors.toList());
+        List<Long> changeRequestIds = new ArrayList<>();
+
+        final String repositoryPathStr = buildRepositoryFolderPath(repositoryAlias);
+
+        if (objectStorage.exists(repositoryPathStr)) {
+            Path repositoryPath = objectStorage.getPath(repositoryPathStr);
+
+            walkFileTree(repositoryPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    try {
+                        checkNotNull("file",
+                                     file);
+                        checkNotNull("attrs",
+                                     attrs);
+
+                        if (file.getFileName().toString().equals(CHANGE_REQUESTS_FILE) && attrs.isRegularFile()) {
+                            Long id = Long.valueOf(file.getParent().getFileName().toString());
+                            changeRequestIds.add(id);
+                        }
+                    } catch (Exception ex) {
+                        logger.error("An unexpected exception was thrown: ", ex);
+                        return FileVisitResult.TERMINATE;
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+
+        return changeRequestIds;
     }
 
     @Override
@@ -228,53 +251,7 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     @Override
     public List<Long> getChangeRequestCommentIds(final String repositoryAlias,
                                                  final Long changeRequestId) {
-        return getChangeRequestCommentPaths(repositoryAlias,
-                                            changeRequestId)
-                .stream()
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .map(FilenameUtils::getBaseName)
-                .map(Long::valueOf)
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
-    private List<Path> getChangeRequestPaths(final String repositoryAlias) {
-        List<Path> changeRequestPaths = new ArrayList<>();
-
-        final String repositoryPathStr = buildRepositoryFolderPath(repositoryAlias);
-
-        if (objectStorage.exists(repositoryPathStr)) {
-            Path repositoryPath = objectStorage.getPath(repositoryPathStr);
-
-            walkFileTree(repositoryPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    try {
-                        checkNotNull("file",
-                                     file);
-                        checkNotNull("attrs",
-                                     attrs);
-
-                        if (file.getFileName().toString().equals(CHANGE_REQUESTS_FILE) && attrs.isRegularFile()) {
-                            changeRequestPaths.add(file);
-                        }
-                    } catch (Exception ex) {
-                        logger.error("An unexpected exception was thrown: ", ex);
-                        return FileVisitResult.TERMINATE;
-                    }
-
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
-
-        return changeRequestPaths;
-    }
-
-    private List<Path> getChangeRequestCommentPaths(final String repositoryAlias,
-                                                    final Long changeRequestId) {
-        List<Path> changeRequestCommentPaths = new ArrayList<>();
+        List<Long> changeRequestCommentIds = new ArrayList<>();
 
         final String changeRequestPathStr = buildChangeRequestCommentFolderPath(repositoryAlias,
                                                                                 changeRequestId);
@@ -294,7 +271,8 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
                         final String extension = FilenameUtils.getExtension(file.getFileName().toString());
 
                         if (extension.equals(CHANGE_REQUEST_COMMENT_FILE_EXT) && attrs.isRegularFile()) {
-                            changeRequestCommentPaths.add(file);
+                            Long id = Long.valueOf(FilenameUtils.getBaseName(file.getFileName().toString()));
+                            changeRequestCommentIds.add(id);
                         }
                     } catch (Exception ex) {
                         logger.error("An unexpected exception was thrown: ", ex);
@@ -306,7 +284,7 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
             });
         }
 
-        return changeRequestCommentPaths;
+        return changeRequestCommentIds;
     }
 
     BranchPermissions getDefaultBranchPermissions(String branchName) {

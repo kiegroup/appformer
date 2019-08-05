@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.repositories.changerequest;
+package org.guvnor.structure.repositories.changerequest.portable;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
- * Represents the type of the change.
- * ADD: when the file is added.
- * MODIFY: when the file is modified.
- * DELETE: when the file is deleted.
- * RENAME: when the file is renamed.
- * COPY: when the file is copied.
+ * Represents change request status.
+ * OPEN: when the CR is created.
+ * ACCEPTED: when the changes are accepted and merged.
+ * REJECTED: when reviewers have rejected the changes.
+ * REVERTED: when the CR was accepted and then reverted.
+ * REVERT_FAILED: when an attempt to revert the CR has failed.
  */
 @Portable
-public enum ChangeType {
-    ADD,
-    MODIFY,
-    DELETE,
-    RENAME,
-    COPY
+public enum ChangeRequestStatus {
+    ACCEPTED,
+    REJECTED,
+    OPEN,
+    REVERTED,
+    REVERT_FAILED
 }

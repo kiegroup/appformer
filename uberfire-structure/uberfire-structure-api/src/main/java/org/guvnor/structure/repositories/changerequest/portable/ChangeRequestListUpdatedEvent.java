@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.repositories.changerequest;
+package org.guvnor.structure.repositories.changerequest.portable;
 
 import java.util.Objects;
 
@@ -22,23 +22,16 @@ import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
-public class ChangeRequestUpdatedEvent {
+public class ChangeRequestListUpdatedEvent {
 
     private final String repositoryId;
-    private final Long changeRequestId;
 
-    public ChangeRequestUpdatedEvent(final @MapsTo("repositoryId") String repositoryId,
-                                     final @MapsTo("changeRequestId") Long changeRequestId) {
+    public ChangeRequestListUpdatedEvent(final @MapsTo("repositoryId") String repositoryId) {
         this.repositoryId = repositoryId;
-        this.changeRequestId = changeRequestId;
     }
 
     public String getRepositoryId() {
         return repositoryId;
-    }
-
-    public Long getChangeRequestId() {
-        return changeRequestId;
     }
 
     @Override
@@ -49,14 +42,12 @@ public class ChangeRequestUpdatedEvent {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ChangeRequestUpdatedEvent that = (ChangeRequestUpdatedEvent) o;
-        return repositoryId.equals(that.repositoryId) &&
-                changeRequestId.equals(that.changeRequestId);
+        ChangeRequestListUpdatedEvent that = (ChangeRequestListUpdatedEvent) o;
+        return repositoryId.equals(that.repositoryId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(repositoryId,
-                            changeRequestId);
+        return Objects.hash(repositoryId);
     }
 }
