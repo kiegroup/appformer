@@ -30,6 +30,7 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.DefaultGridLayer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLienzoPanel;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -248,5 +249,20 @@ public class GridHighlightHelperTest {
 
         verify(model).clearSelections();
         verify(gridWidget).draw();
+    }
+
+    @Test
+    public void testCalculateRowOffset() {
+
+        final double widgetY = -32;
+        final double paddingY = 20;
+        final double expected = -(widgetY - rowOffset - paddingY);
+
+        when(highlightHelper.getPaddingY()).thenReturn(paddingY);
+        when(gridWidget.getY()).thenReturn(widgetY);
+
+        final double actual = highlightHelper.calculateRowOffset(row);
+
+        assertEquals(expected, actual, 0.01d);
     }
 }

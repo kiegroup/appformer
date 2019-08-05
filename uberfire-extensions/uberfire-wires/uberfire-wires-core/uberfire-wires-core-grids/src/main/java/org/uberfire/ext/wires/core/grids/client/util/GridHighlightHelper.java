@@ -136,11 +136,15 @@ public class GridHighlightHelper {
     }
 
     private double calculateColumnOffset(final int column) {
-        return -(getMinX() + getRendererHelper().getColumnOffset(column) - getPaddingX());
+        final double offset = getRendererHelper().getColumnOffset(column);
+        final double x =  getGridWidget().getX() + offset;
+        return -(x - getPaddingX());
     }
 
-    private double calculateRowOffset(final int row) {
-        return -(getMinY() + getRendererHelper().getRowOffset(row) - getPaddingY());
+    double calculateRowOffset(final int row) {
+        final double offset = getRendererHelper().getRowOffset(row);
+        final double y = getGridWidget().getY() - offset;
+        return -(y - getPaddingY());
     }
 
     private BaseGridRendererHelper getRendererHelper() {
@@ -179,7 +183,7 @@ public class GridHighlightHelper {
         return paddingX;
     }
 
-    private double getPaddingY() {
+    double getPaddingY() {
         return paddingY;
     }
 
