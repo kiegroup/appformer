@@ -275,7 +275,7 @@ public class LiveSearchDropDown<TYPE> implements IsWidget {
 
         view.setDropDownText(message);
 
-        if (onChange != null & changeCallbackEnabled) {
+        if (onChange != null && changeCallbackEnabled) {
             onChange.execute();
         }
     }
@@ -283,7 +283,7 @@ public class LiveSearchDropDown<TYPE> implements IsWidget {
     public void clearSelection() {
         selectionHandler.clearSelection();
 
-        if (onChange != null & changeCallbackEnabled) {
+        if (onChange != null && changeCallbackEnabled) {
             onChange.execute();
         }
     }
