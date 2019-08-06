@@ -38,16 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.IOException;
-import org.uberfire.java.nio.file.FileVisitResult;
+import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
-import org.uberfire.java.nio.file.SimpleFileVisitor;
-import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.util.URIUtil;
-
-import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
-import static org.uberfire.java.nio.file.Files.walkFileTree;
 
 public class SpaceConfigStorageImpl implements SpaceConfigStorage {
 
@@ -167,31 +161,22 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     public List<Long> getChangeRequestIds(String repositoryAlias) {
         List<Long> changeRequestIds = new ArrayList<>();
 
-        final String repositoryPathStr = buildRepositoryFolderPath(repositoryAlias);
+        final String changeRequestsFolderPath = buildChangeRequestsFolderPath(repositoryAlias);
 
-        if (objectStorage.exists(repositoryPathStr)) {
-            Path repositoryPath = objectStorage.getPath(repositoryPathStr);
+        if (objectStorage.exists(changeRequestsFolderPath)) {
+            final Path changeRequestsFolder = objectStorage.getPath(changeRequestsFolderPath);
 
-            walkFileTree(repositoryPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    try {
-                        checkNotNull("file",
-                                     file);
-                        checkNotNull("attrs",
-                                     attrs);
-
-                        if (file.getFileName().toString().equals(CHANGE_REQUESTS_FILE) && attrs.isRegularFile()) {
-                            Long id = Long.valueOf(file.getParent().getFileName().toString());
+            ioService.newDirectoryStream(changeRequestsFolder,
+                                         entry -> Files.isDirectory(entry))
+                    .forEach(crDir -> {
+                        try {
+                            Long id = Long.valueOf(crDir.getFileName().toString());
                             changeRequestIds.add(id);
+                        } catch (NumberFormatException e) {
+                            logger.error("Cannot convert folder name to long: ", e);
+                        } catch (Exception e) {
+                            logger.error("An unexpected exception was thrown: ", e);
                         }
-                    } catch (Exception ex) {
-                        logger.error("An unexpected exception was thrown: ", ex);
-                        return FileVisitResult.TERMINATE;
-                    }
-
-                    return FileVisitResult.CONTINUE;
-                }
             });
         }
 
@@ -253,35 +238,24 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
                                                  final Long changeRequestId) {
         List<Long> changeRequestCommentIds = new ArrayList<>();
 
-        final String changeRequestPathStr = buildChangeRequestCommentFolderPath(repositoryAlias,
-                                                                                changeRequestId);
+        final String changeRequestCommentsPathStr = buildChangeRequestCommentFolderPath(repositoryAlias,
+                                                                                        changeRequestId);
 
-        if (objectStorage.exists(changeRequestPathStr)) {
-            Path changeRequestPath = objectStorage.getPath(changeRequestPathStr);
+        if (objectStorage.exists(changeRequestCommentsPathStr)) {
+            final Path changeRequestCommentsFolder = objectStorage.getPath(changeRequestCommentsPathStr);
 
-            walkFileTree(changeRequestPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    try {
-                        checkNotNull("file",
-                                     file);
-                        checkNotNull("attrs",
-                                     attrs);
-
-                        final String extension = FilenameUtils.getExtension(file.getFileName().toString());
-
-                        if (extension.equals(CHANGE_REQUEST_COMMENT_FILE_EXT) && attrs.isRegularFile()) {
-                            Long id = Long.valueOf(FilenameUtils.getBaseName(file.getFileName().toString()));
+            ioService.newDirectoryStream(changeRequestCommentsFolder,
+                                         entry -> Files.isRegularFile(entry))
+                    .forEach(commentFile -> {
+                        try {
+                            Long id = Long.valueOf(FilenameUtils.getBaseName(commentFile.getFileName().toString()));
                             changeRequestCommentIds.add(id);
+                        } catch (NumberFormatException e) {
+                            logger.error("Cannot convert folder name to long: ", e);
+                        } catch (Exception e) {
+                            logger.error("An unexpected exception was thrown: ", e);
                         }
-                    } catch (Exception ex) {
-                        logger.error("An unexpected exception was thrown: ", ex);
-                        return FileVisitResult.TERMINATE;
-                    }
-
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+                    });
         }
 
         return changeRequestCommentIds;

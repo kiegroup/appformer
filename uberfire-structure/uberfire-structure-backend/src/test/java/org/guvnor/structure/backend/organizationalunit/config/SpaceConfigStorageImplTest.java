@@ -164,7 +164,7 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void deleteAllChangeRequestsTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path crsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests"));
         final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments"));
 
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
@@ -172,9 +172,9 @@ public class SpaceConfigStorageImplTest {
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/1.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/2.comment")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests");
         doReturn(true).when(objectStorage).exists("/MyProject/change_requests/2/comments");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(crsPath).when(objectStorage).getPath("/MyProject/change_requests");
         doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/2/comments");
 
         spaceConfigStorage.deleteAllChangeRequests("MyProject");
@@ -195,7 +195,7 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void deleteRepositoryTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path crsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests"));
         final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments"));
 
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
@@ -203,9 +203,9 @@ public class SpaceConfigStorageImplTest {
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/1.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/comments/2.comment")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests");
         doReturn(true).when(objectStorage).exists("/MyProject/change_requests/2/comments");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(crsPath).when(objectStorage).getPath("/MyProject/change_requests");
         doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/2/comments");
 
         spaceConfigStorage.deleteRepository("MyProject");
@@ -219,12 +219,12 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void getChangeRequestIdsTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path crsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests"));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/information.cr")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests");
+        doReturn(crsPath).when(objectStorage).getPath("/MyProject/change_requests");
 
         final List<Long> ids = spaceConfigStorage.getChangeRequestIds("MyProject");
 
@@ -234,12 +234,12 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void getChangeRequestIdsNoResultsTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
+        final org.uberfire.java.nio.file.Path crsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests"));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/2/information.cr")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests");
+        doReturn(crsPath).when(objectStorage).getPath("/MyProject/change_requests");
 
         final List<Long> ids = spaceConfigStorage.getChangeRequestIds("MyOtherProject");
 
@@ -296,15 +296,12 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void deleteAllChangeRequestCommentsTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
         final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
 
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/2.comment")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
         doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
         doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
 
         spaceConfigStorage.deleteAllChangeRequestComments("MyProject", 1L);
@@ -322,16 +319,13 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void getChangeRequestCommentIdsTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
         final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
 
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/30.comment")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
         doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
         doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
 
         final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyProject", 1L);
@@ -343,16 +337,13 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void getChangeRequestCommentIdsNoResultsOtherChangeRequestTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
         final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
 
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/30.comment")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
         doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
         doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
 
         final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyProject", 2L);
@@ -362,16 +353,13 @@ public class SpaceConfigStorageImplTest {
 
     @Test
     public void getChangeRequestCommentIdsNoResultsOtherProjectTest() {
-        final org.uberfire.java.nio.file.Path repositoryPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject"));
         final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
 
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/30.comment")));
 
-        doReturn(true).when(objectStorage).exists("/MyProject");
         doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
-        doReturn(repositoryPath).when(objectStorage).getPath("/MyProject");
         doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
 
         final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyOtherProject", 1L);
