@@ -121,9 +121,10 @@ public class BaseGridData implements GridData {
 
         removeColumn(column);
 
-        //Destroy column data
+        //Destroy column related cell
         for (GridRow row : rows) {
             ((BaseGridRow) row).deleteCell(index);
+            //Shift all cells according to the removed one
             final Map<Integer, GridCell<?>> clone = new TreeMap<>(row.getCells());
             for (Map.Entry<Integer, GridCell<?>> e : clone.entrySet()) {
                 if (e.getKey() > index) {
