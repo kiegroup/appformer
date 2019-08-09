@@ -30,10 +30,6 @@ public class GridHighlightHelper {
 
     private double paddingY = 0d;
 
-    private double minX = 0d;
-
-    private double minY = 0d;
-
     private boolean isPinnedGrid = false;
 
     private final GridLienzoPanel gridPanel;
@@ -78,16 +74,6 @@ public class GridHighlightHelper {
 
     public GridHighlightHelper withPinnedGrid() {
         this.isPinnedGrid = true;
-        return this;
-    }
-
-    public GridHighlightHelper withMinX(final double minX) {
-        this.minX = minX;
-        return this;
-    }
-
-    public GridHighlightHelper withMinY(final double minY) {
-        this.minY = minY;
         return this;
     }
 
@@ -185,14 +171,6 @@ public class GridHighlightHelper {
 
     double getPaddingY() {
         return paddingY;
-    }
-
-    private double getMinX() {
-        return minX;
-    }
-
-    private double getMinY() {
-        return minY;
     }
 
     private DefaultGridLayer getDefaultGridLayer() {

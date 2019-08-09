@@ -133,7 +133,7 @@ public class GridHighlightHelperTest {
 
         verify(gridWidget).selectCell(row, column, false, false);
         verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(-63, -126);
+        verify(highlightHelper).moveCanvasTo(-63, 130);
     }
 
     @Test
@@ -141,14 +141,11 @@ public class GridHighlightHelperTest {
 
         doNothing().when(highlightHelper).moveCanvasTo(anyInt(), anyInt());
 
-        highlightHelper
-                .withMinX(-256)
-                .withMinY(-512)
-                .withPinnedGrid().highlight(row, column);
+        highlightHelper.withPinnedGrid().highlight(row, column);
 
         verify(gridWidget).selectCell(row, column, false, false);
         verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(0, 0);
+        verify(highlightHelper).moveCanvasTo(-63, 0);
     }
 
     @Test
@@ -163,23 +160,9 @@ public class GridHighlightHelperTest {
 
         verify(gridWidget).selectCell(row, column, false, false);
         verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(64, -64);
+        verify(highlightHelper).moveCanvasTo(64, 192);
     }
 
-    @Test
-    public void testHighlightWithMinValues() {
-
-        doNothing().when(highlightHelper).moveCanvasTo(anyInt(), anyInt());
-
-        highlightHelper
-                .withMinX(-256)
-                .withMinY(-512)
-                .highlight(row, column);
-
-        verify(gridWidget).selectCell(row, column, false, false);
-        verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(193, 386);
-    }
 
     @Test
     public void testMoveCanvasToWhenTheElementIsVisible() {
