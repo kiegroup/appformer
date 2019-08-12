@@ -141,7 +141,7 @@ public class PathPlaceRequest extends DefaultPlaceRequest {
     }
 
     @PreDestroy
-    private void preDestroy() {
-        path.dispose();
+    public void preDestroy() {
+        getPath().dispose();
     }
 }
