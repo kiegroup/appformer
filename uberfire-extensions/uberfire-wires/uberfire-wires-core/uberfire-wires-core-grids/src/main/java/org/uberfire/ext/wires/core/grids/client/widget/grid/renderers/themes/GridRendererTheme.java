@@ -31,6 +31,10 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.imp
  */
 public interface GridRendererTheme {
 
+    String HIGHLIGHTED_CELL_BACKGROUND = "#F9D67A";
+
+    String HIGHLIGHTED_CELL_STROKE = "#F5C12E";
+
     /**
      * Returns a display name for the theme.
      * @return A name for the theme
@@ -128,5 +132,17 @@ public interface GridRendererTheme {
                 .setListening(false)
                 .setTextBaseLine(TextBaseLine.MIDDLE)
                 .setTextAlign(TextAlign.CENTER);
+    }
+
+    /**
+     * Delegates the highlighted cell background Rectangle to sub-classes.
+     * @return A {@link Rectangle} for the cell's highlight background.
+     */
+    default Rectangle getHighlightedCellBackground() {
+        final Rectangle r = new Rectangle(0, 0);
+        r.setFillColor(HIGHLIGHTED_CELL_BACKGROUND);
+        r.setStrokeWidth(1.0);
+        r.setStrokeColor(HIGHLIGHTED_CELL_STROKE);
+        return r;
     }
 }
