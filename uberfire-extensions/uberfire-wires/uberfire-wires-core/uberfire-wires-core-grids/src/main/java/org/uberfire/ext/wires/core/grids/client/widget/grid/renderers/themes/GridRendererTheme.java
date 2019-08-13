@@ -142,6 +142,8 @@ public interface GridRendererTheme {
         final Rectangle r = new Rectangle(0, 0);
         r.setFillColor(HIGHLIGHTED_CELL_BACKGROUND);
         r.setStrokeWidth(1.0);
+        // We need some alpha because the highlight is draw over the cell content.
+        r.setAlpha(0.3);
         r.setStrokeColor(HIGHLIGHTED_CELL_STROKE);
         return r;
     }
