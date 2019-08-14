@@ -57,8 +57,10 @@ public class FileUploadEditor implements IsWidget, LeafAttributeEditor<String> {
         View showError(final SafeHtml message);
 
         View clearError();
-        
+
         View setAccept(String type);
+
+        View clear();
     }
 
     public interface FileUploadEditorCallback {
@@ -213,7 +215,7 @@ public class FileUploadEditor implements IsWidget, LeafAttributeEditor<String> {
         // Fire the value change event.
         valueChangeEvent.fire(new org.dashbuilder.common.client.event.ValueChangeEvent<String>(this, before, this.value));
     }
-    
+
     public void setAccept(String type) {
         view.setAccept(type);
     }

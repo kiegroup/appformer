@@ -104,18 +104,24 @@ public class NavigationExplorerScreen {
 
     void onNavTreeLoaded(@Observes NavTreeLoadedEvent event) {
         NavTree navTree = event.getNavTree();
-        navTreeEditor.edit(navTree);
+        if (navTree != null) {
+            navTreeEditor.edit(navTree);
+        }
     }
 
     void onPerspectivesChanged(@Observes PerspectivePluginsChangedEvent event) {
         NavTree navTree = navigationManager.getNavTree();
-        navTreeEditor.edit(navTree);
+        if (navTree != null) {
+            navTreeEditor.edit(navTree);
+        }
     }
 
     public void onNavTreeChanged(@Observes final NavTreeChangedEvent event) {
         NavTree navTree = event.getNavTree();
-        navigationManager.update(navTree);
-        navTreeEditor.edit(navTree);
+        if (navTree != null) {
+            navigationManager.update(navTree);
+            navTreeEditor.edit(navTree);
+        }
     }
 
     void onNavTreeSaved() {
@@ -124,6 +130,8 @@ public class NavigationExplorerScreen {
 
     void onAuthzPolicyChanged(@Observes final AuthorizationPolicySavedEvent event) {
         NavTree navTree = navigationManager.getNavTree();
-        navTreeEditor.edit(navTree);
+        if (navTree != null) {
+            navTreeEditor.edit(navTree);
+        }
     }
 }

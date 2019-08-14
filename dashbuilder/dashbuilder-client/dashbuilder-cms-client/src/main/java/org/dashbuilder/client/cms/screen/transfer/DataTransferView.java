@@ -135,6 +135,7 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
     @Override
     public void importError(Throwable throwable) {
         btnImport.disabled = true;
+        fileUploadEditor.view.clear();
         LOGGER.error(throwable.getMessage(), throwable);
         workbenchNotification.fire(
             new NotificationEvent(
@@ -145,6 +146,7 @@ public class DataTransferView implements DataTransferScreen.View, IsElement {
     @Override
     public void importOK() {
         btnImport.disabled = true;
+        fileUploadEditor.view.clear();
         workbenchNotification.fire(
             new NotificationEvent(
                 i18n.importOK(),

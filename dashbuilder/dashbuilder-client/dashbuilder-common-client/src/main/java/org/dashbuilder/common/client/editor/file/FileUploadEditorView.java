@@ -176,4 +176,10 @@ public class FileUploadEditorView extends Composite implements FileUploadEditor.
         fileUpload.setAccept(type);
         return this;
     }
+
+    @Override
+    public FileUploadEditor.View clear() {
+        fileUpload.clear();
+        return this;
+    }
 }

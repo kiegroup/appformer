@@ -181,6 +181,9 @@ public class DataTransferServicesImpl implements DataTransferServices {
             }
         });
 
+        ioService.deleteIfExists(
+                root.resolve(expectedPath));
+
         return imported;
     }
 
@@ -254,10 +257,15 @@ public class DataTransferServicesImpl implements DataTransferServices {
            }
     }
 
-    private void fireDatasetEvent(URI uri, String newFilePath) throws Exception {
-        String json = ioService.readAllString(Paths.get(uri).resolve(newFilePath));
-        DataSetDef newDef = dataSetDefRegistryCDI.getDataSetDefJsonMarshaller().fromJson(json);
-        dataSetDefRegisteredEvent.fire(new DataSetDefRegisteredEvent(newDef));
+    private void fireDatasetEvent(URI uri, String newFilePath) {
+        try {
+            String json = ioService.readAllString(Paths.get(uri).resolve(newFilePath));
+            DataSetDef newDef = dataSetDefRegistryCDI.getDataSetDefJsonMarshaller().fromJson(json);
+            dataSetDefRegisteredEvent.fire(new DataSetDefRegisteredEvent(newDef));
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 
     private void firePerspectiveEvent(File newFile, URI uri, String newFilePath) {

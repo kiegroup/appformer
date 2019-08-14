@@ -106,9 +106,14 @@ public class FileUpload
     public String getFilename() {
         return file.getValue();
     }
-    
+
     public void setAccept(String type) {
         file.getElement().setAttribute("accept", type);
+    }
+
+    public void clear() {
+        file.setValue("");
+        fileText.setText("");
     }
 
     public void setEnabled(boolean b) {
@@ -129,7 +134,7 @@ public class FileUpload
             @Override
             public void onChange(ChangeEvent event) {
                 String fileName = file.getValue();
-                if (fileName.toLowerCase().startsWith(FAKEPATH)) {
+                if (fileName != null && fileName.toLowerCase().startsWith(FAKEPATH)) {
                     fileName = fileName.substring(FAKEPATH.length());
                 }
                 fileText.setValue(fileName);
