@@ -77,7 +77,7 @@ public class ClusterJMSService implements ClusterService {
             connection.setExceptionListener(new JMSExceptionListener());
             connection.start();
         } catch (Exception e) {
-            LOGGER.error("Error connecting on JMS " + e.getMessage());
+            LOGGER.error("Error connecting on JMS {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -122,12 +122,12 @@ public class ClusterJMSService implements ClusterService {
                             listener.accept((T) object);
                         }
                     } catch (JMSException e) {
-                        LOGGER.error("Exception receiving JMS message: " + e.getMessage());
+                        LOGGER.error("Exception receiving JMS message: {}", e.getMessage());
                     }
                 }
             });
         } catch (Exception e) {
-            LOGGER.error("Error creating JMS Watch Service: " + e.getMessage());
+            LOGGER.error("Error creating JMS Watch Service: {}", e.getMessage());
         }
     }
 
@@ -147,16 +147,17 @@ public class ClusterJMSService implements ClusterService {
             if (clusterParameters.getJmsThrottle() > 0) {
                 objectMessage.setLongProperty("_AMQ_SCHED_DELIVERY", System.currentTimeMillis() + clusterParameters.getJmsThrottle());
             }
-            MessageProducer messageProducer = session.createProducer(destination);
-            messageProducer.send(objectMessage);
+            try (MessageProducer messageProducer = session.createProducer(destination)) {
+                messageProducer.send(objectMessage);
+            }
         } catch (JMSException e) {
-            LOGGER.error("Exception on JMS broadcast: " + e.getMessage());
+            LOGGER.error("Exception on JMS broadcast: {}", e.getMessage());
         } finally {
             if (session != null) {
                 try {
                     session.close();
                 } catch (JMSException e) {
-                    LOGGER.error("Exception on closing JMS session (this could trigger a leak) " + e.getMessage());
+                    LOGGER.error("Exception on closing JMS session (this could trigger a leak) {}", e.getMessage());
                 }
             }
         }
@@ -171,15 +172,15 @@ public class ClusterJMSService implements ClusterService {
         return session.createTopic(channel);
     }
 
-    private Session createConsumerSession() {
+    private Session createConsumerSession() throws JMSException {
         try {
             Session session = connection.createSession(false,
                                                        Session.AUTO_ACKNOWLEDGE);
             consumerSessions.add(session);
             return session;
         } catch (JMSException e) {
-            LOGGER.error("Error creating session " + e.getMessage());
-            throw new RuntimeException(e);
+            LOGGER.error("Error creating consumer session {}", e.getMessage());
+            throw e;
         }
     }
 
@@ -192,7 +193,7 @@ public class ClusterJMSService implements ClusterService {
 
         @Override
         public void onException(JMSException e) {
-            LOGGER.error("JMSException: " + e.getMessage());
+            LOGGER.error("JMSException: {}", e.getMessage());
         }
     }
 
@@ -204,7 +205,7 @@ public class ClusterJMSService implements ClusterService {
             }
             connection.close();
         } catch (JMSException e) {
-            LOGGER.error("Exception closing JMS connection and consumerSessions: " + e.getMessage());
+            LOGGER.error("Exception closing JMS connection and consumerSessions: {}", e.getMessage());
         }
     }
 }
