@@ -80,8 +80,17 @@ public class NavigationExplorerScreenTest {
     @Test
     public void testOnPerspectivesChanged() {
         navigationExplorerScreen.init();
+        when(navigationManager.getNavTree()).thenReturn(navTree);
         navigationExplorerScreen.onPerspectivesChanged(new PerspectivePluginsChangedEvent());
 
-        verify(navTreeEditor).edit(any(NavTree.class));
+        verify(navTreeEditor, times(1)).edit(any(NavTree.class));
+    }
+
+    @Test
+    public void testOnPerspectivesChangedWithNullNavTree() {
+        navigationExplorerScreen.init();
+        navigationExplorerScreen.onPerspectivesChanged(new PerspectivePluginsChangedEvent());
+
+        verify(navTreeEditor, times(0)).edit(any(NavTree.class));
     }
 }

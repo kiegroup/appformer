@@ -243,7 +243,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
         return imported;
     }
 
-    private void fireEvent(File newFile, String tempPath, URI uri, String newFilePath) throws Exception  {
+    private void fireEvent(File newFile, String tempPath, URI uri, String newFilePath) {
         String filePath = newFile.toURI().toString();
 
         if (filePath.contains(tempPath + datasetsFS.getName()) && newFilePath.endsWith(DataSetDefRegistryCDI.DATASET_EXT)) {

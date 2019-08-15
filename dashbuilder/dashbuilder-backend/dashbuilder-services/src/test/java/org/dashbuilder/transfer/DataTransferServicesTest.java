@@ -199,7 +199,6 @@ public class DataTransferServicesTest {
         }}, getFiles(navigationFS));
 
         assertEquals(new ArrayList<String>() {{
-            add(getExpectedImportFilePath());
             add("/readme.md");
         }}, getFiles(systemFS));
 
@@ -267,7 +266,6 @@ public class DataTransferServicesTest {
         }}, getFiles(navigationFS));
 
         assertEquals(new ArrayList<String>() {{
-            add(getExpectedImportFilePath());
             add("/readme.md");
         }}, getFiles(systemFS));
 
