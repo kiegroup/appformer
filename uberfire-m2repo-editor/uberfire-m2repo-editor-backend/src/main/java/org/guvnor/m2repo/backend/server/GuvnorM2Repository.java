@@ -521,9 +521,7 @@ public class GuvnorM2Repository {
     }
 
     private String loadGAVFromJarInternal(final File file) {
-        try {
-            ZipFile zip = new ZipFile(file);
-
+        try (ZipFile zip = new ZipFile(file)) {
             for (Enumeration e = zip.entries(); e.hasMoreElements(); ) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
 
@@ -532,8 +530,6 @@ public class GuvnorM2Repository {
                                             entry);
                 }
             }
-        } catch (ZipException e) {
-            log.error(e.getMessage());
         } catch (IOException e) {
             log.error(e.getMessage());
         }

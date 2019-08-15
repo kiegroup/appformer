@@ -71,14 +71,14 @@ public class M2ServletContextListener implements ServletContextListener {
     private final FixNotMavenizedArtifactInfo fixNotMavenizedArtifact = new FixNotMavenizedArtifactInfo();
 
     public M2ServletContextListener() {
-        Path tempDir = null;
+        Path tempDirHolder = null;
         try {
-            tempDir = Files.createTempDirectory("pom-extract");
+            tempDirHolder = Files.createTempDirectory("pom-extract");
         } catch (IOException e) {
             logger.error(e.getMessage(),
                          e);
         }
-        this.tempDir = tempDir;
+        this.tempDir = tempDirHolder;
     }
 
     @Override
@@ -101,6 +101,7 @@ public class M2ServletContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        // no-op
     }
 
     int deployJarsFromWar(final String path) {
@@ -131,8 +132,7 @@ public class M2ServletContextListener implements ServletContextListener {
     }
 
     private Properties readZipFile(String zipFilePath) {
-        try {
-            final ZipFile zipFile = new ZipFile(zipFilePath);
+        try (final ZipFile zipFile = new ZipFile(zipFilePath)) {
             final Enumeration<? extends ZipEntry> e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = e.nextElement();
@@ -159,11 +159,11 @@ public class M2ServletContextListener implements ServletContextListener {
         final Artifact artifact = MavenRepository.getMavenRepository().resolveArtifact(new AFReleaseIdImpl(gav.getGroupId(), gav.getArtifactId(), gav.getVersion()));
 
         if (artifact != null) {
-            logger.info("Maven Artifact {} already exists in local Maven repository.", gav.toString());
+            logger.info("Maven Artifact {} already exists in local Maven repository.", gav);
             return;
         }
 
-        logger.warn("Maven Artifact {} deployed from WEB-INF.", gav.toString());
+        logger.warn("Maven Artifact {} deployed from WEB-INF.", gav);
 
         Artifact jarArtifact = new DefaultArtifact(gav.getGroupId(),
                                                    gav.getArtifactId(),
@@ -173,8 +173,7 @@ public class M2ServletContextListener implements ServletContextListener {
         jarArtifact = jarArtifact.setFile(jarFile);
 
         Artifact pom = null;
-        try {
-            final ZipFile jarZipFile = new ZipFile(jarArtifact.getFile());
+        try (final ZipFile jarZipFile = new ZipFile(jarArtifact.getFile())) {
             boolean foundPom = false;
             Path target = null;
             final Enumeration<? extends ZipEntry> entries = jarZipFile.entries();
