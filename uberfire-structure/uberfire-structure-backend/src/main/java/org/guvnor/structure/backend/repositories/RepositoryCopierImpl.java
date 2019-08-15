@@ -32,6 +32,7 @@ import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.IOException;
+import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import org.uberfire.java.nio.file.FileVisitResult;
 import org.uberfire.java.nio.file.FileVisitor;
@@ -197,18 +198,19 @@ public class RepositoryCopierImpl
 
     private void copyRootFiles(final Path targetRoot,
                                final org.uberfire.java.nio.file.Path originRepositoryRoot) {
-        for (org.uberfire.java.nio.file.Path path : Files.newDirectoryStream(originRepositoryRoot)) {
+        try (DirectoryStream<org.uberfire.java.nio.file.Path> stream = Files.newDirectoryStream(originRepositoryRoot)) {
+            for (org.uberfire.java.nio.file.Path path : stream) {
 
-            if (!Files.isDirectory(path)) {
-                try {
-                    org.uberfire.java.nio.file.Path fileName = path.getFileName();
-                    org.uberfire.java.nio.file.Path resolve = Paths.convert(targetRoot).resolve(fileName);
-                    Files.copy(path,
-                               resolve,
-                               StandardCopyOption.REPLACE_EXISTING);
-                } catch (FileAlreadyExistsException x) {
-                    //Swallow
-                    x.printStackTrace();
+                if (!Files.isDirectory(path)) {
+                    try {
+                        org.uberfire.java.nio.file.Path fileName = path.getFileName();
+                        org.uberfire.java.nio.file.Path resolve = Paths.convert(targetRoot).resolve(fileName);
+                        Files.copy(path,
+                                   resolve,
+                                   StandardCopyOption.REPLACE_EXISTING);
+                    } catch (FileAlreadyExistsException x) {
+                        //Swallow
+                    }
                 }
             }
         }
@@ -239,9 +241,7 @@ public class RepositoryCopierImpl
                 Files.copy(src,
                            tgt,
                            StandardCopyOption.REPLACE_EXISTING);
-//            } catch (FileAlreadyExistsException x) {
             } catch (Exception x) {
-                x.printStackTrace();
                 //Swallow
             }
             return FileVisitResult.CONTINUE;
