@@ -477,34 +477,31 @@ public class PluginServicesImpl implements PluginServices {
     }
 
     private Map<CodeType, String> loadCodeMap(final String pluginName) {
-        try {
-            final Path rootPlugin = getPluginPath(pluginName);
-            try (final DirectoryStream<Path> stream =
+        final Path rootPlugin = getPluginPath(pluginName);
+        try (final DirectoryStream<Path> stream =
                          getIoService().newDirectoryStream(getCodeRoot(rootPlugin),
                                                            pathEntry -> pathEntry.getFileName()
                                                                                  .toString()
                                                                                  .endsWith(CODE_EXTENSION))) {
-                final Map<CodeType, String> result = new EnumMap<>(CodeType.class);
+            final Map<CodeType, String> result = new EnumMap<>(CodeType.class);
 
-                for (final Path path : stream) {
-                    final CodeType type = getCodeType(path);
-                    if (type != null) {
-                        result.put(type,
-                                   getIoService().readAllString(path));
-                    }
+            for (final Path path : stream) {
+                final CodeType type = getCodeType(path);
+                if (type != null) {
+                    result.put(type,
+                               getIoService().readAllString(path));
                 }
-
-                return result;
             }
+
+            return result;
         } catch (final NotDirectoryException exception) {
             return Collections.emptyMap();
         }
     }
 
     private Set<Media> loadMediaLibrary(final String pluginName) {
-        try {
-            final Path rootPlugin = getPluginPath(pluginName);
-            try (final DirectoryStream<Path> stream = getIoService().newDirectoryStream(getMediaRoot(rootPlugin))) {
+        final Path rootPlugin = getPluginPath(pluginName);
+        try (final DirectoryStream<Path> stream = getIoService().newDirectoryStream(getMediaRoot(rootPlugin))) {
                 final Set<Media> result = new HashSet<>();
 
                 for (final Path path : stream) {
@@ -513,8 +510,6 @@ public class PluginServicesImpl implements PluginServices {
                 }
 
                 return result;
-            }
-
         } catch (final NotDirectoryException exception) {
             return Collections.emptySet();
         }
@@ -537,20 +532,17 @@ public class PluginServicesImpl implements PluginServices {
     }
 
     private Set<Framework> loadFramework(final String pluginName) {
-        try {
+        try (final DirectoryStream<Path> stream = getIoService().newDirectoryStream(getPluginPath(pluginName).resolve(DEPENDENCIES))) {
             final Set<Framework> result = new HashSet<>();
-            try(final DirectoryStream<Path> stream = getIoService().newDirectoryStream(getPluginPath(pluginName).resolve(DEPENDENCIES))) {
-                for (final Path path : stream) {
-                    try {
-                        result.add(Framework.valueOf(path.getFileName().toString().replace(DEPENDENCY_EXTENSION,
-                                                                                           "").toUpperCase()));
-                    } catch (final Exception ignored) {
-                    }
+            for (final Path path : stream) {
+                try {
+                    result.add(Framework.valueOf(path.getFileName().toString().replace(DEPENDENCY_EXTENSION,
+                                                                                       "").toUpperCase()));
+                } catch (final Exception ignored) {
                 }
-
-                return result;
             }
 
+            return result;
         } catch (final NotDirectoryException exception) {
             return Collections.emptySet();
         }
