@@ -19,6 +19,7 @@ package org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.imp
 import java.util.List;
 
 import com.ait.lienzo.client.core.shape.Group;
+import com.ait.lienzo.client.core.shape.Rectangle;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,6 +27,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
+import org.uberfire.ext.wires.core.grids.client.model.GridRow;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridData;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseGridRow;
 import org.uberfire.ext.wires.core.grids.client.model.impl.BaseHeaderMetaData;
@@ -36,16 +38,21 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.columns.Gr
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer.GridRendererContext;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.SelectionsTransformer;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl.BaseGridRendererHelper.RenderingBlockInformation;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.GridRendererTheme;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.BlueTheme;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.uberfire.ext.wires.core.grids.client.widget.grid.impl.BaseGridWidgetRenderingTestUtils.makeRenderingInformation;
+import static org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl.BaseGridRendererHelper.RenderingInformation;
 
 public abstract class BaseGridRendererTest {
 
@@ -108,7 +115,7 @@ public abstract class BaseGridRendererTest {
     public void checkRenderHeaderWhenColumnsHaveNoMetaData() {
         column.getHeaderMetaData().clear();
 
-        final BaseGridRendererHelper.RenderingInformation ri = makeRenderingInformation(model);
+        final RenderingInformation ri = makeRenderingInformation(model);
         final GridHeaderRenderContext context = mock(GridHeaderRenderContext.class);
 
         final List<GridRenderer.RendererCommand> commands = renderer.renderHeader(model,
@@ -131,6 +138,90 @@ public abstract class BaseGridRendererTest {
 
         when(context.getBlockColumns()).thenReturn(model.getColumns());
         when(context.getTransformer()).thenReturn(selectionsTransformer);
+    }
+
+    @Test
+    public void testMakeCellHighlight() {
+        final int rowIndex = 1;
+        final int visibleRowIndex = 2;
+        final GridData model = mock(GridData.class);
+        final RenderingInformation renderInformation = makeRenderingInformation(model);
+        final GridRendererTheme theme = mock(GridRendererTheme.class);
+        final Rectangle rectangle = mock(Rectangle.class);
+        when(theme.getHighlightedCellBackground()).thenReturn(rectangle);
+        when(rectangle.setListening(false)).thenReturn(rectangle);
+        renderer.setTheme(theme);
+
+        doNothing().when(renderer).setCellHighlightX(rectangle, renderInformation, context, rendererHelper, column);
+        doNothing().when(renderer).setCellHighlightY(rectangle, rendererHelper, visibleRowIndex);
+        doNothing().when(renderer).setCellHighlightSize(rectangle, model, column, rowIndex);
+
+        Rectangle current = renderer.makeCellHighlight(rowIndex,
+                                                       visibleRowIndex,
+                                                       model,
+                                                       rendererHelper,
+                                                       column,
+                                                       renderInformation,
+                                                       context);
+
+        assertEquals(rectangle, current);
+    }
+
+    @Test
+    public void testSetCellHighlightY() {
+        final int visibleRowIndex = 2;
+        final Rectangle rectangle = mock(Rectangle.class);
+        final double y = 190;
+
+        when(rendererHelper.getRowOffset(visibleRowIndex)).thenReturn(y);
+
+        renderer.setCellHighlightY(rectangle, rendererHelper, visibleRowIndex);
+
+        verify(rectangle).setY(y);
+    }
+
+    @Test
+    public void setCellHighlightX() {
+        final RenderingInformation renderingInformation = mock(RenderingInformation.class);
+        final RenderingBlockInformation floatingBlockInformation = mock(RenderingBlockInformation.class);
+        final List<GridColumn<?>> fakeList = mock(List.class);
+        when(floatingBlockInformation.getColumns()).thenReturn(fakeList);
+        when(fakeList.size()).thenReturn(1);
+        final Rectangle rectangle = mock(Rectangle.class);
+        final double columnOffsetX = 77;
+        final int columnIndex = 3;
+        final double xOffset = 128;
+        final double expectedOffset = xOffset - columnOffsetX;
+
+        when(renderingInformation.getFloatingBlockInformation()).thenReturn(floatingBlockInformation);
+        when(context.getAbsoluteColumnOffsetX()).thenReturn(columnOffsetX);
+        final GridColumn<?> column = mock(GridColumn.class);
+        when(column.getIndex()).thenReturn(columnIndex);
+
+        when(rendererHelper.getColumnOffset(columnIndex)).thenReturn(xOffset);
+
+        renderer.setCellHighlightX(rectangle, renderingInformation, context, rendererHelper, column);
+
+        verify(rectangle).setX(expectedOffset);
+    }
+
+    @Test
+    public void setCellHighlightSize() {
+        final Rectangle rectangle = mock(Rectangle.class);
+        final GridData model = mock(GridData.class);
+        final GridColumn<?> column = mock(GridColumn.class);
+        final double width = 100;
+        final int rowIndex = 4;
+        final GridRow row = mock(GridRow.class);
+        final double height = 20;
+        when(column.getWidth()).thenReturn(width);
+        when(row.getHeight()).thenReturn(height);
+        when(model.getRow(rowIndex)).thenReturn(row);
+
+        renderer.setCellHighlightSize(rectangle, model, column, rowIndex);
+
+        verify(rectangle).setWidth(width);
+        verify(rectangle).setHeight(height);
     }
 
     protected abstract boolean isSelectionLayer();

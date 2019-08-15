@@ -56,6 +56,10 @@ public class BaseGridRenderer implements GridRenderer {
 
     private static final String LINK_ICON = "\ue144";
 
+    private Integer highlightCellColumnIndex;
+
+    private Integer highlightCellRowIndex;
+
     protected GridRendererTheme theme;
 
     protected BiFunction<Boolean, GridColumn<?>, Boolean> columnRenderingConstraint = (isSelectionLayer, gridColumn) -> !isSelectionLayer;
@@ -400,6 +404,13 @@ public class BaseGridRenderer implements GridRenderer {
             }
         }
 
+        if (!Objects.isNull(highlightCellColumnIndex) && !Objects.isNull(highlightCellRowIndex)) {
+            commands.addAll(renderHighlightedCells(model,
+                                                   context,
+                                                   rendererHelper,
+                                                   renderingInformation));
+        }
+
         return commands;
     }
 
@@ -438,5 +449,88 @@ public class BaseGridRenderer implements GridRenderer {
     @Override
     public void setColumnRenderConstraint(final BiFunction<Boolean, GridColumn<?>, Boolean> columnRenderingConstraint) {
         this.columnRenderingConstraint = columnRenderingConstraint;
+    }
+
+    public void clearCellHighlight() {
+        highlightCellColumnIndex = null;
+        highlightCellRowIndex = null;
+    }
+
+    public void highlightCell(final int column, final int row) {
+        highlightCellColumnIndex = column;
+        highlightCellRowIndex = row;
+    }
+
+    private List<RendererCommand> renderHighlightedCells(GridData model,
+                                                         GridBodyRenderContext context,
+                                                         BaseGridRendererHelper rendererHelper,
+                                                         BaseGridRendererHelper.RenderingInformation renderingInformation) {
+
+        final List<RendererCommand> commands = new ArrayList<>();
+
+        GridColumn<?> column = model.getColumns().get(highlightCellColumnIndex);
+
+        final int visibleRowIndex = highlightCellRowIndex - renderingInformation.getMinVisibleRowIndex();
+
+        commands.add((rc) -> {
+            if (!rc.isSelectionLayer()) {
+                if (model.getColumns().size() >= 1) {
+
+                    rc.getGroup().add(makeCellHighlight(highlightCellRowIndex,
+                                                        visibleRowIndex,
+                                                        model,
+                                                        rendererHelper,
+                                                        column,
+                                                        renderingInformation,
+                                                        context));
+                }
+            }
+        });
+
+        return commands;
+    }
+
+    Rectangle makeCellHighlight(final int rowIndex,
+                                final int visibleRowIndex,
+                                final GridData model,
+                                final BaseGridRendererHelper rendererHelper,
+                                final GridColumn<?> column,
+                                final BaseGridRendererHelper.RenderingInformation renderingInformation,
+                                final GridBodyRenderContext context) {
+
+        final Rectangle r = getTheme().getHighlightedCellBackground().setListening(false);
+        setCellHighlightX(r, renderingInformation, context, rendererHelper, column);
+        setCellHighlightY(r, rendererHelper, visibleRowIndex);
+        setCellHighlightSize(r, model, column, rowIndex);
+        return r;
+    }
+
+    void setCellHighlightY(final Rectangle r,
+                           final BaseGridRendererHelper rendererHelper,
+                           final int visibleRowIndex) {
+        r.setY(rendererHelper.getRowOffset(visibleRowIndex));
+    }
+
+    void setCellHighlightX(final Rectangle r,
+                           final BaseGridRendererHelper.RenderingInformation renderingInformation,
+                           final GridBodyRenderContext context,
+                           final BaseGridRendererHelper rendererHelper,
+                           final GridColumn<?> column) {
+        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
+        double columnOffsetX = context.getAbsoluteColumnOffsetX();
+        double x = rendererHelper.getColumnOffset(column.getIndex());
+        if (floatingBlockInformation.getColumns().size() > 0) {
+            x = x - columnOffsetX;
+        }
+        r.setX(x);
+    }
+
+    void setCellHighlightSize(final Rectangle rectangle,
+                              final GridData model,
+                              final GridColumn<?> column,
+                              final int rowIndex) {
+        final double width = column.getWidth();
+        rectangle.setWidth(width);
+        rectangle.setHeight(model.getRow(rowIndex).getHeight());
     }
 }

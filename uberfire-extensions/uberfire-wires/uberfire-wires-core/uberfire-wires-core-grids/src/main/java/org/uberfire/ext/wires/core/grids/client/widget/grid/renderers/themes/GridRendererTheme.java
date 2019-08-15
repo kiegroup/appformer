@@ -26,14 +26,13 @@ import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.KIEColours;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.KIEStyles;
 
+import static org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.KIEColours.HIGHLIGHTED_CELL_BACKGROUND;
+import static org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.impl.KIEColours.HIGHLIGHTED_CELL_STROKE;
+
 /**
  * Definition of themes used by a render for the pluggable rendering mechanism.
  */
 public interface GridRendererTheme {
-
-    String HIGHLIGHTED_CELL_BACKGROUND = "#F9D67A";
-
-    String HIGHLIGHTED_CELL_STROKE = "#F5C12E";
 
     /**
      * Returns a display name for the theme.
