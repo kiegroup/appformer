@@ -49,6 +49,7 @@ import org.uberfire.spaces.SpacesAPI;
 public class RuntimePluginServiceImpl implements RuntimePluginService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimePluginServiceImpl.class);
+    private static final String FILE_URL_PREFIX = "file://";
 
     @Inject
     @Any
@@ -82,15 +83,15 @@ public class RuntimePluginServiceImpl implements RuntimePluginService {
 
         String realPath = PluginUtils.getRealPath("plugins");
         if (realPath == null) {
-            LOGGER.info("Not fetching template content for " + url + " because getRealPath() is"
-                                + " returning null. (This app is probably deployed in an unexploded .war)");
+            LOGGER.info("Not fetching template content for {} because getRealPath() is"
+                                + " returning null. (This app is probably deployed in an unexploded .war)", url);
             return "";
         }
         final Path template;
         if (url.startsWith("/")) {
-            template = Paths.get(URI.create("file://" + realPath + url));
+            template = Paths.get(URI.create(FILE_URL_PREFIX + realPath + url));
         } else {
-            template = Paths.get(URI.create("file://" + realPath + "/" + url));
+            template = Paths.get(URI.create(FILE_URL_PREFIX + realPath + "/" + url));
         }
 
         if (Files.isRegularFile(template)) {
@@ -107,20 +108,20 @@ public class RuntimePluginServiceImpl implements RuntimePluginService {
                                                 final String glob) {
         String realPath = PluginUtils.getRealPath(directory);
         if (realPath == null) {
-            LOGGER.info("Not listing directory content for " + directory + "/" + glob +
-                                " because getRealPath() is returning null. (This app is probably deployed in an unexploded .war)");
+            LOGGER.info("Not listing directory content for {}/{}" +
+                                " because getRealPath() is returning null. (This app is probably deployed in an unexploded .war)",
+                        directory, glob);
             return Collections.emptyList();
         }
         final Collection<String> result = new ArrayList<>();
 
-        final Path pluginsRootPath = Paths.get(URI.create("file://" + realPath));
+        final Path pluginsRootPath = Paths.get(URI.create(FILE_URL_PREFIX + realPath));
 
         if (Files.isDirectory(pluginsRootPath)) {
-            final DirectoryStream<Path> stream = Files.newDirectoryStream(pluginsRootPath,
-                                                                          glob);
-
-            for (final Path activeJS : stream) {
-                result.add(new String(Files.readAllBytes(activeJS)));
+            try (final DirectoryStream<Path> stream = Files.newDirectoryStream(pluginsRootPath, glob)) {
+                for (final Path activeJS : stream) {
+                    result.add(new String(Files.readAllBytes(activeJS)));
+                }
             }
         }
 
@@ -133,7 +134,7 @@ public class RuntimePluginServiceImpl implements RuntimePluginService {
             Optional<RuntimePlugin> runtimePlugin = htmlPluginProcessor.lookupForTemplate(pluginName);
 
             return runtimePlugin.
-                    map(p -> p.getPluginContent()).orElse("");
+                    map(RuntimePlugin::getPluginContent).orElse("");
         }
         return "";
     }
