@@ -63,8 +63,6 @@
     <!-- Mockito version downgrade, need changes in tests to upgrade to ip-bom (AF-1800) -->
     <version.org.mockito>1.10.19</version.org.mockito>
 
-    <!-- Custom Freemarker build with workaround for random concurrent access issue (annotation processors). See AF-600 for more info.-->
-    <version.org.freemarker>2.3.26.jbossorg-1</version.org.freemarker>
     <version.org.jboss.errai>4.6.0.Final</version.org.jboss.errai>
     <version.org.webjars.bower.org.patternfly>3.18.1</version.org.webjars.bower.org.patternfly>
     <version.org.webjars.bower.google-code-prettify>1.0.4</version.org.webjars.bower.google-code-prettify>
@@ -1085,13 +1083,6 @@
         <groupId>com.google.jsinterop</groupId>
         <artifactId>base</artifactId>
         <version>${version.com.google.jsinterop.base}</version>
-      </dependency>
-
-      <!-- RHDM-588 freemarker -->
-      <dependency>
-        <groupId>org.freemarker</groupId>
-        <artifactId>freemarker</artifactId>
-        <version>${version.org.freemarker}</version>
       </dependency>
 
       <dependency>
