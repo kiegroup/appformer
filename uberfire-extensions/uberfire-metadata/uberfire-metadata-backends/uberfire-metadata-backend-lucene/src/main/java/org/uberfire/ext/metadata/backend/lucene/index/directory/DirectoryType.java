@@ -38,6 +38,7 @@ public enum DirectoryType {
                                     final IndexWriterConfig config) {
             final Directory directory = new Directory(new RAMDirectory(),
                                                       deleteDirectory -> {
+                                                            // no-op
                                                       },
                                                       true);
             return new DirectoryLuceneIndex(cluster,
@@ -64,6 +65,7 @@ public enum DirectoryType {
                                                 directory,
                                                 config);
             } catch (IOException e) {
+                logger.error("Error while creating newIndex for NIO DirectoryType. Exception: {}", e);
                 throw new org.uberfire.java.nio.IOException(e);
             }
 
@@ -86,6 +88,7 @@ public enum DirectoryType {
                                                 directory,
                                                 config);
             } catch (IOException e) {
+                logger.error("Error while creating newIndex for MMAP DirectoryType. Exception: {}", e);
                 throw new org.uberfire.java.nio.IOException(e);
             }
         }
