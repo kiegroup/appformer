@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.dashbuilder</groupId>
     <artifactId>dashbuilder-client</artifactId>
-    <version>2.22.0-SNAPSHOT</version>
+    <version>2.23.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>dashbuilder-cms-client</artifactId>
@@ -85,6 +85,11 @@
     </dependency>
 
     <!-- UberFire -->
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-js</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.uberfire</groupId>
