@@ -152,7 +152,7 @@ public abstract class BaseGridRendererTest {
         when(rectangle.setListening(false)).thenReturn(rectangle);
         renderer.setTheme(theme);
 
-        doNothing().when(renderer).setCellHighlightX(rectangle, renderInformation, context, rendererHelper, column);
+        doNothing().when(renderer).setCellHighlightX(rectangle, renderInformation, context, rendererHelper);
         doNothing().when(renderer).setCellHighlightY(rectangle, rendererHelper, visibleRowIndex);
         doNothing().when(renderer).setCellHighlightSize(rectangle, model, column, rowIndex);
 
@@ -200,7 +200,8 @@ public abstract class BaseGridRendererTest {
 
         when(rendererHelper.getColumnOffset(columnIndex)).thenReturn(xOffset);
 
-        renderer.setCellHighlightX(rectangle, renderingInformation, context, rendererHelper, column);
+        renderer.highlightCell(columnIndex, 0);
+        renderer.setCellHighlightX(rectangle, renderingInformation, context, rendererHelper);
 
         verify(rectangle).setX(expectedOffset);
     }

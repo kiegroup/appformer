@@ -468,7 +468,7 @@ public class BaseGridRenderer implements GridRenderer {
 
         final List<RendererCommand> commands = new ArrayList<>();
 
-        GridColumn<?> column = model.getColumns().get(highlightCellColumnIndex);
+        final GridColumn<?> column = model.getColumns().get(highlightCellColumnIndex);
 
         final int visibleRowIndex = highlightCellRowIndex - renderingInformation.getMinVisibleRowIndex();
 
@@ -499,7 +499,7 @@ public class BaseGridRenderer implements GridRenderer {
                                 final GridBodyRenderContext context) {
 
         final Rectangle r = getTheme().getHighlightedCellBackground().setListening(false);
-        setCellHighlightX(r, renderingInformation, context, rendererHelper, column);
+        setCellHighlightX(r, renderingInformation, context, rendererHelper);
         setCellHighlightY(r, rendererHelper, visibleRowIndex);
         setCellHighlightSize(r, model, column, rowIndex);
         return r;
@@ -514,11 +514,10 @@ public class BaseGridRenderer implements GridRenderer {
     void setCellHighlightX(final Rectangle r,
                            final BaseGridRendererHelper.RenderingInformation renderingInformation,
                            final GridBodyRenderContext context,
-                           final BaseGridRendererHelper rendererHelper,
-                           final GridColumn<?> column) {
+                           final BaseGridRendererHelper rendererHelper) {
         final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
         double columnOffsetX = context.getAbsoluteColumnOffsetX();
-        double x = rendererHelper.getColumnOffset(column.getIndex());
+        double x = rendererHelper.getColumnOffset(highlightCellColumnIndex);
         if (floatingBlockInformation.getColumns().size() > 0) {
             x = x - columnOffsetX;
         }
