@@ -133,7 +133,7 @@ public class GridHighlightHelperTest {
 
         verify(gridWidget).selectCell(row, column, false, false);
         verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(-63, 130);
+        verify(highlightHelper).moveCanvasTo(-63, -126);
     }
 
     @Test
@@ -145,7 +145,7 @@ public class GridHighlightHelperTest {
 
         verify(gridWidget).selectCell(row, column, false, false);
         verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(-63, 0);
+        verify(highlightHelper).moveCanvasTo(-63, -126);
     }
 
     @Test
@@ -160,9 +160,8 @@ public class GridHighlightHelperTest {
 
         verify(gridWidget).selectCell(row, column, false, false);
         verify(gridWidget).draw();
-        verify(highlightHelper).moveCanvasTo(64, 192);
+        verify(highlightHelper).moveCanvasTo(64, -64);
     }
-
 
     @Test
     public void testMoveCanvasToWhenTheElementIsVisible() {
@@ -239,12 +238,27 @@ public class GridHighlightHelperTest {
 
         final double widgetY = -32;
         final double paddingY = 20;
-        final double expected = -(widgetY - rowOffset - paddingY);
+        final double expected = -(widgetY + rowOffset - paddingY);
 
         when(highlightHelper.getPaddingY()).thenReturn(paddingY);
         when(gridWidget.getY()).thenReturn(widgetY);
 
         final double actual = highlightHelper.calculateRowOffset(row);
+
+        assertEquals(expected, actual, 0.01d);
+    }
+
+    @Test
+    public void testCalculateColumnOffset() {
+
+        final double widgetX = -67;
+        final double paddingX = 12;
+        final double expected = -(widgetX + columnOffset - paddingX);
+
+        when(highlightHelper.getPaddingX()).thenReturn(paddingX);
+        when(gridWidget.getX()).thenReturn(widgetX);
+
+        final double actual = highlightHelper.calculateColumnOffset(column);
 
         assertEquals(expected, actual, 0.01d);
     }
