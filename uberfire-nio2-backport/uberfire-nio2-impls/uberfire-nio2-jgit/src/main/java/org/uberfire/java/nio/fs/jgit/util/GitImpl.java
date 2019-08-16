@@ -16,11 +16,13 @@
 
 package org.uberfire.java.nio.fs.jgit.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jgit.api.AddCommand;
@@ -76,11 +78,13 @@ import org.uberfire.java.nio.fs.jgit.util.commands.ListCommits;
 import org.uberfire.java.nio.fs.jgit.util.commands.ListDiffs;
 import org.uberfire.java.nio.fs.jgit.util.commands.ListPathContent;
 import org.uberfire.java.nio.fs.jgit.util.commands.ListRefs;
+import org.uberfire.java.nio.fs.jgit.util.commands.MapDiffContent;
 import org.uberfire.java.nio.fs.jgit.util.commands.Merge;
 import org.uberfire.java.nio.fs.jgit.util.commands.Push;
 import org.uberfire.java.nio.fs.jgit.util.commands.RefTreeUpdateCommand;
 import org.uberfire.java.nio.fs.jgit.util.commands.ResolveObjectIds;
 import org.uberfire.java.nio.fs.jgit.util.commands.ResolveRevCommit;
+import org.uberfire.java.nio.fs.jgit.util.commands.RevertMerge;
 import org.uberfire.java.nio.fs.jgit.util.commands.SimpleRefUpdateCommand;
 import org.uberfire.java.nio.fs.jgit.util.commands.Squash;
 import org.uberfire.java.nio.fs.jgit.util.commands.SyncRemote;
@@ -291,6 +295,28 @@ public class GitImpl implements Git {
     }
 
     @Override
+    public List<String> merge(final String source,
+                              final String target,
+                              final boolean noFastForward) {
+        return new Merge(this,
+                         source,
+                         target,
+                         noFastForward).execute();
+    }
+
+    @Override
+    public boolean revertMerge(final String source,
+                               final String target,
+                               final String commonAncestorCommitId,
+                               final String mergeCommitId) {
+        return new RevertMerge(this,
+                               source,
+                               target,
+                               commonAncestorCommitId,
+                               mergeCommitId).execute();
+    }
+
+    @Override
     public void cherryPick(final JGitPathImpl target,
                            final String... commits) {
         new CherryPick(this,
@@ -379,11 +405,28 @@ public class GitImpl implements Git {
     }
 
     @Override
+    public List<DiffEntry> listDiffs(final String startCommitId,
+                                     final String endCommitId) {
+        return listDiffs(getCommit(startCommitId).getTree(),
+                         getCommit(endCommitId).getTree());
+    }
+
+    @Override
     public List<DiffEntry> listDiffs(final ObjectId refA,
                                      final ObjectId refB) {
         return new ListDiffs(this,
                              refA,
                              refB).execute();
+    }
+
+    @Override
+    public Map<String, File> mapDiffContent(final String branch,
+                                            final String startCommitId,
+                                            final String endCommitId) {
+        return new MapDiffContent(this,
+                                  branch,
+                                  startCommitId,
+                                  endCommitId).execute();
     }
 
     @Override

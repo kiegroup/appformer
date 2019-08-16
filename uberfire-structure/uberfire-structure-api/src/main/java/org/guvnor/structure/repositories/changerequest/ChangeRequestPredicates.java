@@ -25,39 +25,53 @@ import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestSta
 
 public class ChangeRequestPredicates {
 
-    public static Predicate<? super ChangeRequest> matchAll() {
+    public static Predicate<ChangeRequest> matchAll() {
         return elem -> true;
     }
 
-    public static Predicate<? super ChangeRequest> matchId(final Long id) {
+    public static Predicate<ChangeRequest> matchId(final Long id) {
         return elem -> elem.getId() == id;
     }
 
-    public static Predicate<? super ChangeRequest> matchSearchFilter(final String searchFilter,
-                                                                     final Function<ChangeRequest, String> searchableElementFunction) {
+    public static Predicate<ChangeRequest> matchSearchFilter(final String searchFilter,
+                                                             final Function<ChangeRequest, String> searchableElementFunction) {
         return elem -> searchableElementFunction.apply(elem).contains(searchFilter.toLowerCase());
     }
 
-    public static Predicate<? super ChangeRequest> matchStatusList(final List<ChangeRequestStatus> statusList) {
+    public static Predicate<ChangeRequest> matchStatus(final ChangeRequestStatus status) {
+        return elem -> elem.getStatus() == status;
+    }
+
+    public static Predicate<ChangeRequest> matchStatusList(final List<ChangeRequestStatus> statusList) {
         return elem -> statusList.contains(elem.getStatus());
     }
 
-    public static Predicate<? super ChangeRequest> matchSearchFilterAndStatusList(final String searchFilter,
-                                                                                  final Function<ChangeRequest, String> searchableElementFunction,
-                                                                                  final List<ChangeRequestStatus> statusList) {
-        return elem -> statusList.contains(elem.getStatus())
-                && searchableElementFunction.apply(elem).contains(searchFilter.toLowerCase());
+    public static Predicate<ChangeRequest> matchSourceBranch(final String branch) {
+        return elem -> elem.getSourceBranch().equals(branch);
     }
 
-    public static Predicate<? super ChangeRequest> matchSourceOrTargetBranch(final String branch) {
-        return elem -> elem.getSourceBranch().equals(branch) || elem.getTargetBranch().equals(branch);
+    public static Predicate<ChangeRequest> matchTargetBranch(final String branch) {
+        return elem -> elem.getTargetBranch().equals(branch);
     }
 
-    public static Predicate<? super ChangeRequest> matchSourceAndTargetAndStatus(final String sourceBranchName,
-                                                                                 final String targetBranchName,
-                                                                                 final ChangeRequestStatus status) {
-        return elem -> elem.getSourceBranch().equals(sourceBranchName)
-                && elem.getTargetBranch().equals(targetBranchName)
-                && elem.getStatus() == status;
+    public static Predicate<ChangeRequest> matchSearchFilterAndStatusList(final String searchFilter,
+                                                                          final Function<ChangeRequest, String> searchableElementFunction,
+                                                                          final List<ChangeRequestStatus> statusList) {
+        return matchSearchFilter(searchFilter,
+                                 searchableElementFunction)
+                .and(matchStatusList(statusList));
+    }
+
+    public static Predicate<ChangeRequest> matchSourceOrTargetBranch(final String branchName) {
+        return matchSourceBranch(branchName)
+                .or(matchTargetBranch(branchName));
+    }
+
+    public static Predicate<ChangeRequest> matchSourceAndTargetAndStatus(final String sourceBranchName,
+                                                                         final String targetBranchName,
+                                                                         final ChangeRequestStatus status) {
+        return matchSourceBranch(sourceBranchName)
+                .and(matchTargetBranch(targetBranchName)
+                             .and(matchStatus(status)));
     }
 }

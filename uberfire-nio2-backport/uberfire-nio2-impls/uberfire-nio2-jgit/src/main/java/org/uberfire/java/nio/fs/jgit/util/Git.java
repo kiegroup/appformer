@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -249,6 +250,15 @@ public interface Git {
     List<String> merge(final String source,
                        final String target);
 
+    List<String> merge(final String source,
+                       final String target,
+                       final boolean noFastForward);
+
+    boolean revertMerge(final String source,
+                        final String target,
+                        final String commonAncestorCommitId,
+                        final String mergeCommitId);
+
     void cherryPick(final JGitPathImpl target,
                     final String... commits);
 
@@ -282,8 +292,15 @@ public interface Git {
                    final ObjectId originId,
                    final CommitContent content);
 
+    List<DiffEntry> listDiffs(final String startCommitId,
+                              final String endCommitId);
+
     List<DiffEntry> listDiffs(final ObjectId refA,
                               final ObjectId refB);
+
+    Map<String, File> mapDiffContent(final String branch,
+                                     final String startCommitId,
+                                     final String endCommitId);
 
     InputStream blobAsInputStream(final String treeRef,
                                   final String path);

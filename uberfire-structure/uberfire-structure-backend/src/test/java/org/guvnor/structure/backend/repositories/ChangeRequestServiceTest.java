@@ -23,10 +23,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.event.Event;
 
-import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
@@ -41,6 +44,7 @@ import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDif
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatus;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.portable.NothingToMergeException;
 import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestCommentList;
 import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestList;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -51,9 +55,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.java.nio.base.TextualDiff;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
+import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
 import org.uberfire.java.nio.fs.jgit.util.Git;
-import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 import org.uberfire.java.nio.fs.jgit.util.model.CommitInfo;
+import org.uberfire.java.nio.fs.jgit.util.model.PathInfo;
 import org.uberfire.java.nio.fs.jgit.util.model.RevertCommitContent;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
@@ -65,11 +71,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -121,6 +127,9 @@ public class ChangeRequestServiceTest {
     private Git git;
 
     @Mock
+    private JGitFileSystem fs;
+
+    @Mock
     private RevCommit commonCommit;
 
     @Mock
@@ -168,9 +177,20 @@ public class ChangeRequestServiceTest {
                                                         branchAccessAuthorizer,
                                                         sessionInfo));
 
-        doReturn(git).when(service).getGitFromBranch(repository, "sourceBranch");
-        doReturn(git).when(service).getGitFromBranch(repository, "targetBranch");
-        doReturn(git).when(service).getGitFromBranch(repository, "hiddenBranch");
+        doReturn(fs).when(service).getFileSystemFromBranch(repository, "sourceBranch");
+        doReturn(fs).when(service).getFileSystemFromBranch(repository, "targetBranch");
+        doReturn(git).when(fs).getGit();
+
+        doReturn(mock(PathInfo.class)).when(git).getPathInfo(anyString(),
+                                                             anyString());
+
+        doReturn(mock(JGitPathImpl.class)).when(service).createJGitPathImpl(eq(fs),
+                                                                            anyString(),
+                                                                            anyString(),
+                                                                            any(ObjectId.class),
+                                                                            anyBoolean());
+
+        doReturn("commit message").when(service).getFullCommitMessage(any(RevCommit.class));
     }
 
     @Test
@@ -733,7 +753,6 @@ public class ChangeRequestServiceTest {
                                                                                   "hiddenBranch");
 
         doReturn(Optional.of(mock(Branch.class))).when(repository).getBranch("branch");
-        doReturn(git).when(service).getGitFromBranch(repository, "branch");
 
         List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
             addAll(Collections.nCopies(10, crsSourceBranch));
@@ -792,83 +811,36 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void acceptChangeRequestCannotMergeWithSquashTest() {
+    public void acceptChangeRequestSuccessTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
-        TextualDiff textualDiff = new TextualDiff("old/file/path",
-                                                  "new/file/path",
-                                                  "ADD",
-                                                  10,
-                                                  10,
-                                                  "diff text");
-
-        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+        DiffEntry diffEntry = mock(DiffEntry.class);
+        doReturn("old/file/path").when(diffEntry).getOldPath();
+        doReturn("new/file/path").when(diffEntry).getNewPath();
+        doReturn(DiffEntry.ChangeType.MODIFY).when(diffEntry).getChangeType();
+        List<DiffEntry> diffList = Collections.nCopies(10, diffEntry);
 
         doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
                                                                             anyString());
-        doReturn(diffList).when(git).textualDiffRefs(anyString(),
-                                                     anyString(),
-                                                     anyString(),
-                                                     anyString());
+        doReturn(diffList).when(git).listDiffs(anyString(),
+                                               anyString());
 
-        List<RevCommit> commits = Collections.nCopies(1, mock(RevCommit.class));
-        doReturn(commits).when(git).listCommits(anyString(),
-                                                anyString());
-
-        doThrow(GitException.class).when(git).merge(anyString(),
-                                                    anyString());
+        List<String> commitList = Stream.of("commit-id").collect(Collectors.toList());
+        doReturn(commitList).when(git).merge(anyString(),
+                                             anyString(),
+                                             eq(true));
 
         boolean result = service.acceptChangeRequest("mySpace",
                                                      "myRepository",
                                                      1L);
 
         verify(git).merge(anyString(),
-                          anyString());
+                          anyString(),
+                          eq(true));
 
-        verify(spaceConfigStorage, never()).saveChangeRequest(eq("myRepository"),
-                                                              any(ChangeRequest.class));
-
-        verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
-
-        assertFalse(result);
-    }
-
-    @Test
-    public void acceptChangeRequestSuccessWithSquashManyCommitsTest() {
-        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        TextualDiff textualDiff = new TextualDiff("old/file/path",
-                                                  "new/file/path",
-                                                  "ADD",
-                                                  10,
-                                                  10,
-                                                  "diff text");
-
-        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
-
-        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
-                                                                            anyString());
-        doReturn(diffList).when(git).textualDiffRefs(anyString(),
-                                                     anyString(),
-                                                     anyString(),
-                                                     anyString());
-
-        List<RevCommit> commits = Collections.nCopies(3, mock(RevCommit.class));
-        doReturn(commits).when(git).listCommits(anyString(),
-                                                anyString());
-
-        boolean result = service.acceptChangeRequest("mySpace",
-                                                     "myRepository",
-                                                     1L);
-
-        verify(git).squash(anyString(),
-                           anyString(),
-                           anyString());
-
-        verify(git).merge(anyString(),
-                          anyString());
+        verify(fs).publishEvents(any(org.uberfire.java.nio.file.Path.class),
+                                 anyList());
 
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
@@ -878,97 +850,29 @@ public class ChangeRequestServiceTest {
         assertTrue(result);
     }
 
-    @Test
-    public void acceptChangeRequestSuccessWithSquashOneCommitTest() {
+    @Test(expected = NothingToMergeException.class)
+    public void acceptChangeRequestWhenThereIsNoChangesTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
-        TextualDiff textualDiff = new TextualDiff("old/file/path",
-                                                  "new/file/path",
-                                                  "ADD",
-                                                  10,
-                                                  10,
-                                                  "diff text");
-
-        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
+        DiffEntry diffEntry = mock(DiffEntry.class);
+        doReturn("old/file/path").when(diffEntry).getOldPath();
+        doReturn("new/file/path").when(diffEntry).getNewPath();
+        doReturn(DiffEntry.ChangeType.MODIFY).when(diffEntry).getChangeType();
+        List<DiffEntry> diffList = Collections.nCopies(10, diffEntry);
 
         doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
                                                                             anyString());
-        doReturn(diffList).when(git).textualDiffRefs(anyString(),
-                                                     anyString(),
-                                                     anyString(),
-                                                     anyString());
+        doReturn(diffList).when(git).listDiffs(anyString(),
+                                               anyString());
 
-        List<RevCommit> commits = Collections.nCopies(1, mock(RevCommit.class));
-        doReturn(commits).when(git).listCommits(anyString(),
-                                                anyString());
+        doReturn(Collections.emptyList()).when(git).merge(anyString(),
+                                                          anyString(),
+                                                          eq(true));
 
-        boolean result = service.acceptChangeRequest("mySpace",
+        service.acceptChangeRequest("mySpace",
                                                      "myRepository",
                                                      1L);
-
-        verify(git).squash(anyString(),
-                           anyString(),
-                           anyString());
-
-        verify(git).merge(anyString(),
-                          anyString());
-
-        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
-                                                     any(ChangeRequest.class));
-
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
-
-        assertTrue(result);
-    }
-
-    @Test
-    public void acceptChangeRequestWhenEmptyCommitsTest() {
-        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        TextualDiff textualDiff = new TextualDiff("old/file/path",
-                                                  "new/file/path",
-                                                  "ADD",
-                                                  10,
-                                                  10,
-                                                  "diff text");
-
-        List<TextualDiff> diffList = Collections.nCopies(10, textualDiff);
-
-        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
-                                                                            anyString());
-        doReturn(diffList).when(git).textualDiffRefs(anyString(),
-                                                     anyString(),
-                                                     anyString(),
-                                                     anyString());
-
-        doReturn(Collections.emptyList()).when(git).listCommits(anyString(),
-                                                                anyString());
-
-        boolean result = service.acceptChangeRequest("mySpace",
-                                                     "myRepository",
-                                                     1L);
-        verify(spaceConfigStorage, never()).saveChangeRequest(eq("myRepository"),
-                                                              any(ChangeRequest.class));
-        verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
-
-        assertFalse(result);
-    }
-
-    @Test
-    public void acceptChangeRequestWhenEmptyDiffsTest() {
-        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        boolean result = service.acceptChangeRequest("mySpace",
-                                                     "myRepository",
-                                                     1L);
-        verify(spaceConfigStorage, never()).saveChangeRequest(eq("myRepository"),
-                                                              any(ChangeRequest.class));
-        verify(changeRequestUpdatedEvent, never()).fire(any(ChangeRequestUpdatedEvent.class));
-
-        assertFalse(result);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -992,24 +896,23 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void revertChangeRequestFailWhenNotLastCommitTest() {
+    public void revertChangeRequestFailTest() {
         final String lastCommitId = "abcde12";
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
                                                                                                             lastCommitId));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
-        doReturn(Collections.nCopies(5, mock(RevCommit.class))).when(git).listCommits(anyString(),
-                                                                                      anyString());
+        doReturn(false).when(git).revertMerge(anyString(),
+                                              anyString(),
+                                              anyString(),
+                                              anyString());
 
         boolean result = service.revertChangeRequest("mySpace",
                                                      "myRepository",
                                                      1L);
 
-        verify(git, never()).commit(anyString(),
-                                    any(CommitInfo.class),
-                                    anyBoolean(),
-                                    any(RevCommit.class),
-                                    any(RevertCommitContent.class));
+        verify(fs, never()).publishEvents(any(org.uberfire.java.nio.file.Path.class),
+                                          anyList());
 
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
@@ -1028,7 +931,6 @@ public class ChangeRequestServiceTest {
 
         RevCommit commit = mock(RevCommit.class);
         doReturn(commit).when(git).getLastCommit("targetBranch");
-        doReturn(commit).when(service).getFirstCommitParent(any(RevCommit.class));
 
         doReturn(true).when(git).commit(eq("targetBranch"),
                                         any(CommitInfo.class),
@@ -1036,15 +938,28 @@ public class ChangeRequestServiceTest {
                                         any(RevCommit.class),
                                         any(RevertCommitContent.class));
 
+        DiffEntry diffEntry = mock(DiffEntry.class);
+        doReturn("old/file/path").when(diffEntry).getOldPath();
+        doReturn("new/file/path").when(diffEntry).getNewPath();
+        doReturn(DiffEntry.ChangeType.MODIFY).when(diffEntry).getChangeType();
+        List<DiffEntry> diffList = Collections.nCopies(10, diffEntry);
+
+        doReturn(Collections.emptyList()).when(git).conflictBranchesChecker(anyString(),
+                                                                            anyString());
+        doReturn(diffList).when(git).listDiffs(anyString(),
+                                               anyString());
+
+        doReturn(true).when(git).revertMerge(anyString(),
+                                             anyString(),
+                                             anyString(),
+                                             anyString());
+
         boolean result = service.revertChangeRequest("mySpace",
                                                      "myRepository",
                                                      1L);
 
-        verify(git, times(2)).commit(anyString(),
-                                     any(CommitInfo.class),
-                                     anyBoolean(),
-                                     any(RevCommit.class),
-                                     any(RevertCommitContent.class));
+        verify(fs).publishEvents(any(org.uberfire.java.nio.file.Path.class),
+                                 anyList());
 
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
@@ -1052,74 +967,6 @@ public class ChangeRequestServiceTest {
         verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
 
         assertTrue(result);
-    }
-
-    @Test
-    public void revertChangeRequestSuccessFixSourceTest() {
-        final String lastCommitId = "0000000000000000000000000000000000000000";
-        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
-                                                                                                            lastCommitId));
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        RevCommit commit = mock(RevCommit.class);
-        doReturn(commit).when(git).getLastCommit("targetBranch");
-        doReturn(commit).when(service).getFirstCommitParent(any(RevCommit.class));
-
-        doReturn(true).when(git).commit(eq("targetBranch"),
-                                        any(CommitInfo.class),
-                                        eq(false),
-                                        any(RevCommit.class),
-                                        any(RevertCommitContent.class));
-
-        boolean result = service.revertChangeRequest("mySpace",
-                                                     "myRepository",
-                                                     1L);
-
-        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
-                                                     any(ChangeRequest.class));
-
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
-
-        verify(git).createRef(anyString(),
-                              anyString());
-
-        verify(git, times(2)).commit(anyString(),
-                                     any(CommitInfo.class),
-                                     anyBoolean(),
-                                     any(RevCommit.class),
-                                     any(RevertCommitContent.class));
-
-        verify(git).merge(anyString(),
-                          anyString());
-
-        verify(git).deleteRef(any(Ref.class));
-
-        assertTrue(result);
-    }
-
-    @Test
-    public void revertChangeRequestFailedCommitTest() {
-        final String lastCommitId = "0000000000000000000000000000000000000000";
-        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatusLastCommitId(ChangeRequestStatus.ACCEPTED,
-                                                                                                            lastCommitId));
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        doReturn(false).when(git).commit(eq("targetBranch"),
-                                         any(CommitInfo.class),
-                                         eq(false),
-                                         any(RevCommit.class),
-                                         any(RevertCommitContent.class));
-
-        boolean result = service.revertChangeRequest("mySpace",
-                                                     "myRepository",
-                                                     1L);
-
-        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
-                                                     any(ChangeRequest.class));
-
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
-
-        assertFalse(result);
     }
 
     @Test
@@ -1248,7 +1095,8 @@ public class ChangeRequestServiceTest {
                                  "description",
                                  new Date(),
                                  "commonCommitId",
-                                 lastCommitId);
+                                 lastCommitId,
+                                 null);
     }
 
     private ChangeRequest createCommonChangeRequest() {

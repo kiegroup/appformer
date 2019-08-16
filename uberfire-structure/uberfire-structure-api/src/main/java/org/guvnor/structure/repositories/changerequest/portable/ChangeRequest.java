@@ -40,8 +40,9 @@ public class ChangeRequest {
     private Date createdDate;
     private Integer changedFilesCount;
     private Integer commentsCount;
-    private String commonCommitId;
-    private String lastCommitId;
+    private String startCommitId;
+    private String endCommitId;
+    private String mergeCommitId;
     private Boolean conflict;
 
     public ChangeRequest(final long id,
@@ -54,7 +55,7 @@ public class ChangeRequest {
                          final String summary,
                          final String description,
                          final Date createdDate,
-                         final String commonCommitId) {
+                         final String startCommitId) {
         this(id,
              spaceName,
              repositoryAlias,
@@ -65,7 +66,8 @@ public class ChangeRequest {
              summary,
              description,
              createdDate,
-             commonCommitId,
+             startCommitId,
+             null,
              null);
     }
 
@@ -79,8 +81,9 @@ public class ChangeRequest {
                          final String summary,
                          final String description,
                          final Date createdDate,
-                         final String commonCommitId,
-                         final String lastCommitId) {
+                         final String startCommitId,
+                         final String endCommitId,
+                         final String mergeCommitId) {
         this(id,
              spaceName,
              repositoryAlias,
@@ -93,8 +96,9 @@ public class ChangeRequest {
              createdDate,
              0,
              0,
-             commonCommitId,
-             lastCommitId,
+             startCommitId,
+             endCommitId,
+             mergeCommitId,
              false);
     }
 
@@ -110,8 +114,9 @@ public class ChangeRequest {
                          @MapsTo("createdDate") final Date createdDate,
                          @MapsTo("changedFilesCount") final Integer changedFilesCount,
                          @MapsTo("commentsCount") final Integer commentsCount,
-                         @MapsTo("commonCommitId") final String commonCommitId,
-                         @MapsTo("lastCommitId") final String lastCommitId,
+                         @MapsTo("startCommitId") final String startCommitId,
+                         @MapsTo("endCommitId") final String endCommitId,
+                         @MapsTo("mergeCommitId") final String mergeCommitId,
                          @MapsTo("conflict") final Boolean conflict) {
 
         this.id = checkNotNull("id",
@@ -138,9 +143,10 @@ public class ChangeRequest {
                                               changedFilesCount);
         this.commentsCount = checkNotNull("commentsCount",
                                           commentsCount);
-        this.commonCommitId = checkNotEmpty("commonCommitId",
-                                            commonCommitId);
-        this.lastCommitId = lastCommitId; // can be null
+        this.startCommitId = checkNotEmpty("startCommitId",
+                                           startCommitId);
+        this.endCommitId = endCommitId; // can be null
+        this.mergeCommitId = mergeCommitId; // can be null
         this.conflict = checkNotNull("conflict",
                                      conflict);
     }
@@ -193,12 +199,16 @@ public class ChangeRequest {
         return this.commentsCount;
     }
 
-    public String getCommonCommitId() {
-        return commonCommitId;
+    public String getStartCommitId() {
+        return startCommitId;
     }
 
-    public String getLastCommitId() {
-        return lastCommitId;
+    public String getEndCommitId() {
+        return endCommitId;
+    }
+
+    public String getMergeCommitId() {
+        return mergeCommitId;
     }
 
     public Boolean isConflict() {
@@ -207,7 +217,7 @@ public class ChangeRequest {
 
     @Override
     public String toString() {
-        return "#" + this.id + " " + this.summary;
+        return "(#" + this.id + ") " + this.summary;
     }
 
     @Override
@@ -231,8 +241,9 @@ public class ChangeRequest {
                 createdDate.equals(that.createdDate) &&
                 changedFilesCount.equals(that.changedFilesCount) &&
                 commentsCount.equals(that.commentsCount) &&
-                commonCommitId.equals(that.commonCommitId) &&
-                lastCommitId.equals(that.lastCommitId) &&
+                startCommitId.equals(that.startCommitId) &&
+                endCommitId.equals(that.endCommitId) &&
+                mergeCommitId.equals(that.getMergeCommitId()) &&
                 conflict.equals(that.conflict);
     }
 
@@ -250,8 +261,9 @@ public class ChangeRequest {
                             createdDate,
                             changedFilesCount,
                             commentsCount,
-                            commonCommitId,
-                            lastCommitId,
+                            startCommitId,
+                            endCommitId,
+                            mergeCommitId,
                             conflict);
     }
 }

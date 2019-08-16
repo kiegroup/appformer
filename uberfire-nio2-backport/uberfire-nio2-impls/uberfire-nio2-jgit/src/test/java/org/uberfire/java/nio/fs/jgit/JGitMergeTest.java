@@ -130,7 +130,7 @@ public class JGitMergeTest extends AbstractTestInfra {
     }
 
     @Test
-    public void testMergeConflict() throws IOException {
+    public void testMergeNoDiff() throws IOException {
         final File parentFolder = createTempDirectory();
 
         final File gitSource = new File(parentFolder,
@@ -167,17 +167,11 @@ public class JGitMergeTest extends AbstractTestInfra {
                            tempFile("temp1"));
                    }}).execute();
 
-        new Merge(origin,
-                  "develop",
-                  "master").execute();
+        List<String> commitIds = new Merge(origin,
+                                           "develop",
+                                           "master").execute();
 
-        final List<DiffEntry> result = new ListDiffs(origin,
-                                                     new GetTreeFromRef(origin,
-                                                                        "master").execute(),
-                                                     new GetTreeFromRef(origin,
-                                                                        "develop").execute()).execute();
-
-        assertThat(result).isEmpty();
+        assertThat(commitIds).isEmpty();
     }
 
     @Test(expected = IllegalArgumentException.class)

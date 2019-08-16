@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Before;
 import org.junit.Test;
 import org.uberfire.java.nio.base.TextualDiff;
@@ -42,7 +43,6 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
 
     private static final String MASTER_BRANCH = "master";
     private static final String DEVELOP_BRANCH = "develop";
-    private static final String NON_EXISTENT_FILE = "/dev/null";
 
     private static final List<String> TXT_FILES =
             Stream.of("file0", "file1", "file2", "file3", "file4")
@@ -82,10 +82,29 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
             assertThat(diff.getDiffText()).isNotEmpty();
         });
 
-        assertThat(diffs.get(0).getOldFilePath()).isEqualTo(NON_EXISTENT_FILE);
+        assertThat(diffs.get(0).getOldFilePath()).isEqualTo(DiffEntry.DEV_NULL);
         assertThat(diffs.get(0).getNewFilePath()).isEqualTo(TXT_FILES.get(3));
         assertThat(diffs.get(0).getLinesAdded()).isEqualTo(4);
         assertThat(diffs.get(0).getLinesDeleted()).isEqualTo(0);
+    }
+
+    @Test
+    public void testDiffWithAddedFilesSameBranch() throws IOException {
+        RevCommit startCommit = git.getLastCommit(MASTER_BRANCH);
+
+        commit(git, MASTER_BRANCH, "Adding files",
+               content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
+               content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
+
+        RevCommit endCommit = git.getLastCommit(MASTER_BRANCH);
+
+        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH,
+                                                      MASTER_BRANCH,
+                                                      startCommit.getName(),
+                                                      endCommit.getName());
+
+        assertThat(diffs).isNotEmpty();
+        assertThat(diffs).hasSize(2);
     }
 
     @Test
@@ -104,7 +123,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
         assertThat(diffs.get(0).getChangeType()).isEqualTo(DiffEntry.ChangeType.ADD.toString());
         assertThat(diffs.get(0).getDiffText()).isNotEmpty();
 
-        assertThat(diffs.get(0).getOldFilePath()).isEqualTo(NON_EXISTENT_FILE);
+        assertThat(diffs.get(0).getOldFilePath()).isEqualTo(DiffEntry.DEV_NULL);
         assertThat(diffs.get(0).getNewFilePath()).isEqualTo(TXT_FILES.get(3));
         assertThat(diffs.get(0).getLinesAdded()).isEqualTo(4);
         assertThat(diffs.get(0).getLinesDeleted()).isEqualTo(0);
@@ -125,7 +144,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
 
         assertThat(diffs.get(0).getChangeType()).isEqualTo(DiffEntry.ChangeType.DELETE.toString());
         assertThat(diffs.get(0).getOldFilePath()).isEqualTo(TXT_FILES.get(0));
-        assertThat(diffs.get(0).getNewFilePath()).isEqualTo(NON_EXISTENT_FILE);
+        assertThat(diffs.get(0).getNewFilePath()).isEqualTo(DiffEntry.DEV_NULL);
         assertThat(diffs.get(0).getLinesAdded()).isEqualTo(0);
         assertThat(diffs.get(0).getLinesDeleted()).isEqualTo(4);
         assertThat(diffs.get(0).getDiffText()).isNotEmpty();
