@@ -106,7 +106,8 @@ public class RevertMerge {
 
     private boolean canRevert(final RevCommit lastSourceCommit,
                               final RevCommit lastTargetCommit) {
-        return lastTargetCommit.getName().equals(mergeCommitId) &&
+        return lastTargetCommit.getParentCount() > 1 &&
+                lastTargetCommit.getName().equals(mergeCommitId) &&
                 lastTargetCommit.getParent(0).getName().equals(commonAncestorCommitId) &&
                 lastTargetCommit.getParent(1).getName().equals(lastSourceCommit.getName());
     }
