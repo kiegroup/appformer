@@ -49,6 +49,7 @@ import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCou
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatus;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatusUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeType;
 import org.guvnor.structure.repositories.changerequest.portable.NothingToMergeException;
@@ -84,6 +85,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     private final SpacesAPI spaces;
     private final Event<ChangeRequestListUpdatedEvent> changeRequestListUpdatedEvent;
     private final Event<ChangeRequestUpdatedEvent> changeRequestUpdatedEvent;
+    private final Event<ChangeRequestStatusUpdatedEvent> changeRequestStatusUpdatedEventEvent;
     private final BranchAccessAuthorizer branchAccessAuthorizer;
     private final SessionInfo sessionInfo;
 
@@ -95,6 +97,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                     final SpacesAPI spaces,
                                     final Event<ChangeRequestListUpdatedEvent> changeRequestListUpdatedEvent,
                                     final Event<ChangeRequestUpdatedEvent> changeRequestUpdatedEvent,
+                                    final Event<ChangeRequestStatusUpdatedEvent> changeRequestStatusUpdatedEventEvent,
                                     final BranchAccessAuthorizer branchAccessAuthorizer,
                                     final SessionInfo sessionInfo) {
         this.spaceConfigStorageRegistry = spaceConfigStorageRegistry;
@@ -102,6 +105,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         this.spaces = spaces;
         this.changeRequestListUpdatedEvent = changeRequestListUpdatedEvent;
         this.changeRequestUpdatedEvent = changeRequestUpdatedEvent;
+        this.changeRequestStatusUpdatedEventEvent = changeRequestStatusUpdatedEventEvent;
         this.branchAccessAuthorizer = branchAccessAuthorizer;
         this.sessionInfo = sessionInfo;
     }
@@ -399,12 +403,22 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotEmpty("associatedBranchName", associatedBranchName);
 
-        getFilteredChangeRequests(spaceName,
-                                  repositoryAlias,
-                                  false,
-                                  ChangeRequestPredicates.matchSourceOrTargetBranch(associatedBranchName))
-                .forEach(elem -> spaceConfigStorageRegistry.get(spaceName).deleteChangeRequest(repositoryAlias,
-                                                                                               elem.getId()));
+        final List<ChangeRequest> changeRequestsToDelete =
+                getFilteredChangeRequests(spaceName,
+                                          repositoryAlias,
+                                          false,
+                                          ChangeRequestPredicates.matchSourceOrTargetBranch(associatedBranchName));
+
+        if (!changeRequestsToDelete.isEmpty()) {
+            changeRequestsToDelete.forEach(elem -> spaceConfigStorageRegistry.get(spaceName)
+                    .deleteChangeRequest(repositoryAlias,
+                                         elem.getId()));
+
+            final Repository repository = resolveRepository(spaceName,
+                                                            repositoryAlias);
+
+            changeRequestListUpdatedEvent.fire(new ChangeRequestListUpdatedEvent(repository.getIdentifier()));
+        }
     }
 
     @Override
@@ -833,8 +847,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         spaceConfigStorageRegistry.get(spaceName).saveChangeRequest(repositoryAlias,
                                                                     updatedChangeRequest);
 
-        changeRequestUpdatedEvent.fire(new ChangeRequestUpdatedEvent(repository.getIdentifier(),
-                                                                     updatedChangeRequest.getId()));
+        changeRequestStatusUpdatedEventEvent.fire(new ChangeRequestStatusUpdatedEvent(repository.getIdentifier(),
+                                                                                      updatedChangeRequest.getId(),
+                                                                                      oldChangeRequest.getStatus(),
+                                                                                      status));
     }
 
     private List<ChangeRequestDiff> getDiff(final Repository repository,

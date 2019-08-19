@@ -43,6 +43,7 @@ import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCou
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatus;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestStatusUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestUpdatedEvent;
 import org.guvnor.structure.repositories.changerequest.portable.NothingToMergeException;
 import org.guvnor.structure.repositories.changerequest.portable.PaginatedChangeRequestCommentList;
@@ -101,6 +102,9 @@ public class ChangeRequestServiceTest {
 
     @Mock
     private Event<ChangeRequestUpdatedEvent> changeRequestUpdatedEvent;
+
+    @Mock
+    private Event<ChangeRequestStatusUpdatedEvent> changeRequestStatusUpdatedEventEvent;
 
     @Mock
     private BranchAccessAuthorizer branchAccessAuthorizer;
@@ -174,6 +178,7 @@ public class ChangeRequestServiceTest {
                                                         spaces,
                                                         changeRequestListUpdatedEvent,
                                                         changeRequestUpdatedEvent,
+                                                        changeRequestStatusUpdatedEventEvent,
                                                         branchAccessAuthorizer,
                                                         sessionInfo));
 
@@ -739,6 +744,8 @@ public class ChangeRequestServiceTest {
 
         verify(spaceConfigStorage, times(10)).deleteChangeRequest(anyString(),
                                                                   anyLong());
+
+        verify(changeRequestListUpdatedEvent).fire(any(ChangeRequestListUpdatedEvent.class));
     }
 
     @Test
@@ -768,6 +775,8 @@ public class ChangeRequestServiceTest {
 
         verify(spaceConfigStorage, times(30)).deleteChangeRequest(anyString(),
                                                                   anyLong());
+
+        verify(changeRequestListUpdatedEvent).fire(any(ChangeRequestListUpdatedEvent.class));
     }
 
     @Test
@@ -785,6 +794,8 @@ public class ChangeRequestServiceTest {
 
         verify(spaceConfigStorage, never()).deleteChangeRequest(anyString(),
                                                                 anyLong());
+
+        verify(changeRequestListUpdatedEvent, never()).fire(any(ChangeRequestListUpdatedEvent.class));
     }
 
     @Test
@@ -797,7 +808,7 @@ public class ChangeRequestServiceTest {
                                     1L);
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+        verify(changeRequestStatusUpdatedEventEvent).fire(any(ChangeRequestStatusUpdatedEvent.class));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -845,7 +856,7 @@ public class ChangeRequestServiceTest {
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
 
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+        verify(changeRequestStatusUpdatedEventEvent).fire(any(ChangeRequestStatusUpdatedEvent.class));
 
         assertTrue(result);
     }
@@ -917,7 +928,7 @@ public class ChangeRequestServiceTest {
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
 
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+        verify(changeRequestStatusUpdatedEventEvent).fire(any(ChangeRequestStatusUpdatedEvent.class));
 
         assertFalse(result);
     }
@@ -964,7 +975,7 @@ public class ChangeRequestServiceTest {
         verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
                                                      any(ChangeRequest.class));
 
-        verify(changeRequestUpdatedEvent).fire(any(ChangeRequestUpdatedEvent.class));
+        verify(changeRequestStatusUpdatedEventEvent).fire(any(ChangeRequestStatusUpdatedEvent.class));
 
         assertTrue(result);
     }
