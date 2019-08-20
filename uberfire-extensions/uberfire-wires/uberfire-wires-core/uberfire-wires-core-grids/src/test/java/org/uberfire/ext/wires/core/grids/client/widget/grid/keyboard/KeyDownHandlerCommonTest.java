@@ -112,6 +112,18 @@ public class KeyDownHandlerCommonTest {
     }
 
     @Test
+    public void ctrlEnterKeyCanvasActions() {
+        final KeyDownEvent e = mockKeyDownEvent(Optional.of(KeyCodes.KEY_ENTER),
+                                                Optional.of(false),
+                                                Optional.of(true));
+
+        handler.onKeyDown(e);
+
+        verify(gridCell, never()).flush();
+        verify(e).stopPropagation();
+    }
+
+    @Test
     public void escapeKeyCanvasActions() {
         final KeyDownEvent e = mockKeyDownEvent(Optional.of(KeyCodes.KEY_ESCAPE),
                                                 Optional.of(false),

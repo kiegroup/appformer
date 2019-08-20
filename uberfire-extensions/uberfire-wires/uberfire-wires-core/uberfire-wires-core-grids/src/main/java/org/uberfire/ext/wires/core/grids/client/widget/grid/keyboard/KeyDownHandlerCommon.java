@@ -49,6 +49,7 @@ public class KeyDownHandlerCommon implements KeyDownHandler {
         final int keyCode = e.getNativeKeyCode();
 
         if (e.isControlKeyDown() && KeyCodes.KEY_ENTER == keyCode) {
+            e.stopPropagation();
             return;
         }
 
