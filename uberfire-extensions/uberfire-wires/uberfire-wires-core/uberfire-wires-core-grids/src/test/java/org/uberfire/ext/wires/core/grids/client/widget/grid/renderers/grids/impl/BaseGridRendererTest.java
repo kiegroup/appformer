@@ -145,24 +145,22 @@ public abstract class BaseGridRendererTest {
         final int rowIndex = 1;
         final int visibleRowIndex = 2;
         final GridData model = mock(GridData.class);
-        final RenderingInformation renderInformation = makeRenderingInformation(model);
         final GridRendererTheme theme = mock(GridRendererTheme.class);
         final Rectangle rectangle = mock(Rectangle.class);
         when(theme.getHighlightedCellBackground()).thenReturn(rectangle);
         when(rectangle.setListening(false)).thenReturn(rectangle);
         renderer.setTheme(theme);
 
-        doNothing().when(renderer).setCellHighlightX(rectangle, renderInformation, context, rendererHelper);
+        doNothing().when(renderer).setCellHighlightX(rectangle, context, rendererHelper);
         doNothing().when(renderer).setCellHighlightY(rectangle, rendererHelper, visibleRowIndex);
         doNothing().when(renderer).setCellHighlightSize(rectangle, model, column, rowIndex);
 
-        Rectangle current = renderer.makeCellHighlight(rowIndex,
-                                                       visibleRowIndex,
-                                                       model,
-                                                       rendererHelper,
-                                                       column,
-                                                       renderInformation,
-                                                       context);
+        final Rectangle current = renderer.makeCellHighlight(rowIndex,
+                                                             visibleRowIndex,
+                                                             model,
+                                                             rendererHelper,
+                                                             column,
+                                                             context);
 
         assertEquals(rectangle, current);
     }
@@ -201,7 +199,7 @@ public abstract class BaseGridRendererTest {
         when(rendererHelper.getColumnOffset(columnIndex)).thenReturn(xOffset);
 
         renderer.highlightCell(columnIndex, 0);
-        renderer.setCellHighlightX(rectangle, renderingInformation, context, rendererHelper);
+        renderer.setCellHighlightX(rectangle, context, rendererHelper);
 
         verify(rectangle).setX(expectedOffset);
     }

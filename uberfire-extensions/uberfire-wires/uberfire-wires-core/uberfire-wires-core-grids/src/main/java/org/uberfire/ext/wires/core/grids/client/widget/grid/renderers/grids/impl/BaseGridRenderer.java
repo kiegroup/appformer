@@ -481,7 +481,6 @@ public class BaseGridRenderer implements GridRenderer {
                                                         model,
                                                         rendererHelper,
                                                         column,
-                                                        renderingInformation,
                                                         context));
                 }
             }
@@ -495,11 +494,10 @@ public class BaseGridRenderer implements GridRenderer {
                                 final GridData model,
                                 final BaseGridRendererHelper rendererHelper,
                                 final GridColumn<?> column,
-                                final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                 final GridBodyRenderContext context) {
 
         final Rectangle r = getTheme().getHighlightedCellBackground().setListening(false);
-        setCellHighlightX(r, renderingInformation, context, rendererHelper);
+        setCellHighlightX(r, context, rendererHelper);
         setCellHighlightY(r, rendererHelper, visibleRowIndex);
         setCellHighlightSize(r, model, column, rowIndex);
         return r;
@@ -512,15 +510,10 @@ public class BaseGridRenderer implements GridRenderer {
     }
 
     void setCellHighlightX(final Rectangle r,
-                           final BaseGridRendererHelper.RenderingInformation renderingInformation,
                            final GridBodyRenderContext context,
                            final BaseGridRendererHelper rendererHelper) {
-        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
         double columnOffsetX = context.getAbsoluteColumnOffsetX();
-        double x = rendererHelper.getColumnOffset(highlightCellColumnIndex);
-        if (floatingBlockInformation.getColumns().size() > 0) {
-            x = x - columnOffsetX;
-        }
+        double x = rendererHelper.getColumnOffset(highlightCellColumnIndex) - columnOffsetX;
         r.setX(x);
     }
 
