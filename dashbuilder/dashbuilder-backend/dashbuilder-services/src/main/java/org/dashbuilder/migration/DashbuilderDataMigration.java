@@ -212,9 +212,8 @@ public class DashbuilderDataMigration {
     }
 
     private void runWithLock(Command command) {
-        String className = this.getClass().getName();
-        String lockName = className + ".lock";
-        String markerName = className + ".done";
+        String lockName = "data-migration.lock";
+        String markerName = "data-migration.done";
 
         TimeUnit lastAccessTimeUnit = TimeUnit.SECONDS;
         int lastAccessThreshold = 1;
