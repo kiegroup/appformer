@@ -158,44 +158,6 @@ public interface ChangeRequestService {
                                                   final String repositoryAlias);
 
     /**
-     * Retrieves the number of change requests that the user is able to visualize.
-     *
-     * @param spaceName       the space containing the origin repository
-     * @param repositoryAlias the repository alias
-     * @param statusList      change request status to filter the results
-     * @return The number of change requests.
-     */
-    Integer countChangeRequests(final String spaceName,
-                                final String repositoryAlias,
-                                final List<ChangeRequestStatus> statusList);
-
-    /**
-     * Retrieves the number of change requests that the user is able to visualize.
-     *
-     * @param spaceName       the space containing the origin repository
-     * @param repositoryAlias the repository alias
-     * @param filter          a string to filter the results
-     * @return The number of change requests.
-     */
-    Integer countChangeRequests(final String spaceName,
-                                final String repositoryAlias,
-                                final String filter);
-
-    /**
-     * Retrieves the number of change requests that the user is able to visualize.
-     *
-     * @param spaceName       the space containing the origin repository
-     * @param repositoryAlias the repository alias
-     * @param statusList      change request status to filter the results
-     * @param filter          a string to filter the results
-     * @return The number of change requests.
-     */
-    Integer countChangeRequests(final String spaceName,
-                                final String repositoryAlias,
-                                final List<ChangeRequestStatus> statusList,
-                                final String filter);
-
-    /**
      * Obtains differences between branches.
      *
      * @param spaceName        the space containing the origin repository
@@ -308,18 +270,6 @@ public interface ChangeRequestService {
                                                   final Long changeRequestId,
                                                   final Integer page,
                                                   final Integer pageSize);
-
-    /**
-     * Retrieves the number of comments associated with the given change request.
-     *
-     * @param spaceName       the space containing the origin repository
-     * @param repositoryAlias the repository alias
-     * @param changeRequestId the id of the change request
-     * @return The number of comments.
-     */
-    Integer countChangeRequestComments(final String spaceName,
-                                       final String repositoryAlias,
-                                       final Long changeRequestId);
 
     /**
      * Adds a comment to the change request comment list.

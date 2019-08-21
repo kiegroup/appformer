@@ -42,8 +42,12 @@ public class ChangeRequestPredicates {
         return elem -> elem.getStatus() == status;
     }
 
-    public static Predicate<ChangeRequest> matchStatusList(final List<ChangeRequestStatus> statusList) {
+    public static Predicate<ChangeRequest> matchInStatusList(final List<ChangeRequestStatus> statusList) {
         return elem -> statusList.contains(elem.getStatus());
+    }
+
+    public static Predicate<ChangeRequest> matchInTargetBranchList(final List<String> targetBranches) {
+        return elem -> targetBranches.contains(elem.getTargetBranch());
     }
 
     public static Predicate<ChangeRequest> matchSourceBranch(final String branch) {
@@ -59,7 +63,7 @@ public class ChangeRequestPredicates {
                                                                           final List<ChangeRequestStatus> statusList) {
         return matchSearchFilter(searchFilter,
                                  searchableElementFunction)
-                .and(matchStatusList(statusList));
+                .and(matchInStatusList(statusList));
     }
 
     public static Predicate<ChangeRequest> matchSourceOrTargetBranch(final String branchName) {
@@ -73,5 +77,10 @@ public class ChangeRequestPredicates {
         return matchSourceBranch(sourceBranchName)
                 .and(matchTargetBranch(targetBranchName)
                              .and(matchStatus(status)));
+    }
+
+    public static Predicate<ChangeRequest> matchTargetBranchListAndOtherPredicate(final List<String> targetBranches,
+                                                                                  final Predicate<ChangeRequest> predicate) {
+        return matchInTargetBranchList(targetBranches).and(predicate);
     }
 }

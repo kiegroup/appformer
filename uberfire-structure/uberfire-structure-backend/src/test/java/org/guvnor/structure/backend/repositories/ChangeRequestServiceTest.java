@@ -153,6 +153,17 @@ public class ChangeRequestServiceTest {
         doReturn(repository).when(repositoryService).getRepositoryFromSpace(mySpace,
                                                                             "myRepository");
 
+        doReturn("sourceBranch").when(sourceBranch).getName();
+        doReturn("targetBranch").when(targetBranch).getName();
+        doReturn("hiddenBranch").when(hiddenBranch).getName();
+
+        Branch branch = mock(Branch.class);
+        doReturn("branch").when(branch).getName();
+
+        List<Branch> branches = Stream.of(sourceBranch, targetBranch, hiddenBranch, branch)
+                .collect(Collectors.toList());
+        doReturn(branches).when(repository).getBranches();
+
         doReturn("myRepository").when(repository).getAlias();
         doReturn(mySpace).when(repository).getSpace();
         doReturn("mySpace").when(mySpace).getName();
@@ -517,107 +528,6 @@ public class ChangeRequestServiceTest {
 
         assertEquals(15, (int) countSummary.getOpen());
         assertEquals(20, (int) countSummary.getTotal());
-    }
-
-    @Test
-    public void countChangeRequestsWithStatusTest() {
-        ChangeRequest crsWithStatus = createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN);
-
-        ChangeRequest crsHidden = mock(ChangeRequest.class);
-        doReturn(ChangeRequestStatus.REJECTED).when(crsHidden).getStatus();
-
-        List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
-            addAll(Collections.nCopies(26, crsWithStatus));
-            addAll(Collections.nCopies(30, crsHidden));
-        }};
-
-        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
-            add(ChangeRequestStatus.OPEN);
-        }};
-
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        int count = service.countChangeRequests("mySpace",
-                                                "myRepository",
-                                                statusList);
-
-        assertEquals(26, count);
-    }
-
-    @Test
-    public void countChangeRequestsWithFilterTest() {
-        ChangeRequest crsWithFilter = createCommonChangeRequestWithSummary("findme");
-
-        ChangeRequest crsHidden = createCommonChangeRequestWithSummary("hidden");
-
-        List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
-            addAll(Collections.nCopies(26, crsWithFilter));
-            addAll(Collections.nCopies(30, crsHidden));
-        }};
-
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        int count = service.countChangeRequests("mySpace",
-                                                "myRepository",
-                                                "me");
-
-        assertEquals(26, count);
-    }
-
-    @Test
-    public void countChangeRequestsWithStatusAndFilterTest() {
-        ChangeRequest crsWithFilter = createCommonChangeRequestWithSummary("findme");
-
-        ChangeRequest crsWithStatus = createCommonChangeRequestWithStatus(ChangeRequestStatus.REJECTED);
-
-        ChangeRequest crsWithStatusAndFilter = createCommonChangeRequestWithStatusSummary(ChangeRequestStatus.REJECTED,
-                                                                                          "findme");
-
-        ChangeRequest crsHidden = createCommonChangeRequestWithSummary("hidden");
-
-        List<ChangeRequest> crList = new ArrayList<ChangeRequest>() {{
-            addAll(Collections.nCopies(26, crsWithFilter));
-            addAll(Collections.nCopies(5, crsWithStatus));
-            addAll(Collections.nCopies(30, crsHidden));
-            addAll(Collections.nCopies(18, crsWithStatusAndFilter));
-        }};
-
-        List<ChangeRequestStatus> statusList = new ArrayList<ChangeRequestStatus>() {{
-            add(ChangeRequestStatus.REJECTED);
-        }};
-
-        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
-
-        int count = service.countChangeRequests("mySpace",
-                                                "myRepository",
-                                                statusList,
-                                                "me");
-
-        assertEquals(18, count);
-    }
-
-    @Test
-    public void countChangeRequestCommentsTest() {
-        List<ChangeRequestComment> comments = Collections.nCopies(15, mock(ChangeRequestComment.class));
-        doReturn(comments).when(spaceConfigStorage).getChangeRequestCommentIds("myRepository", 1L);
-
-        int count = service.countChangeRequestComments("mySpace",
-                                                       "myRepository",
-                                                       1L);
-
-        assertEquals(15, count);
-    }
-
-    @Test
-    public void countChangeRequestCommentsEmptyListTest() {
-        List<ChangeRequestComment> comments = Collections.nCopies(15, mock(ChangeRequestComment.class));
-        doReturn(comments).when(spaceConfigStorage).getChangeRequestCommentIds("myRepository", 2L);
-
-        int count = service.countChangeRequestComments("mySpace",
-                                                       "myRepository",
-                                                       1L);
-
-        assertEquals(0, count);
     }
 
     @Test

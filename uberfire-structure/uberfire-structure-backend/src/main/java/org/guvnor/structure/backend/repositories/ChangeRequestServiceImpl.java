@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -129,9 +130,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                       sourceBranch,
                                       targetBranch);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
-        long changeRequestId = this.generateChangeRequestId(spaceName, repositoryAlias);
+        long changeRequestId = this.generateChangeRequestId(spaceName,
+                                                            repositoryAlias);
 
         final String startCommitId = getCommonCommitId(repository,
                                                        sourceBranch,
@@ -142,14 +145,13 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                  repositoryAlias,
                                                                  sourceBranch,
                                                                  targetBranch,
-                                                                 ChangeRequestStatus.OPEN,
                                                                  sessionInfo.getIdentity().getIdentifier(),
                                                                  summary,
                                                                  description,
-                                                                 new Date(),
                                                                  startCommitId);
 
-        spaceConfigStorageRegistry.get(spaceName).saveChangeRequest(repositoryAlias, newChangeRequest);
+        spaceConfigStorageRegistry.get(spaceName).saveChangeRequest(repositoryAlias,
+                                                                    newChangeRequest);
 
         changeRequestListUpdatedEvent.fire(new ChangeRequestListUpdatedEvent(repository.getIdentifier()));
 
@@ -162,10 +164,15 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
 
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         true,
-                                         ChangeRequestPredicates.matchAll());
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     true,
+                                                     ChangeRequestPredicates.matchAll());
+
+        return computeFullContent(spaceName,
+                                  repositoryAlias,
+                                  changeRequests);
     }
 
     @Override
@@ -175,11 +182,18 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
 
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         true,
-                                         ChangeRequestPredicates.matchSearchFilter(filter,
-                                                                                   ChangeRequestServiceImpl::composeSearchableElement));
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     true,
+                                                     ChangeRequestPredicates
+                                                             .matchSearchFilter(filter,
+                                                                                ChangeRequestServiceImpl
+                                                                                        ::composeSearchableElement));
+
+        return computeFullContent(spaceName,
+                                  repositoryAlias,
+                                  changeRequests);
     }
 
     @Override
@@ -190,10 +204,15 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotEmpty("statusList", statusList);
 
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         true,
-                                         ChangeRequestPredicates.matchStatusList(statusList));
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     true,
+                                                     ChangeRequestPredicates.matchInStatusList(statusList));
+
+        return computeFullContent(spaceName,
+                                  repositoryAlias,
+                                  changeRequests);
     }
 
     @Override
@@ -205,12 +224,19 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotEmpty("statusList", statusList);
 
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         true,
-                                         ChangeRequestPredicates.matchSearchFilterAndStatusList(filter,
-                                                                                                ChangeRequestServiceImpl::composeSearchableElement,
-                                                                                                statusList));
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequestsFromStorage(
+                        spaceName,
+                        repositoryAlias,
+                        true,
+                        ChangeRequestPredicates.matchSearchFilterAndStatusList(filter,
+                                                                               ChangeRequestServiceImpl::
+                                                                                       composeSearchableElement,
+                                                                               statusList));
+
+        return computeFullContent(spaceName,
+                                  repositoryAlias,
+                                  changeRequests);
     }
 
     @Override
@@ -225,17 +251,21 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("pageSize", pageSize);
 
         final List<ChangeRequest> changeRequests =
-                getFilteredChangeRequests(spaceName,
-                                          repositoryAlias,
-                                          true,
-                                          ChangeRequestPredicates.matchSearchFilter(filter,
-                                                                                    ChangeRequestServiceImpl::composeSearchableElement));
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     true,
+                                                     ChangeRequestPredicates
+                                                             .matchSearchFilter(filter,
+                                                                                ChangeRequestServiceImpl::
+                                                                                        composeSearchableElement));
 
         final List<ChangeRequest> paginatedChangeRequests = paginateChangeRequests(changeRequests,
                                                                                    page,
                                                                                    pageSize);
 
-        return new PaginatedChangeRequestList(paginatedChangeRequests,
+        return new PaginatedChangeRequestList(computeFullContent(spaceName,
+                                                                 repositoryAlias,
+                                                                 paginatedChangeRequests),
                                               page,
                                               pageSize,
                                               changeRequests.size());
@@ -255,18 +285,22 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("statusList", statusList);
 
         final List<ChangeRequest> changeRequests =
-                getFilteredChangeRequests(spaceName,
-                                          repositoryAlias,
-                                          true,
-                                          ChangeRequestPredicates.matchSearchFilterAndStatusList(filter,
-                                                                                                 ChangeRequestServiceImpl::composeSearchableElement,
-                                                                                                 statusList));
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     true,
+                                                     ChangeRequestPredicates
+                                                             .matchSearchFilterAndStatusList(filter,
+                                                                                             ChangeRequestServiceImpl::
+                                                                                                     composeSearchableElement,
+                                                                                             statusList));
 
         final List<ChangeRequest> paginatedChangeRequests = paginateChangeRequests(changeRequests,
                                                                                    page,
                                                                                    pageSize);
 
-        return new PaginatedChangeRequestList(paginatedChangeRequests,
+        return new PaginatedChangeRequestList(computeFullContent(spaceName,
+                                                                 repositoryAlias,
+                                                                 paginatedChangeRequests),
                                               page,
                                               pageSize,
                                               changeRequests.size());
@@ -292,10 +326,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("spaceName", spaceName);
         checkNotEmpty("repositoryAlias", repositoryAlias);
 
-        final List<ChangeRequest> changeRequests = getFilteredChangeRequests(spaceName,
-                                                                             repositoryAlias,
-                                                                             false,
-                                                                             ChangeRequestPredicates.matchAll());
+        final List<ChangeRequest> changeRequests =
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     false,
+                                                     ChangeRequestPredicates.matchAll());
 
         final Integer total = changeRequests.size();
         final long open = changeRequests.stream()
@@ -304,54 +339,6 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
 
         return new ChangeRequestCountSummary(total,
                                              (int) open);
-    }
-
-    @Override
-    public Integer countChangeRequests(final String spaceName,
-                                       final String repositoryAlias,
-                                       final List<ChangeRequestStatus> statusList) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotEmpty("statusList", statusList);
-
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         false,
-                                         ChangeRequestPredicates.matchStatusList(statusList))
-                .size();
-    }
-
-    @Override
-    public Integer countChangeRequests(final String spaceName,
-                                       final String repositoryAlias,
-                                       final String filter) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         false,
-                                         ChangeRequestPredicates.matchSearchFilter(filter,
-                                                                                   ChangeRequestServiceImpl::composeSearchableElement))
-                .size();
-    }
-
-    @Override
-    public Integer countChangeRequests(final String spaceName,
-                                       final String repositoryAlias,
-                                       final List<ChangeRequestStatus> statusList,
-                                       final String filter) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotEmpty("statusList", statusList);
-
-        return getFilteredChangeRequests(spaceName,
-                                         repositoryAlias,
-                                         false,
-                                         ChangeRequestPredicates.matchSearchFilterAndStatusList(filter,
-                                                                                                ChangeRequestServiceImpl::composeSearchableElement,
-                                                                                                statusList))
-                .size();
     }
 
     @Override
@@ -364,7 +351,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("sourceBranchName", sourceBranchName);
         checkNotNull("targetBranchName", targetBranchName);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         return getDiff(repository,
                        sourceBranchName,
@@ -381,7 +369,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("repositoryAlias", repositoryAlias);
         checkNotNull("changeRequestId", changeRequestId);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         final ChangeRequest changeRequest = getChangeRequestById(spaceName,
                                                                  repositoryAlias,
@@ -404,10 +393,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotEmpty("associatedBranchName", associatedBranchName);
 
         final List<ChangeRequest> changeRequestsToDelete =
-                getFilteredChangeRequests(spaceName,
-                                          repositoryAlias,
-                                          false,
-                                          ChangeRequestPredicates.matchSourceOrTargetBranch(associatedBranchName));
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     false,
+                                                     ChangeRequestPredicates
+                                                             .matchSourceOrTargetBranch(associatedBranchName));
 
         if (!changeRequestsToDelete.isEmpty()) {
             changeRequestsToDelete.forEach(elem -> spaceConfigStorageRegistry.get(spaceName)
@@ -502,7 +492,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("changeRequestId", changeRequestId);
         checkNotEmpty("updatedSummary", updatedSummary);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         final ChangeRequest oldChangeRequest = getChangeRequestById(spaceName,
                                                                     repositoryAlias,
@@ -538,7 +529,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("changeRequestId", changeRequestId);
         checkNotEmpty("updatedDescription", updatedDescription);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         final ChangeRequest oldChangeRequest = getChangeRequestById(spaceName,
                                                                     repositoryAlias,
@@ -592,18 +584,6 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public Integer countChangeRequestComments(final String spaceName,
-                                              final String repositoryAlias,
-                                              final Long changeRequestId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
-
-        return spaceConfigStorageRegistry.get(spaceName).getChangeRequestCommentIds(repositoryAlias,
-                                                                                    changeRequestId).size();
-    }
-
-    @Override
     public void addComment(final String spaceName,
                            final String repositoryAlias,
                            final Long changeRequestId,
@@ -613,7 +593,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("changeRequestId", changeRequestId);
         checkNotEmpty("text", text);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         final Long commentId = generateCommentId(spaceName,
                                                  repositoryAlias,
@@ -642,7 +623,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         checkNotNull("changeRequestId", changeRequestId);
         checkNotNull("commentId", commentId);
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         spaceConfigStorageRegistry.get(spaceName).deleteChangeRequestComment(repositoryAlias,
                                                                              changeRequestId,
@@ -654,19 +636,21 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
 
     private ChangeRequest getChangeRequestById(final String spaceName,
                                                final String repositoryAlias,
-                                               final boolean processInnerContent,
+                                               final boolean withFullContent,
                                                final Long changeRequestId) {
         final List<ChangeRequest> changeRequests =
-                this.getFilteredChangeRequests(spaceName,
-                                               repositoryAlias,
-                                               processInnerContent,
-                                               ChangeRequestPredicates.matchId(changeRequestId));
+                this.getFilteredChangeRequestsFromStorage(spaceName,
+                                                          repositoryAlias,
+                                                          false,
+                                                          ChangeRequestPredicates.matchId(changeRequestId));
 
         if (changeRequests.size() == 0) {
             throw new NoSuchElementException("Unable to find the change request with id #" + changeRequestId);
         }
 
-        return changeRequests.get(0);
+        return withFullContent ? computeFullContent(spaceName,
+                                                    repositoryAlias,
+                                                    changeRequests).get(0) : changeRequests.get(0);
     }
 
     private org.uberfire.backend.vfs.Path createPath(final String branchPath,
@@ -690,45 +674,79 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         return repository;
     }
 
-    private List<ChangeRequest> getFilteredChangeRequests(final String spaceName,
-                                                          final String repositoryAlias,
-                                                          final boolean processInnerContent,
-                                                          final Predicate<ChangeRequest> predicate) {
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+    private List<ChangeRequest> getFilteredChangeRequestsFromStorage(final String spaceName,
+                                                                     final String repositoryAlias,
+                                                                     final boolean sorted,
+                                                                     final Predicate<ChangeRequest> predicate) {
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
-        return spaceConfigStorageRegistry.get(spaceName).loadChangeRequests(repositoryAlias)
+        final List<String> branchesUserCanRead = repository.getBranches()
                 .stream()
-                .filter(elem -> branchAccessAuthorizer.authorize(sessionInfo.getIdentity().getIdentifier(),
-                                                                 spaceName,
-                                                                 repository.getIdentifier(),
-                                                                 repository.getAlias(),
-                                                                 elem.getTargetBranch(),
-                                                                 BranchAccessAuthorizer.AccessType.READ))
-                .filter(predicate)
-                .sorted(Comparator.comparing(ChangeRequest::getCreatedDate).reversed())
-                .map(elem -> new ChangeRequest(elem.getId(),
-                                               elem.getSpaceName(),
-                                               elem.getRepositoryAlias(),
-                                               elem.getSourceBranch(),
-                                               elem.getTargetBranch(),
-                                               elem.getStatus(),
-                                               elem.getAuthorId(),
-                                               elem.getSummary(),
-                                               elem.getDescription(),
-                                               elem.getCreatedDate(),
-                                               processInnerContent ? countChangeRequestDiffs(repository, elem) : 0,
-                                               processInnerContent ? countChangeRequestComments(spaceName,
-                                                                                                repositoryAlias,
-                                                                                                elem.getId()) : 0,
-                                               elem.getStartCommitId(),
-                                               elem.getEndCommitId(),
-                                               elem.getMergeCommitId(),
-                                               processInnerContent && !isChangeRequestConflictFree(repository, elem)))
+                .map(Branch::getName)
+                .filter(branchName -> branchAccessAuthorizer.authorize(sessionInfo.getIdentity().getIdentifier(),
+                                                                       repository.getSpace().getName(),
+                                                                       repository.getIdentifier(),
+                                                                       repository.getAlias(),
+                                                                       branchName,
+                                                                       BranchAccessAuthorizer.AccessType.READ))
+                .collect(Collectors.toList());
+
+        final Stream<ChangeRequest> changeRequestStream =
+                spaceConfigStorageRegistry.get(spaceName).loadChangeRequests(repositoryAlias)
+                        .stream()
+                        .filter(ChangeRequestPredicates.matchTargetBranchListAndOtherPredicate(branchesUserCanRead,
+                                                                                               predicate));
+        if (sorted) {
+            return changeRequestStream
+                    .sorted(Comparator.comparing(ChangeRequest::getCreatedDate).reversed())
+                    .collect(Collectors.toList());
+        } else {
+            return changeRequestStream.collect(Collectors.toList());
+        }
+    }
+
+    private List<ChangeRequest> computeFullContent(final String spaceName,
+                                                   final String repositoryAlias,
+                                                   final List<ChangeRequest> changeRequests) {
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
+
+        return changeRequests
+                .stream()
+                .map(elem -> {
+                    final int changedFilesCount = countChangeRequestDiffs(repository,
+                                                                          elem);
+
+                    final int commentsCount = countChangeRequestComments(spaceName,
+                                                                         repositoryAlias,
+                                                                         elem.getId());
+
+                    final boolean hasConflicts = !isChangeRequestConflictFree(repository,
+                                                                              elem);
+
+                    return new ChangeRequest(elem.getId(),
+                                             elem.getSpaceName(),
+                                             elem.getRepositoryAlias(),
+                                             elem.getSourceBranch(),
+                                             elem.getTargetBranch(),
+                                             elem.getStatus(),
+                                             elem.getAuthorId(),
+                                             elem.getSummary(),
+                                             elem.getDescription(),
+                                             elem.getCreatedDate(),
+                                             changedFilesCount,
+                                             commentsCount,
+                                             elem.getStartCommitId(),
+                                             elem.getEndCommitId(),
+                                             elem.getMergeCommitId(),
+                                             hasConflicts);
+                })
                 .collect(Collectors.toList());
     }
 
     private static String composeSearchableElement(final ChangeRequest element) {
-        return ("#" + element.getId() + " " + element.getSummary()).toLowerCase();
+        return element.toString().toLowerCase();
     }
 
     private List<ChangeRequest> paginateChangeRequests(final List<ChangeRequest> changeRequests,
@@ -754,6 +772,13 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         }
 
         return paginatedChangeRequests;
+    }
+
+    private Integer countChangeRequestComments(final String spaceName,
+                                               final String repositoryAlias,
+                                               final Long changeRequestId) {
+        return spaceConfigStorageRegistry.get(spaceName).getChangeRequestCommentIds(repositoryAlias,
+                                                                                    changeRequestId).size();
     }
 
     private List<ChangeRequestComment> paginateComments(final List<ChangeRequestComment> comments,
@@ -823,7 +848,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
             throw new IllegalStateException("Must have a merge commit id to update change request to ACCEPTED.");
         }
 
-        final Repository repository = resolveRepository(spaceName, repositoryAlias);
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
 
         final String endCommitId =
                 oldChangeRequest.getStatus() == ChangeRequestStatus.OPEN && status != ChangeRequestStatus.OPEN ?
@@ -1013,12 +1039,13 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                final String sourceBranchName,
                                                final String targetBranchName) {
         final List<ChangeRequest> changeRequests =
-                getFilteredChangeRequests(spaceName,
-                                          repositoryAlias,
-                                          false,
-                                          ChangeRequestPredicates.matchSourceAndTargetAndStatus(sourceBranchName,
-                                                                                                targetBranchName,
-                                                                                                ChangeRequestStatus.OPEN));
+                getFilteredChangeRequestsFromStorage(spaceName,
+                                                     repositoryAlias,
+                                                     false,
+                                                     ChangeRequestPredicates
+                                                             .matchSourceAndTargetAndStatus(sourceBranchName,
+                                                                                            targetBranchName,
+                                                                                            ChangeRequestStatus.OPEN));
 
         if (!changeRequests.isEmpty()) {
             throw new ChangeRequestAlreadyOpenException(changeRequests.get(0).getId());

@@ -50,6 +50,28 @@ public class ChangeRequest {
                          final String repositoryAlias,
                          final String sourceBranch,
                          final String targetBranch,
+                         final String authorId,
+                         final String summary,
+                         final String description,
+                         final String startCommitId) {
+        this(id,
+             spaceName,
+             repositoryAlias,
+             sourceBranch,
+             targetBranch,
+             ChangeRequestStatus.OPEN,
+             authorId,
+             summary,
+             description,
+             new Date(),
+             startCommitId);
+    }
+
+    public ChangeRequest(final long id,
+                         final String spaceName,
+                         final String repositoryAlias,
+                         final String sourceBranch,
+                         final String targetBranch,
                          final ChangeRequestStatus status,
                          final String authorId,
                          final String summary,
