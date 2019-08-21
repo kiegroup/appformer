@@ -41,8 +41,10 @@ import org.uberfire.java.nio.fs.jgit.FileSystemLock;
 import org.uberfire.java.nio.fs.jgit.FileSystemLockManager;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
+import org.uberfire.mvp.Command;
 import org.uberfire.java.nio.file.FileVisitResult;
 import org.uberfire.java.nio.file.Files;
+import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
@@ -57,10 +59,6 @@ public class DashbuilderDataMigration {
     private FileSystem pluginsFS;
     private FileSystem perspectivesFS;
     private FileSystem navigationFS;
-
-    private interface RunnableWithLock {
-        void run(FileSystem sourceFS, FileSystem targetFS);
-    }
 
     public DashbuilderDataMigration() {
 
@@ -83,46 +81,46 @@ public class DashbuilderDataMigration {
 
     @PostConstruct
     private void init() {
-        migrateDatasets();
-        migratePerspectives();
-        migrateNavigation();
+        runWithLock(() -> {
+            migrateDatasets();
+            migratePerspectives();
+            migrateNavigation();
+        });
     }
 
     private void migrateDatasets() {
-        FileSystem oldDatasetsFS = lookupOldDataSetsFS();
-        runWithLock(this::migrateDatasets,
-                    oldDatasetsFS,
-                    datasetsFS);
-        cleanupDataSets(oldDatasetsFS);
+        FileSystem oldDatasetsFS = lookupFileSystem(SpacesAPI.DEFAULT_SPACE, "datasets");
+        this.migrateDatasets(oldDatasetsFS, datasetsFS);
+        cleanupFileSystem(oldDatasetsFS);
     }
 
-    private FileSystem lookupOldDataSetsFS() {
-        FileSystem oldDatasetsFS;
+    private FileSystem lookupFileSystem(Space space, String name) {
+        FileSystem fs;
+
         URI uri = new SpacesAPIImpl().resolveFileSystemURI(
-            SpacesAPI.Scheme.DEFAULT,
-            SpacesAPI.DEFAULT_SPACE,
-            "datasets");
+            SpacesAPI.Scheme.GIT,
+            space,
+            name);
+
+        HashMap<String, Object> env = new HashMap<>();
+        env.put("init", Boolean.TRUE);
+        env.put("internal", Boolean.TRUE);
 
         try {
-            oldDatasetsFS = ioService.newFileSystem(
-                uri,
-                new HashMap<String, Object>() {{
-                    put("init", Boolean.TRUE);
-                    put("internal", Boolean.TRUE);
-                }});
+            fs = ioService.newFileSystem(uri, env);
 
         } catch (FileSystemAlreadyExistsException e) {
-            oldDatasetsFS = ioService.getFileSystem(uri);
+            fs = ioService.getFileSystem(uri);
         }
 
-        return oldDatasetsFS;
+        return fs;
     }
 
-    private void cleanupDataSets(FileSystem oldDatasetsFS) {
-        Path oldDatasetsRoot = getRoot(oldDatasetsFS);
-        if (oldDatasetsRoot != null && oldDatasetsFS instanceof JGitFileSystem) {
+    private void cleanupFileSystem(FileSystem fs) {
+        Path root = getRoot(fs);
+        if (root != null && fs instanceof JGitFileSystem) {
             try {
-                Path fsPath = oldDatasetsFS.getPath("");
+                Path fsPath = fs.getPath("");
                 Files.delete(fsPath);
 
             } catch (Exception e) {
@@ -133,15 +131,11 @@ public class DashbuilderDataMigration {
     }
 
     private void migratePerspectives() {
-        runWithLock(this::migratePerspectives,
-                    pluginsFS,
-                    perspectivesFS);
+        this.migratePerspectives(pluginsFS, perspectivesFS);
     }
 
     private void migrateNavigation() {
-        runWithLock(this::migrateNavigation,
-                    pluginsFS,
-                    navigationFS);
+        this.migrateNavigation(pluginsFS, navigationFS);
     }
 
     public void migrateDatasets(FileSystem sourceFS, FileSystem targetFS) {
@@ -217,17 +211,16 @@ public class DashbuilderDataMigration {
         }
     }
 
-    private void runWithLock(RunnableWithLock runnable, FileSystem sourceFS, FileSystem targetFS) {
-        String fsName = targetFS.getName();
-        String baseName = fsName.substring(fsName.indexOf(File.separator) + 1);
-
-        String lockName = baseName + ".migration.lock";
-        String markerName = baseName + ".migration.done";
+    private void runWithLock(Command command) {
+        String className = this.getClass().getName();
+        String lockName = className + ".lock";
+        String markerName = className + ".done";
 
         TimeUnit lastAccessTimeUnit = TimeUnit.SECONDS;
         int lastAccessThreshold = 1;
 
-        File dir = ((JGitPathImpl) targetFS.getPath("/"))
+        // get .niogit/dashbuilder path
+        File dir = ((JGitPathImpl) navigationFS.getPath("/"))
             .getFileSystem()
             .getGit()
             .getRepository()
@@ -249,7 +242,7 @@ public class DashbuilderDataMigration {
 
             if (!marker.exists()) {
                 marker.createNewFile();
-                runnable.run(sourceFS, targetFS);
+                command.execute();
             }
 
         } catch (java.io.IOException e) {
