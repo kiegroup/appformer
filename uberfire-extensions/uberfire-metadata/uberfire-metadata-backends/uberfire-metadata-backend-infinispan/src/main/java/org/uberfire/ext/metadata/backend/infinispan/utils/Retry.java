@@ -18,6 +18,7 @@ package org.uberfire.ext.metadata.backend.infinispan.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.ext.metadata.backend.infinispan.exceptions.RetryException;
 
 public class Retry {
 
@@ -33,13 +34,17 @@ public class Retry {
     }
 
     public void run() {
+        int maxRetries = retries;
         while (retries > 0 && !finished) {
             try {
                 runnable.run();
                 finished = true;
             } catch (Exception e) {
-                logger.error("Error found. Retrying", e);
                 retries--;
+                logger.error("Error found. Retrying", e);
+                if (retries <= 0) {
+                    throw new RetryException("Retried " + maxRetries + " times but exception found", e);
+                }
             }
         }
     }

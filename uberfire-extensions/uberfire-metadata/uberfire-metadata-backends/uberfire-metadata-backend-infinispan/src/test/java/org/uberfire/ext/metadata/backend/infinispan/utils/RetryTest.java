@@ -17,6 +17,7 @@
 package org.uberfire.ext.metadata.backend.infinispan.utils;
 
 import org.junit.Test;
+import org.uberfire.ext.metadata.backend.infinispan.exceptions.RetryException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,10 +40,14 @@ public class RetryTest {
 
         {
             Retry retry = new Retry(5, () -> {
-                throw new RuntimeException("");
+                throw new RuntimeException("This should fail right here");
             });
 
-            retry.run();
+            try {
+                retry.run();
+            } catch (Exception e) {
+                assertTrue(e instanceof RetryException);
+            }
 
             assertEquals(0, retry.getRemainingRetries());
             assertFalse(retry.isFinished());
