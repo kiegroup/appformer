@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.uberfire.ext.wires.core.grids.client.model.GridCell;
 import org.uberfire.ext.wires.core.grids.client.model.GridColumn;
 import org.uberfire.ext.wires.core.grids.client.model.GridData;
 import org.uberfire.ext.wires.core.grids.client.model.GridRow;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -152,7 +154,7 @@ public abstract class BaseGridRendererTest {
         renderer.setTheme(theme);
 
         doNothing().when(renderer).setCellHighlightX(rectangle, context, rendererHelper);
-        doNothing().when(renderer).setCellHighlightY(rectangle, rendererHelper, visibleRowIndex);
+        doNothing().when(renderer).setCellHighlightY(rectangle, rendererHelper, visibleRowIndex, model);
         doNothing().when(renderer).setCellHighlightSize(rectangle, model, column, rowIndex);
 
         final Rectangle current = renderer.makeCellHighlight(rowIndex,
@@ -170,10 +172,42 @@ public abstract class BaseGridRendererTest {
         final int visibleRowIndex = 2;
         final Rectangle rectangle = mock(Rectangle.class);
         final double y = 190;
+        final GridCell cell = mock(GridCell.class);
+        final int rowIndex = 5;
+        final int columnIndex = 1;
 
         when(rendererHelper.getRowOffset(visibleRowIndex)).thenReturn(y);
+        doReturn(rowIndex).when(renderer).getHighlightCellRowIndex();
+        doReturn(columnIndex).when(renderer).getHighlightCellColumnIndex();
+        final GridData dataModel = mock(GridData.class);
 
-        renderer.setCellHighlightY(rectangle, rendererHelper, visibleRowIndex);
+        when(dataModel.getCell(rowIndex, columnIndex)).thenReturn(cell);
+        when(cell.isMerged()).thenReturn(false);
+
+        renderer.setCellHighlightY(rectangle, rendererHelper, visibleRowIndex, dataModel);
+
+        verify(rectangle).setY(y);
+    }
+
+    @Test
+    public void testSetCellHighlightYWithMergedCell() {
+        final int visibleRowIndex = 2;
+        final Rectangle rectangle = mock(Rectangle.class);
+        final double y = 190;
+        final GridCell cell = mock(GridCell.class);
+        final int rowIndex = 5;
+        final int columnIndex = 1;
+        final int firstMergedCellIndex = 3;
+        when(rendererHelper.getRowOffset(firstMergedCellIndex)).thenReturn(y);
+        doReturn(rowIndex).when(renderer).getHighlightCellRowIndex();
+        doReturn(columnIndex).when(renderer).getHighlightCellColumnIndex();
+        final GridData dataModel = mock(GridData.class);
+
+        when(dataModel.getCell(rowIndex, columnIndex)).thenReturn(cell);
+        when(cell.isMerged()).thenReturn(true);
+        doReturn(firstMergedCellIndex).when(renderer).getFirstRowIndexOfMergedBlock(dataModel, visibleRowIndex);
+
+        renderer.setCellHighlightY(rectangle, rendererHelper, visibleRowIndex, dataModel);
 
         verify(rectangle).setY(y);
     }
@@ -205,7 +239,7 @@ public abstract class BaseGridRendererTest {
     }
 
     @Test
-    public void setCellHighlightSize() {
+    public void testSetCellHighlightSize() {
         final Rectangle rectangle = mock(Rectangle.class);
         final GridData model = mock(GridData.class);
         final GridColumn<?> column = mock(GridColumn.class);
@@ -216,11 +250,29 @@ public abstract class BaseGridRendererTest {
         when(column.getWidth()).thenReturn(width);
         when(row.getHeight()).thenReturn(height);
         when(model.getRow(rowIndex)).thenReturn(row);
+        doReturn(1).when(renderer).getMergedCellsCount(model, rowIndex);
 
         renderer.setCellHighlightSize(rectangle, model, column, rowIndex);
 
         verify(rectangle).setWidth(width);
         verify(rectangle).setHeight(height);
+    }
+
+    @Test
+    public void testGetMergedCellsCount() {
+        final GridData model = mock(GridData.class);
+        final GridCell cell = mock(GridCell.class);
+        final int rowIndex = 0;
+        final int columnIndex = 1;
+        final int mergedCellsCount = 1;
+
+        when(renderer.getHighlightCellColumnIndex()).thenReturn(columnIndex);
+        when(model.getCell(rowIndex, columnIndex)).thenReturn(cell);
+        when(cell.getMergedCellCount()).thenReturn(mergedCellsCount);
+
+        final int actual = renderer.getMergedCellsCount(model, rowIndex);
+
+        assertEquals(mergedCellsCount, actual);
     }
 
     protected abstract boolean isSelectionLayer();
