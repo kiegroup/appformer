@@ -516,7 +516,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                     updatedChangeRequest);
 
         changeRequestUpdatedEvent.fire(new ChangeRequestUpdatedEvent(repository.getIdentifier(),
-                                                                     updatedChangeRequest.getId()));
+                                                                     updatedChangeRequest.getId(),
+                                                                     sessionInfo.getIdentity().getIdentifier()));
     }
 
     @Override
@@ -553,7 +554,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                     updatedChangeRequest);
 
         changeRequestUpdatedEvent.fire(new ChangeRequestUpdatedEvent(repository.getIdentifier(),
-                                                                     updatedChangeRequest.getId()));
+                                                                     updatedChangeRequest.getId(),
+                                                                     sessionInfo.getIdentity().getIdentifier()));
     }
 
     @Override
@@ -610,7 +612,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                            newComment);
 
         changeRequestUpdatedEvent.fire(new ChangeRequestUpdatedEvent(repository.getIdentifier(),
-                                                                     changeRequestId));
+                                                                     changeRequestId,
+                                                                     sessionInfo.getIdentity().getIdentifier()));
     }
 
     @Override
@@ -631,7 +634,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                              commentId);
 
         changeRequestUpdatedEvent.fire(new ChangeRequestUpdatedEvent(repository.getIdentifier(),
-                                                                     changeRequestId));
+                                                                     changeRequestId,
+                                                                     sessionInfo.getIdentity().getIdentifier()));
     }
 
     private ChangeRequest getChangeRequestById(final String spaceName,
@@ -873,10 +877,12 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         spaceConfigStorageRegistry.get(spaceName).saveChangeRequest(repositoryAlias,
                                                                     updatedChangeRequest);
 
-        changeRequestStatusUpdatedEventEvent.fire(new ChangeRequestStatusUpdatedEvent(repository.getIdentifier(),
-                                                                                      updatedChangeRequest.getId(),
-                                                                                      oldChangeRequest.getStatus(),
-                                                                                      status));
+        changeRequestStatusUpdatedEventEvent.fire(
+                new ChangeRequestStatusUpdatedEvent(repository.getIdentifier(),
+                                                    updatedChangeRequest.getId(),
+                                                    oldChangeRequest.getStatus(),
+                                                    status,
+                                                    sessionInfo.getIdentity().getIdentifier()));
     }
 
     private List<ChangeRequestDiff> getDiff(final Repository repository,

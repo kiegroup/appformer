@@ -26,11 +26,14 @@ public class ChangeRequestUpdatedEvent {
 
     private final String repositoryId;
     private final Long changeRequestId;
+    private final String userId;
 
     public ChangeRequestUpdatedEvent(final @MapsTo("repositoryId") String repositoryId,
-                                     final @MapsTo("changeRequestId") Long changeRequestId) {
+                                     final @MapsTo("changeRequestId") Long changeRequestId,
+                                     final @MapsTo("userId") String userId) {
         this.repositoryId = repositoryId;
         this.changeRequestId = changeRequestId;
+        this.userId = userId;
     }
 
     public String getRepositoryId() {
@@ -39,6 +42,10 @@ public class ChangeRequestUpdatedEvent {
 
     public Long getChangeRequestId() {
         return changeRequestId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     @Override
@@ -51,12 +58,14 @@ public class ChangeRequestUpdatedEvent {
         }
         ChangeRequestUpdatedEvent that = (ChangeRequestUpdatedEvent) o;
         return repositoryId.equals(that.repositoryId) &&
-                changeRequestId.equals(that.changeRequestId);
+                changeRequestId.equals(that.changeRequestId) &&
+                userId.equals(that.userId);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(repositoryId,
-                            changeRequestId);
+                            changeRequestId,
+                            userId);
     }
 }

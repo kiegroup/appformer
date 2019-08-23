@@ -28,15 +28,18 @@ public class ChangeRequestStatusUpdatedEvent {
     private final Long changeRequestId;
     private final ChangeRequestStatus oldStatus;
     private final ChangeRequestStatus newStatus;
+    private final String userId;
 
     public ChangeRequestStatusUpdatedEvent(@MapsTo("repositoryId") final String repositoryId,
                                            @MapsTo("changeRequestId") final Long changeRequestId,
                                            @MapsTo("oldStatus") final ChangeRequestStatus oldStatus,
-                                           @MapsTo("newStatus") final ChangeRequestStatus newStatus) {
+                                           @MapsTo("newStatus") final ChangeRequestStatus newStatus,
+                                           @MapsTo("userId") final String userId) {
         this.repositoryId = repositoryId;
         this.changeRequestId = changeRequestId;
         this.oldStatus = oldStatus;
         this.newStatus = newStatus;
+        this.userId = userId;
     }
 
     public String getRepositoryId() {
@@ -55,6 +58,10 @@ public class ChangeRequestStatusUpdatedEvent {
         return newStatus;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -67,7 +74,8 @@ public class ChangeRequestStatusUpdatedEvent {
         return repositoryId.equals(that.repositoryId) &&
                 changeRequestId.equals(that.changeRequestId) &&
                 oldStatus == that.oldStatus &&
-                newStatus == that.newStatus;
+                newStatus == that.newStatus &&
+                userId.equals(that.userId);
     }
 
     @Override
@@ -75,6 +83,7 @@ public class ChangeRequestStatusUpdatedEvent {
         return Objects.hash(repositoryId,
                             changeRequestId,
                             oldStatus,
-                            newStatus);
+                            newStatus,
+                            userId);
     }
 }
