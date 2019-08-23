@@ -531,7 +531,7 @@ public class BaseGridRenderer implements GridRenderer {
 
         int currentIndex = rowIndex;
         GridCell<?> cell = model.getCell(rowIndex, getHighlightCellColumnIndex());
-        while (cell.getMergedCellCount() == 0) {
+        while (cell.getMergedCellCount() == 0 && currentIndex >= 0) {
             currentIndex--;
             cell = model.getCell(currentIndex, getHighlightCellColumnIndex());
         }
