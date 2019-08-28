@@ -16,6 +16,7 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ait.lienzo.client.core.shape.Group;
@@ -273,6 +274,59 @@ public abstract class BaseGridRendererTest {
         final int actual = renderer.getMergedCellsCount(model, rowIndex);
 
         assertEquals(mergedCellsCount, actual);
+    }
+
+    @Test
+    public void testRenderHighlightedCells() {
+
+        final RenderingInformation renderingInformation = mock(RenderingInformation.class);
+        final List<GridColumn<?>> columnsList = new ArrayList<>();
+        columnsList.add(column);
+        final GridData dataModel = mock(GridData.class);
+
+        doReturn(1).when(renderer).getHighlightCellRowIndex();
+        doReturn(0).when(renderer).getHighlightCellColumnIndex();
+        when(renderingInformation.getMinVisibleRowIndex()).thenReturn(1);
+        when(dataModel.getColumns()).thenReturn(columnsList);
+
+        final List<GridRenderer.RendererCommand> result = renderer.renderHighlightedCells(dataModel, context, rendererHelper, renderingInformation);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testGetRendererCommand() {
+
+        final int highlightCellRowIndex = 0;
+        final GridData dataModel = mock(GridData.class);
+        final int visibleRowIndex = 0;
+        final List<GridColumn<?>> columnsList = new ArrayList<>();
+        columnsList.add(column);
+        final GridRendererContext rc = mock(GridRendererContext.class);
+        final Group group = mock(Group.class);
+        final Rectangle rectangle = mock(Rectangle.class);
+
+        doReturn(highlightCellRowIndex).when(renderer).getHighlightCellRowIndex();
+        when(dataModel.getColumns()).thenReturn(columnsList);
+        when(rc.getGroup()).thenReturn(group);
+        when(rc.isSelectionLayer()).thenReturn(false);
+
+        doReturn(rectangle).when(renderer).makeCellHighlight(highlightCellRowIndex,
+                                                             visibleRowIndex,
+                                                             dataModel,
+                                                             rendererHelper,
+                                                             column,
+                                                             context);
+
+        final GridRenderer.RendererCommand cmd = renderer.getRendererCommand(dataModel,
+                                                                             context,
+                                                                             rendererHelper,
+                                                                             column,
+                                                                             visibleRowIndex);
+
+        cmd.execute(rc);
+
+        verify(group).add(rectangle);
     }
 
     protected abstract boolean isSelectionLayer();

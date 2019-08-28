@@ -470,10 +470,10 @@ public class BaseGridRenderer implements GridRenderer {
         return highlightCellRowIndex;
     }
 
-    private List<RendererCommand> renderHighlightedCells(final GridData model,
-                                                         final GridBodyRenderContext context,
-                                                         final BaseGridRendererHelper rendererHelper,
-                                                         final BaseGridRendererHelper.RenderingInformation renderingInformation) {
+    List<RendererCommand> renderHighlightedCells(final GridData model,
+                                                 final GridBodyRenderContext context,
+                                                 final BaseGridRendererHelper rendererHelper,
+                                                 final BaseGridRendererHelper.RenderingInformation renderingInformation) {
 
         final List<RendererCommand> commands = new ArrayList<>();
 
@@ -481,7 +481,17 @@ public class BaseGridRenderer implements GridRenderer {
 
         final int visibleRowIndex = getHighlightCellRowIndex() - renderingInformation.getMinVisibleRowIndex();
 
-        commands.add((rc) -> {
+        commands.add(getRendererCommand(model, context, rendererHelper, column, visibleRowIndex));
+
+        return commands;
+    }
+
+    RendererCommand getRendererCommand(final GridData model,
+                                       final GridBodyRenderContext context,
+                                       final BaseGridRendererHelper rendererHelper,
+                                       final GridColumn<?> column,
+                                       final int visibleRowIndex) {
+        return (rc) -> {
             if (!rc.isSelectionLayer()) {
                 if (model.getColumns().size() >= 1) {
 
@@ -493,9 +503,7 @@ public class BaseGridRenderer implements GridRenderer {
                                                         context));
                 }
             }
-        });
-
-        return commands;
+        };
     }
 
     Rectangle makeCellHighlight(final int rowIndex,
