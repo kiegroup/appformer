@@ -510,7 +510,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                      updatedSummary,
                                                                      oldChangeRequest.getDescription(),
                                                                      oldChangeRequest.getCreatedDate(),
-                                                                     oldChangeRequest.getStartCommitId());
+                                                                     oldChangeRequest.getStartCommitId(),
+                                                                     oldChangeRequest.getEndCommitId(),
+                                                                     oldChangeRequest.getMergeCommitId());
 
         spaceConfigStorageRegistry.get(spaceName).saveChangeRequest(repositoryAlias,
                                                                     updatedChangeRequest);
@@ -548,7 +550,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                      oldChangeRequest.getSummary(),
                                                                      updatedDescription,
                                                                      oldChangeRequest.getCreatedDate(),
-                                                                     oldChangeRequest.getStartCommitId());
+                                                                     oldChangeRequest.getStartCommitId(),
+                                                                     oldChangeRequest.getEndCommitId(),
+                                                                     oldChangeRequest.getMergeCommitId());
 
         spaceConfigStorageRegistry.get(spaceName).saveChangeRequest(repositoryAlias,
                                                                     updatedChangeRequest);
@@ -906,7 +910,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                               startCommitId,
                               lastCommitId)
                 .stream()
-                .sorted(Comparator.comparing(TextualDiff::getOldFilePath))
+                .sorted(Comparator.comparing(TextualDiff::getChangeType))
                 .map(textualDiff -> new ChangeRequestDiff(
                         createPath(sourceBranch.getPath().toURI(), textualDiff.getOldFilePath()),
                         createPath(targetBranch.getPath().toURI(), textualDiff.getNewFilePath()),
