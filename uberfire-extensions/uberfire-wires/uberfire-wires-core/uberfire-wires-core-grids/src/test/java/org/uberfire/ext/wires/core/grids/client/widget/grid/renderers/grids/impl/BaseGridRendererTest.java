@@ -46,6 +46,7 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.imp
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
@@ -289,9 +290,9 @@ public abstract class BaseGridRendererTest {
         when(renderingInformation.getMinVisibleRowIndex()).thenReturn(1);
         when(dataModel.getColumns()).thenReturn(columnsList);
 
-        final List<GridRenderer.RendererCommand> result = renderer.renderHighlightedCells(dataModel, context, rendererHelper, renderingInformation);
+        final GridRenderer.RendererCommand result = renderer.renderHighlightedCells(dataModel, context, rendererHelper, renderingInformation);
 
-        assertEquals(1, result.size());
+        assertNotNull(result);
     }
 
     @Test
@@ -327,6 +328,32 @@ public abstract class BaseGridRendererTest {
         cmd.execute(rc);
 
         verify(group).add(rectangle);
+    }
+
+    @Test
+    public void testAddRenderHighlightedCellsCommand() {
+
+        final GridData dataModel = mock(GridData.class);
+        final RenderingInformation renderingInformation = mock(RenderingInformation.class);
+        final List<GridRenderer.RendererCommand> commands = mock(List.class);
+        final int columnIndex = 1;
+        final int rowIndex = 1;
+        final GridRenderer.RendererCommand cmd = mock(GridRenderer.RendererCommand.class);
+
+        doReturn(columnIndex).when(renderer).getHighlightCellColumnIndex();
+        doReturn(rowIndex).when(renderer).getHighlightCellRowIndex();
+        doReturn(cmd).when(renderer).renderHighlightedCells(dataModel,
+                                                            context,
+                                                            rendererHelper,
+                                                            renderingInformation);
+
+        renderer.addRenderHighlightedCellsCommand(dataModel,
+                                                  context,
+                                                  rendererHelper,
+                                                  renderingInformation,
+                                                  commands);
+
+        verify(commands).add(cmd);
     }
 
     protected abstract boolean isSelectionLayer();

@@ -405,14 +405,22 @@ public class BaseGridRenderer implements GridRenderer {
             }
         }
 
-        if (!Objects.isNull(getHighlightCellColumnIndex()) && !Objects.isNull(getHighlightCellRowIndex())) {
-            commands.addAll(renderHighlightedCells(model,
-                                                   context,
-                                                   rendererHelper,
-                                                   renderingInformation));
-        }
+        addRenderHighlightedCellsCommand(model, context, rendererHelper, renderingInformation, commands);
 
         return commands;
+    }
+
+    void addRenderHighlightedCellsCommand(final GridData model,
+                                          final GridBodyRenderContext context,
+                                          final BaseGridRendererHelper rendererHelper,
+                                          final BaseGridRendererHelper.RenderingInformation renderingInformation,
+                                          final List<RendererCommand> commands) {
+        if (!Objects.isNull(getHighlightCellColumnIndex()) && !Objects.isNull(getHighlightCellRowIndex())) {
+            commands.add(renderHighlightedCells(model,
+                                                context,
+                                                rendererHelper,
+                                                renderingInformation));
+        }
     }
 
     @Override
@@ -470,20 +478,18 @@ public class BaseGridRenderer implements GridRenderer {
         return highlightCellRowIndex;
     }
 
-    List<RendererCommand> renderHighlightedCells(final GridData model,
-                                                 final GridBodyRenderContext context,
-                                                 final BaseGridRendererHelper rendererHelper,
-                                                 final BaseGridRendererHelper.RenderingInformation renderingInformation) {
-
-        final List<RendererCommand> commands = new ArrayList<>();
+    RendererCommand renderHighlightedCells(final GridData model,
+                                           final GridBodyRenderContext context,
+                                           final BaseGridRendererHelper rendererHelper,
+                                           final BaseGridRendererHelper.RenderingInformation renderingInformation) {
 
         final GridColumn<?> column = model.getColumns().get(getHighlightCellColumnIndex());
 
         final int visibleRowIndex = getHighlightCellRowIndex() - renderingInformation.getMinVisibleRowIndex();
 
-        commands.add(getRendererCommand(model, context, rendererHelper, column, visibleRowIndex));
+        final RendererCommand renderCommand = getRendererCommand(model, context, rendererHelper, column, visibleRowIndex);
 
-        return commands;
+        return renderCommand;
     }
 
     RendererCommand getRendererCommand(final GridData model,
