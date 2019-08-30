@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.uberfire.java.nio.fs.jgit.util.Git;
@@ -73,9 +72,8 @@ public class MapDiffContent {
 
         diffs.forEach(entry -> {
             if (entry.getChangeType() != DiffEntry.ChangeType.DELETE) {
-                final InputStream inputStream = git.blobAsInputStream(branch,
-                                                                      entry.getNewPath());
-                try {
+                try (final InputStream inputStream = git.blobAsInputStream(branch,
+                                                                           entry.getNewPath())) {
                     final File file = File.createTempFile("gitz",
                                                           "woot");
 
@@ -87,8 +85,6 @@ public class MapDiffContent {
                                 file);
                 } catch (IOException e) {
                     throw new GitException("Unable to get content from diffs", e);
-                } finally {
-                    IOUtils.closeQuietly(inputStream);
                 }
             } else {
                 content.put(entry.getOldPath(),

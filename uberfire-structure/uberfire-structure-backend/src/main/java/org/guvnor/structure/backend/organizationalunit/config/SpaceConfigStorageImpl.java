@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.spaces.SpacesAPI;
@@ -166,18 +167,20 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         if (objectStorage.exists(changeRequestsFolderPath)) {
             final Path changeRequestsFolder = objectStorage.getPath(changeRequestsFolderPath);
 
-            ioService.newDirectoryStream(changeRequestsFolder,
-                                         entry -> Files.isDirectory(entry))
-                    .forEach(crDir -> {
-                        try {
-                            Long id = Long.valueOf(crDir.getFileName().toString());
-                            changeRequestIds.add(id);
-                        } catch (NumberFormatException e) {
-                            logger.error("Cannot convert folder name to long: ", e);
-                        } catch (Exception e) {
-                            logger.error("An unexpected exception was thrown: ", e);
-                        }
-            });
+            try (DirectoryStream<Path> directoryStream =
+                         ioService.newDirectoryStream(changeRequestsFolder,
+                                                      Files::isDirectory)) {
+                directoryStream.forEach(crDir -> {
+                    try {
+                        Long id = Long.valueOf(crDir.getFileName().toString());
+                        changeRequestIds.add(id);
+                    } catch (NumberFormatException e) {
+                        logger.error("Cannot convert folder name to long: ", e);
+                    } catch (Exception e) {
+                        logger.error("An unexpected exception was thrown: ", e);
+                    }
+                });
+            }
         }
 
         return changeRequestIds;
@@ -244,18 +247,20 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         if (objectStorage.exists(changeRequestCommentsPathStr)) {
             final Path changeRequestCommentsFolder = objectStorage.getPath(changeRequestCommentsPathStr);
 
-            ioService.newDirectoryStream(changeRequestCommentsFolder,
-                                         entry -> Files.isRegularFile(entry))
-                    .forEach(commentFile -> {
-                        try {
-                            Long id = Long.valueOf(FilenameUtils.getBaseName(commentFile.getFileName().toString()));
-                            changeRequestCommentIds.add(id);
-                        } catch (NumberFormatException e) {
-                            logger.error("Cannot convert folder name to long: ", e);
-                        } catch (Exception e) {
-                            logger.error("An unexpected exception was thrown: ", e);
-                        }
-                    });
+            try (DirectoryStream<Path> directoryStream =
+                         ioService.newDirectoryStream(changeRequestCommentsFolder,
+                                                      Files::isRegularFile)) {
+                directoryStream.forEach(commentFile -> {
+                    try {
+                        Long id = Long.valueOf(FilenameUtils.getBaseName(commentFile.getFileName().toString()));
+                        changeRequestCommentIds.add(id);
+                    } catch (NumberFormatException e) {
+                        logger.error("Cannot convert folder name to long: ", e);
+                    } catch (Exception e) {
+                        logger.error("An unexpected exception was thrown: ", e);
+                    }
+                });
+            }
         }
 
         return changeRequestCommentIds;

@@ -25,6 +25,10 @@ import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestSta
 
 public class ChangeRequestPredicates {
 
+    private ChangeRequestPredicates(){
+
+    }
+
     public static Predicate<ChangeRequest> matchAll() {
         return elem -> true;
     }

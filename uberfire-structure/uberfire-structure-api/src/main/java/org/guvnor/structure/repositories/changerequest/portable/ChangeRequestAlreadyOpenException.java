@@ -24,7 +24,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 @Portable
 public class ChangeRequestAlreadyOpenException extends RuntimeException {
 
-    private Long changeRequestId;
+    private final Long changeRequestId;
 
     public ChangeRequestAlreadyOpenException(@MapsTo("changeRequestId") final Long changeRequestId) {
         super("Change request already open with id #" + changeRequestId);

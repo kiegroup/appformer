@@ -652,7 +652,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                           false,
                                                           ChangeRequestPredicates.matchId(changeRequestId));
 
-        if (changeRequests.size() == 0) {
+        if (changeRequests.isEmpty()) {
             throw new NoSuchElementException("Unable to find the change request with id #" + changeRequestId);
         }
 
@@ -936,7 +936,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                 final ChangeRequest changeRequest) {
         return getConflicts(repository,
                             changeRequest.getSourceBranch(),
-                            changeRequest.getTargetBranch()).size() == 0;
+                            changeRequest.getTargetBranch()).isEmpty();
     }
 
     private boolean tryMergeChangeRequest(final Repository repository,

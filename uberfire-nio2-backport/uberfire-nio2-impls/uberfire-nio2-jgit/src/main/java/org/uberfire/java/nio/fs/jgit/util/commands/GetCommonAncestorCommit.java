@@ -43,12 +43,12 @@ public class GetCommonAncestorCommit {
 
     public RevCommit execute() {
         try (final RevWalk revWalk = new RevWalk(git.getRepository())) {
-            final RevCommit commitA = revWalk.lookupCommit(this.commitA);
-            final RevCommit commitB = revWalk.lookupCommit(this.commitB);
+            final RevCommit validatedCommitA = revWalk.lookupCommit(this.commitA);
+            final RevCommit validatedCommitB = revWalk.lookupCommit(this.commitB);
 
             revWalk.setRevFilter(RevFilter.MERGE_BASE);
-            revWalk.markStart(commitA);
-            revWalk.markStart(commitB);
+            revWalk.markStart(validatedCommitA);
+            revWalk.markStart(validatedCommitB);
             return revWalk.next();
         } catch (Exception e) {
             throw new GitException("Error when trying to get common ancestor",

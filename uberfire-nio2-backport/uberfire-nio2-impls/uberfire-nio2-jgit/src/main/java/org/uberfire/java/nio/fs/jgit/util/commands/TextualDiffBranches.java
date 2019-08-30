@@ -147,8 +147,8 @@ public class TextualDiffBranches {
                                                linesDeleted,
                                                diffText);
                     }).collect(Collectors.toList());
-        } catch (final Exception ex) {
-            throw new RuntimeException(ex);
+        } catch (final Exception e) {
+            throw new GitException("Unable to get textual diff", e);
         }
     }
 

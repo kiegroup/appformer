@@ -416,7 +416,7 @@ public class ChangeRequestServiceTest {
                                                                           "find");
 
         assertThat(actualList.getChangeRequests()).isNotEmpty();
-        assertEquals((int) actualList.getChangeRequests().size(), 10);
+        assertEquals(10, (int) actualList.getChangeRequests().size());
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -425,7 +425,7 @@ public class ChangeRequestServiceTest {
                                                "find");
 
         assertThat(actualList.getChangeRequests()).isNotEmpty();
-        assertEquals((int) actualList.getChangeRequests().size(), 10);
+        assertEquals(10, (int) actualList.getChangeRequests().size());
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -434,7 +434,7 @@ public class ChangeRequestServiceTest {
                                                "find");
 
         assertThat(actualList.getChangeRequests()).isNotEmpty();
-        assertEquals((int) actualList.getChangeRequests().size(), 6);
+        assertEquals(6, (int) actualList.getChangeRequests().size());
     }
 
     @Test
@@ -468,7 +468,7 @@ public class ChangeRequestServiceTest {
                                                                           "find");
 
         assertThat(actualList.getChangeRequests()).isNotEmpty();
-        assertEquals((int) actualList.getChangeRequests().size(), 10);
+        assertEquals(10, (int) actualList.getChangeRequests().size());
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -478,7 +478,7 @@ public class ChangeRequestServiceTest {
                                                "find");
 
         assertThat(actualList.getChangeRequests()).isNotEmpty();
-        assertEquals((int) actualList.getChangeRequests().size(), 10);
+        assertEquals(10, (int) actualList.getChangeRequests().size());
 
         actualList = service.getChangeRequests("mySpace",
                                                "myRepository",
@@ -488,7 +488,7 @@ public class ChangeRequestServiceTest {
                                                "find");
 
         assertThat(actualList.getChangeRequests()).isNotEmpty();
-        assertEquals((int) actualList.getChangeRequests().size(), 6);
+        assertEquals(6, (int) actualList.getChangeRequests().size());
     }
 
     @Test
@@ -932,7 +932,7 @@ public class ChangeRequestServiceTest {
                                                                               0,
                                                                               0);
 
-        assertEquals((int) paginatedList.getChangeRequestComments().size(), 3);
+        assertEquals(3, (int) paginatedList.getChangeRequestComments().size());
     }
 
     @Test
@@ -965,10 +965,10 @@ public class ChangeRequestServiceTest {
                                             3,
                                             10).getChangeRequestComments().size();
 
-        assertEquals(page0Size, 10);
-        assertEquals(page1Size, 10);
-        assertEquals(page2Size, 5);
-        assertEquals(page3Size, 0);
+        assertEquals(10, page0Size);
+        assertEquals(10, page1Size);
+        assertEquals(5, page2Size);
+        assertEquals(0, page3Size);
     }
 
     @Test
