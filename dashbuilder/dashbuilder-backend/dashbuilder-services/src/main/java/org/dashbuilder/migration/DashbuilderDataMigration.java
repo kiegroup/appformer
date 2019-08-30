@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.commons.services.cdi.Startup;
+import org.uberfire.commons.services.cdi.StartupType;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.FileSystem;
@@ -50,7 +51,7 @@ import org.uberfire.spaces.SpacesAPI;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 @ApplicationScoped
-@Startup
+@Startup(value = StartupType.BOOTSTRAP, priority = Integer.MAX_VALUE)
 public class DashbuilderDataMigration {
     private static final Logger LOGGER = LoggerFactory.getLogger(DashbuilderDataMigration.class);
 
