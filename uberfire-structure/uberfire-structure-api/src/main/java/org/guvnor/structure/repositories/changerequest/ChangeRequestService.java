@@ -162,14 +162,14 @@ public interface ChangeRequestService {
      *
      * @param spaceName        the space containing the origin repository
      * @param repositoryAlias  the origin repository
-     * @param sourceBranchName the source branch
-     * @param targetBranchName the target branch
+     * @param sourceBranch the source branch
+     * @param targetBranch the target branch
      * @return The list of differences between files.
      */
     List<ChangeRequestDiff> getDiff(final String spaceName,
                                     final String repositoryAlias,
-                                    final String sourceBranchName,
-                                    final String targetBranchName);
+                                    final String sourceBranch,
+                                    final String targetBranch);
 
     /**
      * Obtains differences between branches involved in the given change request.

@@ -25,7 +25,7 @@ import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestSta
 
 public class ChangeRequestPredicates {
 
-    private ChangeRequestPredicates(){
+    private ChangeRequestPredicates() {
 
     }
 

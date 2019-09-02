@@ -81,6 +81,23 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 @ApplicationScoped
 public class ChangeRequestServiceImpl implements ChangeRequestService {
 
+    // Avoiding string duplication - SonarCloud
+    private static final String SPACE_NAME_PARAM = "spaceName";
+    private static final String REPOSITORY_ALIAS_PARAM = "repositoryAlias";
+    private static final String STATUS_LIST_PARAM = "statusList";
+    private static final String CHANGE_REQUEST_ID_PARAM = "changeRequestId";
+    private static final String PAGE_PARAM = "page";
+    private static final String PAGE_SIZE_PARAM = "pageSize";
+    private static final String SOURCE_BRANCH_PARAM = "sourceBranch";
+    private static final String TARGET_BRANCH_PARAM = "targetBranch";
+    private static final String SUMMARY_PARAM = "summary";
+    private static final String DESCRIPTION_PARAM = "description";
+    private static final String ASSOCIATED_BRANCH_NAME_PARAM = "associatedBranchName";
+    private static final String TEXT_PARAM = "text";
+    private static final String COMMENT_ID_PARAM = "commentId";
+    private static final String UPDATED_SUMMARY_PARAM = "updatedSummary";
+    private static final String UPDATED_DESCRIPTION_PARAM = "updatedDescription";
+
     private final SpaceConfigStorageRegistry spaceConfigStorageRegistry;
     private final RepositoryService repositoryService;
     private final SpacesAPI spaces;
@@ -118,12 +135,12 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                              final String targetBranch,
                                              final String summary,
                                              final String description) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotEmpty("sourceBranch", sourceBranch);
-        checkNotEmpty("targetBranch", targetBranch);
-        checkNotEmpty("summary", summary);
-        checkNotEmpty("description", description);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotEmpty(SOURCE_BRANCH_PARAM, sourceBranch);
+        checkNotEmpty(TARGET_BRANCH_PARAM, targetBranch);
+        checkNotEmpty(SUMMARY_PARAM, summary);
+        checkNotEmpty(DESCRIPTION_PARAM, description);
 
         checkChangeRequestAlreadyOpen(spaceName,
                                       repositoryAlias,
@@ -161,8 +178,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     @Override
     public List<ChangeRequest> getChangeRequests(final String spaceName,
                                                  final String repositoryAlias) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -179,8 +196,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public List<ChangeRequest> getChangeRequests(final String spaceName,
                                                  final String repositoryAlias,
                                                  final String filter) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -200,9 +217,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public List<ChangeRequest> getChangeRequests(final String spaceName,
                                                  final String repositoryAlias,
                                                  final List<ChangeRequestStatus> statusList) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotEmpty("statusList", statusList);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotEmpty(STATUS_LIST_PARAM, statusList);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -220,9 +237,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                  final String repositoryAlias,
                                                  final List<ChangeRequestStatus> statusList,
                                                  final String filter) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotEmpty("statusList", statusList);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotEmpty(STATUS_LIST_PARAM, statusList);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(
@@ -245,10 +262,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                         final Integer page,
                                                         final Integer pageSize,
                                                         final String filter) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("page", page);
-        checkNotNull("pageSize", pageSize);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(PAGE_PARAM, page);
+        checkNotNull(PAGE_SIZE_PARAM, pageSize);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -278,11 +295,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                         final Integer pageSize,
                                                         final List<ChangeRequestStatus> statusList,
                                                         final String filter) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("page", page);
-        checkNotNull("pageSize", pageSize);
-        checkNotEmpty("statusList", statusList);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(PAGE_PARAM, page);
+        checkNotNull(PAGE_SIZE_PARAM, pageSize);
+        checkNotEmpty(STATUS_LIST_PARAM, statusList);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -310,9 +327,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public ChangeRequest getChangeRequest(final String spaceName,
                                           final String repositoryAlias,
                                           final Long changeRequestId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
 
         return getChangeRequestById(spaceName,
                                     repositoryAlias,
@@ -323,8 +340,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     @Override
     public ChangeRequestCountSummary countChangeRequests(final String spaceName,
                                                          final String repositoryAlias) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
 
         final List<ChangeRequest> changeRequests =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -344,19 +361,19 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     @Override
     public List<ChangeRequestDiff> getDiff(final String spaceName,
                                            final String repositoryAlias,
-                                           final String sourceBranchName,
-                                           final String targetBranchName) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("sourceBranchName", sourceBranchName);
-        checkNotNull("targetBranchName", targetBranchName);
+                                           final String sourceBranch,
+                                           final String targetBranch) {
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(SOURCE_BRANCH_PARAM, sourceBranch);
+        checkNotNull(TARGET_BRANCH_PARAM, targetBranch);
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
 
         return getDiff(repository,
-                       sourceBranchName,
-                       targetBranchName,
+                       sourceBranch,
+                       targetBranch,
                        null,
                        null);
     }
@@ -365,9 +382,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public List<ChangeRequestDiff> getDiff(final String spaceName,
                                            final String repositoryAlias,
                                            final Long changeRequestId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
@@ -388,9 +405,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public void deleteChangeRequests(final String spaceName,
                                      final String repositoryAlias,
                                      final String associatedBranchName) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotEmpty("associatedBranchName", associatedBranchName);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotEmpty(ASSOCIATED_BRANCH_NAME_PARAM, associatedBranchName);
 
         final List<ChangeRequest> changeRequestsToDelete =
                 getFilteredChangeRequestsFromStorage(spaceName,
@@ -415,9 +432,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public void rejectChangeRequest(final String spaceName,
                                     final String repositoryAlias,
                                     final Long changeRequestId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
 
         final ChangeRequest changeRequest = getChangeRequestById(spaceName,
                                                                  repositoryAlias,
@@ -438,9 +455,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public Boolean acceptChangeRequest(final String spaceName,
                                        final String repositoryAlias,
                                        final Long changeRequestId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
 
         final ChangeRequest changeRequest = getChangeRequestById(spaceName,
                                                                  repositoryAlias,
@@ -462,9 +479,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     public Boolean revertChangeRequest(final String spaceName,
                                        final String repositoryAlias,
                                        final Long changeRequestId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
 
         final ChangeRequest changeRequest = getChangeRequestById(spaceName,
                                                                  repositoryAlias,
@@ -487,10 +504,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                            final String repositoryAlias,
                                            final Long changeRequestId,
                                            final String updatedSummary) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
-        checkNotEmpty("updatedSummary", updatedSummary);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
+        checkNotEmpty(UPDATED_SUMMARY_PARAM, updatedSummary);
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
@@ -527,10 +544,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                final String repositoryAlias,
                                                final Long changeRequestId,
                                                final String updatedDescription) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
-        checkNotEmpty("updatedDescription", updatedDescription);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
+        checkNotEmpty(UPDATED_DESCRIPTION_PARAM, updatedDescription);
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
@@ -568,9 +585,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                          final Long changeRequestId,
                                                          final Integer page,
                                                          final Integer pageSize) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
 
         final List<ChangeRequestComment> comments =
                 spaceConfigStorageRegistry.get(spaceName).loadChangeRequestComments(repositoryAlias,
@@ -594,10 +611,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                            final String repositoryAlias,
                            final Long changeRequestId,
                            final String text) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
-        checkNotEmpty("text", text);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
+        checkNotEmpty(TEXT_PARAM, text);
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
@@ -625,10 +642,10 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                               final String repositoryAlias,
                               final Long changeRequestId,
                               final Long commentId) {
-        checkNotEmpty("spaceName", spaceName);
-        checkNotEmpty("repositoryAlias", repositoryAlias);
-        checkNotNull("changeRequestId", changeRequestId);
-        checkNotNull("commentId", commentId);
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
+        checkNotNull(COMMENT_ID_PARAM, commentId);
 
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
@@ -894,11 +911,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                             final String targetBranchName,
                                             final String startCommitId,
                                             final String lastCommitId) {
-        final Branch sourceBranch = repository.getBranch(sourceBranchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + sourceBranchName + " does not exist"));
+        final Branch sourceBranch = resolveBranch(repository,
+                                                  sourceBranchName);
 
-        final Branch targetBranch = repository.getBranch(targetBranchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + targetBranchName + " does not exist"));
+        final Branch targetBranch = resolveBranch(repository,
+                                                  targetBranchName);
 
         final List<String> conflicts = getConflicts(repository,
                                                     sourceBranchName,
@@ -921,6 +938,12 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                         conflicts.contains(textualDiff.getOldFilePath()) ||
                                 conflicts.contains(textualDiff.getNewFilePath())
                 )).collect(Collectors.toList());
+    }
+
+    private Branch resolveBranch(final Repository repository,
+                                 final String branchName) {
+        return repository.getBranch(branchName)
+                .orElseThrow(() -> new IllegalStateException("The branch " + branchName + " does not exist"));
     }
 
     private int countChangeRequestDiffs(final Repository repository,
@@ -1213,8 +1236,8 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
 
     JGitFileSystem getFileSystemFromBranch(final Repository repository,
                                            final String branchName) {
-        final Branch branch = repository.getBranch(branchName)
-                .orElseThrow(() -> new IllegalStateException("The branch " + branchName + " does not exist"));
+        final Branch branch = resolveBranch(repository,
+                                            branchName);
 
         return ((JGitPathImpl) Paths.convert(branch.getPath())).getFileSystem();
     }

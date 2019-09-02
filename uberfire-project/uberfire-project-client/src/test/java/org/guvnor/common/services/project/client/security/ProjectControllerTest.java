@@ -604,6 +604,22 @@ public class ProjectControllerTest {
     }
 
     @Test
+    public void userCannotSubmitChangeRequestWhenInMasterBranchTest() {
+        WorkspaceProject project = mock(WorkspaceProject.class);
+        Branch master = mock(Branch.class);
+        doReturn("master").when(master).getName();
+        doReturn(master).when(project).getBranch();
+
+        projectController.canSubmitChangeRequest(project).then(userCanSubmitChangeRequest -> {
+            assertFalse(userCanSubmitChangeRequest);
+            return promises.resolve();
+        }).catch_(error -> {
+            fail();
+            return promises.resolve();
+        });
+    }
+
+    @Test
     public void projectContributorCanDeleteBranchTest() {
         final WorkspaceProject project = getProject();
         doReturn(promises.resolve(Optional.of(new RolePermissions("CONTRIBUTOR", true, true, true, true))))
@@ -639,6 +655,34 @@ public class ProjectControllerTest {
                                             user)).thenReturn(true);
         projectController.getUpdatableBranches(project).then(branches -> {
             assertEquals(2, branches.size());
+            return promises.resolve();
+        }).catch_(error -> {
+            fail();
+            return promises.resolve();
+        });
+    }
+
+    @Test
+    public void userCanReadAllBranchesTest() {
+        final WorkspaceProject project = getProject();
+        when(authorizationManager.authorize(project.getRepository(),
+                                            RepositoryAction.READ,
+                                            user)).thenReturn(true);
+        projectController.getReadableBranches(project).then(branches -> {
+            assertEquals(2, branches.size());
+            return promises.resolve();
+        }).catch_(error -> {
+            fail();
+            return promises.resolve();
+        });
+    }
+
+    @Test
+    public void getReadableBranchesWhenInvalidModuleTest() {
+        WorkspaceProject project = mock(WorkspaceProject.class);
+
+        projectController.getReadableBranches(project).then(branches -> {
+            assertEquals(0, branches.size());
             return promises.resolve();
         }).catch_(error -> {
             fail();

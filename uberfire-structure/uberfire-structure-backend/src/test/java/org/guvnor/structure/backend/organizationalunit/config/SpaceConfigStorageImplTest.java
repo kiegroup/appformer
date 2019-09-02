@@ -233,6 +233,21 @@ public class SpaceConfigStorageImplTest {
     }
 
     @Test
+    public void getChangeRequestIdsSkipInvalidIdsTest() {
+        final org.uberfire.java.nio.file.Path crsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests"));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/invalid-id/information.cr")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
+
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests");
+        doReturn(crsPath).when(objectStorage).getPath("/MyProject/change_requests");
+
+        final List<Long> ids = spaceConfigStorage.getChangeRequestIds("MyProject");
+
+        assertSame(1, ids.size());
+        assertSame(1L, ids.get(0));
+    }
+
+    @Test
     public void getChangeRequestIdsNoResultsTest() {
         final org.uberfire.java.nio.file.Path crsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests"));
         fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/information.cr")));
@@ -333,6 +348,24 @@ public class SpaceConfigStorageImplTest {
         assertSame(1L, ids.get(0));
         assertSame(20L, ids.get(1));
         assertSame(30L, ids.get(2));
+    }
+
+    @Test
+    public void getChangeRequestCommentIdsSkipInvalidIdsTest() {
+        final org.uberfire.java.nio.file.Path commentsPath = fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments"));
+
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/1.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/20.comment")));
+        fileSystemTestingUtils.getIoService().createFile(fileSystemTestingUtils.getIoService().get(URI.create(PATH_PREFIX + "MyProject/change_requests/1/comments/invalid-id.comment")));
+
+        doReturn(true).when(objectStorage).exists("/MyProject/change_requests/1/comments");
+        doReturn(commentsPath).when(objectStorage).getPath("/MyProject/change_requests/1/comments");
+
+        final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyProject", 1L);
+
+        assertSame(2, ids.size());
+        assertSame(1L, ids.get(0));
+        assertSame(20L, ids.get(1));
     }
 
     @Test

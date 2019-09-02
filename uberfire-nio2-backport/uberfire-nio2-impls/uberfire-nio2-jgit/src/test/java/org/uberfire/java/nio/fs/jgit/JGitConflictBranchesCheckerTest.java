@@ -28,6 +28,7 @@ import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.GitImpl;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateRepository;
+import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -108,5 +109,10 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
         List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isEmpty();
+    }
+
+    @Test(expected = GitException.class)
+    public void testInvalidBranch() {
+        git.conflictBranchesChecker(MASTER_BRANCH, "invalid-branch");
     }
 }

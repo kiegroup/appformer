@@ -59,12 +59,15 @@ public class JGitGetCommonAncestorCommitTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file", content("file.txt", "file content 3"));
         commit(git, DEVELOP_BRANCH, "Updating file", content("file.txt", "file content 4"));
 
-        RevCommit lastMasterCommit = git.getLastCommit(MASTER_BRANCH);
-        RevCommit lastDevCommit = git.getLastCommit(DEVELOP_BRANCH);
-
-        RevCommit actualCommonAncestorCommit = git.getCommonAncestorCommit(lastMasterCommit.getName(),
-                                                                           lastDevCommit.getName());
+        RevCommit actualCommonAncestorCommit = git.getCommonAncestorCommit(MASTER_BRANCH,
+                                                                           DEVELOP_BRANCH);
 
         assertThat(actualCommonAncestorCommit.getName()).isEqualTo(expectedCommonAncestorCommit.getName());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidBranchTest() {
+        git.getCommonAncestorCommit(MASTER_BRANCH,
+                                    "invalid-branch");
     }
 }

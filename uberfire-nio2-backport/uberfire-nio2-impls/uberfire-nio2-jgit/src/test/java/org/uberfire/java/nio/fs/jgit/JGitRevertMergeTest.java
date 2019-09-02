@@ -46,7 +46,6 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
     private static final String[] COMMON_TXT_LINES = {"Line1", "Line2", "Line3", "Line4"};
 
     private String commonAncestorCommitId;
-    private String mergeCommitId;
 
     @Before
     public void setup() throws IOException {
@@ -73,7 +72,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     @Test(expected = GitException.class)
     public void testInvalidSourceBranch() {
-        doMerge();
+        String mergeCommitId = doMerge();
 
         git.revertMerge("invalid-branch",
                         MASTER_BRANCH,
@@ -83,7 +82,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     @Test(expected = GitException.class)
     public void testInvalidTargetBranch() {
-        doMerge();
+        String mergeCommitId = doMerge();
 
         git.revertMerge(DEVELOP_BRANCH,
                         "invalid-branch",
@@ -93,9 +92,9 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     @Test
     public void testRevertFailedMergeIsNotLastTargetCommit() throws IOException {
-        doMerge();
+        String mergeCommitId = doMerge();
 
-        commit(git, DEVELOP_BRANCH, "Updating file",
+        commit(git, MASTER_BRANCH, "Updating file",
                content(TXT_FILES.get(0), "new content"));
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
@@ -111,7 +110,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
         commit(git, MASTER_BRANCH, "Updating file",
                content(TXT_FILES.get(0), "new content"));
 
-        doMerge();
+        String mergeCommitId = doMerge();
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
                                          MASTER_BRANCH,
@@ -123,7 +122,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     @Test
     public void testRevertFailedMergeSourceParentIsNotLastSourceCommit() throws IOException {
-        doMerge();
+        String mergeCommitId = doMerge();
 
         commit(git, DEVELOP_BRANCH, "Updating file",
                content(TXT_FILES.get(0), "new content"));
@@ -138,7 +137,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     @Test
     public void testRevertSucceeded() {
-        doMerge();
+        String mergeCommitId = doMerge();
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
                                          MASTER_BRANCH,
@@ -148,11 +147,11 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
         assertThat(result).isTrue();
     }
 
-    private void doMerge() {
+    private String doMerge() {
         git.merge(DEVELOP_BRANCH,
                   MASTER_BRANCH,
                   true);
 
-        mergeCommitId = git.getLastCommit(MASTER_BRANCH).getName();
+        return git.getLastCommit(MASTER_BRANCH).getName();
     }
 }

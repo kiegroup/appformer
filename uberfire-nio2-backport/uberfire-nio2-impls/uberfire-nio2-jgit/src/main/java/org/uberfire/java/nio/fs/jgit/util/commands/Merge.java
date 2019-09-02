@@ -64,7 +64,7 @@ public class Merge {
         this(git,
              sourceBranch,
              targetBranch,
-             true);
+             false);
     }
 
     public Merge(final Git git,
@@ -117,9 +117,9 @@ public class Merge {
                                                         git.getTreeFromRef(sourceBranch));
 
         if (diffBetweenBranches.isEmpty()) {
-            logger.info(String.format("There is nothing to merge from branch <%s> to <%s>",
-                                      sourceBranch,
-                                      targetBranch));
+            logger.info("There is nothing to merge from branch {} to {}",
+                        sourceBranch,
+                        targetBranch);
             return Collections.emptyList();
         }
 
