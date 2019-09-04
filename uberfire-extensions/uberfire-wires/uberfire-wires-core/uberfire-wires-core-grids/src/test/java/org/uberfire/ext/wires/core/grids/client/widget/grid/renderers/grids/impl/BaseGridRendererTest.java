@@ -364,11 +364,31 @@ public abstract class BaseGridRendererTest {
         renderer.highlightCell(0, 0);
         renderer.clearCellHighlight();
 
-        Integer rowIndex = renderer.getHighlightCellRowIndex();
-        Integer columnIndex = renderer.getHighlightCellColumnIndex();
+        final Integer rowIndex = renderer.getHighlightCellRowIndex();
+        final Integer columnIndex = renderer.getHighlightCellColumnIndex();
 
         assertTrue(Objects.isNull(rowIndex));
         assertTrue(Objects.isNull(columnIndex));
+    }
+
+    @Test
+    public void testGetFirstRowIndexOfMergedBlock() {
+
+        final GridData dataModel = mock(GridData.class);
+        final int rowIndex = 2;
+
+        final GridCell cell2 = mock(GridCell.class);
+        when(cell2.getMergedCellCount()).thenReturn(0);
+        when(dataModel.getCell(2, 0)).thenReturn(cell2);
+
+        final GridCell cell1 = mock(GridCell.class);
+        when(cell1.getMergedCellCount()).thenReturn(1);
+        when(dataModel.getCell(1, 0)).thenReturn(cell1);
+
+        renderer.highlightCell(0, 0);
+        final int actual = renderer.getFirstRowIndexOfMergedBlock(dataModel, rowIndex);
+
+        assertEquals(1, actual);
     }
 
     protected abstract boolean isSelectionLayer();
