@@ -18,6 +18,7 @@ package org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.imp
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.Rectangle;
@@ -47,6 +48,7 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.themes.imp
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
@@ -354,6 +356,19 @@ public abstract class BaseGridRendererTest {
                                                   commands);
 
         verify(commands).add(cmd);
+    }
+
+    @Test
+    public void testClearCellHighlight() {
+
+        renderer.highlightCell(0, 0);
+        renderer.clearCellHighlight();
+
+        Integer rowIndex = renderer.getHighlightCellRowIndex();
+        Integer columnIndex = renderer.getHighlightCellColumnIndex();
+
+        assertTrue(Objects.isNull(rowIndex));
+        assertTrue(Objects.isNull(columnIndex));
     }
 
     protected abstract boolean isSelectionLayer();
