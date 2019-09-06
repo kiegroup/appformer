@@ -147,21 +147,21 @@ public class SaveAndRenameCommandBuilder<T, M> {
         };
     }
 
-    CommandWithFileNameAndCommitMessage makeSaveAndRenameCommand() {
+    protected CommandWithFileNameAndCommitMessage makeSaveAndRenameCommand() {
         return (details) -> {
             showBusyIndicator();
             callSaveAndRename(details);
         };
     }
 
-    CommandWithFileNameAndCommitMessage makeRenameCommand() {
+    protected CommandWithFileNameAndCommitMessage makeRenameCommand() {
         return (details) -> {
             showBusyIndicator();
             callRename(details);
         };
     }
 
-    void callSaveAndRename(final FileNameAndCommitMessage details) {
+    protected void callSaveAndRename(final FileNameAndCommitMessage details) {
 
         final String newFileName = details.getNewFileName();
         final String commitMessage = details.getCommitMessage();
@@ -175,7 +175,7 @@ public class SaveAndRenameCommandBuilder<T, M> {
                                                                 commitMessage);
     }
 
-    void callRename(final FileNameAndCommitMessage details) {
+    protected void callRename(final FileNameAndCommitMessage details) {
 
         final String newFileName = details.getNewFileName();
         final String commitMessage = details.getCommitMessage();
@@ -185,7 +185,7 @@ public class SaveAndRenameCommandBuilder<T, M> {
                                                          commitMessage);
     }
 
-    RemoteCallback<Path> onSuccess() {
+    protected RemoteCallback<Path> onSuccess() {
         return (Path path) -> {
             notifyRenameInProgress();
             onSuccess.execute(path);
