@@ -285,7 +285,7 @@ public abstract class BaseEditor<T, M> {
                 .build();
     }
 
-    Supplier<Boolean> getSaveValidator() {
+    protected Supplier<Boolean> getSaveValidator() {
 
         return () -> {
 

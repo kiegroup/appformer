@@ -62,6 +62,8 @@ public class SaveAndRenameCommandBuilder<T, M> {
     };
     private Command onError = () -> {
     };
+    private Command beforeSaveAndRenameCommand = () -> {
+    };
 
     @Inject
     public SaveAndRenameCommandBuilder(final RenamePopUpPresenter renamePopUpPresenter,
@@ -120,6 +122,11 @@ public class SaveAndRenameCommandBuilder<T, M> {
         return this;
     }
 
+    public SaveAndRenameCommandBuilder<T, M> addBeforeSaveAndRenameCommand(final Command beforeSaveAndRenameCommand) {
+        this.beforeSaveAndRenameCommand = beforeSaveAndRenameCommand;
+        return this;
+    }
+
     public Command build() {
 
         checkNotNull("pathSupplier", pathSupplier);
@@ -158,6 +165,8 @@ public class SaveAndRenameCommandBuilder<T, M> {
 
         final String newFileName = details.getNewFileName();
         final String commitMessage = details.getCommitMessage();
+
+        beforeSaveAndRenameCommand.execute();
 
         renameCaller.call(onSuccess(), onError()).saveAndRename(getPath(),
                                                                 newFileName,
