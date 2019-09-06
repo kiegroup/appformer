@@ -185,7 +185,7 @@ public class SaveAndRenameCommandBuilder<T, M> {
                                                          commitMessage);
     }
 
-    protected RemoteCallback<Path> onSuccess() {
+    RemoteCallback<Path> onSuccess() {
         return (Path path) -> {
             notifyRenameInProgress();
             onSuccess.execute(path);
