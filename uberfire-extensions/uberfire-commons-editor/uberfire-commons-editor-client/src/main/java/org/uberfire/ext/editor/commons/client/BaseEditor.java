@@ -282,7 +282,14 @@ public abstract class BaseEditor<T, M> {
                 .addContentSupplier(getContentSupplier())
                 .addIsDirtySupplier(isDirtySupplier())
                 .addSuccessCallback(onSuccess())
+                .addBeforeSaveAndRenameCommand(getBeforeSaveAndRenameCommand())
                 .build();
+    }
+
+    protected Command getBeforeSaveAndRenameCommand() {
+        return () -> {
+
+        };
     }
 
     protected Supplier<Boolean> getSaveValidator() {
