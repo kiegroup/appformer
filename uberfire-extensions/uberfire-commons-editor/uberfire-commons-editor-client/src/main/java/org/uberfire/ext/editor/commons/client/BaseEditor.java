@@ -288,7 +288,6 @@ public abstract class BaseEditor<T, M> {
 
     protected Command getBeforeSaveAndRenameCommand() {
         return () -> {
-
         };
     }
 
