@@ -389,6 +389,7 @@ public abstract class BaseEditor<T, M> {
             @Override
             public void execute(final ObservablePath.OnConcurrentUpdateEvent eventInfo) {
                 concurrentUpdateSessionInfo = eventInfo;
+                showConcurrentUpdatePopup();
             }
         });
 
