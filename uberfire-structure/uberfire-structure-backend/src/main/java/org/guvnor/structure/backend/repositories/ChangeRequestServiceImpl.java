@@ -81,7 +81,6 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 @ApplicationScoped
 public class ChangeRequestServiceImpl implements ChangeRequestService {
 
-    // Avoiding string duplication - SonarCloud
     private static final String SPACE_NAME_PARAM = "spaceName";
     private static final String REPOSITORY_ALIAS_PARAM = "repositoryAlias";
     private static final String STATUS_LIST_PARAM = "statusList";
