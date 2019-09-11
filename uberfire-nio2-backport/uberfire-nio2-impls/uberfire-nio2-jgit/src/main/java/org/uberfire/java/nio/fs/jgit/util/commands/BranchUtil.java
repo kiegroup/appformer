@@ -26,6 +26,10 @@ import org.uberfire.java.nio.fs.jgit.util.exceptions.GitException;
 
 public class BranchUtil {
 
+    private BranchUtil() {
+
+    }
+
     public static void deleteUnfilteredBranches(final Repository repository,
                                                 final List<String> branchesToKeep) throws GitAPIException {
         if (branchesToKeep == null || branchesToKeep.isEmpty()) {
@@ -49,7 +53,7 @@ public class BranchUtil {
     public static void existsBranch(final Git git,
                                     final String branch) {
         if (git.getRef(branch) == null) {
-            throw new GitException(String.format("Branch <<%s>> does not exists",
+            throw new GitException(String.format("Branch <<%s>> does not exist",
                                                  branch));
         }
     }
