@@ -19,9 +19,9 @@ package org.uberfire.ext.editor.commons.client.resources.i18n;
 import org.jboss.errai.ui.shared.api.annotations.TranslationKey;
 
 public class Constants {
-
+    
     @TranslationKey(defaultValue = "")
-    public static final String SavePopUpView_ConfirmSave = "SavePopUpView.ConfirmSave";
+    public static final String SavePopUpView_SaveWithComments = "SavePopUpView.SaveWithComments";
 
     @TranslationKey(defaultValue = "")
     public static final String SavePopUpView_Save = "SavePopUpView.Save";

@@ -35,6 +35,7 @@ import org.uberfire.ext.editor.commons.version.VersionService;
 import org.uberfire.ext.editor.commons.version.events.RestoreEvent;
 import org.uberfire.java.nio.base.version.VersionRecord;
 import org.uberfire.mvp.Command;
+import org.uberfire.mvp.ParameterizedCommand;
 import org.uberfire.workbench.model.menu.MenuItem;
 
 public class VersionRecordManager {
@@ -137,6 +138,11 @@ public class VersionRecordManager {
     }
 
     public MenuItem newSaveMenuItem(final Command command) {
+        saveButton.setCommand(command);
+        return saveButton;
+    }
+
+    public MenuItem newSaveMenuItem(final ParameterizedCommand<Boolean> command) {
         saveButton.setCommand(command);
         return saveButton;
     }

@@ -33,6 +33,8 @@ public interface CommonConstants
 
     String Save();
 
+    String SaveWithComments();
+
     String Tags();
 
     String Cancel();
