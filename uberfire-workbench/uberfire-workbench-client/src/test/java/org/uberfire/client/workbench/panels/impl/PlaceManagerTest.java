@@ -423,6 +423,16 @@ public class PlaceManagerTest {
     }
 
     @Test
+    public void testClosePlaceAlwaysCloseActivityBeforeDestroy() {
+        when(kansasActivity.isType(any())).thenReturn(false);
+
+        placeManager.closePlace(kansas);
+
+        verify(kansasActivity).onClose();
+        verify(activityManager).destroyActivity(kansasActivity);
+    }
+
+    @Test
     public void testCanceledCloseExistingScreenActivity() throws Exception {
         when(kansasActivity.onMayClose()).thenReturn(false);
         when(kansasActivity.isType(ActivityResourceType.SCREEN.name())).thenReturn(true);
