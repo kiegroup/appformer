@@ -25,6 +25,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
  * REJECTED: when reviewers have rejected the changes.
  * REVERTED: when the CR was accepted and then reverted.
  * REVERT_FAILED: when an attempt to revert the CR has failed.
+ * CLOSED: when an open CR is closed.
  */
 @Portable
 public enum ChangeRequestStatus {
@@ -32,5 +33,6 @@ public enum ChangeRequestStatus {
     REJECTED,
     OPEN,
     REVERTED,
-    REVERT_FAILED
+    REVERT_FAILED,
+    CLOSED
 }

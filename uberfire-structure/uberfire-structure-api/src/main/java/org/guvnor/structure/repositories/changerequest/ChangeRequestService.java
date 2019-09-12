@@ -160,10 +160,10 @@ public interface ChangeRequestService {
     /**
      * Obtains differences between branches.
      *
-     * @param spaceName        the space containing the origin repository
-     * @param repositoryAlias  the origin repository
-     * @param sourceBranch the source branch
-     * @param targetBranch the target branch
+     * @param spaceName       the space containing the origin repository
+     * @param repositoryAlias the origin repository
+     * @param sourceBranch    the source branch
+     * @param targetBranch    the target branch
      * @return The list of differences between files.
      */
     List<ChangeRequestDiff> getDiff(final String spaceName,
@@ -228,6 +228,17 @@ public interface ChangeRequestService {
     Boolean revertChangeRequest(final String spaceName,
                                 final String repositoryAlias,
                                 final Long changeRequestId);
+
+    /**
+     * Closes the change request.
+     *
+     * @param spaceName       the space containing the origin repository
+     * @param repositoryAlias the repository used as a filter
+     * @param changeRequestId the id of the change request
+     */
+    void closeChangeRequest(final String spaceName,
+                            final String repositoryAlias,
+                            final Long changeRequestId);
 
     /**
      * Updates the change request summary.

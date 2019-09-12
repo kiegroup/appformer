@@ -732,6 +732,29 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
+    public void closeChangeRequestTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.closeChangeRequest("mySpace",
+                                   "myRepository",
+                                   1L);
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+        verify(changeRequestStatusUpdatedEventEvent).fire(any(ChangeRequestStatusUpdatedEvent.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void closeChangeRequestWhenChangeRequestNotOpenTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.closeChangeRequest("mySpace",
+                                   "myRepository",
+                                   1L);
+    }
+
+    @Test
     public void acceptChangeRequestSuccessTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");

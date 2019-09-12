@@ -499,6 +499,29 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
+    public void closeChangeRequest(final String spaceName,
+                                   final String repositoryAlias,
+                                   final Long changeRequestId) {
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
+
+        final ChangeRequest changeRequest = getChangeRequestById(spaceName,
+                                                                 repositoryAlias,
+                                                                 false,
+                                                                 changeRequestId);
+
+        if (changeRequest.getStatus() != ChangeRequestStatus.OPEN) {
+            throw new IllegalStateException("Cannot close a change request that is not open");
+        }
+
+        this.updateNotMergedChangeRequestStatus(spaceName,
+                                                repositoryAlias,
+                                                changeRequest,
+                                                ChangeRequestStatus.CLOSED);
+    }
+
+    @Override
     public void updateChangeRequestSummary(final String spaceName,
                                            final String repositoryAlias,
                                            final Long changeRequestId,
