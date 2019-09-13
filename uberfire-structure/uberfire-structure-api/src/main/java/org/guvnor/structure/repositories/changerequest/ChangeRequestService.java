@@ -241,6 +241,17 @@ public interface ChangeRequestService {
                             final Long changeRequestId);
 
     /**
+     * Reopens the change request.
+     *
+     * @param spaceName       the space containing the origin repository
+     * @param repositoryAlias the repository used as a filter
+     * @param changeRequestId the id of the change request
+     */
+    void reopenChangeRequest(final String spaceName,
+                             final String repositoryAlias,
+                             final Long changeRequestId);
+
+    /**
      * Updates the change request summary.
      *
      * @param spaceName       the space containing the origin repository

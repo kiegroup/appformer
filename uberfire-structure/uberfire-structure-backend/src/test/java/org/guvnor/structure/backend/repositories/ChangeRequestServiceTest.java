@@ -246,7 +246,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test(expected = ChangeRequestAlreadyOpenException.class)
-    public void createChangeRequestWhenAlreadyOpenTest() {
+    public void createChangeRequestFailWhenAlreadyOpenTest() {
         List<ChangeRequest> crList = Collections.singletonList(createCommonChangeRequest());
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -709,7 +709,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void rejectChangeRequestTest() {
+    public void rejectChangeRequestSuccessTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -722,7 +722,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void rejectChangeRequestWhenChangeRequestNotOpenTest() {
+    public void rejectChangeRequestFailWhenChangeRequestNotOpenTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -732,7 +732,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test
-    public void closeChangeRequestTest() {
+    public void closeChangeRequestSuccessTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -745,13 +745,49 @@ public class ChangeRequestServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void closeChangeRequestWhenChangeRequestNotOpenTest() {
+    public void closeChangeRequestFailWhenChangeRequestNotOpenTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
         service.closeChangeRequest("mySpace",
                                    "myRepository",
                                    1L);
+    }
+
+    @Test
+    public void reopenChangeRequestSuccessTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.CLOSED));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.reopenChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
+        verify(spaceConfigStorage).saveChangeRequest(eq("myRepository"),
+                                                     any(ChangeRequest.class));
+        verify(changeRequestStatusUpdatedEventEvent).fire(any(ChangeRequestStatusUpdatedEvent.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void reopenChangeRequestFailWhenChangeRequestNotClosedTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.reopenChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
+    }
+
+    @Test(expected = ChangeRequestAlreadyOpenException.class)
+    public void reopenChangeRequestFailWhenOtherIsOpenSameBranchesTest() {
+        ChangeRequest crToReopen = createCommonChangeRequestWithIdStatus(1L, ChangeRequestStatus.REJECTED);
+        ChangeRequest otherOpen = createCommonChangeRequestWithIdStatus(2L, ChangeRequestStatus.OPEN);
+
+        List<ChangeRequest> crList = Stream.of(crToReopen, otherOpen).collect(Collectors.toList());
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.reopenChangeRequest("mySpace",
+                                    "myRepository",
+                                    1L);
     }
 
     @Test
@@ -795,7 +831,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test(expected = NothingToMergeException.class)
-    public void acceptChangeRequestWhenThereIsNoChangesTest() {
+    public void acceptChangeRequestFailWhenThereIsNoChangesTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -820,7 +856,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void acceptChangeRequestWhenChangeRequestNotOpenTest() {
+    public void acceptChangeRequestFailWhenChangeRequestNotOpenTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.ACCEPTED));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -830,7 +866,7 @@ public class ChangeRequestServiceTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void revertChangeRequestWhenChangeRequestNotAcceptedTest() {
+    public void revertChangeRequestFailWhenChangeRequestNotAcceptedTest() {
         List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.REJECTED));
         doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
 
@@ -1124,6 +1160,16 @@ public class ChangeRequestServiceTest {
                                                    "targetBranch",
                                                    status,
                                                    summary,
+                                                   null);
+    }
+
+    private ChangeRequest createCommonChangeRequestWithIdStatus(final Long id,
+                                                                final ChangeRequestStatus status) {
+        return createCommonChangeRequestWithFields(id,
+                                                   "sourceBranch",
+                                                   "targetBranch",
+                                                   status,
+                                                   "summary",
                                                    null);
     }
 }

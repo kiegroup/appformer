@@ -522,6 +522,35 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
+    public void reopenChangeRequest(final String spaceName,
+                                    final String repositoryAlias,
+                                    final Long changeRequestId) {
+        checkNotEmpty(SPACE_NAME_PARAM, spaceName);
+        checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
+        checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
+
+        final ChangeRequest changeRequest = getChangeRequestById(spaceName,
+                                                                 repositoryAlias,
+                                                                 false,
+                                                                 changeRequestId);
+
+        if (changeRequest.getStatus() != ChangeRequestStatus.CLOSED &&
+                changeRequest.getStatus() != ChangeRequestStatus.REJECTED) {
+            throw new IllegalStateException("Cannot reopen a change request that is not closed/rejected");
+        }
+
+        checkChangeRequestAlreadyOpen(spaceName,
+                                      repositoryAlias,
+                                      changeRequest.getSourceBranch(),
+                                      changeRequest.getTargetBranch());
+
+        this.updateNotMergedChangeRequestStatus(spaceName,
+                                                repositoryAlias,
+                                                changeRequest,
+                                                ChangeRequestStatus.OPEN);
+    }
+
+    @Override
     public void updateChangeRequestSummary(final String spaceName,
                                            final String repositoryAlias,
                                            final Long changeRequestId,
@@ -879,18 +908,18 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                     final String repositoryAlias,
                                                     final ChangeRequest oldChangeRequest,
                                                     final ChangeRequestStatus status) {
-        this.updateMergedChangeRequestStatus(spaceName,
-                                             repositoryAlias,
-                                             oldChangeRequest,
-                                             status,
-                                             null);
+        this.updateChangeRequestStatus(spaceName,
+                                       repositoryAlias,
+                                       oldChangeRequest,
+                                       status,
+                                       null);
     }
 
-    private void updateMergedChangeRequestStatus(final String spaceName,
-                                                 final String repositoryAlias,
-                                                 final ChangeRequest oldChangeRequest,
-                                                 final ChangeRequestStatus status,
-                                                 final String mergeCommitId) {
+    private void updateChangeRequestStatus(final String spaceName,
+                                           final String repositoryAlias,
+                                           final ChangeRequest oldChangeRequest,
+                                           final ChangeRequestStatus status,
+                                           final String mergeCommitId) {
         if (mergeCommitId == null && status == ChangeRequestStatus.ACCEPTED) {
             throw new IllegalStateException("Must have a merge commit id to update change request to ACCEPTED.");
         }
@@ -898,10 +927,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
 
-        final String endCommitId =
-                oldChangeRequest.getStatus() == ChangeRequestStatus.OPEN && status != ChangeRequestStatus.OPEN ?
-                        getLastCommitId(repository, oldChangeRequest.getSourceBranch()) :
-                        oldChangeRequest.getEndCommitId();
+        final String endCommitId = resolveEndCommitId(repository,
+                                                      oldChangeRequest,
+                                                      status);
 
         final ChangeRequest updatedChangeRequest = new ChangeRequest(oldChangeRequest.getId(),
                                                                      oldChangeRequest.getSpaceName(),
@@ -926,6 +954,20 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                     oldChangeRequest.getStatus(),
                                                     status,
                                                     sessionInfo.getIdentity().getIdentifier()));
+    }
+
+    private String resolveEndCommitId(final Repository repository,
+                                      final ChangeRequest changeRequest,
+                                      final ChangeRequestStatus newStatus) {
+        if (newStatus == ChangeRequestStatus.OPEN) {
+            return null;
+        }
+
+        if (changeRequest.getStatus() == ChangeRequestStatus.OPEN) {
+            return getLastCommitId(repository, changeRequest.getSourceBranch());
+        }
+
+        return changeRequest.getEndCommitId();
     }
 
     private List<ChangeRequestDiff> getDiff(final Repository repository,
@@ -1020,11 +1062,11 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                    changesToNotify,
                                    getFullCommitMessage(mergeCommit));
 
-            this.updateMergedChangeRequestStatus(repository.getSpace().getName(),
-                                                 repository.getAlias(),
-                                                 changeRequest,
-                                                 ChangeRequestStatus.ACCEPTED,
-                                                 mergeCommitId);
+            this.updateChangeRequestStatus(repository.getSpace().getName(),
+                                           repository.getAlias(),
+                                           changeRequest,
+                                           ChangeRequestStatus.ACCEPTED,
+                                           mergeCommitId);
 
             isDone = true;
         } catch (GitException e) {
