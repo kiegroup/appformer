@@ -927,9 +927,13 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
         final Repository repository = resolveRepository(spaceName,
                                                         repositoryAlias);
 
-        final String endCommitId = resolveEndCommitId(repository,
-                                                      oldChangeRequest,
-                                                      status);
+        final String startCommitId = resolveStartCommitIdOnStatusUpdated(repository,
+                                                                         oldChangeRequest,
+                                                                         status);
+
+        final String endCommitId = resolveEndCommitIdOnStatusUpdated(repository,
+                                                                     oldChangeRequest,
+                                                                     status);
 
         final ChangeRequest updatedChangeRequest = new ChangeRequest(oldChangeRequest.getId(),
                                                                      oldChangeRequest.getSpaceName(),
@@ -941,7 +945,7 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                                      oldChangeRequest.getSummary(),
                                                                      oldChangeRequest.getDescription(),
                                                                      oldChangeRequest.getCreatedDate(),
-                                                                     oldChangeRequest.getStartCommitId(),
+                                                                     startCommitId,
                                                                      endCommitId,
                                                                      mergeCommitId);
 
@@ -956,9 +960,21 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                                     sessionInfo.getIdentity().getIdentifier()));
     }
 
-    private String resolveEndCommitId(final Repository repository,
-                                      final ChangeRequest changeRequest,
-                                      final ChangeRequestStatus newStatus) {
+    private String resolveStartCommitIdOnStatusUpdated(final Repository repository,
+                                                       final ChangeRequest changeRequest,
+                                                       final ChangeRequestStatus newStatus) {
+        if (newStatus == ChangeRequestStatus.OPEN) {
+            return getCommonCommitId(repository,
+                                     changeRequest.getSourceBranch(),
+                                     changeRequest.getTargetBranch());
+        }
+
+        return changeRequest.getStartCommitId();
+    }
+
+    private String resolveEndCommitIdOnStatusUpdated(final Repository repository,
+                                                     final ChangeRequest changeRequest,
+                                                     final ChangeRequestStatus newStatus) {
         if (newStatus == ChangeRequestStatus.OPEN) {
             return null;
         }
