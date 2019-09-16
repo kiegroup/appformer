@@ -20,8 +20,10 @@ import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.uberfire.commons.clusterapi.Clustered;
 
 @Portable
+@Clustered
 public class ChangeRequestStatusUpdatedEvent {
 
     private final String repositoryId;
