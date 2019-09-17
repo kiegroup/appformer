@@ -57,7 +57,6 @@ public class SaveButton
         caretButton.setToggleCaret(true);
         caretButton.setDataToggle(Toggle.DROPDOWN);
         caretButton.setSize(ButtonSize.SMALL);
-        caretButton.addStyleName("dropdown-toggle-split");
         caretButton.setMarginRight(10);
 
         buttonGroup.add(dropDownMenu);
