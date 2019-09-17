@@ -428,8 +428,9 @@ public class PlaceManagerTest {
 
         placeManager.closePlace(kansas);
 
-        verify(kansasActivity).onClose();
-        verify(activityManager).destroyActivity(kansasActivity);
+        InOrder inOrder = inOrder(activityManager, kansasActivity);
+        inOrder.verify(kansasActivity).onClose();
+        inOrder.verify(activityManager).destroyActivity(kansasActivity);
     }
 
     @Test
