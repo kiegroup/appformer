@@ -17,6 +17,7 @@ import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.config.RepositoryConfiguration;
 import org.guvnor.structure.organizationalunit.config.RepositoryInfo;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
+import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageBatch;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.guvnor.structure.repositories.Branch;
@@ -34,17 +35,10 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.spaces.Space;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryServiceImplTest {
@@ -175,7 +169,7 @@ public class RepositoryServiceImplTest {
 
     @Test
     public void testDoRemoveInOrder() {
-        SpaceConfigStorage spaceConfigStorage = mock(SpaceConfigStorage.class);
+
         Consumer<Repository> notification = mock(Consumer.class);
         OrganizationalUnit orgUnit = mock(OrganizationalUnit.class);
         String alias = "alias";
@@ -185,8 +179,6 @@ public class RepositoryServiceImplTest {
         when(configuredRepositories.getRepositoryByRepositoryAlias(any(), anyString())).thenReturn(repository);
         when(repository.getAlias()).thenReturn(alias);
         when(orgUnit.getRepositories()).thenReturn(Collections.singletonList(repository));
-        when(registry.get(anyString())).thenReturn(spaceConfigStorage);
-        doNothing().when(spaceConfigStorage).deleteRepository(anyString());
 
         InOrder inOrder = inOrder(this.organizationalUnitService, notification);
 

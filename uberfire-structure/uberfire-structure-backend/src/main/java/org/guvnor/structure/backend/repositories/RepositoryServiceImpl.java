@@ -450,8 +450,6 @@ public class RepositoryServiceImpl implements RepositoryService {
             //Remove reference to Repository from Organizational Units
             for (Repository repository : orgUnit.getRepositories()) {
                 if (repository.getAlias().equals(alias)) {
-                    configStorage.deleteRepository(alias);
-
                     organizationalUnitService.removeRepository(orgUnit,
                                                                repository);
                     metadataStore.delete(alias);
