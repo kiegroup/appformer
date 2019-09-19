@@ -1145,6 +1145,8 @@ public class PlaceManagerImpl implements PlaceManager {
                 } else {
                     return;
                 }
+            } else {
+                activity.onClose();
             }
 
             getPlaceHistoryHandler().registerClose(activity,
