@@ -71,6 +71,8 @@ public interface CommonConstants
 
     String Restore();
 
+    String RestoreWithComments();
+
     String Other();
 
     String Loading();

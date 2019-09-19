@@ -223,9 +223,15 @@ public class VersionRecordManager {
         return null;
     }
 
-    public void restoreToCurrentVersion() {
-        restorePopUpPresenter.show(getCurrentPath(),
-                                   getCurrentVersionRecordUri());
+    public void restoreToCurrentVersion(boolean withComments) {
+        if (withComments)
+            restorePopUpPresenter.show(getCurrentPath(),
+                                       getCurrentVersionRecordUri());
+        else {
+            restorePopUpPresenter.restoreCommand(getCurrentPath(),
+                                                 getCurrentVersionRecordUri())
+                                 .execute("");
+        }
     }
 
     private void loadVersions(final ObservablePath path) {

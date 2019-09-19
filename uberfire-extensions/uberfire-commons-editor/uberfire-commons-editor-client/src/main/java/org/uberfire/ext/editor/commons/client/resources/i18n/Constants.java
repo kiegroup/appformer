@@ -45,7 +45,7 @@ public class Constants {
     public static final String DeletePopUpView_UnexpectedError = "DeletePopUpView.UnexpectedError";
 
     @TranslationKey(defaultValue = "")
-    public static final String RestorePopUpView_ConfirmRestore = "RestorePopUpView.ConfirmRestore";
+    public static final String RestorePopUpView_RestoreWithComments = "RestorePopUpView.RestoreWithComments";
 
     @TranslationKey(defaultValue = "")
     public static final String RestorePopUpView_Restore = "RestorePopUpView.Restore";

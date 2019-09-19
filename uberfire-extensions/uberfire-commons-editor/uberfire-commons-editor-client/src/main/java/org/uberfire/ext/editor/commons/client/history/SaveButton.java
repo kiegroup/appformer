@@ -119,10 +119,12 @@ public class SaveButton
 
     public void setTextToSave() {
         saveButton.setText(CommonConstants.INSTANCE.Save());
+        saveWithCommentsButton.setText(CommonConstants.INSTANCE.SaveWithComments());
     }
 
     public void setTextToRestore() {
         saveButton.setText(CommonConstants.INSTANCE.Restore());
+        saveWithCommentsButton.setText(CommonConstants.INSTANCE.RestoreWithComments());
     }
 
     public void setCommand(Command command) {
