@@ -421,7 +421,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                                       final IndexerDispatcher dispatcher) throws DisposedException {
                             final Path oldPath = context.getOldPath();
                             // ignore delete events for dot files, because dot files are not indexed
-                            if (!oldPath.getFileName().toString().startsWith(".")) {
+                            if (!isDotFile(oldPath)) {
                                 dispatcher.offer(new DeletedFileEvent(oldPath));
                             }
                         }
@@ -430,8 +430,11 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                                       final IndexerDispatcher dispatcher) throws DisposedException {
                             final Path sourcePath = context.getOldPath();
                             final Path destinationPath = context.getPath();
-                            dispatcher.offer(new RenamedFileEvent(sourcePath,
-                                                                  destinationPath));
+
+                            if (!isDotFile(destinationPath)) {
+                                dispatcher.offer(new RenamedFileEvent(sourcePath,
+                                                                      destinationPath));
+                            }
                         }
 
                         private void queueCreationAndModificationEvent(final Set<Path> eventRealPaths,
@@ -441,7 +444,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                             // "real path" index the "real path" instead. This ensures when only a
                             // "dot path" is updated the FileAttributeView(s) are re-indexed.
                             Path path = context.getPath();
-                            if (path.getFileName().toString().startsWith(".")) {
+                            if (isDotFile(path)) {
                                 if (!IOServiceIndexedUtil.isBlackListed(path)) {
                                     final Path realPath = DotFileUtils.undot(path);
                                     if (!eventRealPaths.contains(realPath)) {
@@ -450,7 +453,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                 }
                             }
 
-                            if (!path.getFileName().toString().startsWith(".")) {
+                            if (!isDotFile(path)) {
                                 dispatcher.offer(new IndexableIOEvent.NewFileEvent(path));
                             }
                         }
@@ -464,7 +467,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                 final WatchContext context = ((WatchContext) event.context());
                                 if (event.kind() == ENTRY_MODIFY || event.kind() == ENTRY_CREATE) {
                                     final Path path = context.getPath();
-                                    if (!path.getFileName().toString().startsWith(".")) {
+                                    if (!isDotFile(path)) {
                                         eventRealPaths.add(path);
                                     }
                                 }
@@ -508,6 +511,11 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                DeleteOption[] options) {
         super.delete(path,
                      options);
+    }
+
+    private boolean isDotFile(Path path) {
+        if (path == null || path.getFileName() == null) return false;
+        return path.getFileName().toString().startsWith(".");
     }
 
     private void cleanupDeletedFS(FileSystem fs) {
