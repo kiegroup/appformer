@@ -14,41 +14,37 @@
  * limitations under the License.
  */
 
-package org.uberfire.experimental.service.storage.impl;
-
-import java.text.MessageFormat;
-import java.util.Collection;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Named;
+package org.uberfire.experimental.service.storage.scoped.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefRegistry;
 import org.uberfire.experimental.service.definition.ExperimentalFeatureDefinition;
 import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
+import org.uberfire.experimental.service.storage.scoped.ExperimentalStorageScope;
+import org.uberfire.experimental.service.storage.util.ExperimentalConstants;
 import org.uberfire.io.IOService;
 import org.uberfire.rpc.SessionInfo;
-import org.uberfire.spaces.SpacesAPI;
+
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
 
 @Dependent
-@Named("user")
-public class UserExperimentalFeaturesStorageImpl extends AbstractExperimentalFeaturesStorage {
+public class UserExperimentalFeaturesStorageImpl extends AbstractScopedExperimentalFeaturesStorage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserExperimentalFeaturesStorageImpl.class);
 
-    public static final String USER_FOLDER = "/experimental/users/{0}/.experimental";
+    public static final String USER_FOLDER_ROOT = ExperimentalConstants.EXPERIMENTAL_ROOT_FOLDER + "/users";
+    public static final String USER_FOLDER = USER_FOLDER_ROOT + "/{0}/" + ExperimentalConstants.EXPERIMENTAL_FILENAME;
 
     @Inject
-    public UserExperimentalFeaturesStorageImpl(final SessionInfo sessionInfo, final SpacesAPI spaces, @Named("configIO") final IOService ioService, final ExperimentalFeatureDefRegistry defRegistry) {
-        super(sessionInfo, spaces, ioService, defRegistry);
-    }
-
-    @PostConstruct
-    public void init() {
-        initializeFileSystem();
+    public UserExperimentalFeaturesStorageImpl(final SessionInfo sessionInfo, @Named("configIO") final IOService ioService, final ExperimentalFeatureDefRegistry defRegistry) {
+        super(sessionInfo, ioService, defRegistry);
     }
 
     @Override
@@ -63,11 +59,24 @@ public class UserExperimentalFeaturesStorageImpl extends AbstractExperimentalFea
 
     @Override
     public String getStoragePath() {
-        return MessageFormat.format(USER_FOLDER, sessionInfo.getIdentity().getIdentifier());
+        return MessageFormat.format(USER_FOLDER, getUserId());
+    }
+
+    private String getUserId() {
+        return encode(sessionInfo.getIdentity().getIdentifier());
     }
 
     @Override
     protected Logger log() {
         return LOGGER;
+    }
+
+    @Override
+    public ExperimentalStorageScope getScope() {
+        return ExperimentalStorageScope.USER;
+    }
+
+    public static String encode(String folderName) {
+        return new String(Base64.getEncoder().encode(folderName.getBytes()));
     }
 }
