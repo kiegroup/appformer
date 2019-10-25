@@ -182,8 +182,6 @@ public interface PlaceManager {
 
     boolean canClosePlace(PlaceRequest place);
 
-    boolean canCloseAllPlaces();
-
     /**
      * @return All opened PlaceRequests that cannot be closed (@onMayClose method returns false).
      */

@@ -1182,11 +1182,6 @@ public class PlaceManagerImpl implements PlaceManager {
         return false;
     }
 
-    @Override
-    public boolean canCloseAllPlaces() {
-        return getUncloseablePlaces().isEmpty();
-    }
-
     @SuppressWarnings("unused")
     private void onWorkbenchPartOnFocus(@Observes PlaceGainFocusEvent event) {
         final PlaceRequest place = event.getPlace();
