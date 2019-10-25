@@ -18,7 +18,6 @@ package org.uberfire.client.mvp;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -30,6 +29,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -225,25 +226,13 @@ public class LockManagerImpl implements LockManager {
     }
 
     private void releaseLockOnClose() {
-        closeHandler = Window.addCloseHandler(event -> requestReleaseLock());
-    }
-
-    private native void requestReleaseLock()/*-{
-        var pathArray = window.location.pathname.split('/');
-
-        var url = "";
-        for (var i = 0; i < pathArray.length - 1; i++) {
-            if (pathArray[i] !== "") {
-                url += "/" + pathArray[i];
+        closeHandler = Window.addWindowClosingHandler(new ClosingHandler() {
+            @Override
+            public void onWindowClosing(ClosingEvent event) {
+                releaseLock();
             }
-        }
-
-        url += "/releaseUserLocksServlet";
-
-        var request = new XMLHttpRequest();
-        request.open('GET', url, false);
-        request.send();
-    }-*/;
+        });
+    }
 
     private void handleLockFailure(final LockInfo lockInfo) {
 
