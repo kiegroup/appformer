@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -236,21 +237,24 @@ public class VFSLockServiceImpl implements VFSLockService {
     private void updateSession(final LockInfo lockInfo,
                                boolean remove) {
         final HttpSession session = RpcContext.getHttpSession();
-        @SuppressWarnings("unchecked")
-        Set<LockInfo> locks = (Set<LockInfo>) session.getAttribute(LOCK_SESSION_ATTRIBUTE_NAME);
 
-        if (remove) {
-            if (locks != null) {
-                locks.remove(lockInfo);
-            }
-        } else {
-            if (locks == null) {
-                locks = new HashSet<LockInfo>();
-            }
+        if (session != null) {
+            @SuppressWarnings("unchecked")
+            Set<LockInfo> locks = (Set<LockInfo>) session.getAttribute(LOCK_SESSION_ATTRIBUTE_NAME);
 
-            locks.add(lockInfo);
-            session.setAttribute(LOCK_SESSION_ATTRIBUTE_NAME,
-                                 locks);
+            if (remove) {
+                if (locks != null) {
+                    locks.remove(lockInfo);
+                }
+            } else {
+                if (locks == null) {
+                    locks = new HashSet<LockInfo>();
+                }
+
+                locks.add(lockInfo);
+                session.setAttribute(LOCK_SESSION_ATTRIBUTE_NAME,
+                                     locks);
+            }
         }
     }
 
