@@ -20,11 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+
 import org.kie.soup.commons.validation.PortablePreconditions;
+import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.animations.LinearFadeOutAnimation;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager.NotificationPopupHandle;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager;
@@ -40,6 +43,7 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
     private boolean removing = false;
     private int initialSpacing = SPACING;
     private IsWidget container;
+    @Inject private PlaceManager placeManager;
 
     @Override
     public void setContainer(final IsWidget container) {
@@ -62,6 +66,7 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
         final NotificationPopupView view = new NotificationPopupView();
         final PopupHandle popupHandle = new PopupHandle(view,
                                                         event);
+
         activeNotifications.add(popupHandle);
         int size = activeNotifications.size();
         int topMargin = (size == 1) ? initialSpacing : (size * SPACING) - (SPACING - initialSpacing);
@@ -70,7 +75,16 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
         view.setNotification(event.getNotification());
         view.setType(event.getType());
         view.setNotificationWidth(getWidth() + "px");
-        view.show(hideCommand);
+
+        if (event.hasNavigation()) {
+            view.addNavigation(event.getNavigationText(), () -> {
+                hideCommand.execute();
+                placeManager.goTo(event.getNavigationPath());
+            });
+        }
+
+        view.show(hideCommand,
+                  event.autoHide());
         return popupHandle;
     }
 

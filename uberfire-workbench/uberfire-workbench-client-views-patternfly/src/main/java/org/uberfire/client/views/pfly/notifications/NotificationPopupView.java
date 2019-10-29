@@ -16,9 +16,15 @@
 
 package org.uberfire.client.views.pfly.notifications;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import org.gwtbootstrap3.client.ui.Alert;
+
+import org.gwtbootstrap3.client.shared.event.AlertCloseEvent;
+import org.gwtbootstrap3.client.shared.event.AlertCloseHandler;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 import org.uberfire.client.resources.WorkbenchResources;
 import org.uberfire.client.workbench.widgets.animations.LinearFadeInAnimation;
@@ -73,16 +79,20 @@ public class NotificationPopupView extends DecoratedPopupPanel {
         notification.setWidth(width);
     }
 
+    public void show(final Command onCompleteCommand) {
+        show(onCompleteCommand,
+             true);
+    }
+
     /**
      * Show the Notification pop-up. This consists of fading the pop-up into
      * view and pausing. Once complete the onCompleteCommand will be executed.
      * @param onCompleteCommand
      */
-    public void show(final Command onCompleteCommand) {
+    public void show(final Command onCompleteCommand,
+                     final boolean autoHide) {
 
-        //Fade in the notification message
         final LinearFadeInAnimation fadeInAnimation = new LinearFadeInAnimation(this) {
-
             @Override
             public void onStart() {
                 super.onStart();
@@ -90,20 +100,41 @@ public class NotificationPopupView extends DecoratedPopupPanel {
             }
         };
 
-        //Pause. Removal is handled by the NotificationPopupsManager
         final Pause pauseAnimation = new Pause() {
-
             @Override
             public void onComplete() {
                 super.onComplete();
                 onCompleteCommand.execute();
             }
         };
+
         final Sequencer s = new Sequencer();
-        s.add(fadeInAnimation,
-              250);
-        s.add(pauseAnimation,
-              2000);
+        s.add(fadeInAnimation, 250);
+
+        if (autoHide) {
+            s.add(pauseAnimation, 2000);
+        } else {
+            notification.addCloseHandler(new AlertCloseHandler() {
+                @Override
+                public void onClose(AlertCloseEvent evt) {
+                    onCompleteCommand.execute();
+                }
+            });
+        }
+
         s.run();
+    }
+
+    public void addNavigation(String text, Command command) {
+        Anchor nav = new Anchor();
+        nav.setText(text);
+        nav.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                command.execute();
+            }
+        });
+        nav.setMarginLeft(15);
+        notification.add(nav);
     }
 }

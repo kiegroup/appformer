@@ -29,6 +29,9 @@ public class NotificationEvent implements UberFireEvent {
     private boolean isSingleton;
     private PlaceRequest placeRequest;
     private Integer initialTopOffset;
+    private boolean autoHide = true;
+    private String navigationText;
+    private String navigationPath;
 
     public NotificationEvent() {
     }
@@ -82,6 +85,7 @@ public class NotificationEvent implements UberFireEvent {
                              final boolean isSingleton,
                              final PlaceRequest placeRequest,
                              final Integer initialTopOffset) {
+
         this.notification = notification;
         this.type = type;
         this.isSingleton = isSingleton;
@@ -107,6 +111,37 @@ public class NotificationEvent implements UberFireEvent {
 
     public Integer getInitialTopOffset() {
         return initialTopOffset;
+    }
+
+    public NotificationEvent setAutoHide(final boolean autoHide) {
+        this.autoHide = autoHide;
+        return this;
+    }
+
+    public boolean autoHide() {
+        return autoHide;
+    }
+
+    public NotificationEvent setNavigation(final String text,
+                                           final String path) {
+        navigationText = text;
+        navigationPath = path;
+        return this;
+    }
+
+    public boolean hasNavigation() {
+        return navigationText != null
+            && !navigationText.isEmpty()
+            && navigationPath != null
+            && !navigationPath.isEmpty();
+    }
+
+    public String getNavigationText() {
+        return navigationText;
+    }
+
+    public String getNavigationPath() {
+        return navigationPath;
     }
 
     @Override
