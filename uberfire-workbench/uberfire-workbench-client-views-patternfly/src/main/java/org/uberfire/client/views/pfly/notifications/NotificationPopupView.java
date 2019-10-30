@@ -16,14 +16,10 @@
 
 package org.uberfire.client.views.pfly.notifications;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import org.gwtbootstrap3.client.ui.Alert;
 
-import org.gwtbootstrap3.client.shared.event.AlertCloseEvent;
-import org.gwtbootstrap3.client.shared.event.AlertCloseHandler;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 import org.uberfire.client.resources.WorkbenchResources;
@@ -114,12 +110,7 @@ public class NotificationPopupView extends DecoratedPopupPanel {
         if (autoHide) {
             s.add(pauseAnimation, 2000);
         } else {
-            notification.addCloseHandler(new AlertCloseHandler() {
-                @Override
-                public void onClose(AlertCloseEvent evt) {
-                    onCompleteCommand.execute();
-                }
-            });
+            notification.addCloseHandler(evt -> onCompleteCommand.execute());
         }
 
         s.run();
@@ -128,12 +119,7 @@ public class NotificationPopupView extends DecoratedPopupPanel {
     public void addNavigation(String text, Command command) {
         Anchor nav = new Anchor();
         nav.setText(text);
-        nav.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                command.execute();
-            }
-        });
+        nav.addClickHandler(evt -> command.execute());
         nav.setMarginLeft(15);
         notification.add(nav);
     }
