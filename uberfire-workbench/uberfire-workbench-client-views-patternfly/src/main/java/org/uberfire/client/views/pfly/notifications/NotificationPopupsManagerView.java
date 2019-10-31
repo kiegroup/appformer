@@ -30,8 +30,13 @@ import org.kie.soup.commons.validation.PortablePreconditions;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.animations.LinearFadeOutAnimation;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager.NotificationPopupHandle;
+import org.uberfire.security.ResourceRef;
+import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager;
 import org.uberfire.workbench.events.NotificationEvent;
+import org.uberfire.workbench.model.ActivityResourceType;
+
+import org.jboss.errai.security.shared.api.identity.User;
 
 @Dependent
 public class NotificationPopupsManagerView implements NotificationManager.View {
@@ -44,6 +49,8 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
     private int initialSpacing = SPACING;
     private IsWidget container;
     @Inject private PlaceManager placeManager;
+    @Inject private AuthorizationManager authorizationManager;
+    @Inject private User user;
 
     @Override
     public void setContainer(final IsWidget container) {
@@ -77,14 +84,23 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
         view.setNotificationWidth(getWidth() + "px");
 
         if (event.hasNavigation()) {
-            view.addNavigation(event.getNavigationText(), () -> {
-                hideCommand.execute();
-                placeManager.goTo(event.getNavigationPath());
-            });
+            ResourceRef resourceRef = new ResourceRef(
+                event.getNavigationPath(),
+                ActivityResourceType.PERSPECTIVE);
+            boolean authorized = authorizationManager.authorize(
+                resourceRef,
+                user);
+            if (authorized) {
+                view.addNavigation(event.getNavigationText(), () -> {
+                    hideCommand.execute();
+                    placeManager.goTo(event.getNavigationPath());
+                });
+            }
         }
 
         view.show(hideCommand,
                   event.autoHide());
+
         return popupHandle;
     }
 
