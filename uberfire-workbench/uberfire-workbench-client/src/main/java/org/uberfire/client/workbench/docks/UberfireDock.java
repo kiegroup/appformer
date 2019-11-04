@@ -33,6 +33,8 @@ public class UberfireDock {
 
     private String label;
 
+    private String tooltip;
+
     private ImageResource imageIcon;
 
     private ImageResource imageIconFocused;
@@ -86,6 +88,11 @@ public class UberfireDock {
         return this;
     }
 
+    public UberfireDock withTooltip(String tooltip) {
+        this.tooltip = tooltip;
+        return this;
+    }
+
     public UberfireDock withSize(double size) {
         this.size = size;
         return this;
@@ -117,6 +124,10 @@ public class UberfireDock {
 
     public String getLabel() {
         return label;
+    }
+
+    public String getTooltip() {
+        return tooltip;
     }
 
     public String getIconType() {
@@ -157,7 +168,10 @@ public class UberfireDock {
         if (size != null ? !size.equals(that.size) : that.size != null) {
             return false;
         }
-        return !(label != null ? !label.equals(that.label) : that.label != null);
+        if (label != null ? !label.equals(that.label) : that.label != null) {
+            return false;
+        }
+        return !(tooltip != null ? !tooltip.equals(that.tooltip) : that.tooltip != null);
     }
 
     @Override
@@ -172,6 +186,8 @@ public class UberfireDock {
         result = 31 * result + (size != null ? size.hashCode() : 0);
         result = ~~result;
         result = 31 * result + (label != null ? label.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (tooltip != null ? tooltip.hashCode() : 0);
         result = ~~result;
         return result;
     }
