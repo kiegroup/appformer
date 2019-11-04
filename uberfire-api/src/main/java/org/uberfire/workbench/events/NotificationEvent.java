@@ -31,7 +31,7 @@ public class NotificationEvent implements UberFireEvent {
     private Integer initialTopOffset;
     private boolean autoHide = true;
     private String navigationText;
-    private String navigationPath;
+    private PlaceRequest navigationPlace;
 
     public NotificationEvent() {
     }
@@ -123,25 +123,23 @@ public class NotificationEvent implements UberFireEvent {
     }
 
     public NotificationEvent setNavigation(final String text,
-                                           final String path) {
-        navigationText = text;
-        navigationPath = path;
+                                       final PlaceRequest place) {
+        this.navigationText = text;
+        this.navigationPlace = place;
         return this;
     }
 
     public boolean hasNavigation() {
         return navigationText != null
-            && !navigationText.isEmpty()
-            && navigationPath != null
-            && !navigationPath.isEmpty();
+            && navigationPlace != null;
     }
 
     public String getNavigationText() {
         return navigationText;
     }
 
-    public String getNavigationPath() {
-        return navigationPath;
+    public PlaceRequest getNavigationPlace() {
+        return navigationPlace;
     }
 
     @Override

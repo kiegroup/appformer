@@ -27,6 +27,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.kie.soup.commons.validation.PortablePreconditions;
+import org.uberfire.client.mvp.Activity;
+import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.widgets.animations.LinearFadeOutAnimation;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager.NotificationPopupHandle;
@@ -35,7 +37,9 @@ import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.client.workbench.widgets.notifications.NotificationManager;
 import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.ActivityResourceType;
-
+import org.jboss.errai.ioc.client.container.IOC;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 
 @Dependent
@@ -84,17 +88,19 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
         view.setNotificationWidth(getWidth() + "px");
 
         if (event.hasNavigation()) {
-            ResourceRef resourceRef = new ResourceRef(
-                event.getNavigationPath(),
-                ActivityResourceType.PERSPECTIVE);
-            boolean authorized = authorizationManager.authorize(
-                resourceRef,
-                user);
-            if (authorized) {
-                view.addNavigation(event.getNavigationText(), () -> {
-                    hideCommand.execute();
-                    placeManager.goTo(event.getNavigationPath());
-                });
+            final SyncBeanManager beanManager = IOC.getBeanManager();
+            final String identifier = event.getNavigationPlace().getIdentifier();
+            final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
+            final SyncBeanDef<Activity> syncBeanDefActivity = activityBeansCache.getActivity(identifier);
+            final ResourceRef resourceRef = new ResourceRef(identifier, syncBeanDefActivity.getInstance().getResourceType());
+            final Boolean isAuthorized = authorizationManager.authorize(resourceRef, user);
+            if (isAuthorized) {
+                view.addNavigation(
+                        event.getNavigationText(),
+                        () -> {
+                            hideCommand.execute();
+                            placeManager.goTo(event.getNavigationPlace());
+                        });
             }
         }
 
