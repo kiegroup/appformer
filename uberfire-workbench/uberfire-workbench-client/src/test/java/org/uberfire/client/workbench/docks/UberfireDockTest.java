@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
+import static org.junit.Assert.assertNotEquals;
+
 @RunWith(GwtMockitoTestRunner.class)
 public class UberfireDockTest extends TestCase {
 
@@ -22,16 +24,20 @@ public class UberfireDockTest extends TestCase {
     private static final String TOOLTIP = "DOCK TOOLTIP";
 
     @Mock
-    private ImageResource imageIcon;
+    private ImageResource imageIcon1;
+    @Mock
+    private ImageResource imageIcon2;
 
     @Mock
-    private ImageResource imageIconFocused;
+    private ImageResource imageIconFocused1;
+    @Mock
+    private ImageResource imageIconFocused2;
 
     private UberfireDock tested;
     private UberfireDock testedWithImages;
 
     @Before
-    public void setup() {
+    public void setUp() {
         tested = new UberfireDock(DOCK_POSITION,
                                   ICON_TYPE,
                                   new DefaultPlaceRequest(SCREEN_ID),
@@ -41,20 +47,20 @@ public class UberfireDockTest extends TestCase {
                 .withSize(SIZE);
 
         testedWithImages = new UberfireDock(DOCK_POSITION,
-                                            imageIcon,
-                                            imageIconFocused,
+                                            imageIcon1,
+                                            imageIconFocused1,
                                             new DefaultPlaceRequest(SCREEN_ID),
                                             PERSPECTIVE_ID);
     }
 
     @Test
     public void testWithLabel() {
-        assertTrue(tested.getLabel().compareTo(LABEL) == 0);
+        assertEquals(0, tested.getLabel().compareTo(LABEL));
     }
 
     @Test
     public void testWithTooltip() {
-        assertTrue(tested.getTooltip().compareTo(TOOLTIP) == 0);
+        assertEquals(0, tested.getTooltip().compareTo(TOOLTIP));
 
         final UberfireDock tested2 = new UberfireDock(UberfireDockPosition.EAST,
                                                       ICON_TYPE,
@@ -70,7 +76,13 @@ public class UberfireDockTest extends TestCase {
 
     @Test
     public void testSetUberfireDockPosition() {
-        assertEquals(DOCK_POSITION, tested.getDockPosition());
+
+        UberfireDock uberfireDock = tested = new UberfireDock(UberfireDockPosition.EAST,
+                                                              ICON_TYPE,
+                                                              new DefaultPlaceRequest(SCREEN_ID),
+                                                              PERSPECTIVE_ID);
+        uberfireDock.setUberfireDockPosition(UberfireDockPosition.WEST);
+        assertEquals(UberfireDockPosition.WEST, tested.getDockPosition());
     }
 
     @Test
@@ -115,12 +127,12 @@ public class UberfireDockTest extends TestCase {
 
     @Test
     public void testGetImageIcon() {
-        assertEquals(imageIcon, testedWithImages.getImageIcon());
+        assertEquals(imageIcon1, testedWithImages.getImageIcon());
     }
 
     @Test
     public void testGetImageIconFocused() {
-        assertEquals(imageIconFocused, testedWithImages.getImageIconFocused());
+        assertEquals(imageIconFocused1, testedWithImages.getImageIconFocused());
     }
 
     @Test
@@ -129,17 +141,69 @@ public class UberfireDockTest extends TestCase {
                                                      ICON_TYPE,
                                                      new DefaultPlaceRequest(SCREEN_ID),
                                                      PERSPECTIVE_ID)
+                .withSize(SIZE)
                 .withLabel(LABEL)
-                .withTooltip(TOOLTIP)
-                .withSize(SIZE);
+                .withTooltip(TOOLTIP);
 
         UberfireDock compareDock2 = new UberfireDock(DOCK_POSITION,
-                                                     ICON_TYPE,
+                                                     imageIcon1,
+                                                     imageIconFocused1,
                                                      new DefaultPlaceRequest(SCREEN_ID),
-                                                     PERSPECTIVE_ID);
+                                                     PERSPECTIVE_ID)
+                .withSize(SIZE)
+                .withLabel(LABEL)
+                .withTooltip(TOOLTIP);
 
-        assertTrue(tested.equals(compareDock1));
-        assertFalse(tested.equals(compareDock2));
+        UberfireDock compareDock3 = new UberfireDock(null,
+                                                     null,
+                                                     new DefaultPlaceRequest(SCREEN_ID));
+
+        UberfireDock compareDock4 = new UberfireDock(null,
+                                                     null,
+                                                     null,
+                                                     new DefaultPlaceRequest(SCREEN_ID));
+
+        UberfireDock compareDock5 = new UberfireDock(UberfireDockPosition.WEST,
+                                                     ICON_TYPE + "EXTRA",
+                                                     new DefaultPlaceRequest(SCREEN_ID + "EXTRA"),
+                                                     PERSPECTIVE_ID + "EXTRA")
+                .withSize(SIZE + 20)
+                .withLabel(LABEL + "EXTRA")
+                .withTooltip(TOOLTIP + "EXTRA");
+
+        UberfireDock compareDock6 = new UberfireDock(UberfireDockPosition.WEST,
+                                                     imageIcon2,
+                                                     imageIconFocused2,
+                                                     new DefaultPlaceRequest(SCREEN_ID + "EXTRA"),
+                                                     PERSPECTIVE_ID + "EXTRA")
+                .withSize(SIZE + 20)
+                .withLabel(LABEL + "EXTRA")
+                .withTooltip(TOOLTIP + "EXTRA");
+
+        assertEquals(tested, tested);
+        assertEquals(tested, compareDock1);
+        assertNotEquals(null, tested);
+        assertNotEquals(tested, new Object());
+        assertNotEquals(tested, compareDock2);
+        assertNotEquals(tested, compareDock3);
+        assertNotEquals(tested, compareDock4);
+        assertNotEquals(tested, compareDock5);
+        assertNotEquals(tested, compareDock6);
+        assertNotEquals(compareDock1, compareDock2);
+        assertNotEquals(compareDock1, compareDock3);
+        assertNotEquals(compareDock1, compareDock4);
+        assertNotEquals(compareDock1, compareDock5);
+        assertNotEquals(compareDock1, compareDock6);
+        assertNotEquals(compareDock2, compareDock3);
+        assertNotEquals(compareDock2, compareDock4);
+        assertNotEquals(compareDock2, compareDock5);
+        assertNotEquals(compareDock2, compareDock6);
+        assertEquals(compareDock3, compareDock4);
+        assertNotEquals(compareDock3, compareDock5);
+        assertNotEquals(compareDock3, compareDock6);
+        assertNotEquals(compareDock4, compareDock5);
+        assertNotEquals(compareDock4, compareDock6);
+        assertNotEquals(compareDock5, compareDock6);
     }
 
     @Test
@@ -148,16 +212,48 @@ public class UberfireDockTest extends TestCase {
                                                      ICON_TYPE,
                                                      new DefaultPlaceRequest(SCREEN_ID),
                                                      PERSPECTIVE_ID)
+                .withSize(SIZE)
                 .withLabel(LABEL)
-                .withTooltip(TOOLTIP)
-                .withSize(SIZE);
+                .withTooltip(TOOLTIP);
 
         UberfireDock compareDock2 = new UberfireDock(DOCK_POSITION,
+                                                     imageIcon1,
+                                                     imageIconFocused1,
+                                                     new DefaultPlaceRequest(SCREEN_ID),
+                                                     PERSPECTIVE_ID)
+                .withSize(SIZE)
+                .withLabel(LABEL)
+                .withTooltip(TOOLTIP);
+
+        UberfireDock compareDock3 = new UberfireDock(null,
+                                                     null,
+                                                     new DefaultPlaceRequest(SCREEN_ID));
+
+        UberfireDock compareDock4 = new UberfireDock(null,
+                                                     null,
+                                                     null,
+                                                     new DefaultPlaceRequest(SCREEN_ID));
+
+        UberfireDock compareDock5 = new UberfireDock(DOCK_POSITION,
                                                      ICON_TYPE,
                                                      new DefaultPlaceRequest(SCREEN_ID),
-                                                     PERSPECTIVE_ID);
+                                                     PERSPECTIVE_ID)
+                .withLabel(null);
 
         assertEquals(tested.hashCode(), compareDock1.hashCode());
         assertNotSame(tested.hashCode(), compareDock2.hashCode());
+        assertNotSame(tested.hashCode(), compareDock3.hashCode());
+        assertNotSame(tested.hashCode(), compareDock4.hashCode());
+        assertNotSame(tested.hashCode(), compareDock5.hashCode());
+        assertNotSame(compareDock1.hashCode(), compareDock2.hashCode());
+        assertNotSame(compareDock1.hashCode(), compareDock3.hashCode());
+        assertNotSame(compareDock1.hashCode(), compareDock4.hashCode());
+        assertNotSame(compareDock1.hashCode(), compareDock5.hashCode());
+        assertNotSame(compareDock2.hashCode(), compareDock3.hashCode());
+        assertNotSame(compareDock2.hashCode(), compareDock4.hashCode());
+        assertNotSame(compareDock2.hashCode(), compareDock5.hashCode());
+        assertNotSame(compareDock3.hashCode(), compareDock4.hashCode());
+        assertNotSame(compareDock3.hashCode(), compareDock5.hashCode());
+        assertNotSame(compareDock4.hashCode(), compareDock5.hashCode());
     }
 }

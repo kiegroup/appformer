@@ -16,6 +16,8 @@
 
 package org.uberfire.client.workbench.docks;
 
+import java.util.Objects;
+
 import com.google.gwt.resources.client.ImageResource;
 import org.uberfire.mvp.PlaceRequest;
 
@@ -153,33 +155,27 @@ public class UberfireDock {
 
         UberfireDock that = (UberfireDock) o;
 
-        if (placeRequest != null ? !placeRequest.equals(that.placeRequest) : that.placeRequest != null) {
-            return false;
-        }
-        if (iconType != that.iconType) {
-            return false;
-        }
-        if (uberfireDockPosition != that.uberfireDockPosition) {
-            return false;
-        }
-        if (associatedPerspective != null ? !associatedPerspective.equals(that.associatedPerspective) : that.associatedPerspective != null) {
-            return false;
-        }
-        if (size != null ? !size.equals(that.size) : that.size != null) {
-            return false;
-        }
-        if (label != null ? !label.equals(that.label) : that.label != null) {
-            return false;
-        }
-        return !(tooltip != null ? !tooltip.equals(that.tooltip) : that.tooltip != null);
+        return Objects.equals(uberfireDockPosition, that.uberfireDockPosition) &&
+                Objects.equals(iconType, that.iconType) &&
+                Objects.equals(imageIcon, that.imageIcon) &&
+                Objects.equals(imageIconFocused, that.imageIconFocused) &&
+                Objects.equals(placeRequest, that.placeRequest) &&
+                Objects.equals(associatedPerspective, that.associatedPerspective) &&
+                Objects.equals(size, that.size) &&
+                Objects.equals(label, that.label) &&
+                Objects.equals(tooltip, that.tooltip);
     }
 
     @Override
     public int hashCode() {
-        int result = placeRequest != null ? placeRequest.hashCode() : 0;
+        int result = placeRequest.hashCode();
+        result = 31 * result + (uberfireDockPosition != null ? uberfireDockPosition.hashCode() : 0);
+        result = ~~result;
         result = 31 * result + (iconType != null ? iconType.hashCode() : 0);
         result = ~~result;
-        result = 31 * result + (uberfireDockPosition != null ? uberfireDockPosition.hashCode() : 0);
+        result = 31 * result + (imageIcon != null ? imageIcon.hashCode() : 0);
+        result = ~~result;
+        result = 31 * result + (imageIconFocused != null ? imageIconFocused.hashCode() : 0);
         result = ~~result;
         result = 31 * result + (associatedPerspective != null ? associatedPerspective.hashCode() : 0);
         result = ~~result;
