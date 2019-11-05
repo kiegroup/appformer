@@ -113,6 +113,8 @@ public class NotificationPopupView extends DecoratedPopupPanel {
             notification.addCloseHandler(evt -> onCompleteCommand.execute());
         }
 
+        notification.setDismissable(!autoHide);
+
         s.run();
     }
 
