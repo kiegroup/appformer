@@ -39,7 +39,6 @@ import org.uberfire.workbench.events.NotificationEvent;
 import org.uberfire.workbench.model.ActivityResourceType;
 import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
 
 @Dependent
@@ -55,6 +54,7 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
     @Inject private PlaceManager placeManager;
     @Inject private AuthorizationManager authorizationManager;
     @Inject private User user;
+    @Inject private ActivityBeansCache activityBeansCache;
 
     @Override
     public void setContainer(final IsWidget container) {
@@ -88,9 +88,7 @@ public class NotificationPopupsManagerView implements NotificationManager.View {
         view.setNotificationWidth(getWidth() + "px");
 
         if (event.hasNavigation()) {
-            final SyncBeanManager beanManager = IOC.getBeanManager();
             final String identifier = event.getNavigationPlace().getIdentifier();
-            final ActivityBeansCache activityBeansCache = beanManager.lookupBean(ActivityBeansCache.class).getInstance();
             final SyncBeanDef<Activity> syncBeanDefActivity = activityBeansCache.getActivity(identifier);
             final ResourceRef resourceRef = new ResourceRef(identifier, syncBeanDefActivity.getInstance().getResourceType());
             final Boolean isAuthorized = authorizationManager.authorize(resourceRef, user);
