@@ -24,6 +24,8 @@ import org.uberfire.experimental.service.registry.impl.ExperimentalFeatureImpl;
 import org.uberfire.experimental.service.storage.scoped.ExperimentalStorageScope;
 import org.uberfire.experimental.service.storage.util.ExperimentalConstants;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.FileSystem;
+import org.uberfire.java.nio.file.Path;
 import org.uberfire.rpc.SessionInfo;
 
 import javax.enterprise.context.Dependent;
@@ -45,6 +47,20 @@ public class UserExperimentalFeaturesStorageImpl extends AbstractScopedExperimen
     @Inject
     public UserExperimentalFeaturesStorageImpl(final SessionInfo sessionInfo, @Named("configIO") final IOService ioService, final ExperimentalFeatureDefRegistry defRegistry) {
         super(sessionInfo, ioService, defRegistry);
+    }
+
+    @Override
+    public void init(FileSystem fileSystem) {
+        super.init(fileSystem);
+
+        checkStoragePath();
+    }
+
+    private void checkStoragePath() {
+        Path path = fileSystem.getPath(USER_FOLDER_ROOT);
+        if(!ioService.exists(path)) {
+            ioService.createDirectory(path);
+        }
     }
 
     @Override

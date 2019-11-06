@@ -46,10 +46,11 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
 
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
-        verify(ioService).exists(any());
+        verify(ioService, times(2)).exists(any());
         verify(ioService, never()).newInputStream(any());
+        verify(ioService).createDirectory(any());
 
-        verify(ioService).newOutputStream(any());
+        verify(ioService, times(2)).newOutputStream(any());
         verify(ioService).startBatch(fileSystem);
         verify(ioService).endBatch();
 
@@ -67,7 +68,8 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
 
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
-        verify(ioService, times(2)).exists(any());
+        verify(ioService, times(3)).exists(any());
+        verify(ioService, never()).createDirectory(any());
         verify(ioService).newInputStream(any());
 
         verify(ioService, never()).newOutputStream(any());
@@ -87,7 +89,8 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
 
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
-        verify(ioService, times(2)).exists(any());
+        verify(ioService, times(3)).exists(any());
+        verify(ioService, never()).createDirectory(any());
         verify(ioService).newInputStream(any());
 
         verify(ioService).newOutputStream(any());
@@ -107,7 +110,8 @@ public class UserExperimentalFeaturesStorageImplTest extends AbstractExperimenta
 
         List<ExperimentalFeatureImpl> features = new ArrayList<>(storage.getFeatures());
 
-        verify(ioService, times(2)).exists(any());
+        verify(ioService, times(3)).exists(any());
+        verify(ioService, never()).createDirectory(any());
         verify(ioService).newInputStream(any());
 
         verify(ioService).newOutputStream(any());
