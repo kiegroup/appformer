@@ -16,7 +16,7 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.scrollbars;
 
-import java.util.Optional;
+import java.util.Objects;
 
 import com.ait.lienzo.client.core.event.NodeMouseMoveEvent;
 import com.ait.lienzo.client.core.shape.Viewport;
@@ -224,7 +224,9 @@ public class GridLienzoScrollHandler {
     }
 
     DefaultGridLayer getDefaultGridLayer() {
-        return Optional.ofNullable(panel.getDefaultGridLayer()).orElse(emptyLayer());
+        //Do not use Optional.ofNullable(..).orElse(..) as the _else_ expression is *always* invoked
+        final DefaultGridLayer defaultGridLayer = panel.getDefaultGridLayer();
+        return Objects.nonNull(defaultGridLayer) ? defaultGridLayer : emptyLayer();
     }
 
     Viewport getViewport() {

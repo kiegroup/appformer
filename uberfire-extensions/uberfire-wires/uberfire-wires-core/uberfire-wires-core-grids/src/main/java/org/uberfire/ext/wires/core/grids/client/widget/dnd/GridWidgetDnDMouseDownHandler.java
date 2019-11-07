@@ -158,11 +158,13 @@ public class GridWidgetDnDMouseDownHandler implements NodeMouseDownHandler {
 
         final Bounds bounds = renderingInformation.getBounds();
         final GridRow row = activeGridRows.get(0);
-        final double rowOffsetY = rendererHelper.getRowOffset(row) + view.getRenderer().getHeaderHeight();
+        final int rowIndex = view.getModel().getRows().indexOf(row);
+        final List<Double> allRowHeights = renderingInformation.getAllRowHeights();
+        final double rowOffsetY = rendererHelper.getRowOffset(rowIndex, allRowHeights) + view.getRenderer().getHeaderHeight();
 
         final double highlightWidth = Math.min(bounds.getX() + bounds.getWidth() - view.getComputedLocation().getX(),
                                                view.getWidth());
-        final double highlightHeight = row.getHeight();
+        final double highlightHeight = allRowHeights.get(rowIndex);
 
         state.getEventColumnHighlight().setWidth(highlightWidth)
                 .setHeight(highlightHeight)

@@ -16,7 +16,9 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.columns.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import com.ait.lienzo.test.LienzoMockitoTestRunner;
 import org.assertj.core.api.Assertions;
@@ -53,13 +55,15 @@ public class ColumnRenderingStrategyMergedTest {
     @Test
     public void testGetCellHeightCells3() throws Exception {
         doReturn(3).when(gridCell).getMergedCellCount();
-        Assertions.assertThat(ColumnRenderingStrategyMerged.getCellHeight(0, gridData, gridCell)).isEqualTo(BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT * 3);
+        final List<Double> allRowHeights = new ArrayList<>(Collections.nCopies(3, BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT));
+        Assertions.assertThat(ColumnRenderingStrategyMerged.getCellHeight(0, allRowHeights, gridCell)).isEqualTo(BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT * 3);
     }
 
     @Test
     public void testGetCellHeightCells4() throws Exception {
         doReturn(4).when(gridCell).getMergedCellCount();
-        Assertions.assertThat(ColumnRenderingStrategyMerged.getCellHeight(0, gridData, gridCell)).isEqualTo(BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT * 4);
+        final List<Double> allRowHeights = new ArrayList<>(Collections.nCopies(4, BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT));
+        Assertions.assertThat(ColumnRenderingStrategyMerged.getCellHeight(0, allRowHeights, gridCell)).isEqualTo(BaseGridWidgetRenderingTestUtils.HEADER_ROW_HEIGHT * 4);
     }
 
     @Test

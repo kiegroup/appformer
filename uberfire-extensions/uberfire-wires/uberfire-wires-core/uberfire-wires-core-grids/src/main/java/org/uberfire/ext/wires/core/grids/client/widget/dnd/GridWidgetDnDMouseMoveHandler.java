@@ -139,6 +139,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
             if (cy < headerMaxY) {
                 //Check for column moving
                 findMovableColumns(gridWidget,
+                                   renderingInformation,
                                    headerHeight - headerRowsYOffset,
                                    headerMinY,
                                    cx,
@@ -146,11 +147,13 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
             } else {
                 //Check for movable rows
                 findMovableRows(gridWidget,
+                                renderingInformation,
                                 cx,
                                 cy);
 
                 //Check for column resizing
                 findResizableColumn(gridWidget,
+                                    renderingInformation,
                                     cx);
             }
 
@@ -168,7 +171,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         }
     }
 
-    private void setCursor(final Style.Cursor cursor) {
+    protected void setCursor(final Style.Cursor cursor) {
         for (IMediator mediator : layer.getViewport().getMediators()) {
             if (mediator instanceof RestrictedMousePanMediator) {
                 if (((RestrictedMousePanMediator) mediator).isDragging()) {
@@ -181,10 +184,9 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
     }
 
     protected void findResizableColumn(final GridWidget view,
+                                       final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                        final double cx) {
         //Gather information on columns
-        final BaseGridRendererHelper rendererHelper = view.getRendererHelper();
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         if (renderingInformation == null) {
             return;
         }
@@ -243,13 +245,12 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
     }
 
     protected void findMovableColumns(final GridWidget view,
+                                      final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                       final double headerRowsHeight,
                                       final double headerMinY,
                                       final double cx,
                                       final double cy) {
         //Gather information on columns
-        final BaseGridRendererHelper rendererHelper = view.getRendererHelper();
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         if (renderingInformation == null) {
             return;
         }
@@ -327,25 +328,28 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
     }
 
     protected void findMovableRows(final GridWidget view,
+                                   final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                    final double cx,
                                    final double cy) {
         if (!isOverRowDragHandleColumn(view,
+                                       renderingInformation,
                                        cx)) {
             return;
         }
 
         final GridData gridModel = view.getModel();
         final GridRenderer renderer = view.getRenderer();
+        final List<Double> allRowHeights = renderingInformation.getAllRowHeights();
 
         //Get row index
         if (gridModel.getRowCount() == 0) {
             return;
         }
-        GridRow row;
+        double rowHeight;
         int uiRowIndex = 0;
         double offsetY = cy - renderer.getHeaderHeight();
-        while ((row = gridModel.getRow(uiRowIndex)).getHeight() < offsetY) {
-            offsetY = offsetY - row.getHeight();
+        while ((rowHeight = allRowHeights.get(uiRowIndex)) < offsetY) {
+            offsetY = offsetY - rowHeight;
             uiRowIndex++;
         }
         if (uiRowIndex < 0 || uiRowIndex > gridModel.getRowCount() - 1) {
@@ -353,7 +357,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         }
 
         //Add row over which MouseEvent occurred
-        final List<GridRow> rows = new ArrayList<GridRow>();
+        final List<GridRow> rows = new ArrayList<>();
         rows.add(gridModel.getRow(uiRowIndex));
 
         //Add any other collapsed rows
@@ -370,10 +374,9 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
     }
 
     private boolean isOverRowDragHandleColumn(final GridWidget view,
+                                              final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                               final double cx) {
         //Gather information on columns
-        final BaseGridRendererHelper rendererHelper = view.getRendererHelper();
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         if (renderingInformation == null) {
             return false;
         }
@@ -596,7 +599,9 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         final List<GridColumn<?>> allGridColumns = activeGridModel.getColumns();
 
         final BaseGridRendererHelper rendererHelper = activeGridWidget.getRendererHelper();
+        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         final GridRenderer renderer = activeGridWidget.getRenderer();
+        final List<Double> allRowHeights = renderingInformation.getAllRowHeights();
         final double headerHeight = renderer.getHeaderHeight();
 
         final GridRow leadRow = activeGridRows.get(0);
@@ -611,11 +616,11 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         }
 
         //Find new row index
-        GridRow row;
+        double rowHeight;
         int uiRowIndex = 0;
         double offsetY = cy - headerHeight;
-        while ((row = activeGridModel.getRow(uiRowIndex)).getHeight() < offsetY) {
-            offsetY = offsetY - row.getHeight();
+        while ((rowHeight = allRowHeights.get(uiRowIndex)) < offsetY) {
+            offsetY = offsetY - rowHeight;
             uiRowIndex++;
         }
         if (uiRowIndex < 0 || uiRowIndex > activeGridModel.getRowCount() - 1) {
@@ -627,12 +632,12 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
             return;
         } else if (uiRowIndex < activeGridModel.getRows().indexOf(leadRow)) {
             //Don't move up if the pointer is in the bottom half of the target row.
-            if (offsetY > activeGridModel.getRow(uiRowIndex).getHeight() / 2) {
+            if (offsetY > allRowHeights.get(uiRowIndex) / 2) {
                 return;
             }
         } else if (uiRowIndex > activeGridModel.getRows().indexOf(leadRow)) {
             //Don't move down if the pointer is in the top half of the target row.
-            if (offsetY < activeGridModel.getRow(uiRowIndex).getHeight() / 2) {
+            if (offsetY < allRowHeights.get(uiRowIndex) / 2) {
                 return;
             }
         }

@@ -168,6 +168,11 @@ public class GridWidgetDnDMouseMoveHandlerTest {
                                                                                                                2,
                                                                                                                new ArrayList<Double>() {{
                                                                                                                    add(20.0);
+                                                                                                                   add(20.0);
+                                                                                                                   add(20.0);
+                                                                                                               }},
+                                                                                                               new ArrayList<Double>() {{
+                                                                                                                   add(20.0);
                                                                                                                    add(40.0);
                                                                                                                    add(60.0);
                                                                                                                }},
@@ -201,16 +206,19 @@ public class GridWidgetDnDMouseMoveHandlerTest {
 
         verify(handler,
                never()).findMovableColumns(any(GridWidget.class),
+                                           any(BaseGridRendererHelper.RenderingInformation.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class));
         verify(handler,
                never()).findMovableRows(any(GridWidget.class),
+                                        any(BaseGridRendererHelper.RenderingInformation.class),
                                         any(Double.class),
                                         any(Double.class));
         verify(handler,
                never()).findResizableColumn(any(GridWidget.class),
+                                            any(BaseGridRendererHelper.RenderingInformation.class),
                                             any(Double.class));
     }
 
@@ -229,16 +237,19 @@ public class GridWidgetDnDMouseMoveHandlerTest {
 
         verify(handler,
                never()).findMovableColumns(any(GridWidget.class),
+                                           any(BaseGridRendererHelper.RenderingInformation.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class));
         verify(handler,
                never()).findMovableRows(any(GridWidget.class),
+                                        any(BaseGridRendererHelper.RenderingInformation.class),
                                         any(Double.class),
                                         any(Double.class));
         verify(handler,
                never()).findResizableColumn(any(GridWidget.class),
+                                            any(BaseGridRendererHelper.RenderingInformation.class),
                                             any(Double.class));
     }
 
@@ -261,16 +272,19 @@ public class GridWidgetDnDMouseMoveHandlerTest {
 
         verify(handler,
                times(1)).findMovableColumns(any(GridWidget.class),
+                                            any(BaseGridRendererHelper.RenderingInformation.class),
                                             any(Double.class),
                                             any(Double.class),
                                             any(Double.class),
                                             any(Double.class));
         verify(handler,
                never()).findMovableRows(any(GridWidget.class),
+                                        any(BaseGridRendererHelper.RenderingInformation.class),
                                         any(Double.class),
                                         any(Double.class));
         verify(handler,
                never()).findResizableColumn(any(GridWidget.class),
+                                            any(BaseGridRendererHelper.RenderingInformation.class),
                                             any(Double.class));
 
         verify(state,
@@ -370,16 +384,19 @@ public class GridWidgetDnDMouseMoveHandlerTest {
 
         verify(handler,
                times(1)).findMovableColumns(any(GridWidget.class),
+                                            any(BaseGridRendererHelper.RenderingInformation.class),
                                             any(Double.class),
                                             any(Double.class),
                                             any(Double.class),
                                             any(Double.class));
         verify(handler,
                never()).findMovableRows(any(GridWidget.class),
+                                        any(BaseGridRendererHelper.RenderingInformation.class),
                                         any(Double.class),
                                         any(Double.class));
         verify(handler,
                never()).findResizableColumn(any(GridWidget.class),
+                                            any(BaseGridRendererHelper.RenderingInformation.class),
                                             any(Double.class));
 
         verify(state,
@@ -414,16 +431,19 @@ public class GridWidgetDnDMouseMoveHandlerTest {
 
         verify(handler,
                never()).findMovableColumns(any(GridWidget.class),
+                                           any(BaseGridRendererHelper.RenderingInformation.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class));
         verify(handler,
                times(1)).findMovableRows(any(GridWidget.class),
+                                         any(BaseGridRendererHelper.RenderingInformation.class),
                                          any(Double.class),
                                          any(Double.class));
         verify(handler,
                times(1)).findResizableColumn(any(GridWidget.class),
+                                             any(BaseGridRendererHelper.RenderingInformation.class),
                                              any(Double.class));
 
         verify(state,
@@ -458,16 +478,19 @@ public class GridWidgetDnDMouseMoveHandlerTest {
 
         verify(handler,
                never()).findMovableColumns(any(GridWidget.class),
+                                           any(BaseGridRendererHelper.RenderingInformation.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class),
                                            any(Double.class));
         verify(handler,
                times(1)).findMovableRows(any(GridWidget.class),
+                                         any(BaseGridRendererHelper.RenderingInformation.class),
                                          any(Double.class),
                                          any(Double.class));
         verify(handler,
                times(1)).findResizableColumn(any(GridWidget.class),
+                                             any(BaseGridRendererHelper.RenderingInformation.class),
                                              any(Double.class));
 
         verify(state,

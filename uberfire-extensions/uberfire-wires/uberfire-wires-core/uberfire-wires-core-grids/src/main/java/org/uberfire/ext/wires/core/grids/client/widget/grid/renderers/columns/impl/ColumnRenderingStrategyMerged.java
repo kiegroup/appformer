@@ -57,6 +57,7 @@ public class ColumnRenderingStrategyMerged {
         final double clipMinX = context.getClipMinX();
         final int minVisibleRowIndex = context.getMinVisibleRowIndex();
         final int maxVisibleRowIndex = context.getMaxVisibleRowIndex();
+        final List<Double> allRowHeights = renderingInformation.getAllRowHeights();
         final List<Double> visibleRowOffsets = renderingInformation.getVisibleRowOffsets();
         final boolean isFloating = context.isFloating();
         final GridData model = context.getModel();
@@ -64,7 +65,7 @@ public class ColumnRenderingStrategyMerged {
         final GridRenderer renderer = context.getRenderer();
         final GridRendererTheme theme = renderer.getTheme();
         final double columnWidth = column.getWidth();
-        final double columnHeight = visibleRowOffsets.get(maxVisibleRowIndex - minVisibleRowIndex) - visibleRowOffsets.get(0) + model.getRow(maxVisibleRowIndex).getHeight();
+        final double columnHeight = visibleRowOffsets.get(maxVisibleRowIndex - minVisibleRowIndex) - visibleRowOffsets.get(0) + allRowHeights.get(maxVisibleRowIndex);
         final int columnIndex = model.getColumns().indexOf(column);
 
         final List<GridRenderer.RendererCommand> commands = new ArrayList<>();
@@ -146,7 +147,7 @@ public class ColumnRenderingStrategyMerged {
 
                     if (isCollapsedCellMixedValue) {
                         final Group mixedValueGroup = renderMergedCellMixedValueHighlight(columnWidth,
-                                                                                          row.getHeight());
+                                                                                          allRowHeights.get(rowIndex));
                         mixedValueGroup.setX(0).setY(y).setListening(true);
                         columnGroup.add(mixedValueGroup);
                     }
@@ -162,7 +163,7 @@ public class ColumnRenderingStrategyMerged {
                                                                       columnIndex);
                         if (nextRowCell != null) {
                             final Group gt = renderGroupedCellToggle(columnWidth,
-                                                                     row.getHeight(),
+                                                                     allRowHeights.get(rowIndex),
                                                                      nextRowCell.isCollapsed());
                             gt.setX(0).setY(y);
                             columnGroup.add(gt);
@@ -172,7 +173,7 @@ public class ColumnRenderingStrategyMerged {
                     if (cell.getMergedCellCount() > 0) {
                         //If cell is "lead" i.e. top of a merged block centralize content in cell
                         final double cellHeight = getCellHeight(rowIndex,
-                                                                model,
+                                                                allRowHeights,
                                                                 cell);
                         final GridBodyCellRenderContext cellContext = new GridBodyCellRenderContext(absoluteColumnX,
                                                                                                     absoluteGridY + renderer.getHeaderHeight() + visibleRowOffsets.get(rowIndex - minVisibleRowIndex),
@@ -201,14 +202,14 @@ public class ColumnRenderingStrategyMerged {
                         GridCell<?> _cell = cell;
                         while (_cell.getMergedCellCount() == 0) {
                             _rowIndex--;
-                            _y = _y - model.getRow(_rowIndex).getHeight();
+                            _y = _y - allRowHeights.get(_rowIndex);
                             _cell = model.getCell(_rowIndex,
                                                   columnIndex);
                         }
 
                         final double cellHeight = getCellHeight(_rowIndex,
-                                                                model,
-                                                                _cell);
+                                                                allRowHeights,
+                                                                cell);
                         final GridBodyCellRenderContext cellContext = new GridBodyCellRenderContext(absoluteColumnX,
                                                                                                     absoluteGridY + renderer.getHeaderHeight() + rendererHelper.getRowOffset(_rowIndex),
                                                                                                     columnWidth,
@@ -305,10 +306,10 @@ public class ColumnRenderingStrategyMerged {
     }
 
     protected static double getCellHeight(final int rowIndex,
-                                          final GridData model,
+                                          final List<Double> allRowHeights,
                                           final GridCell<?> cell) {
         return IntStream.range(rowIndex, rowIndex + cell.getMergedCellCount())
-                .mapToDouble(index -> model.getRow(index).getHeight())
+                .mapToDouble(allRowHeights::get)
                 .sum();
     }
 

@@ -16,7 +16,9 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.columns.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -170,10 +172,12 @@ public class ColumnRenderingStrategyFlattenedTest {
 
     @Test
     public void testRenderNotSelectionLayer() throws Exception {
+        final List<Double> allRowHeights = new ArrayList<>(Collections.nCopies(3, ROW_HEIGHT));
         final GridRenderer.GridRendererContext rendererContext = mock(GridRenderer.GridRendererContext.class);
         final Group group = mock(Group.class);
         doReturn(false).when(rendererContext).isSelectionLayer();
         doReturn(group).when(rendererContext).getGroup();
+        doReturn(allRowHeights).when(renderingInformation).getAllRowHeights();
 
         final List<GridRenderer.RendererCommand> commands = ColumnRenderingStrategyFlattened.render(column,
                                                                                                     context,
