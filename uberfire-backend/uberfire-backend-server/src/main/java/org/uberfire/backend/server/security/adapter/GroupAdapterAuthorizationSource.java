@@ -16,16 +16,27 @@
 
 package org.uberfire.backend.server.security.adapter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import javax.security.auth.Subject;
 
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.GroupImpl;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.RoleImpl;
+import org.uberfire.backend.server.security.BasicAuthorizationPrincipal;
 import org.uberfire.backend.server.security.RoleRegistry;
 import org.uberfire.security.authz.adapter.GroupsAdapter;
 
@@ -115,6 +126,9 @@ public class GroupAdapterAuthorizationSource {
             Set<java.security.Principal> principals = subject.getPrincipals();
             if (principals != null) {
                 for (java.security.Principal p : principals) {
+                    if (p instanceof BasicAuthorizationPrincipal) {
+                        continue;
+                    }
                     if (p instanceof java.security.acl.Group) {
                         for (final String rolePrincipleName : rolePrincipleNames) {
                             if (rolePrincipleName.equalsIgnoreCase(p.getName())) {
