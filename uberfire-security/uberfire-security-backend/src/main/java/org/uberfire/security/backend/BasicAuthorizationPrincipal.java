@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.backend.server.security;
+package org.uberfire.security.backend;
 
 import java.security.Principal;
 
