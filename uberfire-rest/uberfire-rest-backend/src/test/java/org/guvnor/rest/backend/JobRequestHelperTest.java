@@ -84,7 +84,7 @@ public class JobRequestHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        when(workspaceProjectService.resolveProject(eq(space), eq("project"))).thenReturn(workspaceProject);
+        when(workspaceProjectService.resolveProject(eq(space), eq("project"), any())).thenReturn(workspaceProject);
         when(repositoryService.getRepositoryFromSpace(eq(space), eq("repositoryAlias"))).thenReturn(repository);
         when(spaces.getSpace(eq("space"))).thenReturn(space);
     }
@@ -118,6 +118,7 @@ public class JobRequestHelperTest {
     public void resourceDoesNotExist() throws Exception {
         final JobResult jobResult = helper.testProject(null,
                                                        null,
+                                                       null,
                                                        null);
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -139,7 +140,8 @@ public class JobRequestHelperTest {
 
         final JobResult jobResult = helper.testProject(null,
                                                        space.getName(),
-                                                       "project");
+                                                       "project",
+                                                       null);
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
     }
@@ -175,7 +177,8 @@ public class JobRequestHelperTest {
                                              final JobStatus status) {
         final JobResult jobResult = helper.testProject(null,
                                                        space.getName(),
-                                                       "project");
+                                                       "project",
+                                                       null);
 
         verify(testService).runAllTests(eq("JobRequestHelper"),
                                         any(Path.class),

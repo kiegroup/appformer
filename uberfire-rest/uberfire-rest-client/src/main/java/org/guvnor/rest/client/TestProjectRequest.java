@@ -22,6 +22,7 @@ public class TestProjectRequest extends JobRequest {
 
     private String projectName;
     private String spaceName;
+    private String branchName;
 
     public String getProjectName() {
         return projectName;
@@ -38,5 +39,13 @@ public class TestProjectRequest extends JobRequest {
 
     public void setSpaceName(String spaceName) {
         this.spaceName = spaceName;
+    }
+
+    public void setBranchName(String branchName) {
+	this.branchName = branchName;
+    }
+
+    public String getBranchName() {
+	return spaceName;
     }
 }
