@@ -22,7 +22,7 @@ public enum ExperimentalStorageScope {
     GLOBAL, USER;
 
     public static ExperimentalStorageScope getScope(ExperimentalFeatureDefinition featureDefinition) {
-        if(featureDefinition.isGlobal()) {
+        if (featureDefinition.isGlobal()) {
             return GLOBAL;
         }
         return USER;

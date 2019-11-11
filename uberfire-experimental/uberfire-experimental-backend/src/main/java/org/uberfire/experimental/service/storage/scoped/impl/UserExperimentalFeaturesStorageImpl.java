@@ -32,7 +32,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 
@@ -58,7 +57,7 @@ public class UserExperimentalFeaturesStorageImpl extends AbstractScopedExperimen
 
     private void checkStoragePath() {
         Path path = fileSystem.getPath(USER_FOLDER_ROOT);
-        if(!ioService.exists(path)) {
+        if (!ioService.exists(path)) {
             ioService.createDirectory(path);
         }
     }

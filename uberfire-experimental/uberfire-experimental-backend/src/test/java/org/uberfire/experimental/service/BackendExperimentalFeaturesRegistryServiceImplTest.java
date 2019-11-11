@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -195,5 +196,10 @@ public class BackendExperimentalFeaturesRegistryServiceImplTest {
         Assertions.assertThat(registry.getAllFeatures())
                 .isNotNull()
                 .hasSize(6);
+    }
+
+    @After
+    public void clear() {
+        System.clearProperty(BackendExperimentalFeaturesRegistryServiceImpl.EXPERIMENTAL_FEATURES_PROPERTY_NAME);
     }
 }

@@ -48,7 +48,6 @@ import static org.uberfire.experimental.service.storage.util.ExperimentalConstan
 public class ExperimentalFeaturesStorageImpl implements ExperimentalFeaturesStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExperimentalFeaturesStorageImpl.class);
 
-
     private Properties settings;
     private FileSystem fileSystem;
     private Map<ExperimentalStorageScope, ScopedExperimentalFeaturesStorage> storages = new HashMap<>();
@@ -99,7 +98,7 @@ public class ExperimentalFeaturesStorageImpl implements ExperimentalFeaturesStor
     private void checkVersion() {
         int currentVersion = Integer.parseInt(settings.getOrDefault(ExperimentalConstants.EXPERIMENTAL_VERSION_KEY, "1").toString());
 
-        if(currentVersion < ExperimentalConstants.EXPERIMENTAL_VERSION) {
+        if (currentVersion < ExperimentalConstants.EXPERIMENTAL_VERSION) {
             migrationService.migrate(ExperimentalConstants.EXPERIMENTAL_VERSION, fileSystem);
 
             settings.setProperty(ExperimentalConstants.EXPERIMENTAL_VERSION_KEY, ExperimentalConstants.EXPERIMENTAL_VERSION.toString());

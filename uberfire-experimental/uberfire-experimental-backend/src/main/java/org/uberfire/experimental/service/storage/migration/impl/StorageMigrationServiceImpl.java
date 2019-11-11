@@ -16,17 +16,16 @@
 
 package org.uberfire.experimental.service.storage.migration.impl;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import org.uberfire.experimental.service.storage.migration.StorageMigration;
+import org.uberfire.experimental.service.storage.migration.StorageMigrationService;
+import org.uberfire.java.nio.file.FileSystem;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-
-import org.uberfire.experimental.service.storage.migration.StorageMigration;
-import org.uberfire.experimental.service.storage.migration.StorageMigrationService;
-import org.uberfire.java.nio.file.FileSystem;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Dependent
 public class StorageMigrationServiceImpl implements StorageMigrationService {
@@ -43,7 +42,7 @@ public class StorageMigrationServiceImpl implements StorageMigrationService {
     @Override
     public void migrate(final Integer targetVersion, final FileSystem fileSystem) {
         migrations.iterator().forEachRemaining(migration -> {
-            if(migration.getTargetVersion() <= targetVersion) {
+            if (migration.getTargetVersion() <= targetVersion) {
                 migration.migrate(fileSystem);
             }
         });
