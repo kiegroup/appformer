@@ -155,4 +155,34 @@ public class ConfirmPopupTest {
         verify(modalConfirmationMessageLabel,
                times(1)).setTextContent(CONFIRM_MESSAGE);
     }
+
+    @Test
+    public void testShowWithInlineNotificationAndSingleButton() {
+        final Command command = mock(Command.class);
+        InlineNotification.InlineNotificationType arbitraryNotificationType = InlineNotification.InlineNotificationType.WARNING;
+        Button.ButtonStyleType arbitraryButtonType = Button.ButtonStyleType.PRIMARY;
+        popup.show(TITLE,
+                   INLINE_NOTIFICATION_MESSAGE,
+                   arbitraryNotificationType,
+                   OK_BUTTON_TEXT,
+                   arbitraryButtonType,
+                   CONFIRM_MESSAGE,
+                   true,
+                   command);
+        verify(modalTitle,
+               times(1)).setTextContent(TITLE);
+        verify(confirmInlineNotificationStyle,
+               times(1)).removeProperty("display");
+        verify(confirmInlineNotification,
+               times(1)).setMessage(INLINE_NOTIFICATION_MESSAGE);
+        verify(confirmInlineNotification,
+               times(1)).setType(arbitraryNotificationType);
+        verify(okButton,
+               times(1)).setText(OK_BUTTON_TEXT);
+        verify(okButton,
+               times(1)).setButtonStyleType(arbitraryButtonType);
+        verify(modalConfirmationMessageLabel,
+               times(1)).setTextContent(CONFIRM_MESSAGE);
+        verify(cancelButton, times(1)).hide();
+    }
 }

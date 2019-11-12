@@ -107,6 +107,20 @@ public class ConfirmPopup {
         modal.show();
     }
 
+    public void show(final String title,
+                     final String inlineNotificationMessage,
+                     final InlineNotification.InlineNotificationType inlineNotificationType,
+                     final String okButtonText,
+                     final Button.ButtonStyleType okButtonType,
+                     final String confirmMessage,
+                     final boolean isSingleButton,
+                     final Command okCommand) {
+        show(title, inlineNotificationMessage, inlineNotificationType, okButtonText, okButtonType, confirmMessage, okCommand);
+        if (isSingleButton) {
+            cancelButton.hide();
+        }
+    }
+
     public void hide() {
         modal.hide();
     }
