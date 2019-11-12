@@ -167,7 +167,7 @@ public class GridLienzoPanel extends FocusPanel implements RequiresResize,
         addMouseUpHandler((e) -> refreshScrollPosition());
     }
 
-    private void setupDefaultHandlers() {
+    void setupDefaultHandlers() {
         //Prevent DOMElements scrolling into view when they receive the focus
         domElementContainer.addDomHandler(new ScrollHandler() {
 

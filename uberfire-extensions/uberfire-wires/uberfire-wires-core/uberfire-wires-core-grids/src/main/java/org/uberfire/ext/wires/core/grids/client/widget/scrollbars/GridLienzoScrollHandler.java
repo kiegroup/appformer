@@ -39,9 +39,15 @@ import org.uberfire.ext.wires.core.grids.client.widget.layer.pinning.impl.Restri
 
 public class GridLienzoScrollHandler {
 
-    private final GridLienzoPanel panel;
+    private final DefaultGridLayer EMPTY = new DefaultGridLayer();
 
-    private final GridLienzoScrollBounds gridLienzoScrollBounds;
+    private final GridLienzoScrollBars SCROLL_BARS = new GridLienzoScrollBars(this);
+
+    private final GridLienzoScrollPosition SCROLL_POSITION = new GridLienzoScrollPosition(this);
+
+    private final GridLienzoScrollBounds SCROLL_BOUNDS = new GridLienzoScrollBounds(this);
+
+    private final GridLienzoPanel panel;
 
     static final int DEFAULT_INTERNAL_SCROLL_HEIGHT = 1;
 
@@ -51,7 +57,6 @@ public class GridLienzoScrollHandler {
 
     public GridLienzoScrollHandler(final GridLienzoPanel panel) {
         this.panel = panel;
-        this.gridLienzoScrollBounds = new GridLienzoScrollBounds(this);
     }
 
     public void init() {
@@ -234,19 +239,19 @@ public class GridLienzoScrollHandler {
     }
 
     DefaultGridLayer emptyLayer() {
-        return new DefaultGridLayer();
+        return EMPTY;
     }
 
     GridLienzoScrollBars scrollBars() {
-        return new GridLienzoScrollBars(this);
+        return SCROLL_BARS;
     }
 
     GridLienzoScrollPosition scrollPosition() {
-        return new GridLienzoScrollPosition(this);
+        return SCROLL_POSITION;
     }
 
     GridLienzoScrollBounds scrollBounds() {
-        return gridLienzoScrollBounds;
+        return SCROLL_BOUNDS;
     }
 
     public void setBounds(final Bounds bounds) {
