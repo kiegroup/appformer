@@ -283,7 +283,7 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected void drawWithoutTransforms(Context2D context,
                                          double alpha,
                                          BoundingBox bb) {
-        long currentTimeMillis;
+        long currentTimeMillis = 0;
 
         final boolean isSelectionLayer = context.isSelection();
         if (isSelectionLayer && (false == isListening())) {
@@ -303,29 +303,45 @@ public class BaseGridWidget extends Group implements GridWidget {
 
         if (!isSelectionLayer) {
             //If there's no RenderingInformation the GridWidget is not visible
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- prepare()");
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                currentTimeMillis = System.currentTimeMillis();
+                LOGGER.log(Level.FINEST, " - Pre- prepare()");
+            }
             this.renderingInformation = prepare();
-            LOGGER.log(Level.FINEST, " - Post- prepare() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST, " - Post- prepare() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            }
             if (renderingInformation == null) {
                 destroyDOMElementResources();
                 return;
             }
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- makeRenderingCommands()");
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                currentTimeMillis = System.currentTimeMillis();
+                LOGGER.log(Level.FINEST, " - Pre- makeRenderingCommands()");
+            }
             makeRenderingCommands();
-            LOGGER.log(Level.FINEST, " - Post- makeRenderingCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST, " - Post- makeRenderingCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            }
         }
 
-        currentTimeMillis = System.currentTimeMillis();
-        LOGGER.log(Level.FINEST, " - Pre- layerRenderGroups()");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            currentTimeMillis = System.currentTimeMillis();
+            LOGGER.log(Level.FINEST, " - Pre- layerRenderGroups()");
+        }
         layerRenderGroups();
-        LOGGER.log(Level.FINEST, " - Post- layerRenderGroups() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, " - Post- layerRenderGroups() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        }
 
-        currentTimeMillis = System.currentTimeMillis();
-        LOGGER.log(Level.FINEST, " - Pre- executeRenderQueueCommands()");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            currentTimeMillis = System.currentTimeMillis();
+            LOGGER.log(Level.FINEST, " - Pre- executeRenderQueueCommands()");
+        }
         executeRenderQueueCommands(isSelectionLayer);
-        LOGGER.log(Level.FINEST, " - Post- executeRenderQueueCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, " - Post- executeRenderQueueCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        }
 
         //Signal columns to free any unused resources
         if (!isSelectionLayer) {
@@ -337,12 +353,16 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
 
         //Then render to the canvas
-        currentTimeMillis = System.currentTimeMillis();
-        LOGGER.log(Level.FINEST, " - Pre- super.drawWithoutTransforms()");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            currentTimeMillis = System.currentTimeMillis();
+            LOGGER.log(Level.FINEST, " - Pre- super.drawWithoutTransforms()");
+        }
         super.drawWithoutTransforms(context,
                                     alpha,
                                     bb);
-        LOGGER.log(Level.FINEST, " - Post- super.drawWithoutTransforms() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, " - Post- super.drawWithoutTransforms() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        }
     }
 
     private BaseGridRendererHelper.RenderingInformation prepare() {
@@ -362,10 +382,15 @@ public class BaseGridWidget extends Group implements GridWidget {
         this.renderQueue.clear();
 
         //If there's no RenderingInformation the GridWidget is not visible
-        long currentTimeMillis = System.currentTimeMillis();
-        LOGGER.log(Level.FINEST, " - Pre- getRenderingInformation()");
+        long currentTimeMillis = 0;
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            currentTimeMillis = System.currentTimeMillis();
+            LOGGER.log(Level.FINEST, " - Pre- getRenderingInformation()");
+        }
         final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
-        LOGGER.log(Level.FINEST, " - Post- getRenderingInformation() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, " - Post- getRenderingInformation() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        }
         if (renderingInformation == null) {
             return null;
         }

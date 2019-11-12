@@ -488,14 +488,12 @@ public class BaseGridRenderer implements GridRenderer {
 
         final int visibleRowIndex = getHighlightCellRowIndex() - renderingInformation.getMinVisibleRowIndex();
 
-        final RendererCommand renderCommand = getRendererCommand(model,
-                                                                 context,
-                                                                 rendererHelper,
-                                                                 renderingInformation,
-                                                                 column,
-                                                                 visibleRowIndex);
-
-        return renderCommand;
+        return getRendererCommand(model,
+                                  context,
+                                  rendererHelper,
+                                  renderingInformation,
+                                  column,
+                                  visibleRowIndex);
     }
 
     RendererCommand getRendererCommand(final GridData model,

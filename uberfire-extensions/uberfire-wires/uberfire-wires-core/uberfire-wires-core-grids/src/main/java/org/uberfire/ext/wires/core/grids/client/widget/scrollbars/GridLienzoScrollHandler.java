@@ -39,19 +39,19 @@ import org.uberfire.ext.wires.core.grids.client.widget.layer.pinning.impl.Restri
 
 public class GridLienzoScrollHandler {
 
-    private final DefaultGridLayer EMPTY = new DefaultGridLayer();
-
-    private final GridLienzoScrollBars SCROLL_BARS = new GridLienzoScrollBars(this);
-
-    private final GridLienzoScrollPosition SCROLL_POSITION = new GridLienzoScrollPosition(this);
-
-    private final GridLienzoScrollBounds SCROLL_BOUNDS = new GridLienzoScrollBounds(this);
-
-    private final GridLienzoPanel panel;
-
     static final int DEFAULT_INTERNAL_SCROLL_HEIGHT = 1;
 
     static final int DEFAULT_INTERNAL_SCROLL_WIDTH = 1;
+
+    private final DefaultGridLayer emptyLayer = new DefaultGridLayer();
+
+    private final GridLienzoScrollBars scrollBars = new GridLienzoScrollBars(this);
+
+    private final GridLienzoScrollPosition scrollPosition = new GridLienzoScrollPosition(this);
+
+    private final GridLienzoScrollBounds scrollBounds = new GridLienzoScrollBounds(this);
+
+    private final GridLienzoPanel panel;
 
     private RestrictedMousePanMediator mousePanMediator;
 
@@ -239,19 +239,19 @@ public class GridLienzoScrollHandler {
     }
 
     DefaultGridLayer emptyLayer() {
-        return EMPTY;
+        return emptyLayer;
     }
 
     GridLienzoScrollBars scrollBars() {
-        return SCROLL_BARS;
+        return scrollBars;
     }
 
     GridLienzoScrollPosition scrollPosition() {
-        return SCROLL_POSITION;
+        return scrollPosition;
     }
 
     GridLienzoScrollBounds scrollBounds() {
-        return SCROLL_BOUNDS;
+        return scrollBounds;
     }
 
     public void setBounds(final Bounds bounds) {

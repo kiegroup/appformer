@@ -331,8 +331,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
                                    final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                    final double cx,
                                    final double cy) {
-        if (!isOverRowDragHandleColumn(view,
-                                       renderingInformation,
+        if (!isOverRowDragHandleColumn(renderingInformation,
                                        cx)) {
             return;
         }
@@ -373,8 +372,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         setCursor(Style.Cursor.MOVE);
     }
 
-    private boolean isOverRowDragHandleColumn(final GridWidget view,
-                                              final BaseGridRendererHelper.RenderingInformation renderingInformation,
+    private boolean isOverRowDragHandleColumn(final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                               final double cx) {
         //Gather information on columns
         if (renderingInformation == null) {
