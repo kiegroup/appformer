@@ -124,10 +124,11 @@ public class GridWidgetDnDMouseDownHandler implements NodeMouseDownHandler {
                                                           view,
                                                           headerMinY);
 
-        state.getEventColumnHighlight().setWidth(highlightWidth)
-                .setHeight(highlightHeight)
-                .setX(view.getComputedLocation().getX() + activeColumnX)
-                .setY(view.getComputedLocation().getY() + headerMinY);
+        final GridWidgetDnDProxy highlight = state.getEventColumnHighlight();
+        highlight.setWidth(highlightWidth);
+        highlight.setHeight(highlightHeight);
+        highlight.setX(view.getComputedLocation().getX() + activeColumnX);
+        highlight.setY(view.getComputedLocation().getY() + headerMinY);
         layer.add(state.getEventColumnHighlight());
         layer.getLayer().batch();
     }
@@ -166,10 +167,11 @@ public class GridWidgetDnDMouseDownHandler implements NodeMouseDownHandler {
                                                view.getWidth());
         final double highlightHeight = allRowHeights.get(rowIndex);
 
-        state.getEventColumnHighlight().setWidth(highlightWidth)
-                .setHeight(highlightHeight)
-                .setX(view.getComputedLocation().getX())
-                .setY(view.getComputedLocation().getY() + rowOffsetY);
+        final GridWidgetDnDProxy highlight = state.getEventColumnHighlight();
+        highlight.setWidth(highlightWidth);
+        highlight.setHeight(highlightHeight);
+        highlight.setX(view.getComputedLocation().getX());
+        highlight.setY(view.getComputedLocation().getY() + rowOffsetY);
         layer.add(state.getEventColumnHighlight());
         layer.getLayer().batch();
     }
