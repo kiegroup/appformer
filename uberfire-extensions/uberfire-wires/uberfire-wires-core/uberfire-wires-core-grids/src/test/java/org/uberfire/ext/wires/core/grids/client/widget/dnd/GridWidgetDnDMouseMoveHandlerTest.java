@@ -467,9 +467,11 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         when(layer.getGridWidgets()).thenReturn(new HashSet<GridWidget>() {{
             add(gridWidget);
         }});
-        //This location is in the GridWidget's body; within row 0's move hot-spot, but not within a column move or resize hot-spot
-        when(event.getX()).thenReturn(125);
-        when(event.getY()).thenReturn(180);
+        //This location is in the GridWidget's body; within row 1's move hot-spot, but not within a column move or resize hot-spot
+        final int eventX = (int) (gridWidget.getComputedLocation().getX() + uiColumn1.getWidth() / 2);
+        final int eventY = (int) (gridWidget.getComputedLocation().getY() + renderer.getHeaderHeight() + uiModel.getRow(0).getHeight() + uiModel.getRow(1).getHeight() / 2);
+        when(event.getX()).thenReturn(eventX);
+        when(event.getY()).thenReturn(eventY);
 
         handler.onNodeMouseMove(event);
 
@@ -504,7 +506,43 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         assertNotNull(uiRows);
         assertEquals(1,
                      uiRows.size());
-        assertTrue(uiRows.contains(uiModel.getRow(0)));
+        assertTrue(uiRows.contains(uiModel.getRow(1)));
+    }
+
+    @Test
+    public void handleRowMove() {
+        final List<GridRow> existingRowOrder = new ArrayList<>(uiModel.getRows());
+        final GridWidgetDnDProxy highlight = mock(GridWidgetDnDProxy.class);
+        when(state.getEventColumnHighlight()).thenReturn(highlight);
+        when(state.getOperation()).thenReturn(GridWidgetHandlersOperation.NONE);
+        when(gridWidget.isVisible()).thenReturn(true);
+        when(layer.getGridWidgets()).thenReturn(new HashSet<GridWidget>() {{
+            add(gridWidget);
+        }});
+
+        //This location is in the GridWidget's body; within row 0's move hot-spot, but not within a column move or resize hot-spot
+        final int eventX = (int) (gridWidget.getComputedLocation().getX() + uiColumn1.getWidth() / 2);
+        final int eventY = (int) (gridWidget.getComputedLocation().getY() + renderer.getHeaderHeight() + uiModel.getRow(0).getHeight() / 2);
+        when(event.getX()).thenReturn(eventX);
+        when(event.getY()).thenReturn(eventY);
+
+        //Mouse is moved over row and viable rows recorded
+        handler.onNodeMouseMove(event);
+
+        //Emulate row drag starting on a MouseDownEvent (see GridWidgetDnDMouseDownHandler)
+        //This location is in the GridWidget's body; within row 1's move hot-spot
+        final int eventNewY = (int) (gridWidget.getComputedLocation().getY() + renderer.getHeaderHeight() + uiModel.getRow(0).getHeight() + uiModel.getRow(1).getHeight() / 2);
+        when(state.getOperation()).thenReturn(GridWidgetHandlersOperation.ROW_MOVE);
+        when(event.getY()).thenReturn(eventNewY);
+
+        handler.onNodeMouseMove(event);
+
+        verify(highlight).setY(gridWidget.getComputedLocation().getY() + renderer.getHeaderHeight());
+        verify(layer).batch();
+
+        assertEquals(existingRowOrder.get(0), uiModel.getRow(1));
+        assertEquals(existingRowOrder.get(1), uiModel.getRow(0));
+        assertEquals(existingRowOrder.get(2), uiModel.getRow(2));
     }
 
     @Test
