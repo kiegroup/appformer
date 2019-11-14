@@ -236,16 +236,16 @@ public class JobRequestHelper {
             branchName);
 
         if (workspaceProject == null) {
-          return ProjectDoesNotExistError(jobId, projectName);
+          return projectDoesNotExistError(jobId, projectName);
        }
 
         Module module = workspaceProject.getMainModule();
 
         if (module == null) {
             if (branchName == null) {
-                return ProjectHasNoMainModuleError(jobId, projectName);
+                return projectHasNoMainModuleError(jobId, projectName);
             }
-            return ProjectHasNoModuleError(jobId, projectName, branchName);
+            return projectHasNoModuleError(jobId, projectName, branchName);
         }
 
         BuildResults buildResults = buildService.build(module);
@@ -288,28 +288,26 @@ public class JobRequestHelper {
             return result;
         }
 
-
         final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
             spacesAPI.getSpace(spaceName),
             projectName,
             branchName);
 
         if (workspaceProject == null) {
-            return ProjectDoesNotExistError(jobId, projectName);
+            return projectDoesNotExistError(jobId, projectName);
         }
 
         final Module module = workspaceProject.getMainModule();
 
         if (module == null) {
             if (branchName == null) {
-            return ProjectHasNoMainModuleError(jobId, projectName);
+                return projectHasNoMainModuleError(jobId, projectName);
             }
-            return ProjectHasNoModuleError(jobId, projectName, branchName);
+            return projectHasNoModuleError(jobId, projectName, branchName);
         }
 
         try {
-            BuildResults buildResults = null;
-            buildResults = buildService.buildAndDeploy(module);
+            BuildResults buildResults = buildService.buildAndDeploy(module);
             result.setDetailedResult(buildResults == null ? null : deployResultToDetailedStringMessages(buildResults));
             result.setStatus(buildResults != null && buildResults.getErrorMessages().isEmpty() ? JobStatus.SUCCESS : JobStatus.FAIL);
 
@@ -327,7 +325,7 @@ public class JobRequestHelper {
                 result.setDetailedResult(errorResult);
                 result.setStatus(JobStatus.FAIL);
             }
-        }
+       }
 
         return result;
     }
@@ -356,16 +354,16 @@ public class JobRequestHelper {
             branchName);
 
         if (workspaceProject == null) {
-            return ProjectDoesNotExistError(jobId, projectName);
+            return projectDoesNotExistError(jobId, projectName);
         }
 
         final Module module = workspaceProject.getMainModule();
 
         if (module == null) {
             if (branchName == null) {
-                return ProjectHasNoMainModuleError(jobId, projectName);
+                return projectHasNoMainModuleError(jobId, projectName);
             }
-            return ProjectHasNoModuleError(jobId, projectName, branchName);
+            return projectHasNoModuleError(jobId, projectName, branchName);
         }
 
         testService.runAllTests("JobRequestHelper",
@@ -412,22 +410,20 @@ public class JobRequestHelper {
             branchName);
 
         if (workspaceProject == null) {
-            return ProjectDoesNotExistError(jobId, projectName);
+            return projectDoesNotExistError(jobId, projectName);
         }
 
         Module module = workspaceProject.getMainModule();
 
         if (module == null) {
             if (branchName == null) {
-                return ProjectHasNoMainModuleError(jobId, projectName);
+                return projectHasNoMainModuleError(jobId, projectName);
             }
-            return ProjectHasNoModuleError(jobId, projectName, branchName);
+            return projectHasNoModuleError(jobId, projectName, branchName);
         }
 
-        BuildResults buildResults = null;
-
         try {
-            buildResults = buildService.buildAndDeploy(module);
+            BuildResults buildResults = buildService.buildAndDeploy(module);
             result.setDetailedResult(buildResults == null ? null : deployResultToDetailedStringMessages(buildResults));
             result.setStatus(buildResults != null && buildResults.getErrorMessages().isEmpty() ? JobStatus.SUCCESS : JobStatus.FAIL);
 
@@ -574,7 +570,7 @@ public class JobRequestHelper {
         }
     }
 
-    private JobResult ProjectDoesNotExistError(final String jobId,
+    private JobResult projectDoesNotExistError(final String jobId,
                                                final String projectName) {
         JobResult jobResult = new JobResult();
         jobResult.setStatus(JobStatus.RESOURCE_NOT_EXIST);
@@ -582,7 +578,7 @@ public class JobRequestHelper {
         return jobResult;
     }
 
-    private JobResult ProjectHasNoMainModuleError(final String jobId,
+    private JobResult projectHasNoMainModuleError(final String jobId,
                                                   final String projectName) {
         JobResult jobResult = new JobResult();
         jobResult.setStatus(JobStatus.RESOURCE_NOT_EXIST);
@@ -590,7 +586,7 @@ public class JobRequestHelper {
         return jobResult;
     }
 
-    private JobResult ProjectHasNoModuleError(final String jobId,
+    private JobResult projectHasNoModuleError(final String jobId,
                                               final String projectName,
                                               final String branchName) {
         JobResult jobResult = new JobResult();

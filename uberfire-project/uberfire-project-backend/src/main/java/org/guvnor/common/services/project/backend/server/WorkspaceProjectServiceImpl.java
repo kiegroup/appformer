@@ -285,24 +285,23 @@ public class WorkspaceProjectServiceImpl
                                            final String projectName,
                                            final String branchName) {
 
-    WorkspaceProject workspaceProject = resolveProject(space, projectName);
 
-    if (branchName == null) {
-        return workspaceProject;
-    }
+        WorkspaceProject workspaceProject = resolveProject(space, projectName);
 
-    if (workspaceProject != null) {
+        if (workspaceProject == null || branchName == null) {
+            return workspaceProject;
+        }
+
         for (final Branch branch : workspaceProject.getRepository().getBranches()) {
             if (branch.getName().equals(branchName)) {
                 return resolveProject(space, branch);
             }
         }
-    }
 
-    return new WorkspaceProject(workspaceProject.getOrganizationalUnit(),
-                                workspaceProject.getRepository(),
-                                workspaceProject.getBranch(),
-                                null);
+        return new WorkspaceProject(workspaceProject.getOrganizationalUnit(),
+                                    workspaceProject.getRepository(),
+                                    workspaceProject.getBranch(),
+                                    null);
     }
 
     private WorkspaceProject resolveProject(OrganizationalUnit ou,
