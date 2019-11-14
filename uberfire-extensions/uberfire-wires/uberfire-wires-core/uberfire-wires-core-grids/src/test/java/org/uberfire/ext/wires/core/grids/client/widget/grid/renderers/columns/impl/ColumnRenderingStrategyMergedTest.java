@@ -30,6 +30,8 @@ import com.google.gwtmockito.GwtMockito;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.ext.wires.core.grids.client.model.GridCell;
@@ -117,6 +119,9 @@ public class ColumnRenderingStrategyMergedTest {
 
     @Mock
     private GridRow gridRow;
+
+    @Captor
+    private ArgumentCaptor<GridBodyCellRenderContext> gridBodyCellRenderContextArgumentCaptor;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -425,11 +430,34 @@ public class ColumnRenderingStrategyMergedTest {
         commands.get(1).execute(rendererContext);
 
         verify(gridColumnRenderer).renderCell(eq(cellOne),
-                                              any(GridBodyCellRenderContext.class));
+                                              gridBodyCellRenderContextArgumentCaptor.capture());
+        assertGridBodyCellRenderContext(gridBodyCellRenderContextArgumentCaptor.getAllValues().get(0),
+                                        0.0,
+                                        0.0,
+                                        gridColumn.getWidth(),
+                                        ROW_HEIGHT,
+                                        0,
+                                        0);
+
         verify(gridColumnRenderer).renderCell(eq(cellTwo),
-                                              any(GridBodyCellRenderContext.class));
+                                              gridBodyCellRenderContextArgumentCaptor.capture());
+        assertGridBodyCellRenderContext(gridBodyCellRenderContextArgumentCaptor.getAllValues().get(1),
+                                        0.0,
+                                        50.0,
+                                        gridColumn.getWidth(),
+                                        ROW_HEIGHT,
+                                        1,
+                                        0);
+
         verify(gridColumnRenderer).renderCell(eq(cellThree),
-                                              any(GridBodyCellRenderContext.class));
+                                              gridBodyCellRenderContextArgumentCaptor.capture());
+        assertGridBodyCellRenderContext(gridBodyCellRenderContextArgumentCaptor.getAllValues().get(2),
+                                        0.0,
+                                        100.0,
+                                        gridColumn.getWidth(),
+                                        ROW_HEIGHT,
+                                        2,
+                                        0);
 
         verify(boundingBoxPathClipperFactory).newClipper(0,
                                                          0,
@@ -440,5 +468,105 @@ public class ColumnRenderingStrategyMergedTest {
         verify(columnGroup).setX(CONTEXT_X_POSITION);
 
         verify(group).add(columnGroup);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRenderNotSelectionLayer_Merged() {
+        final GridCell cellOne = gridCellWithMockedMergedCellCount("one", 3);
+        final GridCell cellTwo = gridCellWithMockedMergedCellCount("one", 0);
+        final GridCell cellThree = gridCellWithMockedMergedCellCount("one", 0);
+        final GridRow gridRowOne = mock(GridRow.class);
+        final GridRow gridRowTwo = mock(GridRow.class);
+        final GridRow gridRowThree = mock(GridRow.class);
+        when(gridData.getRow(0)).thenReturn(gridRowOne);
+        when(gridData.getRow(1)).thenReturn(gridRowTwo);
+        when(gridData.getRow(2)).thenReturn(gridRowThree);
+        when(gridRowOne.isMerged()).thenReturn(true);
+        when(gridRowTwo.isMerged()).thenReturn(true);
+        when(gridRowThree.isMerged()).thenReturn(true);
+        when(gridRowOne.isCollapsed()).thenReturn(false);
+        when(gridRowTwo.isCollapsed()).thenReturn(false);
+        when(gridRowThree.isCollapsed()).thenReturn(false);
+        when(gridRowOne.getCells()).thenReturn(Collections.singletonMap(0, cellOne));
+        when(gridRowTwo.getCells()).thenReturn(Collections.singletonMap(0, cellTwo));
+        when(gridRowThree.getCells()).thenReturn(Collections.singletonMap(0, cellThree));
+        when(gridData.getCell(0, 0)).thenReturn(cellOne);
+        when(gridData.getCell(1, 0)).thenReturn(cellTwo);
+        when(gridData.getCell(2, 0)).thenReturn(cellThree);
+        when(gridColumnRenderer.renderCell(any(GridCell.class), any(GridBodyCellRenderContext.class))).thenReturn(cellGroup);
+        when(cellGroup.setX(anyDouble())).thenReturn(cellGroup);
+        when(cellGroup.setY(anyDouble())).thenReturn(cellGroup);
+
+        final List<Double> allRowHeights = new ArrayList<>(Collections.nCopies(3, ROW_HEIGHT));
+        final GridRenderer.GridRendererContext rendererContext = mock(GridRenderer.GridRendererContext.class);
+        final Group group = mock(Group.class);
+        doReturn(false).when(rendererContext).isSelectionLayer();
+        doReturn(group).when(rendererContext).getGroup();
+        doReturn(allRowHeights).when(renderingInformation).getAllRowHeights();
+
+        final List<GridRenderer.RendererCommand> commands = ColumnRenderingStrategyMerged.render(gridColumn,
+                                                                                                 context,
+                                                                                                 rendererHelper,
+                                                                                                 renderingInformation,
+                                                                                                 columnRenderingConstraint);
+
+        // Grid lines and column content
+        assertThat(commands).hasSize(2);
+
+        // -- Grid lines --
+        commands.get(0).execute(rendererContext);
+
+        verify(group).add(multiPath);
+        // Verify horizontal lines
+        // First (merged) row
+        verify(multiPath).M(CONTEXT_X_POSITION, 0 + 0.5);
+        verify(multiPath).L(CONTEXT_X_POSITION + COLUMN_WIDTH, 0 + 0.5);
+
+        // Vertical
+        verify(multiPath).M(COLUMN_WIDTH + 0.5, 0);
+        verify(multiPath).L(COLUMN_WIDTH + 0.5, ROW_HEIGHT * 3);
+
+        reset(group);
+
+        // -- Column content --
+        commands.get(1).execute(rendererContext);
+
+        verify(gridColumnRenderer).renderCell(eq(cellOne),
+                                              gridBodyCellRenderContextArgumentCaptor.capture());
+        final GridBodyCellRenderContext context = gridBodyCellRenderContextArgumentCaptor.getValue();
+        assertGridBodyCellRenderContext(context,
+                                        0.0,
+                                        0.0,
+                                        gridColumn.getWidth(),
+                                        ROW_HEIGHT * 3,
+                                        0,
+                                        0);
+
+        verify(boundingBoxPathClipperFactory).newClipper(0,
+                                                         0,
+                                                         COLUMN_WIDTH,
+                                                         ROW_HEIGHT * 3);
+        verify(pathClipper).setActive(true);
+
+        verify(columnGroup).setX(CONTEXT_X_POSITION);
+
+        verify(group).add(columnGroup);
+    }
+
+    private void assertGridBodyCellRenderContext(final GridBodyCellRenderContext context,
+                                                 final double expectedAbsoluteCellX,
+                                                 final double expectedAbsoluteCellY,
+                                                 final double expectedCellWidth,
+                                                 final double expectedCellHeight,
+                                                 final int expectedRowIndex,
+                                                 final int expectedColumnIndex) {
+        assertThat(context).isNotNull();
+        assertThat(context.getAbsoluteCellX()).isEqualTo(expectedAbsoluteCellX);
+        assertThat(context.getAbsoluteCellY()).isEqualTo(expectedAbsoluteCellY);
+        assertThat(context.getCellWidth()).isEqualTo(expectedCellWidth);
+        assertThat(context.getCellHeight()).isEqualTo(expectedCellHeight);
+        assertThat(context.getRowIndex()).isEqualTo(expectedRowIndex);
+        assertThat(context.getColumnIndex()).isEqualTo(expectedColumnIndex);
     }
 }
