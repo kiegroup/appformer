@@ -158,9 +158,9 @@ public class BaseGridRendererHelper {
     public RenderingInformation getRenderingInformation() {
         final GridData model = view.getModel();
         final Bounds bounds = getVisibleBounds();
-        final List<GridColumn<?>> allColumns = new ArrayList<GridColumn<?>>();
-        final List<GridColumn<?>> bodyColumns = new ArrayList<GridColumn<?>>();
-        final List<GridColumn<?>> floatingColumns = new ArrayList<GridColumn<?>>();
+        final List<GridColumn<?>> allColumns = new ArrayList<>();
+        final List<GridColumn<?>> bodyColumns = new ArrayList<>();
+        final List<GridColumn<?>> floatingColumns = new ArrayList<>();
 
         double viewHeight = 0;
         final int rowCount = model.getRowCount();
