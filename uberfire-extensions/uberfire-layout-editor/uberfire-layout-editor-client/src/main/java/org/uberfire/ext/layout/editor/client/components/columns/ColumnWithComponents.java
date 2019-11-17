@@ -28,6 +28,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
@@ -68,6 +69,9 @@ public class ColumnWithComponents implements Column {
     private Integer columnWidth;
     private boolean selected = false;
     private boolean selectable = true;
+
+    @Inject
+    Event<LockRequiredEvent> lockRequiredEvent;
 
     @Inject
     public ColumnWithComponents(final View view,
@@ -196,6 +200,7 @@ public class ColumnWithComponents implements Column {
                                    id,
                                    orientation));
         }
+        lockRequiredEvent.fire(new LockRequiredEvent());
     }
 
     public boolean hasComponent(Column targetColumn) {

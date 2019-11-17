@@ -31,6 +31,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.css.CssValue;
 import org.uberfire.ext.layout.editor.api.editor.LayoutRow;
@@ -75,6 +76,9 @@ public class Container implements LayoutEditorElement {
     private boolean selected = false;
     
     LayoutEditorFocusController layoutEditorFocusController;
+
+    @Inject
+    Event<LockRequiredEvent> lockRequiredEvent;
 
     @Inject
     public Container(final View view,
@@ -353,6 +357,7 @@ public class Container implements LayoutEditorElement {
                   updatedRows);
         // notifying dndManager that the move has finished!
         dndManager.endComponentMove();
+        lockRequiredEvent.fire(new LockRequiredEvent());
     }
 
     private void removeOldComponent(Column column) {

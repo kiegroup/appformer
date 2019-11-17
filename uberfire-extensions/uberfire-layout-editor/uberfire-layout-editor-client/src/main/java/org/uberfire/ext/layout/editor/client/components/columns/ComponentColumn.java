@@ -27,6 +27,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
@@ -69,6 +70,9 @@ public class ComponentColumn implements Column {
     private Event<LayoutEditorElementUnselectEvent> columnUnselectEvent;
     private ManagedInstance<ComponentColumnPart> componentColumnManagedInstance;
     private List<LayoutEditorElementPart> parts = new ArrayList<>();
+
+    @Inject
+    Event<LockRequiredEvent> lockRequiredEvent;
 
     @Inject
     public ComponentColumn(final View view,
@@ -363,6 +367,7 @@ public class ComponentColumn implements Column {
                                         .fromMove(
                                                 dndManager.getDraggedColumn()));
         }
+        lockRequiredEvent.fire(new LockRequiredEvent());
     }
 
     private boolean dropInTheSameColumn() {

@@ -605,10 +605,10 @@ public class ComponentColumnView
         return (dragOverY - top) < (bottom - dragOverY);
     }
 
-    public void cleanUp(@Observes DragComponentEndEvent dragComponentEndEvent) {
-        lockRequiredEvent.fire(new LockRequiredEvent());
+    public void onDragEnd(@Observes DragComponentEndEvent dragComponentEndEvent) {
         removeCSSClass(colUp,
                        "componentDropInColumnPreview");
+        lockRequiredEvent.fire(new LockRequiredEvent());
     }
     
     public LayoutDragComponent getLayoutDragComponent() {
