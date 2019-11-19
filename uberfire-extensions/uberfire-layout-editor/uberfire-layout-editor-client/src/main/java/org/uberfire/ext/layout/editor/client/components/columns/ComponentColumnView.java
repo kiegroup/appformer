@@ -105,7 +105,7 @@ public class ComponentColumnView
     private DragHelperComponentColumn helper;
 
     @Inject
-    Event<LockRequiredEvent> lockRequiredEvent;
+    private Event<LockRequiredEvent> lockRequiredEvent;
 
     @Override
     public void init(ComponentColumn presenter) {
@@ -608,7 +608,7 @@ public class ComponentColumnView
     public void onDragEnd(@Observes DragComponentEndEvent dragComponentEndEvent) {
         removeCSSClass(colUp,
                        "componentDropInColumnPreview");
-        lockRequiredEvent.fire(new LockRequiredEvent());
+        presenter.requiredLock();
     }
     
     public LayoutDragComponent getLayoutDragComponent() {

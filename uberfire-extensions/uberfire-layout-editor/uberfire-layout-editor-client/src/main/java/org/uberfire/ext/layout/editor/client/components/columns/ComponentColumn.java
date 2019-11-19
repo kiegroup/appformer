@@ -349,6 +349,11 @@ public class ComponentColumn implements Column {
             newComponentDrop(orientation,
                              dndData);
         }
+        requiredLock();
+    }
+
+    public void requiredLock() {
+        lockRequiredEvent.fire(new LockRequiredEvent());
     }
 
     private void newComponentDrop(ColumnDrop.Orientation orientation,
@@ -367,7 +372,6 @@ public class ComponentColumn implements Column {
                                         .fromMove(
                                                 dndManager.getDraggedColumn()));
         }
-        lockRequiredEvent.fire(new LockRequiredEvent());
     }
 
     private boolean dropInTheSameColumn() {

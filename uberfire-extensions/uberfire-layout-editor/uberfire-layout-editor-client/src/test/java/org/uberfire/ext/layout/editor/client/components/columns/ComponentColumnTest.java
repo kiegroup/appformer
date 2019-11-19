@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.Supplier;
 
 import org.junit.Test;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponentPart;

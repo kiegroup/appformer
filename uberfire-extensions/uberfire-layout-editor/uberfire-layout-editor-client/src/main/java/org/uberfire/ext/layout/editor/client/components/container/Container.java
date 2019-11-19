@@ -326,6 +326,7 @@ public class Container implements LayoutEditorElement {
             }
             rows = updatedRows;
             getView();
+            lockRequiredEvent.fire(new LockRequiredEvent());
         };
     }
 
@@ -357,7 +358,6 @@ public class Container implements LayoutEditorElement {
                   updatedRows);
         // notifying dndManager that the move has finished!
         dndManager.endComponentMove();
-        lockRequiredEvent.fire(new LockRequiredEvent());
     }
 
     private void removeOldComponent(Column column) {
