@@ -139,7 +139,6 @@ public class CellContextUtilitiesTest {
 
     @Test
     public void testMakeCellRenderContextOneRow() {
-        final double headerRowsHeight = 100.0;
         final BaseGridRow row = new BaseGridRow();
         final List<GridColumn<?>> allColumns = new ArrayList<>();
         final List<Double> allRowHeights = Collections.singletonList(row.getHeight());
@@ -151,8 +150,6 @@ public class CellContextUtilitiesTest {
         allColumns.add(uiColumn3);
         gridWidget.getModel().appendRow(row);
 
-        doReturn(allColumns).when(ri).getAllColumns();
-        doReturn(headerRowsHeight).when(ri).getHeaderRowsHeight();
         doReturn(allRowHeights).when(ri).getAllRowHeights();
         doReturn(uiColumn2).when(ci).getColumn();
         doReturn(25.0).when(ci).getOffsetX();
@@ -170,12 +167,11 @@ public class CellContextUtilitiesTest {
 
         assertThat(context.getAbsoluteCellY())
                 .as("Should be headers height")
-                .isEqualTo(headerRowsHeight);
+                .isEqualTo(HEADER_HEIGHT);
     }
 
     @Test
     public void testMakeCellRenderContextThreeRows() {
-        final double headerRowsHeight = 100.0;
         final BaseGridRow row1 = new BaseGridRow();
         final BaseGridRow row2 = new BaseGridRow();
         final BaseGridRow row3 = new BaseGridRow();
@@ -192,8 +188,6 @@ public class CellContextUtilitiesTest {
         gridWidget.getModel().appendRow(row2);
         gridWidget.getModel().appendRow(row3);
 
-        doReturn(allColumns).when(ri).getAllColumns();
-        doReturn(headerRowsHeight).when(ri).getHeaderRowsHeight();
         doReturn(allRowHeights).when(ri).getAllRowHeights();
         doReturn(uiColumn3).when(ci).getColumn();
         doReturn(25.0).when(ci).getOffsetX();
@@ -211,7 +205,7 @@ public class CellContextUtilitiesTest {
 
         assertThat(context.getAbsoluteCellY())
                 .as("Should be sum of header height plus preceding row heights")
-                .isEqualTo(headerRowsHeight + row1.getHeight() + row2.getHeight());
+                .isEqualTo(HEADER_HEIGHT + row1.getHeight() + row2.getHeight());
     }
 
     @Test
