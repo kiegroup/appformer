@@ -597,9 +597,7 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         final List<GridColumn<?>> allGridColumns = activeGridModel.getColumns();
 
         final BaseGridRendererHelper rendererHelper = activeGridWidget.getRendererHelper();
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         final GridRenderer renderer = activeGridWidget.getRenderer();
-        final List<Double> allRowHeights = renderingInformation.getAllRowHeights();
         final double headerHeight = renderer.getHeaderHeight();
 
         final GridRow leadRow = activeGridRows.get(0);
@@ -614,11 +612,11 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
         }
 
         //Find new row index
-        double rowHeight;
+        GridRow row;
         int uiRowIndex = 0;
         double offsetY = cy - headerHeight;
-        while ((rowHeight = allRowHeights.get(uiRowIndex)) < offsetY) {
-            offsetY = offsetY - rowHeight;
+        while ((row = activeGridModel.getRow(uiRowIndex)).getHeight() < offsetY) {
+            offsetY = offsetY - row.getHeight();
             uiRowIndex++;
         }
         if (uiRowIndex < 0 || uiRowIndex > activeGridModel.getRowCount() - 1) {
@@ -630,12 +628,12 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
             return;
         } else if (uiRowIndex < activeGridModel.getRows().indexOf(leadRow)) {
             //Don't move up if the pointer is in the bottom half of the target row.
-            if (offsetY > allRowHeights.get(uiRowIndex) / 2) {
+            if (offsetY > activeGridModel.getRow(uiRowIndex).getHeight() / 2) {
                 return;
             }
         } else if (uiRowIndex > activeGridModel.getRows().indexOf(leadRow)) {
             //Don't move down if the pointer is in the top half of the target row.
-            if (offsetY < allRowHeights.get(uiRowIndex) / 2) {
+            if (offsetY < activeGridModel.getRow(uiRowIndex).getHeight() / 2) {
                 return;
             }
         }

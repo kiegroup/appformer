@@ -72,7 +72,7 @@ public class GridWidgetDnDMouseDownHandlerTest {
 
     private static final double COLUMN_WIDTH = 25.0;
 
-    private static final double HEADER_HEIGHT = 25.0;/**/
+    private static final double HEADER_HEIGHT = 25.0;
 
     private static final double ROW_HEIGHT = 32.0;
 
@@ -278,9 +278,7 @@ public class GridWidgetDnDMouseDownHandlerTest {
         when(state.getEventColumnHighlight()).thenReturn(highlight);
         when(state.getActiveGridWidget()).thenReturn(gridWidget);
         when(state.getOperation()).thenReturn(GridWidgetHandlersOperation.COLUMN_MOVE_PENDING);
-        when(state.getActiveGridColumns()).thenReturn(new ArrayList<GridColumn<?>>() {{
-            add(uiColumn);
-        }});
+        when(state.getActiveGridColumns()).thenReturn(Collections.singletonList(uiColumn));
 
         when(rendererHelper.getRenderingInformation()).thenReturn(renderingInformation);
         when(rendererHelper.getRowOffset(anyInt(), any(List.class))).thenCallRealMethod();
@@ -308,9 +306,7 @@ public class GridWidgetDnDMouseDownHandlerTest {
         when(state.getEventColumnHighlight()).thenReturn(highlight);
         when(state.getActiveGridWidget()).thenReturn(gridWidget);
         when(state.getOperation()).thenReturn(GridWidgetHandlersOperation.ROW_MOVE_PENDING);
-        when(state.getActiveGridRows()).thenReturn(new ArrayList<GridRow>() {{
-            add(uiRow);
-        }});
+        when(state.getActiveGridRows()).thenReturn(Collections.singletonList(uiRow));
 
         when(rendererHelper.getRenderingInformation()).thenReturn(renderingInformation);
         when(renderingInformation.getBounds()).thenReturn(bounds);

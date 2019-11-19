@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.stream.IntStream;
 
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.shape.IPathClipper;
@@ -308,9 +307,11 @@ public class ColumnRenderingStrategyMerged {
     protected static double getCellHeight(final int rowIndex,
                                           final List<Double> allRowHeights,
                                           final GridCell<?> cell) {
-        return IntStream.range(rowIndex, rowIndex + cell.getMergedCellCount())
-                .mapToDouble(allRowHeights::get)
-                .sum();
+        double height = 0.0;
+        for (int iRowIndex = rowIndex; iRowIndex < rowIndex + cell.getMergedCellCount(); iRowIndex++) {
+            height = height + allRowHeights.get(iRowIndex);
+        }
+        return height;
     }
 
     private static Group renderGroupedCellToggle(final double cellWidth,

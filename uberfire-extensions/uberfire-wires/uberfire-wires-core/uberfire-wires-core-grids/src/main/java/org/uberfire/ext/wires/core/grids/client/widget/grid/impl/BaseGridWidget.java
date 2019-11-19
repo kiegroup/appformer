@@ -250,7 +250,9 @@ public class BaseGridWidget extends Group implements GridWidget {
 
     private double getHeight(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         double height = renderer.getHeaderHeight();
-        height = height + renderingInformation.getAllRowHeights().stream().reduce(0d, Double::sum);
+        for (double h : renderingInformation.getAllRowHeights()) {
+            height = height + h;
+        }
         return height;
     }
 
@@ -283,8 +285,6 @@ public class BaseGridWidget extends Group implements GridWidget {
     protected void drawWithoutTransforms(Context2D context,
                                          double alpha,
                                          BoundingBox bb) {
-        long currentTimeMillis = 0;
-
         final boolean isSelectionLayer = context.isSelection();
         if (isSelectionLayer && (false == isListening())) {
             return;
@@ -301,47 +301,28 @@ public class BaseGridWidget extends Group implements GridWidget {
         //Clear existing content
         this.removeAll();
 
+        long currentTimeMillis = 0;
         if (!isSelectionLayer) {
             //If there's no RenderingInformation the GridWidget is not visible
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                currentTimeMillis = System.currentTimeMillis();
-                LOGGER.log(Level.FINEST, " - Pre- prepare()");
-            }
+            currentTimeMillis = log(" - Pre- prepare()");
             this.renderingInformation = prepare();
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINEST, " - Post- prepare() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-            }
+            log(" - Post- prepare() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
             if (renderingInformation == null) {
                 destroyDOMElementResources();
                 return;
             }
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                currentTimeMillis = System.currentTimeMillis();
-                LOGGER.log(Level.FINEST, " - Pre- makeRenderingCommands()");
-            }
+            currentTimeMillis = log(" - Pre- makeRenderingCommands()");
             makeRenderingCommands();
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINEST, " - Post- makeRenderingCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-            }
+            log(" - Post- makeRenderingCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
         }
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- layerRenderGroups()");
-        }
+        currentTimeMillis = log(" - Pre- layerRenderGroups()");
         layerRenderGroups();
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- layerRenderGroups() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(" - Post- layerRenderGroups() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
 
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- executeRenderQueueCommands()");
-        }
+        currentTimeMillis = log(" - Pre- executeRenderQueueCommands()");
         executeRenderQueueCommands(isSelectionLayer);
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- executeRenderQueueCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(" - Post- executeRenderQueueCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
 
         //Signal columns to free any unused resources
         if (!isSelectionLayer) {
@@ -353,16 +334,11 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
 
         //Then render to the canvas
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- super.drawWithoutTransforms()");
-        }
+        currentTimeMillis = log(" - Pre- super.drawWithoutTransforms()");
         super.drawWithoutTransforms(context,
                                     alpha,
                                     bb);
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- super.drawWithoutTransforms() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(" - Post- super.drawWithoutTransforms() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
     }
 
     private BaseGridRendererHelper.RenderingInformation prepare() {
@@ -382,15 +358,9 @@ public class BaseGridWidget extends Group implements GridWidget {
         this.renderQueue.clear();
 
         //If there's no RenderingInformation the GridWidget is not visible
-        long currentTimeMillis = 0;
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- getRenderingInformation()");
-        }
+        long currentTimeMillis = log(" - Pre- getRenderingInformation()");
         final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- getRenderingInformation() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(" - Post- getRenderingInformation() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
         if (renderingInformation == null) {
             return null;
         }
@@ -893,5 +863,12 @@ public class BaseGridWidget extends Group implements GridWidget {
                                           final int uiColumnIndex) {
         // no operation by default
         return false;
+    }
+
+    private static long log(final String message) {
+        if (LOGGER.isLoggable(Level.FINEST)) {
+            LOGGER.log(Level.FINEST, message);
+        }
+        return System.currentTimeMillis();
     }
 }

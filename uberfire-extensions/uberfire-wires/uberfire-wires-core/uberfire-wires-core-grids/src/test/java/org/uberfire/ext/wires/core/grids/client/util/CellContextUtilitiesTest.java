@@ -142,7 +142,7 @@ public class CellContextUtilitiesTest {
         final double headerRowsHeight = 100.0;
         final BaseGridRow row = new BaseGridRow();
         final List<GridColumn<?>> allColumns = new ArrayList<>();
-        final List<Double> allRowHeights = new ArrayList<>(Collections.singletonList(row.getHeight()));
+        final List<Double> allRowHeights = Collections.singletonList(row.getHeight());
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(60.0);
         final GridColumn<?> uiColumn3 = mockGridColumn(100.0);
