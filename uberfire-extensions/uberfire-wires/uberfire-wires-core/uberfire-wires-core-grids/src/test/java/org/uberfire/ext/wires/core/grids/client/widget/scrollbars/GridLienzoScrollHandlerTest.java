@@ -506,17 +506,11 @@ public class GridLienzoScrollHandlerTest {
 
     @Test
     public void testGetDefaultGridLayerWhenLienzoGridLayerIsNotNull() {
-
-        final DefaultGridLayer expectedLayer = mock(DefaultGridLayer.class);
-
-        doReturn(expectedLayer).when(gridLienzoPanel).getDefaultGridLayer();
-        doCallRealMethod().when(gridLienzoScrollHandler).getDefaultGridLayer();
-
         final DefaultGridLayer actualLayer = gridLienzoScrollHandler.getDefaultGridLayer();
 
         verify(gridLienzoScrollHandler, never()).emptyLayer();
 
-        assertEquals(expectedLayer,
+        assertEquals(defaultGridLayer,
                      actualLayer);
     }
 

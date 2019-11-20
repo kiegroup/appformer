@@ -180,7 +180,7 @@ public class CellContextUtilitiesTest {
         final BaseGridRow row2 = new BaseGridRow();
         final BaseGridRow row3 = new BaseGridRow();
         final List<GridColumn<?>> allColumns = new ArrayList<>();
-        final List<Double> allRowHeights = new ArrayList<>(Collections.nCopies(3, row1.getHeight()));
+        final List<Double> allRowHeights = Collections.nCopies(3, row1.getHeight());
         final GridColumn<?> uiColumn1 = mockGridColumn(25.0);
         final GridColumn<?> uiColumn2 = mockGridColumn(60.0);
         final GridColumn<?> uiColumn3 = mockGridColumn(100.0);

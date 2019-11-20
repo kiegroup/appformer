@@ -43,8 +43,6 @@ public class GridLienzoScrollHandler {
 
     static final int DEFAULT_INTERNAL_SCROLL_WIDTH = 1;
 
-    private final DefaultGridLayer emptyLayer = new DefaultGridLayer();
-
     private final GridLienzoScrollBars scrollBars = new GridLienzoScrollBars(this);
 
     private final GridLienzoScrollPosition scrollPosition = new GridLienzoScrollPosition(this);
@@ -52,6 +50,8 @@ public class GridLienzoScrollHandler {
     private final GridLienzoScrollBounds scrollBounds = new GridLienzoScrollBounds(this);
 
     private final GridLienzoPanel panel;
+
+    private DefaultGridLayer emptyLayer;
 
     private RestrictedMousePanMediator mousePanMediator;
 
@@ -239,6 +239,9 @@ public class GridLienzoScrollHandler {
     }
 
     DefaultGridLayer emptyLayer() {
+        if (Objects.isNull(emptyLayer)) {
+            emptyLayer = new DefaultGridLayer();
+        }
         return emptyLayer;
     }
 

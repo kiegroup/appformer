@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -59,6 +58,8 @@ import org.uberfire.ext.wires.core.grids.client.widget.grid.selections.impl.Base
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridSelectionManager;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.DefaultGridLayer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.pinning.GridPinnedModeManager;
+
+import static org.uberfire.ext.wires.core.grids.client.util.Logging.log;
 
 /**
  * The base of all GridWidgets.
@@ -301,28 +302,28 @@ public class BaseGridWidget extends Group implements GridWidget {
         //Clear existing content
         this.removeAll();
 
-        long currentTimeMillis = 0;
+        long currentTimeMillis;
         if (!isSelectionLayer) {
             //If there's no RenderingInformation the GridWidget is not visible
-            currentTimeMillis = log(" - Pre- prepare()");
+            currentTimeMillis = log(LOGGER, " - Pre- prepare()");
             this.renderingInformation = prepare();
-            log(" - Post- prepare() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            log(LOGGER, " - Post- prepare()", currentTimeMillis);
             if (renderingInformation == null) {
                 destroyDOMElementResources();
                 return;
             }
-            currentTimeMillis = log(" - Pre- makeRenderingCommands()");
+            currentTimeMillis = log(LOGGER, " - Pre- makeRenderingCommands()");
             makeRenderingCommands();
-            log(" - Post- makeRenderingCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            log(LOGGER, " - Post- makeRenderingCommands()", currentTimeMillis);
         }
 
-        currentTimeMillis = log(" - Pre- layerRenderGroups()");
+        currentTimeMillis = log(LOGGER, " - Pre- layerRenderGroups()");
         layerRenderGroups();
-        log(" - Post- layerRenderGroups() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        log(LOGGER, " - Post- layerRenderGroups()", currentTimeMillis);
 
-        currentTimeMillis = log(" - Pre- executeRenderQueueCommands()");
+        currentTimeMillis = log(LOGGER, " - Pre- executeRenderQueueCommands()");
         executeRenderQueueCommands(isSelectionLayer);
-        log(" - Post- executeRenderQueueCommands() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        log(LOGGER, " - Post- executeRenderQueueCommands()", currentTimeMillis);
 
         //Signal columns to free any unused resources
         if (!isSelectionLayer) {
@@ -334,11 +335,11 @@ public class BaseGridWidget extends Group implements GridWidget {
         }
 
         //Then render to the canvas
-        currentTimeMillis = log(" - Pre- super.drawWithoutTransforms()");
+        currentTimeMillis = log(LOGGER, " - Pre- super.drawWithoutTransforms()");
         super.drawWithoutTransforms(context,
                                     alpha,
                                     bb);
-        log(" - Post- super.drawWithoutTransforms() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        log(LOGGER, " - Post- super.drawWithoutTransforms()", currentTimeMillis);
     }
 
     private BaseGridRendererHelper.RenderingInformation prepare() {
@@ -358,9 +359,9 @@ public class BaseGridWidget extends Group implements GridWidget {
         this.renderQueue.clear();
 
         //If there's no RenderingInformation the GridWidget is not visible
-        long currentTimeMillis = log(" - Pre- getRenderingInformation()");
+        long currentTimeMillis = log(LOGGER, " - Pre- getRenderingInformation()");
         final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
-        log(" - Post- getRenderingInformation() - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+        log(LOGGER, " - Post- getRenderingInformation()", currentTimeMillis);
         if (renderingInformation == null) {
             return null;
         }
@@ -863,12 +864,5 @@ public class BaseGridWidget extends Group implements GridWidget {
                                           final int uiColumnIndex) {
         // no operation by default
         return false;
-    }
-
-    private static long log(final String message) {
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, message);
-        }
-        return System.currentTimeMillis();
     }
 }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.uberfire.ext.wires.core.grids.client.model.Bounds;
@@ -29,6 +28,8 @@ import org.uberfire.ext.wires.core.grids.client.model.GridRow;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.GridRenderer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
+
+import static org.uberfire.ext.wires.core.grids.client.util.Logging.log;
 
 /**
  * Helper for rendering a grid.
@@ -212,11 +213,7 @@ public class BaseGridRendererHelper {
         }
 
         //Identify rows to render
-        long currentTimeMillis = 0;
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- identify rows to render");
-        }
+        long currentTimeMillis = log(LOGGER, " - Pre- identify rows to render");
 
         int minVisibleRowIndex = 0;
         if (model.getRowCount() > 0) {
@@ -235,15 +232,10 @@ public class BaseGridRendererHelper {
                 maxVisibleRowIndex++;
             }
         }
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- identify rows to render - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(LOGGER, " - Post- identify rows to render", currentTimeMillis);
 
         //Identify columns to render
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- identify columns to render");
-        }
+        currentTimeMillis = log(LOGGER, " - Pre- identify columns to render");
 
         double x = 0;
         for (GridColumn<?> column : model.getColumns()) {
@@ -287,9 +279,7 @@ public class BaseGridRendererHelper {
                 }
             }
         }
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- identify columns to render - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(LOGGER, " - Post- identify columns to render", currentTimeMillis);
 
         //Construct details of Floating and Body blocks
         double visibleRowOffset = getRowOffset(minVisibleRowIndex, rowHeights);
@@ -312,10 +302,7 @@ public class BaseGridRendererHelper {
         // The minVisibleRowIndex corresponds to index zero and maxVisibleRowIndex corresponds to visibleRowOffsets.size() - 1.
         // This is useful to calculate the Y co-ordinate of each Row's top. It is calculated once and passed to
         // each column as an optimisation to prevent each column from recalculating the same values.
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            currentTimeMillis = System.currentTimeMillis();
-            LOGGER.log(Level.FINEST, " - Pre- calculate row offsets");
-        }
+        currentTimeMillis = log(LOGGER, " - Pre- calculate row offsets");
 
         final List<Double> visibleRowOffsets = new ArrayList<>();
         if (model.getRowCount() > 0) {
@@ -324,9 +311,7 @@ public class BaseGridRendererHelper {
                 visibleRowOffset = visibleRowOffset + rowHeights.get(rowIndex);
             }
         }
-        if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, " - Post- calculate row offsets - " + (System.currentTimeMillis() - currentTimeMillis) + "ms");
-        }
+        log(LOGGER, " - Post- calculate row offsets", currentTimeMillis);
 
         final int headerRowCount = model.getHeaderRowCount();
         final double headerHeight = renderer.getHeaderHeight();
