@@ -20,6 +20,10 @@ import java.util.logging.Logger;
 
 public class Logging {
 
+    private Logging() {
+        //Sonar rule: Utility classes should not have public constructors
+    }
+
     /**
      * Logs a message at {@see Level.FINEST}
      * @param logger Logger to record the entry.
