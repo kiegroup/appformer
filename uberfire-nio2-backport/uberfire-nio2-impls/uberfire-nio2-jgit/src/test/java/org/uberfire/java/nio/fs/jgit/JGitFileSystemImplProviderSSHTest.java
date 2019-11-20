@@ -19,42 +19,50 @@ package org.uberfire.java.nio.fs.jgit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.sshd.server.SshServer;
 import org.assertj.core.api.Assertions;
+import org.eclipse.jgit.errors.UnsupportedCredentialItem;
+import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.CredentialsProvider;
+import org.eclipse.jgit.transport.URIish;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.junit.Assume;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.extensions.FileSystemHookExecutionContext;
 import org.uberfire.java.nio.file.extensions.FileSystemHooks;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
+import org.uberfire.java.nio.fs.jgit.util.commands.Push;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.GIT_DAEMON_PORT;
 
 public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
 
     private int gitSSHPort;
+    private int gitPort;
 
     @Override
     public Map<String, String> getGitPreferences() {
-        Map<String, String> gitPrefs = super.getGitPreferences();
-
-        gitPrefs.put("org.uberfire.nio.git.ssh.enabled",
-                     "true");
+        final Map<String, String> gitPrefs = super.getGitPreferences();
+        gitPrefs.put("org.uberfire.nio.git.daemon.enabled", "true");
+        gitPort = findFreePort();
+        gitPrefs.put(GIT_DAEMON_PORT, String.valueOf(gitPort));
+        gitPrefs.put("org.uberfire.nio.git.ssh.enabled", "true");
         gitSSHPort = findFreePort();
-        gitPrefs.put("org.uberfire.nio.git.ssh.port",
-                     String.valueOf(gitSSHPort));
-        gitPrefs.put("org.uberfire.nio.git.ssh.idle.timeout",
-                     "10001");
+        gitPrefs.put("org.uberfire.nio.git.ssh.port", String.valueOf(gitSSHPort));
+        gitPrefs.put("org.uberfire.nio.git.ssh.idle.timeout", "10001");
 
         return gitPrefs;
     }
@@ -145,5 +153,54 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
         Assertions.assertThat(captor.getValue())
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("fsName", "repo");
+    }
+
+    @Test
+    public void testGitProtocolReadOnly() throws IOException {
+        //Setup origin
+        final URI originRepo = URI.create("git://repo");
+        final JGitFileSystem origin = (JGitFileSystem) provider.newFileSystem(originRepo,
+                                                                              new HashMap<String, Object>() {{
+                                                                                  put("init", "true");
+                                                                              }});
+
+        //Write a file to origin that we won't amend in the clone
+        new Commit(origin.getGit(),
+                   "master",
+                   "user1",
+                   "user1@example.com",
+                   "commitx",
+                   null,
+                   null,
+                   false,
+                   new HashMap<String, File>() {{
+                       put("file-name.txt",
+                           tempFile("temp1"));
+                   }}).execute();
+
+        //Setup clone
+        final JGitFileSystem clone = (JGitFileSystem) provider.newFileSystem(URI.create("git://repo-clone"),
+                                                                             new HashMap<String, Object>() {{
+                                                                                 put("init",
+                                                                                     "true");
+                                                                                 put("origin",
+                                                                                     "git://localhost:" + gitPort + "/repo");
+                                                                             }});
+
+        Files.write(clone.getPath("/home/file.txt"), "test".getBytes());
+
+        try {
+            provider.getFileSystem(URI.create("git://repo-clone?push=git://localhost:" + gitPort + "/repo"));
+            fail("should fail");
+        } catch (Throwable ex){
+        }
+
+        try {
+            provider.getFileSystem(URI.create("git://repo-clone?ssh=git://localhost:" + gitSSHPort + "/repo"));
+        } catch (Throwable ex){
+            fail("should not fail");
+        }
+
+        assertNotNull(clone);
     }
 }
