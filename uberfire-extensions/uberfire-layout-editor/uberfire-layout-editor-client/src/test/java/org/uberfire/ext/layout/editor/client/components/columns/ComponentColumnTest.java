@@ -39,6 +39,7 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.client.AbstractLayoutEditorTest;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditorElement;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
+import org.uberfire.ext.layout.editor.client.infra.DragComponentEndEvent;
 import org.uberfire.mvp.ParameterizedCommand;
 
 public class ComponentColumnTest extends AbstractLayoutEditorTest {
@@ -105,19 +106,23 @@ public class ComponentColumnTest extends AbstractLayoutEditorTest {
     }
 
     @Test
-    public void testOnDrop() throws Exception {
-        loadLayout(SINGLE_ROW_COMPONENT_LAYOUT_WITH_PARTS);
-        componentColumn.init(parent, 300, layoutComponent, dropCommand, removeCommand, currentLayoutTemplateSupplier, false);
+    public void testOnDrop() {
         componentColumn.onDrop(ColumnDrop.Orientation.UP,"this-is-a-requirement-to-firefox-html5dnd");
         verify(lockRequiredEvent,
                times(1)).fire(any(LockRequiredEvent.class));
     }
 
     @Test
-    public void testRequiredLock() throws Exception{
-        loadLayout(SINGLE_ROW_COMPONENT_LAYOUT_WITH_PARTS);
-        componentColumn.init(parent, 300, layoutComponent, dropCommand, removeCommand, currentLayoutTemplateSupplier, false);
+    public void testRequiredLock() {
         componentColumn.requiredLock();
+        verify(lockRequiredEvent,
+               times(1)).fire(any(LockRequiredEvent.class));
+    }
+
+    @Test
+    public void onDragEnd() {
+        componentColumn.onDragEnd(new DragComponentEndEvent());
+        verify(view, times(1)).notifyDragEnd();
         verify(lockRequiredEvent,
                times(1)).fire(any(LockRequiredEvent.class));
     }

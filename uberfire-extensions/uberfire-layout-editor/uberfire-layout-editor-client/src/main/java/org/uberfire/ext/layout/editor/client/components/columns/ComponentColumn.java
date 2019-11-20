@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.jboss.errai.ioc.client.api.ManagedInstance;
@@ -441,6 +442,11 @@ public class ComponentColumn implements Column {
             }
         }
     }
+
+    public void onDragEnd(@Observes DragComponentEndEvent dragComponentEndEvent) {
+        view.notifyDragEnd();
+        requiredLock();
+    }
     
     @Override
     public List<LayoutEditorElementPart> getLayoutEditorElementParts() {
@@ -479,6 +485,8 @@ public class ComponentColumn implements Column {
         void setColumnHeight(Integer columnHeight);
 
         void setSelected(boolean selected);
+
+        void notifyDragEnd();
 
         List<PropertyEditorCategory> getPropertyCategories();
     }

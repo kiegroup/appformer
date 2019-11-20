@@ -42,7 +42,6 @@ import org.uberfire.ext.layout.editor.client.api.LayoutDragComponent;
 import org.uberfire.ext.layout.editor.client.api.RenderingContext;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.ContainerResizeEvent;
-import org.uberfire.ext.layout.editor.client.infra.DragComponentEndEvent;
 import org.uberfire.ext.layout.editor.client.infra.DragHelperComponentColumn;
 import org.uberfire.ext.layout.editor.client.infra.LayoutEditorFocusController;
 import org.uberfire.ext.layout.editor.client.resources.i18n.CommonConstants;
@@ -605,14 +604,15 @@ public class ComponentColumnView
         return (dragOverY - top) < (bottom - dragOverY);
     }
 
-    public void onDragEnd(@Observes DragComponentEndEvent dragComponentEndEvent) {
+    @Override
+    public void notifyDragEnd() {
         removeCSSClass(colUp,
                        "componentDropInColumnPreview");
-        presenter.requiredLock();
     }
-    
+
+    @Override
     public LayoutDragComponent getLayoutDragComponent() {
         return helper.getLayoutDragComponent();
     }
-    
+
 }

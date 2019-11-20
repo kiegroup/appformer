@@ -71,14 +71,12 @@ public class Container implements LayoutEditorElement {
     private LayoutTemplate.Style pageStyle = LayoutTemplate.Style.FLUID;
     private Event<LayoutEditorElementSelectEvent> containerSelectEvent;
     private Event<LayoutEditorElementUnselectEvent> containerUnselectEvent;
+    private Event<LockRequiredEvent> lockRequiredEvent;
     private DnDManager dndManager;
     private boolean selectable = false;
     private boolean selected = false;
-    
-    LayoutEditorFocusController layoutEditorFocusController;
 
-    @Inject
-    Event<LockRequiredEvent> lockRequiredEvent;
+    LayoutEditorFocusController layoutEditorFocusController;
 
     @Inject
     public Container(final View view,
@@ -88,6 +86,7 @@ public class Container implements LayoutEditorElement {
                      Event<ComponentDropEvent> componentDropEvent,
                      Event<LayoutEditorElementSelectEvent> containerSelectEvent,
                      Event<LayoutEditorElementUnselectEvent> containerUnselectEvent,
+                     Event<LockRequiredEvent> lockRequiredEvent,
                      DnDManager dndManager,
                      LayoutEditorFocusController layoutEditorFocusController) {
         this.layoutCssHelper = layoutCssHelper;
@@ -97,6 +96,7 @@ public class Container implements LayoutEditorElement {
         this.componentDropEvent = componentDropEvent;
         this.containerSelectEvent = containerSelectEvent;
         this.containerUnselectEvent = containerUnselectEvent;
+        this.lockRequiredEvent = lockRequiredEvent;
         this.dndManager = dndManager;
         this.layoutEditorFocusController = layoutEditorFocusController;
         this.id = idGenerator.createContainerID();

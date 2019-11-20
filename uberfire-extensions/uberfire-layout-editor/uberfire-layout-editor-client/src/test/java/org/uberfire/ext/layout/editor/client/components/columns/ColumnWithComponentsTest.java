@@ -17,20 +17,14 @@
 
 package org.uberfire.ext.layout.editor.client.components.columns;
 
-import java.util.function.Supplier;
-
 import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
 
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.client.mvp.LockRequiredEvent;
-import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.client.AbstractLayoutEditorTest;
-import org.uberfire.ext.layout.editor.client.api.LayoutEditorElement;
-import org.uberfire.ext.layout.editor.client.components.rows.Row;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.mvp.ParameterizedCommand;
 
@@ -52,7 +46,6 @@ public class ColumnWithComponentsTest extends AbstractLayoutEditorTest {
 
     @Test
     public void testOnDrop() throws Exception {
-        loadLayout(SINGLE_ROW_COMPONENT_LAYOUT_WITH_PARTS);
         columnWithComponents.onDrop(ColumnDrop.Orientation.UP, "this-is-a-requirement-to-firefox-html5dnd");
         verify(lockRequiredEvent,
                times(1)).fire(any(LockRequiredEvent.class));
