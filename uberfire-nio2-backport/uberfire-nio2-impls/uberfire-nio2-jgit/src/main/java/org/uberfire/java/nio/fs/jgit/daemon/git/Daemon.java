@@ -79,8 +79,6 @@ public class Daemon {
 
     private volatile UploadPackFactory<DaemonClient> uploadPackFactory;
 
-    private volatile ReceivePackFactory<DaemonClient> receivePackFactory;
-
     private ServerSocket listenSock = null;
 
     private ExecutorService executorService;
@@ -127,50 +125,6 @@ public class Daemon {
             return up;
         };
 
-        final ReceivePackFactory<DaemonClient> factory = (req, db) -> {
-            final ReceivePack rp = new KetchCustomReceivePack(db);
-
-            final InetAddress peer = req.getRemoteAddress();
-            String host = peer.getCanonicalHostName();
-            if (host == null) {
-                host = peer.getHostAddress();
-            }
-            final String name = "anonymous";
-            final String email = name + "@" + host;
-            rp.setRefLogIdent(new PersonIdent("system",
-                                              "system",
-                                              new Date(1L),
-                                              TimeZone.getDefault()));
-            rp.setTimeout(getTimeout());
-
-            rp.setPreReceiveHook((rp12, commands) ->
-                                         System.out.println("[" + addr.getHostString() + "]" + " onPreReceive!"));
-            rp.setPostReceiveHook((rp1, commands) ->
-                                          System.out.println("[" + addr.getHostString() + "]" + " onPostReceive!"));
-
-            return rp;
-        };
-
-//        if ( leaders == null ) {
-        if (true) {
-            receivePackFactory = factory;
-        } else {
-            receivePackFactory = (req, repo) -> {
-                final ReceivePack rp = factory.create(req,
-                                                      repo);
-                final KetchLeader leader;
-                try {
-                    leader = leaders.get(repo);
-                } catch (URISyntaxException err) {
-                    throw new ServiceNotEnabledException(
-                            KetchText.get().invalidFollowerUri,
-                            err);
-                }
-                rp.setPreReceiveHook(new KetchPreReceive(leader));
-                return rp;
-            };
-        }
-
         services = new DaemonService[]{new DaemonService("upload-pack",
                                                          "uploadpack") {
             {
@@ -193,7 +147,7 @@ public class Daemon {
         }, new DaemonService("receive-pack",
                              "receivepack") {
             {
-                setEnabled(true);
+                setEnabled(false);
             }
 
             @Override
@@ -201,13 +155,7 @@ public class Daemon {
                                    final Repository db) throws IOException,
                     ServiceNotEnabledException,
                     ServiceNotAuthorizedException {
-                final ReceivePack rp = receivePackFactory.create(dc,
-                                                                 db);
-                final InputStream in = dc.getInputStream();
-                final OutputStream out = dc.getOutputStream();
-                rp.receive(in,
-                           out,
-                           null);
+                throw new ServiceNotAuthorizedException();
             }
         }};
     }
