@@ -23,8 +23,12 @@ import org.appformer.kogito.bridge.client.resource.ResourceContentService;
 import org.appformer.kogito.bridge.client.resource.impl.MockResourceContentService;
 import org.appformer.kogito.bridge.client.resource.impl.ResourceContentServiceImpl;
 
+/**
+ * Produces {@link ResourceContentService} beans according to whether the envelope API is available or not
+ *
+ */
 public class ResourceClientServiceProducer {
-    
+
     @Produces
     @ApplicationScoped
     public ResourceContentService produce() {
@@ -37,7 +41,7 @@ public class ResourceClientServiceProducer {
     }
 
     private native boolean isResourceContentServiceAvailable()/*-{
-        return typeof $wnd.envelope !== "undefined";
-    }-*/;
+                                                              return typeof $wnd.envelope !== "undefined";
+                                                              }-*/;
 
 }

@@ -20,13 +20,17 @@ import elemental2.promise.Promise;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
-@JsType(isNative=true, namespace="window", name="envelope")
+/**
+ * Javascript bridge to access actual ResourceContentService available in the envelope namespace
+ *
+ */
+@JsType(isNative = true, namespace = "window", name = "envelope")
 public class ResourceContentEditorServiceWrapper {
-    
-    public native Promise<String> get(String uri); 
-    
-    public native Promise<String[]> list(String pattern); 
-    
+
+    public native Promise<String> get(String uri);
+
+    public native Promise<String[]> list(String pattern);
+
     @JsProperty(name = "resourceContentEditorService")
     public static native ResourceContentEditorServiceWrapper get();
 

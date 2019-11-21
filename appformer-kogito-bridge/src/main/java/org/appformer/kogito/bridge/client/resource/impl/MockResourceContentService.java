@@ -16,10 +16,12 @@
 
 package org.appformer.kogito.bridge.client.resource.impl;
 
+import elemental2.promise.Promise;
 import org.appformer.kogito.bridge.client.resource.ResourceContentService;
 
-import elemental2.promise.Promise;
-
+/**
+ * This {@link ResourceContentService} implementation is used when the envelope API is not available
+ */
 public class MockResourceContentService implements ResourceContentService {
 
     @Override
