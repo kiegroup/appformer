@@ -36,16 +36,15 @@ public class TestProjectRequest extends JobRequest {
         return spaceName;
     }
 
-
     public void setSpaceName(String spaceName) {
         this.spaceName = spaceName;
     }
 
     public void setBranchName(String branchName) {
-	this.branchName = branchName;
+	    this.branchName = branchName;
     }
 
     public String getBranchName() {
-	return spaceName;
+	    return branchName;
     }
 }
