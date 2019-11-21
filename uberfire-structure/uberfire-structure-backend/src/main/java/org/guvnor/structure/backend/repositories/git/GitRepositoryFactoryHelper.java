@@ -54,6 +54,7 @@ public class GitRepositoryFactoryHelper implements RepositoryFactoryHelper {
 
     private BranchAccessAuthorizer branchAccessAuthorizer;
 
+    @Inject
     private PasswordService secureService;
 
     public GitRepositoryFactoryHelper() {
@@ -65,15 +66,13 @@ public class GitRepositoryFactoryHelper implements RepositoryFactoryHelper {
                                       SpacesAPI spacesAPI,
                                       Event<RepositoryExternalUpdateEvent> repositoryExternalUpdate,
                                       PostCommitNotificationService postCommitNotificationService,
-                                      BranchAccessAuthorizer branchAccessAuthorizer,
-                                      PasswordService secureService) {
+                                      BranchAccessAuthorizer branchAccessAuthorizer) {
         this.indexedIOService = indexedIOService;
         this.notIndexedIOService = notIndexedIOService;
         this.spacesAPI = spacesAPI;
         this.repositoryExternalUpdate = repositoryExternalUpdate;
         this.postCommitNotificationService = postCommitNotificationService;
         this.branchAccessAuthorizer = branchAccessAuthorizer;
-        this.secureService = secureService;
     }
 
     @Override

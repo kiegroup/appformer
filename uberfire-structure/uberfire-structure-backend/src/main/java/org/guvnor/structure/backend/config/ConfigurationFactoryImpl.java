@@ -25,8 +25,6 @@ import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.PasswordService;
 import org.guvnor.structure.server.config.SecureConfigItem;
 
-import static org.guvnor.structure.repositories.EnvironmentParameters.CRYPT_PREFIX;
-
 public class ConfigurationFactoryImpl implements ConfigurationFactory {
 
     protected PasswordService secureService;
@@ -95,8 +93,8 @@ public class ConfigurationFactoryImpl implements ConfigurationFactory {
     public SecureConfigItem newSecuredConfigItem(final String name,
                                                  final String valueType) {
         final SecureConfigItem stringConfigItem = new SecureConfigItem();
-        if (name.startsWith(CRYPT_PREFIX)) {
-            stringConfigItem.setName(name.substring(CRYPT_PREFIX.length()));
+        if (name.startsWith("crypt:")) {
+            stringConfigItem.setName(name.substring("crypt:".length()));
         } else {
             stringConfigItem.setName(name);
         }

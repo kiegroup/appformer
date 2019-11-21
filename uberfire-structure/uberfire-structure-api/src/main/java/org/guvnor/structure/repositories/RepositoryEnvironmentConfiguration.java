@@ -18,8 +18,6 @@ package org.guvnor.structure.repositories;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 
-import static org.guvnor.structure.repositories.EnvironmentParameters.CRYPT_PREFIX;
-
 @Portable
 public class RepositoryEnvironmentConfiguration {
 
@@ -49,6 +47,6 @@ public class RepositoryEnvironmentConfiguration {
     }
 
     public boolean isSecuredConfigurationItem() {
-        return name.startsWith(CRYPT_PREFIX);
+        return name.startsWith("crypt:");
     }
 }

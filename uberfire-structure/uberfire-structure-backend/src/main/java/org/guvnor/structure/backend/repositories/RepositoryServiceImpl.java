@@ -50,7 +50,6 @@ import org.guvnor.structure.repositories.RepositoryRemovedEvent;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.server.config.ConfigurationFactory;
 import org.guvnor.structure.server.config.ConfigurationService;
-import org.guvnor.structure.server.config.PasswordService;
 import org.guvnor.structure.server.repositories.RepositoryFactory;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -67,8 +66,6 @@ import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
-import static org.guvnor.structure.repositories.EnvironmentParameters.CRYPT_PREFIX;
-import static org.guvnor.structure.repositories.EnvironmentParameters.SECURE_PREFIX;
 import static org.guvnor.structure.repositories.EnvironmentParameters.SCHEME;
 import static org.uberfire.backend.server.util.Paths.convert;
 
@@ -110,8 +107,6 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     private Event<RepositoryContributorsUpdatedEvent> repositoryContributorsUpdatedEvent;
 
-    private PasswordService secureService;
-
     public RepositoryServiceImpl() {
     }
 
@@ -130,8 +125,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                                  final User user,
                                  final SpacesAPI spacesAPI,
                                  final SpaceConfigStorageRegistry spaceConfigStorage,
-                                 final Event<RepositoryContributorsUpdatedEvent> repositoryContributorsUpdatedEvent,
-                                 final PasswordService secureService) {
+                                 final Event<RepositoryContributorsUpdatedEvent> repositoryContributorsUpdatedEvent) {
         this.ioService = ioService;
         this.metadataStore = metadataStore;
         this.configurationService = configurationService;
@@ -147,7 +141,6 @@ public class RepositoryServiceImpl implements RepositoryService {
         this.spacesAPI = spacesAPI;
         this.spaceConfigStorage = spaceConfigStorage;
         this.repositoryContributorsUpdatedEvent = repositoryContributorsUpdatedEvent;
-        this.secureService = secureService;
     }
 
     @Override
@@ -610,13 +603,10 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         String key = configuration.getName();
         if (configuration.isSecuredConfigurationItem()) {
-            String subKey = key.substring(CRYPT_PREFIX.length());
-            String encrypted = secureService.encrypt(configuration.getValue().toString());
-            String newKey = SECURE_PREFIX + subKey;
-            repositoryConfiguration.add(newKey, encrypted);
-        } else {
-            repositoryConfiguration.add(key, configuration.getValue());
+            key = "secure:" + key;
         }
+        repositoryConfiguration.add(key,
+                                    configuration.getValue());
     }
 
     public class NoActiveSpaceInTheContext extends RuntimeException {
