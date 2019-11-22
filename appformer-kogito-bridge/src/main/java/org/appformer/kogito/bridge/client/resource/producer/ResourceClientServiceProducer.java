@@ -41,7 +41,7 @@ public class ResourceClientServiceProducer {
     }
 
     private native boolean isResourceContentServiceAvailable()/*-{
-                                                              return typeof $wnd.envelope !== "undefined";
-                                                              }-*/;
+        return typeof $wnd.envelope !== "undefined";
+    }-*/;
 
 }
