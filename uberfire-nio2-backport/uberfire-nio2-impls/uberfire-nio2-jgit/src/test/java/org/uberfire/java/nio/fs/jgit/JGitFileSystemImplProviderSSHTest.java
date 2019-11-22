@@ -19,16 +19,12 @@ package org.uberfire.java.nio.fs.jgit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.sshd.server.SshServer;
 import org.assertj.core.api.Assertions;
-import org.eclipse.jgit.errors.UnsupportedCredentialItem;
-import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.transport.URIish;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.service.AuthenticationService;
@@ -39,14 +35,17 @@ import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.extensions.FileSystemHookExecutionContext;
 import org.uberfire.java.nio.file.extensions.FileSystemHooks;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
-import org.uberfire.java.nio.fs.jgit.util.commands.Push;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.GIT_DAEMON_ENABLED;
 import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.GIT_DAEMON_PORT;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.GIT_SSH_ENABLED;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.GIT_SSH_IDLE_TIMEOUT;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration.GIT_SSH_PORT;
 
 public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
 
@@ -56,13 +55,13 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
     @Override
     public Map<String, String> getGitPreferences() {
         final Map<String, String> gitPrefs = super.getGitPreferences();
-        gitPrefs.put("org.uberfire.nio.git.daemon.enabled", "true");
+        gitPrefs.put(GIT_DAEMON_ENABLED, "true");
         gitPort = findFreePort();
         gitPrefs.put(GIT_DAEMON_PORT, String.valueOf(gitPort));
-        gitPrefs.put("org.uberfire.nio.git.ssh.enabled", "true");
+        gitPrefs.put(GIT_SSH_ENABLED, "true");
         gitSSHPort = findFreePort();
-        gitPrefs.put("org.uberfire.nio.git.ssh.port", String.valueOf(gitSSHPort));
-        gitPrefs.put("org.uberfire.nio.git.ssh.idle.timeout", "10001");
+        gitPrefs.put(GIT_SSH_PORT, String.valueOf(gitSSHPort));
+        gitPrefs.put(GIT_SSH_IDLE_TIMEOUT, "10001");
 
         return gitPrefs;
     }
@@ -192,12 +191,12 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
         try {
             provider.getFileSystem(URI.create("git://repo-clone?push=git://localhost:" + gitPort + "/repo"));
             fail("should fail");
-        } catch (Throwable ex){
+        } catch (Throwable ex) {
         }
 
         try {
             provider.getFileSystem(URI.create("git://repo-clone?ssh=git://localhost:" + gitSSHPort + "/repo"));
-        } catch (Throwable ex){
+        } catch (Throwable ex) {
             fail("should not fail");
         }
 
