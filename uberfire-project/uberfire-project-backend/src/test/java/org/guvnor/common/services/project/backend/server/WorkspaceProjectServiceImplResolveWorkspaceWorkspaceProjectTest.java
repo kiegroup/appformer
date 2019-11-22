@@ -226,7 +226,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
                      workspaceProject.getMainModule());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void resolveNullProjectAndNullBranch() {
         mockRepositoriesAndBranches();
 
@@ -238,7 +238,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
         assertNull(workspaceProject);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void resolveNonExistingProject() {
         mockRepositoriesAndBranches();
 
@@ -246,8 +246,6 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
                 space,
                 "project7",
                 null);
-
-        assertNull(workspaceProject);
     }
 
     @Test
@@ -280,7 +278,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
         assertNotNull(workspaceProject.getMainModule());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void resolveProjectAndNonExistingBranch() {
         mockRepositoriesAndBranches();
 

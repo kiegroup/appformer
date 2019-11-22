@@ -285,10 +285,13 @@ public class WorkspaceProjectServiceImpl
                                            final String projectName,
                                            final String branchName) {
 
-
         WorkspaceProject workspaceProject = resolveProject(space, projectName);
 
-        if (workspaceProject == null || branchName == null) {
+        if (workspaceProject == null) {
+            throw new IllegalArgumentException("project " + projectName + " not found.");
+        }
+
+        if (branchName == null) {
             return workspaceProject;
         }
 
@@ -298,10 +301,7 @@ public class WorkspaceProjectServiceImpl
             }
         }
 
-        return new WorkspaceProject(workspaceProject.getOrganizationalUnit(),
-                                    workspaceProject.getRepository(),
-                                    workspaceProject.getBranch(),
-                                    null);
+        throw new IllegalArgumentException("branch " + branchName + " not found.");
     }
 
     private WorkspaceProject resolveProject(OrganizationalUnit ou,

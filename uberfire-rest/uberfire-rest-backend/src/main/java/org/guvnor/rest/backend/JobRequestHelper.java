@@ -236,8 +236,8 @@ public class JobRequestHelper {
             branchName);
 
         if (workspaceProject == null) {
-          return projectDoesNotExistError(jobId, projectName);
-       }
+            return projectDoesNotExistError(jobId, projectName);
+        }
 
         Module module = workspaceProject.getMainModule();
 
@@ -573,6 +573,7 @@ public class JobRequestHelper {
     private JobResult projectDoesNotExistError(final String jobId,
                                                final String projectName) {
         JobResult jobResult = new JobResult();
+        jobResult.setJobId(jobId);
         jobResult.setStatus(JobStatus.RESOURCE_NOT_EXIST);
         jobResult.setResult("Project [" + projectName + "] does not exist.");
         return jobResult;
@@ -581,6 +582,7 @@ public class JobRequestHelper {
     private JobResult projectHasNoMainModuleError(final String jobId,
                                                   final String projectName) {
         JobResult jobResult = new JobResult();
+        jobResult.setJobId(jobId);
         jobResult.setStatus(JobStatus.RESOURCE_NOT_EXIST);
         jobResult.setResult("Project [" + projectName + "] has no main module.");
         return jobResult;
@@ -590,6 +592,7 @@ public class JobRequestHelper {
                                               final String projectName,
                                               final String branchName) {
         JobResult jobResult = new JobResult();
+        jobResult.setJobId(jobId);
         jobResult.setStatus(JobStatus.RESOURCE_NOT_EXIST);
         jobResult.setResult("Project [" + projectName + "] has no module [" + branchName + "].");
         return jobResult;
