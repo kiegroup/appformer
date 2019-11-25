@@ -84,9 +84,9 @@ public class CellContextUtilitiesTest {
     private Point2D rp = new Point2D(0, 0);
     private Point2D computedLocation = new Point2D(0, 0);
     private BaseGridRendererHelper gridRendererHelper;
-    private BaseGridRow row1 = new BaseGridRow();
-    private BaseGridRow row2 = new BaseGridRow();
-    private BaseGridRow row3 = new BaseGridRow();
+    private BaseGridRow row1;
+    private BaseGridRow row2;
+    private BaseGridRow row3;
 
     @Before
     public void setup() {
@@ -569,8 +569,8 @@ public class CellContextUtilitiesTest {
         doReturn(0).when(gridColumn).getIndex();
 
         gridWidget.getModel().appendColumn(gridColumn);
-        gridWidget.getModel().appendRow(new BaseGridRow());
-        gridWidget.getModel().appendRow(new BaseGridRow());
+        gridWidget.getModel().appendRow(row1);
+        gridWidget.getModel().appendRow(row2);
         gridWidget.getModel().selectCell(1, 0);
 
         CellContextUtilities.editSelectedCell(gridWidget);
@@ -591,7 +591,7 @@ public class CellContextUtilitiesTest {
 
         gridWidget.getModel().appendColumn(gridColumnOne);
         gridWidget.getModel().appendColumn(gridColumnTwo);
-        gridWidget.getModel().appendRow(new BaseGridRow());
+        gridWidget.getModel().appendRow(row1);
         gridWidget.getModel().selectCell(0, 1);
 
         CellContextUtilities.editSelectedCell(gridWidget);
