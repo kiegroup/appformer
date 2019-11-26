@@ -63,6 +63,7 @@ public class ColumnWithComponents implements Column {
     private boolean canResizeLeft;
     private boolean canResizeRight;
     private Event<ColumnResizeEvent> columnResizeEvent;
+    private Event<LockRequiredEvent> lockRequiredEvent;
     private LayoutTemplate.Style pageStyle;
     private Supplier<LayoutTemplate> currentLayoutTemplateSupplier;
     private Integer columnHeight = DEFAULT_COLUMN_HEIGHT;
@@ -71,19 +72,18 @@ public class ColumnWithComponents implements Column {
     private boolean selectable = true;
 
     @Inject
-    Event<LockRequiredEvent> lockRequiredEvent;
-
-    @Inject
     public ColumnWithComponents(final View view,
                                 Instance<Row> rowInstance,
                                 DnDManager dndManager,
                                 LayoutDragComponentHelper layoutDragComponentHelper,
-                                Event<ColumnResizeEvent> columnResizeEvent) {
+                                Event<ColumnResizeEvent> columnResizeEvent,
+                                Event<LockRequiredEvent> lockRequiredEvent) {
         this.view = view;
         this.rowInstance = rowInstance;
         this.dndManager = dndManager;
         this.layoutDragComponentHelper = layoutDragComponentHelper;
         this.columnResizeEvent = columnResizeEvent;
+        this.lockRequiredEvent = lockRequiredEvent;
     }
 
     @PostConstruct

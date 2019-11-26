@@ -26,16 +26,21 @@ import org.mockito.Spy;
 import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.ext.layout.editor.client.AbstractLayoutEditorTest;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
+import org.uberfire.ext.layout.editor.client.infra.DnDManager;
 import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ColumnWithComponentsTest extends AbstractLayoutEditorTest {
 
     @Mock
     private Event<LockRequiredEvent> lockRequiredEvent;
+
+    @Mock
+    private DnDManager dndManager;
 
     @Spy
     @InjectMocks
@@ -45,7 +50,16 @@ public class ColumnWithComponentsTest extends AbstractLayoutEditorTest {
     private ParameterizedCommand<ColumnDrop> dropCommand;
 
     @Test
-    public void testOnDrop() throws Exception {
+    public void testOnDropComponentMove() {
+        when(dndManager.isOnComponentMove()).thenReturn(true);
+        columnWithComponents.onDrop(ColumnDrop.Orientation.UP, "this-is-a-requirement-to-firefox-html5dnd");
+        verify(lockRequiredEvent,
+               times(1)).fire(any(LockRequiredEvent.class));
+    }
+
+    @Test
+    public void testOnDropNewComponent() {
+        when(dndManager.isOnComponentMove()).thenReturn(false);
         columnWithComponents.onDrop(ColumnDrop.Orientation.UP, "this-is-a-requirement-to-firefox-html5dnd");
         verify(lockRequiredEvent,
                times(1)).fire(any(LockRequiredEvent.class));

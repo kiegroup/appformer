@@ -171,6 +171,7 @@ public abstract class AbstractLayoutEditorTest {
                                                                       mock(Event.class),
                                                                       columnSelectedEvent,
                                                                       columnUnselectedEvent,
+                                                                      mock(Event.class),
                                                                       managedInstanceMock) {
                     @Override
                     protected boolean hasConfiguration() {
@@ -188,6 +189,7 @@ public abstract class AbstractLayoutEditorTest {
                         null,
                         dnDManager,
                         dragHelper,
+                        mock(Event.class),
                         mock(Event.class)) {
                     @Override
                     protected Row createInstanceRow() {

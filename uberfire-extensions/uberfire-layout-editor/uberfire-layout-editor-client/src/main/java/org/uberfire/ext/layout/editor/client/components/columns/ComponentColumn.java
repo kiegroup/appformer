@@ -69,11 +69,9 @@ public class ComponentColumn implements Column {
     private boolean selectable = true;
     private Event<LayoutEditorElementSelectEvent> columnSelectEvent;
     private Event<LayoutEditorElementUnselectEvent> columnUnselectEvent;
+    private Event<LockRequiredEvent> lockRequiredEvent;
     private ManagedInstance<ComponentColumnPart> componentColumnManagedInstance;
     private List<LayoutEditorElementPart> parts = new ArrayList<>();
-
-    @Inject
-    Event<LockRequiredEvent> lockRequiredEvent;
 
     @Inject
     public ComponentColumn(final View view,
@@ -82,6 +80,7 @@ public class ComponentColumn implements Column {
                            Event<ColumnResizeEvent> columnResizeEvent,
                            Event<LayoutEditorElementSelectEvent> columnSelectEvent,
                            Event<LayoutEditorElementUnselectEvent> columnUnselectEvent,
+                           Event<LockRequiredEvent> lockRequiredEvent,
                            ManagedInstance<ComponentColumnPart> componentColumnManagedInstance) {
         this.view = view;
         this.dndManager = dndManager;
@@ -89,6 +88,7 @@ public class ComponentColumn implements Column {
         this.columnResizeEvent = columnResizeEvent;
         this.columnSelectEvent = columnSelectEvent;
         this.columnUnselectEvent = columnUnselectEvent;
+        this.lockRequiredEvent = lockRequiredEvent;
         this.componentColumnManagedInstance = componentColumnManagedInstance;
     }
 

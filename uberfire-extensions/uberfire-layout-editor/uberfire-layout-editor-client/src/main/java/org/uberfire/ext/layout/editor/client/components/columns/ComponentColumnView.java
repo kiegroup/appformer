@@ -19,7 +19,6 @@ package org.uberfire.ext.layout.editor.client.components.columns;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -33,7 +32,6 @@ import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.client.workbench.docks.UberfireDocksInteractionEvent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
@@ -102,9 +100,6 @@ public class ComponentColumnView
 
     @Inject
     private DragHelperComponentColumn helper;
-
-    @Inject
-    private Event<LockRequiredEvent> lockRequiredEvent;
 
     @Override
     public void init(ComponentColumn presenter) {
