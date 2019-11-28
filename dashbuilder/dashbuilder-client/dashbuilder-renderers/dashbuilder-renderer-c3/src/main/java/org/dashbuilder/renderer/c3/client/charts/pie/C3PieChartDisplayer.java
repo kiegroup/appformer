@@ -25,11 +25,12 @@ import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.displayer.DisplayerAttributeDef;
-import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.renderer.c3.client.C3Displayer;
 import org.dashbuilder.renderer.c3.client.charts.CommonC3DisplayerConstants;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3AxisX;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3ChartConf;
+import org.dashbuilder.renderer.c3.client.jsbinding.C3Donut;
 import org.dashbuilder.renderer.c3.client.jsbinding.C3JsTypesFactory;
 
 @Dependent
@@ -42,7 +43,15 @@ public class C3PieChartDisplayer extends C3Displayer<C3PieChartDisplayer.View> {
     }
     
     private View view;
-    
+
+    @Override
+    protected C3ChartConf buildConfiguration() {
+        C3ChartConf conf = super.buildConfiguration();
+        C3Donut donutConf = createDonut();
+        conf.setDonut(donutConf);
+        return conf;
+    }
+
     @Inject
     public C3PieChartDisplayer(View view, FilterLabelSet filterLabelSet, C3JsTypesFactory builder) {
         super(filterLabelSet, builder);
@@ -110,4 +119,8 @@ public class C3PieChartDisplayer extends C3Displayer<C3PieChartDisplayer.View> {
                 .supportsAttribute(DisplayerAttributeDef.SUBTYPE);
     }
 
+    private C3Donut createDonut() {
+        String donutHoleTitle = displayerSettings.getDonutHoleTitle();
+        return factory.c3Donut(donutHoleTitle);
+    }
 }
