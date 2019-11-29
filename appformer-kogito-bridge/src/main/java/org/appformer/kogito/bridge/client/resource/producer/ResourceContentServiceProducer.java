@@ -19,29 +19,26 @@ package org.appformer.kogito.bridge.client.resource.producer;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+import elemental2.dom.DomGlobal;
 import org.appformer.kogito.bridge.client.resource.ResourceContentService;
-import org.appformer.kogito.bridge.client.resource.impl.MockResourceContentService;
-import org.appformer.kogito.bridge.client.resource.impl.ResourceContentServiceImpl;
+import org.appformer.kogito.bridge.client.resource.impl.NoOpResourceContentService;
+import org.appformer.kogito.bridge.client.resource.impl.EnvelopeResourceContentService;
+import org.appformer.kogito.bridge.client.resource.interop.Envelope;
 
 /**
  * Produces {@link ResourceContentService} beans according to whether the envelope API is available or not
  *
  */
-public class ResourceClientServiceProducer {
+public class ResourceContentServiceProducer {
 
     @Produces
     @ApplicationScoped
     public ResourceContentService produce() {
-        boolean isResourceContentServiceAvailable = isResourceContentServiceAvailable();
-        if (isResourceContentServiceAvailable) {
-            return new ResourceContentServiceImpl();
-        } else {
-            return new MockResourceContentService();
+        if (Envelope.isAvailable()) {
+            return new EnvelopeResourceContentService();
         }
+        DomGlobal.console.info("[ResourceContentServiceProducer] Envelope API is not available. Producing NoOpResourceContentService");
+        return new NoOpResourceContentService();
     }
-
-    private native boolean isResourceContentServiceAvailable()/*-{
-        return typeof $wnd.envelope !== "undefined";
-    }-*/;
 
 }
