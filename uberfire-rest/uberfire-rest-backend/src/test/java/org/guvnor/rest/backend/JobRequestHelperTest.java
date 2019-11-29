@@ -61,6 +61,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JobRequestHelperTest {
@@ -91,6 +92,7 @@ public class JobRequestHelperTest {
 
     @Before
     public void setUp() throws Exception {
+        when(workspaceProjectService.resolveProject(eq(space), eq("project"))).thenReturn(workspaceProject);
         when(workspaceProjectService.resolveProject(eq(space), eq("project"), any())).thenReturn(workspaceProject);
         when(repositoryService.getRepositoryFromSpace(eq(space), eq("repositoryAlias"))).thenReturn(repository);
         when(spaces.getSpace(eq("space"))).thenReturn(space);
@@ -285,6 +287,83 @@ public class JobRequestHelperTest {
                                                     null);
 
         assertEquals(JobStatus.FAIL,
+                     jobResult.getStatus());
+    }
+
+    @Test
+    public void testAddBranchProjectDoesNotExists() {
+        when(workspaceProjectService.resolveProject(eq(space), eq("project"))).thenReturn(null);
+
+        JobResult jobResult = helper.addBranch(null,
+                                               space.getName(),
+                                               "project",
+                                               "new-branch",
+                                               "ref-branch");
+
+        assertEquals(JobStatus.RESOURCE_NOT_EXIST,
+                     jobResult.getStatus());
+    }
+
+    @Test
+    public void testAddBranchBadRequest() {
+        doThrow(Exception.class).when(workspaceProjectService).addBranch(any(), any(), any());
+
+        JobResult jobResult = helper.addBranch(null,
+                                               space.getName(),
+                                               "project",
+                                               "new-branch",
+                                               "ref-branch");
+
+        assertEquals(JobStatus.BAD_REQUEST,
+                     jobResult.getStatus());
+    }
+
+    @Test
+    public void testAddBranch() {
+        JobResult jobResult = helper.addBranch(null,
+                                               space.getName(),
+                                               "project",
+                                               "new-branch",
+                                               "ref-branch");
+
+        assertEquals(JobStatus.SUCCESS,
+                     jobResult.getStatus());
+    }
+
+    @Test
+    public void testRemoveBranchProjectDoesNotExists() {
+        when(workspaceProjectService.resolveProject(eq(space), eq("project"))).thenReturn(null);
+
+        JobResult jobResult = helper.removeBranch(null,
+                                               space.getName(),
+                                               "project",
+                                               "new-branch");
+
+        assertEquals(JobStatus.RESOURCE_NOT_EXIST,
+                     jobResult.getStatus());
+    }
+
+    @Test
+    public void testRemoveBranchBadRequest() {
+        doThrow(Exception.class).when(workspaceProjectService).removeBranch(any(), any());
+
+        JobResult jobResult = helper.removeBranch(null,
+                                               space.getName(),
+                                               "project",
+                                               "new-branch");
+
+        assertEquals(JobStatus.BAD_REQUEST,
+                     jobResult.getStatus());
+    }
+
+    @Test
+    public void testRemoveBranch() {
+        JobResult jobResult = helper.removeBranch(null,
+                                               space.getName(),
+                                               "project",
+                                               "new-branch");
+
+        assertEquals(JobStatus.SUCCESS,
                      jobResult.getStatus());
     }
 

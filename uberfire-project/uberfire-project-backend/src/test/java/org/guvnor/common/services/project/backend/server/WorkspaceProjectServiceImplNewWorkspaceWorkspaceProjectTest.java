@@ -31,6 +31,7 @@ import java.util.Optional;
 import javax.enterprise.inject.Instance;
 
 import org.assertj.core.api.Assertions;
+import org.guvnor.common.services.project.backend.server.utils.PathUtil;
 import org.guvnor.common.services.project.events.NewProjectEvent;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.Module;
@@ -50,6 +51,7 @@ import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +61,7 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
+import org.uberfire.io.IOService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
@@ -106,6 +109,15 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
     @Mock
     private SpaceConfigStorage spaceConfigStorage;
 
+    @Mock
+    IOService ioService;
+
+    @Mock
+    PathUtil pathUtil;
+
+    @Mock
+    ChangeRequestService changeRequestService;
+
     private POM pom;
 
     @Before
@@ -147,6 +159,9 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                                                                   newProjectEvent,
                                                                   moduleServices,
                                                                   repositoryResolver,
+                                                                  ioService,
+                                                                  pathUtil,
+                                                                  changeRequestService,
                                                                   spaceConfigStorageRegistry);
     }
 

@@ -33,6 +33,7 @@ import java.util.Arrays;
 
 import javax.enterprise.inject.Instance;
 
+import org.guvnor.common.services.project.backend.server.utils.PathUtil;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.WorkspaceProject;
@@ -47,6 +48,7 @@ import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestService;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,6 +106,12 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     @Mock
     SpaceConfigStorage spaceConfigStorage;
 
+    @Mock
+    PathUtil pathUtil;
+
+    @Mock
+    ChangeRequestService changeRequestService;
+
     private Path path;
     private Path branchRoot;
     private Branch masterBranch;
@@ -147,6 +155,9 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
                                                                   new EventSourceMock<>(),
                                                                   moduleServices,
                                                                   repositoryResolver,
+                                                                  ioService,
+                                                                  pathUtil,
+                                                                  changeRequestService,
                                                                   spaceConfigStorageRegistry);
     }
 

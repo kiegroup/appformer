@@ -21,6 +21,7 @@ import javax.ws.rs.core.Variant;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.rest.client.CloneProjectRequest;
 import org.guvnor.rest.client.CreateProjectRequest;
+import org.guvnor.rest.client.AddBranchRequest;
 import org.guvnor.rest.client.JobRequest;
 import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
@@ -291,6 +292,26 @@ public class ProjectResourceJobTest {
     public void deleteSpace() throws Exception {
 
         projectResource.deleteSpace("spaceName");
+
+        verify(jobManager).putJob(jobResultArgumentCaptor.capture());
+        assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
+    }
+
+    @Test
+    public void addBranch() {
+        projectResource.addBranch("spaceName",
+                                  "projectName",
+                                  new AddBranchRequest());
+
+        verify(jobManager).putJob(jobResultArgumentCaptor.capture());
+        assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
+    }
+
+    @Test
+    public void removeBranch() {
+        projectResource.removeBranch("spaceName",
+                                     "projectName",
+                                     "branchName");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());

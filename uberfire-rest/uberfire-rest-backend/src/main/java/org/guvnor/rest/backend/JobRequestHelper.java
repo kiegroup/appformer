@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
@@ -508,6 +509,74 @@ public class JobRequestHelper {
         } else {
             result.setStatus(JobStatus.FAIL);
         }
+        return result;
+    }
+
+    public JobResult addBranch(final String jobId,
+                               final String spaceName,
+                               final String projectName,
+                               final String newBranchName,
+                               final String baseBranchName) {
+
+        JobResult result = new JobResult();
+        result.setJobId(jobId);
+
+        final WorkspaceProject project = workspaceProjectService.resolveProject(
+                spacesAPI.getSpace(spaceName),
+                projectName);
+
+        if (project == null) {
+            result.setStatus(JobStatus.RESOURCE_NOT_EXIST);
+            result.setResult("Project [" + projectName + "] does not exist");
+            return result;
+        }
+
+        try {
+            workspaceProjectService.addBranch(newBranchName,
+                                              baseBranchName,
+                                              project);
+            result.setStatus(JobStatus.SUCCESS);
+
+        } catch (FileAlreadyExistsException e) {
+            result.setStatus(JobStatus.BAD_REQUEST);
+            result.setResult("Branch [" + newBranchName + "] already exists.");
+
+        } catch (Exception e) {
+            result.setStatus(JobStatus.BAD_REQUEST);
+            result.setResult(e.getMessage());
+        }
+
+        return result;
+    }
+
+    public JobResult removeBranch(final String jobId,
+                                  final String spaceName,
+                                  final String projectName,
+                                  final String branchName) {
+
+        JobResult result = new JobResult();
+        result.setJobId(jobId);
+
+        final WorkspaceProject project = workspaceProjectService.resolveProject(
+                spacesAPI.getSpace(spaceName),
+                projectName);
+
+        if (project == null) {
+            result.setStatus(JobStatus.RESOURCE_NOT_EXIST);
+            result.setResult("Project [" + projectName + "] does not exist");
+            return result;
+        }
+
+        try {
+            workspaceProjectService.removeBranch(branchName,
+                                                 project);
+            result.setStatus(JobStatus.SUCCESS);
+
+        } catch (Exception e) {
+            result.setStatus(JobStatus.BAD_REQUEST);
+            result.setResult(e.getMessage());
+        }
+
         return result;
     }
 

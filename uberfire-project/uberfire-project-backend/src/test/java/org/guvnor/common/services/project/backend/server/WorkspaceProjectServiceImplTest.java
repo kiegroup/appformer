@@ -15,6 +15,8 @@
  */
 package org.guvnor.common.services.project.backend.server;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,7 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.event.Event;
 
+import org.guvnor.common.services.project.backend.server.utils.PathUtil;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
@@ -37,8 +41,11 @@ import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorageRegistry;
 import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
 import org.guvnor.structure.repositories.Branch;
+import org.guvnor.structure.repositories.NewBranchEvent;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.repositories.RepositoryUpdatedEvent;
+import org.guvnor.structure.repositories.changerequest.ChangeRequestService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +53,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
+import org.uberfire.backend.vfs.Path;
+import org.uberfire.java.nio.file.FileSystem;
+import org.uberfire.java.nio.file.spi.FileSystemProvider;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
+import org.uberfire.io.IOService;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -88,6 +99,21 @@ public class WorkspaceProjectServiceImplTest {
     @Mock
     SpaceConfigStorage spaceConfigStorage;
 
+    @Mock
+    IOService ioService;
+
+    @Mock
+    PathUtil pathUtil;
+
+    @Mock
+    ChangeRequestService changeRequestService;
+
+    @Mock
+    EventSourceMock<RepositoryUpdatedEvent> repositoryUpdatedEvent;
+
+    @Mock
+    Event<NewBranchEvent> newBranchEvent;
+
     SpacesAPI spaces = new SpacesAPIImpl();
 
     Space space1;
@@ -117,6 +143,9 @@ public class WorkspaceProjectServiceImplTest {
                                                                   new EventSourceMock<>(),
                                                                   moduleServices,
                                                                   repositoryResolver,
+                                                                  ioService,
+                                                                  pathUtil,
+                                                                  changeRequestService,
                                                                   spaceConfigStorageRegistry);
     }
 
@@ -381,6 +410,84 @@ public class WorkspaceProjectServiceImplTest {
             verify(this.repositoryService).removeRepository(new Space(this.ou1.getName()),
                                                             repository1);
         }
+    }
+
+    @Test
+    public void addBranchTest() throws URISyntaxException {
+        final WorkspaceProject project = mock(WorkspaceProject.class);
+        doReturn(repository1).when(project).getRepository();
+
+        final List<Branch> repo1Branches = Arrays.asList(makeBranch("repo1-branch1",
+                                                                    repository1.getAlias()),
+                                                         makeBranch("repo1-branch2",
+                                                                    repository1.getAlias()));
+        when(repository1.getBranches()).thenReturn(repo1Branches);
+        when(repository1.getBranch(anyString())).then(inv -> repo1Branches.stream().filter(b -> b.getName().equals(inv.getArgumentAt(0, String.class))).findFirst());
+
+        doReturn(new Space("my-space")).when(project).getSpace();
+        doReturn(mock(SpaceConfigStorage.class)).when(spaceConfigStorageRegistry).get("my-space");
+
+        final org.uberfire.java.nio.file.Path baseBranchPath = mock(org.uberfire.java.nio.file.Path.class);
+        final Path path = repository1.getBranches().stream().filter(b -> b.getName().equals("repo1-branch1")).findFirst().get().getPath();
+        final FileSystem fileSystem = mock(FileSystem.class);
+        final FileSystemProvider fileSystemProvider = mock(FileSystemProvider.class);
+        doReturn(fileSystemProvider).when(fileSystem).provider();
+        doReturn(fileSystem).when(baseBranchPath).getFileSystem();
+        doReturn(baseBranchPath).when(pathUtil).convert(path);
+
+        doReturn(repository1).when(repositoryService).getRepository(any());
+
+        Branch newBranch = makeBranch("new-branch", "repo1");
+        Branch branch1Branch = makeBranch("repo1-branch1", "repo1");
+
+        when(repository1.getBranch(any(Path.class))).thenReturn(Optional.of(newBranch)).thenReturn(Optional.of(branch1Branch));
+
+        final org.uberfire.java.nio.file.Path newBranchPath = mock(org.uberfire.java.nio.file.Path.class);
+        doReturn(newBranchPath).when(ioService).get(new URI("default://new-branch@repo1/"));
+
+        doReturn("default://new-branch@repo1/").when(pathUtil).replaceBranch(anyString(), anyString());
+
+        workspaceProjectService.addBranch("new-branch", "repo1-branch1", project);
+
+        verify(fileSystemProvider).copy(baseBranchPath, newBranchPath);
+    }
+
+    @Test
+    public void removeBranchTest() {
+        final Branch otherBranch = makeBranch("repo1-branch1", "repo1");
+        final org.uberfire.java.nio.file.Path baseBranchPath = mock(org.uberfire.java.nio.file.Path.class);
+        final FileSystem fileSystem = mock(FileSystem.class);
+        final FileSystemProvider fileSystemProvider = mock(FileSystemProvider.class);
+        doReturn(fileSystemProvider).when(fileSystem).provider();
+        doReturn(fileSystem).when(baseBranchPath).getFileSystem();
+        doReturn(baseBranchPath).when(pathUtil).convert(any(Path.class));
+
+        final List<Branch> repo1Branches = Arrays.asList(makeBranch("repo1-branch1",
+                                                                    repository1.getAlias()),
+                                                         makeBranch("repo1-branch2",
+                                                                    repository1.getAlias()));
+        when(repository1.getBranches()).thenReturn(repo1Branches);
+        when(repository1.getBranch(anyString())).then(inv -> repo1Branches.stream().filter(b -> b.getName().equals(inv.getArgumentAt(0, String.class))).findFirst());
+
+        final WorkspaceProject project = mock(WorkspaceProject.class);
+        doReturn(repository1).when(project).getRepository();
+        final Space space = new Space("my-space");
+        doReturn(space).when(project).getSpace();
+        doReturn(mock(SpaceConfigStorage.class)).when(spaceConfigStorageRegistry).get("my-space");
+        doReturn(repository1).when(repositoryService).getRepositoryFromSpace(space, "repository1");
+
+        workspaceProjectService.removeBranch(otherBranch.getName(), project);
+
+        verify(ioService).startBatch(fileSystem);
+        verify(ioService).delete(baseBranchPath);
+        verify(ioService).endBatch();
+    }
+
+    private Branch makeBranch(final String branchName,
+        final String repoName) {
+        final Path path = mock(Path.class);
+        doReturn("default://" + branchName + "@" + repoName + "/").when(path).toURI();
+        return new Branch(branchName, path);
     }
 
     private void assertContains(final Repository repository,
