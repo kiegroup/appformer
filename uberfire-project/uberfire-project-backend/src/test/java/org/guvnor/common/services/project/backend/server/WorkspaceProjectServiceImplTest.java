@@ -51,12 +51,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.ArgumentCaptor;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.server.spaces.SpacesAPIImpl;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mocks.SessionInfoMock;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.io.IOService;
@@ -114,6 +117,9 @@ public class WorkspaceProjectServiceImplTest {
     @Mock
     Event<NewBranchEvent> newBranchEvent;
 
+    @Mock
+    SessionInfo sessionInfo;
+
     SpacesAPI spaces = new SpacesAPIImpl();
 
     Space space1;
@@ -130,6 +136,8 @@ public class WorkspaceProjectServiceImplTest {
 
         setUpRepositories();
 
+        sessionInfo = new SessionInfoMock();
+
         doReturn(moduleService).when(moduleServices).get();
         doReturn(allRepositories).when(repositoryService).getAllRepositoriesFromAllUserSpaces();
 
@@ -141,12 +149,15 @@ public class WorkspaceProjectServiceImplTest {
                                                                   repositoryService,
                                                                   spaces,
                                                                   new EventSourceMock<>(),
+                                                                  repositoryUpdatedEvent,
+                                                                  newBranchEvent,
                                                                   moduleServices,
                                                                   repositoryResolver,
                                                                   ioService,
                                                                   pathUtil,
                                                                   changeRequestService,
-                                                                  spaceConfigStorageRegistry);
+                                                                  spaceConfigStorageRegistry,
+                                                                  sessionInfo);
     }
 
     private void setUpOUs() {
@@ -416,6 +427,7 @@ public class WorkspaceProjectServiceImplTest {
     public void addBranchTest() throws URISyntaxException {
         final WorkspaceProject project = mock(WorkspaceProject.class);
         doReturn(repository1).when(project).getRepository();
+        doReturn(repository1).when(repositoryService).getRepositoryFromSpace(any(), any());
 
         final List<Branch> repo1Branches = Arrays.asList(makeBranch("repo1-branch1",
                                                                     repository1.getAlias()),
@@ -447,9 +459,19 @@ public class WorkspaceProjectServiceImplTest {
 
         doReturn("default://new-branch@repo1/").when(pathUtil).replaceBranch(anyString(), anyString());
 
+        final ArgumentCaptor<NewBranchEvent> newBranchEventArgumentCaptor = ArgumentCaptor.forClass(NewBranchEvent.class);
+
         workspaceProjectService.addBranch("new-branch", "repo1-branch1", project);
 
         verify(fileSystemProvider).copy(baseBranchPath, newBranchPath);
+
+        verify(repositoryUpdatedEvent).fire(any());
+        verify(newBranchEvent).fire(newBranchEventArgumentCaptor.capture());
+
+        final NewBranchEvent newBranchEvent = newBranchEventArgumentCaptor.getValue();
+        assertEquals("new-branch", newBranchEvent.getNewBranchName());
+        assertEquals("repo1-branch1", newBranchEvent.getFromBranchName());
+        assertEquals(repository1, newBranchEvent.getRepository());
     }
 
     @Test
@@ -481,6 +503,7 @@ public class WorkspaceProjectServiceImplTest {
         verify(ioService).startBatch(fileSystem);
         verify(ioService).delete(baseBranchPath);
         verify(ioService).endBatch();
+        verify(repositoryUpdatedEvent).fire(any());
     }
 
     private Branch makeBranch(final String branchName,

@@ -60,6 +60,7 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.io.IOService;
@@ -112,6 +113,9 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     @Mock
     ChangeRequestService changeRequestService;
 
+    @Mock
+    SessionInfo sessionInfo;
+
     private Path path;
     private Path branchRoot;
     private Branch masterBranch;
@@ -153,12 +157,15 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
                                                                   repositoryService,
                                                                   spaces,
                                                                   new EventSourceMock<>(),
+                                                                  new EventSourceMock<>(),
+                                                                  new EventSourceMock<>(),
                                                                   moduleServices,
                                                                   repositoryResolver,
                                                                   ioService,
                                                                   pathUtil,
                                                                   changeRequestService,
-                                                                  spaceConfigStorageRegistry);
+                                                                  spaceConfigStorageRegistry,
+                                                                  sessionInfo);
     }
 
     @Test

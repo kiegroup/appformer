@@ -59,6 +59,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.io.IOService;
@@ -118,6 +119,9 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
     @Mock
     ChangeRequestService changeRequestService;
 
+    @Mock
+    SessionInfo sessionInfo;
+
     private POM pom;
 
     @Before
@@ -157,12 +161,15 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                                                                   repositoryService,
                                                                   spaces,
                                                                   newProjectEvent,
+                                                                  new EventSourceMock<>(),
+                                                                  new EventSourceMock<>(),
                                                                   moduleServices,
                                                                   repositoryResolver,
                                                                   ioService,
                                                                   pathUtil,
                                                                   changeRequestService,
-                                                                  spaceConfigStorageRegistry);
+                                                                  spaceConfigStorageRegistry,
+                                                                  sessionInfo);
     }
 
     @Test

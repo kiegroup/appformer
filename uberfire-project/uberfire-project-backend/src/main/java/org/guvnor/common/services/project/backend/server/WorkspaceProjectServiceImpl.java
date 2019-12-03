@@ -51,10 +51,13 @@ import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.changerequest.ChangeRequestService;
+import org.guvnor.structure.repositories.RepositoryUpdatedEvent;
+import org.guvnor.structure.repositories.NewBranchEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.io.IOService;
@@ -67,6 +70,8 @@ public class WorkspaceProjectServiceImpl
     private OrganizationalUnitService organizationalUnitService;
     private RepositoryService repositoryService;
     private Event<NewProjectEvent> newProjectEvent;
+    private Event<RepositoryUpdatedEvent> repositoryUpdatedEvent;
+    private Event<NewBranchEvent> newBranchEvent;
     private ModuleService<? extends Module> moduleService;
     private SpacesAPI spaces;
     private ModuleRepositoryResolver repositoryResolver;
@@ -75,6 +80,7 @@ public class WorkspaceProjectServiceImpl
     private IOService ioService;
     private PathUtil pathUtil;
     private ChangeRequestService changeRequestService;
+    private SessionInfo sessionInfo;
 
     public WorkspaceProjectServiceImpl() {
     }
@@ -84,22 +90,28 @@ public class WorkspaceProjectServiceImpl
                                        final RepositoryService repositoryService,
                                        final SpacesAPI spaces,
                                        final Event<NewProjectEvent> newProjectEvent,
+                                       final Event<RepositoryUpdatedEvent> repositoryUpdatedEvent,
+                                       final Event<NewBranchEvent> newBranchEvent,
                                        final Instance<ModuleService<? extends Module>> moduleServices,
                                        final ModuleRepositoryResolver repositoryResolver,
                                        @Named("ioStrategy") final IOService ioService,
                                        final PathUtil pathUtil,
                                        final ChangeRequestService changeRequestService,
-                                       final SpaceConfigStorageRegistry spaceConfigStorageRegistry) {
+                                       final SpaceConfigStorageRegistry spaceConfigStorageRegistry,
+                                       final SessionInfo sessionInfo) {
         this.organizationalUnitService = organizationalUnitService;
         this.repositoryService = repositoryService;
         this.spaces = spaces;
         this.newProjectEvent = newProjectEvent;
+        this.repositoryUpdatedEvent = repositoryUpdatedEvent;
+        this.newBranchEvent = newBranchEvent;
         this.moduleService = moduleServices.get();
         this.repositoryResolver = repositoryResolver;
         this.ioService = ioService;
         this.pathUtil = pathUtil;
         this.changeRequestService = changeRequestService;
         this.spaceConfigStorageRegistry = spaceConfigStorageRegistry;
+        this.sessionInfo = sessionInfo;
     }
 
     @Override
@@ -412,6 +424,7 @@ public class WorkspaceProjectServiceImpl
                                                                baseBranch.getPath().toURI());
         try {
             final org.uberfire.java.nio.file.Path newBranchPath = ioService.get(new URI(newBranchPathURI));
+
             baseBranchPath
                 .getFileSystem()
                 .provider()
@@ -428,6 +441,17 @@ public class WorkspaceProjectServiceImpl
                 .saveBranchPermissions(newBranchName,
                                        project.getRepository().getIdentifier(),
                                        branchPermissions);
+
+            final Repository repository = repositoryService.getRepositoryFromSpace(
+                    project.getSpace(),
+                    project.getRepository().getAlias());
+
+            repositoryUpdatedEvent.fire(new RepositoryUpdatedEvent(repository));
+
+            newBranchEvent.fire(new NewBranchEvent(repository,
+                                                   newBranchName,
+                                                   baseBranchName,
+                                                   sessionInfo.getIdentity()));
 
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -452,6 +476,7 @@ public class WorkspaceProjectServiceImpl
                 .getBranch(branch.getName())
                 .ifPresent(updatedBranch -> {
                         final org.uberfire.java.nio.file.Path branchPath = pathUtil.convert(branch.getPath());
+
                         ioService.delete(branchPath);
 
                         spaceConfigStorageRegistry
@@ -462,6 +487,12 @@ public class WorkspaceProjectServiceImpl
                         changeRequestService.deleteChangeRequests(project.getSpace().getName(),
                                                                   project.getRepository().getAlias(),
                                                                   branch.getName());
+
+                        final Repository repository = repositoryService.getRepositoryFromSpace(
+                                project.getSpace(),
+                                project.getRepository().getAlias());
+
+                        repositoryUpdatedEvent.fire(new RepositoryUpdatedEvent(repository));
                     });
 
         } finally {
