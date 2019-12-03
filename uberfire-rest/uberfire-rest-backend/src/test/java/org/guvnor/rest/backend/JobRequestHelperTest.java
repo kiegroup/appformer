@@ -305,7 +305,7 @@ public class JobRequestHelperTest {
     }
 
     @Test
-    public void testAddBranchBadRequest() {
+    public void testAddBranchFail() {
         doThrow(Exception.class).when(workspaceProjectService).addBranch(any(), any(), any());
 
         JobResult jobResult = helper.addBranch(null,
@@ -314,7 +314,7 @@ public class JobRequestHelperTest {
                                                "new-branch",
                                                "ref-branch");
 
-        assertEquals(JobStatus.BAD_REQUEST,
+        assertEquals(JobStatus.FAIL,
                      jobResult.getStatus());
     }
 
@@ -344,7 +344,7 @@ public class JobRequestHelperTest {
     }
 
     @Test
-    public void testRemoveBranchBadRequest() {
+    public void testRemoveBranchFail() {
         doThrow(Exception.class).when(workspaceProjectService).removeBranch(any(), any());
 
         JobResult jobResult = helper.removeBranch(null,
@@ -352,7 +352,7 @@ public class JobRequestHelperTest {
                                                "project",
                                                "new-branch");
 
-        assertEquals(JobStatus.BAD_REQUEST,
+        assertEquals(JobStatus.FAIL,
                      jobResult.getStatus());
     }
 

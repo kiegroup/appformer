@@ -538,11 +538,11 @@ public class JobRequestHelper {
             result.setStatus(JobStatus.SUCCESS);
 
         } catch (FileAlreadyExistsException e) {
-            result.setStatus(JobStatus.BAD_REQUEST);
+            result.setStatus(JobStatus.DUPLICATE_RESOURCE);
             result.setResult("Branch [" + newBranchName + "] already exists.");
 
         } catch (Exception e) {
-            result.setStatus(JobStatus.BAD_REQUEST);
+            result.setStatus(JobStatus.FAIL);
             result.setResult(e.getMessage());
         }
 
@@ -573,7 +573,7 @@ public class JobRequestHelper {
             result.setStatus(JobStatus.SUCCESS);
 
         } catch (Exception e) {
-            result.setStatus(JobStatus.BAD_REQUEST);
+            result.setStatus(JobStatus.FAIL);
             result.setResult(e.getMessage());
         }
 
