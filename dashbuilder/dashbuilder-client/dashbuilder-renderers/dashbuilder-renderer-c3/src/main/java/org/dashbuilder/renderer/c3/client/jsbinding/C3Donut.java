@@ -25,7 +25,7 @@ public class C3Donut {
 
     @JsOverlay
     static C3Donut create(String title) {
-        C3Donut  data = new C3Donut ();
+        C3Donut data = new C3Donut();
         data.setTitle(title);
         return data;
     }
