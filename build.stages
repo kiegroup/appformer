@@ -1,0 +1,17 @@
+if(!env.kiegroup_appformer) {
+    stage('Build appformer projects') {
+        dir("droolsjbpm-knowledge") {
+            script {
+                githubscm.checkoutIfExists('droolsjbpm-knowledge', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+                load("build.stages")
+            }
+        }
+    }
+    stage('Build appformer project') {
+        script {
+            githubscm.checkoutIfExists('appformer', "$CHANGE_AUTHOR", "$CHANGE_BRANCH", 'kiegroup', "$CHANGE_TARGET")
+            maven.runMavenWithSubmarineSettings('clean install', true)
+            env.kiegroup_appformer = true;
+        }
+    }
+}
