@@ -17,17 +17,33 @@
 
 package org.uberfire.ext.layout.editor.client;
 
+import java.util.function.Supplier;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LayoutEditorPluginImplTest {
 
+    @Mock
+    private LayoutEditorPresenter layoutEditorPresenter;
+
     @Spy
+    @InjectMocks
     private LayoutEditorPluginImpl layoutEditorPlugin;
+
+    @Captor
+    private ArgumentCaptor<Supplier<Boolean>> lockSupplierCaptor;
 
     @Test
     public void testLock() {
@@ -39,5 +55,12 @@ public class LayoutEditorPluginImplTest {
     public void testUnlock() {
         layoutEditorPlugin.unlock();
         Assert.assertFalse(layoutEditorPlugin.isLocked());
+    }
+
+    @Test
+    public void testSetup() {
+        layoutEditorPlugin.setup();
+        verify(layoutEditorPresenter, times(1)).setup(lockSupplierCaptor.capture());
+        Assert.assertFalse(lockSupplierCaptor.getValue().get());
     }
 }
