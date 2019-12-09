@@ -56,7 +56,7 @@ public class LayoutEditorPluginImpl implements LayoutEditorPlugin {
 
     @PostConstruct
     public void setup() {
-        layoutEditorPresenter.setup(() -> locked);
+        layoutEditorPresenter.setup(this::isLocked);
     }
 
     @Override
@@ -163,13 +163,17 @@ public class LayoutEditorPluginImpl implements LayoutEditorPlugin {
         layoutEditorPresenter.visit(visitor);
     }
 
+    public boolean isLocked() {
+        return locked;
+    }
+
     @Override
     public void lock() {
-        this.locked = true;
+        locked = true;
     }
 
     @Override
     public void unlock() {
-        this.locked = false;
+        locked = false;
     }
 }

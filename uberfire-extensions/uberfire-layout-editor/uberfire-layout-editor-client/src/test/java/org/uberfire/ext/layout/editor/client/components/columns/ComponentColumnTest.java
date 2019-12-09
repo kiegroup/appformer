@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,9 @@ public class ComponentColumnTest extends AbstractLayoutEditorTest {
 
     @Mock
     private Supplier<LayoutTemplate> currentLayoutTemplateSupplier;
+
+    @Mock
+    private Supplier<Boolean> lockSupplier;
 
     @Mock
     private ComponentColumn.View view;
@@ -125,5 +129,20 @@ public class ComponentColumnTest extends AbstractLayoutEditorTest {
         verify(view, times(1)).notifyDragEnd();
         verify(lockRequiredEvent,
                times(1)).fire(any(LockRequiredEvent.class));
+    }
+
+    @Test
+    public void testConfigComponentSupplier() {
+        when(lockSupplier.get()).thenReturn(true);
+        componentColumn.configComponent(true);
+        verify(view, times(0)).hasModalConfiguration();
+    }
+
+    @Test
+    public void testConfigComponent() {
+        when(lockSupplier.get()).thenReturn(false);
+        when(view.hasModalConfiguration()).thenReturn(true);
+        componentColumn.configComponent(true);
+        verify(view,times(1)).hasModalConfiguration();
     }
 }
