@@ -270,7 +270,7 @@ public class Container implements LayoutEditorElement {
         return row;
     }
 
-    private Supplier<Boolean> getLockSupplier() {
+    public Supplier<Boolean> getLockSupplier() {
         return () -> lockSupplier.get();
     }
 

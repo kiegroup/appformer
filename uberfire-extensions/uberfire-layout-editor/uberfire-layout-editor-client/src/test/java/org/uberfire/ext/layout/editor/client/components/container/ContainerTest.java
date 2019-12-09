@@ -324,4 +324,10 @@ public class ContainerTest extends AbstractLayoutEditorTest {
         assertEquals(expected,
                      currentLayoutTemplateSupplier.get());
     }
+
+    @Test
+    public void testLockSupplier() {
+        container.setLockSupplier(() -> false);
+        assertEquals(Boolean.FALSE, container.getLockSupplier().get());
+    }
 }
