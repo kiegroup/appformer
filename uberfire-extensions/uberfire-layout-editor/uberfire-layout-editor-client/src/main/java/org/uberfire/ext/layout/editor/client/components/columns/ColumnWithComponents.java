@@ -28,6 +28,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.jboss.errai.codegen.util.Bool;
 import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
@@ -66,6 +67,7 @@ public class ColumnWithComponents implements Column {
     private Event<LockRequiredEvent> lockRequiredEvent;
     private LayoutTemplate.Style pageStyle;
     private Supplier<LayoutTemplate> currentLayoutTemplateSupplier;
+    private Supplier<Boolean> lockSupplier;
     private Integer columnHeight = DEFAULT_COLUMN_HEIGHT;
     private Integer columnWidth;
     private boolean selected = false;
@@ -103,6 +105,7 @@ public class ColumnWithComponents implements Column {
                      ParameterizedCommand<ColumnDrop> removeComponentCommand,
                      ParameterizedCommand<Column> removeCommand,
                      Supplier<LayoutTemplate> currentLayoutTemplateSupplier,
+                     Supplier<Boolean> lockSupplier,
                      Integer columnHeight) {
         this.columnWidth = columnWidth;
         this.parentElement = parent;
@@ -111,6 +114,7 @@ public class ColumnWithComponents implements Column {
         this.removeColumnCommand = removeCommand;
         this.pageStyle = pageStyle;
         this.currentLayoutTemplateSupplier = currentLayoutTemplateSupplier;
+        this.lockSupplier = lockSupplier;
         this.columnHeight = columnHeight;
         view.setWidth(columnWidth);
         setupPageLayout();
@@ -123,6 +127,7 @@ public class ColumnWithComponents implements Column {
                  createComponentRemoveCommand(),
                  this,
                  currentLayoutTemplateSupplier,
+                 lockSupplier,
                  Row.ROW_DEFAULT_HEIGHT);
     }
 

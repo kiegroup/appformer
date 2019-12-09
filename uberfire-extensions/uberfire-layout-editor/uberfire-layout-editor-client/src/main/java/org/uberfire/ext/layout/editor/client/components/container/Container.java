@@ -75,6 +75,7 @@ public class Container implements LayoutEditorElement {
     private DnDManager dndManager;
     private boolean selectable = false;
     private boolean selected = false;
+    private Supplier<Boolean> lockSupplier = () -> false;
 
     LayoutEditorFocusController layoutEditorFocusController;
 
@@ -122,6 +123,10 @@ public class Container implements LayoutEditorElement {
             destroy(row);
         }
         rows = new ArrayList<>();
+    }
+
+    public void setLockSupplier(Supplier<Boolean> lockSupplier) {
+        this.lockSupplier = lockSupplier;
     }
 
     @Override
@@ -257,11 +262,16 @@ public class Container implements LayoutEditorElement {
                  createRemoveRowCommand(),
                  createRemoveComponentCommand(),
                  createCurrentLayoutTemplateSupplier(),
+                 getLockSupplier(),
                  height);
         row.withOneColumn(drop.getComponent(),
                           drop.newComponent());
         view.addRow(row.getView());
         return row;
+    }
+
+    private Supplier<Boolean> getLockSupplier() {
+        return () -> lockSupplier.get();
     }
 
     Supplier<LayoutTemplate> createCurrentLayoutTemplateSupplier() {
@@ -475,7 +485,8 @@ public class Container implements LayoutEditorElement {
                  layoutRow,
                  createRemoveRowCommand(),
                  createRemoveComponentCommand(),
-                 createCurrentLayoutTemplateSupplier());
+                 createCurrentLayoutTemplateSupplier(),
+                 getLockSupplier());
         return row;
     }
 

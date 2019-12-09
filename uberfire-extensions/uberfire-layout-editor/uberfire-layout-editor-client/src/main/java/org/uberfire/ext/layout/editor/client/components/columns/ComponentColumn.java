@@ -58,6 +58,7 @@ public class ComponentColumn implements Column {
     private boolean innerColumn = false;
     private LayoutComponent layoutComponent;
     private Supplier<LayoutTemplate> currentLayoutTemplateSupplier;
+    private Supplier<Boolean> lockSupplier;
     private boolean componentReady;
     private ParameterizedCommand<Column> removeCommand;
     private LayoutDragComponentHelper layoutDragComponentHelper;
@@ -103,9 +104,11 @@ public class ComponentColumn implements Column {
                      ParameterizedCommand<ColumnDrop> dropCommand,
                      ParameterizedCommand<Column> removeCommand,
                      Supplier<LayoutTemplate> currentLayoutTemplateSupplier,
+                     Supplier<Boolean> lockSupplier,
                      boolean newComponent) {
         this.layoutComponent = layoutComponent;
         this.currentLayoutTemplateSupplier = currentLayoutTemplateSupplier;
+        this.lockSupplier = lockSupplier;
         view.setup(layoutComponent, pageStyle);
         this.parentElement = parent;
         this.columnWidth = columnWidth;
@@ -216,7 +219,9 @@ public class ComponentColumn implements Column {
     }
 
     void configComponent(boolean newComponent) {
-
+        if (lockSupplier.get()) {
+            return;
+        }
         if (hasModalConfiguration(newComponent)) {
             view.showConfigComponentModal(this::configurationFinish,
                                           this::configurationCanceled,
