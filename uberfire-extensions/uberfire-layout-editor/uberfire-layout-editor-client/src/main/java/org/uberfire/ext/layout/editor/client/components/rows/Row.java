@@ -414,11 +414,11 @@ public class Row implements LayoutEditorElement {
         Optional<Column> optional = checkIfColumnExistsInChildColumnWithComponents(targetColumn);
 
         // If present let's remove it!
-        optional.ifPresent(column -> removeComponentFromColumnWithComponents((ColumnWithComponents) column,
+        optional.ifPresent(column -> removeComponentFromColumnWihtComponents((ColumnWithComponents) column,
                                                                              targetColumn));
     }
 
-    private void removeComponentFromColumnWithComponents(ColumnWithComponents parent,
+    private void removeComponentFromColumnWihtComponents(ColumnWithComponents parent,
                                                          Column targetColumn) {
         PortablePreconditions.checkNotNull("parent",
                                            parent);
@@ -445,17 +445,21 @@ public class Row implements LayoutEditorElement {
         if (columnToReplace.getRow().getColumns().size() == 1) {
 
             // getting the remaining column
-            ComponentColumn originalColumn = (ComponentColumn) columnToReplace.getRow().getColumns().remove(0);
-            ComponentColumn column = createNewComponentColumn(originalColumn.getLayoutComponent(),
-                                              columnToReplace.getColumnWidth(),
-                                              false);
-
-            column.setId(columnToReplace.getId());
+            Column column = columnToReplace.getRow().getColumns().remove(0);
 
             int index = columns.indexOf(columnToReplace);
 
+            if (column instanceof ComponentColumn) {
+                // if it is a ComponentColumn we must regenerate to reload all the styling
+                ComponentColumn originalColumn = (ComponentColumn) column;
+                column = createNewComponentColumn(originalColumn.getLayoutComponent(),
+                                                  columnToReplace.getColumnWidth(),
+                                                  false);
+            }
+
             // promoting the remaining child on the actual row
-            columns.set(index, column);
+            columns.set(index,
+                        column);
 
             // destroy current column & update view
             columnToReplace.preDestroy();
