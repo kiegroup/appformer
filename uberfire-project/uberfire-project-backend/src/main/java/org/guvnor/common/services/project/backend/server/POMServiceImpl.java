@@ -58,6 +58,8 @@ import org.uberfire.mvp.Command;
 public class POMServiceImpl
         implements POMService {
 
+    public static final String POM_XML = "pom.xml";
+
     private final Logger logger = LoggerFactory.getLogger(POMServiceImpl.class);
     private IOService ioService;
     private POMContentHandler pomContentHandler;
