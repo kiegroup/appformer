@@ -25,7 +25,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 public class WorkbenchCloseHandlerImpl implements WorkbenchCloseHandler {
 
     @Override
-    public void onWindowClosing(ParameterizedCommand<Window.ClosingEvent> command) {
+    public void onWindowClosing(final ParameterizedCommand<Window.ClosingEvent> command) {
         this.onWindowClosing(command, null);
     }
 

@@ -26,7 +26,8 @@ public interface WorkbenchCloseHandler {
 
     void onWindowClosing(final ParameterizedCommand<Window.ClosingEvent> command);
 
-    void onWindowClosing(final ParameterizedCommand<Window.ClosingEvent> command, Window.ClosingEvent event);
+    void onWindowClosing(final ParameterizedCommand<Window.ClosingEvent> command,
+                         final Window.ClosingEvent event);
 
     void onWindowClose(final Command command);
 }
