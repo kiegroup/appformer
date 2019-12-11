@@ -27,6 +27,8 @@ import org.guvnor.rest.client.JobResult;
 import org.guvnor.rest.client.JobStatus;
 import org.guvnor.rest.client.Space;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
+import org.jboss.errai.security.shared.api.identity.User;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -34,10 +36,13 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.SpacesAPI;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectResourceJobTest {
@@ -56,6 +61,9 @@ public class ProjectResourceJobTest {
 
     @Mock
     private WorkspaceProjectService workspaceProjectService;
+
+    @Mock
+    private SessionInfo sessionInfo;
 
     @Captor
     private ArgumentCaptor<JobResult> jobResultArgumentCaptor;
@@ -76,6 +84,13 @@ public class ProjectResourceJobTest {
             return null;
         }
     };
+
+    @Before
+    public void setup() {
+        User user = mock(User.class);
+        when(user.getIdentifier()).thenReturn("user");
+        when(sessionInfo.getIdentity()).thenReturn(user);
+    }
 
     @Test
     public void cloneProject() throws Exception {

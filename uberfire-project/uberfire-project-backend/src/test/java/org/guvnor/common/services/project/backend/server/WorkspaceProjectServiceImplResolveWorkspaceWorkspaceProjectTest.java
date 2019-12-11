@@ -164,8 +164,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
                                                                   ioService,
                                                                   pathUtil,
                                                                   changeRequestService,
-                                                                  spaceConfigStorageRegistry,
-                                                                  sessionInfo);
+                                                                  spaceConfigStorageRegistry);
     }
 
     @Test

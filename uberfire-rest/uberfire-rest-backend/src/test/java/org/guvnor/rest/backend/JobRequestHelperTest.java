@@ -51,6 +51,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
@@ -88,6 +89,8 @@ public class JobRequestHelperTest {
     private SpacesAPI spaces;
     @Mock
     private OrganizationalUnitService organizationalUnitService;
+    @Mock
+    private SessionInfo sessionInfo;
     private Space space = new Space("space");
 
     @Before
@@ -298,7 +301,8 @@ public class JobRequestHelperTest {
                                                space.getName(),
                                                "project",
                                                "new-branch",
-                                               "ref-branch");
+                                               "ref-branch",
+                                               "user");
 
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -306,13 +310,14 @@ public class JobRequestHelperTest {
 
     @Test
     public void testAddBranchFail() {
-        doThrow(Exception.class).when(workspaceProjectService).addBranch(any(), any(), any());
+        doThrow(Exception.class).when(workspaceProjectService).addBranch(any(), any(), any(), any());
 
         JobResult jobResult = helper.addBranch(null,
                                                space.getName(),
                                                "project",
                                                "new-branch",
-                                               "ref-branch");
+                                               "ref-branch",
+                                               "user");
 
         assertEquals(JobStatus.FAIL,
                      jobResult.getStatus());
@@ -324,7 +329,8 @@ public class JobRequestHelperTest {
                                                space.getName(),
                                                "project",
                                                "new-branch",
-                                               "ref-branch");
+                                               "ref-branch",
+                                               "user");
 
         assertEquals(JobStatus.SUCCESS,
                      jobResult.getStatus());
@@ -337,7 +343,8 @@ public class JobRequestHelperTest {
         JobResult jobResult = helper.removeBranch(null,
                                                space.getName(),
                                                "project",
-                                               "new-branch");
+                                               "new-branch",
+                                               "user");
 
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -345,12 +352,13 @@ public class JobRequestHelperTest {
 
     @Test
     public void testRemoveBranchFail() {
-        doThrow(Exception.class).when(workspaceProjectService).removeBranch(any(), any());
+        doThrow(Exception.class).when(workspaceProjectService).removeBranch(any(), any(), any());
 
         JobResult jobResult = helper.removeBranch(null,
                                                space.getName(),
                                                "project",
-                                               "new-branch");
+                                               "new-branch",
+                                               "user");
 
         assertEquals(JobStatus.FAIL,
                      jobResult.getStatus());
@@ -361,7 +369,8 @@ public class JobRequestHelperTest {
         JobResult jobResult = helper.removeBranch(null,
                                                space.getName(),
                                                "project",
-                                               "new-branch");
+                                               "new-branch",
+                                               "user");
 
         assertEquals(JobStatus.SUCCESS,
                      jobResult.getStatus());

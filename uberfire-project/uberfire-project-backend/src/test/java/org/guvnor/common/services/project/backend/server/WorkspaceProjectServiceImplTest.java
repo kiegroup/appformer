@@ -156,8 +156,7 @@ public class WorkspaceProjectServiceImplTest {
                                                                   ioService,
                                                                   pathUtil,
                                                                   changeRequestService,
-                                                                  spaceConfigStorageRegistry,
-                                                                  sessionInfo);
+                                                                  spaceConfigStorageRegistry);
     }
 
     private void setUpOUs() {
@@ -461,7 +460,10 @@ public class WorkspaceProjectServiceImplTest {
 
         final ArgumentCaptor<NewBranchEvent> newBranchEventArgumentCaptor = ArgumentCaptor.forClass(NewBranchEvent.class);
 
-        workspaceProjectService.addBranch("new-branch", "repo1-branch1", project);
+        workspaceProjectService.addBranch("new-branch",
+                                          "repo1-branch1",
+                                          project,
+                                          "user");
 
         verify(fileSystemProvider).copy(baseBranchPath, newBranchPath);
 
@@ -498,7 +500,9 @@ public class WorkspaceProjectServiceImplTest {
         doReturn(mock(SpaceConfigStorage.class)).when(spaceConfigStorageRegistry).get("my-space");
         doReturn(repository1).when(repositoryService).getRepositoryFromSpace(space, "repository1");
 
-        workspaceProjectService.removeBranch(otherBranch.getName(), project);
+        workspaceProjectService.removeBranch(otherBranch.getName(),
+                                             project,
+                                             "user");
 
         verify(ioService).startBatch(fileSystem);
         verify(ioService).delete(baseBranchPath);

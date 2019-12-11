@@ -45,7 +45,8 @@ public class AddBranchCmd extends AbstractJobCommand {
                                       jobRequest.getSpaceName(),
                                       jobRequest.getProjectName(),
                                       jobRequest.getNewBranchName(),
-                                      jobRequest.getBaseBranchName());
+                                      jobRequest.getBaseBranchName(),
+                                      jobRequest.getUserIdentifier());
 
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;

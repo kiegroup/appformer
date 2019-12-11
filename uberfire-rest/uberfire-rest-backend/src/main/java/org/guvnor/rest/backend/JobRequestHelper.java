@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.io.IOService;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
@@ -516,7 +517,8 @@ public class JobRequestHelper {
                                final String spaceName,
                                final String projectName,
                                final String newBranchName,
-                               final String baseBranchName) {
+                               final String baseBranchName,
+                               final String userIdentifier) {
 
         JobResult result = new JobResult();
         result.setJobId(jobId);
@@ -534,7 +536,8 @@ public class JobRequestHelper {
         try {
             workspaceProjectService.addBranch(newBranchName,
                                               baseBranchName,
-                                              project);
+                                              project,
+                                              userIdentifier);
             result.setStatus(JobStatus.SUCCESS);
 
         } catch (FileAlreadyExistsException e) {
@@ -552,7 +555,8 @@ public class JobRequestHelper {
     public JobResult removeBranch(final String jobId,
                                   final String spaceName,
                                   final String projectName,
-                                  final String branchName) {
+                                  final String branchName,
+                                  final String userIdentifier) {
 
         JobResult result = new JobResult();
         result.setJobId(jobId);
@@ -569,7 +573,8 @@ public class JobRequestHelper {
 
         try {
             workspaceProjectService.removeBranch(branchName,
-                                                 project);
+                                                 project,
+                                                 userIdentifier);
             result.setStatus(JobStatus.SUCCESS);
 
         } catch (Exception e) {

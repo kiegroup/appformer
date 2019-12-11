@@ -70,8 +70,10 @@ import org.guvnor.structure.repositories.Branch;
 import org.kie.soup.commons.validation.PortablePreconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.rpc.SessionInfo;
 import org.uberfire.io.IOService;
 import org.uberfire.spaces.SpacesAPI;
+import org.jboss.errai.security.shared.api.identity.User;
 
 import static org.guvnor.rest.backend.PermissionConstants.REST_PROJECT_ROLE;
 import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
@@ -106,6 +108,8 @@ public class ProjectResource {
     private JobResultManager jobManager;
     @Inject
     private SpacesAPI spacesAPI;
+    @Inject
+    private SessionInfo sessionInfo;
 
     private AtomicLong counter = new AtomicLong(0);
 
@@ -361,6 +365,7 @@ public class ProjectResource {
         jobRequest.setProjectName(projectName);
         jobRequest.setNewBranchName(addBranchRequest.getNewBranchName());
         jobRequest.setBaseBranchName(addBranchRequest.getBaseBranchName());
+        jobRequest.setUserIdentifier(sessionInfo.getIdentity().getIdentifier());
         addAcceptedJobResult(id);
 
         jobRequestObserver.addBranchRequest(jobRequest);
@@ -401,6 +406,7 @@ public class ProjectResource {
         jobRequest.setSpaceName(spaceName);
         jobRequest.setProjectName(projectName);
         jobRequest.setBranchName(branchName);
+        jobRequest.setUserIdentifier(sessionInfo.getIdentity().getIdentifier());
         addAcceptedJobResult(id);
 
         jobRequestObserver.removeBranchRequest(jobRequest);

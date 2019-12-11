@@ -57,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
-import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.io.IOService;
@@ -80,7 +79,6 @@ public class WorkspaceProjectServiceImpl
     private IOService ioService;
     private PathUtil pathUtil;
     private ChangeRequestService changeRequestService;
-    private SessionInfo sessionInfo;
 
     public WorkspaceProjectServiceImpl() {
     }
@@ -97,8 +95,7 @@ public class WorkspaceProjectServiceImpl
                                        @Named("ioStrategy") final IOService ioService,
                                        final PathUtil pathUtil,
                                        final ChangeRequestService changeRequestService,
-                                       final SpaceConfigStorageRegistry spaceConfigStorageRegistry,
-                                       final SessionInfo sessionInfo) {
+                                       final SpaceConfigStorageRegistry spaceConfigStorageRegistry) {
         this.organizationalUnitService = organizationalUnitService;
         this.repositoryService = repositoryService;
         this.spaces = spaces;
@@ -111,7 +108,6 @@ public class WorkspaceProjectServiceImpl
         this.pathUtil = pathUtil;
         this.changeRequestService = changeRequestService;
         this.spaceConfigStorageRegistry = spaceConfigStorageRegistry;
-        this.sessionInfo = sessionInfo;
     }
 
     @Override
@@ -412,7 +408,8 @@ public class WorkspaceProjectServiceImpl
     @Override
     public void addBranch(final String newBranchName,
                           final String baseBranchName,
-                          final WorkspaceProject project) {
+                          final WorkspaceProject project,
+                          final String userIdentifier) {
 
         final Branch baseBranch = project
             .getRepository()
@@ -451,7 +448,7 @@ public class WorkspaceProjectServiceImpl
             newBranchEvent.fire(new NewBranchEvent(repository,
                                                    newBranchName,
                                                    baseBranchName,
-                                                   sessionInfo.getIdentity()));
+                                                   userIdentifier));
 
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
@@ -460,7 +457,8 @@ public class WorkspaceProjectServiceImpl
 
     @Override
     public void removeBranch(final String branchName,
-                             final WorkspaceProject project) {
+                             final WorkspaceProject project,
+                             final String userIdentifier) {
 
         final Branch branch = project
                 .getRepository()
@@ -486,7 +484,8 @@ public class WorkspaceProjectServiceImpl
 
                         changeRequestService.deleteChangeRequests(project.getSpace().getName(),
                                                                   project.getRepository().getAlias(),
-                                                                  branch.getName());
+                                                                  branch.getName(),
+                                                                  userIdentifier);
 
                         final Repository repository = repositoryService.getRepositoryFromSpace(
                                 project.getSpace(),

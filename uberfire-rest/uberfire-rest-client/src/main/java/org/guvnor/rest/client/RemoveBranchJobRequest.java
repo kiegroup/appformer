@@ -23,6 +23,7 @@ public class RemoveBranchJobRequest extends JobRequest {
     private String spaceName;
     private String projectName;
     private String branchName;
+    private String userIdentifier;
 
     public String getSpaceName() {
         return spaceName;
@@ -46,5 +47,13 @@ public class RemoveBranchJobRequest extends JobRequest {
 
     public void setBranchName(final String name) {
         this.branchName = name;
+    }
+
+    public void setUserIdentifier(final String userIdentifier) {
+        this.userIdentifier = userIdentifier;
+    }
+
+    public String getUserIdentifier() {
+        return userIdentifier;
     }
 }

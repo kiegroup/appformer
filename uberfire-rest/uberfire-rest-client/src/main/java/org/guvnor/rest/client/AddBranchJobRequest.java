@@ -24,6 +24,7 @@ public class AddBranchJobRequest extends JobRequest {
     private String projectName;
     private String newBranchName;
     private String baseBranchName;
+    private String userIdentifier;
 
     public String getSpaceName() {
         return spaceName;
@@ -55,5 +56,13 @@ public class AddBranchJobRequest extends JobRequest {
 
     public void setBaseBranchName(final String name) {
         this.baseBranchName = name;
+    }
+
+    public void setUserIdentifier(final String userIdentifier) {
+        this.userIdentifier = userIdentifier;
+    }
+
+    public String getUserIdentifier() {
+        return userIdentifier;
     }
 }

@@ -78,8 +78,10 @@ public interface WorkspaceProjectService {
 
     void addBranch(final String newBranchName,
                    final String baseBranchName,
-                   final WorkspaceProject project);
+                   final WorkspaceProject project,
+                   final String userIdentifier);
 
     void removeBranch(final String branchName,
-                      final WorkspaceProject project);
+                      final WorkspaceProject project,
+                      final String userIdentifier);
 }

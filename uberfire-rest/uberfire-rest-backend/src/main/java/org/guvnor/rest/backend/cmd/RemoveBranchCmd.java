@@ -44,7 +44,8 @@ public class RemoveBranchCmd extends AbstractJobCommand {
             result = helper.removeBranch(jobRequest.getJobId(),
                                          jobRequest.getSpaceName(),
                                          jobRequest.getProjectName(),
-                                         jobRequest.getBranchName());
+                                         jobRequest.getBranchName(),
+                                         jobRequest.getUserIdentifier());
 
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
