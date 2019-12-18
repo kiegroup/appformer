@@ -213,9 +213,7 @@ public class ColumnWithComponents implements Column {
     }
 
     public void remove(Column targetColumn) {
-        DropContext dropContext = new DropContext<>();
-        dropContext.setTargetColumn(targetColumn);
-        row.removeColumn(dropContext);
+        row.removeColumn(new DropContext<>(targetColumn));
     }
 
     public boolean canResizeLeft() {

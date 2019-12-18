@@ -328,11 +328,7 @@ public class Row implements LayoutEditorElement {
         if (parentColumnWithComponents != null) {
             return parentColumnWithComponents.getRemoveColumnCommand();
         }
-        return (targetCol) -> {
-            DropContext dropContext = new DropContext();
-            dropContext.setTargetColumn(targetCol);
-            removeColumn(dropContext);
-        };
+        return targetCol -> removeColumn(new DropContext(targetCol));
     }
 
     public void removeColumn(DropContext dropContext) {

@@ -319,12 +319,7 @@ public class Container implements LayoutEditorElement {
     }
 
     private ParameterizedCommand<ColumnDrop> createRemoveComponentCommand() {
-        return drop -> {
-            DropContext<ColumnDrop> columnDropContext = new DropContext<>();
-            columnDropContext.setDrop(drop);
-            columnDropContext.setTargetColumn(drop.getOldColumn());
-            removeOldComponent(columnDropContext);
-        };
+        return drop -> removeOldComponent(new DropContext<>(drop.getOldColumn(), drop));
     }
 
     private boolean layoutIsEmpty() {
@@ -367,10 +362,7 @@ public class Container implements LayoutEditorElement {
     private void handleMoveComponent(RowDrop dropRow,
                                      List<Row> updatedRows,
                                      Row row) {
-        DropContext<RowDrop> dropContext = new DropContext<>();
-        dropContext.setDrop(dropRow);
-        dropContext.setTargetColumn(dropRow.getOldColumn());
-        removeOldComponent(dropContext);
+        removeOldComponent(new DropContext<>(dropRow.getOldColumn(), dropRow));
         addNewRow(row,
                   dropRow,
                   updatedRows);

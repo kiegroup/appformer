@@ -230,9 +230,7 @@ public class RowTest extends AbstractLayoutEditorTest {
         assertThat(thirdColumn).isNotNull().isInstanceOf(ComponentColumn.class);
 
         // Remove thirdColumn -> the expected result is that rowColumn will be a ColumnWithComponents with two columns (firstColumn & secondColumn)
-        DropContext dropContext = new DropContext();
-        dropContext.setTargetColumn(thirdColumn);
-        row.removeColumn(dropContext);
+        row.removeColumn(new DropContext(thirdColumn));
         rowColumn = row.getColumns().get(0);
         assertThat(rowColumn).isNotNull().isInstanceOf(ColumnWithComponents.class);
 
@@ -246,8 +244,7 @@ public class RowTest extends AbstractLayoutEditorTest {
 
         // Remove firstColumn -> since rowColumn will have onlye one ComponentColumn the expected result is that
         // rowColumn will be a ComponentColumn copy of secondColumn
-        dropContext.setTargetColumn(firstColumn);
-        row.removeColumn(dropContext);
+        row.removeColumn(new DropContext(firstColumn));
 
         verify(componentRemoveEventMock,
                times(2)).fire(removeEventCaptor.capture());
@@ -286,9 +283,7 @@ public class RowTest extends AbstractLayoutEditorTest {
         dnDManager.dragComponent(column.getLayoutComponent(),
                                  columnWithComponents.getRow().getId(),
                                  column);
-        DropContext dropContext = new DropContext();
-        dropContext.setTargetColumn(column);
-        row.removeColumn(dropContext);
+        row.removeColumn(new DropContext(column));
         rowColumn = row.getColumns().get(0);
         assertThat(rowColumn).isNotNull().isInstanceOf(ColumnWithComponents.class);
 
@@ -324,9 +319,7 @@ public class RowTest extends AbstractLayoutEditorTest {
         dnDManager.dragComponent(column.getLayoutComponent(),
                                  row.getId(),
                                  column);
-        DropContext dropContext = new DropContext();
-        dropContext.setTargetColumn(column);
-        row.removeColumn(dropContext);
+        row.removeColumn(new DropContext(column));
 
         assertThat(row.getColumns()).hasSize(3);
 

@@ -24,6 +24,15 @@ public class DropContext<T> {
     private Column targetColumn;
     private T drop;
 
+    public DropContext(Column targetColumn) {
+        this.targetColumn = targetColumn;
+    }
+
+    public DropContext(Column targetColumn, T drop) {
+        this.targetColumn = targetColumn;
+        this.drop = drop;
+    }
+
     public Column getTargetColumn() {
         return targetColumn;
     }
