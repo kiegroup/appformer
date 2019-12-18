@@ -329,21 +329,23 @@ public class Row implements LayoutEditorElement {
             return parentColumnWithComponents.getRemoveColumnCommand();
         }
         return (targetCol) -> {
-            removeColumn(targetCol);
+            DropContext dropContext = new DropContext();
+            dropContext.setTargetColumn(targetCol);
+            removeColumn(dropContext);
         };
     }
 
-    public void removeColumn(Column targetColumn) {
-        removeChildColumn(targetColumn);
+    public void removeColumn(DropContext dropContext) {
+        removeChildColumn(dropContext);
     }
 
-    public void removeChildColumn(Column targetColumn) {
-        if (isAChildColumn(targetColumn)) {
+    public void removeChildColumn(DropContext dropContext) {
+        if (isAChildColumn(dropContext.getTargetColumn())) {
             // Removing a child Column
-            removeChildComponentColumn(targetColumn);
+            removeChildComponentColumn(dropContext.getTargetColumn());
         } else {
             // Removing a column inside a ColumnWithComponents
-            lookupAndRemoveFromColumnsWithComponents(targetColumn);
+            lookupAndRemoveFromColumnsWithComponents(dropContext);
         }
 
         // If the current row is empty we must remove it from the layout
@@ -409,17 +411,18 @@ public class Row implements LayoutEditorElement {
         return columns.isEmpty();
     }
 
-    private void lookupAndRemoveFromColumnsWithComponents(Column targetColumn) {
+    private void lookupAndRemoveFromColumnsWithComponents(DropContext dropContext) {
         // find the ColumnWithComponents that contains the targetColumn
-        Optional<Column> optional = checkIfColumnExistsInChildColumnWithComponents(targetColumn);
+        Optional<Column> optional = checkIfColumnExistsInChildColumnWithComponents(dropContext.getTargetColumn());
 
         // If present let's remove it!
-        optional.ifPresent(column -> removeComponentFromColumnWihtComponents((ColumnWithComponents) column,
-                                                                             targetColumn));
+        optional.ifPresent(column -> removeComponentFromColumnWithComponents((ColumnWithComponents) column,
+                                                                             dropContext));
     }
 
-    private void removeComponentFromColumnWihtComponents(ColumnWithComponents parent,
-                                                         Column targetColumn) {
+    private void removeComponentFromColumnWithComponents(ColumnWithComponents parent,
+                                                         DropContext dropContext) {
+        Column targetColumn = dropContext.getTargetColumn();
         PortablePreconditions.checkNotNull("parent",
                                            parent);
         PortablePreconditions.checkNotNull("targetColumn",
@@ -432,9 +435,23 @@ public class Row implements LayoutEditorElement {
         }
 
         // if parent has only one child remaining we'll remove parent and promote the remaining child on the layout.
-        if (parent.getRow().getColumns().size() == 1) {
+        if (parent.getRow().getColumns().size() == 1 && !isDropInSameColumnWithComponent(dropContext)) {
             replaceColumnWithComponents(parent);
         }
+    }
+
+    private boolean isDropInSameColumnWithComponent(DropContext dropContext) {
+        if (dropContext.getDrop() instanceof ColumnDrop) {
+            int indexOfRowIdOfColumn = dropContext.getTargetColumn().getId().lastIndexOf("column");
+            int indexOfEndIdOfColumn = ((ColumnDrop) dropContext.getDrop()).getEndId().lastIndexOf("column");
+            if (indexOfRowIdOfColumn < 0 || indexOfEndIdOfColumn < 0) {
+                return false;
+            }
+            String rowIdOfColumn = dropContext.getTargetColumn().getId().substring(0, indexOfRowIdOfColumn);
+            String rowEndIdOfColumn = ((ColumnDrop) dropContext.getDrop()).getEndId().substring(0, indexOfEndIdOfColumn);
+            return rowIdOfColumn.equals(rowEndIdOfColumn);
+        } else
+            return false;
     }
 
     private void replaceColumnWithComponents(ColumnWithComponents columnToReplace) {

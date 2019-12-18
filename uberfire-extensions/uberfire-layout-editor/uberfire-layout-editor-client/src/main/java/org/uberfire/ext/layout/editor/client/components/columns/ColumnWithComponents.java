@@ -28,7 +28,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.jboss.errai.codegen.util.Bool;
 import org.uberfire.client.mvp.LockRequiredEvent;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
@@ -41,6 +40,7 @@ import org.uberfire.ext.layout.editor.client.infra.BeanHelper;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.ColumnResizeEvent;
 import org.uberfire.ext.layout.editor.client.infra.DnDManager;
+import org.uberfire.ext.layout.editor.client.infra.DropContext;
 import org.uberfire.ext.layout.editor.client.infra.LayoutDragComponentHelper;
 import org.uberfire.ext.layout.editor.client.infra.UniqueIDGenerator;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
@@ -213,7 +213,9 @@ public class ColumnWithComponents implements Column {
     }
 
     public void remove(Column targetColumn) {
-        row.removeColumn(targetColumn);
+        DropContext dropContext = new DropContext<>();
+        dropContext.setTargetColumn(targetColumn);
+        row.removeColumn(dropContext);
     }
 
     public boolean canResizeLeft() {

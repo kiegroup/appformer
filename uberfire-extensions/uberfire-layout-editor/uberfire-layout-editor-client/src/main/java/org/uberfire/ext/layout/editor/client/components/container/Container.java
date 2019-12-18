@@ -221,7 +221,7 @@ public class Container implements LayoutEditorElement {
         emptyTitleText = null;
         emptySubTitleText = null;
         layoutName = null;
-        properties.clear();;
+        properties.clear();
         emptyDropRow = null;
         pageStyle = LayoutTemplate.Style.FLUID;
     }
@@ -319,7 +319,12 @@ public class Container implements LayoutEditorElement {
     }
 
     private ParameterizedCommand<ColumnDrop> createRemoveComponentCommand() {
-        return drop -> removeOldComponent(drop.getOldColumn());
+        return drop -> {
+            DropContext<ColumnDrop> columnDropContext = new DropContext<>();
+            columnDropContext.setDrop(drop);
+            columnDropContext.setTargetColumn(drop.getOldColumn());
+            removeOldComponent(columnDropContext);
+        };
     }
 
     private boolean layoutIsEmpty() {
@@ -362,7 +367,10 @@ public class Container implements LayoutEditorElement {
     private void handleMoveComponent(RowDrop dropRow,
                                      List<Row> updatedRows,
                                      Row row) {
-        removeOldComponent(dropRow.getOldColumn());
+        DropContext<RowDrop> dropContext = new DropContext<>();
+        dropContext.setDrop(dropRow);
+        dropContext.setTargetColumn(dropRow.getOldColumn());
+        removeOldComponent(dropContext);
         addNewRow(row,
                   dropRow,
                   updatedRows);
@@ -370,16 +378,16 @@ public class Container implements LayoutEditorElement {
         dndManager.endComponentMove();
     }
 
-    private void removeOldComponent(Column column) {
+    private void removeOldComponent(DropContext dropContext) {
 
         // Search the row that contains the column
         Optional<Row> rowOptional = rows.stream()
-                .filter(row -> row.cointainsColumn(column))
+                .filter(row -> row.cointainsColumn(dropContext.getTargetColumn()))
                 .findAny();
 
         // If the row is present remove it!
         if (rowOptional.isPresent()) {
-            rowOptional.get().removeChildColumn(column);
+            rowOptional.get().removeChildColumn(dropContext);
         }
     }
 
