@@ -219,7 +219,7 @@ public interface PanelManager {
     void onPartMinimized(PartDefinition part);
 
     /**
-     * @return the focused {@link PanelDefinition}
+     * @return the focused {@link PartDefinition}
      */
     PartDefinition getFocusedPart();
 }
