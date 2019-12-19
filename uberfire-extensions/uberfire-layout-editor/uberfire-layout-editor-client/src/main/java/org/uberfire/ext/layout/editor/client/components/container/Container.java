@@ -40,7 +40,6 @@ import org.uberfire.ext.layout.editor.client.api.ComponentDropEvent;
 import org.uberfire.ext.layout.editor.client.api.ComponentDropType;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditorElement;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditorElementType;
-import org.uberfire.ext.layout.editor.client.components.columns.Column;
 import org.uberfire.ext.layout.editor.client.components.rows.EmptyDropRow;
 import org.uberfire.ext.layout.editor.client.components.rows.Row;
 import org.uberfire.ext.layout.editor.client.components.rows.RowDnDEvent;
@@ -221,7 +220,7 @@ public class Container implements LayoutEditorElement {
         emptyTitleText = null;
         emptySubTitleText = null;
         layoutName = null;
-        properties.clear();
+        properties.clear();;
         emptyDropRow = null;
         pageStyle = LayoutTemplate.Style.FLUID;
     }
