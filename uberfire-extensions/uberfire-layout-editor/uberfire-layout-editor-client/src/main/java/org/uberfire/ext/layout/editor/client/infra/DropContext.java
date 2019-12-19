@@ -37,15 +37,7 @@ public class DropContext<T> {
         return targetColumn;
     }
 
-    public void setTargetColumn(Column targetColumn) {
-        this.targetColumn = targetColumn;
-    }
-
     public T getDrop() {
         return drop;
-    }
-
-    public void setDrop(T drop) {
-        this.drop = drop;
     }
 }

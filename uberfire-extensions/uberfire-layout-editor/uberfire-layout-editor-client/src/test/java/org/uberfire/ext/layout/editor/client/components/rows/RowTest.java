@@ -36,6 +36,7 @@ import static org.jgroups.util.Util.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -260,6 +261,19 @@ public class RowTest extends AbstractLayoutEditorTest {
                                                                 "columnWidth",
                                                                 "columnHeight",
                                                                 "layoutComponent");
+    }
+
+    @Test
+    public void testIsDropInSameColumnWithComponent() throws Exception {
+
+        loadLayout(SAMPLE_COLUMN_WITH_COMPONENTS_LAYOUT);
+
+        Row row = mock(Row.class);
+        DropContext<RowDrop> rowDropContext = mock(DropContext.class);
+        assertFalse(row.isDropInSameColumnWithComponent(rowDropContext));
+
+        DropContext<ColumnDrop> columnDropContext = mock(DropContext.class);
+        assertFalse(row.isDropInSameColumnWithComponent(columnDropContext));
     }
 
     @Test

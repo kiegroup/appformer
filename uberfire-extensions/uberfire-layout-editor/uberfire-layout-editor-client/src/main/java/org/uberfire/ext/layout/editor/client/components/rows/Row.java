@@ -436,7 +436,7 @@ public class Row implements LayoutEditorElement {
         }
     }
 
-    private boolean isDropInSameColumnWithComponent(DropContext dropContext) {
+    protected boolean isDropInSameColumnWithComponent(DropContext dropContext) {
         if (dropContext.getDrop() instanceof ColumnDrop) {
             int indexOfRowIdOfColumn = dropContext.getTargetColumn().getId().lastIndexOf("column");
             int indexOfEndIdOfColumn = ((ColumnDrop) dropContext.getDrop()).getEndId().lastIndexOf("column");
