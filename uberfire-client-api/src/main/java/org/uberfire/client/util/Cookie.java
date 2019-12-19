@@ -23,8 +23,12 @@ import elemental2.dom.DomGlobal;
 @Dependent
 public class Cookie {
 
-    public static String get(final String name) {
-        String cookie = "; " + DomGlobal.document.cookie;
+    public String get() {
+        return DomGlobal.document.cookie;
+    }
+
+    public String get(final String name) {
+        String cookie = "; " + get();
         String[] parts = cookie.split("; " + name + "=");
         if (parts.length == 2) {
             return parts[1].split(";")[0];
@@ -32,12 +36,12 @@ public class Cookie {
         return "";
     }
 
-    public static void set(final String name,
-                           final String value) {
+    public void set(final String name,
+                    final String value) {
         DomGlobal.document.cookie = name + "=" + value;
     }
 
-    public static void clear(final String name) {
-        Cookie.set(name, "");
+    public void clear(final String name) {
+        set(name, "");
     }
 }
