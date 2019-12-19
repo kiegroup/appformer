@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RowTest extends AbstractLayoutEditorTest {
 
@@ -268,12 +269,20 @@ public class RowTest extends AbstractLayoutEditorTest {
 
         loadLayout(SAMPLE_COLUMN_WITH_COMPONENTS_LAYOUT);
 
-        Row row = mock(Row.class);
+        Row row = getRowByIndex(FIRST_ROW);
+
+        assertThat(row.getColumns()).hasSize(1);
+
+        Column rowColumn = row.getColumns().get(0);
+        ColumnWithComponents columnWithComponents = (ColumnWithComponents) rowColumn;
+        Column firstColumn = columnWithComponents.getRow().getColumns().get(0);
+
         DropContext<RowDrop> rowDropContext = mock(DropContext.class);
         assertFalse(row.isDropInSameColumnWithComponent(rowDropContext));
 
-        DropContext<ColumnDrop> columnDropContext = mock(DropContext.class);
-        assertFalse(row.isDropInSameColumnWithComponent(columnDropContext));
+        DropContext<ColumnDrop> columnDropContext = new DropContext<ColumnDrop>(firstColumn, mock(ColumnDrop.class));
+        when(columnDropContext.getDrop().getEndId()).thenReturn(columnDropContext.getTargetColumn().getId());
+        assertTrue(row.isDropInSameColumnWithComponent(columnDropContext));
     }
 
     @Test
