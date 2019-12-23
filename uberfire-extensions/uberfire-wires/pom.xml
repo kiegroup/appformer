@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-extensions</artifactId>
-    <version>7.32.0-SNAPSHOT</version>
+    <version>7.32.0.k20191223</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
