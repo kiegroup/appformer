@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.resource.interop;
+package org.appformer.kogito.bridge.client.context.interop;
 
-import jsinterop.annotations.JsOverlay;
-import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
-@JsType(isNative = true, name = "window", namespace = JsPackage.GLOBAL)
-public class Envelope {
+/**
+ * 
+ * Provide access to the editorContext object 
+ * 
+ */
+@JsType(isNative = true, namespace = "window", name = "envelope")
+public class EditorContextWrapper {
 
-    @JsProperty(name = "envelope")
-    private static native Envelope get();
+    @JsProperty
+    public native String getChannel();
 
-    @JsOverlay
-    public static boolean isAvailable() {
-        return get() != null;
-    }
+    @JsProperty(name = "editorContext")
+    public static native EditorContextWrapper get();
 
 }

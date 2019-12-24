@@ -210,7 +210,7 @@ public class ClientEditorActivityGenerator extends AbstractGenerator {
         }
         //Validate setContentMethodName
         if (setContentMethodName == null) {
-            throw new GenerationException("The WorkbenchClientEditor must provide a @SetContent annotated method that has a java.lang.String as parameter.",
+            throw new GenerationException("The WorkbenchClientEditor must provide a @SetContent annotated method that has two java.lang.String as parameters.",
                                           packageName + "." + className);
         }
         //Validate getContentMethodName

@@ -20,10 +20,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
 import elemental2.dom.DomGlobal;
+import org.appformer.kogito.bridge.client.interop.Envelope;
 import org.appformer.kogito.bridge.client.resource.ResourceContentService;
-import org.appformer.kogito.bridge.client.resource.impl.NoOpResourceContentService;
 import org.appformer.kogito.bridge.client.resource.impl.EnvelopeResourceContentService;
-import org.appformer.kogito.bridge.client.resource.interop.Envelope;
+import org.appformer.kogito.bridge.client.resource.impl.NoOpResourceContentService;
 
 /**
  * Produces {@link ResourceContentService} beans according to whether the envelope API is available or not
