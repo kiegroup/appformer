@@ -40,7 +40,6 @@ import org.uberfire.ext.layout.editor.client.infra.BeanHelper;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.ColumnResizeEvent;
 import org.uberfire.ext.layout.editor.client.infra.DnDManager;
-import org.uberfire.ext.layout.editor.client.infra.DropContext;
 import org.uberfire.ext.layout.editor.client.infra.LayoutDragComponentHelper;
 import org.uberfire.ext.layout.editor.client.infra.UniqueIDGenerator;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
@@ -213,7 +212,7 @@ public class ColumnWithComponents implements Column {
     }
 
     public void remove(Column targetColumn) {
-        row.removeColumn(new DropContext<>(targetColumn));
+        row.removeColumn(targetColumn);
     }
 
     public boolean canResizeLeft() {

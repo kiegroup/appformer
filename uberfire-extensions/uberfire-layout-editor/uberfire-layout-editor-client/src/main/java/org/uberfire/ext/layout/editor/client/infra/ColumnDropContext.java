@@ -17,27 +17,19 @@
 
 package org.uberfire.ext.layout.editor.client.infra;
 
-import org.uberfire.ext.layout.editor.client.components.columns.Column;
+public class ColumnDropContext {
 
-public class DropContext<T> {
+    private static ColumnDrop activeDrop;
 
-    private Column targetColumn;
-    private T drop;
-
-    public DropContext(Column targetColumn) {
-        this.targetColumn = targetColumn;
+    public static void setActiveDrop(ColumnDrop columnDrop) {
+        activeDrop = columnDrop;
     }
 
-    public DropContext(Column targetColumn, T drop) {
-        this.targetColumn = targetColumn;
-        this.drop = drop;
+    public static ColumnDrop getActiveDrop() {
+        return activeDrop;
     }
 
-    public Column getTargetColumn() {
-        return targetColumn;
-    }
-
-    public T getDrop() {
-        return drop;
+    public static void clear() {
+        activeDrop = null;
     }
 }

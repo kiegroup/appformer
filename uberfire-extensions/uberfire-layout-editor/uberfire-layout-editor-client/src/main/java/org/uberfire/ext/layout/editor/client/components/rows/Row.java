@@ -299,6 +299,7 @@ public class Row implements LayoutEditorElement {
 
     public ParameterizedCommand<ColumnDrop> dropCommand() {
         return (drop) -> {
+            ColumnDropContext.setActiveDrop(drop);
             if (dropFromMoveComponent(drop)) {
                 removeOldComponent(drop);
                 // notifying dndManager that the move has finished!
@@ -308,6 +309,7 @@ public class Row implements LayoutEditorElement {
             Row.this.columns = updateColumns(drop,
                                              Row.this.columns);
             updateView();
+            ColumnDropContext.clear();
         };
     }
 
@@ -328,20 +330,22 @@ public class Row implements LayoutEditorElement {
         if (parentColumnWithComponents != null) {
             return parentColumnWithComponents.getRemoveColumnCommand();
         }
-        return targetCol -> removeColumn(new DropContext(targetCol));
+        return (targetCol) -> {
+            removeColumn(targetCol);
+        };
     }
 
-    public void removeColumn(DropContext dropContext) {
-        removeChildColumn(dropContext);
+    public void removeColumn(Column targetColumn) {
+        removeChildColumn(targetColumn);
     }
 
-    public void removeChildColumn(DropContext dropContext) {
-        if (isAChildColumn(dropContext.getTargetColumn())) {
+    public void removeChildColumn(Column targetColumn) {
+        if (isAChildColumn(targetColumn)) {
             // Removing a child Column
-            removeChildComponentColumn(dropContext.getTargetColumn());
+            removeChildComponentColumn(targetColumn);
         } else {
             // Removing a column inside a ColumnWithComponents
-            lookupAndRemoveFromColumnsWithComponents(dropContext);
+            lookupAndRemoveFromColumnsWithComponents(targetColumn);
         }
 
         // If the current row is empty we must remove it from the layout
@@ -407,18 +411,17 @@ public class Row implements LayoutEditorElement {
         return columns.isEmpty();
     }
 
-    private void lookupAndRemoveFromColumnsWithComponents(DropContext dropContext) {
+    private void lookupAndRemoveFromColumnsWithComponents(Column targetColumn) {
         // find the ColumnWithComponents that contains the targetColumn
-        Optional<Column> optional = checkIfColumnExistsInChildColumnWithComponents(dropContext.getTargetColumn());
+        Optional<Column> optional = checkIfColumnExistsInChildColumnWithComponents(targetColumn);
 
         // If present let's remove it!
         optional.ifPresent(column -> removeComponentFromColumnWithComponents((ColumnWithComponents) column,
-                                                                             dropContext));
+                                                                             targetColumn));
     }
 
     private void removeComponentFromColumnWithComponents(ColumnWithComponents parent,
-                                                         DropContext dropContext) {
-        Column targetColumn = dropContext.getTargetColumn();
+                                                         Column targetColumn) {
         PortablePreconditions.checkNotNull("parent",
                                            parent);
         PortablePreconditions.checkNotNull("targetColumn",
@@ -431,23 +434,22 @@ public class Row implements LayoutEditorElement {
         }
 
         // if parent has only one child remaining we'll remove parent and promote the remaining child on the layout.
-        if (parent.getRow().getColumns().size() == 1 && !isDropInSameColumnWithComponent(dropContext)) {
+        if (parent.getRow().getColumns().size() == 1 && !isDropInSameColumnWithComponent(ColumnDropContext.getActiveDrop())) {
             replaceColumnWithComponents(parent);
         }
     }
 
-    protected boolean isDropInSameColumnWithComponent(DropContext dropContext) {
-        if (dropContext.getDrop() instanceof ColumnDrop) {
-            int indexOfRowIdOfColumn = dropContext.getTargetColumn().getId().lastIndexOf("column");
-            int indexOfEndIdOfColumn = ((ColumnDrop) dropContext.getDrop()).getEndId().lastIndexOf("column");
-            if (indexOfRowIdOfColumn < 0 || indexOfEndIdOfColumn < 0) {
-                return false;
+    protected boolean isDropInSameColumnWithComponent(ColumnDrop drop) {
+        if (drop != null) {
+            int indexOfRowIdOfColumn = drop.getOldColumn().getId().lastIndexOf("column");
+            int indexOfEndIdOfColumn = drop.getEndId().lastIndexOf("column");
+            if (indexOfRowIdOfColumn > 0 && indexOfEndIdOfColumn > 0) {
+                String rowIdOfColumn = drop.getOldColumn().getId().substring(0, indexOfRowIdOfColumn);
+                String rowEndIdOfColumn = drop.getEndId().substring(0, indexOfEndIdOfColumn);
+                return rowIdOfColumn.equals(rowEndIdOfColumn);
             }
-            String rowIdOfColumn = dropContext.getTargetColumn().getId().substring(0, indexOfRowIdOfColumn);
-            String rowEndIdOfColumn = ((ColumnDrop) dropContext.getDrop()).getEndId().substring(0, indexOfEndIdOfColumn);
-            return rowIdOfColumn.equals(rowEndIdOfColumn);
-        } else
-            return false;
+        }
+        return false;
     }
 
     private void replaceColumnWithComponents(ColumnWithComponents columnToReplace) {

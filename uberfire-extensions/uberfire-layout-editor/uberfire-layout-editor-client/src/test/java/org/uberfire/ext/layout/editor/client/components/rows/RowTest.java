@@ -29,7 +29,6 @@ import org.uberfire.ext.layout.editor.client.components.columns.ColumnWithCompon
 import org.uberfire.ext.layout.editor.client.components.columns.ComponentColumn;
 import org.uberfire.ext.layout.editor.client.infra.ColumnDrop;
 import org.uberfire.ext.layout.editor.client.infra.ColumnResizeEvent;
-import org.uberfire.ext.layout.editor.client.infra.DropContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jgroups.util.Util.assertEquals;
@@ -232,7 +231,7 @@ public class RowTest extends AbstractLayoutEditorTest {
         assertThat(thirdColumn).isNotNull().isInstanceOf(ComponentColumn.class);
 
         // Remove thirdColumn -> the expected result is that rowColumn will be a ColumnWithComponents with two columns (firstColumn & secondColumn)
-        row.removeColumn(new DropContext(thirdColumn));
+        row.removeColumn(thirdColumn);
         rowColumn = row.getColumns().get(0);
         assertThat(rowColumn).isNotNull().isInstanceOf(ColumnWithComponents.class);
 
@@ -246,7 +245,7 @@ public class RowTest extends AbstractLayoutEditorTest {
 
         // Remove firstColumn -> since rowColumn will have onlye one ComponentColumn the expected result is that
         // rowColumn will be a ComponentColumn copy of secondColumn
-        row.removeColumn(new DropContext(firstColumn));
+        row.removeColumn(firstColumn);
 
         verify(componentRemoveEventMock,
                times(2)).fire(removeEventCaptor.capture());
@@ -277,12 +276,16 @@ public class RowTest extends AbstractLayoutEditorTest {
         ColumnWithComponents columnWithComponents = (ColumnWithComponents) rowColumn;
         Column firstColumn = columnWithComponents.getRow().getColumns().get(0);
 
-        DropContext<RowDrop> rowDropContext = mock(DropContext.class);
-        assertFalse(row.isDropInSameColumnWithComponent(rowDropContext));
+        // when drop is not in the same column
+        ColumnDrop columnDrop = mock(ColumnDrop.class);
+        when(columnDrop.getOldColumn()).thenReturn(firstColumn);
+        when(columnDrop.getEndId()).thenReturn("container: | row:1");
+        assertFalse(row.isDropInSameColumnWithComponent(columnDrop));
 
-        DropContext<ColumnDrop> columnDropContext = new DropContext<ColumnDrop>(firstColumn, mock(ColumnDrop.class));
-        when(columnDropContext.getDrop().getEndId()).thenReturn(columnDropContext.getTargetColumn().getId());
-        assertTrue(row.isDropInSameColumnWithComponent(columnDropContext));
+        // when drop is in the same column
+        when(columnDrop.getOldColumn()).thenReturn(firstColumn);
+        when(columnDrop.getEndId()).thenReturn(firstColumn.getId());
+        assertTrue(row.isDropInSameColumnWithComponent(columnDrop));
     }
 
     @Test
@@ -306,7 +309,7 @@ public class RowTest extends AbstractLayoutEditorTest {
         dnDManager.dragComponent(column.getLayoutComponent(),
                                  columnWithComponents.getRow().getId(),
                                  column);
-        row.removeColumn(new DropContext(column));
+        row.removeColumn(column);
         rowColumn = row.getColumns().get(0);
         assertThat(rowColumn).isNotNull().isInstanceOf(ColumnWithComponents.class);
 
@@ -342,7 +345,7 @@ public class RowTest extends AbstractLayoutEditorTest {
         dnDManager.dragComponent(column.getLayoutComponent(),
                                  row.getId(),
                                  column);
-        row.removeColumn(new DropContext(column));
+        row.removeColumn(column);
 
         assertThat(row.getColumns()).hasSize(3);
 

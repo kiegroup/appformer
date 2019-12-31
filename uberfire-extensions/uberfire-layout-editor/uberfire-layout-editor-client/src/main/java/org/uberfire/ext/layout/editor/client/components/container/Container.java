@@ -40,6 +40,7 @@ import org.uberfire.ext.layout.editor.client.api.ComponentDropEvent;
 import org.uberfire.ext.layout.editor.client.api.ComponentDropType;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditorElement;
 import org.uberfire.ext.layout.editor.client.api.LayoutEditorElementType;
+import org.uberfire.ext.layout.editor.client.components.columns.Column;
 import org.uberfire.ext.layout.editor.client.components.rows.EmptyDropRow;
 import org.uberfire.ext.layout.editor.client.components.rows.Row;
 import org.uberfire.ext.layout.editor.client.components.rows.RowDnDEvent;
@@ -318,7 +319,7 @@ public class Container implements LayoutEditorElement {
     }
 
     private ParameterizedCommand<ColumnDrop> createRemoveComponentCommand() {
-        return drop -> removeOldComponent(new DropContext<>(drop.getOldColumn(), drop));
+        return drop -> removeOldComponent(drop.getOldColumn());
     }
 
     private boolean layoutIsEmpty() {
@@ -361,7 +362,7 @@ public class Container implements LayoutEditorElement {
     private void handleMoveComponent(RowDrop dropRow,
                                      List<Row> updatedRows,
                                      Row row) {
-        removeOldComponent(new DropContext<>(dropRow.getOldColumn(), dropRow));
+        removeOldComponent(dropRow.getOldColumn());
         addNewRow(row,
                   dropRow,
                   updatedRows);
@@ -369,16 +370,16 @@ public class Container implements LayoutEditorElement {
         dndManager.endComponentMove();
     }
 
-    private void removeOldComponent(DropContext dropContext) {
+    private void removeOldComponent(Column column) {
 
         // Search the row that contains the column
         Optional<Row> rowOptional = rows.stream()
-                .filter(row -> row.cointainsColumn(dropContext.getTargetColumn()))
+                .filter(row -> row.cointainsColumn(column))
                 .findAny();
 
         // If the row is present remove it!
         if (rowOptional.isPresent()) {
-            rowOptional.get().removeChildColumn(dropContext);
+            rowOptional.get().removeChildColumn(column);
         }
     }
 
