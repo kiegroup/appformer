@@ -46,6 +46,7 @@ import org.guvnor.structure.repositories.changerequest.ChangeRequestService;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestAlreadyOpenException;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCommit;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCountSummary;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
@@ -464,9 +465,9 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
     }
 
     @Override
-    public Boolean acceptChangeRequest(final String spaceName,
-                                       final String repositoryAlias,
-                                       final Long changeRequestId) {
+    public Boolean mergeChangeRequest(final String spaceName,
+                                      final String repositoryAlias,
+                                      final Long changeRequestId) {
         checkNotEmpty(SPACE_NAME_PARAM, spaceName);
         checkNotEmpty(REPOSITORY_ALIAS_PARAM, repositoryAlias);
         checkNotNull(CHANGE_REQUEST_ID_PARAM, changeRequestId);
@@ -1357,5 +1358,62 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
                                    host,
                                    objectId,
                                    isRealPath);
+    }
+
+    @Override
+    public List<ChangeRequestCommit> getCommits(final String spaceName,
+                                                final String repositoryAlias,
+                                                final Long changeRequestId) {
+
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
+
+        final ChangeRequest changeRequest = getChangeRequestById(spaceName,
+                                                                 repositoryAlias,
+                                                                 false,
+                                                                 changeRequestId);
+
+        final Git git = getGitFromBranch(repository,
+                                         changeRequest.getSourceBranch());
+
+        final String endCommitId = git.getLastCommit(changeRequest.getSourceBranch())
+                                      .getName();
+
+        final String startCommitId = changeRequest.getStartCommitId();
+
+        return git.listCommits(startCommitId,
+                               endCommitId)
+                  .stream()
+                  .map(c -> new ChangeRequestCommit(c.getName(),
+                                                    c.getFullMessage()))
+                  .collect(Collectors.toList());
+    }
+
+    @Override
+    public Boolean squashChangeRequest(final String spaceName,
+                                    final String repositoryAlias,
+                                    final Long changeRequestId,
+                                    final String commitMessage) {
+
+        final Repository repository = resolveRepository(spaceName,
+                                                        repositoryAlias);
+
+        final ChangeRequest changeRequest = getChangeRequestById(spaceName,
+                                                                 repositoryAlias,
+                                                                 false,
+                                                                 changeRequestId);
+
+        final Git git = getGitFromBranch(repository,
+                                         changeRequest.getSourceBranch());
+
+        final String startCommit = changeRequest.getStartCommitId();
+
+        git.squash(changeRequest.getSourceBranch(),
+                   startCommit,
+                   commitMessage);
+
+        return mergeChangeRequest(spaceName,
+                                  repositoryAlias,
+                                  changeRequestId);
     }
 }
