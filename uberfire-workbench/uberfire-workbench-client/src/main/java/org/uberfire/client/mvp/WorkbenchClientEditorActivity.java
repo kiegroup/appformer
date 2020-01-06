@@ -30,9 +30,9 @@ public interface WorkbenchClientEditorActivity extends WorkbenchActivity {
      *  Set the editor content
      *  
      * @param path
-     * Content Path 
+     *  Content Relative Path
      * @param value
-     * The editor content
+     *  The editor content
      */
     void setContent(String path, String value);
 
