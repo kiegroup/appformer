@@ -28,6 +28,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 import com.google.gwt.user.client.DOM;
+import org.uberfire.ext.widgets.common.client.resources.CommonCss;
+import org.uberfire.ext.widgets.common.client.resources.CommonResources;
 
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOUT;
 import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
@@ -36,6 +38,8 @@ import static com.google.gwt.dom.client.BrowserEvents.MOUSEOVER;
  * An extension to the normal TextCell that renders a Bootstrap Popover when text overflows.
  */
 public class PopoverTextCell extends AbstractSafeHtmlCell<String> {
+
+    protected static final CommonCss CSS = CommonResources.INSTANCE.CSS();
 
     private Placement placement;
 
@@ -66,14 +70,14 @@ public class PopoverTextCell extends AbstractSafeHtmlCell<String> {
         div.getStyle().setOverflow(Style.Overflow.HIDDEN);
         div.getStyle().setTextOverflow(Style.TextOverflow.ELLIPSIS);
         div.getStyle().setWhiteSpace(Style.WhiteSpace.NOWRAP);
+
         final String html = div.getString();
         sb.appendHtmlConstant(html);
 
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             @Override
             public void execute() {
-                initPopover(div.getId(),
-                            placement.name().toLowerCase());
+                initPopover(div.getId(), placement.name().toLowerCase(), CSS.popoverTextBreakWord());
             }
         });
     }
@@ -120,18 +124,18 @@ public class PopoverTextCell extends AbstractSafeHtmlCell<String> {
         $wnd.jQuery('#' + id).popover('show');
     }-*/;
 
-    private native void initPopover(String id,
-                                    String placement) /*-{
+    private native void initPopover(String id, String placement, String css) /*-{
         var jQueryId = '#' + id;
         var div = $wnd.jQuery(jQueryId);
-
         div.popover({
             trigger: 'manual',
             placement: placement,
+            html: true,
             content: function () {
                 var offsetWidth = $wnd.document.getElementById(id).offsetWidth;
                 var scrollWidth = $wnd.document.getElementById(id).scrollWidth;
-                return offsetWidth < scrollWidth ? div.html() : "";
+
+                return offsetWidth < scrollWidth ? "<span class='" + css + "'>" + div.html() + "</span>" : "";
             },
             container: 'body'
         });
