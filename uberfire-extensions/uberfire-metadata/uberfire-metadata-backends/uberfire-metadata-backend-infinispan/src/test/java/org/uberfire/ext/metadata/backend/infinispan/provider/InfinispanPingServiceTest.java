@@ -59,7 +59,6 @@ public class InfinispanPingServiceTest {
 
     @Test
     public void testPingFailure() {
-        when(remoteCache.ping().isSuccess()).thenThrow(new RuntimeException("error"));
         InfinispanPingService service = spy(new InfinispanPingService(remoteCache));
         assertFalse(service.ping());
         service.stop();
