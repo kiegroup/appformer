@@ -39,6 +39,7 @@ import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestAlreadyOpenException;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
+import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCommit;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCountSummary;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
@@ -1138,6 +1139,19 @@ public class ChangeRequestServiceTest {
                                    "myRepository",
                                    1L,
                                    "myComment");
+    }
+
+    @Test
+    public void getCommitsTest() {
+        List<ChangeRequest> crList = Collections.nCopies(3, createCommonChangeRequestWithStatus(ChangeRequestStatus.OPEN));
+        doReturn(crList).when(spaceConfigStorage).loadChangeRequests("myRepository");
+
+        service.getCommits("mySpace",
+                           "myRepository",
+                           1L);
+
+        verify(git).listCommits("commonCommitId",
+                                lastCommit.getName());
     }
 
     private ChangeRequest createCommonChangeRequestWithFields(final Long id,
