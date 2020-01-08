@@ -1,6 +1,7 @@
 package org.guvnor.structure.repositories.changerequest.portable;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.common.client.api.annotations.MapsTo;
 
 @Portable
 public class ChangeRequestCommit {
@@ -8,11 +9,8 @@ public class ChangeRequestCommit {
     private String id;
     private String message;
 
-    public ChangeRequestCommit() {
-    }
-
-    public ChangeRequestCommit(final String id,
-                               final String message) {
+    public ChangeRequestCommit(@MapsTo("id") final String id,
+                               @MapsTo("message") final String message) {
         this.id = id;
         this.message = message;
     }
