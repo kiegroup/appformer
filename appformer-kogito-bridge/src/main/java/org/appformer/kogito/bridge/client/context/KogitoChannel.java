@@ -16,19 +16,29 @@
 
 package org.appformer.kogito.bridge.client.context;
 
-/**
- * 
- * Provide access to EditorContext properties
- *
- */
-public interface EditorContextProvider {
+import java.util.stream.Stream;
 
-    /**
-     * Access the channel where the editor is running (e.g. ONLINE, GITHUB or VSCODE).
-     * 
-     * @return
-     * The channel where the editor is running or an empty optional if no channel is available.
-     */
-    KogitoChannel getChannel();
+public enum KogitoChannel {
+
+    DEFAULT("DEFAULT"),
+    ONLINE("ONLINE"),
+    VSCODE("VSCODE"),
+    GITHUB("GITHUB");
+
+    private final String name;
+
+    KogitoChannel(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static KogitoChannel withName(String name) {
+        return Stream.of(KogitoChannel.values())
+                     .filter(channel -> channel.getName().equalsIgnoreCase(name))
+                     .findFirst().orElseThrow(() -> new IllegalArgumentException("Name not recognized: " + name));
+    }
 
 }

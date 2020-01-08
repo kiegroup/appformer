@@ -20,7 +20,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
 import elemental2.dom.DomGlobal;
-import org.appformer.kogito.bridge.client.interop.Envelope;
+import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.resource.ResourceContentService;
 import org.appformer.kogito.bridge.client.resource.impl.EnvelopeResourceContentService;
 import org.appformer.kogito.bridge.client.resource.impl.NoOpResourceContentService;
@@ -34,7 +34,7 @@ public class ResourceContentServiceProducer {
     @Produces
     @ApplicationScoped
     public ResourceContentService produce() {
-        if (Envelope.isAvailable()) {
+        if (WindowRef.isEnvelopeAvailable()) {
             return new EnvelopeResourceContentService();
         }
         DomGlobal.console.info("[ResourceContentServiceProducer] Envelope API is not available. Producing NoOpResourceContentService");

@@ -22,14 +22,14 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, name = "window", namespace = JsPackage.GLOBAL)
-public class Envelope {
+public class WindowRef {
 
     @JsProperty(name = "envelope")
-    private static native Envelope get();
+    private static native WindowRef getEnvelope();
 
     @JsOverlay
-    public static boolean isAvailable() {
-        return get() != null;
+    public static boolean isEnvelopeAvailable() {
+        return getEnvelope() != null;
     }
 
 }
