@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public interface EditorContextProvider {
      * Access the channel where the editor is running (e.g. ONLINE, GITHUB or VSCODE).
      * 
      * @return
-     * The channel where the editor is running or an empty optional if no channel is available.
+     * The channel where the editor is running or DEFAULT if no channel is available.
      */
     KogitoChannel getChannel();
 
