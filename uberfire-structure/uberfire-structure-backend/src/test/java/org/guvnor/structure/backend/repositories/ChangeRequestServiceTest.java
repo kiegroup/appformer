@@ -1085,7 +1085,7 @@ public class ChangeRequestServiceTest {
                                                      1L,
                                                      "myComment");
 
-        verify(git).squash(sourceBranch.getName(),
+        verify(git).squash(targetBranch.getName(),
                            "commonCommitId",
                            "myComment");
 

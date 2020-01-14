@@ -1408,12 +1408,14 @@ public class ChangeRequestServiceImpl implements ChangeRequestService {
 
         final String startCommit = changeRequest.getStartCommitId();
 
-        git.squash(changeRequest.getSourceBranch(),
+        final boolean result = mergeChangeRequest(spaceName,
+                                                  repositoryAlias,
+                                                  changeRequestId);
+
+        git.squash(changeRequest.getTargetBranch(),
                    startCommit,
                    commitMessage);
 
-        return mergeChangeRequest(spaceName,
-                                  repositoryAlias,
-                                  changeRequestId);
+        return result;
     }
 }
