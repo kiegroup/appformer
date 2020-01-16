@@ -102,7 +102,7 @@ public class POMServiceImpl
         org.uberfire.java.nio.file.Path pathToPOMXML = null;
         try {
             pomModel.addRepository(getRepository());
-            pathToPOMXML = Paths.convert(projectRoot).resolve("pom.xml");
+            pathToPOMXML = Paths.convert(projectRoot).resolve(POM_XML);
 
             if (ioService.exists(pathToPOMXML)) {
                 throw new FileAlreadyExistsException(pathToPOMXML.toString());
@@ -270,7 +270,7 @@ public class POMServiceImpl
         private void saveGAVChange(final GAV gav,
                                    final String childModuleName) throws IOException, XmlPullParserException {
 
-            final org.uberfire.java.nio.file.Path childPOMPath = Paths.convert(pomPath).getParent().resolve(childModuleName).resolve("pom.xml");
+            final org.uberfire.java.nio.file.Path childPOMPath = Paths.convert(pomPath).getParent().resolve(childModuleName).resolve(POM_XML);
 
             if (ioService.exists(childPOMPath)) {
                 final POM childContent = load(Paths.convert(childPOMPath));
