@@ -104,7 +104,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
         return renderingInformation != null;
     }
 
-    private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget, boolean isHeaderCellSelected) {
+    private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget, final boolean isHeaderCellSelected) {
         final GridData gridModel = gridWidget.getModel();
         final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
         final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
@@ -152,9 +152,13 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
 
         double dy = 0;
         final Bounds bounds = gridLayer.getVisibleBounds();
-        final double rowHeight = gridModel.getRow(uiRowIndex).getHeight();
-        final double headerHeight = gridWidget.getRenderer().getHeaderHeight();
-        final double gridCellY = gridWidget.getY() + headerHeight + gridWidget.getRendererHelper().getRowOffset(uiRowIndex);
+        final double rowHeight = isHeaderCellSelected ? gridWidget.getRenderer().getHeaderRowHeight() :
+                                                        gridModel.getRow(uiRowIndex).getHeight();
+        final double headerHeight = isHeaderCellSelected ? 0 :
+                                                           gridWidget.getRenderer().getHeaderHeight();
+        final double rowOffset = isHeaderCellSelected ? rowHeight * uiRowIndex:
+                                                        gridWidget.getRendererHelper().getRowOffset(uiRowIndex);
+        final double gridCellY = gridWidget.getY() + headerHeight + rowOffset;
 
         if (gridCellY + rowHeight >= bounds.getY() + bounds.getHeight()) {
             dy = bounds.getY() + bounds.getHeight() - gridCellY - rowHeight;
@@ -172,7 +176,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
      * @param isHeaderCellSelected
      * @return
      */
-    private GridData.SelectedCell getSelectedCellOrigin(GridData gridModel, boolean isHeaderCellSelected) {
+    private GridData.SelectedCell getSelectedCellOrigin(GridData gridModel, final boolean isHeaderCellSelected) {
         if (isHeaderCellSelected) {
             List<GridData.SelectedCell> selectedHeaderCells = gridModel.getSelectedHeaderCells();
             if (KEY_RIGHT == getKeyCode()) {
