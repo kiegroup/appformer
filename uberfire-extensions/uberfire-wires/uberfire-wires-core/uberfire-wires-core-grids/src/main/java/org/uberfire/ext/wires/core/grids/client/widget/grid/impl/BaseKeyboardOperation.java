@@ -152,18 +152,17 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
 
         double dy = 0;
         final Bounds bounds = gridLayer.getVisibleBounds();
-        final double rowHeight = isHeaderCellSelected ? gridWidget.getRenderer().getHeaderRowHeight() :
-                                                        gridModel.getRow(uiRowIndex).getHeight();
-        final double headerHeight = isHeaderCellSelected ? 0 :
-                                                           gridWidget.getRenderer().getHeaderHeight();
-        final double rowOffset = isHeaderCellSelected ? rowHeight * uiRowIndex:
-                                                        gridWidget.getRendererHelper().getRowOffset(uiRowIndex);
-        final double gridCellY = gridWidget.getY() + headerHeight + rowOffset;
+        final int headerRowCount = gridModel.getHeaderRowCount();
+        final double headerHeight = gridWidget.getRenderer().getHeaderHeight();
+        final double rowHeight = isHeaderCellSelected ? gridWidget.getRenderer().getHeaderRowHeight() : gridModel.getRow(uiRowIndex).getHeight();
+        final double headerYOffset = isHeaderCellSelected ? headerHeight - headerRowCount * rowHeight : headerHeight;
+        final double rowOffset = isHeaderCellSelected ? rowHeight * uiRowIndex : gridWidget.getRendererHelper().getRowOffset(uiRowIndex);
+        final double gridCellY = gridWidget.getY() + headerYOffset + rowOffset;
 
         if (gridCellY + rowHeight >= bounds.getY() + bounds.getHeight()) {
             dy = bounds.getY() + bounds.getHeight() - gridCellY - rowHeight;
-        } else if (gridCellY <= bounds.getY() + headerHeight) {
-            dy = bounds.getY() + headerHeight - gridCellY;
+        } else if (gridCellY <= bounds.getY() + headerYOffset) {
+            dy = bounds.getY() + headerYOffset - gridCellY;
         }
 
         return dy;
