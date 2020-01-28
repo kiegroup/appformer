@@ -137,7 +137,7 @@ public class MultiPageEditorViewImpl extends ResizeTabPanel implements MultiPage
         for (int tabIndex = 0; tabIndex < tabsCount; tabIndex++) {
             if (getTabBar().getWidget(tabIndex) instanceof TabListItem) {
                 final TabListItem tab = (TabListItem) getTabBar().getWidget(tabIndex);
-                if (Objects.equals(tab.getTitle(), title)) {
+                if (Objects.equals(tab.getText(), title)) {
                     return tabIndex;
                 }
             }

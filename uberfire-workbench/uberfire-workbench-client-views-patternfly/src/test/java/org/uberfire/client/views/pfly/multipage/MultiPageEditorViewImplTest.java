@@ -219,9 +219,9 @@ public class MultiPageEditorViewImplTest {
         doReturn(pageTwo).when(navTabs).getWidget(1);
         doReturn(pageThree).when(navTabs).getWidget(2);
 
-        doReturn("page 1").when(pageOne).getTitle();
-        doReturn("page 2").when(pageTwo).getTitle();
-        doReturn("page 3").when(pageThree).getTitle();
+        doReturn("page 1").when(pageOne).getText();
+        doReturn("page 2").when(pageTwo).getText();
+        doReturn("page 3").when(pageThree).getText();
 
         Assertions.assertThat(view.getPageIndex("page 3")).isEqualTo(2);
         Assertions.assertThat(view.getPageIndex("page 2")).isEqualTo(1);
