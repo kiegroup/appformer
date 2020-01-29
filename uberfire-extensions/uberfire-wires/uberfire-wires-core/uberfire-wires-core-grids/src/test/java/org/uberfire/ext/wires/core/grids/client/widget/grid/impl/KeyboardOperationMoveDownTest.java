@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,37 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.grid.impl;
 
-import com.google.gwt.event.dom.client.KeyCodes;
+import com.ait.lienzo.test.LienzoMockitoTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.selections.SelectionExtension;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLienzoPanel;
 
-public class KeyboardOperationMoveUp extends KeyboardOperationMove {
+import static org.junit.Assert.assertEquals;
 
-    public KeyboardOperationMoveUp(final GridLayer gridLayer) {
-        this(gridLayer, null);
+@RunWith(LienzoMockitoTestRunner.class)
+public class KeyboardOperationMoveDownTest {
+
+    @Mock
+    private GridLayer gridLayer;
+
+    @Mock
+    private GridLienzoPanel panel;
+
+    private KeyboardOperationMoveDown keyboardOperation;
+
+    @Before
+    public void setup() {
+        keyboardOperation = new KeyboardOperationMoveDown(gridLayer, panel);
     }
 
-    public KeyboardOperationMoveUp(final GridLayer gridLayer,
-                                   final GridLienzoPanel panel) {
-        super(gridLayer, panel);
-    }
+    @Test
+    public void testGetSelectionExtension() {
 
-    @Override
-    SelectionExtension getSelectionExtension() {
-        return SelectionExtension.UP;
-    }
-
-    @Override
-    public int getKeyCode() {
-        return KeyCodes.KEY_UP;
+        final SelectionExtension actual = keyboardOperation.getSelectionExtension();
+        assertEquals(SelectionExtension.DOWN, actual);
     }
 }
