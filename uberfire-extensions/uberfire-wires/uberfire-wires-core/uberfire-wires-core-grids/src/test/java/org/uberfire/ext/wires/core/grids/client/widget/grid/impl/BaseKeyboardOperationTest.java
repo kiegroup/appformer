@@ -16,13 +16,12 @@
 
 package org.uberfire.ext.wires.core.grids.client.widget.grid.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
+import com.ait.lienzo.client.core.shape.Viewport;
+import com.ait.lienzo.client.core.types.Transform;
 import com.ait.lienzo.test.LienzoMockitoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,6 +77,9 @@ public class BaseKeyboardOperationTest {
     @Mock
     private GridRenderer gridRenderer;
 
+    @Mock
+    private Viewport viewport;
+
     private BaseKeyboardOperation baseKeyboardOperationSpy;
     private int currentKeyCode = 0;
 
@@ -89,7 +91,9 @@ public class BaseKeyboardOperationTest {
         when(gridData.getColumns()).thenReturn(Collections.singletonList(gridColumn));
         when(gridColumn.getIndex()).thenReturn(0);
         when(gridWidget.getRenderer()).thenReturn(gridRenderer);
+        when(layer.getViewport()).thenReturn(viewport);
         when(layer.getVisibleBounds()).thenReturn(new BaseBounds(0, 0, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        when(viewport.getTransform()).thenReturn(new Transform());
 
         baseKeyboardOperationSpy = spy(new BaseKeyboardOperation(layer) {
             @Override
@@ -121,6 +125,8 @@ public class BaseKeyboardOperationTest {
     public void scrollSelectedCellIntoView_HeaderSelected() {
         when(gridData.getSelectedHeaderCells()).thenReturn(Collections.singletonList(new GridData.SelectedCell(0,0)));
         assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, never()).getViewport();
+        verify(viewport, never()).getTransform();
     }
 
     @Test
@@ -129,6 +135,28 @@ public class BaseKeyboardOperationTest {
         when(gridData.getRow(0)).thenReturn(gridRow);
         when(gridRow.getHeight()).thenReturn(30d);
         assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, never()).getViewport();
+        verify(viewport, never()).getTransform();
+    }
+
+    @Test
+    public void scrollSelectedCellIntoView_HeaderSelected_WithDeltaXScroll() {
+        when(gridData.getSelectedHeaderCells()).thenReturn(Collections.singletonList(new GridData.SelectedCell(0,0)));
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(500, 0, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, times(1)).getViewport();
+        verify(viewport, times(1)).getTransform();
+    }
+
+    @Test
+    public void scrollSelectedCellIntoView_CellSelected_WithDeltaXScroll() {
+        when(gridData.getSelectedCellsOrigin()).thenReturn(new GridData.SelectedCell(0,0));
+        when(gridData.getRow(0)).thenReturn(gridRow);
+        when(gridRow.getHeight()).thenReturn(30d);
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(500, 0, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, times(1)).getViewport();
+        verify(viewport, times(1)).getTransform();
     }
 
     @Test
