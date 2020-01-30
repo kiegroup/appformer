@@ -98,11 +98,6 @@ public class BaseKeyboardOperationTest {
             }
 
             @Override
-            public TriStateBoolean isControlKeyDown() {
-                return super.isControlKeyDown();
-            }
-
-            @Override
             public boolean perform(GridWidget gridWidget, boolean isShiftKeyDown, boolean isControlKeyDown) {
                 return false;
             }
@@ -142,7 +137,6 @@ public class BaseKeyboardOperationTest {
         baseKeyboardOperationSpy.getSelectedCellOrigin(gridData, false);
         verify(gridData, times(1)).getSelectedCellsOrigin();
         verify(gridData, never()).getSelectedHeaderCells();
-
     }
 
     @Test
