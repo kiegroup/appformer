@@ -169,8 +169,10 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
     }
 
     /**
-     * It retrieves the selected cell in <code>GridData</code> model, which could be a <b>header</b> cell or a
-     * simple one.
+     * It retrieves the selected cell in <code>GridData</code> model, which could be an <b>header</b> cell or a
+     * simple one. In case of an <b>header</b> cell, it manages a possible case where a cell is spanned over multiple
+     * columns: when pressing <code>KEY_RIGHT</code>, it selected the last cell of the selected header cells group in
+     * order to show all the spanned cell. The otherwise in all other cases
      * @param gridModel
      * @param isHeaderCellSelected
      * @return
