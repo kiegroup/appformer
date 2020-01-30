@@ -177,7 +177,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
      * @param isHeaderCellSelected
      * @return
      */
-    private GridData.SelectedCell getSelectedCellOrigin(GridData gridModel, final boolean isHeaderCellSelected) {
+    protected GridData.SelectedCell getSelectedCellOrigin(final GridData gridModel, final boolean isHeaderCellSelected) {
         if (isHeaderCellSelected) {
             List<GridData.SelectedCell> selectedHeaderCells = gridModel.getSelectedHeaderCells();
             if (KEY_RIGHT == getKeyCode()) {
