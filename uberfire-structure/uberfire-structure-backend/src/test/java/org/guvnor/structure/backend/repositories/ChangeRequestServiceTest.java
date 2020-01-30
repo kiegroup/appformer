@@ -39,7 +39,6 @@ import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestAlreadyOpenException;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
-import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCommit;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestCountSummary;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestDiff;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestListUpdatedEvent;
@@ -810,7 +809,9 @@ public class ChangeRequestServiceTest {
         List<String> commitList = Stream.of("commit-id").collect(Collectors.toList());
         doReturn(commitList).when(git).merge(anyString(),
                                              anyString(),
-                                             eq(true));
+                                             eq(true),
+                                             eq(false),
+                                             any());
 
         boolean result = service.mergeChangeRequest("mySpace",
                                                     "myRepository",
@@ -818,7 +819,9 @@ public class ChangeRequestServiceTest {
 
         verify(git).merge(anyString(),
                           anyString(),
-                          eq(true));
+                          eq(true),
+                          eq(false),
+                          any());
 
         verify(fs).publishEvents(any(org.uberfire.java.nio.file.Path.class),
                                  anyList());
@@ -849,7 +852,9 @@ public class ChangeRequestServiceTest {
 
         doReturn(Collections.emptyList()).when(git).merge(anyString(),
                                                           anyString(),
-                                                          eq(true));
+                                                          eq(true),
+                                                          eq(false),
+                                                          any());
 
         service.mergeChangeRequest("mySpace",
                                    "myRepository",
@@ -1078,20 +1083,20 @@ public class ChangeRequestServiceTest {
         List<String> commitList = Stream.of("commit-id").collect(Collectors.toList());
         doReturn(commitList).when(git).merge(anyString(),
                                              anyString(),
-                                             eq(true));
+                                             eq(true),
+                                             eq(true),
+                                             any(CommitInfo.class));
 
         boolean result = service.squashChangeRequest("mySpace",
                                                      "myRepository",
                                                      1L,
                                                      "myComment");
 
-        verify(git).squash(targetBranch.getName(),
-                           "commonCommitId",
-                           "myComment");
-
         verify(git).merge(anyString(),
                           anyString(),
-                          eq(true));
+                          eq(true),
+                          eq(true),
+                          any(CommitInfo.class));
 
         verify(fs).publishEvents(any(org.uberfire.java.nio.file.Path.class),
                                  anyList());
@@ -1122,7 +1127,9 @@ public class ChangeRequestServiceTest {
 
         doReturn(Collections.emptyList()).when(git).merge(anyString(),
                                                           anyString(),
-                                                          eq(true));
+                                                          eq(true),
+                                                          eq(true),
+                                                          any(CommitInfo.class));
 
         service.squashChangeRequest("mySpace",
                                    "myRepository",
