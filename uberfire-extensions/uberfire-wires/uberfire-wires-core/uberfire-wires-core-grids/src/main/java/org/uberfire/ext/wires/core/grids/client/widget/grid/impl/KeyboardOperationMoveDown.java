@@ -20,6 +20,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.selections.SelectionExtension;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLienzoPanel;
+import org.uberfire.ext.wires.core.grids.client.widget.scrollbars.GridLienzoScrollable;
 
 public class KeyboardOperationMoveDown extends KeyboardOperationMove {
 
@@ -28,7 +29,7 @@ public class KeyboardOperationMoveDown extends KeyboardOperationMove {
     }
 
     public KeyboardOperationMoveDown(final GridLayer gridLayer,
-                                     final GridLienzoPanel panel) {
+                                     final GridLienzoScrollable panel) {
         super(gridLayer, panel);
     }
 

@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.selections.SelectionExtension;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
-import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLienzoPanel;
+import org.uberfire.ext.wires.core.grids.client.widget.scrollbars.GridLienzoScrollable;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -38,7 +38,7 @@ public class KeyboardOperationMoveTest {
     private GridLayer gridLayer;
 
     @Mock
-    private GridLienzoPanel gridLienzoPanel;
+    private GridLienzoScrollable gridLienzoPanel;
 
     @Mock
     private SelectionExtension extension;

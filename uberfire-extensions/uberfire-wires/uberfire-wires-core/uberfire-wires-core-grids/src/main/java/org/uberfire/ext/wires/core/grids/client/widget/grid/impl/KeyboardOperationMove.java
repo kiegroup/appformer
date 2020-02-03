@@ -21,14 +21,14 @@ import java.util.Optional;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.selections.SelectionExtension;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
-import org.uberfire.ext.wires.core.grids.client.widget.layer.impl.GridLienzoPanel;
+import org.uberfire.ext.wires.core.grids.client.widget.scrollbars.GridLienzoScrollable;
 
 public abstract class KeyboardOperationMove extends BaseKeyboardOperation {
 
-    private final Optional<GridLienzoPanel> panel;
+    private final Optional<GridLienzoScrollable> panel;
 
     KeyboardOperationMove(final GridLayer gridLayer,
-                          final GridLienzoPanel panel) {
+                          final GridLienzoScrollable panel) {
         super(gridLayer);
         this.panel = Optional.of(panel);
     }
