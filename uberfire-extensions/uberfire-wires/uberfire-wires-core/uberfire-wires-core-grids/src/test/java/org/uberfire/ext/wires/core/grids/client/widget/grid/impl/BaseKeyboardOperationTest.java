@@ -80,6 +80,8 @@ public class BaseKeyboardOperationTest {
     @Mock
     private Viewport viewport;
 
+    private Transform transform;
+
     private BaseKeyboardOperation baseKeyboardOperationSpy;
     private int currentKeyCode = 0;
 
@@ -93,7 +95,8 @@ public class BaseKeyboardOperationTest {
         when(gridWidget.getRenderer()).thenReturn(gridRenderer);
         when(layer.getViewport()).thenReturn(viewport);
         when(layer.getVisibleBounds()).thenReturn(new BaseBounds(0, 0, BOUNDS_WIDTH, BOUNDS_HEIGHT));
-        when(viewport.getTransform()).thenReturn(new Transform());
+        transform = spy(new Transform());
+        when(viewport.getTransform()).thenReturn(transform);
 
         baseKeyboardOperationSpy = spy(new BaseKeyboardOperation(layer) {
             @Override
@@ -142,10 +145,12 @@ public class BaseKeyboardOperationTest {
     @Test
     public void scrollSelectedCellIntoView_HeaderSelected_WithDeltaXScroll() {
         when(gridData.getSelectedHeaderCells()).thenReturn(Collections.singletonList(new GridData.SelectedCell(0,0)));
-        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(500, 0, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(600, 0, BOUNDS_WIDTH, BOUNDS_HEIGHT));
         assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
         verify(layer, times(1)).getViewport();
         verify(viewport, times(1)).getTransform();
+        verify(transform, times(1)).scale(1, 1);
+        verify(transform, times(1)).translate(600, 0);
     }
 
     @Test
@@ -157,6 +162,56 @@ public class BaseKeyboardOperationTest {
         assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
         verify(layer, times(1)).getViewport();
         verify(viewport, times(1)).getTransform();
+        verify(transform, times(1)).scale(1, 1);
+        verify(transform, times(1)).translate(500d, 0);
+    }
+
+    @Test
+    public void scrollSelectedCellIntoView_HeaderSelected_WithDeltaYScroll() {
+        when(gridData.getSelectedHeaderCells()).thenReturn(Collections.singletonList(new GridData.SelectedCell(0,0)));
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(0, 250, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, times(1)).getViewport();
+        verify(viewport, times(1)).getTransform();
+        verify(transform, times(1)).scale(1, 1);
+        verify(transform, times(1)).translate(0, 250);
+    }
+
+    @Test
+    public void scrollSelectedCellIntoView_CellSelected_WithDeltaYScroll() {
+        when(gridData.getSelectedCellsOrigin()).thenReturn(new GridData.SelectedCell(0,0));
+        when(gridData.getRow(0)).thenReturn(gridRow);
+        when(gridRow.getHeight()).thenReturn(30d);
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(0, 400, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, times(1)).getViewport();
+        verify(viewport, times(1)).getTransform();
+        verify(transform, times(1)).scale(1, 1);
+        verify(transform, times(1)).translate(0, 400);
+    }
+
+    @Test
+    public void scrollSelectedCellIntoView_HeaderSelected_WithDeltaXYScroll() {
+        when(gridData.getSelectedHeaderCells()).thenReturn(Collections.singletonList(new GridData.SelectedCell(0,0)));
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(50, 75, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, times(1)).getViewport();
+        verify(viewport, times(1)).getTransform();
+        verify(transform, times(1)).scale(1, 1);
+        verify(transform, times(1)).translate(50, 75);
+    }
+
+    @Test
+    public void scrollSelectedCellIntoView_CellSelected_WithDeltaXYScroll() {
+        when(gridData.getSelectedCellsOrigin()).thenReturn(new GridData.SelectedCell(0,0));
+        when(gridData.getRow(0)).thenReturn(gridRow);
+        when(gridRow.getHeight()).thenReturn(30d);
+        when(layer.getVisibleBounds()).thenReturn(new BaseBounds(75, 100, BOUNDS_WIDTH, BOUNDS_HEIGHT));
+        assertTrue(baseKeyboardOperationSpy.scrollSelectedCellIntoView(gridWidget));
+        verify(layer, times(1)).getViewport();
+        verify(viewport, times(1)).getTransform();
+        verify(transform, times(1)).scale(1, 1);
+        verify(transform, times(1)).translate(75, 100);
     }
 
     @Test
