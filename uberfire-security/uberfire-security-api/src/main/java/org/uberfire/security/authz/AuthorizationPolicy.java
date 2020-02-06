@@ -188,4 +188,7 @@ public interface AuthorizationPolicy {
      * @return The permission collection
      */
     PermissionCollection getPermissions();
+
+    void addPermission(Group group,
+                       Permission permission);
 }

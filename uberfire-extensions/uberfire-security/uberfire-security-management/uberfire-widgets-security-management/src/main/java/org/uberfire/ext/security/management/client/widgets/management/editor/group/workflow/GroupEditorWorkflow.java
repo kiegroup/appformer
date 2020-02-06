@@ -29,6 +29,7 @@ import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.security.shared.api.Group;
+import org.jboss.errai.security.shared.api.GroupImpl;
 import org.uberfire.backend.authz.AuthorizationService;
 import org.uberfire.client.authz.PerspectiveAction;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -38,6 +39,7 @@ import org.uberfire.ext.security.management.client.resources.i18n.UsersManagemen
 import org.uberfire.ext.security.management.client.widgets.management.editor.group.GroupEditor;
 import org.uberfire.ext.security.management.client.widgets.management.editor.workflow.EntityWorkflowView;
 import org.uberfire.ext.security.management.client.widgets.management.events.ContextualEvent;
+import org.uberfire.ext.security.management.client.widgets.management.events.CreateGroupEvent;
 import org.uberfire.ext.security.management.client.widgets.management.events.DeleteGroupEvent;
 import org.uberfire.ext.security.management.client.widgets.management.events.HomePerspectiveChangedEvent;
 import org.uberfire.ext.security.management.client.widgets.management.events.OnDeleteEvent;
@@ -56,6 +58,8 @@ import org.uberfire.security.authz.AuthorizationResult;
 import org.uberfire.security.authz.Permission;
 import org.uberfire.security.authz.PermissionCollection;
 import org.uberfire.security.authz.PermissionManager;
+import org.uberfire.security.impl.authz.DefaultAuthorizationEntry;
+import org.uberfire.security.impl.authz.DotNamedPermission;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.INFO;
@@ -260,6 +264,17 @@ public class GroupEditorWorkflow implements IsWidget {
         } else {
             throw new RuntimeException("Group must be valid before updating it.");
         }
+    }
+
+    private void grantHomePageAccess(@Observes CreateGroupEvent createGroupEvent) {
+        final String PERSPECTIVE = "perspective";
+        final String ACCESS = "read";
+        Group group = new GroupImpl(createGroupEvent.getName());
+        String permissionName = PERSPECTIVE + "." + ACCESS + "." + new DefaultAuthorizationEntry().getHomePerspective();
+        DotNamedPermission dotNamedPermission = new DotNamedPermission(permissionName, true);
+        AuthorizationPolicy authzPolicy = permissionManager.getAuthorizationPolicy();
+        authzPolicy.addPermission(group, dotNamedPermission);
+        authorizationService.call().savePolicy(authzPolicy);
     }
 
     protected void showNotification(String message) {
