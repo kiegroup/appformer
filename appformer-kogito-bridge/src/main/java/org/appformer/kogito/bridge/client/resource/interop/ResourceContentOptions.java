@@ -22,7 +22,7 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
-public class Options {
+public class ResourceContentOptions {
 
     /**
      * The a content type. When "text" the resource content is returned in text format. </br>
@@ -40,8 +40,8 @@ public class Options {
      * Options with binary type (base64 encoded binary content)
      */
     @JsOverlay
-    public static Options binary() {
-        Options options = new Options();
+    public static ResourceContentOptions binary() {
+        ResourceContentOptions options = new ResourceContentOptions();
         options.setType("binary");
         return options;
     }
@@ -54,8 +54,8 @@ public class Options {
      * Options with text type
      */
     @JsOverlay
-    public static Options text() {
-        Options options = new Options();
+    public static ResourceContentOptions text() {
+        ResourceContentOptions options = new ResourceContentOptions();
         options.setType("text");
         return options;
     }

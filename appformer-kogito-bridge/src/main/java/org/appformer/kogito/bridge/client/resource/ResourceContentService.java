@@ -17,7 +17,7 @@
 package org.appformer.kogito.bridge.client.resource;
 
 import elemental2.promise.Promise;
-import org.appformer.kogito.bridge.client.resource.interop.Options;
+import org.appformer.kogito.bridge.client.resource.interop.ResourceContentOptions;
 
 /**
  * Service to access resources in the project or workspace where the editor is open
@@ -45,7 +45,7 @@ public interface ResourceContentService {
      * @return
      * The resource content or null if the resource is not available
      */
-    public Promise<String> get(String uri, Options options);
+    public Promise<String> get(String uri, ResourceContentOptions options);
 
     /**
      * List files from the project/workspace where the editor is running
