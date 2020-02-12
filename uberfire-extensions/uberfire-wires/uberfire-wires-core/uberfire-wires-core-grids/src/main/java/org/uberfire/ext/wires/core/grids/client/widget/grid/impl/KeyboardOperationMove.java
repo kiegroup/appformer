@@ -30,7 +30,7 @@ public abstract class KeyboardOperationMove extends BaseKeyboardOperation {
     KeyboardOperationMove(final GridLayer gridLayer,
                           final GridLienzoScrollable panel) {
         super(gridLayer);
-        this.panel = Optional.of(panel);
+        this.panel = Optional.ofNullable(panel);
     }
 
     @Override
