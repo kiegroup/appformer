@@ -16,7 +16,7 @@
 
 package org.appformer.kogito.bridge.client.stateControl.interop;
 
-import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsType;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 
@@ -38,7 +38,7 @@ public class StateControl {
      * command on the {@link KogitoJSCommandRegistry}
      * @param command The command to execute on undo
      */
-    @JsProperty(name = "undoCommand")
+    @JsMethod
     public native void setUndoCommand(StateControlCommand command);
 
     /**
@@ -46,6 +46,6 @@ public class StateControl {
      * undone command on the {@link KogitoJSCommandRegistry}
      * @param command The command to execute on redo
      */
-    @JsProperty(name = "redoCommand")
+    @JsMethod
     public native void setRedoCommand(StateControlCommand command);
 }
