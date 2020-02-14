@@ -76,11 +76,9 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
 
         final RenderingInformation renderingInformation = computeRenderingInformation(gridWidget);
 
-        if (Objects.isNull(renderingInformation)) {
-            return false;
-        }
-
-        if (!isGridColumnCandidateForScroll(gridWidget, renderingInformation, isHeaderCellSelected)) {
+        if (!isGridColumnCandidateForScroll(gridWidget,
+                                            renderingInformation,
+                                            isHeaderCellSelected)) {
             return false;
         }
 
