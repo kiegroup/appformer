@@ -28,6 +28,8 @@ import org.uberfire.ext.wires.core.grids.client.model.GridData;
 import org.uberfire.ext.wires.core.grids.client.util.ColumnIndexUtilities;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.GridWidget;
 import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl.BaseGridRendererHelper;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl.BaseGridRendererHelper.RenderingBlockInformation;
+import org.uberfire.ext.wires.core.grids.client.widget.grid.renderers.grids.impl.BaseGridRendererHelper.RenderingInformation;
 import org.uberfire.ext.wires.core.grids.client.widget.layer.GridLayer;
 
 import static com.google.gwt.event.dom.client.KeyCodes.KEY_RIGHT;
@@ -72,7 +74,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
             isHeaderCellSelected = true;
         }
 
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = computeRenderingInformation(gridWidget);
+        final RenderingInformation renderingInformation = computeRenderingInformation(gridWidget);
 
         if (Objects.isNull(renderingInformation)) {
             return false;
@@ -105,7 +107,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
     }
 
     private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget,
-                                                   final BaseGridRendererHelper.RenderingInformation renderingInformation,
+                                                   final RenderingInformation renderingInformation,
                                                    final boolean isHeaderCellSelected) {
         if (Objects.isNull(renderingInformation)) {
             return false;
@@ -118,7 +120,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
         final int uiColumnIndex = ColumnIndexUtilities.findUiColumnIndex(columns,
                                                                          origin.getColumnIndex());
 
-        final BaseGridRendererHelper.RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
+        final RenderingBlockInformation floatingBlockInformation = renderingInformation.getFloatingBlockInformation();
         final List<GridColumn<?>> floatingColumns = floatingBlockInformation.getColumns();
         final GridColumn<?> column = columns.get(uiColumnIndex);
 
@@ -213,7 +215,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
      * It is preferable to compute it just once and reuse
      * See https://issues.redhat.com/browse/DROOLS-4792
      */
-    private BaseGridRendererHelper.RenderingInformation computeRenderingInformation(final GridWidget gridWidget) {
+    private RenderingInformation computeRenderingInformation(final GridWidget gridWidget) {
         final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
         return rendererHelper.getRenderingInformation();
     }
