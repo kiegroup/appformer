@@ -72,7 +72,11 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
             isHeaderCellSelected = true;
         }
 
-        if (!(isGridWidgetRendered(gridWidget) || isGridColumnCandidateForScroll(gridWidget, isHeaderCellSelected))) {
+        final BaseGridRendererHelper.RenderingInformation renderingInformation = computeRenderingInformation(gridWidget);
+
+        if (!(isGridWidgetRendered(renderingInformation) || isGridColumnCandidateForScroll(gridWidget,
+                                                                                           renderingInformation,
+                                                                                           isHeaderCellSelected))) {
             return false;
         }
 
@@ -98,16 +102,14 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
         return !gridModel.getSelectedHeaderCells().isEmpty();
     }
 
-    private boolean isGridWidgetRendered(final GridWidget gridWidget) {
-        final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
+    private boolean isGridWidgetRendered(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
         return renderingInformation != null;
     }
 
-    private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget, final boolean isHeaderCellSelected) {
+    private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget,
+                                                   final BaseGridRendererHelper.RenderingInformation renderingInformation,
+                                                   final boolean isHeaderCellSelected) {
         final GridData gridModel = gridWidget.getModel();
-        final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
-        final BaseGridRendererHelper.RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
         if (renderingInformation == null) {
             return false;
         }
@@ -205,5 +207,15 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
         transform.scale(scaleX,
                         scaleY).translate(frameLocation.getX(),
                                           frameLocation.getY());
+    }
+
+    /**
+     * Computing of RenderingInformation is quite complex operation
+     * It is preferable to compute it just once and reuse
+     * See https://issues.redhat.com/browse/DROOLS-4792
+     */
+    private BaseGridRendererHelper.RenderingInformation computeRenderingInformation(final GridWidget gridWidget) {
+        final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
+        return rendererHelper.getRenderingInformation();
     }
 }
