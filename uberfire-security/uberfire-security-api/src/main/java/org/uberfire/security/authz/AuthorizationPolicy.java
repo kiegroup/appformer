@@ -189,6 +189,11 @@ public interface AuthorizationPolicy {
      */
     PermissionCollection getPermissions();
 
+    /**
+     * Add a single permission entry for a group.
+     * @param group The group instance
+     * @param permission A permission instance
+     */
     void addPermission(Group group,
                        Permission permission);
 }

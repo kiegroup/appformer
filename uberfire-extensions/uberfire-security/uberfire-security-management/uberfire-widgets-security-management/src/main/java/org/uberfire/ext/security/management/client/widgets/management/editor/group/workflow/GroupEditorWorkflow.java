@@ -1,12 +1,12 @@
 /*
  * Copyright 2016 Red Hat, Inc. and/or its affiliates.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 
 package org.uberfire.ext.security.management.client.widgets.management.editor.group.workflow;
 
-import java.util.Collection;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -58,8 +57,6 @@ import org.uberfire.security.authz.AuthorizationResult;
 import org.uberfire.security.authz.Permission;
 import org.uberfire.security.authz.PermissionCollection;
 import org.uberfire.security.authz.PermissionManager;
-import org.uberfire.security.impl.authz.DefaultAuthorizationEntry;
-import org.uberfire.security.impl.authz.DotNamedPermission;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.uberfire.workbench.events.NotificationEvent.NotificationType.INFO;
@@ -67,6 +64,7 @@ import static org.uberfire.workbench.events.NotificationEvent.NotificationType.S
 
 /**
  * <p>Main entry point for viewing a group instance.</p>
+ *
  * @since 0.8.0
  */
 @Dependent
@@ -174,7 +172,7 @@ public class GroupEditorWorkflow implements IsWidget {
                                  errorCallback).delete(name);
     }
 
-    protected void doDelete(){
+    protected void doDelete() {
         final String name = group.getName();
         AuthorizationPolicy authzPolicy = permissionManager.getAuthorizationPolicy();
         showLoadingBox();
@@ -264,17 +262,6 @@ public class GroupEditorWorkflow implements IsWidget {
         } else {
             throw new RuntimeException("Group must be valid before updating it.");
         }
-    }
-
-    private void grantHomePageAccess(@Observes CreateGroupEvent createGroupEvent) {
-        final String PERSPECTIVE = "perspective";
-        final String ACCESS = "read";
-        Group group = new GroupImpl(createGroupEvent.getName());
-        String permissionName = PERSPECTIVE + "." + ACCESS + "." + new DefaultAuthorizationEntry().getHomePerspective();
-        DotNamedPermission dotNamedPermission = new DotNamedPermission(permissionName, true);
-        AuthorizationPolicy authzPolicy = permissionManager.getAuthorizationPolicy();
-        authzPolicy.addPermission(group, dotNamedPermission);
-        authorizationService.call().savePolicy(authzPolicy);
     }
 
     protected void showNotification(String message) {
