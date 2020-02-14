@@ -74,9 +74,11 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
 
         final BaseGridRendererHelper.RenderingInformation renderingInformation = computeRenderingInformation(gridWidget);
 
-        if (!(isGridWidgetRendered(renderingInformation) || isGridColumnCandidateForScroll(gridWidget,
-                                                                                           renderingInformation,
-                                                                                           isHeaderCellSelected))) {
+        if (Objects.isNull(renderingInformation)) {
+            return false;
+        }
+
+        if (!isGridColumnCandidateForScroll(gridWidget, renderingInformation, isHeaderCellSelected)) {
             return false;
         }
 
@@ -102,17 +104,14 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
         return !gridModel.getSelectedHeaderCells().isEmpty();
     }
 
-    private boolean isGridWidgetRendered(final BaseGridRendererHelper.RenderingInformation renderingInformation) {
-        return renderingInformation != null;
-    }
-
     private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget,
                                                    final BaseGridRendererHelper.RenderingInformation renderingInformation,
                                                    final boolean isHeaderCellSelected) {
-        final GridData gridModel = gridWidget.getModel();
-        if (renderingInformation == null) {
+        if (Objects.isNull(renderingInformation)) {
             return false;
         }
+
+        final GridData gridModel = gridWidget.getModel();
 
         final List<GridColumn<?>> columns = gridModel.getColumns();
         final GridData.SelectedCell origin = getSelectedCellOrigin(gridModel, isHeaderCellSelected);
