@@ -74,10 +74,7 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
             isHeaderCellSelected = true;
         }
 
-        final RenderingInformation renderingInformation = computeRenderingInformation(gridWidget);
-
         if (!isGridColumnCandidateForScroll(gridWidget,
-                                            renderingInformation,
                                             isHeaderCellSelected)) {
             return false;
         }
@@ -105,8 +102,10 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
     }
 
     private boolean isGridColumnCandidateForScroll(final GridWidget gridWidget,
-                                                   final RenderingInformation renderingInformation,
                                                    final boolean isHeaderCellSelected) {
+        final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
+        final RenderingInformation renderingInformation = rendererHelper.getRenderingInformation();
+
         if (Objects.isNull(renderingInformation)) {
             return false;
         }
@@ -206,15 +205,5 @@ public abstract class BaseKeyboardOperation implements KeyboardOperation {
         transform.scale(scaleX,
                         scaleY).translate(frameLocation.getX(),
                                           frameLocation.getY());
-    }
-
-    /**
-     * Computing of RenderingInformation is quite complex operation
-     * It is preferable to compute it just once and reuse
-     * See https://issues.redhat.com/browse/DROOLS-4792
-     */
-    private RenderingInformation computeRenderingInformation(final GridWidget gridWidget) {
-        final BaseGridRendererHelper rendererHelper = gridWidget.getRendererHelper();
-        return rendererHelper.getRenderingInformation();
     }
 }
