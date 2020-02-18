@@ -21,6 +21,7 @@ import org.appformer.kogito.bridge.client.stateControl.interop.StateControlComma
 
 /**
  * JsType that represents the TypeScript CommandRegistry available on the Envelope StateControl engine
+ *
  * @param <C> anything that can be considered a Command
  */
 @JsType(isNative = true)
@@ -28,25 +29,29 @@ public interface KogitoJSCommandRegistry<C> {
 
     /**
      * Registers a command with a give ID into the registry
-     * @param id The command id
+     *
+     * @param id      The command id
      * @param command A command to register
      */
     void register(String id, C command);
 
     /**
      * Peeks the last added command. Doesn't remove it.
+     *
      * @return The last added Command
      */
     C peek();
 
     /**
      * Pops the last added command and removes it.
+     *
      * @return The last added Command
      */
     C pop();
 
     /**
      * Sets the max number of commands that can be stored on the registry.
+     *
      * @param size A positive integer
      */
     void setMaxSize(final int size);
@@ -58,18 +63,21 @@ public interface KogitoJSCommandRegistry<C> {
 
     /**
      * Determines if the registry is empty or not
+     *
      * @return true if empty, false if not.
      */
     boolean isEmpty();
 
     /**
      * Returns an array containing all the commands in the registry
+     *
      * @return A commands array
      */
     C[] getCommands();
 
     /**
      * Sets a {@link StateControlCommand} to be called when the registry changes.
+     *
      * @param changeListener A {@link StateControlCommand}
      */
     void setRegistryChangeListener(StateControlCommand changeListener);

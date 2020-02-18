@@ -16,6 +16,7 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.impl;
 
+import org.appformer.kogito.bridge.client.stateControl.registry.RegistryChangeListener;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -24,13 +25,15 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KogitoCommandRegistryTest {
 
     private boolean envelopeEnabled = true;
+
+    @Mock
+    private RegistryChangeListener registryChangeListener;
 
     @Mock
     private KogitoJSCommandRegistry<Object> kogitoJSCommandRegistry;
@@ -50,22 +53,26 @@ public class KogitoCommandRegistryTest {
     public void testMethods() {
 
         when(kogitoJSCommandRegistry.getCommands()).thenReturn(new Object[]{});
-        commandRegistry = new KogitoCommandRegistry<>(() -> envelopeEnabled, () -> kogitoJSCommandRegistry);
+        when(kogitoJSCommandRegistry.pop()).thenReturn(new Object());
+        when(kogitoJSCommandRegistry.peek()).thenReturn(new Object());
 
-        commandRegistry.setRegistryChangeListener(() -> {});
-        verify(kogitoJSCommandRegistry).setRegistryChangeListener(any());
+        commandRegistry = new KogitoCommandRegistry<>(() -> envelopeEnabled, () -> kogitoJSCommandRegistry);
+        commandRegistry.setRegistryChangeListener(registryChangeListener);
 
         commandRegistry.register(new Object());
         verify(kogitoJSCommandRegistry).register(anyString(), anyObject());
+        verify(registryChangeListener).notifyRegistryChange();
 
         commandRegistry.peek();
         verify(kogitoJSCommandRegistry).peek();
 
         commandRegistry.pop();
         verify(kogitoJSCommandRegistry).pop();
+        verify(registryChangeListener, times(2)).notifyRegistryChange();
 
         commandRegistry.clear();
         verify(kogitoJSCommandRegistry).clear();
+        verify(registryChangeListener, times(3)).notifyRegistryChange();
 
         commandRegistry.isEmpty();
         verify(kogitoJSCommandRegistry).isEmpty();

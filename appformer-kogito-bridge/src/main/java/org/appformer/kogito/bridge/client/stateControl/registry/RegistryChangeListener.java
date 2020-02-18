@@ -17,13 +17,13 @@
 package org.appformer.kogito.bridge.client.stateControl.registry;
 
 /**
- * This functional interface represents the code that will be executed everytime there's a change on a {@link CommandRegistry}
+ * This functional interface represents the code that will be executed every time there's a change on a {@link CommandRegistry}
  */
 @FunctionalInterface
 public interface RegistryChangeListener {
 
     /**
-     * Method that will be executed every time theres a
+     * Method that will be executed when a change on the registry happens
      */
     void notifyRegistryChange();
 }

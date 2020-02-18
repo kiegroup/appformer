@@ -28,9 +28,6 @@ public class WindowRef {
     @JsProperty(name = "envelope")
     public static native WindowRef getEnvelope();
 
-    @JsProperty(name = "stateControl")
-    public native StateControl getStateControl();
-
     @JsOverlay
     public static boolean isEnvelopeAvailable() {
         return getEnvelope() != null;

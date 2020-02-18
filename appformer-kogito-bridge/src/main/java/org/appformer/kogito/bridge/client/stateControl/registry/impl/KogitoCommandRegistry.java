@@ -17,22 +17,24 @@
 package org.appformer.kogito.bridge.client.stateControl.registry.impl;
 
 import org.appformer.kogito.bridge.client.interop.WindowRef;
+import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
 import org.appformer.kogito.bridge.client.stateControl.registry.CommandRegistry;
 import org.appformer.kogito.bridge.client.stateControl.registry.RegistryChangeListener;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
 
-
     private KogitoJSCommandRegistry<C> wrapped;
+    private RegistryChangeListener registryChangeListener;
 
     public KogitoCommandRegistry() {
-        this(WindowRef::isEnvelopeAvailable, () -> WindowRef.getEnvelope().getStateControl().getCommandRegistry());
+        this(WindowRef::isEnvelopeAvailable, () -> StateControl.get().getCommandRegistry());
     }
 
     KogitoCommandRegistry(Supplier<Boolean> envelopeEnabledSupplier, Supplier<KogitoJSCommandRegistry<C>> kogitoJSCommandRegistrySupplier) {
@@ -45,6 +47,7 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
     @Override
     public void register(C command) {
         wrapped.register(String.valueOf(command.hashCode()), command);
+        notifyRegistryChange();
     }
 
     @Override
@@ -54,7 +57,11 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
 
     @Override
     public C pop() {
-        return wrapped.pop();
+        Optional<C> optional = Optional.ofNullable(wrapped.pop());
+        if (optional.isPresent()) {
+            notifyRegistryChange();
+        }
+        return optional.orElse(null);
     }
 
     @Override
@@ -71,6 +78,7 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
     @Override
     public void clear() {
         wrapped.clear();
+        notifyRegistryChange();
     }
 
     @Override
@@ -80,14 +88,12 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
 
     @Override
     public void setRegistryChangeListener(RegistryChangeListener registryChangeListener) {
-        wrapped.setRegistryChangeListener(registryChangeListener::notifyRegistryChange);
+        this.registryChangeListener = registryChangeListener;
     }
 
-    boolean isEnvelopeEnabled() {
-        return WindowRef.isEnvelopeAvailable();
-    }
-
-    protected KogitoJSCommandRegistry<C> getRegistry() {
-        return WindowRef.getEnvelope().getStateControl().getCommandRegistry();
+    private void notifyRegistryChange() {
+        if (registryChangeListener != null) {
+            registryChangeListener.notifyRegistryChange();
+        }
     }
 }
