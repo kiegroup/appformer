@@ -40,7 +40,7 @@ public abstract class KeyboardOperationMove extends BaseKeyboardOperation {
         final boolean redraw = gridWidget.adjustSelection(getSelectionExtension(),
                                                           isShiftKeyDown);
         baseScrollSelectedCellIntoView(gridWidget);
-        panel.ifPresent(p -> p.refreshScrollPosition());
+        panel.ifPresent(GridLienzoScrollable::refreshScrollPosition);
         return redraw;
     }
 
