@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.resource.interop;
+package org.appformer.kogito.bridge.client.keyboardshortcuts;
 
-import elemental2.promise.Promise;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
-import org.appformer.kogito.bridge.client.resource.ResourceContentService;
 
 /**
  * Javascript bridge to access actual KeyboardShortcutsApi available in the envelope namespace
  */
 @JsType(isNative = true, namespace = "window", name = "envelope")
-public class ResourceContentEditorServiceWrapper {
+public class KeyboardShortcutsApiInteropWrapper {
 
-    public native Promise<String> get(String uri);
-    
-    public native Promise<String> get(String uri, ResourceContentOptions options);
+    public native int registerKeypress(String combination, String label, Runnable onKeyDown, Object opts);
 
-    public native Promise<String[]> list(String pattern);
+    public native int registerKeyDownThenUp(String combination, String label, Runnable onKeyDown, Runnable onKeyUp, Object opts);
 
-    @JsProperty(name = "resourceContentEditorService")
-    public static native ResourceContentEditorServiceWrapper get();
+    public native void deregister(int id);
+
+    @JsProperty(name = "keyboardShortcuts")
+    public static native KeyboardShortcutsApiInteropWrapper get();
 }

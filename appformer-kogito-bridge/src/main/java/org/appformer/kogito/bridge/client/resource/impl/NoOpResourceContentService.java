@@ -18,7 +18,6 @@ package org.appformer.kogito.bridge.client.resource.impl;
 
 import elemental2.promise.Promise;
 import org.appformer.kogito.bridge.client.resource.ResourceContentService;
-import org.appformer.kogito.bridge.client.resource.interop.ResourceContentOptions;
 
 /**
  * This {@link ResourceContentService} implementation is used when the envelope API is not available
