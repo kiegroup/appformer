@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.stateControl.registry;
+package org.appformer.kogito.api.stateControl.registry;
 
 /**
  * This functional interface represents the code that will be executed every time there's a change on a {@link CommandRegistry}

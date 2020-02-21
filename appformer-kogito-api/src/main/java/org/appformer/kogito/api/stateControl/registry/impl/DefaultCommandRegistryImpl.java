@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.stateControl.registry.impl;
-
-import org.appformer.kogito.bridge.client.stateControl.registry.DefaultCommandRegistry;
-import org.appformer.kogito.bridge.client.stateControl.registry.RegistryChangeListener;
+package org.appformer.kogito.api.stateControl.registry.impl;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+
+import org.appformer.kogito.api.stateControl.registry.DefaultCommandRegistry;
+import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
 
 /**
  * The default generic implementation for the CommandRegistry type.
@@ -30,7 +30,7 @@ import java.util.List;
  * Note: The Stack class behavior when using the iterator is not the expected one, so used
  * ArrayDeque instead of an Stack to provide right iteration order.
  */
-public class CommandRegistryImpl<C> implements DefaultCommandRegistry<C> {
+public class DefaultCommandRegistryImpl<C> implements DefaultCommandRegistry<C> {
 
     private final Deque<C> commands = new ArrayDeque<>();
     private int maxStackSize = 200;
@@ -38,6 +38,9 @@ public class CommandRegistryImpl<C> implements DefaultCommandRegistry<C> {
 
     @Override
     public void setMaxSize(final int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException("The registry size should be a positive number");
+        }
         this.maxStackSize = size;
     }
 

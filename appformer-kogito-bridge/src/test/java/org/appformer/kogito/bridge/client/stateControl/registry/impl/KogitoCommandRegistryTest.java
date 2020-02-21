@@ -16,16 +16,20 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.impl;
 
-import org.appformer.kogito.bridge.client.stateControl.registry.RegistryChangeListener;
+import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KogitoCommandRegistryTest {
@@ -40,6 +44,16 @@ public class KogitoCommandRegistryTest {
 
     private KogitoCommandRegistry<Object> commandRegistry;
 
+    @Before
+    public void setUp() {
+        when(kogitoJSCommandRegistry.getCommands()).thenReturn(new Object[]{});
+        when(kogitoJSCommandRegistry.pop()).thenReturn(new Object());
+        when(kogitoJSCommandRegistry.peek()).thenReturn(new Object());
+
+        commandRegistry = new KogitoCommandRegistry<>(() -> envelopeEnabled, () -> kogitoJSCommandRegistry);
+        commandRegistry.setRegistryChangeListener(registryChangeListener);
+    }
+
     @Test
     public void testBuildOutsideEnvelope() {
         this.envelopeEnabled = false;
@@ -50,37 +64,54 @@ public class KogitoCommandRegistryTest {
     }
 
     @Test
-    public void testMethods() {
-
-        when(kogitoJSCommandRegistry.getCommands()).thenReturn(new Object[]{});
-        when(kogitoJSCommandRegistry.pop()).thenReturn(new Object());
-        when(kogitoJSCommandRegistry.peek()).thenReturn(new Object());
-
-        commandRegistry = new KogitoCommandRegistry<>(() -> envelopeEnabled, () -> kogitoJSCommandRegistry);
-        commandRegistry.setRegistryChangeListener(registryChangeListener);
-
+    public void testRegisterCommand() {
         commandRegistry.register(new Object());
         verify(kogitoJSCommandRegistry).register(anyString(), anyObject());
         verify(registryChangeListener).notifyRegistryChange();
+    }
 
+    @Test
+    public void testPeek() {
         commandRegistry.peek();
         verify(kogitoJSCommandRegistry).peek();
+    }
 
+    @Test
+    public void testPop() {
         commandRegistry.pop();
         verify(kogitoJSCommandRegistry).pop();
-        verify(registryChangeListener, times(2)).notifyRegistryChange();
+        verify(registryChangeListener).notifyRegistryChange();
+    }
 
+    @Test
+    public void testClear() {
         commandRegistry.clear();
         verify(kogitoJSCommandRegistry).clear();
-        verify(registryChangeListener, times(3)).notifyRegistryChange();
+        verify(registryChangeListener).notifyRegistryChange();
+    }
 
+    @Test
+    public void testIsEmpty() {
         commandRegistry.isEmpty();
         verify(kogitoJSCommandRegistry).isEmpty();
+    }
 
+    @Test
+    public void testGetCommandsHistory() {
         commandRegistry.getCommandHistory();
         verify(kogitoJSCommandRegistry).getCommands();
+    }
 
+    @Test
+    public void testSetMaxSize() {
         commandRegistry.setMaxSize(1);
         verify(kogitoJSCommandRegistry).setMaxSize(eq(1));
+    }
+
+    @Test
+    public void testSettingWrongMaxSize() {
+        Assertions.assertThatThrownBy(() -> commandRegistry.setMaxSize(-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The registry size should be a positive number");
     }
 }

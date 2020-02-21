@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.stateControl.registry.impl;
+package org.appformer.kogito.api.stateControl.registry.impl;
 
-import org.appformer.kogito.bridge.client.stateControl.registry.RegistryChangeListener;
+import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CommandRegistryImplTest {
+public class DefaultCommandRegistryImplTest {
 
     private static final Command COMMAND1 = new Command(1);
     private static final Command COMMAND2 = new Command(2);
@@ -40,11 +40,11 @@ public class CommandRegistryImplTest {
     @Mock
     private RegistryChangeListener changeListener;
 
-    private CommandRegistryImpl<Command> registry;
+    private DefaultCommandRegistryImpl<Command> registry;
 
     @Before
     public void init() {
-        registry = new CommandRegistryImpl<>();
+        registry = new DefaultCommandRegistryImpl<>();
 
         registry.setRegistryChangeListener(changeListener);
     }
@@ -99,7 +99,6 @@ public class CommandRegistryImplTest {
         assertTrue(registry.isEmpty());
         Assertions.assertThat(registry.getCommandHistory())
                 .isEmpty();
-
     }
 
     @Test
@@ -135,7 +134,15 @@ public class CommandRegistryImplTest {
                 .containsExactly(COMMAND4, COMMAND3);
     }
 
+    @Test
+    public void testSettingWrongMax() {
+        Assertions.assertThatThrownBy(() -> registry.setMaxSize(-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The registry size should be a positive number");
+    }
+
     public static class Command {
+
         private Integer id;
 
         public Command(Integer id) {

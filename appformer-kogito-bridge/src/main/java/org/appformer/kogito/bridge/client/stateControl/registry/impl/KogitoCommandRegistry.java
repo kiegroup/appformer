@@ -16,17 +16,17 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.impl;
 
-import org.appformer.kogito.bridge.client.interop.WindowRef;
-import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
-import org.appformer.kogito.bridge.client.stateControl.registry.CommandRegistry;
-import org.appformer.kogito.bridge.client.stateControl.registry.RegistryChangeListener;
-import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.appformer.kogito.api.stateControl.registry.CommandRegistry;
+import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
+import org.appformer.kogito.bridge.client.interop.WindowRef;
+import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
+import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 
 public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
 
@@ -72,6 +72,9 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
 
     @Override
     public void setMaxSize(int size) {
+        if(size < 0) {
+            throw new IllegalArgumentException("The registry size should be a positive number");
+        }
         wrapped.setMaxSize(size);
     }
 

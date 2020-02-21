@@ -33,6 +33,7 @@ public class StateControl {
      * @param <C> Anything that can be considered a command
      * @return The {@link KogitoJSCommandRegistry}
      */
+    @JsProperty(name = "registry")
     public native <C> KogitoJSCommandRegistry<C> getCommandRegistry();
 
     /**

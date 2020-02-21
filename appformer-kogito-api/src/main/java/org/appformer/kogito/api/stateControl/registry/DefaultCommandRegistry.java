@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.stateControl.registry;
+package org.appformer.kogito.api.stateControl.registry;
 
 public interface DefaultCommandRegistry<C> extends CommandRegistry<C> {
+
 }

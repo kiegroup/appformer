@@ -16,14 +16,15 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.producer;
 
-import org.appformer.kogito.bridge.client.interop.WindowRef;
-import org.appformer.kogito.bridge.client.stateControl.registry.CommandRegistry;
-import org.appformer.kogito.bridge.client.stateControl.registry.impl.CommandRegistryImpl;
-import org.appformer.kogito.bridge.client.stateControl.registry.impl.KogitoCommandRegistry;
+import java.util.function.Supplier;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
-import java.util.function.Supplier;
+
+import org.appformer.kogito.api.stateControl.registry.CommandRegistry;
+import org.appformer.kogito.api.stateControl.registry.impl.DefaultCommandRegistryImpl;
+import org.appformer.kogito.bridge.client.interop.WindowRef;
+import org.appformer.kogito.bridge.client.stateControl.registry.impl.KogitoCommandRegistry;
 
 public class CommandRegistryProducer {
 
@@ -45,7 +46,7 @@ public class CommandRegistryProducer {
         if (isEnvelopeEnabled()) {
             return kogitoCommandRegistrySupplier.get();
         }
-        return new CommandRegistryImpl();
+        return new DefaultCommandRegistryImpl();
     }
 
     boolean isEnvelopeEnabled() {
