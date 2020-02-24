@@ -73,9 +73,9 @@ public interface CommandRegistry<C> {
     List<C> getCommandHistory();
 
     /**
-     * Sets a {@link RegistryChangeListener} to be called when the registry changes.
+     * Sets a {@link CommandRegistryChangeListener} to be called when the registry changes.
      *
-     * @param registryChangeListener A {@link RegistryChangeListener}
+     * @param commandRegistryChangeListener A {@link CommandRegistryChangeListener}
      */
-    void setRegistryChangeListener(RegistryChangeListener registryChangeListener);
+    void setCommandRegistryChangeListener(CommandRegistryChangeListener commandRegistryChangeListener);
 }

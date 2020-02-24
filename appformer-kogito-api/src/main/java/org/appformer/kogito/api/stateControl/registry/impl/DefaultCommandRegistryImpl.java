@@ -22,7 +22,7 @@ import java.util.Deque;
 import java.util.List;
 
 import org.appformer.kogito.api.stateControl.registry.DefaultCommandRegistry;
-import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
+import org.appformer.kogito.api.stateControl.registry.CommandRegistryChangeListener;
 
 /**
  * The default generic implementation for the CommandRegistry type.
@@ -34,7 +34,7 @@ public class DefaultCommandRegistryImpl<C> implements DefaultCommandRegistry<C> 
 
     private final Deque<C> commands = new ArrayDeque<>();
     private int maxStackSize = 200;
-    private RegistryChangeListener registryChangeListener;
+    private CommandRegistryChangeListener commandRegistryChangeListener;
 
     @Override
     public void setMaxSize(final int size) {
@@ -62,8 +62,8 @@ public class DefaultCommandRegistryImpl<C> implements DefaultCommandRegistry<C> 
     }
 
     @Override
-    public void setRegistryChangeListener(RegistryChangeListener registryChangeListener) {
-        this.registryChangeListener = registryChangeListener;
+    public void setCommandRegistryChangeListener(final CommandRegistryChangeListener commandRegistryChangeListener) {
+        this.commandRegistryChangeListener = commandRegistryChangeListener;
     }
 
     @Override
@@ -84,8 +84,8 @@ public class DefaultCommandRegistryImpl<C> implements DefaultCommandRegistry<C> 
     }
 
     private void notifyRegistryChange() {
-        if (registryChangeListener != null) {
-            registryChangeListener.notifyRegistryChange();
+        if (commandRegistryChangeListener != null) {
+            commandRegistryChangeListener.notifyRegistryChange();
         }
     }
 

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.appformer.kogito.api.stateControl.registry.CommandRegistry;
-import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
+import org.appformer.kogito.api.stateControl.registry.CommandRegistryChangeListener;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
@@ -31,7 +31,7 @@ import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJS
 public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
 
     private KogitoJSCommandRegistry<C> wrapped;
-    private RegistryChangeListener registryChangeListener;
+    private CommandRegistryChangeListener commandRegistryChangeListener;
 
     public KogitoCommandRegistry() {
         this(WindowRef::isEnvelopeAvailable, () -> StateControl.get().getCommandRegistry());
@@ -90,13 +90,13 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
     }
 
     @Override
-    public void setRegistryChangeListener(RegistryChangeListener registryChangeListener) {
-        this.registryChangeListener = registryChangeListener;
+    public void setCommandRegistryChangeListener(final CommandRegistryChangeListener commandRegistryChangeListener) {
+        this.commandRegistryChangeListener = commandRegistryChangeListener;
     }
 
     private void notifyRegistryChange() {
-        if (registryChangeListener != null) {
-            registryChangeListener.notifyRegistryChange();
+        if (commandRegistryChangeListener != null) {
+            commandRegistryChangeListener.notifyRegistryChange();
         }
     }
 }

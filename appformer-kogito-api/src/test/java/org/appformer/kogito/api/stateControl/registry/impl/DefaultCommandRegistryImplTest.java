@@ -16,7 +16,7 @@
 
 package org.appformer.kogito.api.stateControl.registry.impl;
 
-import org.appformer.kogito.api.stateControl.registry.RegistryChangeListener;
+import org.appformer.kogito.api.stateControl.registry.CommandRegistryChangeListener;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class DefaultCommandRegistryImplTest {
     private static final Command COMMAND4 = new Command(4);
 
     @Mock
-    private RegistryChangeListener changeListener;
+    private CommandRegistryChangeListener changeListener;
 
     private DefaultCommandRegistryImpl<Command> registry;
 
@@ -46,7 +46,7 @@ public class DefaultCommandRegistryImplTest {
     public void init() {
         registry = new DefaultCommandRegistryImpl<>();
 
-        registry.setRegistryChangeListener(changeListener);
+        registry.setCommandRegistryChangeListener(changeListener);
     }
 
     @Test

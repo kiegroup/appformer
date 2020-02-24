@@ -20,7 +20,7 @@ package org.appformer.kogito.api.stateControl.registry;
  * This functional interface represents the code that will be executed every time there's a change on a {@link CommandRegistry}
  */
 @FunctionalInterface
-public interface RegistryChangeListener {
+public interface CommandRegistryChangeListener {
 
     /**
      * Method that will be executed when a change on the registry happens
