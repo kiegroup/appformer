@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.api.stateControl.registry;
+package org.appformer.client.stateControl.registry;
 
 import java.util.List;
 

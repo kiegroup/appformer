@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.api.stateControl.registry.impl;
+package org.appformer.client.stateControl.registry.impl;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import org.appformer.kogito.api.stateControl.registry.DefaultCommandRegistry;
-import org.appformer.kogito.api.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.DefaultCommandRegistry;
+import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
 
 /**
  * The default generic implementation for the CommandRegistry type.

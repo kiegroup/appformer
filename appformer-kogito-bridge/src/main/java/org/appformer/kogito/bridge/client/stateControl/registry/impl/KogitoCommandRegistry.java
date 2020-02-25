@@ -22,8 +22,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.appformer.kogito.api.stateControl.registry.CommandRegistry;
-import org.appformer.kogito.api.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.CommandRegistry;
+import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;

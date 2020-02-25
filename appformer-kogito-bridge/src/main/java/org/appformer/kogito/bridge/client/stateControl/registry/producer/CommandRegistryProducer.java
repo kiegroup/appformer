@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 
-import org.appformer.kogito.api.stateControl.registry.CommandRegistry;
-import org.appformer.kogito.api.stateControl.registry.impl.DefaultCommandRegistryImpl;
+import org.appformer.client.stateControl.registry.CommandRegistry;
+import org.appformer.client.stateControl.registry.impl.DefaultCommandRegistryImpl;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.stateControl.registry.impl.KogitoCommandRegistry;
 

@@ -16,7 +16,7 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.producer;
 
-import org.appformer.kogito.api.stateControl.registry.impl.DefaultCommandRegistryImpl;
+import org.appformer.client.stateControl.registry.impl.DefaultCommandRegistryImpl;
 import org.appformer.kogito.bridge.client.stateControl.registry.impl.KogitoCommandRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;

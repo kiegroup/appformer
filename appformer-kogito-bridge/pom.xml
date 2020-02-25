@@ -54,7 +54,7 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>appformer-kogito-api</artifactId>
+      <artifactId>appformer-client-api</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>

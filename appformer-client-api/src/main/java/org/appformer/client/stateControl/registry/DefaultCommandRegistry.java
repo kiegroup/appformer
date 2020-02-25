@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.api.stateControl.registry;
+package org.appformer.client.stateControl.registry;
 
-/**
- * This functional interface represents the code that will be executed every time there's a change on a {@link CommandRegistry}
- */
-@FunctionalInterface
-public interface CommandRegistryChangeListener {
+public interface DefaultCommandRegistry<C> extends CommandRegistry<C> {
 
-    /**
-     * Method that will be executed when a change on the registry happens
-     */
-    void notifyRegistryChange();
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.api.stateControl.registry.impl;
+package org.appformer.client.stateControl.registry.impl;
 
-import org.appformer.kogito.api.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
