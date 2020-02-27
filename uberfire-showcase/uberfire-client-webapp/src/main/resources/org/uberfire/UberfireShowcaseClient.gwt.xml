@@ -35,11 +35,9 @@
   <source path='shared'/>
 
   <!-- i18n -->
-  <extend-property name="locale" values="es_ES"/>
-  <extend-property name="locale" values="fr_FR"/>
-  <extend-property name="locale" values="ja_JP"/>
-  <extend-property name="locale" values="pt_BR"/>
-  <extend-property name="locale" values="zh_CN"/>
+  <extend-property name="locale" values="es"/>
+  <extend-property name="locale" values="fr"/>
+  <extend-property name="locale" values="ja"/>
 
   <collapse-property name="locale" values="*"/>
 
