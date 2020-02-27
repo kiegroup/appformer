@@ -16,7 +16,7 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.producer;
 
-import org.appformer.client.stateControl.registry.impl.DefaultCommandRegistryImpl;
+import org.appformer.client.stateControl.registry.impl.DefaultRegistryImpl;
 import org.appformer.kogito.bridge.client.stateControl.registry.impl.KogitoCommandRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CommandRegistryProducerTest {
+public class RegistryProducerTest {
 
     @Mock
     private KogitoCommandRegistry registry;
@@ -51,6 +51,6 @@ public class CommandRegistryProducerTest {
 
         Assertions.assertThat(producer.lookup())
                 .isNotNull()
-                .isInstanceOf(DefaultCommandRegistryImpl.class);
+                .isInstanceOf(DefaultRegistryImpl.class);
     }
 }

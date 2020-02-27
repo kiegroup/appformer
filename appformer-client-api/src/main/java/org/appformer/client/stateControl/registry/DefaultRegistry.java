@@ -16,6 +16,6 @@
 
 package org.appformer.client.stateControl.registry;
 
-public interface DefaultCommandRegistry<C> extends CommandRegistry<C> {
+public interface DefaultRegistry<C> extends Registry<C> {
 
 }

@@ -16,7 +16,7 @@
 
 package org.appformer.client.stateControl.registry.impl;
 
-import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.RegistryChangeListener;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultCommandRegistryImplTest {
+public class DefaultRegistryImplTest {
 
     private static final Command COMMAND1 = new Command(1);
     private static final Command COMMAND2 = new Command(2);
@@ -38,15 +38,15 @@ public class DefaultCommandRegistryImplTest {
     private static final Command COMMAND4 = new Command(4);
 
     @Mock
-    private CommandRegistryChangeListener changeListener;
+    private RegistryChangeListener changeListener;
 
-    private DefaultCommandRegistryImpl<Command> registry;
+    private DefaultRegistryImpl<Command> registry;
 
     @Before
     public void init() {
-        registry = new DefaultCommandRegistryImpl<>();
+        registry = new DefaultRegistryImpl<>();
 
-        registry.setCommandRegistryChangeListener(changeListener);
+        registry.setRegistryChangeListener(changeListener);
     }
 
     @Test
@@ -60,14 +60,14 @@ public class DefaultCommandRegistryImplTest {
 
         assertFalse(registry.isEmpty());
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(4)
                 .containsExactly(COMMAND4, COMMAND3, COMMAND2, COMMAND1);
 
         Assertions.assertThat(registry.peek())
                 .isSameAs(COMMAND4);
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(4)
                 .containsExactly(COMMAND4, COMMAND3, COMMAND2, COMMAND1);
 
@@ -76,7 +76,7 @@ public class DefaultCommandRegistryImplTest {
 
         verify(changeListener, times(5)).notifyRegistryChange();
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(3)
                 .containsExactly(COMMAND3, COMMAND2, COMMAND1);
 
@@ -89,7 +89,7 @@ public class DefaultCommandRegistryImplTest {
 
         assertFalse(registry.isEmpty());
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(2)
                 .containsExactly(COMMAND2, COMMAND1);
 
@@ -97,7 +97,7 @@ public class DefaultCommandRegistryImplTest {
         verify(changeListener, times(7)).notifyRegistryChange();
 
         assertTrue(registry.isEmpty());
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .isEmpty();
     }
 
@@ -111,7 +111,7 @@ public class DefaultCommandRegistryImplTest {
         verify(changeListener, times(2)).notifyRegistryChange();
         assertFalse(registry.isEmpty());
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(2)
                 .containsExactly(COMMAND2, COMMAND1);
 
@@ -120,7 +120,7 @@ public class DefaultCommandRegistryImplTest {
         verify(changeListener, times(3)).notifyRegistryChange();
         assertFalse(registry.isEmpty());
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(2)
                 .containsExactly(COMMAND3, COMMAND2);
 
@@ -129,7 +129,7 @@ public class DefaultCommandRegistryImplTest {
         verify(changeListener, times(4)).notifyRegistryChange();
         assertFalse(registry.isEmpty());
 
-        Assertions.assertThat(registry.getCommandHistory())
+        Assertions.assertThat(registry.getHistory())
                 .hasSize(2)
                 .containsExactly(COMMAND4, COMMAND3);
     }

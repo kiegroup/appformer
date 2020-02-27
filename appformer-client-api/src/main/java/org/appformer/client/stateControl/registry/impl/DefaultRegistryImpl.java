@@ -21,20 +21,21 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import org.appformer.client.stateControl.registry.DefaultCommandRegistry;
-import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.DefaultRegistry;
+import org.appformer.client.stateControl.registry.Registry;
+import org.appformer.client.stateControl.registry.RegistryChangeListener;
 
 /**
- * The default generic implementation for the CommandRegistry type.
+ * The default generic implementation for the {@link Registry} type.
  * It's implemented for achieving an in-memory and lightweight registry approach, don't do an overuse of it.
  * Note: The Stack class behavior when using the iterator is not the expected one, so used
  * ArrayDeque instead of an Stack to provide right iteration order.
  */
-public class DefaultCommandRegistryImpl<C> implements DefaultCommandRegistry<C> {
+public class DefaultRegistryImpl<C> implements DefaultRegistry<C> {
 
-    private final Deque<C> commands = new ArrayDeque<>();
+    private final Deque<C> items = new ArrayDeque<>();
     private int maxStackSize = 200;
-    private CommandRegistryChangeListener commandRegistryChangeListener;
+    private RegistryChangeListener registryChangeListener;
 
     @Override
     public void setMaxSize(final int size) {
@@ -45,56 +46,56 @@ public class DefaultCommandRegistryImpl<C> implements DefaultCommandRegistry<C> 
     }
 
     @Override
-    public void register(final C command) {
-        addIntoStack(command);
+    public void register(final C item) {
+        addIntoStack(item);
         notifyRegistryChange();
     }
 
     @Override
     public void clear() {
-        commands.clear();
+        items.clear();
         notifyRegistryChange();
     }
 
     @Override
-    public List<C> getCommandHistory() {
-        return new ArrayList<>(commands);
+    public List<C> getHistory() {
+        return new ArrayList<>(items);
     }
 
     @Override
-    public void setCommandRegistryChangeListener(final CommandRegistryChangeListener commandRegistryChangeListener) {
-        this.commandRegistryChangeListener = commandRegistryChangeListener;
+    public void setRegistryChangeListener(final RegistryChangeListener registryChangeListener) {
+        this.registryChangeListener = registryChangeListener;
     }
 
     @Override
     public C peek() {
-        return commands.peek();
+        return items.peek();
     }
 
     @Override
     public C pop() {
-        C command = commands.pop();
+        C item = items.pop();
         notifyRegistryChange();
-        return command;
+        return item;
     }
 
     @Override
     public boolean isEmpty() {
-        return commands.isEmpty();
+        return items.isEmpty();
     }
 
     private void notifyRegistryChange() {
-        if (commandRegistryChangeListener != null) {
-            commandRegistryChangeListener.notifyRegistryChange();
+        if (registryChangeListener != null) {
+            registryChangeListener.notifyRegistryChange();
         }
     }
 
-    private void addIntoStack(final C command) {
-        if (null != command) {
-            if ((commands.size() + 1) > maxStackSize) {
-                commands.removeLast();
+    private void addIntoStack(final C item) {
+        if (null != item) {
+            if ((items.size() + 1) > maxStackSize) {
+                items.removeLast();
             }
-            commands.push(command);
+            items.push(item);
         }
     }
 }

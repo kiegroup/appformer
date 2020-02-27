@@ -16,7 +16,7 @@
 
 package org.appformer.kogito.bridge.client.stateControl.registry.impl;
 
-import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.RegistryChangeListener;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class KogitoCommandRegistryTest {
     private boolean envelopeEnabled = true;
 
     @Mock
-    private CommandRegistryChangeListener commandRegistryChangeListener;
+    private RegistryChangeListener registryChangeListener;
 
     @Mock
     private KogitoJSCommandRegistry<Object> kogitoJSCommandRegistry;
@@ -51,7 +51,7 @@ public class KogitoCommandRegistryTest {
         when(kogitoJSCommandRegistry.peek()).thenReturn(new Object());
 
         commandRegistry = new KogitoCommandRegistry<>(() -> envelopeEnabled, () -> kogitoJSCommandRegistry);
-        commandRegistry.setCommandRegistryChangeListener(commandRegistryChangeListener);
+        commandRegistry.setRegistryChangeListener(registryChangeListener);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class KogitoCommandRegistryTest {
     public void testRegisterCommand() {
         commandRegistry.register(new Object());
         verify(kogitoJSCommandRegistry).register(anyString(), anyObject());
-        verify(commandRegistryChangeListener).notifyRegistryChange();
+        verify(registryChangeListener).notifyRegistryChange();
     }
 
     @Test
@@ -80,14 +80,14 @@ public class KogitoCommandRegistryTest {
     public void testPop() {
         commandRegistry.pop();
         verify(kogitoJSCommandRegistry).pop();
-        verify(commandRegistryChangeListener).notifyRegistryChange();
+        verify(registryChangeListener).notifyRegistryChange();
     }
 
     @Test
     public void testClear() {
         commandRegistry.clear();
         verify(kogitoJSCommandRegistry).clear();
-        verify(commandRegistryChangeListener).notifyRegistryChange();
+        verify(registryChangeListener).notifyRegistryChange();
     }
 
     @Test
@@ -98,7 +98,7 @@ public class KogitoCommandRegistryTest {
 
     @Test
     public void testGetCommandsHistory() {
-        commandRegistry.getCommandHistory();
+        commandRegistry.getHistory();
         verify(kogitoJSCommandRegistry).getCommands();
     }
 

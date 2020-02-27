@@ -17,10 +17,10 @@
 package org.appformer.client.stateControl.registry;
 
 /**
- * This functional interface represents the code that will be executed every time there's a change on a {@link CommandRegistry}
+ * This functional interface represents the code that will be executed every time there's a change on a {@link Registry}
  */
 @FunctionalInterface
-public interface CommandRegistryChangeListener {
+public interface RegistryChangeListener {
 
     /**
      * Method that will be executed when a change on the registry happens

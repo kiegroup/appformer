@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 
-import org.appformer.client.stateControl.registry.CommandRegistry;
-import org.appformer.client.stateControl.registry.impl.DefaultCommandRegistryImpl;
+import org.appformer.client.stateControl.registry.Registry;
+import org.appformer.client.stateControl.registry.impl.DefaultRegistryImpl;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.stateControl.registry.impl.KogitoCommandRegistry;
 
@@ -42,11 +42,11 @@ public class CommandRegistryProducer {
 
     @Produces
     @Dependent
-    public CommandRegistry lookup() {
+    public Registry lookup() {
         if (isEnvelopeEnabled()) {
             return kogitoCommandRegistrySupplier.get();
         }
-        return new DefaultCommandRegistryImpl();
+        return new DefaultRegistryImpl();
     }
 
     boolean isEnvelopeEnabled() {

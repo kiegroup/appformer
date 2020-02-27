@@ -22,16 +22,21 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.appformer.client.stateControl.registry.CommandRegistry;
-import org.appformer.client.stateControl.registry.CommandRegistryChangeListener;
+import org.appformer.client.stateControl.registry.Registry;
+import org.appformer.client.stateControl.registry.RegistryChangeListener;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
 
-public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
+/**
+ * Implementation of {@link Registry} to register commands on the State Control engine.
+ *
+ * @param <C>
+ */
+public class KogitoCommandRegistry<C> implements Registry<C> {
 
     private KogitoJSCommandRegistry<C> wrapped;
-    private CommandRegistryChangeListener commandRegistryChangeListener;
+    private RegistryChangeListener registryChangeListener;
 
     public KogitoCommandRegistry() {
         this(WindowRef::isEnvelopeAvailable, () -> StateControl.get().getCommandRegistry());
@@ -45,8 +50,8 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
     }
 
     @Override
-    public void register(C command) {
-        wrapped.register(String.valueOf(command.hashCode()), command);
+    public void register(C item) {
+        wrapped.register(String.valueOf(item.hashCode()), item);
         notifyRegistryChange();
     }
 
@@ -65,14 +70,14 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
     }
 
     @Override
-    public List<C> getCommandHistory() {
+    public List<C> getHistory() {
         return Stream.of(wrapped.getCommands())
                 .collect(Collectors.toList());
     }
 
     @Override
     public void setMaxSize(int size) {
-        if(size < 0) {
+        if (size < 0) {
             throw new IllegalArgumentException("The registry size should be a positive number");
         }
         wrapped.setMaxSize(size);
@@ -90,13 +95,13 @@ public class KogitoCommandRegistry<C> implements CommandRegistry<C> {
     }
 
     @Override
-    public void setCommandRegistryChangeListener(final CommandRegistryChangeListener commandRegistryChangeListener) {
-        this.commandRegistryChangeListener = commandRegistryChangeListener;
+    public void setRegistryChangeListener(final RegistryChangeListener registryChangeListener) {
+        this.registryChangeListener = registryChangeListener;
     }
 
     private void notifyRegistryChange() {
-        if (commandRegistryChangeListener != null) {
-            commandRegistryChangeListener.notifyRegistryChange();
+        if (registryChangeListener != null) {
+            registryChangeListener.notifyRegistryChange();
         }
     }
 }

@@ -19,35 +19,35 @@ package org.appformer.client.stateControl.registry;
 import java.util.List;
 
 /**
- * Represents a registry of commands to be used on the StateControl engine.
+ * Represents a basic items registry.
  *
- * @param <C> anything that can be considered a Command
+ * @param <C> anything that can be registered.
  */
-public interface CommandRegistry<C> {
+public interface Registry<C> {
 
     /**
-     * Registers a command into the registry
+     * Registers an item into the registry
      *
-     * @param command A command to register
+     * @param item An item to register
      */
-    void register(final C command);
+    void register(final C item);
 
     /**
-     * Peeks the last added command. Doesn't remove it.
+     * Peeks the last added item. Doesn't remove it.
      *
-     * @return The last added Command
+     * @return The last added item
      */
     C peek();
 
     /**
-     * Pops the last added command and removes it.
+     * Pops the last added item and removes it.
      *
-     * @return The last added Command
+     * @return The last added item
      */
     C pop();
 
     /**
-     * Sets the max number of commands that can be stored on the registry.
+     * Sets the max number of items that can be stored on the registry.
      *
      * @param size A positive integer
      */
@@ -66,16 +66,16 @@ public interface CommandRegistry<C> {
     boolean isEmpty();
 
     /**
-     * Returns a {@link List} containing all the commands in the registry
+     * Returns a {@link List} containing all the items in the registry
      *
-     * @return A {@link List} of commands
+     * @return A {@link List} of containing the registered items
      */
-    List<C> getCommandHistory();
+    List<C> getHistory();
 
     /**
-     * Sets a {@link CommandRegistryChangeListener} to be called when the registry changes.
+     * Sets a {@link RegistryChangeListener} to be called when the registry changes.
      *
-     * @param commandRegistryChangeListener A {@link CommandRegistryChangeListener}
+     * @param registryChangeListener A {@link RegistryChangeListener}
      */
-    void setCommandRegistryChangeListener(CommandRegistryChangeListener commandRegistryChangeListener);
+    void setRegistryChangeListener(RegistryChangeListener registryChangeListener);
 }
