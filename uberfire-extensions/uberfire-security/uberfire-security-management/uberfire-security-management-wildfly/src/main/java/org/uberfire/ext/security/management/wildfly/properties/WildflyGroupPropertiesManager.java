@@ -26,8 +26,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.as.controller.services.path.PathManager;
 import org.jboss.as.domain.management.security.PropertiesFileLoader;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.GroupImpl;
@@ -414,12 +416,13 @@ public class WildflyGroupPropertiesManager extends BaseWildflyPropertiesManager 
         private final PropertiesLineWriterPredicate lineWriterPredicate;
 
         public WildflyGroupsPropertiesFileLoader(final String path) {
-            this(path, null);
+            this(null, path, null);
         }
 
-        public WildflyGroupsPropertiesFileLoader(final String path,
+        public WildflyGroupsPropertiesFileLoader(final Supplier<PathManager> pathManagerSupplier,
+                                                 final String path,
                                                  final String relativeTo) {
-            super(path, relativeTo);
+            super(pathManagerSupplier, path, relativeTo);
             this.lineWriterPredicate = new PropertiesLineWriterPredicate(WildflyGroupsPropertiesFileLoader.this::cleanKey,
                                                                          false);
         }

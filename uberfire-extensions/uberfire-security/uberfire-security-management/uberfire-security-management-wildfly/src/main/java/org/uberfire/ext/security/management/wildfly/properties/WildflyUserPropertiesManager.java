@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import org.jboss.as.controller.services.path.PathManager;
 import org.jboss.as.domain.management.security.PropertiesFileLoader;
 import org.jboss.as.domain.management.security.UserPropertiesFileLoader;
 import org.jboss.errai.security.shared.api.Group;
@@ -341,12 +343,13 @@ public class WildflyUserPropertiesManager extends BaseWildflyPropertiesManager i
         private final PropertiesLineWriterPredicate lineWriterPredicate;
 
         public WildflyUsersPropertiesFileLoader(final String path) {
-            this(path, null);
+            this(null, path, null);
         }
 
-        public WildflyUsersPropertiesFileLoader(final String path,
+        public WildflyUsersPropertiesFileLoader(final Supplier<PathManager> pathManagerSupplier,
+                                                final String path,
                                                 final String relativeTo) {
-            super(path, relativeTo);
+            super(pathManagerSupplier, path, relativeTo);
             this.lineWriterPredicate = new PropertiesLineWriterPredicate(WildflyUsersPropertiesFileLoader.this::cleanKey,
                                                                          true);
         }
