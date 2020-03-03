@@ -20,6 +20,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.appformer.kogito.bridge.client.context.KogitoChannel;
 import org.appformer.kogito.bridge.client.context.EditorContextProvider;
+import org.appformer.kogito.bridge.client.context.KogitoOperatingSystem;
 import org.appformer.kogito.bridge.client.context.interop.EditorContextWrapper;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 
@@ -29,12 +30,23 @@ public class EditorContextProviderImpl implements EditorContextProvider {
     @Override
     public KogitoChannel getChannel() {
         if (WindowRef.isEnvelopeAvailable()) {
-            String channel = EditorContextWrapper.get().getChannel();
+            final String channel = EditorContextWrapper.get().getChannel();
             if (channel != null) {
                 return KogitoChannel.withName(channel);
             }
         }
         return KogitoChannel.DEFAULT;
+    }
+
+    @Override
+    public KogitoOperatingSystem getOperatingSystem() {
+        if (WindowRef.isEnvelopeAvailable()) {
+            final String os = EditorContextWrapper.get().getOperatingSystem();
+            if (os != null) {
+                return KogitoOperatingSystem.withName(os);
+            }
+        }
+        return KogitoOperatingSystem.DEFAULT;
     }
 
 }

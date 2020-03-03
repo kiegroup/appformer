@@ -31,4 +31,12 @@ public interface EditorContextProvider {
      */
     KogitoChannel getChannel();
 
+    /**
+     * Access the operating system where the editor is running (e.g. MACOS, WINDOWS or LINUX).
+     *
+     * @return
+     * The operating system where the editor is running or DEFAULT if no information is available.
+     */
+    KogitoOperatingSystem getOperatingSystem();
+
 }
