@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use in method that returns a {@code @WorkbenchClientEditor} content. 
+ * Used in method that returns a {@code @WorkbenchClientEditor} content. 
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
