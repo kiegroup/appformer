@@ -22,12 +22,12 @@ package org.appformer.kogito.bridge.client.keyboardshortcuts;
 public class NoOpKeyboardShortcutsService implements KeyboardShortcutsApi {
 
     @Override
-    public int registerKeypress(String combination, String label, Runnable onKeyDown, Object opts) {
+    public int registerKeyPress(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Opts opts) {
         return 0;
     }
 
     @Override
-    public int registerKeyDownThenUp(String combination, String label, Runnable onKeyDown, Runnable onKeyUp, Object opts) {
+    public int registerKeyDownThenUp(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Action onKeyUp, KeyboardShortcutsApi.Opts opts) {
         return 0;
     }
 

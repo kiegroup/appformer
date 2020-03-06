@@ -16,20 +16,20 @@
 
 package org.appformer.kogito.bridge.client.keyboardshortcuts;
 
+import jsinterop.annotations.JsFunction;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
+
 public interface KeyboardShortcutsApi {
 
-    int registerKeypress(String combination, String label, Runnable onKeyDown, Object opts);
+    int registerKeyPress(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Opts opts);
 
-    int registerKeyDownThenUp(String combination, String label, Runnable onKeyDown, Runnable onKeyUp, Object opts);
+    int registerKeyDownThenUp(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Action onKeyUp, KeyboardShortcutsApi.Opts opts);
 
     void deregister(int id);
 
+    @JsType
     class Opts {
-
-        public enum Repeat {
-            REPEAT,
-            NO_REPEAT
-        }
 
         public static final Opts DEFAULT = new Opts(Repeat.NO_REPEAT);
 
@@ -39,8 +39,21 @@ public interface KeyboardShortcutsApi {
             this.repeat = repeat;
         }
 
+        @JsProperty
         public boolean getRepeat() {
             return Repeat.REPEAT.equals(repeat);
         }
+
+        public enum Repeat {
+            REPEAT,
+            NO_REPEAT
+        }
+    }
+
+    @JsFunction
+    @FunctionalInterface
+    interface Action {
+
+        void execute();
     }
 }

@@ -22,12 +22,19 @@ package org.appformer.kogito.bridge.client.keyboardshortcuts;
 public class KeyboardShortcutsService implements KeyboardShortcutsApi {
 
     @Override
-    public int registerKeypress(final String combination, final String label, final Runnable onKeyDown, final Object opts) {
-        return KeyboardShortcutsApiInteropWrapper.get().registerKeypress(combination, label, onKeyDown, opts);
+    public int registerKeyPress(final String combination,
+                                final String label,
+                                final KeyboardShortcutsApi.Action onKeyDown,
+                                final KeyboardShortcutsApi.Opts opts) {
+        return KeyboardShortcutsApiInteropWrapper.get().registerKeyPress(combination, label, onKeyDown, opts);
     }
 
     @Override
-    public int registerKeyDownThenUp(final String combination, final String label, final Runnable onKeyDown, final Runnable onKeyUp, final Object opts) {
+    public int registerKeyDownThenUp(final String combination,
+                                     final String label,
+                                     final KeyboardShortcutsApi.Action onKeyDown,
+                                     final KeyboardShortcutsApi.Action onKeyUp,
+                                     final KeyboardShortcutsApi.Opts opts) {
         return KeyboardShortcutsApiInteropWrapper.get().registerKeyDownThenUp(combination, label, onKeyDown, onKeyUp, opts);
     }
 

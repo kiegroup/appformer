@@ -25,11 +25,18 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true, namespace = "window", name = "envelope")
 public class KeyboardShortcutsApiInteropWrapper {
 
-    public native int registerKeypress(String combination, String label, Runnable onKeyDown, Object opts);
+    public native int registerKeyPress(final String combination,
+                                       final String label,
+                                       final KeyboardShortcutsApi.Action onKeyDown,
+                                       final KeyboardShortcutsApi.Opts opts);
 
-    public native int registerKeyDownThenUp(String combination, String label, Runnable onKeyDown, Runnable onKeyUp, Object opts);
+    public native int registerKeyDownThenUp(final String combination,
+                                            final String label,
+                                            final KeyboardShortcutsApi.Action onKeyDown,
+                                            final KeyboardShortcutsApi.Action onKeyUp,
+                                            final KeyboardShortcutsApi.Opts opts);
 
-    public native void deregister(int id);
+    public native void deregister(final int id);
 
     @JsProperty(name = "keyboardShortcuts")
     public static native KeyboardShortcutsApiInteropWrapper get();
