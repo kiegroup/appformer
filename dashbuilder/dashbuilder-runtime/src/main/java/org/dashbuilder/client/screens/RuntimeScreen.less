@@ -1,0 +1,40 @@
+#runtimePage {
+
+  height: 100%;
+
+  .runtimePageBody {
+    background-image: url('/images/runtime_home_bg.jpg');
+    align-items: stretch;
+    display: flex;
+    justify-content: space-between;
+    flex-flow: column nowrap;
+    height: 100%;
+    max-height: 100vh;
+  }
+  .runtimePage__content {
+    flex: 1 1 auto;
+  }
+  .runtimeContent--bg-image {
+    background-color: #4d5258;
+    background-position: top center;
+    background-size: cover;
+    .blank-slate-pf {
+      background-color: transparent;
+      color: #d1d1d1;
+      border: 0;
+    }
+  }
+  .runtime-container-fluid--blank-slate {
+    @media (min-width: 992px) {
+      width: 100%;
+      background-color: rgba(0, 0, 0, .2);
+    }
+  }
+  .runtime-blank-slate {
+    display: flex;
+    background-color: transparent;
+    @media (min-width: 992px) {
+      align-items: center;
+    }
+  }
+}
