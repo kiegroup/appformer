@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-workbench</artifactId>
-    <version>7.31.0-SNAPSHOT</version>
+    <version>7.35.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-workbench-client</artifactId>
@@ -50,10 +50,6 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-experimental-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-cdi-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.errai</groupId>
@@ -121,10 +117,6 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-testing-utils</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.gwtbootstrap3</groupId>
-      <artifactId>gwtbootstrap3</artifactId>
     </dependency>
   </dependencies>
 

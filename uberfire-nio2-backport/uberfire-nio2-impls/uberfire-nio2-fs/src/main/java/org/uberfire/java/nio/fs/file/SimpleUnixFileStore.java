@@ -23,7 +23,7 @@ import org.uberfire.java.nio.file.Path;
 
 public class SimpleUnixFileStore extends BaseSimpleFileStore {
 
-    SimpleUnixFileStore(final Path path) {
+    protected SimpleUnixFileStore(final Path path) {
         super(path);
     }
 

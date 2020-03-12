@@ -57,6 +57,7 @@ import org.uberfire.java.nio.base.FileDiff;
 import org.uberfire.java.nio.base.TextualDiff;
 import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.java.nio.fs.jgit.JGitPathImpl;
+import org.uberfire.java.nio.fs.jgit.util.commands.AddRemote;
 import org.uberfire.java.nio.fs.jgit.util.commands.BlobAsInputStream;
 import org.uberfire.java.nio.fs.jgit.util.commands.CherryPick;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
@@ -82,6 +83,7 @@ import org.uberfire.java.nio.fs.jgit.util.commands.MapDiffContent;
 import org.uberfire.java.nio.fs.jgit.util.commands.Merge;
 import org.uberfire.java.nio.fs.jgit.util.commands.Push;
 import org.uberfire.java.nio.fs.jgit.util.commands.RefTreeUpdateCommand;
+import org.uberfire.java.nio.fs.jgit.util.commands.RemoveRemote;
 import org.uberfire.java.nio.fs.jgit.util.commands.ResolveObjectIds;
 import org.uberfire.java.nio.fs.jgit.util.commands.ResolveRevCommit;
 import org.uberfire.java.nio.fs.jgit.util.commands.RevertMerge;
@@ -297,11 +299,15 @@ public class GitImpl implements Git {
     @Override
     public List<String> merge(final String source,
                               final String target,
-                              final boolean noFastForward) {
+                              final boolean noFastForward,
+                              final boolean squash,
+                              final CommitInfo commitInfo) {
         return new Merge(this,
                          source,
                          target,
-                         noFastForward).execute();
+                         noFastForward,
+                         squash,
+                         commitInfo).execute();
     }
 
     @Override
@@ -555,6 +561,22 @@ public class GitImpl implements Git {
     @Override
     public void updateLeaders(final KetchLeaderCache leaders) {
         this.leaders = leaders;
+    }
+
+    @Override
+    public void removeRemote(final String remote,
+                             final String ref) {
+        new RemoveRemote(this,
+                         remote,
+                         ref).execute();
+    }
+
+    @Override
+    public void addRemote(final String remote,
+                          final String url) {
+        new AddRemote(this,
+                      remote,
+                      url).execute();
     }
 
     //just for test purposes

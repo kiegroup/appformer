@@ -55,6 +55,19 @@ public interface WorkspaceProjectService {
                                 final DeploymentMode mode,
                                 final List<Contributor> contributor);
 
+    WorkspaceProject newProject(final OrganizationalUnit organizationalUnit,
+                                final POM pom,
+                                final DeploymentMode mode,
+                                final List<Contributor> contributor,
+                                final Repository templateRepository);
+
+    WorkspaceProject newProject(final OrganizationalUnit organizationalUnit,
+                                final POM pom,
+                                final DeploymentMode mode,
+                                final List<Contributor> contributor,
+                                final Repository templateRepository,
+                                final String remoteRepositoryUrl);
+
     String createFreshProjectName(final OrganizationalUnit organizationalUnit,
                                   final String name);
 
@@ -75,4 +88,13 @@ public interface WorkspaceProjectService {
                                     final String branchName);
 
     WorkspaceProject resolveProjectByRepositoryAlias(final Space space, final String repositoryAlias);
+
+    void addBranch(final String newBranchName,
+                   final String baseBranchName,
+                   final WorkspaceProject project,
+                   final String userIdentifier);
+
+    void removeBranch(final String branchName,
+                      final WorkspaceProject project,
+                      final String userIdentifier);
 }
