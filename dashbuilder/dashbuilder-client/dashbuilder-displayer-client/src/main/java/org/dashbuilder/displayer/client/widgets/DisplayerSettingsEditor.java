@@ -16,14 +16,21 @@
 package org.dashbuilder.displayer.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.Console;
+import elemental2.dom.DomGlobal;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.dataset.DataColumn;
 import org.dashbuilder.dataset.DataSet;
@@ -34,6 +41,7 @@ import org.dashbuilder.displayer.DisplayerAttributeDef;
 import org.dashbuilder.displayer.DisplayerAttributeGroupDef;
 import org.dashbuilder.displayer.DisplayerConstraints;
 import org.dashbuilder.displayer.DisplayerSettings;
+import org.dashbuilder.displayer.MapColorScheme;
 import org.dashbuilder.displayer.Position;
 import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.DisplayerLocator;
@@ -98,6 +106,8 @@ public class DisplayerSettingsEditor implements IsWidget {
         String getMeterValidationLowerI18n(String level);
 
         String getMeterValidationInvalidI18n();
+
+        String getMapColorSchemeI18n(MapColorScheme colorScheme);
     }
 
     protected View view;
@@ -110,7 +120,6 @@ public class DisplayerSettingsEditor implements IsWidget {
     protected Event<DisplayerSettingsChangedEvent> settingsChangedEvent;
 
     public static final String COLUMNS_PREFFIX = "columns.";
-
 
     @Inject
     public DisplayerSettingsEditor(View view,
@@ -141,21 +150,26 @@ public class DisplayerSettingsEditor implements IsWidget {
             this.supportedAttributes = displayerContraints.getSupportedAttributes();
 
             displayer.getDataSetHandler().lookupDataSet(new DataSetReadyCallback() {
+
                 @Override
                 public void callback(DataSet dataSet) {
                     show();
                 }
+
                 @Override
                 public void notFound() {
                     view.dataSetNotFound();
                 }
+
                 @Override
                 public boolean onError(final ClientRuntimeError error) {
+                    DomGlobal.console.error(error);
                     view.error(error.getMessage());
                     return false;
                 }
             });
         } catch (Exception e) {
+            DomGlobal.console.error(e);
             view.error(e.toString());
         }
     }
@@ -209,7 +223,7 @@ public class DisplayerSettingsEditor implements IsWidget {
 
             if (isSupported(CHART_RESIZABLE)) {
                 view.addBooleanProperty(CHART_RESIZABLE, displayerSettings.isResizable());
-            }            
+            }
             if (isSupported(CHART_WIDTH)) {
                 view.addTextProperty(CHART_WIDTH, String.valueOf(displayerSettings.getChartWidth()), createLongValidator());
             }
@@ -368,7 +382,7 @@ public class DisplayerSettingsEditor implements IsWidget {
             view.addCategory(COLUMNS_GROUP);
 
             DataSet dataSet = displayer.getDataSetHandler().getLastDataSet();
-            for (int i=0; i<dataSet.getColumns().size(); i++) {
+            for (int i = 0; i < dataSet.getColumns().size(); i++) {
 
                 DataColumn dataColumn = dataSet.getColumnByIndex(i);
                 ColumnSettings cs = displayerSettings.getColumnSettings(dataColumn);
@@ -401,6 +415,19 @@ public class DisplayerSettingsEditor implements IsWidget {
                 view.addBooleanProperty(EXPORT_TO_XLS, displayerSettings.isExcelExportAllowed());
             }
         }
+
+        if (isSupported(MAP_GROUP)) {
+            view.addCategory(MAP_GROUP);
+
+            if (isSupported(MAP_COLOR_SCHEME)) {
+                List<String> colorsSchemes = Stream.of(MapColorScheme.values())
+                                                   .map(view::getMapColorSchemeI18n)
+                                                   .collect(Collectors.toList());
+
+                String mapColorSchemePositionLabel = view.getMapColorSchemeI18n(displayerSettings.getMapColorScheme());
+                view.addListProperty(MAP_COLOR_SCHEME, colorsSchemes, mapColorSchemePositionLabel);
+            }
+        }
         view.show();
     }
 
@@ -414,14 +441,11 @@ public class DisplayerSettingsEditor implements IsWidget {
 
                 if ("name".equals(setting)) {
                     displayerSettings.setColumnName(columnId, attrValue);
-                }
-                else if ("empty".equals(setting)) {
+                } else if ("empty".equals(setting)) {
                     displayerSettings.setColumnEmptyTemplate(columnId, attrValue);
-                }
-                else if ("pattern".equals(setting)) {
+                } else if ("pattern".equals(setting)) {
                     displayerSettings.setColumnValuePattern(columnId, attrValue);
-                }
-                else if ("expression".equals(setting)) {
+                } else if ("expression".equals(setting)) {
                     displayerSettings.setColumnValueExpression(columnId, attrValue);
                 }
             }
@@ -452,11 +476,11 @@ public class DisplayerSettingsEditor implements IsWidget {
     public class LongValidator implements PropertyFieldValidator {
 
         @Override
-        public boolean validate( Object value ) {
+        public boolean validate(Object value) {
             try {
-                Long.parseLong( value.toString() );
+                Long.parseLong(value.toString());
                 return true;
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -473,11 +497,11 @@ public class DisplayerSettingsEditor implements IsWidget {
     public class DoubleValidator implements PropertyFieldValidator {
 
         @Override
-        public boolean validate( Object value ) {
+        public boolean validate(Object value) {
             try {
-                Double.parseDouble( value.toString() );
+                Double.parseDouble(value.toString());
                 return true;
-            } catch ( Exception e ) {
+            } catch (Exception e) {
                 return false;
             }
         }
@@ -505,31 +529,39 @@ public class DisplayerSettingsEditor implements IsWidget {
 
         private long getLevelValue(int level) {
             switch (level) {
-                case 0: return displayerSettings.getMeterStart();
-                case 1: return displayerSettings.getMeterWarning();
-                case 2: return displayerSettings.getMeterCritical();
-                case 3: return displayerSettings.getMeterEnd();
+                case 0:
+                    return displayerSettings.getMeterStart();
+                case 1:
+                    return displayerSettings.getMeterWarning();
+                case 2:
+                    return displayerSettings.getMeterCritical();
+                case 3:
+                    return displayerSettings.getMeterEnd();
             }
             return level < 0 ? Long.MIN_VALUE : Long.MAX_VALUE;
         }
 
         private String getLevelDescr(int level) {
             switch (level) {
-                case 0: return view.getMeterStartI18n();
-                case 1: return view.getMeterWarningI18n();
-                case 2: return view.getMeterCriticalI18n();
-                case 3: return view.getMeterEndI18n();
+                case 0:
+                    return view.getMeterStartI18n();
+                case 1:
+                    return view.getMeterWarningI18n();
+                case 2:
+                    return view.getMeterCriticalI18n();
+                case 3:
+                    return view.getMeterEndI18n();
             }
             return view.getMeterUnknownI18n();
         }
 
         @Override
-        public boolean validate( Object value ) {
+        public boolean validate(Object value) {
             if (!super.validate(value)) {
                 return false;
             }
             long thisLevel = Long.parseLong(value.toString());
-            long lowerLevel = getLevelValue(level-1);
+            long lowerLevel = getLevelValue(level - 1);
             long upperLevel = getLevelValue(level + 1);
             lowerOk = thisLevel >= lowerLevel;
             upperOk = thisLevel <= upperLevel;

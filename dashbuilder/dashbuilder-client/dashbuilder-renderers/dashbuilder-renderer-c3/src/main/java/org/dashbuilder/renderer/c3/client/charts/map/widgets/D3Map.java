@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import org.dashbuilder.displayer.MapColorScheme;
 import org.dashbuilder.renderer.c3.client.charts.map.D3MapConf;
 import org.dashbuilder.renderer.c3.client.charts.map.geojson.CountriesGeoJsonService;
 import org.dashbuilder.renderer.c3.client.jsbinding.d3.D3PathGenerator;
@@ -73,7 +74,7 @@ public class D3Map implements IsElement {
     private HTMLDivElement mapContainer;
 
     D3 d3 = D3.Builder.get();
-    final String[] COLORS_SCHEME = d3.getSchemeGreens()[D3_COLOR_SCHEME_TOTAL];
+    private String[] colorsScheme;
 
     @PostConstruct
     public void init() {
@@ -92,16 +93,17 @@ public class D3Map implements IsElement {
         this.conf = conf;
         this.countriesGeoJsonService = conf.getCountriesGeoJsonService();
         this.data = conf.getData();
-        Element mapSVG = DomGlobal.document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        Selection d3Selection = d3.select(mapSVG);
-        D3PathGenerator pathGenerator = createPathGenerator();
-        IntSummaryStatistics statistics = data.values().stream()
-                                              .mapToInt(v -> v.intValue()).summaryStatistics();
+        this.colorsScheme = getScheme(conf.getColorScheme())[D3_COLOR_SCHEME_TOTAL];
+        final Element mapSVG = DomGlobal.document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        final Selection d3Selection = d3.select(mapSVG);
+        final D3PathGenerator pathGenerator = createPathGenerator();
+        final IntSummaryStatistics statistics = data.values().stream()
+                                                    .mapToInt(v -> v.intValue()).summaryStatistics();
         Integer[] domain = new Integer[]{statistics.getMin(), statistics.getMax()};
-        colorScale = d3.scaleQuantize().domain(domain).range(COLORS_SCHEME);
+        colorScale = d3.scaleQuantize().domain(domain).range(colorsScheme);
 
         D3 map = createMap(d3Selection, pathGenerator);
-        
+
         if (conf.isRegions()) {
             fillRegions(map);
         }
@@ -110,6 +112,19 @@ public class D3Map implements IsElement {
         }
         createLegend(d3Selection);
         mapContainer.appendChild(mapSVG);
+    }
+
+    private String[][] getScheme(MapColorScheme colorScheme) {
+        switch (colorScheme) {
+            case BLUE:
+                return d3.getSchemeBlues();
+            case GREEN:
+                return d3.getSchemeGreens();
+            case RED:
+                return d3.getSchemeReds();
+            default:
+                return d3.getSchemeGreens();
+        }
     }
 
     private D3 createMap(Selection d3Selection, D3PathGenerator pathGenerator) {
@@ -126,7 +141,7 @@ public class D3Map implements IsElement {
     private void createLegend(D3 d3Selection) {
         int titleSize = 5;
         int legendSquareSize = 12;
-        int legendSize = titleSize + (legendSquareSize * COLORS_SCHEME.length);
+        int legendSize = titleSize + (legendSquareSize * colorsScheme.length);
         AtomicInteger rectPos = new AtomicInteger();
         AtomicInteger textPos = new AtomicInteger(legendSquareSize);
         String translate = "translate(0, " + (height - legendSize - 2) + ")";
