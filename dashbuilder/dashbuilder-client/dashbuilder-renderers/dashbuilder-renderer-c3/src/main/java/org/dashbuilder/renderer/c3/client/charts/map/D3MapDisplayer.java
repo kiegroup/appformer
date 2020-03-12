@@ -107,7 +107,6 @@ public class D3MapDisplayer extends C3AbstractDisplayer<D3MapDisplayer.View>  {
         String backgroundColor = displayerSettings.getChartBackgroundColor();
         String columnName = getDataColumnName();
         MapColorScheme colorScheme = displayerSettings.getMapColorScheme();
-//        MapColorScheme colorScheme = MapColorScheme.RED;
         conf = D3MapConf.of(columnName, data, markers, regions, backgroundColor, geoService, this::format, this::selectLocation, colorScheme);
         getView().createMap(conf);
     }
