@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
+import org.uberfire.ext.editor.commons.backend.version.CurrentBranch;
 import org.uberfire.spaces.Space;
 
 import static org.junit.Assert.*;
@@ -64,6 +65,9 @@ public class ConfiguredRepositoriesTest {
 
     @Mock
     private SpaceConfigStorageRegistry spaceConfigStorageRegistry;
+
+    @Mock
+    private CurrentBranch currentBranch;
 
     @Before
     public void setUp() throws Exception {
@@ -126,7 +130,8 @@ public class ConfiguredRepositoriesTest {
         }).when(spaceConfigStorageRegistry).get(any());
 
         configuredRepositories = new ConfiguredRepositoriesImpl(repositoryFactory,
-                                                                spaceConfigStorageRegistry);
+                                                                spaceConfigStorageRegistry,
+                                                                currentBranch);
     }
 
     private List<Contributor> createAdminContributors(String... username) {

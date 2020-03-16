@@ -53,6 +53,9 @@ public class VersionServiceImpl
     @Inject
     private PathResolver pathResolver;
 
+    @Inject
+    private CurrentBranch currentBranch;
+
     @Override
     public List<VersionRecord> getVersions(final Path path) {
 
@@ -75,8 +78,8 @@ public class VersionServiceImpl
             ioService.startBatch(Paths.convert(_path).getFileSystem());
 
             final org.uberfire.java.nio.file.Path path = pathResolver.resolveMainFilePath(convert(_path));
-            final org.uberfire.java.nio.file.Path target = path.getFileSystem().getPath(path.toString());
-
+            final org.uberfire.java.nio.file.Path target = path.getFileSystem()
+                    .getPath(currentBranch.getName(),path.toString().split("/"));
             return convert(ioService.copy(path,
                                           target,
                                           REPLACE_EXISTING,
