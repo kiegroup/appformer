@@ -21,15 +21,19 @@ import org.appformer.kogito.bridge.client.resource.interop.ResourceContentOption
 
 /**
  * Service to access resources in the project or workspace where the editor is open
+ *
  */
 public interface ResourceContentService {
 
     /**
      * Returns a resource's content
-     * @param uri the resource URI relative to the workspace/project
-     * @return The resource content or null if the resource is not available
+     *
+     * @param uri
+     *  the resource URI relative to the workspace/project
+     * @return
+     * The resource content or null if the resource is not available
      */
-    Promise<String> get(String uri);
+    public Promise<String> get(String uri);
 
     /**
      * Returns a resource's content
@@ -45,8 +49,12 @@ public interface ResourceContentService {
 
     /**
      * List files from the project/workspace where the editor is running
-     * @param pattern A GLOB pattern to filter files. To list all files use "*"
-     * @return The list of matched resources URIs
+     *
+     * @param pattern
+     * A GLOB pattern to filter files. To list all files use "*"
+     * @return
+     * The list of matched resources URIs
      */
-    Promise<String[]> list(String pattern);
+    public Promise<String[]> list(String pattern);
+
 }

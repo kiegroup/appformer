@@ -37,7 +37,7 @@ public class ResourceContentServiceProducer {
         if (WindowRef.isEnvelopeAvailable()) {
             return new EnvelopeResourceContentService();
         }
-        DomGlobal.console.info("[ResourceContentServiceProducer] Envelope API is not available. Producing NoOpKeyboardShortcutsService");
+        DomGlobal.console.info("[ResourceContentServiceProducer] Envelope API is not available. Producing NoOpResourceContentService");
         return new NoOpResourceContentService();
     }
 

@@ -19,10 +19,10 @@ package org.appformer.kogito.bridge.client.resource.interop;
 import elemental2.promise.Promise;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
-import org.appformer.kogito.bridge.client.resource.ResourceContentService;
 
 /**
- * Javascript bridge to access actual KeyboardShortcutsApi available in the envelope namespace
+ * Javascript bridge to access actual ResourceContentService available in the envelope namespace
+ *
  */
 @JsType(isNative = true, namespace = "window", name = "envelope")
 public class ResourceContentEditorServiceWrapper {
@@ -35,4 +35,5 @@ public class ResourceContentEditorServiceWrapper {
 
     @JsProperty(name = "resourceContentEditorService")
     public static native ResourceContentEditorServiceWrapper get();
+
 }
