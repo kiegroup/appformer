@@ -30,6 +30,7 @@ import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.server.repositories.RepositoryFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.editor.commons.backend.version.CurrentBranch;
 import org.uberfire.spaces.Space;
 
 /**
@@ -46,15 +47,18 @@ public class ConfiguredRepositoriesImpl implements ConfiguredRepositories {
 
     private RepositoryFactory repositoryFactory;
     private SpaceConfigStorageRegistry spaceConfigStorage;
+    private CurrentBranch currentBranch;
 
     public ConfiguredRepositoriesImpl() {
     }
 
     @Inject
     public ConfiguredRepositoriesImpl(final RepositoryFactory repositoryFactory,
-                                      final SpaceConfigStorageRegistry spaceConfigStorage) {
+                                      final SpaceConfigStorageRegistry spaceConfigStorage,
+                                      final CurrentBranch currentBranch) {
         this.repositoryFactory = repositoryFactory;
         this.spaceConfigStorage = spaceConfigStorage;
+        this.currentBranch = currentBranch;
     }
 
     /**
@@ -117,6 +121,7 @@ public class ConfiguredRepositoriesImpl implements ConfiguredRepositories {
                 for (final Branch branch : r.getBranches()) {
                     Path rootPath = Paths.normalizePath(branch.getPath());
                     if (root.equals(rootPath)) {
+                        currentBranch.setName(branch.getName());
                         return true;
                     }
                 }
