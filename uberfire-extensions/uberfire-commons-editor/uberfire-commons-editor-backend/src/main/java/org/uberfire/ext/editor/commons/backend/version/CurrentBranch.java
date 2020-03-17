@@ -28,6 +28,9 @@ public class CurrentBranch implements Serializable {
 
     private String name;
 
+    public CurrentBranch() {
+    }
+
     public String getName() {
         return name;
     }
