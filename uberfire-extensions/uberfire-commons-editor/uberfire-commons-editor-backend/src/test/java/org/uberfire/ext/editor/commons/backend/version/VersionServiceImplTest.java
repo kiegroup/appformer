@@ -50,8 +50,6 @@ public class VersionServiceImplTest {
     private PathResolver pathResolver;
     @InjectMocks
     private VersionServiceImpl versionService;
-    @Mock
-    private CurrentBranch currentBranch;
 
     @Before
     public void setUp() throws Exception {
@@ -67,7 +65,6 @@ public class VersionServiceImplTest {
         final org.uberfire.java.nio.file.Path nioPath = Paths.convert(path);
 
         doReturn(nioPath).when(pathResolver).resolveMainFilePath(any());
-        doReturn("master").when(currentBranch).getName();
 
         final InOrder order = inOrder(ioService);
 
