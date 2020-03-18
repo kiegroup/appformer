@@ -27,6 +27,7 @@ import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.ext.editor.commons.client.file.RestoreUtil;
+import org.uberfire.ext.editor.commons.client.menu.CurrentBranchProvider;
 import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.editor.commons.version.VersionService;
 import org.uberfire.ext.editor.commons.version.events.RestoreEvent;
@@ -48,17 +49,21 @@ public class RestorePopUpPresenter {
 
     private View view;
 
+    private CurrentBranchProvider currentBranchProvider;
+
     @Inject
     public RestorePopUpPresenter(View view,
                                  BusyIndicatorView busyIndicatorView,
                                  Caller<VersionService> versionService,
                                  Event<RestoreEvent> restoreEvent,
-                                 RestoreUtil restoreUtil) {
+                                 RestoreUtil restoreUtil,
+                                 CurrentBranchProvider currentBranchProvider) {
         this.view = view;
         this.busyIndicatorView = busyIndicatorView;
         this.versionService = versionService;
         this.restoreEvent = restoreEvent;
         this.restoreUtil = restoreUtil;
+        this.currentBranchProvider = currentBranchProvider;
     }
 
     @PostConstruct
@@ -101,7 +106,7 @@ public class RestorePopUpPresenter {
             busyIndicatorView.showBusyIndicator(CommonConstants.INSTANCE.Restoring());
             versionService.call(successCallback(currentVersionRecordUri),
                                 errorCallback()).restore(currentPath,
-                                                         comment);
+                                                         comment, currentBranchProvider.getName());
         };
     }
 

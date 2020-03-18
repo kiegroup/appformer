@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.ObservablePath;
 import org.uberfire.ext.editor.commons.client.file.RestoreUtil;
+import org.uberfire.ext.editor.commons.client.menu.CurrentBranchProvider;
 import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.editor.commons.version.VersionService;
 import org.uberfire.ext.editor.commons.version.events.RestoreEvent;
@@ -61,13 +62,16 @@ public class RestorePopUpPresenterTest {
 
     RestorePopUpPresenter presenter;
 
+    CurrentBranchProvider currentBranchProvider;
+
     @Before
     public void init() throws Exception {
         presenter = new RestorePopUpPresenter(view,
                                               busyIndicatorView,
                                               versionService,
                                               restoreEvent,
-                                              restoreUtil) {
+                                              restoreUtil,
+                                              currentBranchProvider) {
         };
     }
 

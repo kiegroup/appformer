@@ -33,5 +33,5 @@ public interface VersionService {
     Path getPathToPreviousVersion(String uri);
 
     Path restore(final Path path,
-                 final String comment);
+                 final String comment, final String currentBranch);
 }

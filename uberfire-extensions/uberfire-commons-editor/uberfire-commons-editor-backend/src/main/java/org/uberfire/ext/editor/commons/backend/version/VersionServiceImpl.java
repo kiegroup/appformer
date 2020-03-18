@@ -70,13 +70,14 @@ public class VersionServiceImpl
 
     @Override
     public Path restore(final Path _path,
-                        final String comment) {
+                        final String comment,
+                        final String currentBranch) {
         try {
             ioService.startBatch(Paths.convert(_path).getFileSystem());
 
             final org.uberfire.java.nio.file.Path path = pathResolver.resolveMainFilePath(convert(_path));
-            final org.uberfire.java.nio.file.Path target = path.getFileSystem().getPath(path.toString());
-
+            final org.uberfire.java.nio.file.Path target = path.getFileSystem()
+                    .getPath(currentBranch,path.toString().split("/"));
             return convert(ioService.copy(path,
                                           target,
                                           REPLACE_EXISTING,

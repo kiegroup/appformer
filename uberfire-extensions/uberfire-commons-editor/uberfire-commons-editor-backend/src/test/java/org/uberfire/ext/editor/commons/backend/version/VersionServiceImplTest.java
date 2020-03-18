@@ -69,7 +69,8 @@ public class VersionServiceImplTest {
         final InOrder order = inOrder(ioService);
 
         versionService.restore(path,
-                               "Restore comment");
+                               "Restore comment",
+                               "master");
 
         order.verify(ioService).startBatch(nioPath.getFileSystem());
 

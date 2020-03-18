@@ -88,6 +88,7 @@ public class BasicFileMenuBuilderTest {
     private CallerMock<SupportsCopy> copyCaller;
 
     private BasicFileMenuBuilderImpl builder;
+    private CurrentBranchProvider currentBranchProvider;
 
     @Before
     public void setup() {
@@ -96,7 +97,8 @@ public class BasicFileMenuBuilderTest {
                                                renamePopUpPresenter,
                                                busyIndicatorView,
                                                notification,
-                                               restoreVersionCommandProvider);
+                                               restoreVersionCommandProvider,
+                                               currentBranchProvider);
         deleteCaller = new CallerMock<>(deleteService);
         renameCaller = new CallerMock<>(renameService);
         when(provider.getPath()).thenReturn(mockPath);

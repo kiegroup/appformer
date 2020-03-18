@@ -45,7 +45,7 @@ public class RestoreVersionCommandProvider {
     @Inject
     private SavePopUpPresenter savePopUpPresenter;
 
-    public Command getCommand(final Path path) {
+    public Command getCommand(final Path path, final String currentBranchName) {
         return new Command() {
 
             @Override
@@ -60,7 +60,8 @@ public class RestoreVersionCommandProvider {
                                                         getRestorationSuccessCallback(),
                                                         new HasBusyIndicatorDefaultErrorCallback(busyIndicatorView))
                                                         .restore(path,
-                                                                 comment);
+                                                                 comment,
+                                                                 currentBranchName);
                                             }
                                         });
             }

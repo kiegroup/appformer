@@ -75,6 +75,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     private List<MenuItem> topLevelMenus = new ArrayList<MenuItem>();
     private List<MenuItem> menuItemsSyncedWithLockState = new ArrayList<MenuItem>();
     private LockSyncMenuStateHelper lockSyncMenuStateHelper = new BasicFileMenuBuilder.BasicLockSyncMenuStateHelper();
+    private CurrentBranchProvider currentBranchProvider;
 
     @Inject
     public BasicFileMenuBuilderImpl(final DeletePopUpPresenter deletePopUpPresenter,
@@ -82,13 +83,15 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                                     final RenamePopUpPresenter renamePopUpPresenter,
                                     final BusyIndicatorView busyIndicatorView,
                                     final Event<NotificationEvent> notification,
-                                    final RestoreVersionCommandProvider restoreVersionCommandProvider) {
+                                    final RestoreVersionCommandProvider restoreVersionCommandProvider,
+                                    final CurrentBranchProvider currentBranchProvider) {
         this.deletePopUpPresenter = deletePopUpPresenter;
         this.copyPopUpPresenter = copyPopUpPresenter;
         this.renamePopUpPresenter = renamePopUpPresenter;
         this.busyIndicatorView = busyIndicatorView;
         this.notification = notification;
         this.restoreVersionCommandProvider = restoreVersionCommandProvider;
+        this.currentBranchProvider = currentBranchProvider;
     }
 
     @Override
@@ -344,7 +347,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
 
     @Override
     public BasicFileMenuBuilder addRestoreVersion(final Path path) {
-        this.restoreCommand = restoreVersionCommandProvider.getCommand(path);
+        this.restoreCommand = restoreVersionCommandProvider.getCommand(path, currentBranchProvider.getName());
         return this;
     }
 
