@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.dashbuilder</groupId>
     <artifactId>dashbuilder-client</artifactId>
-    <version>7.34.0-SNAPSHOT</version>
+    <version>7.35.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>dashbuilder-renderers</artifactId>
@@ -33,7 +33,6 @@
   <modules>
     <module>dashbuilder-renderer-default</module>
     <module>dashbuilder-renderer-chartjs</module>
-    <module>dashbuilder-renderer-lienzo</module>
     <module>dashbuilder-renderer-c3</module>
     <module>dashbuilder-renderer-google</module>
   </modules>
