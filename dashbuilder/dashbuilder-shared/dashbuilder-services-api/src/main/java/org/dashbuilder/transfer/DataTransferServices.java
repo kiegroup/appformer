@@ -17,6 +17,7 @@
 package org.dashbuilder.transfer;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 
@@ -27,6 +28,11 @@ public interface DataTransferServices {
     public static final String EXPORT_FILE_NAME = "export.zip";
     public static final String IMPORT_FILE_NAME = "import.zip";
 
-    public String doExport() throws java.io.IOException;
+    public String doExport(DataTransferExportModel exportsModel) throws java.io.IOException;
+    
     public List<String> doImport() throws Exception;
+    
+    public DataTransferAssets assetsToExport();
+    
+    public Map<String, String> validateExport(DataTransferExportModel exportsModel);
 }

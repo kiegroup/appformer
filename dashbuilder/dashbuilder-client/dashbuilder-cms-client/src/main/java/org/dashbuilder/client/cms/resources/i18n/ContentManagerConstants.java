@@ -109,5 +109,8 @@ public interface ContentManagerConstants extends Messages {
     String exportText();
 
     String importText();
-}
 
+    String dataTransferExportPopUpViewTitle();
+
+    String dataTransferExportError();
+}

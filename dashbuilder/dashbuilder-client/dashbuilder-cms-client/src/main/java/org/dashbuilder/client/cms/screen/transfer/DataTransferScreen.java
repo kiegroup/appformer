@@ -30,6 +30,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElemental;
+import org.uberfire.mvp.ParameterizedCommand;
+import org.dashbuilder.transfer.DataTransferExportModel;
 import org.dashbuilder.transfer.DataTransferServices;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 
@@ -42,6 +44,9 @@ public class DataTransferScreen {
     private Caller<DataTransferServices> dataTransferServices;
     private ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
     private DataTransferPopUp popUp;
+    private DataTransferExportPopUp dataTransferExportPopUp;
+    
+    protected ParameterizedCommand<DataTransferExportModel> exportCallback;
 
     public DataTransferScreen() {
     }
@@ -50,11 +55,13 @@ public class DataTransferScreen {
     public DataTransferScreen(
             final View view,
             final DataTransferPopUp popUp,
-            final Caller<DataTransferServices> dataTransferServices) {
+            final Caller<DataTransferServices> dataTransferServices,
+            DataTransferExportPopUp dataTransferExportPopUp) {
 
         this.view = view;
         this.popUp = popUp;
         this.dataTransferServices = dataTransferServices;
+        this.dataTransferExportPopUp = dataTransferExportPopUp;
     }
 
     @WorkbenchPartTitle
@@ -70,24 +77,28 @@ public class DataTransferScreen {
     @PostConstruct
     public void init() {
         view.init(this);
+        exportCallback = dataTransferExportModel -> {
+            try {
+                dataTransferServices.call(
+                    (RemoteCallback<String>) path -> {
+                        view.exportOK();
+                        view.download(path);
+
+                    }, (ErrorCallback<Exception>) (message, throwable) -> {
+                        view.exportError(throwable);
+                        return false;
+
+                    }).doExport(dataTransferExportModel);
+
+            } catch (Exception e) {
+                view.exportError(e);
+            }
+        };
+        dataTransferExportPopUp.setCallback(exportCallback);
     }
 
     public void doExport() {
-        try {
-            dataTransferServices.call(
-                (RemoteCallback<String>) path -> {
-                    view.exportOK();
-                    view.download(path);
-
-                }, (ErrorCallback<Exception>) (message, throwable) -> {
-                    view.exportError(throwable);
-                    return false;
-
-                }).doExport();
-
-        } catch (Exception e) {
-            view.exportError(e);
-        }
+        dataTransferExportPopUp.load();
     }
 
     public void doImport() {
