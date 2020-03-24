@@ -16,18 +16,20 @@
 
 package org.appformer.kogito.bridge.client.keyboardshortcuts;
 
+import org.appformer.client.keyboardShortcuts.KeyboardShortcutsApiOpts;
+
 /**
  * This {@link KeyboardShortcutsApi} implementation is used when the envelope API is not available
  */
 public class NoOpKeyboardShortcutsService implements KeyboardShortcutsApi {
 
     @Override
-    public int registerKeyPress(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Opts opts) {
+    public int registerKeyPress(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApiOpts opts) {
         return 0;
     }
 
     @Override
-    public int registerKeyDownThenUp(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Action onKeyUp, KeyboardShortcutsApi.Opts opts) {
+    public int registerKeyDownThenUp(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Action onKeyUp, KeyboardShortcutsApiOpts opts) {
         return 0;
     }
 

@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.keyboardshortcuts;
+package org.appformer.client.keyboardShortcuts;
 
-import jsinterop.annotations.JsFunction;
-import org.appformer.client.keyboardShortcuts.KeyboardShortcutsApiOpts;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 
-public interface KeyboardShortcutsApi {
+@JsType
+public class KeyboardShortcutsApiOpts {
 
-    int registerKeyPress(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApiOpts opts);
+    public static final KeyboardShortcutsApiOpts DEFAULT = new KeyboardShortcutsApiOpts(Repeat.NO_REPEAT);
 
-    int registerKeyDownThenUp(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Action onKeyUp, KeyboardShortcutsApiOpts opts);
+    private final Repeat repeat;
 
-    void deregister(int id);
+    public KeyboardShortcutsApiOpts(final Repeat repeat) {
+        this.repeat = repeat;
+    }
 
-    @JsFunction
-    @FunctionalInterface
-    interface Action {
+    @JsProperty
+    public boolean getRepeat() {
+        return Repeat.REPEAT.equals(repeat);
+    }
 
-        void execute();
+    public enum Repeat {
+        REPEAT,
+        NO_REPEAT
     }
 }

@@ -17,36 +17,37 @@
 package org.appformer.kogito.bridge.client.context.impl;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 
-import org.appformer.kogito.bridge.client.context.KogitoChannel;
-import org.appformer.kogito.bridge.client.context.EditorContextProvider;
-import org.appformer.kogito.bridge.client.context.KogitoOperatingSystem;
+import org.appformer.client.context.Channel;
+import org.appformer.client.context.EditorContextProvider;
+import org.appformer.client.context.OperatingSystem;
 import org.appformer.kogito.bridge.client.context.interop.EditorContextWrapper;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 
+@Alternative
 @ApplicationScoped
-public class EditorContextProviderImpl implements EditorContextProvider {
+public class KogitoEditorContextProviderImpl implements EditorContextProvider {
 
     @Override
-    public KogitoChannel getChannel() {
+    public Channel getChannel() {
         if (WindowRef.isEnvelopeAvailable()) {
             final String channel = EditorContextWrapper.get().getChannel();
             if (channel != null) {
-                return KogitoChannel.withName(channel);
+                return Channel.withName(channel);
             }
         }
-        return KogitoChannel.DEFAULT;
+        return Channel.DEFAULT;
     }
 
     @Override
-    public KogitoOperatingSystem getOperatingSystem() {
+    public OperatingSystem getOperatingSystem() {
         if (WindowRef.isEnvelopeAvailable()) {
             final String os = EditorContextWrapper.get().getOperatingSystem();
             if (os != null) {
-                return KogitoOperatingSystem.withName(os);
+                return OperatingSystem.withName(os);
             }
         }
-        return KogitoOperatingSystem.DEFAULT;
+        return OperatingSystem.DEFAULT;
     }
-
 }

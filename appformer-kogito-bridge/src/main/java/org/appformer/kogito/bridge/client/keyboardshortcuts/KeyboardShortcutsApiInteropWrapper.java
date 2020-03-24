@@ -18,6 +18,7 @@ package org.appformer.kogito.bridge.client.keyboardshortcuts;
 
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
+import org.appformer.client.keyboardShortcuts.KeyboardShortcutsApiOpts;
 
 /**
  * Javascript bridge to access actual KeyboardShortcutsApi available in the envelope namespace
@@ -28,13 +29,13 @@ public class KeyboardShortcutsApiInteropWrapper {
     public native int registerKeyPress(final String combination,
                                        final String label,
                                        final KeyboardShortcutsApi.Action onKeyDown,
-                                       final KeyboardShortcutsApi.Opts opts);
+                                       final KeyboardShortcutsApiOpts opts);
 
     public native int registerKeyDownThenUp(final String combination,
                                             final String label,
                                             final KeyboardShortcutsApi.Action onKeyDown,
                                             final KeyboardShortcutsApi.Action onKeyUp,
-                                            final KeyboardShortcutsApi.Opts opts);
+                                            final KeyboardShortcutsApiOpts opts);
 
     public native void deregister(final int id);
 

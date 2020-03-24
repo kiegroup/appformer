@@ -16,29 +16,24 @@
 
 package org.appformer.kogito.bridge.client.context;
 
-import java.util.stream.Stream;
+import org.appformer.client.context.Channel;
+import org.junit.Test;
 
-public enum KogitoChannel {
+import static org.junit.Assert.assertEquals;
 
-    DEFAULT("DEFAULT"),
-    ONLINE("ONLINE"),
-    VSCODE("VSCODE"),
-    GITHUB("GITHUB");
+public class ChannelTest {
 
-    private final String name;
-
-    KogitoChannel(String name) {
-        this.name = name;
+    @Test
+    public void withNameTest() {
+        assertEquals(Channel.GITHUB, Channel.withName("GitHub"));
+        assertEquals(Channel.DEFAULT, Channel.withName("dEfAuLt"));
+        assertEquals(Channel.ONLINE, Channel.withName("ONLine"));
+        assertEquals(Channel.VSCODE, Channel.withName("VSCode"));
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public static KogitoChannel withName(String name) {
-        return Stream.of(KogitoChannel.values())
-                     .filter(channel -> channel.getName().equalsIgnoreCase(name))
-                     .findFirst().orElseThrow(() -> new IllegalArgumentException("Name not recognized: " + name));
+    @Test(expected = IllegalArgumentException.class)
+    public void withWrongNameTest() {
+        Channel.withName("foo");
     }
 
 }

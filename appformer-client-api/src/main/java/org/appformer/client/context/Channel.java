@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.context;
+package org.appformer.client.context;
 
 import java.util.stream.Stream;
 
-public enum KogitoOperatingSystem {
+public enum Channel {
 
     DEFAULT("DEFAULT"),
-    MACOS("MACOS"),
-    LINUX("LINUX"),
-    WINDOWS("WINDOWS");
+    ONLINE("ONLINE"),
+    VSCODE("VSCODE"),
+    GITHUB("GITHUB");
 
     private final String name;
 
-    KogitoOperatingSystem(final String name) {
+    Channel(String name) {
         this.name = name;
     }
 
@@ -35,9 +35,9 @@ public enum KogitoOperatingSystem {
         return name;
     }
 
-    public static KogitoOperatingSystem withName(final String name) {
-        return Stream.of(KogitoOperatingSystem.values())
-                     .filter(os -> os.getName().equalsIgnoreCase(name))
+    public static Channel withName(String name) {
+        return Stream.of(Channel.values())
+                     .filter(channel -> channel.getName().equalsIgnoreCase(name))
                      .findFirst().orElseThrow(() -> new IllegalArgumentException("Name not recognized: " + name));
     }
 
