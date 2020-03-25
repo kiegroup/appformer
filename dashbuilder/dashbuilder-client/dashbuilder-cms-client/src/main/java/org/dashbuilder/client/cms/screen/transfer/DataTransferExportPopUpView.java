@@ -152,6 +152,7 @@ public class DataTransferExportPopUpView implements DataTransferExportPopUp.View
         };
         
         elem2Dom.appendWidgetToElement(toggleSwitchContainer, toggleSwitch);
+        toggleSwitch.setValue(true);
 
     }
 
