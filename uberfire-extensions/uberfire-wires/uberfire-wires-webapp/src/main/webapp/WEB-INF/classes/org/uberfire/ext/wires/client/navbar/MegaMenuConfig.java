@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2017 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.dashbuilder.renderer.c3.mutationobserver;
+
+package org.uberfire.ext.wires.client.navbar;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import elemental2.dom.MutationObserver;
-import elemental2.dom.MutationObserver.MutationObserverCallbackFn;
-import elemental2.dom.MutationObserverInit;
+import org.uberfire.client.workbench.widgets.menu.megamenu.brand.MegaMenuBrand;
 
 @ApplicationScoped
-public class MutationObserverFactory {
+public class MegaMenuConfig implements MegaMenuBrand {
 
-    public MutationObserverInit mutationObserverInit() {
-        return MutationObserverInit.create();
+    @Override
+    public String brandImageUrl() {
+        return "images/wires-logo.png";
     }
 
-    public MutationObserver mutationObserver(MutationObserverCallbackFn callback) {
-        return new MutationObserver(callback);
+    @Override
+    public String brandImageLabel() {
+        return "Wires";
+    }
+
+    @Override
+    public String menuAccessorLabel() {
+        return null;
     }
 }
