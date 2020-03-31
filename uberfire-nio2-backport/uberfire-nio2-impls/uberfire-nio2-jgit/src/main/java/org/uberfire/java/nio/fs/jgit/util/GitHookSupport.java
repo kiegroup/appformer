@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package org.appformer.client.context;
+package org.uberfire.java.nio.fs.jgit.util;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
+import org.uberfire.java.nio.fs.jgit.JGitFileSystem;
 
-@ApplicationScoped
-public class DefaultEditorContextProviderImpl implements EditorContextProvider {
+public interface GitHookSupport {
 
-    @Override
-    public Channel getChannel() {
-        return Channel.DEFAULT;
-    }
-
-    @Override
-    public OperatingSystem getOperatingSystem() {
-        return OperatingSystem.DEFAULT;
-    }
+    void executePostCommitHook(JGitFileSystem fileSystem);
 }
