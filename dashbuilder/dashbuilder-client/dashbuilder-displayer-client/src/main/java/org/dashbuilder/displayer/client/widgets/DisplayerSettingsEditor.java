@@ -213,13 +213,13 @@ public class DisplayerSettingsEditor implements IsWidget {
 
                 @Override
                 public boolean onError(final ClientRuntimeError error) {
-                    DomGlobal.console.error(error);
+                    console(error.getThrowable());
                     view.error(error.getMessage());
                     return false;
                 }
             });
         } catch (Exception e) {
-            DomGlobal.console.error(e);
+            console(e);
             view.error(e.toString());
         }
     }
@@ -627,6 +627,13 @@ public class DisplayerSettingsEditor implements IsWidget {
                 return view.getMeterValidationLowerI18n(getLevelDescr(level + 1));
             }
             return view.getMeterValidationInvalidI18n();
+        }
+    }
+
+    private void console(Throwable e) {
+        if (DomGlobal.console != null) {
+            DomGlobal.console.error("Error running displayer.");
+            DomGlobal.console.error(e);
         }
     }
 }
