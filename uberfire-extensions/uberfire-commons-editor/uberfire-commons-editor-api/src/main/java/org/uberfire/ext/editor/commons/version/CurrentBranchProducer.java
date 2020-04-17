@@ -15,14 +15,13 @@
  *
  */
 
-package org.uberfire.ext.editor.commons.client.menu.common;
+package org.uberfire.ext.editor.commons.version;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.uberfire.annotations.Customizable;
-import org.uberfire.ext.editor.commons.version.CurrentBranch;
 
 public class CurrentBranchProducer {
 

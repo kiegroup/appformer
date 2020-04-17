@@ -19,6 +19,7 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetMetadata;
 import org.dashbuilder.dataset.def.DataSetDef;
+import org.dashbuilder.dataset.uuid.ActiveBranchUUID;
 import org.jboss.errai.bus.server.annotations.Remote;
 
 /**
@@ -46,5 +47,5 @@ public interface DataSetLookupServices {
      *
      * @return A DataSetMetadata instance containing general information about the data set.
      */
-    DataSetMetadata lookupDataSetMetadata(String uuid) throws Exception;
+    DataSetMetadata lookupDataSetMetadata(ActiveBranchUUID activeBranchUUID) throws Exception;
 }

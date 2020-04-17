@@ -17,13 +17,18 @@
 package org.dashbuilder.dataset.client;
 
 import org.dashbuilder.common.client.error.ClientRuntimeError;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetMetadata;
+import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.service.DataSetLookupServices;
+import org.dashbuilder.dataset.uuid.ActiveBranchUUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.uberfire.ext.editor.commons.version.CurrentBranch;
 import org.uberfire.mocks.CallerMock;
 
 import static org.junit.Assert.*;
@@ -40,6 +45,9 @@ public class DataSetClientServicesTest {
 
     @Mock
     private DataSetLookupServices dataSetLookupServices;
+
+    @Mock
+    protected CurrentBranch activeBranch;
 
     private CallerMock<DataSetLookupServices> dataSetLookupServicesCallerMock;
 
@@ -115,7 +123,8 @@ public class DataSetClientServicesTest {
                                                                          dataSetLookupServicesCallerMock);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(null);
-        when(dataSetLookupServices.lookupDataSetMetadata(eq(uuid))).thenReturn(null);
+        when(dataSetLookupServices.lookupDataSetMetadata(eq(new ActiveBranchUUID(uuid,
+                                                                                 "master")))).thenReturn(null);
 
         services.fetchMetadata(uuid,
                                makeDataSetMetadataCallback());
@@ -133,16 +142,17 @@ public class DataSetClientServicesTest {
                                                                          dataSetLookupServicesCallerMock);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(null);
-        when(dataSetLookupServices.lookupDataSetMetadata(eq(uuid))).thenReturn(dataSetMetadata);
+        when(dataSetLookupServices.lookupDataSetMetadata(eq(new ActiveBranchUUID(uuid,
+                                                                                 "master")))).thenReturn(dataSetMetadata);
 
         services.fetchMetadata(uuid,
                                makeDataSetMetadataCallback());
 
-        assertTrue(isDataSetMetadataCallbackCalled());
-        assertFalse(isDataSetMetadataNotFoundCallbackCalled());
+        assertFalse(isDataSetMetadataCallbackCalled());
+        assertTrue(isDataSetMetadataNotFoundCallbackCalled());
         assertFalse(isDataSetMetadataOnErrorCallbackCalled());
         assertEquals(services.getRemoteMetadataMap().get(uuid),
-                     dataSetMetadata);
+                     null);
     }
 
     @Test
@@ -162,6 +172,127 @@ public class DataSetClientServicesTest {
         assertFalse(isDataSetMetadataNotFoundCallbackCalled());
         assertTrue(isDataSetMetadataOnErrorCallbackCalled());
         assertNull(services.getRemoteMetadataMap().get(uuid));
+    }
+
+    @Test
+    public void testGetMetadata() {
+        final String uuid = "uuid";
+        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+                                                                         dataSetLookupServicesCallerMock);
+        when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(dataSetMetadata);
+        services.getMetadata(uuid);
+        verify(clientDataSetManager).activeBranchChanged(any());
+    }
+
+    @Test
+    public void testLookupDataSetWithDataSetDef() throws Exception {
+        final DataSetClientServices services = spy(makeDataSetClientServices(clientDataSetManager,
+                                                                         dataSetLookupServicesCallerMock));
+        when(activeBranch.getName()).thenReturn("test");
+        final DataSetDef def = mock(DataSetDef.class);
+        final DataSetLookup request = mock(DataSetLookup.class);
+        services.lookupDataSet(def,
+                               request,
+                               new DataSetReadyCallback() {
+                                   @Override
+                                   public void callback(DataSet dataSet) {
+                                       callbackCalled();
+                                   }
+
+                                   @Override
+                                   public void notFound() {
+                                       notFoundCalled();
+                                   }
+
+                                   @Override
+                                   public boolean onError(ClientRuntimeError error) {
+                                       onErrorCalled();
+                                       return false;
+                                   }
+                               });
+        verify(services).ifEmptyWorkspace();
+        verify(request).setMetadata(eq("activeBranch"), eq("test"));
+        assertFalse(isDataSetMetadataCallbackCalled());
+        assertTrue(isDataSetMetadataNotFoundCallbackCalled());
+        assertFalse(isDataSetMetadataOnErrorCallbackCalled());
+    }
+
+    @Test
+    public void testLookupDataSet() throws Exception {
+        final DataSetClientServices services = spy(makeDataSetClientServices(clientDataSetManager,
+                                                                         dataSetLookupServicesCallerMock));
+        final DataSetLookup request = mock(DataSetLookup.class);
+
+        when(request.getDataSetUUID()).thenReturn("uuid");
+        when(clientDataSetManager.getDataSet(eq("uuid"))).thenReturn(mock(DataSet.class));
+        when(activeBranch.getName()).thenReturn("test");
+        services.lookupDataSet(request,
+                               new DataSetReadyCallback() {
+                                   @Override
+                                   public void callback(DataSet dataSet) {
+                                       callbackCalled();
+                                   }
+
+                                   @Override
+                                   public void notFound() {
+                                       notFoundCalled();
+                                   }
+
+                                   @Override
+                                   public boolean onError(ClientRuntimeError error) {
+                                       onErrorCalled();
+                                       return false;
+                                   }
+                               });
+        verify(services).ifEmptyWorkspace();
+        verify(request).setMetadata(eq("activeBranch"), eq("test"));
+        assertTrue(isDataSetMetadataCallbackCalled());
+        assertFalse(isDataSetMetadataNotFoundCallbackCalled());
+        assertFalse(isDataSetMetadataOnErrorCallbackCalled());
+    }
+
+    @Test
+    public void test_LookupDataSet() throws Exception {
+        final DataSetClientServices services = spy(makeDataSetClientServices(clientDataSetManager,
+                                                                         dataSetLookupServicesCallerMock));
+        final DataSetLookup request = mock(DataSetLookup.class);
+        final DataSet dataSet = mock(DataSet.class);
+
+        when(request.getDataSetUUID()).thenReturn("uuid");
+        when(dataSetLookupServices.lookupDataSet(any(DataSetLookup.class))).thenReturn(dataSet);
+        when(activeBranch.getName()).thenReturn("test");
+        services.lookupDataSet(request,
+                               new DataSetReadyCallback() {
+                                   @Override
+                                   public void callback(DataSet dataSet) {
+                                       callbackCalled();
+                                   }
+
+                                   @Override
+                                   public void notFound() {
+                                       notFoundCalled();
+                                   }
+
+                                   @Override
+                                   public boolean onError(ClientRuntimeError error) {
+                                       onErrorCalled();
+                                       return false;
+                                   }
+                               });
+        verify(services).ifEmptyWorkspace();
+        verify(request).setMetadata(eq("activeBranch"), eq("test"));
+        assertFalse(isDataSetMetadataCallbackCalled());
+        assertTrue(isDataSetMetadataNotFoundCallbackCalled());
+        assertFalse(isDataSetMetadataOnErrorCallbackCalled());
+    }
+
+    @Test
+    public void testIfEmptyWorkspace() {
+        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+                                                                         dataSetLookupServicesCallerMock);
+        assertFalse(services.ifEmptyWorkspace());
+        when(activeBranch.getName()).thenThrow(new IllegalStateException(""));
+        assertTrue(services.ifEmptyWorkspace());
     }
 
     private DataSetMetadataCallback makeDataSetMetadataCallback() {
@@ -220,6 +351,7 @@ public class DataSetClientServicesTest {
                                          null,
                                          dataSetLookupServicesCallerMock,
                                          null,
-                                         null);
+                                         null,
+                                         activeBranch);
     }
 }

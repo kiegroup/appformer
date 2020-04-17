@@ -15,10 +15,9 @@
  *
  */
 
-package org.uberfire.ext.editor.commons.client.menu.common;
+package org.uberfire.ext.editor.commons.version;
 
 import org.uberfire.annotations.FallbackImplementation;
-import org.uberfire.ext.editor.commons.version.CurrentBranch;
 
 @FallbackImplementation
 public class DefaultCurrentBranch implements CurrentBranch {

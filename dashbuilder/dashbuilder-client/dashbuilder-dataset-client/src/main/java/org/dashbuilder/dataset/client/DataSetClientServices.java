@@ -43,11 +43,14 @@ import org.dashbuilder.dataset.group.AggregateFunctionManager;
 import org.dashbuilder.dataset.service.DataSetDefServices;
 import org.dashbuilder.dataset.service.DataSetExportServices;
 import org.dashbuilder.dataset.service.DataSetLookupServices;
+import org.dashbuilder.dataset.uuid.ActiveBranchUUID;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.uberfire.annotations.Customizable;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.ext.editor.commons.version.CurrentBranch;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
@@ -57,6 +60,8 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
  */
 @ApplicationScoped
 public class DataSetClientServices {
+
+    private static final String ACTIVE_BRANCH = "activeBranch";
 
     private ClientDataSetManager clientDataSetManager;
     private PathUrlFactory pathUrlFactory;
@@ -68,6 +73,7 @@ public class DataSetClientServices {
     private Caller<DataSetLookupServices> dataSetLookupServices;
     private Caller<DataSetDefServices> dataSetDefServices;
     private Caller<DataSetExportServices> dataSetExportServices;
+    private CurrentBranch activeBranch;
 
     /**
      * A cache of DataSetMetadata instances
@@ -97,7 +103,8 @@ public class DataSetClientServices {
                                  Event<DataSetModifiedEvent> dataSetModifiedEvent,
                                  Caller<DataSetLookupServices> dataSetLookupServices,
                                  Caller<DataSetDefServices> dataSetDefServices,
-                                 Caller<DataSetExportServices> dataSetExportServices) {
+                                 Caller<DataSetExportServices> dataSetExportServices,
+                                 @Customizable CurrentBranch activeBranch) {
 
         this.clientDataSetManager = clientDataSetManager;
         this.pathUrlFactory = pathUrlFactory;
@@ -109,6 +116,7 @@ public class DataSetClientServices {
         this.dataSetLookupServices = dataSetLookupServices;
         this.dataSetDefServices = dataSetDefServices;
         this.dataSetExportServices = dataSetExportServices;
+        this.activeBranch = activeBranch;
     }
 
     public boolean isPushRemoteDataSetEnabled() {
@@ -130,6 +138,8 @@ public class DataSetClientServices {
      */
     public void fetchMetadata(final String uuid,
                               final DataSetMetadataCallback listener) throws Exception {
+        final ActiveBranchUUID activeBranchUUID = new ActiveBranchUUID(uuid, activeBranch.getName());
+        clientDataSetManager.activeBranchChanged(activeBranchUUID);
         final DataSetMetadata metadata = clientDataSetManager.getDataSetMetadata(uuid);
 
         if (metadata != null) {
@@ -149,7 +159,7 @@ public class DataSetClientServices {
                                            },
                                            (message, throwable) -> {
                                                return listener.onError(new ClientRuntimeError(throwable));
-                                           }).lookupDataSetMetadata(uuid);
+                                           }).lookupDataSetMetadata(activeBranchUUID);
             }
         } else {
             listener.notFound();
@@ -166,6 +176,7 @@ public class DataSetClientServices {
      * @param uuid The UUID of the data set. Null if the metadata is not stored on client yet.
      */
     public DataSetMetadata getMetadata(String uuid) {
+        clientDataSetManager.activeBranchChanged(new ActiveBranchUUID(uuid, activeBranch.getName()));
         DataSetMetadata metadata = clientDataSetManager.getDataSetMetadata(uuid);
         if (metadata != null) {
             return metadata;
@@ -183,6 +194,9 @@ public class DataSetClientServices {
     public void exportDataSetCSV(final DataSetLookup request,
                                  final DataSetExportReadyCallback listener) throws Exception {
 
+        if (!ifEmptyWorkspace()) {
+            request.setMetadata(ACTIVE_BRANCH, activeBranch.getName());
+        }
         if (dataSetLookupServices != null) {
             // Look always into the client data set manager.
             if (clientDataSetManager.getDataSet(request.getDataSetUUID()) != null) {
@@ -238,6 +252,9 @@ public class DataSetClientServices {
     public void exportDataSetExcel(final DataSetLookup request,
                                    final DataSetExportReadyCallback listener) throws Exception {
 
+        if (!ifEmptyWorkspace()) {
+            request.setMetadata(ACTIVE_BRANCH, activeBranch.getName());
+        }
         if (dataSetLookupServices != null) {
             // Look always into the client data set manager.
             if (clientDataSetManager.getDataSet(request.getDataSetUUID()) != null) {
@@ -302,6 +319,9 @@ public class DataSetClientServices {
                               final DataSetLookup request,
                               final DataSetReadyCallback listener) throws Exception {
 
+        if (!ifEmptyWorkspace()) {
+            request.setMetadata(ACTIVE_BRANCH, activeBranch.getName());
+        }
         if (dataSetLookupServices != null) {
             try {
                 dataSetLookupServices.call(
@@ -343,6 +363,9 @@ public class DataSetClientServices {
                               final DataSetReadyCallback listener) throws Exception {
 
         // Look always into the client data set manager.
+        if (!ifEmptyWorkspace()) {
+            request.setMetadata(ACTIVE_BRANCH, activeBranch.getName());
+        }
         if (clientDataSetManager.getDataSet(request.getDataSetUUID()) != null) {
             DataSet dataSet = clientDataSetManager.lookupDataSet(request);
             listener.callback(dataSet);
@@ -402,9 +425,21 @@ public class DataSetClientServices {
         }
     }
 
+    protected boolean ifEmptyWorkspace() {
+        try {
+            activeBranch.getName();
+        } catch (IllegalStateException e) {
+            return true;
+        }
+        return false;
+    }
+
     private void _lookupDataSet(DataSetLookup request,
                                 final DataSetReadyCallback listener) {
         try {
+            if (!ifEmptyWorkspace()) {
+                request.setMetadata(ACTIVE_BRANCH, activeBranch.getName());
+            }
             dataSetLookupServices.call(
                     new RemoteCallback<DataSet>() {
                         public void callback(DataSet result) {

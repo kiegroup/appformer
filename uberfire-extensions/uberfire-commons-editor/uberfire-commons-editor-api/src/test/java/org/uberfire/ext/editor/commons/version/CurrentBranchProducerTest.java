@@ -15,7 +15,7 @@
  *
  */
 
-package org.uberfire.ext.editor.commons.client.menu.common;
+package org.uberfire.ext.editor.commons.version;
 
 import javax.enterprise.inject.Instance;
 
@@ -26,14 +26,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.uberfire.ext.editor.commons.version.CurrentBranch;
-import org.uberfire.mocks.MockInstanceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CurrentBranchProducerTest {
 
     @Mock
-    private Instance<CurrentBranch> currentBranch = new MockInstanceImpl<>();
+    private Instance<CurrentBranch> currentBranch;
     @InjectMocks
     private CurrentBranchProducer currentBranchProducer = new CurrentBranchProducer();
 
@@ -44,5 +42,12 @@ public class CurrentBranchProducerTest {
         Assert.assertNotNull(currentBranch);
         Assert.assertEquals(new DefaultCurrentBranch().getName(),
                             currentBranch.getName());
+    }
+
+    @Test
+    public void testCurrentBranchProducer() {
+        Mockito.when(currentBranch.isUnsatisfied()).thenReturn(false);
+        CurrentBranch currentBranch = currentBranchProducer.currentBranchProducer();
+        Assert.assertNull(currentBranch);
     }
 }

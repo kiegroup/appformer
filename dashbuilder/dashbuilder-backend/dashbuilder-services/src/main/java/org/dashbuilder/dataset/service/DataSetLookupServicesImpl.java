@@ -29,6 +29,7 @@ import org.dashbuilder.dataset.DataSetManagerCDI;
 import org.dashbuilder.dataset.DataSetMetadata;
 import org.dashbuilder.dataset.exception.DataSetLookupException;
 import org.dashbuilder.dataset.def.DataSetDef;
+import org.dashbuilder.dataset.uuid.ActiveBranchUUID;
 import org.dashbuilder.dataset.uuid.UUIDGenerator;
 import org.dashbuilder.exception.ExceptionManager;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 public class DataSetLookupServicesImpl implements DataSetLookupServices {
 
     protected static Logger log = LoggerFactory.getLogger(DataSetLookupServicesImpl.class);
+    private static final String ACTIVE_BRANCH = "activeBranch";
     protected DataSetManagerCDI dataSetManager;
     protected UUIDGenerator uuidGenerator;
     protected DataSetDefDeployerCDI dataSetDefDeployer;
@@ -75,6 +77,8 @@ public class DataSetLookupServicesImpl implements DataSetLookupServices {
     public DataSet lookupDataSet(DataSetLookup lookup) throws Exception {
         DataSet _d = null;
         try {
+            dataSetManager.activeBranchChanged(new ActiveBranchUUID(lookup.getDataSetUUID(),
+                                                                    lookup.getMetadata(ACTIVE_BRANCH).toString()));
             _d = dataSetManager.lookupDataSet(lookup);
         } catch (DataSetLookupException e) {
             throw exceptionManager.handleException(e);
@@ -98,10 +102,11 @@ public class DataSetLookupServicesImpl implements DataSetLookupServices {
         }
     }
 
-    public DataSetMetadata lookupDataSetMetadata(String uuid) throws Exception {
+    public DataSetMetadata lookupDataSetMetadata(ActiveBranchUUID activeBranchUUID) throws Exception {
         DataSetMetadata _d = null;
         try {
-            _d = dataSetManager.getDataSetMetadata(uuid);
+            dataSetManager.activeBranchChanged(activeBranchUUID);
+            _d = dataSetManager.getDataSetMetadata(activeBranchUUID.getUuid());
         } catch (DataSetLookupException e) {
             throw exceptionManager.handleException(e);
         }

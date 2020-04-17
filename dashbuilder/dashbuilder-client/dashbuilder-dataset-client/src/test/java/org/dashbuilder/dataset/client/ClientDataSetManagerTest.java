@@ -15,9 +15,15 @@
 package org.dashbuilder.dataset.client;
 
 import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetLookupFactory;
+import org.dashbuilder.dataset.DataSetMetadata;
+import org.dashbuilder.dataset.uuid.ActiveBranchUUID;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.dashbuilder.dataset.ExpenseReportsData.*;
@@ -26,6 +32,9 @@ import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClientDataSetManagerTest extends AbstractDataSetTest {
+
+    @Mock
+    ActiveBranchUUID activeBranchUUID;
 
     @Test
     public void testGroupWithNullDates() {
@@ -44,5 +53,16 @@ public class ClientDataSetManagerTest extends AbstractDataSetTest {
                         .buildLookup());
 
         assertEquals(result.getRowCount(), 4);
+    }
+
+    @Test
+    public void testDataSetMetadata() {
+        final String uuid = "uuid";
+        activeBranchUUID = new ActiveBranchUUID(uuid, "test");
+        final DataSet dataSet = Mockito.mock(DataSet.class);
+        final DataSetLookup lookup = Mockito.mock(DataSetLookup.class);
+        Mockito.when(dataSet.getMetadata()).thenReturn(Mockito.mock(DataSetMetadata.class));
+        clientDataSetManager.activeBranchChanged(activeBranchUUID);
+        Assert.assertNull(clientDataSetManager.getDataSetMetadata(uuid));
     }
 }

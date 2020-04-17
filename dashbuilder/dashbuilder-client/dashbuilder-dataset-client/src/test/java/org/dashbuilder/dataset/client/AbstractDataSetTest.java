@@ -29,6 +29,7 @@ import org.dashbuilder.dataset.service.DataSetLookupServices;
 import org.jboss.errai.common.client.api.Caller;
 import org.junit.Before;
 import org.mockito.Mock;
+import org.uberfire.ext.editor.commons.version.CurrentBranch;
 import org.uberfire.mocks.CallerMock;
 
 public abstract class AbstractDataSetTest {
@@ -53,6 +54,9 @@ public abstract class AbstractDataSetTest {
 
     @Mock
     protected Caller<DataSetDefServices> dataSetDefServicesCaller;
+
+    @Mock
+    protected CurrentBranch activeBranch;
 
     protected Caller<DataSetExportServices> dataSetExportServicesCaller;
     protected Caller<DataSetLookupServices> dataSetLookupServicesCaller;
@@ -87,7 +91,8 @@ public abstract class AbstractDataSetTest {
                 dataSetModifiedEvent,
                 dataSetLookupServicesCaller,
                 dataSetDefServicesCaller,
-                dataSetExportServicesCaller);
+                dataSetExportServicesCaller,
+                activeBranch);
     }
 
     public void registerExpensesDataSet() throws Exception {

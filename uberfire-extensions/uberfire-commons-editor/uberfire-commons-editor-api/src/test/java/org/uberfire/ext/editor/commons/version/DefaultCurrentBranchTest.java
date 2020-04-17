@@ -15,7 +15,7 @@
  *
  */
 
-package org.uberfire.ext.editor.commons.client.menu.common;
+package org.uberfire.ext.editor.commons.version;
 
 import org.junit.Assert;
 import org.junit.Before;

@@ -31,6 +31,7 @@ import org.dashbuilder.common.client.StringUtils;
 import org.dashbuilder.dataset.def.DataSetPreprocessor;
 import org.dashbuilder.dataset.engine.SharedDataSetOpEngine;
 import org.dashbuilder.dataset.engine.index.DataSetIndex;
+import org.dashbuilder.dataset.uuid.ActiveBranchUUID;
 
 /**
  * Client implementation of a DataSetManager. It hold as map of data sets in memory.
@@ -41,6 +42,7 @@ public class ClientDataSetManager implements DataSetManager {
 
     SharedDataSetOpEngine dataSetOpEngine;
     Map<String,List<DataSetPreprocessor>> preprocessorMap = new HashMap<String, List<DataSetPreprocessor>>();
+    ActiveBranchUUID activeBranchUUID;
 
     public ClientDataSetManager() {
         this.dataSetOpEngine = ClientDataSetCore.get().getSharedDataSetOpEngine();
@@ -130,12 +132,18 @@ public class ClientDataSetManager implements DataSetManager {
 
     @Override
     public DataSetMetadata getDataSetMetadata(String uuid) {
-        DataSetLookup lookup = new DataSetLookup(uuid);
+        DataSetLookup lookup = new DataSetLookup(activeBranchUUID.getUuid());
+        lookup.setMetadata("activeBranch", activeBranchUUID.getActiveBranch());
         DataSet dataSet = lookupDataSet(lookup);
         if (dataSet == null) {
             return null;
         }
         return dataSet.getMetadata();
+    }
+
+    @Override
+    public void activeBranchChanged(ActiveBranchUUID activeBranchUUID) {
+        this.activeBranchUUID = activeBranchUUID;
     }
 
     public void registerDataSetPreprocessor(String uuid, DataSetPreprocessor preprocessor) {

@@ -30,7 +30,7 @@ import org.uberfire.ext.editor.commons.client.file.popups.RenamePopUpPresenter;
 import org.uberfire.ext.editor.commons.client.history.SaveButton;
 import org.uberfire.ext.editor.commons.client.menu.HasLockSyncMenuStateHelper.LockSyncMenuStateHelper.Operation;
 import org.uberfire.ext.editor.commons.version.CurrentBranch;
-import org.uberfire.ext.editor.commons.client.menu.common.DefaultCurrentBranch;
+import org.uberfire.ext.editor.commons.version.DefaultCurrentBranch;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
 import org.uberfire.ext.editor.commons.service.support.SupportsCopy;
 import org.uberfire.ext.editor.commons.service.support.SupportsDelete;
