@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.client.cms.screen.transfer;
+package org.dashbuilder.client.cms.screen.transfer.export.wizard.widget;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import elemental2.dom.HTMLCollection;
-import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLInputElement;
 import elemental2.dom.HTMLTableCellElement;
 import elemental2.dom.HTMLTableElement;
 import elemental2.dom.HTMLTableRowElement;
 import elemental2.dom.HTMLTableSectionElement;
 import org.dashbuilder.client.cms.screen.util.DomFactory;
-import org.dashbuilder.dataprovider.DataSetProviderType;
-import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.transfer.DataTransferAssets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,68 +43,54 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class DataTransferExportPopUpViewTest {
-
-    @Mock
-    HTMLDivElement dataTransferExportModalBody;
-
-    @Mock
-    HTMLInputElement searchDatasets;
-
-    @Mock
-    HTMLInputElement searchPages;
-
-    @Mock
-    HTMLInputElement selectAllDatasets;
-
-    @Mock
-    HTMLInputElement selectAllPages;
-
-    @Mock
-    HTMLInputElement exportNavigation;
-
-    @Mock
-    HTMLDivElement progressIndicator;
-
-    @Mock
-    HTMLDivElement dataSelectionAccordion;
+public class AssetsTableViewTest {
 
     @Mock
     DomFactory domFactory;
 
+    @Mock
+    HTMLTableRowElement assetsTableHeaderRow;
+
+    @Mock
+    HTMLInputElement searchAssets;
+    
+    @Mock
+    HTMLInputElement selectAllAssets;
+
     @InjectMocks
-    DataTransferExportPopUpView dataTransferExportPopUpView;
+    AssetsTableView assetsTableView;
+    
+
+    private MockAssetsTablePresenter presenter;
 
     @Before
     public void prepare() {
+        presenter = new MockAssetsTablePresenter();
         when(domFactory.tableCell()).thenReturn(new HTMLTableCellElement());
         when(domFactory.input()).thenReturn(new HTMLInputElement());
         when(domFactory.tableRow()).thenReturn(new HTMLTableRowElement());
-        HTMLTableElement datasetsTable = buildHTMLTable();
-        HTMLTableElement pagesTable = buildHTMLTable();
-        dataTransferExportPopUpView.datasetsTable = datasetsTable;
-        dataTransferExportPopUpView.pagesTable = pagesTable;
+        when(domFactory.element(any())).thenReturn(new HTMLElement());
 
+        assetsTableView.assetsTable = buildHTMLTable();
+        assetsTableView.init(presenter);
+        presenter.view = assetsTableView;
     }
 
     @Test
     public void testTableRowsCreated() {
-        List<DataSetDef> definitions = Arrays.asList(dataSetDef());
-        List<String> pages = Arrays.asList("page1", "page2");
+        List<String> assets = Arrays.asList("asset1", "asset2");
 
-        dataTransferExportPopUpView.setAssetsToExport(new DataTransferAssets(definitions, pages));
 
-        HTMLTableSectionElement datasetsTableBody = dataTransferExportPopUpView.datasetsTable.tBodies.getAt(0);
-        HTMLTableSectionElement pagesTableBody = dataTransferExportPopUpView.pagesTable.tBodies.getAt(0);
-        Mockito.verify(datasetsTableBody, times(definitions.size())).appendChild(any());
-        Mockito.verify(pagesTableBody, times(pages.size())).appendChild(any());
+        presenter.setData(assets);
+
+        HTMLTableSectionElement assetsTable = assetsTableView.assetsTable.tBodies.getAt(0);
+        Mockito.verify(assetsTable, times(assets.size())).appendChild(any());
     }
 
     @Test
     public void testFilterTable() {
-        HTMLInputElement filter = new HTMLInputElement();
-        filter.value = "test";
-        HTMLTableElement table = buildHTMLTable();
+        HTMLInputElement filter = assetsTableView.searchAssets;
+        HTMLTableElement table = assetsTableView.assetsTable;
         HTMLCollection rows = mock(HTMLCollection.class);
         HTMLTableRowElement[] actualRows = {
                                             mock(HTMLTableRowElement.class),
@@ -140,33 +123,26 @@ public class DataTransferExportPopUpViewTest {
         }
         when(rows.getLength()).thenReturn(actualRows.length);
         table.tBodies.getAt(0).rows = rows;
-        
-        filter.value = "abC";
-        dataTransferExportPopUpView.filterTable(filter, table);
-        assertTrue(actualRows[1].hidden);
-        assertFalse(actualRows[0].hidden);
-        
-        filter.value = "jkL";
-        dataTransferExportPopUpView.filterTable(filter, table);
-        assertTrue(actualRows[0].hidden);
-        assertFalse(actualRows[1].hidden);
-        
-        filter.value = "X";
-        dataTransferExportPopUpView.filterTable(filter, table);
-        assertFalse(actualRows[0].hidden);
-        assertFalse(actualRows[1].hidden);
-        
-        filter.value = "z";
-        dataTransferExportPopUpView.filterTable(filter, table);
-        assertTrue(actualRows[0].hidden);
-        assertTrue(actualRows[1].hidden);
-    }
 
-    private DataSetDef dataSetDef() {
-        DataSetDef def = mock(DataSetDef.class);
-        DataSetProviderType<?> provider = mock(DataSetProviderType.class);
-        when(def.getProvider()).thenReturn(provider);
-        return def;
+        filter.value = "abC";
+        assetsTableView.filterTable();
+        assertTrue(actualRows[1].hidden);
+        assertFalse(actualRows[0].hidden);
+
+        filter.value = "jkL";
+        assetsTableView.filterTable();
+        assertTrue(actualRows[0].hidden);
+        assertFalse(actualRows[1].hidden);
+
+        filter.value = "X";
+        assetsTableView.filterTable();
+        assertFalse(actualRows[0].hidden);
+        assertFalse(actualRows[1].hidden);
+
+        filter.value = "z";
+        assetsTableView.filterTable();
+        assertTrue(actualRows[0].hidden);
+        assertTrue(actualRows[1].hidden);
     }
 
     private HTMLTableElement buildHTMLTable() {
@@ -176,6 +152,20 @@ public class DataTransferExportPopUpViewTest {
         table.tBodies = tableBodies;
         when(tableBodies.getAt(0)).thenReturn(tableBody);
         return table;
+    }
+
+    class MockAssetsTablePresenter extends AssetsTableAbstractPresenter<String> {
+
+        @Override
+        public String[] getHeaders() {
+            return new String[]{"test"};
+        }
+
+        @Override
+        public String[] toRow(String t) {
+            return new String[]{t};
+        }
+
     }
 
 }

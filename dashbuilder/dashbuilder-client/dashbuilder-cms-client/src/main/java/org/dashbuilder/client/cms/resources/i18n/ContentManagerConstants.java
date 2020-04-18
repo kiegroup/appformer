@@ -113,4 +113,6 @@ public interface ContentManagerConstants extends Messages {
     String dataTransferExportPopUpViewTitle();
 
     String dataTransferExportError();
+
+    String loadAssetsToExport();
 }
