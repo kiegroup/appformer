@@ -44,7 +44,7 @@ public class ExportSummaryWizardPage implements WizardPage {
     private Command goToDataSetsCommand = () -> {
     };
 
-    private Command goToPagesPage = () -> {
+    private Command goToPagesCommand = () -> {
     };
 
     public interface View extends UberElemental<ExportSummaryWizardPage> {
@@ -70,7 +70,6 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     @Override
     public void isComplete(Callback<Boolean> callback) {
-        // add validation here when it is ready
         callback.callback(true);
     }
 
@@ -90,7 +89,7 @@ public class ExportSummaryWizardPage implements WizardPage {
     }
 
     public void setGoToPagesCommand(Command goToPages) {
-        this.goToPagesPage = goToPages;
+        this.goToPagesCommand = goToPages;
     }
 
     public void setExportSummary(Supplier<DataTransferExportModel> exportModelSupplier) {
@@ -110,7 +109,7 @@ public class ExportSummaryWizardPage implements WizardPage {
     }
 
     public void goToPagesPage() {
-        goToPagesPage.execute();
+        goToPagesCommand.execute();
     }
-    
+
 }

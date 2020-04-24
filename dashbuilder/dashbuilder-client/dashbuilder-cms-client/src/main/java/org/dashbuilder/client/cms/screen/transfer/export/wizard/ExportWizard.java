@@ -26,6 +26,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.dashbuilder.transfer.DataTransferAssets;
 import org.dashbuilder.transfer.DataTransferExportModel;
 import org.uberfire.client.callbacks.Callback;
@@ -36,6 +37,8 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 @ApplicationScoped
 public class ExportWizard extends AbstractWizard {
+    
+    ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
 
     @Inject
     DataSetsWizardPage dataSetsWizardPage;
@@ -84,7 +87,7 @@ public class ExportWizard extends AbstractWizard {
 
     @Override
     public String getTitle() {
-        return "Export Wizard";
+        return i18n.exportWizardTitle();
     }
 
     @Override

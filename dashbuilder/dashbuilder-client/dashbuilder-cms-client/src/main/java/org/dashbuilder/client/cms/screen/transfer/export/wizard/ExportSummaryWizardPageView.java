@@ -26,6 +26,7 @@ import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLHeadingElement;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.dashbuilder.transfer.DataTransferExportModel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -34,6 +35,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 @Templated
 @ApplicationScoped
 public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View {
+
+    ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
 
     @Inject
     @DataField
@@ -60,12 +63,12 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     @Inject
     @DataField
     HTMLButtonElement downloadExport;
-    
+
     @Inject
     @DataField
     @Named("h1")
     HTMLHeadingElement exportHeading;
-    
+
     private ExportSummaryWizardPage presenter;
 
     @Override
@@ -95,17 +98,17 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
 
     @Override
     public void show(DataTransferExportModel dataTransferExportModel) {
-        pagesInformation.textContent = checkPlural(dataTransferExportModel.getPages().size(), "page");
+        pagesInformation.textContent = checkPlural(dataTransferExportModel.getPages().size(),
+                                                   i18n.pageLabel(),
+                                                   i18n.pagesLabel());
         datasetsInformation.textContent = checkPlural(dataTransferExportModel.getDatasetDefinitions().size(),
-                                                      "dataset");
+                                                      i18n.datasetLabel(),
+                                                      i18n.datasetsLabel());
     }
 
-    private String checkPlural(int size, String text) {
-        String finalText = size + " " + text;
-        if (size == 1) {
-            return finalText;
-        }
-        return finalText.concat("s");
+    private String checkPlural(int size, String text, String pluralText) {
+        String result = size + " ";
+        return size == 1 ? result + text : result + pluralText;
     }
 
 }

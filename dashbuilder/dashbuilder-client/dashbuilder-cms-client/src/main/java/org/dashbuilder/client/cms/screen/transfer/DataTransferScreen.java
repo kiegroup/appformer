@@ -89,7 +89,7 @@ public class DataTransferScreen {
     }
 
     public void doGradualExport() {
-        busyIndicatorView.showBusyIndicator("Loading Export Wizard");
+        busyIndicatorView.showBusyIndicator(i18n.loadingExportWizard());
         dataTransferServices.call((DataTransferAssets v) -> {
             busyIndicatorView.hideBusyIndicator();
             exportWizard.start(v);
@@ -144,12 +144,15 @@ public class DataTransferScreen {
     }
 
     private void callExportService(DataTransferExportModel dataTransferExportModel) {
+        busyIndicatorView.showBusyIndicator(i18n.preparingExportDownload());
         try {
             dataTransferServices.call((RemoteCallback<String>) path -> {
+                busyIndicatorView.hideBusyIndicator();
                 view.exportOK();
                 view.download(path);
 
             }, (ErrorCallback<Exception>) (message, throwable) -> {
+                busyIndicatorView.hideBusyIndicator();
                 view.exportError(throwable);
                 return false;
 

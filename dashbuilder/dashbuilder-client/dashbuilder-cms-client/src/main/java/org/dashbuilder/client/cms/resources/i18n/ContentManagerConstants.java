@@ -115,4 +115,18 @@ public interface ContentManagerConstants extends Messages {
     String dataTransferExportError();
 
     String loadAssetsToExport();
+
+    String pageLabel();
+
+    String pagesLabel();
+    
+    String datasetLabel();
+
+    String datasetsLabel();
+
+    String exportWizardTitle();
+
+    String loadingExportWizard();
+
+    String preparingExportDownload();
 }
