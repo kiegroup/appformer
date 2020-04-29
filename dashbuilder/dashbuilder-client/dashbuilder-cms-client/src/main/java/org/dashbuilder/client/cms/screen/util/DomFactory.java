@@ -34,6 +34,12 @@ public class DomFactory {
     public Element element(String elementType) {
         return DomGlobal.document.createElement(elementType);
     }
+    
+    public Element listItem(String text) {
+        Element li = DomGlobal.document.createElement("li");
+        li.textContent = text;
+        return li;
+    }
 
     public HTMLInputElement input() {
         return (HTMLInputElement) DomGlobal.document.createElement("input");

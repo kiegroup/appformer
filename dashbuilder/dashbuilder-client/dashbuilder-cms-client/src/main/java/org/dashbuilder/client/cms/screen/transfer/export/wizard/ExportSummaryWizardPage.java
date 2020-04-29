@@ -16,6 +16,8 @@
 
 package org.dashbuilder.client.cms.screen.transfer.export.wizard;
 
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -23,10 +25,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Widget;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.dashbuilder.transfer.DataTransferExportModel;
+import org.dashbuilder.transfer.ExportModelValidationService;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.ui.ElementWrapperWidget;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.mvp.UberElemental;
+import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.core.client.wizards.WizardPage;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
@@ -34,12 +40,20 @@ import org.uberfire.mvp.ParameterizedCommand;
 @ApplicationScoped
 public class ExportSummaryWizardPage implements WizardPage {
 
+    ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
+
     @Inject
     View view;
 
+    @Inject
+    Caller<ExportModelValidationService> exportModelValidationService;
+
+    @Inject
+    private BusyIndicatorView busyIndicatorView;
+
     private Supplier<DataTransferExportModel> exportModelSupplier;
     private ParameterizedCommand<DataTransferExportModel> dataTransferExportModelCallback;
-    private DataTransferExportModel dataTransferExportModel;
+    private DataTransferExportModel exportModel;
 
     private Command goToDataSetsCommand = () -> {
     };
@@ -49,7 +63,12 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     public interface View extends UberElemental<ExportSummaryWizardPage> {
 
-        void show(DataTransferExportModel dataTransferExportModel);
+        void success(DataTransferExportModel dataTransferExportModel);
+
+        void validationErrors(DataTransferExportModel dataTransferExportModel,
+                              Map<String, List<String>> pageDependencies);
+        
+        void warning(DataTransferExportModel dataTransferExportModel, String message);
 
     }
 
@@ -65,7 +84,7 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     @Override
     public String getTitle() {
-        return "Export Summary";
+        return i18n.exportWizardTitle();
     }
 
     @Override
@@ -80,8 +99,7 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     @Override
     public void prepareView() {
-        dataTransferExportModel = exportModelSupplier.get();
-        view.show(dataTransferExportModel);
+        validateAndUpdateView();
     }
 
     public void setGoToDataSetsCommand(Command goToDatasets) {
@@ -101,7 +119,7 @@ public class ExportSummaryWizardPage implements WizardPage {
     }
 
     void confirmDownload() {
-        dataTransferExportModelCallback.execute(dataTransferExportModel);
+        dataTransferExportModelCallback.execute(exportModel);
     }
 
     public void goToDataSetsPage() {
@@ -110,6 +128,24 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     public void goToPagesPage() {
         goToPagesCommand.execute();
+    }
+
+    private void validateAndUpdateView() {
+        exportModel = exportModelSupplier.get();
+        if (exportModel.getPages().isEmpty()) {
+            view.warning(exportModel, i18n.noPagesExported());
+            return;
+        }
+        
+        busyIndicatorView.showBusyIndicator(i18n.validatingExport());
+        exportModelValidationService.call((Map<String, List<String>> validation) -> {
+            busyIndicatorView.hideBusyIndicator();
+            if (validation.isEmpty()) {
+                view.success(exportModel);
+            } else {
+                view.validationErrors(exportModel, validation);
+            }
+        }).checkMissingDatasets(exportModel);
     }
 
 }

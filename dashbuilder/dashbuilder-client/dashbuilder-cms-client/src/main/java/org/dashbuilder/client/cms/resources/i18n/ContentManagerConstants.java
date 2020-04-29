@@ -129,4 +129,18 @@ public interface ContentManagerConstants extends Messages {
     String loadingExportWizard();
 
     String preparingExportDownload();
+
+    String pageMissingDataSets(String page);
+
+    String validatingExport();
+
+    String exportWizardHeadingSuccess();
+
+    String exportWizardHeadingError();
+
+    String exportWizardHeadingWarning();
+
+    String noPagesExported();
+
+    String missingDependencies();
 }
