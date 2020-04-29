@@ -1,5 +1,5 @@
 /*
- * Copyright 202 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,9 @@ public interface ExportModelValidationService {
      * Check if there is datasets not exported for the given export model
      * 
      * @param exportModel
+     * The export model to be validated
      * @return
+     * A map of pages with missing dependencies and the list of dependencies for each page.
      */
     Map<String, List<String>> checkMissingDatasets(DataTransferExportModel exportModel);
 
