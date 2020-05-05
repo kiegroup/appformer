@@ -16,6 +16,7 @@
 
 package org.appformer.kogito.bridge.client.keyboardshortcuts;
 
+import elemental2.dom.EventTarget;
 import jsinterop.annotations.JsFunction;
 import org.appformer.client.keyboardShortcuts.KeyboardShortcutsApiOpts;
 
@@ -31,6 +32,6 @@ public interface KeyboardShortcutsApi {
     @FunctionalInterface
     interface Action {
 
-        void execute();
+        void execute(final EventTarget target);
     }
 }
