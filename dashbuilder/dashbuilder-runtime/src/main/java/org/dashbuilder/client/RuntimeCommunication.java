@@ -23,7 +23,7 @@ import elemental2.dom.DomGlobal;
 import org.uberfire.workbench.events.NotificationEvent;
 
 /**
- * Utility methods to user communication
+ * Utility methods to perform user communication
  *
  */
 @ApplicationScoped
