@@ -118,15 +118,14 @@ public class ExportWizard extends AbstractWizard {
     public void setCallback(ParameterizedCommand<DataTransferExportModel> dataTransferExportModelCallback) {
         exportSummaryWizardPage.setCallback(dataTransferExportModelCallback);
     }
-
-    public void pageChanged(final @Observes WizardPageSelectedEvent event) {
-        // prepareView is not being called, hence need to call it manually
-        WizardPage page = event.getSelectedPage();
-        if (getPages().contains(page)) {
-            page.prepareView();
-            this.canConclude = page == exportSummaryWizardPage;
-            checkPagesState();
-        }
+    
+    @Override
+    public void pageSelected(int pageNumber) {
+        super.pageSelected(pageNumber);
+        WizardPage page = getPages().get(pageNumber);
+        page.prepareView();
+        this.canConclude = page == exportSummaryWizardPage;
+        checkPagesState();
     }
 
 }
