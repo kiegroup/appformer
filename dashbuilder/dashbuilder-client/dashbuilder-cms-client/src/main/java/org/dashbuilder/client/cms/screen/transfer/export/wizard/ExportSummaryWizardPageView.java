@@ -33,9 +33,11 @@ import elemental2.dom.HTMLHeadingElement;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
 import org.dashbuilder.client.cms.screen.util.DomFactory;
 import org.dashbuilder.transfer.DataTransferExportModel;
+import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.uberfire.client.views.pfly.widgets.HelpIcon;
 
 @Templated
 @ApplicationScoped
@@ -84,7 +86,14 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     HTMLDivElement alertContainer;
 
     @Inject
+    @DataField
+    HTMLDivElement navigationSummaryContainer;
+
+    @Inject
     DomFactory domFactory;
+
+    @Inject
+    Elemental2DomUtil elementalUtil;
 
     private ExportSummaryWizardPage presenter;
 
@@ -92,6 +101,10 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     public void init(ExportSummaryWizardPage presenter) {
         this.presenter = presenter;
         alertContainer.hidden = true;
+
+        HelpIcon navigationhelp = new HelpIcon();
+        navigationhelp.setHelpContent(i18n.navigationHelpText());
+        elementalUtil.appendWidgetToElement(navigationSummaryContainer, navigationhelp);
     }
 
     @Override
@@ -116,28 +129,19 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
 
     @Override
     public void success(DataTransferExportModel dataTransferExportModel) {
-        exportHeading.textContent = i18n.exportWizardHeadingSuccess();
-        iconSpan.className = "pficon pficon-ok";
-        alertContainer.hidden = true;
-        downloadExport.disabled = false;
-        alertContainer.hidden = true;
+        successState();
         showSummary(dataTransferExportModel);
     }
 
     @Override
     public void validationErrors(DataTransferExportModel dataTransferExportModel,
                                  Map<String, List<String>> pageDependencies) {
-        exportHeading.textContent = i18n.exportWizardHeadingError();
-        alertContainer.hidden = false;
-        alertContainer.className = "errorMsg alert alert-danger";
-        alertContainer.innerHTML = "";
-        iconSpan.className = "pficon pficon-error-circle-o";
-        downloadExport.disabled = true;
-        
+        errorState();
+
         Element errorHeader = domFactory.element("strong");
         errorHeader.textContent = i18n.missingDependencies();
         alertContainer.appendChild(errorHeader);
-        
+
         Element pageList = domFactory.element("ul");
         pageDependencies.forEach((page, ds) -> {
             Element li = domFactory.listItem(i18n.pageMissingDataSets(page));
@@ -145,19 +149,14 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
             pageList.appendChild(li);
         });
         alertContainer.appendChild(pageList);
-        
+
         showSummary(dataTransferExportModel);
     }
 
     @Override
-    public void warning(DataTransferExportModel dataTransferExportModel, String warningMessage) {
-        alertContainer.hidden = false;
-        iconSpan.className = "pficon pficon-warning-triangle-o";
-        exportHeading.textContent = i18n.exportWizardHeadingWarning();
-        alertContainer.className = "errorMsg alert alert-warning";
-        alertContainer.innerHTML = "";
+    public void exportError(DataTransferExportModel dataTransferExportModel, String warningMessage) {
+        errorState();
         alertContainer.textContent = warningMessage;
-        downloadExport.disabled = true;
         showSummary(dataTransferExportModel);
     }
 
@@ -179,6 +178,41 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
         Element list = domFactory.element("ul");
         datasets.stream().map(domFactory::listItem).forEach(list::appendChild);
         return list;
+    }
+
+    @Override
+    public void emptyState() {
+        state("pficon-running",
+              "",
+              true,
+              true);
+        pagesInformation.textContent = "";
+        datasetsInformation.textContent = "";
+    }
+
+    private void errorState() {
+        state("pficon pficon-error-circle-o",
+              i18n.exportWizardHeadingError(),
+              false,
+              true);
+        alertContainer.innerHTML = "";
+    }
+
+    private void successState() {
+        state("pficon pficon-ok",
+              i18n.exportWizardHeadingSuccess(),
+              true,
+              false);
+    }
+
+    private void state(String iconSpanClass,
+                       String headingText,
+                       boolean hideAlert,
+                       boolean hideDownload) {
+        iconSpan.className = iconSpanClass;
+        exportHeading.textContent = headingText;
+        alertContainer.hidden = hideAlert;
+        downloadExport.disabled = hideDownload;
     }
 
 }

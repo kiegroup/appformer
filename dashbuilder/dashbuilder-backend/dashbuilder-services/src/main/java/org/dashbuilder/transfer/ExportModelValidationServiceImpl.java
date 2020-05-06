@@ -16,6 +16,7 @@
 
 package org.dashbuilder.transfer;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,6 +54,9 @@ public class ExportModelValidationServiceImpl implements ExportModelValidationSe
 
     @Override
     public Map<String, List<String>> checkMissingDatasets(DataTransferExportModel exportModel) {
+        if (exportModel == null || exportModel.getPages().isEmpty()) {
+            return Collections.emptyMap();
+        }
         Map<String, List<String>> deps = exportModel.getPages()
                                                     .stream()
                                                     .collect(Collectors.toMap(p -> p,

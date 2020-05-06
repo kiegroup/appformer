@@ -22,7 +22,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Widget;
@@ -71,7 +70,7 @@ public class ExportWizard extends AbstractWizard {
     public void start(DataTransferAssets assets) {
         dataSetsWizardPage.setDataSets(assets.getDatasetsDefinitions());
         pagesWizardPage.setPages(assets.getPages());
-
+        exportSummaryWizardPage.setAssets(assets);
         this.start();
     }
 

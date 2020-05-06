@@ -138,9 +138,11 @@ public interface ContentManagerConstants extends Messages {
 
     String exportWizardHeadingError();
 
-    String exportWizardHeadingWarning();
-
     String noPagesExported();
 
     String missingDependencies();
+
+    String nothingToExport();
+
+    String navigationHelpText();
 }

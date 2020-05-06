@@ -26,6 +26,8 @@ import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.client.cms.resources.i18n.ContentManagerConstants;
+import org.dashbuilder.dataset.def.DataSetDef;
+import org.dashbuilder.transfer.DataTransferAssets;
 import org.dashbuilder.transfer.DataTransferExportModel;
 import org.dashbuilder.transfer.ExportModelValidationService;
 import org.jboss.errai.common.client.api.Caller;
@@ -36,6 +38,8 @@ import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.ext.widgets.core.client.wizards.WizardPage;
 import org.uberfire.mvp.Command;
 import org.uberfire.mvp.ParameterizedCommand;
+
+import static java.util.stream.Collectors.toList;
 
 @ApplicationScoped
 public class ExportSummaryWizardPage implements WizardPage {
@@ -50,6 +54,8 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     @Inject
     private BusyIndicatorView busyIndicatorView;
+
+    DataTransferAssets assets;
 
     private Supplier<DataTransferExportModel> exportModelSupplier;
     private ParameterizedCommand<DataTransferExportModel> dataTransferExportModelCallback;
@@ -67,8 +73,10 @@ public class ExportSummaryWizardPage implements WizardPage {
 
         void validationErrors(DataTransferExportModel dataTransferExportModel,
                               Map<String, List<String>> pageDependencies);
+
+        void exportError(DataTransferExportModel dataTransferExportModel, String message);
         
-        void warning(DataTransferExportModel dataTransferExportModel, String message);
+        void emptyState();
 
     }
 
@@ -132,20 +140,45 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     private void validateAndUpdateView() {
         exportModel = exportModelSupplier.get();
+        
+        if (exportModel.getPages().isEmpty() && exportModel.getDatasetDefinitions().isEmpty()) {
+            view.exportError(exportModel, i18n.nothingToExport());
+            return;
+        }
         if (exportModel.getPages().isEmpty()) {
-            view.warning(exportModel, i18n.noPagesExported());
+            view.exportError(exportModel, i18n.noPagesExported());
             return;
         }
         
+        view.emptyState();
         busyIndicatorView.showBusyIndicator(i18n.validatingExport());
         exportModelValidationService.call((Map<String, List<String>> validation) -> {
             busyIndicatorView.hideBusyIndicator();
             if (validation.isEmpty()) {
                 view.success(exportModel);
             } else {
+                remapMissingDependencies(validation);
                 view.validationErrors(exportModel, validation);
             }
         }).checkMissingDatasets(exportModel);
+    }
+
+    void remapMissingDependencies(Map<String, List<String>> validation) {
+        if (assets == null) {
+            return;
+        }
+        List<DataSetDef> datasets = assets.getDatasetsDefinitions();
+        validation.replaceAll((page, deps) -> {
+            return deps.stream()
+                       .map(uuid -> datasets.stream()
+                                            .filter(ds -> ds.getUUID().equals(uuid))
+                                            .map(ds -> ds.getName()).findAny().orElse(uuid))
+                       .collect(toList());
+        });
+    }
+
+    public void setAssets(DataTransferAssets assets) {
+        this.assets = assets;
     }
 
 }

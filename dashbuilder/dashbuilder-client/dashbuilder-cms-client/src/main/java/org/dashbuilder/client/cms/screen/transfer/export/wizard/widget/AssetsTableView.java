@@ -137,7 +137,7 @@ public class AssetsTableView implements UberElemental<AssetsTableView.Presenter>
         searchAssets.value = "";
         filterTable();
     }
-    
+
     void appendRow(HTMLTableRowElement row) {
         assetsTable.tBodies.getAt(0).appendChild(row);
     }
@@ -204,10 +204,10 @@ public class AssetsTableView implements UberElemental<AssetsTableView.Presenter>
         return IntStream.range(0, items.getLength()).mapToObj(i -> (HTMLInputElement) items.getAt(i));
     }
 
-    private void buildHeaders(String headers[]) {
+    private void buildHeaders(String[] headers) {
         Arrays.stream(headers)
               .map(this::createHeaderCell)
               .forEach(assetsTableHeaderRow::appendChild);
     }
-    
+
 }
