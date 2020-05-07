@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -37,11 +38,16 @@ import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.client.views.pfly.widgets.HelpIcon;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Templated
 @ApplicationScoped
 public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExportSummaryWizardPageView.class);
 
     ContentManagerConstants i18n = ContentManagerConstants.INSTANCE;
 
@@ -94,6 +100,9 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
 
     @Inject
     Elemental2DomUtil elementalUtil;
+
+    @Inject
+    private Event<NotificationEvent> wbNotification;
 
     private ExportSummaryWizardPage presenter;
 
@@ -188,6 +197,13 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
               true);
         pagesInformation.textContent = "";
         datasetsInformation.textContent = "";
+    }
+
+    @Override
+    public void validationError(Throwable throwable) {
+        LOGGER.error(throwable.getMessage(), throwable);
+        wbNotification.fire(new NotificationEvent(i18n.validationError(),
+                                                  NotificationEvent.NotificationType.ERROR));
     }
 
     private void errorState() {

@@ -26,7 +26,9 @@ import java.util.stream.Stream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.def.DataSetDef;
+import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.json.DisplayerSettingsJSONMarshaller;
 import org.dashbuilder.navigation.service.PerspectivePluginServices;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -85,7 +87,11 @@ public class ExportModelValidationServiceImpl implements ExportModelValidationSe
                                         .map(lc -> lc.getProperties().get("json"))
                                         .filter(Objects::nonNull)
                                         .map(marshaller::fromJsonString)
-                                        .map(settings -> settings.getDataSetLookup().getDataSetUUID());
+                                        .map(DisplayerSettings::getDataSetLookup)
+                                        .filter(Objects::nonNull)
+                                        .map(DataSetLookup::getDataSetUUID)
+                                        .filter(Objects::nonNull)
+                                        ;
     }
 
 }

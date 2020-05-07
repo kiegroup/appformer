@@ -75,8 +75,10 @@ public class ExportSummaryWizardPage implements WizardPage {
                               Map<String, List<String>> pageDependencies);
 
         void exportError(DataTransferExportModel dataTransferExportModel, String message);
-        
+
         void emptyState();
+
+        void validationError(Throwable error);
 
     }
 
@@ -140,7 +142,7 @@ public class ExportSummaryWizardPage implements WizardPage {
 
     private void validateAndUpdateView() {
         exportModel = exportModelSupplier.get();
-        
+
         if (exportModel.getPages().isEmpty() && exportModel.getDatasetDefinitions().isEmpty()) {
             view.exportError(exportModel, i18n.nothingToExport());
             return;
@@ -149,7 +151,7 @@ public class ExportSummaryWizardPage implements WizardPage {
             view.exportError(exportModel, i18n.noPagesExported());
             return;
         }
-        
+
         view.emptyState();
         busyIndicatorView.showBusyIndicator(i18n.validatingExport());
         exportModelValidationService.call((Map<String, List<String>> validation) -> {
@@ -160,6 +162,10 @@ public class ExportSummaryWizardPage implements WizardPage {
                 remapMissingDependencies(validation);
                 view.validationErrors(exportModel, validation);
             }
+        }, (message, error) -> {
+            busyIndicatorView.hideBusyIndicator();
+            view.validationError(error);
+            return false;
         }).checkMissingDatasets(exportModel);
     }
 

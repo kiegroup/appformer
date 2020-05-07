@@ -145,4 +145,6 @@ public interface ContentManagerConstants extends Messages {
     String nothingToExport();
 
     String navigationHelpText();
+
+    String validationError();
 }
