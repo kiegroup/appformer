@@ -69,8 +69,7 @@ public class DataSetContentListener {
                     storage.storeCSV(content.getId(), content.getContent());
                     break;
                 case DEFINITION:
-                    DataSetDef dataSetDef = defMarshaller.fromJson(content.getContent());
-                    registry.registerDataSetDef(dataSetDef);
+                    registerDataSetDefinition(content);
                     break;
                 default:
                     logger.error("Unknow DataSet Content Type: {}", contentType.name(), null);
@@ -78,6 +77,16 @@ public class DataSetContentListener {
             }
         } catch (Exception e) {
             logger.error("Error registering dataset", e);
+        }
+    }
+
+    private void registerDataSetDefinition(DataSetContent content) throws Exception {
+        try {
+            DataSetDef dataSetDef = defMarshaller.fromJson(content.getContent());
+            registry.registerDataSetDef(dataSetDef);
+        } catch (Exception e) {
+            logger.warn("Ignoring Dataset {}: error parsing Json", content.getId());
+            logger.debug("Error parsing dataset {}. Content: {}", content.getId(), content.getContent(), e);
         }
     }
 }

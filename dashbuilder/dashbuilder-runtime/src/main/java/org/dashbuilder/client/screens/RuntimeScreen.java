@@ -89,23 +89,14 @@ public class RuntimeScreen extends Composite {
 
     @Inject
     RuntimeCommunication runtimeCommunication;
+    private RuntimeModel loadedModel;
 
     @OnOpen
     public void onOpen() {
-        String importID = Window.Location.getParameter(IMPORT_ID_PARAM);
-        loading.showBusyIndicator(i18n.loadingDashboards());
-        importModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> {
-            loading.hideBusyIndicator();
-            if (runtimeModelOp.isPresent()) {
-                loadDashboards(runtimeModelOp.get());
-            } else {
-                showEmptyContent();
-            }
-        }, (ErrorCallback<Exception>) (Exception message, Throwable throwable) -> {
-            loading.hideBusyIndicator();
-            runtimeCommunication.showError(i18n.errorLoadingDashboards(), throwable);
-            return false;
-        }).getRuntimeModel(importID);
+        if (loadedModel == null) {
+            String importID = Window.Location.getParameter(IMPORT_ID_PARAM);
+            loadRuntimeModel(importID);
+        }
     }
 
     @WorkbenchPartTitle
@@ -127,6 +118,24 @@ public class RuntimeScreen extends Composite {
 
         navigationManager.setDefaultNavTree(navTree);
         runtimeModelEvent.fire(new RuntimeModelEvent(runtimeModel));
+    }
+    
+    private void loadRuntimeModel(String importID) {
+        loading.showBusyIndicator(i18n.loadingDashboards());
+        importModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> {
+            loading.hideBusyIndicator();
+            if (runtimeModelOp.isPresent()) {
+                RuntimeModel runtimeModel = runtimeModelOp.get();
+                this.loadedModel = runtimeModel;
+                loadDashboards(runtimeModel);
+            } else {
+                showEmptyContent();
+            }
+        }, (ErrorCallback<Exception>) (Exception message, Throwable throwable) -> {
+            loading.hideBusyIndicator();
+            runtimeCommunication.showError(i18n.errorLoadingDashboards(), throwable);
+            return false;
+        }).getRuntimeModel(importID);
     }
 
 }
