@@ -218,12 +218,6 @@ public class DataTransferServicesImpl implements DataTransferServices {
         return new DataTransferAssets(datasetsDefs, pages);
     }
 
-    @Override
-    public Map<String, String> validateExport(DataTransferExportModel exportsModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     private List<String> importFiles(Path path) throws Exception {
         String tmpDir = System.getProperty("java.io.tmpdir");
         if (tmpDir.lastIndexOf('/') == tmpDir.length() - 1) {
