@@ -18,7 +18,7 @@
 
   <properties>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
-    <errai.jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly.sdm}</errai.jboss.home>
+    <errai.jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}</errai.jboss.home>
     <gwt.compiler.skip>false</gwt.compiler.skip>
     <gwt.compiler.localWorkers>4</gwt.compiler.localWorkers>
   </properties>
@@ -470,6 +470,13 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-server</artifactId>
+      <exclusions>
+        <!-- Collides with org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec -->
+        <exclusion>
+          <groupId>org.jboss.spec.javax.annotation</groupId>
+          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -606,6 +613,11 @@
       <artifactId>resteasy-jaxrs</artifactId>
       <scope>provided</scope>
       <exclusions>
+        <!-- Collides with jboss-annotations-api_1.2_spec -->
+        <exclusion>
+          <groupId>org.jboss.spec.javax.annotation</groupId>
+          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+        </exclusion> 
         <!-- Collides with org.javassist:javassist -->
         <exclusion>
           <groupId>javassist</groupId>
@@ -835,7 +847,7 @@
                 <artifactItem>
                   <groupId>org.jboss.errai</groupId>
                   <artifactId>wildfly-dist</artifactId>
-                  <version>${version.org.jboss.errai.wildfly.sdm}</version>
+                  <version>${version.org.jboss.errai.wildfly}</version>
                   <type>zip</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}</outputDirectory>
@@ -858,7 +870,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly.sdm}/standalone/deployments</outputDirectory>
+              <outputDirectory>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}/standalone/deployments</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/test/resources/datasources</directory>
