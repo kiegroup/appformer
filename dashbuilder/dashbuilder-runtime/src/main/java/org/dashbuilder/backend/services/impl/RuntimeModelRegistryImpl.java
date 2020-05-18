@@ -20,9 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +38,7 @@ import org.dashbuilder.shared.service.RuntimeModelParser;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.apache.commons.io.FilenameUtils;
 
 @ApplicationScoped
 public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
@@ -97,7 +96,7 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
         }
         
         try (FileInputStream fis = new FileInputStream(fileName)) {
-            String importId = file.getName().replaceAll(".zip", "");
+            String importId = FilenameUtils.getBaseName(file.getPath());
             return register(importId, fis);
         } catch (IOException e) {
             logger.error("Not able to load file {}", fileName, e);
