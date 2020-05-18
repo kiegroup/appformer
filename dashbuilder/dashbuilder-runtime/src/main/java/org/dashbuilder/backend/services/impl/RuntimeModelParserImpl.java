@@ -45,7 +45,7 @@ import static org.dashbuilder.shared.model.ImportDefinitions.NAVIGATION_FILE;
 import static org.dashbuilder.shared.model.ImportDefinitions.PERSPECTIVE_SUFFIX;
 
 /**
- * Parses a exported zip file from Transfer Services into RuntimeModel.
+ * Parses an exported zip file from Transfer Services into RuntimeModel.
  *
  */
 @ApplicationScoped
@@ -97,11 +97,11 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
             }
         }
 
-        if (! datasetContents.isEmpty()) {
+        if (!datasetContents.isEmpty()) {
             newDataSetContentEvent.fire(new NewDataSetContentEvent(datasetContents));
         }
         NavTree navTree = runtimeNavigationBuilder.build(navTreeOp, layoutTemplates);
-        
+
         return new RuntimeModel(navTree, layoutTemplates);
     }
 

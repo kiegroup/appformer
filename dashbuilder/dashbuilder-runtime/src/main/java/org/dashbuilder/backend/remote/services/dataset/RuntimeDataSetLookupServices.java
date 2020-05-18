@@ -33,10 +33,8 @@ public class RuntimeDataSetLookupServices implements DataSetLookupServices {
 
     @Inject
     DataSetManager manager;
-    
 
-    public RuntimeDataSetLookupServices() {
-    }
+    public RuntimeDataSetLookupServices() {}
 
     @Override
     public DataSet lookupDataSet(DataSetLookup lookup) throws Exception {

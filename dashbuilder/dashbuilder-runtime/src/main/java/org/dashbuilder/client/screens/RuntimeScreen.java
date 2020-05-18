@@ -22,9 +22,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Composite;
-import elemental2.dom.HTMLDivElement;
-import org.dashbuilder.client.RuntimeCommunication;
 import org.dashbuilder.client.navbar.NavBarHelper;
 import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.perspective.RuntimePerspectiveGenerator;
@@ -35,30 +32,38 @@ import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
+import org.uberfire.client.mvp.UberElemental;
 import org.uberfire.ext.layout.editor.client.generator.LayoutGenerator;
-import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.workbench.model.menu.Menus;
 
-@Templated
 @ApplicationScoped
 @WorkbenchScreen(identifier = RuntimeScreen.ID)
-public class RuntimeScreen extends Composite {
+public class RuntimeScreen {
 
     public static final String ID = "RuntimeScreen";
-    private static final String IMPORT_ID_PARAM = "import";
+    public static final String IMPORT_ID_PARAM = "import";
 
-    private AppConstants i18n = AppConstants.INSTANCE;
+    private static AppConstants i18n = AppConstants.INSTANCE;
+
+    public interface View extends UberElemental<RuntimeScreen> {
+
+        void addMenus(Menus menus);
+
+        void errorLoadingDashboards(Throwable throwable);
+
+        void loading();
+
+        void stopLoading();
+
+    }
 
     @Inject
-    @DataField
-    HTMLDivElement runtimePage;
+    View view;
 
     @Inject
     private Caller<RuntimeModelService> importModelServiceCaller;
@@ -73,22 +78,14 @@ public class RuntimeScreen extends Composite {
     NavBarHelper menusHelper;
 
     @Inject
-    WorkbenchMegaMenuPresenter menuBar;
-
-    @Inject
     PlaceManager placeManager;
 
     @Inject
     LayoutGenerator layoutGenerator;
-
+    
     @Inject
     Event<RuntimeModelEvent> runtimeModelEvent;
 
-    @Inject
-    BusyIndicatorView loading;
-
-    @Inject
-    RuntimeCommunication runtimeCommunication;
     private RuntimeModel loadedModel;
 
     @OnOpen
@@ -101,29 +98,18 @@ public class RuntimeScreen extends Composite {
 
     @WorkbenchPartTitle
     public String getScreenTitle() {
-        return "Welcome to Dashboards";
+        return i18n.runtimeScreenTitle();
     }
 
-    private void showEmptyContent() {
-        placeManager.goTo(UploadDashboardsScreen.ID);
+    @WorkbenchPartView
+    public View workbenchPart() {
+        return this.view;
     }
 
-    private void loadDashboards(RuntimeModel runtimeModel) {
-        NavTree navTree = runtimeModel.getNavTree();
-        Menus menus = menusHelper.buildMenusFromNavTree(navTree).build();
-
-        runtimeModel.getLayoutTemplates().forEach(perspectiveEditorGenerator::generatePerspective);
-
-        menuBar.addMenus(menus);
-
-        navigationManager.setDefaultNavTree(navTree);
-        runtimeModelEvent.fire(new RuntimeModelEvent(runtimeModel));
-    }
-    
-    private void loadRuntimeModel(String importID) {
-        loading.showBusyIndicator(i18n.loadingDashboards());
+    public void loadRuntimeModel(String importID) {
+        view.loading();
         importModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> {
-            loading.hideBusyIndicator();
+            view.stopLoading();
             if (runtimeModelOp.isPresent()) {
                 RuntimeModel runtimeModel = runtimeModelOp.get();
                 this.loadedModel = runtimeModel;
@@ -132,10 +118,23 @@ public class RuntimeScreen extends Composite {
                 showEmptyContent();
             }
         }, (ErrorCallback<Exception>) (Exception message, Throwable throwable) -> {
-            loading.hideBusyIndicator();
-            runtimeCommunication.showError(i18n.errorLoadingDashboards(), throwable);
+            view.stopLoading();
+            view.errorLoadingDashboards(throwable);
             return false;
         }).getRuntimeModel(importID);
+    }
+
+    private void loadDashboards(RuntimeModel runtimeModel) {
+        NavTree navTree = runtimeModel.getNavTree();
+        Menus menus = menusHelper.buildMenusFromNavTree(navTree).build();
+        runtimeModel.getLayoutTemplates().forEach(perspectiveEditorGenerator::generatePerspective);
+        view.addMenus(menus);
+        navigationManager.setDefaultNavTree(navTree);
+        runtimeModelEvent.fire(new RuntimeModelEvent(runtimeModel));
+    }
+
+    private void showEmptyContent() {
+        placeManager.goTo(UploadDashboardsScreen.ID);
     }
 
 }

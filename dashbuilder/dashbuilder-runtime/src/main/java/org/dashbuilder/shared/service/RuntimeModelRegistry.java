@@ -16,8 +16,6 @@
 
 package org.dashbuilder.shared.service;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
@@ -48,21 +46,21 @@ public interface RuntimeModelRegistry {
      * Returns if this registry has at least one model.
      * @return
      */
-    public boolean isEmpty();
+    boolean isEmpty();
 
     /**
      * Returns the registry mode
      * 
      * @return
      */
-    public DashbuilderRuntimeMode getMode();
+    DashbuilderRuntimeMode getMode();
 
     /**
      * Get a previously registered import model
      * @param id
      * @return
      */
-    public Optional<RuntimeModel> get(String id);
+    Optional<RuntimeModel> get(String id);
 
     /**
      * Sets this runtime mode.
@@ -70,13 +68,13 @@ public interface RuntimeModelRegistry {
      * @param mode
      * The mode to be used.
      */
-    public void setMode(DashbuilderRuntimeMode mode);
+    void setMode(DashbuilderRuntimeMode mode);
 
     /**
      * Store the import from a File path;
      * @param filePath
      * The path to the file
      */
-    public Optional<RuntimeModel> registerFile(String filePath);    
+    Optional<RuntimeModel> registerFile(String filePath);    
 
 }

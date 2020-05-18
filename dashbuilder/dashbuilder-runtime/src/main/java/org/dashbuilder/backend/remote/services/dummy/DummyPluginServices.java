@@ -34,7 +34,7 @@ import org.uberfire.ext.plugin.model.RuntimePlugin;
 import org.uberfire.ext.plugin.service.PluginServices;
 
 /**
- * This should removed as soon as PluginServices cliend side mocked service starts working.
+ * This should be removed as soon as PluginServices cliend side mocked service starts working.
  *
  */
 @Service

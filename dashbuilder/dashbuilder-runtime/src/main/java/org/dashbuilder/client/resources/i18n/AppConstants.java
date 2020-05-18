@@ -33,4 +33,8 @@ public interface AppConstants extends Messages {
 
     String uploadingDashboards();
 
+    String runtimeScreenTitle();
+
+    String uploadDashboardsTitle();
+
 }

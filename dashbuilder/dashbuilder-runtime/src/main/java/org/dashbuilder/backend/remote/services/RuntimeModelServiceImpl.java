@@ -45,7 +45,7 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
 
     @Inject
     RuntimeOptions runtimeOptions;
-    
+
     @Inject
     ExternalImportService externalImportService;
 
@@ -60,13 +60,11 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
             return runtimeModelOp;
         }
 
-        // if it is an existing file
         Optional<String> modelPath = runtimeOptions.modelPath(exportId);
         if (modelPath.isPresent()) {
             return importModelRegistry.registerFile(modelPath.get());
         }
 
-        // if it is an external file
         if (runtimeOptions.isAllowExternal()) {
             return externalImportService.registerExternalImport(exportId);
         }

@@ -29,13 +29,10 @@ import org.dashbuilder.dataset.def.CSVDataSetDef;
 
 @ApplicationScoped
 public class RuntimeCSVFileStorage implements CSVFileStorage {
-    
-    Map<String, String> csvStorage;
-    
-    
-    public RuntimeCSVFileStorage() {
-    }
 
+    Map<String, String> csvStorage;
+
+    public RuntimeCSVFileStorage() {}
 
     @PostConstruct
     public void init() {
@@ -50,9 +47,9 @@ public class RuntimeCSVFileStorage implements CSVFileStorage {
 
     @Override
     public String getCSVString(CSVDataSetDef def) {
-        return csvStorage.get(def.getUUID());
+        return csvStorage.getOrDefault(def.getUUID(), "");
     }
-    
+
     public void storeCSV(String uuid, String csvContent) {
         csvStorage.put(uuid, csvContent);
     }

@@ -56,8 +56,8 @@ public class RuntimeOptions {
 
     @PostConstruct
     public void init() {
-        String multipleImportStr = System.getProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT, "false");
-        String allowExternalStr = System.getProperty(ALLOW_EXTERNAL_FILE_REGISTER_PROP, "true");
+        String multipleImportStr = System.getProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT, Boolean.FALSE.toString());
+        String allowExternalStr = System.getProperty(ALLOW_EXTERNAL_FILE_REGISTER_PROP, Boolean.FALSE.toString());
 
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");

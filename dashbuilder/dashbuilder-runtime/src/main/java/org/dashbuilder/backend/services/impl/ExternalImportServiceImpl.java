@@ -19,7 +19,6 @@ package org.dashbuilder.backend.services.impl;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -53,7 +52,6 @@ public class ExternalImportServiceImpl implements ExternalImportService {
         URL url = getExternalModelUrl(externalModelUrl);
         modelId = buildURLIdentifier(url);
 
-        // consider generate better model ids for URLs
         final String filePath = runtimeOptions.buildFilePath(modelId);
         int totalBytes = 0;
         final int pageSize = 1024;
@@ -77,7 +75,7 @@ public class ExternalImportServiceImpl implements ExternalImportService {
 
     private void checkSize(final String filePath, int totalBytes) throws IOException {
         if (totalBytes > runtimeOptions.getUploadSize()) {
-            Files.deleteIfExists(Paths.get(filePath));
+            deleteFile(filePath);
             logger.error("Size file is bigger than max upload size {}", runtimeOptions.getUploadSize());
             throw new IllegalArgumentException("External file size is too big.");
         }

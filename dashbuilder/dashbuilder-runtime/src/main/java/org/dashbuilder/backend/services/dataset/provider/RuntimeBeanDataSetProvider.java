@@ -37,7 +37,7 @@ public class RuntimeBeanDataSetProvider extends BeanDataSetProvider {
 
     protected BeanManager beanManager;
     protected Map<String, DataSetGenerator> generatorMap = new HashMap<>();
-
+    
     public RuntimeBeanDataSetProvider() {
         super();
     }
@@ -62,10 +62,17 @@ public class RuntimeBeanDataSetProvider extends BeanDataSetProvider {
 
     @Override
     public DataSetGenerator lookupGenerator(DataSetDef def) {
-        BeanDataSetDef beanDef = (BeanDataSetDef) def;
+        if (def instanceof BeanDataSetDef) {
+            return loadDataSetGenerator((BeanDataSetDef) def);
+        }
+
+        throw new IllegalArgumentException("Not a BeanDataSetDef instance");
+
+    }
+
+    private DataSetGenerator loadDataSetGenerator(BeanDataSetDef beanDef) {
         String beanName = beanDef.getGeneratorClass();
         DataSetGenerator generator = generatorMap.get(beanName);
-
         if (generator != null) {
             return generator;
         } else {

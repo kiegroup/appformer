@@ -19,87 +19,89 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.Composite;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.FormData;
-import elemental2.dom.HTMLButtonElement;
-import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLFormElement;
-import elemental2.dom.HTMLInputElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
-import org.dashbuilder.client.RuntimeCommunication;
 import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
+import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.client.mvp.UberElemental;
+import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-@Templated
 @Dependent
 @WorkbenchScreen(identifier = UploadDashboardsScreen.ID)
-public class UploadDashboardsScreen extends Composite {
+public class UploadDashboardsScreen {
 
     public static final String ID = "UploadDashboardsScreen";
 
-    AppConstants i18n = AppConstants.INSTANCE;
+    private static final AppConstants i18n = AppConstants.INSTANCE;
 
     @Inject
-    @DataField
-    HTMLButtonElement btnImport;
+    View view;
 
     @Inject
-    @DataField
-    HTMLFormElement uploadForm;
-
+    PlaceManager placeManager;
+    
     @Inject
-    @DataField
-    HTMLInputElement inputFile;
+    RuntimeScreen runtimeScreen;
 
-    @Inject
-    @DataField
-    HTMLDivElement emptyImport;
+    public interface View extends UberElemental<UploadDashboardsScreen> {
 
-    @Inject
-    RuntimeCommunication runtimeCommunication;
+        void loading();
 
-    @Inject
-    BusyIndicatorView loading;
+        void stopLoading();
+
+        void badResponseUploading(Response response);
+
+        void errorDuringUpload(Object error);
+
+    }
 
     @PostConstruct
-    public void build() {
-        btnImport.onclick = e -> {
-            inputFile.click();
-            return null;
-        };
-
-        inputFile.onchange = e -> {
-            RequestInit request = RequestInit.create();
-            request.setMethod("POST");
-            request.setBody(new FormData(uploadForm));
-            loading.showBusyIndicator(i18n.uploadingDashboards());
-            DomGlobal.window.fetch("/rest/upload", request)
-                            .then((Response response) -> response.text().then(id -> {
-                                loading.hideBusyIndicator();
-                                if (response.status == 200) {
-                                    DomGlobal.window.location.assign("/dashbuilder.html?import=" + id);
-                                } else {
-                                    runtimeCommunication.showError(i18n.errorUploadingDashboards(), response);
-                                }
-                                return null;
-                            }), error -> {
-                                loading.hideBusyIndicator();
-                                runtimeCommunication.showError(i18n.errorUploadingDashboards(), error);
-                                return null;
-                            });
-            return null;
-        };
+    public void init() {
+        view.init(this);
     }
 
     @WorkbenchPartTitle
     public String title() {
-        return "Upload Dashboards";
+        return i18n.uploadDashboardsTitle();
+    }
+
+    @WorkbenchPartView
+    protected View getPart() {
+        return view;
+    }
+
+    public void submit(HTMLFormElement uploadForm) {
+        RequestInit request = RequestInit.create();
+        request.setMethod("POST");
+        request.setBody(new FormData(uploadForm));
+        view.loading();
+        DomGlobal.window.fetch("/rest/upload", request)
+                        .then((Response response) -> response.text().then(id -> {
+                            view.stopLoading();
+                            if (response.status == 200) {
+                                openModel(id);
+                            } else {
+                                view.badResponseUploading(response);
+                            }
+                            return null;
+                        }), error -> {
+                            view.stopLoading();
+                            view.errorDuringUpload(error);
+                            return null;
+                        });
+    }
+
+    protected void openModel(String modelId) {
+        runtimeScreen.loadRuntimeModel(modelId);
+        placeManager.goTo(RuntimeScreen.ID);
     }
 
 }

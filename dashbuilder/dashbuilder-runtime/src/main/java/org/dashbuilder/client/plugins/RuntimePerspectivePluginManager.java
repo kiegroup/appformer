@@ -46,7 +46,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 @Alternative
 @ApplicationScoped
 public class RuntimePerspectivePluginManager implements PerspectivePluginManager {
-    
+
     @Inject
     LayoutGenerator layoutGenerator;
 
@@ -54,7 +54,7 @@ public class RuntimePerspectivePluginManager implements PerspectivePluginManager
 
     @Override
     public void loadPlugins() {
-
+        // not used in Runtime
     }
 
     @Override
@@ -107,7 +107,6 @@ public class RuntimePerspectivePluginManager implements PerspectivePluginManager
 
     @Override
     public void buildPerspectiveWidget(String perspectiveName, LayoutTemplateContext layoutCtx, ParameterizedCommand<IsWidget> afterBuild, ParameterizedCommand<LayoutRecursionIssue> onInfiniteRecursion) {
-        // LAYOUT RECURSION SHOULD BE HANDLED HERE
         templates.stream().filter(lt -> lt.getName().equals(perspectiveName)).findFirst().ifPresent(lt -> {
             LayoutInstance result = layoutGenerator.build(lt);
             IsWidget widget = ElementWrapperWidget.getWidget(result.getElement());
@@ -123,7 +122,7 @@ public class RuntimePerspectivePluginManager implements PerspectivePluginManager
     public void onRuntimeModelLoaded(@Observes RuntimeModelEvent runtimeModelEvent) {
         templates = runtimeModelEvent.getRuntimeModel().getLayoutTemplates();
     }
-    
+
     private boolean searchLayoutTemplate(String name) {
         return templates.stream().anyMatch(lt -> lt.getName().equals(name));
     }

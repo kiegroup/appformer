@@ -31,12 +31,12 @@ public class RuntimeSQLDataSourceLocator implements SQLDataSourceLocator {
 
     @Override
     public DataSource lookup(SQLDataSetDef def) throws Exception {
-        InitialContext ctx = new InitialContext();
-        return (DataSource) ctx.lookup(def.getDataSource());
+        return InitialContext.doLookup(def.getDataSource());
     }
 
     @Override
     public List<SQLDataSourceDef> list() {
         return JDBCUtils.listDatasourceDefs();
     }
+
 }

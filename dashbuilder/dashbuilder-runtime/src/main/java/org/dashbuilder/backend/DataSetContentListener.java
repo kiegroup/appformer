@@ -72,7 +72,7 @@ public class DataSetContentListener {
                     registerDataSetDefinition(content);
                     break;
                 default:
-                    logger.error("Unknow DataSet Content Type: {}", contentType.name(), null);
+                    logger.error("Unknown DataSet Content Type: {}", contentType.name(), null);
                     break;
             }
         } catch (Exception e) {

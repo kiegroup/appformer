@@ -26,6 +26,13 @@ import org.dashbuilder.shared.model.RuntimeModel;
  */
 public interface ExternalImportService {
     
-    public Optional<RuntimeModel> registerExternalImport(String externalModelUrl);
+    /**
+     * Register an external model coming from an external server
+     * @param externalModelUrl
+     * the external model URL
+     * @return
+     * Optional containing the downloaded RuntimeModel or empty
+     */
+    Optional<RuntimeModel> registerExternalImport(String externalModelUrl);
 
 }

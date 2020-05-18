@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 JBoss, by Red Hat, Inc
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,10 +71,10 @@ public class PerspectivePluginManagerImpl implements PerspectivePluginManager {
 
     @Inject
     public PerspectivePluginManagerImpl(ClientTypeRegistry clientTypeRegistry,
-                                    LayoutGenerator layoutGenerator,
-                                    NavigationManager navigationManager,
-                                    Caller<PerspectivePluginServices> pluginServices,
-                                    Event<PerspectivePluginsChangedEvent> perspectivesChangedEvent) {
+                                        LayoutGenerator layoutGenerator,
+                                        NavigationManager navigationManager,
+                                        Caller<PerspectivePluginServices> pluginServices,
+                                        Event<PerspectivePluginsChangedEvent> perspectivesChangedEvent) {
         this.clientTypeRegistry = clientTypeRegistry;
         this.layoutGenerator = layoutGenerator;
         this.navigationManager = navigationManager;
@@ -86,7 +86,6 @@ public class PerspectivePluginManagerImpl implements PerspectivePluginManager {
     public void getPerspectivePlugins(ParameterizedCommand<Collection<Plugin>> callback) {
         loadPlugins(callback);
     }
-
 
     @Override
     public boolean isRuntimePerspective(Plugin plugin) {
@@ -145,8 +144,7 @@ public class PerspectivePluginManagerImpl implements PerspectivePluginManager {
                     LayoutInstance result = layoutGenerator.build(layoutInfo.getLayoutTemplate());
                     IsWidget widget = ElementWrapperWidget.getWidget(result.getElement());
                     afterBuild.execute(widget);
-                }
-                finally {
+                } finally {
                     if (navGroup != null) {
                         navGroupStack.pop();
                     }
@@ -196,7 +194,8 @@ public class PerspectivePluginManagerImpl implements PerspectivePluginManager {
                 navItem.setContext(newCtx.toString());
             }
             if (!itemsToRename.isEmpty()) {
-                navigationManager.saveNavTree(navigationManager.getNavTree(), () -> {});
+                navigationManager.saveNavTree(navigationManager.getNavTree(), () -> {
+                });
             }
             perspectivesChangedEvent.fire(new PerspectivePluginsChangedEvent());
         }
@@ -217,17 +216,17 @@ public class PerspectivePluginManagerImpl implements PerspectivePluginManager {
         }
         perspectivesChangedEvent.fire(new PerspectivePluginsChangedEvent());
     }
-    
+
     @Override
     public void loadPlugins() {
-        loadPlugins(plugins -> {});
+        loadPlugins(plugins -> {
+        });
     }
-    
+
     private void loadPlugins(ParameterizedCommand<Collection<Plugin>> callback) {
         if (pluginsLoaded) {
             callback.execute(pluginMap.values());
-        }
-        else {
+        } else {
             pluginServices.call(((Collection<Plugin> plugins) -> {
                 pluginMap.clear();
                 plugins.stream().filter(this::isRuntimePerspective).forEach(p -> pluginMap.put(p.getName(), p));
@@ -236,6 +235,5 @@ public class PerspectivePluginManagerImpl implements PerspectivePluginManager {
             })).listPlugins();
         }
     }
-
 
 }

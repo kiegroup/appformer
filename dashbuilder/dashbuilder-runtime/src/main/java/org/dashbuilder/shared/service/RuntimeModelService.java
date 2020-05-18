@@ -24,6 +24,15 @@ import org.jboss.errai.bus.server.annotations.Remote;
 @Remote
 public interface RuntimeModelService {
 
-    public Optional<RuntimeModel> getRuntimeModel(String runtimeModelId);
+    /**
+     * 
+     * Get a runtime model given an ID
+     * 
+     * @param runtimeModelId
+     * The Runtime model represented by runtimeModelId
+     * @return
+     * An optional containing the RuntimeModel or empty if the runtime model couldn't be found or built.
+     */
+    Optional<RuntimeModel> getRuntimeModel(String runtimeModelId);
 
 }

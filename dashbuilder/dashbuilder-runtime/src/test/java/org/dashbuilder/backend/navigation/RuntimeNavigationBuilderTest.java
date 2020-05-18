@@ -17,6 +17,7 @@
 package org.dashbuilder.backend.navigation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,10 @@ import static org.junit.Assert.assertTrue;
 
 public class RuntimeNavigationBuilderTest {
 
+    private static final String ITEM = "item1";
+    private static final String GROUP = "group";
+    private static final String EMPTY_GROUP = "emptyGroup";
+
     RuntimeNavigationBuilder runtimeNavigationBuilder;
 
     @Before
@@ -51,9 +56,7 @@ public class RuntimeNavigationBuilderTest {
         NavTreeBuilder builder = new NavTreeBuilder();
         LayoutTemplate lt = new LayoutTemplate("lt1");
 
-        final String ITEM = "item1";
         final String NOT_PRUNED_GROUP = "notemptygroup";
-        final String EMPTY_GROUP = "emptyGroup";
         final String EMPTYCHILDGROUP = "emptychildgroup";
         final String EMPTYONANONEMPTY = "empty_on_a_not_empty";
 
@@ -63,7 +66,7 @@ public class RuntimeNavigationBuilderTest {
         builder.endGroup();
 
         builder.group(NOT_PRUNED_GROUP, "notemptygroup", "", false);
-        builder.item(ITEM, "item1", "", false, NavWorkbenchCtx.perspective(lt.getName()));
+        builder.item(ITEM, ITEM, "", false, NavWorkbenchCtx.perspective(lt.getName()));
         builder.group(EMPTYONANONEMPTY, EMPTYONANONEMPTY, "", false);
         builder.endGroup();
         builder.endGroup();
@@ -97,9 +100,7 @@ public class RuntimeNavigationBuilderTest {
         NavTreeBuilder builder = new NavTreeBuilder();
         LayoutTemplate lt = new LayoutTemplate("lt1");
 
-        final String ITEM = "item1";
         final String ITEM_TO_REMOVE = "item2";
-        final String GROUP = "group";
 
         builder.group(GROUP, GROUP, "", false);
         builder.item(ITEM, ITEM, "", false, NavWorkbenchCtx.perspective(lt.getName()));
@@ -130,18 +131,14 @@ public class RuntimeNavigationBuilderTest {
         LayoutTemplate lt = new LayoutTemplate("lt1");
         LayoutTemplate lt2 = new LayoutTemplate(ORPHAN_ITEM);
 
-        final String ITEM = "item1";
         final String ITEM_TO_REMOVE = "item2";
-        final String GROUP = "group";
 
         builder.group(GROUP, GROUP, "", false);
         builder.item(ITEM, ITEM, "", false, NavWorkbenchCtx.perspective(lt.getName()));
         builder.item(ITEM_TO_REMOVE, ITEM_TO_REMOVE, "", false);
         builder.endGroup();
 
-        List<LayoutTemplate> templates = new ArrayList<>();
-        templates.add(lt);
-        templates.add(lt2);
+        List<LayoutTemplate> templates = Arrays.asList(lt, lt2);
         NavTree originalTree = builder.build();
         assertNull(originalTree.getItemById(RuntimeNavigationBuilder.ORPHAN_GROUP_ID));
         assertEquals(1, originalTree.getRootItems().size());
@@ -165,10 +162,7 @@ public class RuntimeNavigationBuilderTest {
         LayoutTemplate lt2 = new LayoutTemplate("lt2");
         LayoutTemplate lt3 = new LayoutTemplate("lt3");
 
-        List<LayoutTemplate> templates = new ArrayList<>();
-        templates.add(lt1);
-        templates.add(lt2);
-        templates.add(lt3);
+        List<LayoutTemplate> templates = Arrays.asList(lt1, lt2, lt3);
         NavTree runtimeTree = runtimeNavigationBuilder.build(Optional.empty(), templates);
 
         NavGroup orphanItemsGroup = (NavGroup) runtimeTree.getItemById(RuntimeNavigationBuilder.ORPHAN_GROUP_ID);
