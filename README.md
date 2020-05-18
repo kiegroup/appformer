@@ -1,4 +1,4 @@
-[![Uberfire](http://uberfireframework.org/upload/images/uberfire-logo.png)](http://uberfireframework.org/)
+test[![Uberfire](http://uberfireframework.org/upload/images/uberfire-logo.png)](http://uberfireframework.org/)
 
 [![Build Status](http://ci.kiegroup.org/buildStatus/icon?job=uberfire)](http://ci.kiegroup.org/job/uberfire)
 
