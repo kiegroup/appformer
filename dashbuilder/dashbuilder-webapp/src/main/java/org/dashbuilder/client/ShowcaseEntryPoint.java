@@ -15,39 +15,33 @@
  */
 package org.dashbuilder.client;
 
-import static org.uberfire.workbench.events.NotificationEvent.NotificationType.INFO;
-
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import org.dashbuilder.client.cms.resources.i18n.ContentManagerI18n;
-import org.dashbuilder.client.cms.screen.explorer.NavigationExplorerScreen;
-import org.dashbuilder.client.dashboard.DashboardManager;
-import org.dashbuilder.client.dashboard.DashboardPerspectiveActivity;
-import org.dashbuilder.client.navbar.TopMenuBar;
-import org.dashbuilder.client.navigation.NavTreeDefinitions;
-import org.dashbuilder.client.navigation.NavigationManager;
-import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.dashbuilder.client.security.PermissionTreeSetup;
-import org.dashbuilder.navigation.NavItem;
-import org.dashbuilder.navigation.NavTree;
-import org.dashbuilder.navigation.workbench.NavWorkbenchCtx;
-import org.dashbuilder.shared.dashboard.events.DashboardDeletedEvent;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.ioc.client.api.EntryPoint;
-import org.jboss.errai.security.shared.service.AuthenticationService;
-import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.ext.security.management.client.ClientUserSystemManager;
-import org.uberfire.mvp.Command;
-import org.uberfire.workbench.events.NotificationEvent;
 
 import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
+import elemental2.dom.DomGlobal;
+import org.dashbuilder.client.cms.resources.i18n.ContentManagerI18n;
+import org.dashbuilder.client.cms.screen.explorer.NavigationExplorerScreen;
+import org.dashbuilder.client.dashboard.DashboardManager;
+import org.dashbuilder.client.dashboard.DashboardPerspectiveActivity;
+import org.dashbuilder.client.navbar.AppHeader;
+import org.dashbuilder.client.navigation.NavTreeDefinitions;
+import org.dashbuilder.client.navigation.NavigationManager;
+import org.dashbuilder.client.resources.i18n.AppConstants;
+import org.dashbuilder.client.security.PermissionTreeSetup;
+import org.dashbuilder.navigation.event.NavTreeChangedEvent;
+import org.dashbuilder.navigation.workbench.NavWorkbenchCtx;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.api.EntryPoint;
+import org.jboss.errai.security.shared.service.AuthenticationService;
+import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.security.management.client.ClientUserSystemManager;
+import org.uberfire.mvp.Command;
 
 /**
  * Entry-point for the Dashbuilder showcase
@@ -73,16 +67,13 @@ public class ShowcaseEntryPoint {
     private NavigationManager navigationManager;
 
     @Inject
-    private Event<NotificationEvent> workbenchNotification;
-
-    @Inject
     private PermissionTreeSetup permissionTreeSetup;
 
     @Inject
     private NavigationExplorerScreen navigationExplorerScreen;
 
     @Inject
-    private TopMenuBar navBar;
+    private AppHeader appHeader;
 
     @Inject
     private ContentManagerI18n contentManagerI18n;
@@ -92,20 +83,11 @@ public class ShowcaseEntryPoint {
         // OPTIONAL: Rename perspectives to dashboards in CMS
         //customizeCMSTexts();
 
-        userSystemManager.waitForInitialization(() ->
-            dashboardManager.loadDashboards(t ->
-                navigationManager.init(() -> {
-                    permissionTreeSetup.configureTree();
-                    initNavBar();
-                    hideLoadingPopup();
-                })
-            ));
-    }
-
-    private void customizeCMSTexts() {
-        contentManagerI18n.setPerspectiveResourceName(constants.content_manager_dashboard());
-        contentManagerI18n.setPerspectivesResourceName(constants.content_manager_dashboards());
-        contentManagerI18n.setNoPerspectives(constants.content_manager_noDashboards());
+        userSystemManager.waitForInitialization(() -> dashboardManager.loadDashboards(t -> navigationManager.init(() -> {
+            permissionTreeSetup.configureTree();
+            initNavBar();
+            hideLoadingPopup();
+        })));
     }
 
     private void initNavBar() {
@@ -114,35 +96,26 @@ public class ShowcaseEntryPoint {
 
         // Allow links to core perspectives only under the top menu's nav group
         navigationExplorerScreen.getNavTreeEditor()
-                .setOnlyRuntimePerspectives(NavTreeDefinitions.GROUP_APP, false)
-                .applyToAllChildren();
+                                .setOnlyRuntimePerspectives(NavTreeDefinitions.GROUP_APP, false)
+                                .applyToAllChildren();
 
         // Disable perspective context setup under the top menu nav's group
         navigationExplorerScreen.getNavTreeEditor()
-                .setPerspectiveContextEnabled(NavTreeDefinitions.GROUP_APP, false)
-                .applyToAllChildren();
+                                .setPerspectiveContextEnabled(NavTreeDefinitions.GROUP_APP, false)
+                                .applyToAllChildren();
 
         // Attach old existing dashboards (created with versions prior to 0.7) under the "dashboards" group
         for (DashboardPerspectiveActivity activity : dashboardManager.getDashboards()) {
             String perspectiveId = activity.getIdentifier();
             navigationManager.getNavTree().addItem(perspectiveId,
-                    activity.getDisplayName(),
-                    activity.getDisplayName(),
-                    NavTreeDefinitions.GROUP_DASHBOARDS, true,
-                    NavWorkbenchCtx.perspective(perspectiveId).toString());
+                                                   activity.getDisplayName(),
+                                                   activity.getDisplayName(),
+                                                   NavTreeDefinitions.GROUP_DASHBOARDS, true,
+                                                   NavWorkbenchCtx.perspective(perspectiveId).toString());
         }
         // Show the top menu bar
-        navBar.setOnItemSelectedCommand(onItemSelectedCommand);
-        navBar.setOnLogoutCommand(onLogoutCommand);
-        navBar.show(NavTreeDefinitions.GROUP_APP);
-    }
-
-    // Event coming from old dashboards (created with versions prior to 0.7)
-    private void onDashboardDeletedEvent(@Observes DashboardDeletedEvent event) {
-        NavTree navTree = navigationManager.getNavTree();
-        navTree.deleteItem(event.getDashboardId());
-        navBar.show(NavTreeDefinitions.GROUP_APP);
-        workbenchNotification.fire(new NotificationEvent(constants.notification_dashboard_deleted(event.getDashboardName()), INFO));
+        appHeader.setOnLogoutCommand(onLogoutCommand);
+        appHeader.setupMenu(NavTreeDefinitions.NAV_TREE_DEFAULT);
     }
 
     // Fade out the "Loading application" pop-up
@@ -152,34 +125,26 @@ public class ShowcaseEntryPoint {
         new Animation() {
 
             @Override
-            protected void onUpdate( double progress ) {
-                e.getStyle().setOpacity( 1.0 - progress );
+            protected void onUpdate(double progress) {
+                e.getStyle().setOpacity(1.0 - progress);
             }
 
             @Override
             protected void onComplete() {
-                e.getStyle().setVisibility( Style.Visibility.HIDDEN );
+                e.getStyle().setVisibility(Style.Visibility.HIDDEN);
             }
-        }.run( 500 );
+        }.run(500);
     }
-
-    private Command onItemSelectedCommand = () -> {
-        NavItem navItem = navBar.getItemSelected();
-
-        String resourceId = NavWorkbenchCtx.get(navItem).getResourceId();
-        if (resourceId != null) {
-            placeManager.goTo(resourceId);
-        }
-    };
 
     private Command onLogoutCommand = () -> {
         authService.call(r -> {
-            final String location = GWT.getModuleBaseURL().replaceFirst( "/" + GWT.getModuleName() + "/", "/logout.jsp" );
-            redirect( location );
+            final String location = GWT.getModuleBaseURL().replaceFirst("/" + GWT.getModuleName() + "/", "/logout.jsp");
+            DomGlobal.window.location.assign(location);
         }).logout();
     };
 
-    public static native void redirect( String url )/*-{
-        $wnd.location = url;
-    }-*/;
+    public void onNavTreeChanged(@Observes final NavTreeChangedEvent event) {
+        appHeader.setupMenu(navigationManager.getNavTree());
+    }
+
 }
