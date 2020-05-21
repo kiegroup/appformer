@@ -24,7 +24,7 @@ public class DashbuilderNavBrand implements MegaMenuBrand {
 
     @Override
     public String brandImageUrl() {
-        return "/images/dashbuilder_brand.png";
+        return "./images/dashbuilder_brand.png";
     }
 
     @Override
