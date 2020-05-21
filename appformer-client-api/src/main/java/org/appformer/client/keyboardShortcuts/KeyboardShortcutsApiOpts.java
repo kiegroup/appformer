@@ -35,6 +35,12 @@ public class KeyboardShortcutsApiOpts {
         return Repeat.REPEAT.equals(repeat);
     }
 
+    /**
+     * Repetition mode for Keyboard Shortcuts.
+     * <p>
+     * REPEAT - When pressing and holding a key, the same action will be fired multiple times.
+     * NO_REPEAT - When pressing and holding a key, the action will be only fired once.
+     */
     public enum Repeat {
         REPEAT,
         NO_REPEAT

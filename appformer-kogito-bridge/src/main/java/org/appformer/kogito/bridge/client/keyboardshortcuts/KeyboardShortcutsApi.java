@@ -20,12 +20,39 @@ import elemental2.dom.EventTarget;
 import jsinterop.annotations.JsFunction;
 import org.appformer.client.keyboardShortcuts.KeyboardShortcutsApiOpts;
 
+/**
+ * API for registering Keyboard Shortcuts.
+ */
 public interface KeyboardShortcutsApi {
 
+    /**
+     * Register a Keyboard Shortcuts for a keypress event.
+     * @param combination The combination of keys that trigger 'onKeyDown' action. This is shown on the Keyboard Shortcuts panel.
+     * @param label The label for this Keyboard Shortcut. This is shown on the Keyboard Shortcuts panel.
+     * @param onKeyDown The action to  be executed when 'combination' is pressed.
+     * @param opts Options of this registration.
+     *
+     * @return An id representing this registration. This id can be used to 'deregister' the Keyboard Shortcut.
+     */
     int registerKeyPress(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApiOpts opts);
 
+    /**
+     * Register a Keyboard Shortcuts for a keypress event.
+     * @param combination The combination of keys that trigger 'onKeyDown' action when they're pressed and 'onKeyUp' when they're released. This is shown on the Keyboard Shortcuts panel.
+     * @param label The label for this Keyboard Shortcut. This is shown on the Keyboard Shortcuts panel.
+     * @param onKeyDown The action to  be executed when 'combination' is pressed.
+     * @param onKeyUp The action to  be executed when 'combination' is released.
+     * @param opts Options of this registration.
+     *
+     * @return An id representing this registration. This id can be used to 'deregister' the Keyboard Shortcut.
+     */
     int registerKeyDownThenUp(String combination, String label, KeyboardShortcutsApi.Action onKeyDown, KeyboardShortcutsApi.Action onKeyUp, KeyboardShortcutsApiOpts opts);
 
+    /**
+     * Deregister a Keyboard Shortcut.
+     *
+     * @param id
+     */
     void deregister(int id);
 
     @JsFunction

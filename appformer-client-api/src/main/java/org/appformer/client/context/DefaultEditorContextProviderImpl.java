@@ -17,7 +17,6 @@
 package org.appformer.client.context;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Alternative;
 
 @ApplicationScoped
 public class DefaultEditorContextProviderImpl implements EditorContextProvider {

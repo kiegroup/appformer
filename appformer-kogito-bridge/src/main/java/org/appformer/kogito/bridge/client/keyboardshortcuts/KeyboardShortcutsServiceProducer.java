@@ -35,7 +35,7 @@ public class KeyboardShortcutsServiceProducer {
             return new KeyboardShortcutsService();
         }
 
-        DomGlobal.console.info("[KeyboardShortcutsServiceProducer] Envelope API is not available. Producing NoOpKeyboardShortcutsService");
+        DomGlobal.console.debug("[KeyboardShortcutsServiceProducer] Envelope API is not available. Producing NoOpKeyboardShortcutsService");
         return new NoOpKeyboardShortcutsService();
     }
 }
