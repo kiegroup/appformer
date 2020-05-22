@@ -104,7 +104,7 @@ public class AppHeader implements Header {
     }
 
     public void setupMenu(NavTree navTree) {
-        Menus menus = navBarHelper.buildMenusFromNavTree(NavTreeDefinitions.NAV_TREE_DEFAULT).build();
+        Menus menus = navBarHelper.buildMenusFromNavTree(navTree).build();
         menuBarPresenter.clear();
         menuBarPresenter.addMenus(menus);
         menuBarPresenter.addMenus(userMenus);

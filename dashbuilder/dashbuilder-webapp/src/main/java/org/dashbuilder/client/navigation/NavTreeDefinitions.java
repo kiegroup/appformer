@@ -26,6 +26,7 @@ import static org.dashbuilder.perspectives.PerspectiveIds.*;
  */
 public interface NavTreeDefinitions {
 
+    String DASHBOARDS_GROUP = "dashboards_group";
     String GROUP_APP = "app";
     String ENTRY_HOME = "app_home";
     String ENTRY_GALLERY = "app_gallery";
@@ -47,10 +48,12 @@ public interface NavTreeDefinitions {
                 .item(ENTRY_SECURITY, "Security", "The security configuration tool", false, perspective(SECURITY))
                 .item(ENTRY_CONTENT_MGR, "Content manager", "The content manager tool", false, perspective(CONTENT_MANAGER))
                 .item(ENTRY_CONTENT_MGR, "Data Transfer", "Allow content transference between installations", false, perspective(DATA_TRANSFER))
-                .endGroup()
-            .group(GROUP_DASHBOARDS, "Sample Dashboards", "The default location for dashboard items", false)
-                .item(ENTRY_SALES_DASHBOARD, "Sales dashboard", null, true, perspective(SALES_DASHBOARD))
-                .item(ENTRY_SALES_REPORTS, "Sales reports", null, true, perspective(SALES_REPORTS))
-                .endGroup()
+            .endGroup()
         .build();
+    
+    
+    NavTree INITIAL_EMPTY = new NavTreeBuilder()
+                                        .group(DASHBOARDS_GROUP, "Dashboards", "", true)
+                                        .endGroup()
+                                    .build();
 }
