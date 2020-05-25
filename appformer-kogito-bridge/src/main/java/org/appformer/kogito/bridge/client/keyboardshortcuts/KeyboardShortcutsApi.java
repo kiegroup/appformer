@@ -28,7 +28,7 @@ public interface KeyboardShortcutsApi {
     /**
      * Register a Keyboard Shortcuts for a keypress event.
      * @param combination The combination of keys that trigger 'onKeyDown' action. This is shown on the Keyboard Shortcuts panel.
-     * @param label The label for this Keyboard Shortcut. This is shown on the Keyboard Shortcuts panel.
+     * @param label The label for this Keyboard Shortcut. This is shown on the Keyboard Shortcuts panel. Use a `|` character to separate its section from its description. (e.g. "Moving | Arrow up")
      * @param onKeyDown The action to  be executed when 'combination' is pressed.
      * @param opts Options of this registration.
      *
@@ -39,7 +39,7 @@ public interface KeyboardShortcutsApi {
     /**
      * Register a Keyboard Shortcuts for a keypress event.
      * @param combination The combination of keys that trigger 'onKeyDown' action when they're pressed and 'onKeyUp' when they're released. This is shown on the Keyboard Shortcuts panel.
-     * @param label The label for this Keyboard Shortcut. This is shown on the Keyboard Shortcuts panel.
+     * @param label The label for this Keyboard Shortcut. This is shown on the Keyboard Shortcuts panel. Use a `|` character to separate its section from its description. (e.g. "Moving | Arrow up")
      * @param onKeyDown The action to  be executed when 'combination' is pressed.
      * @param onKeyUp The action to  be executed when 'combination' is released.
      * @param opts Options of this registration.
@@ -51,7 +51,7 @@ public interface KeyboardShortcutsApi {
     /**
      * Deregister a Keyboard Shortcut.
      *
-     * @param id
+     * @param id The id obtained when registering a Keyboard Shortcut.
      */
     void deregister(int id);
 
