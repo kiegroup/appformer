@@ -16,6 +16,8 @@
 
 package org.appformer.client.context;
 
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -27,7 +29,7 @@ public class DefaultEditorContextProviderImpl implements EditorContextProvider {
     }
 
     @Override
-    public OperatingSystem getOperatingSystem() {
-        return OperatingSystem.DEFAULT;
+    public Optional<OperatingSystem> getOperatingSystem() {
+        return Optional.empty();
     }
 }

@@ -16,6 +16,8 @@
 
 package org.appformer.kogito.bridge.client.context.impl;
 
+import java.util.Optional;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 
@@ -41,13 +43,13 @@ public class KogitoEditorContextProviderImpl implements EditorContextProvider {
     }
 
     @Override
-    public OperatingSystem getOperatingSystem() {
+    public Optional<OperatingSystem> getOperatingSystem() {
         if (WindowRef.isEnvelopeAvailable()) {
             final String os = EditorContextWrapper.get().getOperatingSystem();
             if (os != null) {
-                return OperatingSystem.withName(os);
+                return Optional.of(OperatingSystem.withName(os));
             }
         }
-        return OperatingSystem.DEFAULT;
+        return Optional.empty();
     }
 }

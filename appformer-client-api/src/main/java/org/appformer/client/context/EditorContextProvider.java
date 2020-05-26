@@ -16,27 +16,22 @@
 
 package org.appformer.client.context;
 
+import java.util.Optional;
+
 /**
- * 
  * Provide access to EditorContext properties
- *
  */
 public interface EditorContextProvider {
 
     /**
      * Access the channel where the editor is running (e.g. ONLINE, GITHUB or VSCODE).
-     * 
-     * @return
-     * The channel where the editor is running or DEFAULT if no channel is available.
+     * @return The channel where the editor is running or DEFAULT if no channel is available.
      */
     Channel getChannel();
 
     /**
      * Access the operating system where the editor is running (e.g. MACOS, WINDOWS or LINUX).
-     *
-     * @return
-     * The operating system where the editor is running or DEFAULT if no information is available.
+     * @return The operating system where the editor is running or Optional.empty() if no information is available.
      */
-    OperatingSystem getOperatingSystem();
-
+    Optional<OperatingSystem> getOperatingSystem();
 }
