@@ -53,10 +53,15 @@ public class UploadResourceImpl {
     RuntimeModelRegistry runtimeModelRegistry;
 
     @PostConstruct
-    public void createBaseDir() throws IOException {
+    public void createBaseDir() {
         java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
         if (!Files.exists(baseDirPath)) {
-            Files.createDirectory(baseDirPath);
+            try {
+                Files.createDirectory(baseDirPath);
+            } catch (IOException e) {
+                logger.debug("Error creating base directory for imports: {}", baseDirPath, e);
+                throw new RuntimeException("Base directory for imports could not be created: " + baseDirPath, e);
+            }
         }
     }
 
