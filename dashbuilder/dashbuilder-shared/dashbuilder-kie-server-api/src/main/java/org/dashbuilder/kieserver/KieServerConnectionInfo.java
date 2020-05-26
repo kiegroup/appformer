@@ -32,15 +32,18 @@ public class KieServerConnectionInfo {
     private Optional<String> user;
     private Optional<String> password;
     private Optional<String> token;
+    private boolean replaceQuery;
 
     public KieServerConnectionInfo(@MapsTo("location") Optional<String> location,
                                    @MapsTo("user") Optional<String> user,
                                    @MapsTo("password") Optional<String> password,
-                                   @MapsTo("token") Optional<String> token) {
+                                   @MapsTo("token") Optional<String> token,
+                                   @MapsTo("replaceQuery") boolean replaceQuery) {
         this.location = location;
         this.user = user;
         this.password = password;
         this.token = token;
+        this.replaceQuery = replaceQuery;
     }
 
     public Optional<String> getLocation() {
@@ -57,6 +60,10 @@ public class KieServerConnectionInfo {
 
     public Optional<String> getToken() {
         return token;
+    }
+    
+    public boolean isReplaceQuery() {
+        return replaceQuery;
     }
 
 }

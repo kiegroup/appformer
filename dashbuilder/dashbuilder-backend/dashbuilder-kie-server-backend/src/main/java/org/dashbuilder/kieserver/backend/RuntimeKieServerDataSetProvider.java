@@ -215,7 +215,7 @@ public class RuntimeKieServerDataSetProvider implements DataSetProvider {
                                       QueryFilterSpec filterSpec) {
         KieServerConnectionInfo connectionInfo = connectionInfoProvider.verifiedConnectionInfo(def);
         int pageNumber = lookup.getRowOffset() / lookup.getNumberOfRows();
-        if (lookup.testMode()) {
+        if (lookup.testMode() || connectionInfo.isReplaceQuery()) {
             QueryDefinition queryDefinition = QueryDefinition.builder()
                                                              .name(lookup.getDataSetUUID())
                                                              .source(def.getDataSource())

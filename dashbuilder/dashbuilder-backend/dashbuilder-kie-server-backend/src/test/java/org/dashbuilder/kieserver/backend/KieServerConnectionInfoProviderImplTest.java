@@ -28,6 +28,7 @@ import org.junit.Test;
 import static org.dashbuilder.kieserver.backend.KieServerConnectionInfoProviderImpl.DATASET_PROP_PREFFIX;
 import static org.dashbuilder.kieserver.backend.KieServerConnectionInfoProviderImpl.SERVER_TEMPLATE_PROP_PREFFIX;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class KieServerConnectionInfoProviderImplTest {
@@ -106,6 +107,7 @@ public class KieServerConnectionInfoProviderImplTest {
         assertEquals(DS_LOCATION, connectionInfo.getLocation().get());
         assertEquals(DS_USER, connectionInfo.getUser().get());
         assertEquals(DS_PASSWORD, connectionInfo.getPassword().get());
+        assertFalse(connectionInfo.isReplaceQuery());
     }
 
     @Test
@@ -119,6 +121,7 @@ public class KieServerConnectionInfoProviderImplTest {
         assertEquals(SERVER_LOCATION, connectionInfo.getLocation().get());
         assertEquals(SERVER_USER, connectionInfo.getUser().get());
         assertEquals(SERVER_PASSWORD, connectionInfo.getPassword().get());
+        assertFalse(connectionInfo.isReplaceQuery());
     }
 
     @Test
@@ -143,6 +146,26 @@ public class KieServerConnectionInfoProviderImplTest {
 
         assertEquals(SERVER_LOCATION, connectionInfo.getLocation().get());
         assertEquals(SERVER_TOKEN, connectionInfo.getToken().get());
+    }
+    
+    @Test
+    public void testReplaceQuery() {
+        setServerProp(KieServerConfigurationKey.LOCATION, SERVER_LOCATION);
+        setServerProp(KieServerConfigurationKey.USER, SERVER_USER);
+        setServerProp(KieServerConfigurationKey.PASSWORD, SERVER_PASSWORD);
+        setServerProp(KieServerConfigurationKey.REPLACE_QUERY, "True");
+        KieServerConnectionInfo connectionInfo = kieServerConnectionInfoProvider.verifiedConnectionInfo(def);
+        assertTrue(connectionInfo.isReplaceQuery());
+    }
+    
+    @Test
+    public void testReplaceQueryFalse() {
+        setServerProp(KieServerConfigurationKey.LOCATION, SERVER_LOCATION);
+        setServerProp(KieServerConfigurationKey.USER, SERVER_USER);
+        setServerProp(KieServerConfigurationKey.PASSWORD, SERVER_PASSWORD);
+        setServerProp(KieServerConfigurationKey.REPLACE_QUERY, "false");
+        KieServerConnectionInfo connectionInfo = kieServerConnectionInfoProvider.verifiedConnectionInfo(def);
+        assertFalse(connectionInfo.isReplaceQuery());
     }
 
     private void setDataSetProp(KieServerConfigurationKey key, String value) {

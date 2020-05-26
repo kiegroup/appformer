@@ -56,6 +56,7 @@ public class KieServerConnectionInfoProviderImpl implements KieServerConnectionI
         LOCATION("location"),
         USER("user"),
         PASSWORD("password"),
+        REPLACE_QUERY("replace_query"),
         TOKEN("token");
 
         private KieServerConfigurationKey(String value) {
@@ -139,15 +140,19 @@ public class KieServerConnectionInfoProviderImpl implements KieServerConnectionI
         Optional<String> user = propertyProvider.apply(confType, KieServerConfigurationKey.USER);
         Optional<String> password = propertyProvider.apply(confType, KieServerConfigurationKey.PASSWORD);
         Optional<String> token = propertyProvider.apply(confType, KieServerConfigurationKey.TOKEN);
+        Optional<String> replaceQueryOp = propertyProvider.apply(confType, KieServerConfigurationKey.REPLACE_QUERY);
 
         if (!url.isPresent() &&
             !user.isPresent() &&
             !password.isPresent() &&
-            !token.isPresent()) {
+            !token.isPresent() &&
+            !replaceQueryOp.isPresent()) {
             return Optional.empty();
         }
+        
+        boolean replaceQuery = replaceQueryOp.isPresent() && Boolean.TRUE.toString().equalsIgnoreCase(replaceQueryOp.get());
 
-        return Optional.of(new KieServerConnectionInfo(url, user, password, token));
+        return Optional.of(new KieServerConnectionInfo(url, user, password, token, replaceQuery));
     }
 
 }
