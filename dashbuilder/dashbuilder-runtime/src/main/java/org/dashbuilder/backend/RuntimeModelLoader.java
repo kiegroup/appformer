@@ -42,8 +42,8 @@ public class RuntimeModelLoader {
     private void doInitialImport() {
         runtimeOptions.importFileLocation().ifPresent(importFile -> {
             logger.info("Importing file {}", importFile);
-            runtimeModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
             runtimeModelRegistry.registerFile(importFile);
+            runtimeModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
         });
 
         if (runtimeOptions.isMultipleImport() && !runtimeOptions.importFileLocation().isPresent()) {
