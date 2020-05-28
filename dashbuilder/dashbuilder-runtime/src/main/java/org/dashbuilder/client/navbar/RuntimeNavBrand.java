@@ -25,7 +25,7 @@ public class RuntimeNavBrand implements MegaMenuBrand {
 
     @Override
     public String brandImageUrl() {
-        return "/images/runtime_logo.png";
+        return "./images/runtime_logo.png";
     }
 
     @Override

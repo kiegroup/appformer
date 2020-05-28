@@ -67,13 +67,7 @@ public class ServerSideProducers {
     @Produces
     @ApplicationScoped
     public UsernameProvider produceUsernameProvider() {
-        return new UsernameProvider() {
-
-            @Override
-            public String get() {
-                return User.ANONYMOUS.getIdentifier();
-            }
-        };
+        return () -> User.ANONYMOUS.getIdentifier();
     }
 
     @Produces
@@ -83,6 +77,7 @@ public class ServerSideProducers {
 
             @Override
             public void logout() {
+                // not used
             }
 
             @Override

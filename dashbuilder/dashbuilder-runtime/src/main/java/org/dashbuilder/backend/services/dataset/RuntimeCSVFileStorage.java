@@ -32,7 +32,9 @@ public class RuntimeCSVFileStorage implements CSVFileStorage {
 
     Map<String, String> csvStorage;
 
-    public RuntimeCSVFileStorage() {}
+    public RuntimeCSVFileStorage() {
+        // not used
+    }
 
     @PostConstruct
     public void init() {

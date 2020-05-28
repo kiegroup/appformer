@@ -87,7 +87,7 @@ public class RuntimeOptions {
      */
     public Optional<String> modelPath(String id) {
         String filePath = buildFilePath(id);
-        return Files.exists(Paths.get(filePath)) ? Optional.of(filePath) : Optional.empty();
+        return Paths.get(filePath).toFile().exists() ? Optional.of(filePath) : Optional.empty();
     }
 
     /**

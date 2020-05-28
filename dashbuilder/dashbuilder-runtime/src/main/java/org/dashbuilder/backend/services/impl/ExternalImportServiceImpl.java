@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class ExternalImportServiceImpl implements ExternalImportService {
 
+    private static final String ERROR_PARSING_URL = "Error parsing URL: {}";
+
     Logger logger = LoggerFactory.getLogger(ExternalImportServiceImpl.class);
 
     @Inject
@@ -73,7 +75,7 @@ public class ExternalImportServiceImpl implements ExternalImportService {
         return runtimeModelRegistry.registerFile(filePath);
     }
 
-    private void checkSize(final String filePath, int totalBytes) throws IOException {
+    private void checkSize(final String filePath, int totalBytes) {
         if (totalBytes > runtimeOptions.getUploadSize()) {
             deleteFile(filePath);
             logger.error("Size file is bigger than max upload size {}", runtimeOptions.getUploadSize());
@@ -85,8 +87,8 @@ public class ExternalImportServiceImpl implements ExternalImportService {
         try {
             return Math.abs(url.toURI().hashCode()) + "";
         } catch (URISyntaxException e) {
-            logger.debug("Error parsing URL: {}", url.toExternalForm(), e);
-            logger.warn("Error parsing URL: {}", url.toExternalForm());
+            logger.debug(ERROR_PARSING_URL, url.toExternalForm(), e);
+            logger.warn(ERROR_PARSING_URL, url.toExternalForm());
             throw new IllegalArgumentException("Not a valid URL: " + url.toExternalForm(), e);
         }
     }
@@ -95,8 +97,8 @@ public class ExternalImportServiceImpl implements ExternalImportService {
         try {
             return new URL(externalModelUrl);
         } catch (Exception e) {
-            logger.debug("Error parsing URL: {}", externalModelUrl, e);
-            logger.error("Error parsing URL: {}", externalModelUrl);
+            logger.debug(ERROR_PARSING_URL, externalModelUrl, e);
+            logger.error(ERROR_PARSING_URL, externalModelUrl);
             throw new IllegalArgumentException("Not a valid URL: " + externalModelUrl, e);
         }
     }

@@ -55,7 +55,8 @@
 		<form-login-config>
 			<form-login-page>/login.html</form-login-page>
 			<form-error-page>/login.html?loginMessage=Login failed. Please try
-				again.</form-error-page>
+				again.
+			</form-error-page>
 		</form-login-config>
 	</login-config>
 
@@ -76,6 +77,11 @@
 		</web-resource-collection>
 	</security-constraint>
 
+	<error-page>
+		<error-code>403</error-code>
+		<location>/not_authorized.jsp</location>
+	</error-page>
+	
 	<!-- Default security constraints. -->
 	<security-constraint>
 		<web-resource-collection>

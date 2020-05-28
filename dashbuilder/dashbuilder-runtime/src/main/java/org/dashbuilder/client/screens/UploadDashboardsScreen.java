@@ -25,14 +25,11 @@ import elemental2.dom.HTMLFormElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
 import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElemental;
-import org.uberfire.mvp.PlaceRequest;
-import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 @Dependent
 @WorkbenchScreen(identifier = UploadDashboardsScreen.ID)
@@ -83,7 +80,7 @@ public class UploadDashboardsScreen {
         request.setMethod("POST");
         request.setBody(new FormData(uploadForm));
         view.loading();
-        DomGlobal.window.fetch("/rest/upload", request)
+        DomGlobal.window.fetch("./rest/upload", request)
                         .then((Response response) -> response.text().then(id -> {
                             view.stopLoading();
                             if (response.status == 200) {

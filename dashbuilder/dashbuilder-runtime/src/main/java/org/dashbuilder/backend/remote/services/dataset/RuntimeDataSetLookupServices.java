@@ -34,7 +34,9 @@ public class RuntimeDataSetLookupServices implements DataSetLookupServices {
     @Inject
     DataSetManager manager;
 
-    public RuntimeDataSetLookupServices() {}
+    public RuntimeDataSetLookupServices() {
+        // not used, but must exist
+    }
 
     @Override
     public DataSet lookupDataSet(DataSetLookup lookup) throws Exception {

@@ -29,7 +29,6 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate.Style;
 import org.uberfire.ext.plugin.model.Plugin;
 
-
 @Service
 @ApplicationScoped
 public class DummyPerspectiveServices implements PerspectiveServices {
@@ -46,7 +45,7 @@ public class DummyPerspectiveServices implements PerspectiveServices {
 
     @Override
     public void delete(Path path, String comment) {
-        
+        // ignored
     }
 
     @Override

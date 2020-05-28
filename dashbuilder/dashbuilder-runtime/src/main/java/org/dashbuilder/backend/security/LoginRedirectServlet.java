@@ -15,7 +15,6 @@
  */
 package org.dashbuilder.backend.security;
 
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -75,11 +74,77 @@ public class LoginRedirectServlet extends HttpServlet {
      */
     private String displayWhenNotAuthenticatedUri;
 
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        String contextRelativeHostPageUri = config.getInitParameter(DISPLAY_AFTER_LOGIN_INIT_PARAM);
+        if (contextRelativeHostPageUri == null) {
+            throw new IllegalStateException(getClass().getSimpleName() + " requires that you set the init parameter \"" + DISPLAY_AFTER_LOGIN_INIT_PARAM + "\" to the context-relative URI of the host page.");
+        }
+        displayAfterLoginUri = config.getServletContext().getContextPath() + contextRelativeHostPageUri;
+
+        // optional display-when-not-authenticated
+        String contextRelativeNotAuthPageUri = config.getInitParameter(DISPLAY_WHEN_NOT_AUTH_INIT_PARAM);
+        if (contextRelativeNotAuthPageUri != null) {
+            displayWhenNotAuthenticatedUri = config.getServletContext().getContextPath() + contextRelativeNotAuthPageUri;
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req,
+                         HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            handleRequest(req, resp);
+        } catch (Exception e) {
+            handleError(resp, e);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req,
+                          HttpServletResponse resp) throws ServletException, IOException {
+        // perform optional check and redirect in case no authenticated request is available
+        try {
+            handleRequest(req, resp);
+        } catch (Exception e) {
+            handleError(resp, e);
+        }
+    }
+
+    private void handleError(HttpServletResponse resp, Exception e) throws IOException {
+        logger.error("Error during login redirect filter execution: {}", e.getMessage());
+        logger.debug("Error during redirect", e);
+        resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error handling request");
+    }
+
+    private void handleRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        if (displayWhenNotAuthenticatedUri != null && req.getUserPrincipal() == null) {
+            logger.debug("No authorized user thus cleaning up session and redirecting to {}", displayWhenNotAuthenticatedUri);
+            try {
+                // clean up session
+                req.logout();
+                req.getSession().invalidate();
+            } catch (Exception e) {
+                // to avoid cases where logout causes issues for first request
+            }
+            resp.sendRedirect(displayWhenNotAuthenticatedUri);
+
+            return;
+        }
+
+        logger.debug("Redirecting {} to {}", req.getUserPrincipal(), displayAfterLoginUri);
+        StringBuilder redirectTarget = new StringBuilder(displayAfterLoginUri);
+        String extraParams = extractParameters(req);
+        if (extraParams.length() > 0) {
+            redirectTarget.append("?").append(extraParams);
+        }
+
+        resp.sendRedirect(redirectTarget.toString());
+    }
+    
     /**
      * Extracts all parameters except the username and password into a URL-encoded query string. The string does not begin
      * or end with a "&amp;".
      */
-    @SuppressWarnings("unchecked")
     private static String extractParameters(HttpServletRequest fromRequest) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -101,56 +166,5 @@ public class LoginRedirectServlet extends HttpServlet {
         } catch (UnsupportedEncodingException e) {
             throw new AssertionError("UTF-8 not supported on this JVM?");
         }
-    }
-
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        String contextRelativeHostPageUri = config.getInitParameter(DISPLAY_AFTER_LOGIN_INIT_PARAM);
-        if (contextRelativeHostPageUri == null) {
-            throw new IllegalStateException(getClass().getSimpleName() + " requires that you set the init parameter \""
-                                                    + DISPLAY_AFTER_LOGIN_INIT_PARAM + "\" to the context-relative URI of the host page.");
-        }
-        displayAfterLoginUri = config.getServletContext().getContextPath() + contextRelativeHostPageUri;
-
-        // optional display-when-not-authenticated
-        String contextRelativeNotAuthPageUri = config.getInitParameter(DISPLAY_WHEN_NOT_AUTH_INIT_PARAM);
-        if (contextRelativeNotAuthPageUri != null) {
-            displayWhenNotAuthenticatedUri = config.getServletContext().getContextPath() + contextRelativeNotAuthPageUri;
-        }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req,
-               resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req,
-                          HttpServletResponse resp) throws ServletException, IOException {
-        // perform optional check and redirect in case no authenticated request is available
-        if (displayWhenNotAuthenticatedUri != null && req.getUserPrincipal() == null) {
-            logger.debug("No authorized user thus cleaning up session and redirecting to " + displayWhenNotAuthenticatedUri);
-            try {
-                // clean up session
-                req.logout();
-                req.getSession().invalidate();
-            } catch (Exception e) {
-                // to avoid cases where logout causes issues for first request
-            }
-            resp.sendRedirect(displayWhenNotAuthenticatedUri);
-
-            return;
-        }
-
-        logger.debug("Redirecting " + req.getUserPrincipal() + " to " + displayAfterLoginUri);
-        StringBuilder redirectTarget = new StringBuilder(displayAfterLoginUri);
-        String extraParams = extractParameters(req);
-        if (extraParams.length() > 0) {
-            redirectTarget.append("?").append(extraParams);
-        }
-
-        resp.sendRedirect(redirectTarget.toString());
     }
 }

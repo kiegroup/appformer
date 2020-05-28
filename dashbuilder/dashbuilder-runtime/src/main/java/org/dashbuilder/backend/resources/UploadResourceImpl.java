@@ -55,7 +55,7 @@ public class UploadResourceImpl {
     @PostConstruct
     public void createBaseDir() {
         java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
-        if (!Files.exists(baseDirPath)) {
+        if (!baseDirPath.toFile().exists()) {
             try {
                 Files.createDirectory(baseDirPath);
             } catch (IOException e) {

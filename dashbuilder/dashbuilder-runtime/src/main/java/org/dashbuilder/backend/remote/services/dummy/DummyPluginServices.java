@@ -43,7 +43,7 @@ public class DummyPluginServices implements PluginServices {
 
     @Override
     public void delete(Path path, String comment) {
-
+        // not used
     }
 
     @Override
@@ -108,7 +108,7 @@ public class DummyPluginServices implements PluginServices {
 
     @Override
     public void deleteMedia(Media media) {
-
+        // not used
     }
 
     @Override
