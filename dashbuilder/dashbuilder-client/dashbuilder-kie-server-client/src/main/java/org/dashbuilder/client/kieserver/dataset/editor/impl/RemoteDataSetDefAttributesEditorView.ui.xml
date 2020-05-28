@@ -29,8 +29,8 @@
     <!-- source -->
     <b:Row addStyleNames="{style.row}">
       <b:Column size="MD_3">
-        <g:HTML text="{i18n.remote_sql_datasource}" addStyleNames="{style.attr}"/>
-        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remote_datasource_description}">
+        <g:HTML text="{i18n.remoteSqlDatasource}" addStyleNames="{style.attr}"/>
+        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remoteDatasourceDescription}">
           <b:Icon type="QUESTION_CIRCLE" />
         </b:Tooltip>
       </b:Column>
@@ -46,8 +46,8 @@
     <!-- server template id -->
     <b:Row addStyleNames="{style.row}">
       <b:Column size="MD_3">
-        <g:HTML text="{i18n.remote_server_template}" addStyleNames="{style.attr}"/>
-        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remote_server_template_description}">
+        <g:HTML text="{i18n.remoteServerTemplate}" addStyleNames="{style.attr}"/>
+        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remoteServerTemplateDescription}">
           <b:Icon type="QUESTION_CIRCLE" />
         </b:Tooltip>
       </b:Column>
@@ -59,8 +59,8 @@
     <!-- target -->
     <b:Row addStyleNames="{style.row}">
       <b:Column size="MD_3">
-        <g:HTML text="{i18n.remote_query_target}" addStyleNames="{style.attr}"/>
-        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remote_query_target_description}">
+        <g:HTML text="{i18n.remoteQueryTarget}" addStyleNames="{style.attr}"/>
+        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remoteQueryTargetDescription}">
           <b:Icon type="QUESTION_CIRCLE" />
         </b:Tooltip>
       </b:Column>
@@ -72,8 +72,8 @@
     <!-- Source selector (table or query). -->
     <b:Row addStyleNames="{style.row}">
       <b:Column size="MD_3">
-        <g:HTML text="{i18n.remote_sql_source}" addStyleNames="{style.attr}"/>
-        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remote_source_description}">
+        <g:HTML text="{i18n.remoteSqlSource}" addStyleNames="{style.attr}"/>
+        <b:Tooltip isAnimated="true" placement="BOTTOM" title="{i18n.remoteSourceDescription}">
           <b:Icon type="QUESTION_CIRCLE" />
         </b:Tooltip>
       </b:Column>
@@ -82,7 +82,7 @@
         <g:FlowPanel ui:field="dbSQLPanel">
           <editor:ValueBoxEditor.View ui:field="dbSQL">
             <editor:valuebox>
-              <b:TextArea placeholder="{i18n.remote_query_placeHolder}" addStyleNames="{style.queryBox}"/>
+              <b:TextArea placeholder="{i18n.remoteQueryPlaceHolder}" addStyleNames="{style.queryBox}"/>
             </editor:valuebox>
           </editor:ValueBoxEditor.View>
         </g:FlowPanel>

@@ -50,11 +50,11 @@ public class RemoteDataSetDefValidator extends AbstractDataSetDefValidator<Remot
     @Override
     public Iterable<ConstraintViolation<?>> validateCustomAttributes(RemoteDataSetDef dataSetDef, Object... params) {
 
-        Set<ConstraintViolation<RemoteDataSetDef>> _violations = validator.validate(dataSetDef,
+        Set<ConstraintViolation<RemoteDataSetDef>> violations = validator.validate(dataSetDef,
                                                                                     RemoteDataSetDefValidation.class,
                                                                                     SQLDataSetDefValidation.class,
                                                                                     SQLDataSetDefDbSQLValidation.class);
-        return toIterable(_violations);
+        return toIterable(violations);
     }
 
     @Override

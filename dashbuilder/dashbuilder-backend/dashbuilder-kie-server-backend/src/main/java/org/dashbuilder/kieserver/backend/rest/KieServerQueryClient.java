@@ -34,7 +34,7 @@ import org.dashbuilder.kieserver.KieServerConnectionInfo;
 @ApplicationScoped
 public class KieServerQueryClient {
 
-    private static final String MEDIA_TYPE = MediaType.APPLICATION_JSON;
+    private static final String REQUEST_MEDIA_TYPE = MediaType.APPLICATION_JSON;
 
     public static final String QUERY_MAP_RAW = "RawList";
 
@@ -46,7 +46,7 @@ public class KieServerQueryClient {
         WebTarget target = requestForQueryDefinition(connectionInfo, uuid, client);
 
         QueryDefinition queryDefinition = target.request()
-                                                .accept(MEDIA_TYPE)
+                                                .accept(REQUEST_MEDIA_TYPE)
                                                 .get(QueryDefinition.class);
         client.close();
         return queryDefinition;
@@ -70,8 +70,8 @@ public class KieServerQueryClient {
         addAuth(connectionInfo, target);
 
         List<List> response = target.request()
-                                    .accept(MEDIA_TYPE)
-                                    .post(Entity.entity(filterSpec, MEDIA_TYPE), List.class);
+                                    .accept(REQUEST_MEDIA_TYPE)
+                                    .post(Entity.entity(filterSpec, REQUEST_MEDIA_TYPE), List.class);
         client.close();
         return response;
     }
@@ -79,9 +79,11 @@ public class KieServerQueryClient {
     public QueryDefinition replaceQuery(KieServerConnectionInfo connectionInfo, QueryDefinition queryDefinition) {
         Client client = ClientBuilder.newClient();
         WebTarget target = requestForQueryDefinition(connectionInfo, queryDefinition.getName(), client);
-        return target.request()
-                     .accept(MEDIA_TYPE)
-                     .put(Entity.entity(queryDefinition, MEDIA_TYPE), QueryDefinition.class);
+        QueryDefinition def = target.request()
+                     .accept(REQUEST_MEDIA_TYPE)
+                     .put(Entity.entity(queryDefinition, REQUEST_MEDIA_TYPE), QueryDefinition.class);
+        client.close();
+        return def;
 
     }
 
@@ -89,6 +91,7 @@ public class KieServerQueryClient {
         Client client = ClientBuilder.newClient();
         WebTarget target = requestForQueryDefinition(connectionInfo, dataSetUUID, client);
         target.request().delete();
+        client.close();
     }
 
     private WebTarget requestForQueryDefinition(KieServerConnectionInfo connectionInfo,

@@ -23,30 +23,30 @@ public interface KieServerClientConstants extends Messages {
 
     public static final KieServerClientConstants INSTANCE = GWT.create(KieServerClientConstants.class);
 
-    public String remote_data_set_editor();
+    public String remoteDataSetEditor();
 
-    public String remote_data_set_editor_description();
+    public String remoteDataSetEditorDescription();
 
-    public String remote_query_target_hint();
+    public String remoteQueryTarget();
 
-    public String remote_query_target();
+    public String remoteQueryTargetHint();
 
-    public String remote_server_template_hint();
+    public String remoteServerTemplateHint();
 
-    public String remote_server_template();
+    public String remoteServerTemplate();
 
-    public String remote_server_template_description();
+    public String remoteServerTemplateDescription();
 
-    public String remote_datasource_description();
+    public String remoteDatasourceDescription();
 
-    public String remote_query_target_description();
+    public String remoteQueryTargetDescription();
 
-    public String remote_source_description();
+    public String remoteSourceDescription();
     
-    public String remote_query_placeHolder();
+    public String remoteQueryPlaceHolder();
     
-    public String remote_sql_source();
+    public String remoteSqlSource();
     
-    public String remote_sql_datasource();
+    public String remoteSqlDatasource();
 
 }

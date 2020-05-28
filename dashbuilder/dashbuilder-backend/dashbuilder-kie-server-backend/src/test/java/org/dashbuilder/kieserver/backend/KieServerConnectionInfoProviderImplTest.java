@@ -112,7 +112,6 @@ public class KieServerConnectionInfoProviderImplTest {
 
     @Test
     public void testServerTemplateProps() {
-
         setServerProp(KieServerConfigurationKey.LOCATION, SERVER_LOCATION);
         setServerProp(KieServerConfigurationKey.USER, SERVER_USER);
         setServerProp(KieServerConfigurationKey.PASSWORD, SERVER_PASSWORD);

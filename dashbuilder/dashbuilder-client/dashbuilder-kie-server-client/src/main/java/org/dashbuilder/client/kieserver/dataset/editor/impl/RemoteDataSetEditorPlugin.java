@@ -34,12 +34,12 @@ public class RemoteDataSetEditorPlugin implements DataSetEditorPlugin {
     
     @Override
     public String getTypeSelectorTitle() {
-        return KieServerClientConstants.INSTANCE.remote_data_set_editor();
+        return KieServerClientConstants.INSTANCE.remoteDataSetEditor();
     }
 
     @Override
     public String getTypeSelectorText() {
-        return KieServerClientConstants.INSTANCE.remote_data_set_editor_description();
+        return KieServerClientConstants.INSTANCE.remoteDataSetEditorDescription();
     }
 
     @Override

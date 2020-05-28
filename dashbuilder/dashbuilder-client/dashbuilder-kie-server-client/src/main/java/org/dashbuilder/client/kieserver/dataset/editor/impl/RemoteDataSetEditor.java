@@ -44,23 +44,23 @@ import org.dashbuilder.kieserver.RemoteDataSetDef;
 public class RemoteDataSetEditor extends DataSetEditor<RemoteDataSetDef> implements RemoteDataSetDefEditor {
 
     RemoteDataSetDefAttributesEditorImpl attributesEditor;
-    
+
     @Inject
     public RemoteDataSetEditor(final DataSetDefBasicAttributesEditor basicAttributesEditor,
-                            final RemoteDataSetDefAttributesEditorImpl attributesEditor,
-                            final DataSetDefColumnsFilterEditor columnsAndFilterEditor,
-                            final DataSetDefPreviewTable previewTable,
-                            final DataSetDefBackendCacheAttributesEditor backendCacheAttributesEditor,
-                            final DataSetDefClientCacheAttributesEditor clientCacheAttributesEditor,
-                            final DataSetDefRefreshAttributesEditor refreshEditor,
-                            final DataSetClientServices clientServices,
-                            final LoadingBox loadingBox,
-                            final Event<ErrorEvent> errorEvent,
-                            final Event<TabChangedEvent> tabChangedEvent,
-                            final View view) {
-        super(basicAttributesEditor, attributesEditor.view, columnsAndFilterEditor, 
-                previewTable, backendCacheAttributesEditor, clientCacheAttributesEditor,
-                refreshEditor, clientServices, loadingBox, errorEvent, tabChangedEvent, view);
+                               final RemoteDataSetDefAttributesEditorImpl attributesEditor,
+                               final DataSetDefColumnsFilterEditor columnsAndFilterEditor,
+                               final DataSetDefPreviewTable previewTable,
+                               final DataSetDefBackendCacheAttributesEditor backendCacheAttributesEditor,
+                               final DataSetDefClientCacheAttributesEditor clientCacheAttributesEditor,
+                               final DataSetDefRefreshAttributesEditor refreshEditor,
+                               final DataSetClientServices clientServices,
+                               final LoadingBox loadingBox,
+                               final Event<ErrorEvent> errorEvent,
+                               final Event<TabChangedEvent> tabChangedEvent,
+                               final View view) {
+        super(basicAttributesEditor, attributesEditor.view, columnsAndFilterEditor,
+              previewTable, backendCacheAttributesEditor, clientCacheAttributesEditor,
+              refreshEditor, clientServices, loadingBox, errorEvent, tabChangedEvent, view);
         this.attributesEditor = attributesEditor;
     }
 
@@ -99,7 +99,7 @@ public class RemoteDataSetEditor extends DataSetEditor<RemoteDataSetDef> impleme
     }
 
     @Override
-    public void setValue(RemoteDataSetDef value) {       
+    public void setValue(RemoteDataSetDef value) {
         super.setValue(value);
     }
 

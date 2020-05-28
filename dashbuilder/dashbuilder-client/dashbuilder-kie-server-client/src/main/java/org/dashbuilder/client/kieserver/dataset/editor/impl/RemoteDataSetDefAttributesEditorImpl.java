@@ -85,7 +85,7 @@ public class RemoteDataSetDefAttributesEditorImpl implements IsWidget, RemoteDat
         view.init(this);
         view.initWidgets(queryTarget.view, serverTemplateId.view, dataSource.view, dbSQL.view);
 
-        queryTarget.setSelectHint(KieServerClientConstants.INSTANCE.remote_query_target_hint());
+        queryTarget.setSelectHint(KieServerClientConstants.INSTANCE.remoteQueryTargetHint());
         List<DropDownEditor.Entry> entries = Stream.of("CUSTOM",
                                                        "PROCESS",
                                                        "TASK",
@@ -98,24 +98,24 @@ public class RemoteDataSetDefAttributesEditorImpl implements IsWidget, RemoteDat
                                                    .map(s -> queryTarget.newEntry(s, s)).collect(Collectors.toList());
         queryTarget.setEntries(entries);
 
-        queryTarget.addHelpContent(KieServerClientConstants.INSTANCE.remote_query_target(),
-                                   KieServerClientConstants.INSTANCE.remote_query_target_description(),
+        queryTarget.addHelpContent(KieServerClientConstants.INSTANCE.remoteQueryTarget(),
+                                   KieServerClientConstants.INSTANCE.remoteQueryTargetDescription(),
                                    Placement.RIGHT); //bottom placement would interfere with the dropdown
 
-        serverTemplateId.setSelectHint(KieServerClientConstants.INSTANCE.remote_server_template_hint());
+        serverTemplateId.setSelectHint(KieServerClientConstants.INSTANCE.remoteServerTemplateHint());
 
         kieServerConnectionInfoProvider.call((List<String> serverTemplates) -> onServerTemplateLoad(serverTemplates)).serverTemplates();
 
-        serverTemplateId.addHelpContent(KieServerClientConstants.INSTANCE.remote_server_template(),
-                                        KieServerClientConstants.INSTANCE.remote_server_template_description(),
+        serverTemplateId.addHelpContent(KieServerClientConstants.INSTANCE.remoteServerTemplate(),
+                                        KieServerClientConstants.INSTANCE.remoteServerTemplateDescription(),
                                         Placement.RIGHT);
 
-        dataSource.addHelpContent(KieServerClientConstants.INSTANCE.remote_data_set_editor(),
-                                  KieServerClientConstants.INSTANCE.remote_datasource_description(),
+        dataSource.addHelpContent(KieServerClientConstants.INSTANCE.remoteDataSetEditor(),
+                                  KieServerClientConstants.INSTANCE.remoteDatasourceDescription(),
                                   Placement.BOTTOM);
 
-        dbSQL.addHelpContent(KieServerClientConstants.INSTANCE.remote_data_set_editor(),
-                             KieServerClientConstants.INSTANCE.remote_datasource_description(),
+        dbSQL.addHelpContent(KieServerClientConstants.INSTANCE.remoteDataSetEditor(),
+                             KieServerClientConstants.INSTANCE.remoteDatasourceDescription(),
                              Placement.BOTTOM);
     }
 
@@ -155,12 +155,12 @@ public class RemoteDataSetDefAttributesEditorImpl implements IsWidget, RemoteDat
 
     @Override
     public void flush() {
-
+        // empty
     }
 
     @Override
     public void onPropertyChange(final String... paths) {
-
+        // empty
     }
 
     @Override

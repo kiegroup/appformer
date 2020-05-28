@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -263,12 +265,10 @@ public class RuntimeKieServerDataSetProvider implements DataSetProvider {
         dataSet.setDefinition(def);
 
         if (extraColumns != null && !extraColumns.isEmpty()) {
-
             for (DataColumn extraColumn : extraColumns) {
                 dataSet.addColumn(extraColumn);
             }
         } else {
-
             for (DataColumnDef column : def.getColumns()) {
                 DataColumn numRows = new DataColumnImpl(column.getId(),
                                                         column.getColumnType());
@@ -296,16 +296,6 @@ public class RuntimeKieServerDataSetProvider implements DataSetProvider {
         //        dataSet.setRowCountNonTrimmed(instances.size() == 0 ? 0 : instances.size() + 1);
         dataSet.setRowCountNonTrimmed(instances.size());
         return dataSet;
-    }
-
-    private boolean isNumberValue(Object value) {
-        try {
-            NumberFormat.getInstance().parse(value.toString());
-            return true;
-        } catch (Exception e) {
-            LOGGER.debug("Date value is not parseable to number", e);
-        }
-        return false;
     }
 
     protected void appendIntervalSelection(DataSetGroup intervalSel,
@@ -358,7 +348,6 @@ public class RuntimeKieServerDataSetProvider implements DataSetProvider {
                 filter = FilterFactory.equalsTo(cg.getSourceId(),
                                                 names);
             }
-
             CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) filter;
             filterParams.add(new QueryParam(coreFunctionFilter.getColumnId(),
                                             coreFunctionFilter.getType().toString(),
@@ -418,15 +407,22 @@ public class RuntimeKieServerDataSetProvider implements DataSetProvider {
         }
     }
 
-    private void addColumnsToDefinition(DataSetDef def, QueryDefinition queryDef) {
-        if (queryDef.getColumns() == null) {
-            return;
+    protected void addColumnsToDefinition(DataSetDef def, QueryDefinition queryDef) {
+        Map<String, String> columns = queryDef.getColumns();
+        if (columns != null) {
+            columns.entrySet().stream()
+                   .filter(e -> def.getColumnById(e.getKey()) == null)
+                   .forEach(e -> def.addColumn(e.getKey(), ColumnType.valueOf(e.getValue())));
         }
-        for (Entry<String, String> entry : queryDef.getColumns().entrySet()) {
-            String columnId = entry.getKey();
-            if (def.getColumnById(columnId) == null) {
-                def.addColumn(columnId, ColumnType.valueOf(entry.getValue()));
-            }
+    }
+
+    protected boolean isNumberValue(Object value) {
+        try {
+            NumberFormat.getInstance().parse(value.toString());
+            return true;
+        } catch (Exception e) {
+            LOGGER.debug("Date value is not parseable to number", e);
         }
+        return false;
     }
 }

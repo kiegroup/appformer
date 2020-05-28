@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keeps Kie Server ups to date with remote dataset changes
+ * Keeps Kie Server up to date with remote dataset changes
  *
  */
 @ApplicationScoped

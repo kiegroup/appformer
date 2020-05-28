@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -95,8 +96,8 @@ public class KieServerConnectionInfoProviderImpl implements KieServerConnectionI
             throw new RuntimeException(missingUrlError);
         }
 
-        if ((!connectionInfo.getUser().isPresent()) &&
-            (!connectionInfo.getToken().isPresent())) {
+        if (!connectionInfo.getUser().isPresent() &&
+            !connectionInfo.getToken().isPresent()) {
             throw new RuntimeException(missingAuthError);
         }
         return connectionInfo;
@@ -142,14 +143,13 @@ public class KieServerConnectionInfoProviderImpl implements KieServerConnectionI
         Optional<String> token = propertyProvider.apply(confType, KieServerConfigurationKey.TOKEN);
         Optional<String> replaceQueryOp = propertyProvider.apply(confType, KieServerConfigurationKey.REPLACE_QUERY);
 
-        if (!url.isPresent() &&
-            !user.isPresent() &&
-            !password.isPresent() &&
-            !token.isPresent() &&
-            !replaceQueryOp.isPresent()) {
+        boolean noPropertyFound = Stream.of(url, user, password, token, replaceQueryOp)
+                                        .noneMatch(Optional::isPresent);
+
+        if (noPropertyFound) {
             return Optional.empty();
         }
-        
+
         boolean replaceQuery = replaceQueryOp.isPresent() && Boolean.TRUE.toString().equalsIgnoreCase(replaceQueryOp.get());
 
         return Optional.of(new KieServerConnectionInfo(url, user, password, token, replaceQuery));
