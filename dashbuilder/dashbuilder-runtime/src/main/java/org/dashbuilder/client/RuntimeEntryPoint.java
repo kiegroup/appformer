@@ -18,19 +18,39 @@ package org.dashbuilder.client;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import elemental2.dom.DomGlobal;
 import elemental2.dom.Element;
+import org.dashbuilder.client.screens.RuntimeScreen;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
+import org.uberfire.client.workbench.Workbench;
 
 @EntryPoint
 @ApplicationScoped
 @Bundle("resources/i18n/AppConstants.properties")
 public class RuntimeEntryPoint {
 
+    @Inject
+    Workbench workbench;
+
+    @Inject
+    ClientRuntimeModelLoader modelLoader;
+
+    @Inject
+    RuntimeScreen runtimeScreen;
+
     @PostConstruct
-    public void hideLoading() {
+    public void startup() {
+        workbench.addStartupBlocker(RuntimeEntryPoint.class);
+        modelLoader.loadModel(model -> hideLoading(),
+                              this::hideLoading,
+                              (e, t) -> this.hideLoading());
+    }
+
+    private void hideLoading() {
+        workbench.removeStartupBlocker(RuntimeEntryPoint.class);
         Element loading = DomGlobal.document.getElementById("loading");
         if (loading != null) {
             loading.remove();

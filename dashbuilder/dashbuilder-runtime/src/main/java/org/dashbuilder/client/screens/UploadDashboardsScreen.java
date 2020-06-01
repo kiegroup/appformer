@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.FormData;
 import elemental2.dom.HTMLFormElement;
@@ -31,6 +32,10 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElemental;
 
+/**
+ * A screen that prompts users to upload a dashboard.
+ *
+ */
 @Dependent
 @WorkbenchScreen(identifier = UploadDashboardsScreen.ID)
 public class UploadDashboardsScreen {
@@ -44,7 +49,7 @@ public class UploadDashboardsScreen {
 
     @Inject
     PlaceManager placeManager;
-    
+
     @Inject
     RuntimeScreen runtimeScreen;
 
@@ -75,7 +80,7 @@ public class UploadDashboardsScreen {
         return view;
     }
 
-    public void submit(HTMLFormElement uploadForm) {
+    public void submit(final HTMLFormElement uploadForm) {
         RequestInit request = RequestInit.create();
         request.setMethod("POST");
         request.setBody(new FormData(uploadForm));
@@ -84,6 +89,7 @@ public class UploadDashboardsScreen {
                         .then((Response response) -> response.text().then(id -> {
                             view.stopLoading();
                             if (response.status == 200) {
+                                updateImportId(id);
                                 openModel(id);
                             } else {
                                 view.badResponseUploading(response);
@@ -96,8 +102,18 @@ public class UploadDashboardsScreen {
                         });
     }
 
-    protected void openModel(String modelId) {
-        runtimeScreen.loadRuntimeModel(modelId);
+    private void updateImportId(final String modelId) {
+        String newUrl = GWT.getHostPageBaseURL() + "?" +
+                        RuntimeScreen.IMPORT_ID_PARAM + "=" +
+                        modelId;
+        DomGlobal.window.history.replaceState(null,
+                                              "Dashbuilder Runtime |" + modelId,
+                                              newUrl);
+
+    }
+
+    protected void openModel(final String modelId) {
+        runtimeScreen.openRuntimeModel(modelId);
         placeManager.goTo(RuntimeScreen.ID);
     }
 

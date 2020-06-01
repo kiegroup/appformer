@@ -21,11 +21,11 @@ import javax.inject.Inject;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.dashbuilder.client.RuntimeCommunication;
+import org.dashbuilder.client.navbar.AppNavBar;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.RuntimeScreen;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.workbench.model.menu.Menus;
 
@@ -40,7 +40,7 @@ public class RuntimeScreenView implements RuntimeScreen.View {
     HTMLDivElement runtimePage;
 
     @Inject
-    WorkbenchMegaMenuPresenter menuBar;
+    AppNavBar appNavBar;
 
     @Inject
     RuntimeCommunication runtimeCommunication;
@@ -60,11 +60,11 @@ public class RuntimeScreenView implements RuntimeScreen.View {
 
     @Override
     public void addMenus(Menus menus) {
-        menuBar.addMenus(menus);
+        appNavBar.setupMenus(menus);
     }
 
     @Override
-    public void errorLoadingDashboards(Throwable throwable) {
+    public void errorLoadingDashboards(final Throwable throwable) {
         runtimeCommunication.showError(i18n.errorLoadingDashboards(), throwable);
     }
 
