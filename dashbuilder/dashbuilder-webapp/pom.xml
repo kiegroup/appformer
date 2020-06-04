@@ -59,6 +59,13 @@
       <groupId>org.jboss.spec.javax.security.jacc</groupId>
       <artifactId>jboss-jacc-api_1.5_spec</artifactId>
       <scope>provided</scope>
+      <!-- collides with jboss-servlet-api_3.1_spec -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.servlet</groupId>
+          <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
