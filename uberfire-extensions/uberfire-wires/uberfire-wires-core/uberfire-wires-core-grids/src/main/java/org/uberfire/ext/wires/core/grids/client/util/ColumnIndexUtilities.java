@@ -81,6 +81,9 @@ public class ColumnIndexUtilities {
         if (candidateHeaderColumnIndex == allColumns.size() - 1) {
             return candidateHeaderColumnIndex;
         }
+        if (candidateHeaderColumnIndex >= allColumns.size()) {
+            return candidateHeaderColumnIndex - 1;
+        }
         while (candidateHeaderColumnIndex < allColumns.size() - 1) {
             final GridColumn candidateColumn = allColumns.get(candidateHeaderColumnIndex + 1);
             final List<GridColumn.HeaderMetaData> candidateHeaderMetaData = candidateColumn.getHeaderMetaData();
