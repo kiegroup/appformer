@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.dashbuilder.client.screens;
+
+package org.dashbuilder.client.widgets;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -22,28 +23,25 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.FormData;
+import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLFormElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
 import org.dashbuilder.client.ClientRuntimeModelLoader;
 import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.uberfire.client.annotations.WorkbenchPartTitle;
-import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.client.annotations.WorkbenchScreen;
+import org.dashbuilder.client.screens.RuntimeScreen;
+import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElemental;
 
 /**
- * A screen that prompts users to upload a dashboard.
+ * Allow users to upload new dashboards
  *
  */
 @Dependent
-@WorkbenchScreen(identifier = UploadDashboardsScreen.ID)
-public class UploadDashboardsScreen {
+public class UploadWidget implements IsElement {
 
-    public static final String ID = "UploadDashboardsScreen";
-
-    private static final AppConstants i18n = AppConstants.INSTANCE;
+    static final AppConstants i18n = AppConstants.INSTANCE;
 
     @Inject
     View view;
@@ -51,10 +49,7 @@ public class UploadDashboardsScreen {
     @Inject
     PlaceManager placeManager;
 
-    @Inject
-    RuntimeScreen runtimeScreen;
-
-    public interface View extends UberElemental<UploadDashboardsScreen> {
+    public interface View extends UberElemental<UploadWidget> {
 
         void loading();
 
@@ -68,17 +63,12 @@ public class UploadDashboardsScreen {
 
     @PostConstruct
     public void init() {
-        view.init(this);
+        this.view.init(this);
     }
 
-    @WorkbenchPartTitle
-    public String title() {
-        return i18n.uploadDashboardsTitle();
-    }
-
-    @WorkbenchPartView
-    protected View getPart() {
-        return view;
+    @Override
+    public HTMLElement getElement() {
+        return this.view.getElement();
     }
 
     public void submit(final HTMLFormElement uploadForm) {
@@ -110,11 +100,9 @@ public class UploadDashboardsScreen {
         DomGlobal.window.history.replaceState(null,
                                               "Dashbuilder Runtime |" + modelId,
                                               newUrl);
-
     }
 
     protected void openModel(final String modelId) {
-        runtimeScreen.openRuntimeModel(modelId);
         placeManager.goTo(RuntimeScreen.ID);
     }
 

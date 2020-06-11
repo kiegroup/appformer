@@ -24,7 +24,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
+import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.perspective.RuntimePerspectiveGenerator;
+import org.dashbuilder.client.plugins.RuntimePerspectivePluginManager;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
@@ -35,11 +37,15 @@ public class ClientRuntimeModelLoader {
 
     public static final String IMPORT_ID_PARAM = "import";
 
-    private Caller<RuntimeModelService> importModelServiceCaller;
+    private Caller<RuntimeModelService> runtimeModelServiceCaller;
 
     RuntimeModel modelCache = null;
 
     RuntimePerspectiveGenerator perspectiveEditorGenerator;
+    
+    RuntimePerspectivePluginManager runtimePerspectivePluginManager;
+    
+    NavigationManager navigationManager;
 
     public ClientRuntimeModelLoader() {
         // do nothing
@@ -47,19 +53,27 @@ public class ClientRuntimeModelLoader {
 
     @Inject
     public ClientRuntimeModelLoader(Caller<RuntimeModelService> importModelServiceCaller,
-                                    RuntimePerspectiveGenerator perspectiveEditorGenerator) {
-        this.importModelServiceCaller = importModelServiceCaller;
+                                    RuntimePerspectiveGenerator perspectiveEditorGenerator,
+                                    RuntimePerspectivePluginManager runtimePerspectivePluginManager,
+                                    NavigationManager navigationManager) {
+        this.runtimeModelServiceCaller = importModelServiceCaller;
         this.perspectiveEditorGenerator = perspectiveEditorGenerator;
+        this.runtimePerspectivePluginManager = runtimePerspectivePluginManager;
+        this.navigationManager = navigationManager;
     }
+
+
+    
 
     public void loadModel(Consumer<RuntimeModel> modelLoaded,
                           Command emptyModel,
                           BiConsumer<Object, Throwable> error) {
         String importID = Window.Location.getParameter(IMPORT_ID_PARAM);
         loadModel(importID, modelLoaded, emptyModel, error);
+
     }
 
-    public void loadModel(String modelId,
+    public void loadModel(String importId,
                           Consumer<RuntimeModel> modelLoaded,
                           Command emptyModel,
                           BiConsumer<Object, Throwable> error) {
@@ -68,19 +82,36 @@ public class ClientRuntimeModelLoader {
             return;
         }
 
-        importModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> {
-            if (runtimeModelOp.isPresent()) {
-                RuntimeModel runtimeModel = runtimeModelOp.get();
-                runtimeModel.getLayoutTemplates().forEach(perspectiveEditorGenerator::generatePerspective);
-                modelCache = runtimeModel;
-                modelLoaded.accept(runtimeModel);
-            } else {
-                emptyModel.execute();
-            }
-        }, (message, throwable) -> {
-            error.accept(message, throwable);
-            return false;
-        }).getRuntimeModel(modelId);
+        if (importId == null || importId.trim().isEmpty()) {
+            runtimeModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> handleResponse(modelLoaded, emptyModel, runtimeModelOp),
+                                           (msg, t) -> handleError(error, msg, t))
+                                     .getRuntimeModel();
+        } else {
+            runtimeModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> handleResponse(modelLoaded, emptyModel, runtimeModelOp),
+                                           (msg, t) -> handleError(error, msg, t))
+                                     .getRuntimeModel(importId);
+        }
+
+    }
+
+    private boolean handleError(BiConsumer<Object, Throwable> error, Object message, Throwable throwable) {
+        error.accept(message, throwable);
+        return false;
+    }
+
+    private void handleResponse(Consumer<RuntimeModel> modelLoaded, Command emptyModel, Optional<RuntimeModel> runtimeModelOp) {
+        if (runtimeModelOp.isPresent()) {
+            RuntimeModel runtimeModel = runtimeModelOp.get();
+            
+            runtimeModel.getLayoutTemplates().forEach(perspectiveEditorGenerator::generatePerspective);
+            runtimePerspectivePluginManager.setTemplates(runtimeModel.getLayoutTemplates());
+            navigationManager.setDefaultNavTree(runtimeModel.getNavTree());
+            
+            modelCache = runtimeModel;
+            modelLoaded.accept(runtimeModel);
+        } else {
+            emptyModel.execute();
+        }
     }
 
 }

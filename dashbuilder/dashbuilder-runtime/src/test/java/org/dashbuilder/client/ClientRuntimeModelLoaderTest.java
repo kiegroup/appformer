@@ -23,7 +23,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.perspective.RuntimePerspectiveGenerator;
+import org.dashbuilder.client.plugins.RuntimePerspectivePluginManager;
+import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.junit.Before;
@@ -36,6 +39,7 @@ import org.uberfire.mvp.Command;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,30 +55,45 @@ public class ClientRuntimeModelLoaderTest {
 
     @Mock
     RuntimePerspectiveGenerator runtimePerspectiveGenerator;
+    
+    @Mock
+    RuntimePerspectivePluginManager runtimePerspectivePluginManager;
+    
+    @Mock
+    NavigationManager navigationManager;
 
     ClientRuntimeModelLoader clientRuntimeModelLoader;
 
     @Before
     public void setup() {
         importModelServiceCaller = new CallerMock<>(runtimeModelService);
-        clientRuntimeModelLoader = new ClientRuntimeModelLoader(importModelServiceCaller, runtimePerspectiveGenerator);
+        clientRuntimeModelLoader = new ClientRuntimeModelLoader(importModelServiceCaller, 
+                                                                runtimePerspectiveGenerator,
+                                                                runtimePerspectivePluginManager,
+                                                                navigationManager);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testLoadModelSuccess() {
+        String modeId = "abc";
         LayoutTemplate perspective = mock(LayoutTemplate.class);
         List<LayoutTemplate> perspectives = Arrays.asList(perspective);
-        RuntimeModel runtimeModel = new RuntimeModel(null, perspectives);
-        when(runtimeModelService.getRuntimeModel(anyString())).thenReturn(Optional.of(runtimeModel));
+        NavTree navTree = mock(NavTree.class);
+        RuntimeModel runtimeModel = new RuntimeModel(navTree, perspectives);
+        when(runtimeModelService.getRuntimeModel(eq(modeId))).thenReturn(Optional.of(runtimeModel));
        
         Consumer<RuntimeModel> runtimeModelConsumer = mock(Consumer.class);
         Command empty = mock(Command.class);
         BiConsumer<Object, Throwable> error = mock(BiConsumer.class);
         
-        clientRuntimeModelLoader.loadModel("", runtimeModelConsumer, empty, error);
+        clientRuntimeModelLoader.loadModel(modeId, runtimeModelConsumer, empty, error);
 
         verify(runtimeModelConsumer).accept(runtimeModel);
+        verify(runtimePerspectiveGenerator).generatePerspective(eq(perspective));
+        verify(runtimePerspectivePluginManager).setTemplates(eq(perspectives));
+        verify(navigationManager).setDefaultNavTree(navTree);
+        
         verify(empty, times(0)).execute();
         verify(error, times(0)).accept(any(), any());
     }
@@ -82,7 +101,7 @@ public class ClientRuntimeModelLoaderTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testLoadModelNotFound() {
-        when(runtimeModelService.getRuntimeModel(anyString())).thenReturn(Optional.empty());
+        when(runtimeModelService.getRuntimeModel()).thenReturn(Optional.empty());
         
         Consumer<RuntimeModel> runtimeModelConsumer = mock(Consumer.class);
         Command empty = mock(Command.class);
@@ -99,6 +118,8 @@ public class ClientRuntimeModelLoaderTest {
     @SuppressWarnings("unchecked")
     public void testLoadModelError() {
         when(runtimeModelService.getRuntimeModel(anyString())).thenThrow(new RuntimeException());
+        when(runtimeModelService.getRuntimeModel()).thenThrow(new RuntimeException());
+
         
         Consumer<RuntimeModel> runtimeModelConsumer = mock(Consumer.class);
         Command empty = mock(Command.class);

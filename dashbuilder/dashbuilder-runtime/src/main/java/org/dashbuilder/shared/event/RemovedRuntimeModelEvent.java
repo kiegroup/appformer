@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.dashbuilder.shared.event;
 
-import org.dashbuilder.shared.model.RuntimeModel;
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 
 /**
- * Fired when runtime model is loaded
+ * Fired when datasets are removed.
  *
  */
-public class RuntimeModelEvent {
+public class RemovedRuntimeModelEvent {
 
-    RuntimeModel runtimeModel;
+    /**
+     * Removed runtime model IDs
+     */
+    String runtimeModelId;
 
-    public RuntimeModelEvent(@MapsTo("runtimeModel") RuntimeModel runtimeModel) {
-        this.runtimeModel = runtimeModel;
+    public RemovedRuntimeModelEvent(@MapsTo("id") String id) {
+        this.runtimeModelId = id;
+    }
+    
+    public String getRuntimeModelId() {
+        return runtimeModelId;
     }
 
-    public RuntimeModel getRuntimeModel() {
-        return runtimeModel;
-    }
 
 }

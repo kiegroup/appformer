@@ -50,25 +50,45 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
     ExternalImportService externalImportService;
 
     @Override
-    public Optional<RuntimeModel> getRuntimeModel(String exportId) {
-        if (exportId == null && !runtimeOptions.isMultipleImport()) {
+    public Optional<RuntimeModel> getRuntimeModel() {
+        if (!importModelRegistry.acceptingNewImports()) {
             return importModelRegistry.single();
         }
 
-        Optional<RuntimeModel> runtimeModelOp = importModelRegistry.get(exportId);
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<RuntimeModel> getRuntimeModel(String exportId) {
+        if (exportId == null || exportId.trim().isEmpty()) {
+            return Optional.empty();
+        }
+
+        return loadImportById(exportId);
+
+    }
+
+    /**
+     * Attempts to load a model which could be a local file, an already loaded model or an external file.
+     * @param id
+     * The model id or path
+     * @return
+     * An optional containing the loaded model or empty.
+     */
+    private Optional<RuntimeModel> loadImportById(String id) {
+        Optional<RuntimeModel> runtimeModelOp = importModelRegistry.get(id);
         if (runtimeModelOp.isPresent()) {
             return runtimeModelOp;
         }
 
-        Optional<String> modelPath = runtimeOptions.modelPath(exportId);
+        Optional<String> modelPath = runtimeOptions.modelPath(id);
         if (modelPath.isPresent()) {
             return importModelRegistry.registerFile(modelPath.get());
         }
 
         if (runtimeOptions.isAllowExternal()) {
-            return externalImportService.registerExternalImport(exportId);
+            return externalImportService.registerExternalImport(id);
         }
-
         return Optional.empty();
     }
 

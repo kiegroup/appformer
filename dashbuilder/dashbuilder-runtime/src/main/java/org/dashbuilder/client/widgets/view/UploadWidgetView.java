@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.dashbuilder.client.screens.view;
+
+package org.dashbuilder.client.widgets.view;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -28,26 +29,27 @@ import elemental2.dom.HTMLInputElement;
 import elemental2.dom.Response;
 import org.dashbuilder.client.RuntimeCommunication;
 import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.dashbuilder.client.screens.UploadDashboardsScreen;
+import org.dashbuilder.client.widgets.UploadWidget;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 
-@Templated
 @Dependent
-public class UploadDashboardsScreenView implements UploadDashboardsScreen.View {
-
+@Templated
+public class UploadWidgetView implements UploadWidget.View {
+    
     private static final AppConstants i18n = AppConstants.INSTANCE;
-
+    
+    UploadWidget presenter;
+    
     @Inject
-    @DataField
-    HTMLDivElement emptyImport;
-
+    @DataField HTMLDivElement uploadButtonContainer;
+    
     @Inject
     @DataField
     HTMLButtonElement btnImport;
-
+    
     @Inject
     @DataField
     HTMLFormElement uploadForm;
@@ -55,36 +57,18 @@ public class UploadDashboardsScreenView implements UploadDashboardsScreen.View {
     @Inject
     @DataField
     HTMLInputElement inputFile;
-
-    @Inject
-    BusyIndicatorView loading;
-
+    
     @Inject
     RuntimeCommunication runtimeCommunication;
-
-    private UploadDashboardsScreen presenter;
-
+    
+    @Inject
+    BusyIndicatorView loading;
+    
     @Override
-    public HTMLElement getElement() {
-        return emptyImport;
-    }
-
-    @Override
-    public void init(UploadDashboardsScreen presenter) {
+    public void init(UploadWidget presenter) {
         this.presenter = presenter;
-
     }
-
-    @EventHandler("inputFile")
-    public void handleInputFileChange(ChangeEvent e) {
-        presenter.submit(uploadForm);
-    }
-
-    @EventHandler("btnImport")
-    public void handleImport(ClickEvent e) {
-        inputFile.click();
-    }
-
+    
     @Override
     public void loading() {
         loading.showBusyIndicator(i18n.uploadingDashboards());
@@ -104,4 +88,20 @@ public class UploadDashboardsScreenView implements UploadDashboardsScreen.View {
     public void errorDuringUpload(Object error) {
         runtimeCommunication.showError(i18n.errorUploadingDashboards(), error);
     }
+    
+    @EventHandler("btnImport")
+    public void handleImport(ClickEvent e) {
+        inputFile.click();
+    }
+    
+    @EventHandler("inputFile")
+    public void handleInputFileChange(ChangeEvent e) {
+        presenter.submit(uploadForm);
+    }
+    
+    @Override
+    public HTMLElement getElement() {
+        return uploadButtonContainer;
+    }
+
 }

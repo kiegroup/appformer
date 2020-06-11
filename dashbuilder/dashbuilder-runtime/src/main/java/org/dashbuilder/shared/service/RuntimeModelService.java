@@ -39,4 +39,13 @@ public interface RuntimeModelService {
      */
     Optional<RuntimeModel> getRuntimeModel(String runtimeModelId);
 
+    /**
+     * 
+     * Get the available runtime model
+     * 
+     * @return
+     * An optional containing the Runtime Model or empty if the runtime model couldn't be found or built.
+     */
+    Optional<RuntimeModel> getRuntimeModel();
+
 }

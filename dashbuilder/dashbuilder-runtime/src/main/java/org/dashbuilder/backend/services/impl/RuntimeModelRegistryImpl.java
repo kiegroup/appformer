@@ -32,6 +32,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
+import org.dashbuilder.shared.event.RemovedRuntimeModelEvent;
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.ImportValidationService;
@@ -55,9 +56,12 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
 
     @Inject
     Event<NewDataSetContentEvent> newDataSetContentEvent;
-    
+
     @Inject
     ImportValidationService importValidationService;
+
+    @Inject
+    Event<RemovedRuntimeModelEvent> removedRuntimeModelEvent;
 
     @PostConstruct
     public void init() {
@@ -84,18 +88,18 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
             logger.error("Invalid file name: {}", fileName);
             throw new IllegalArgumentException("Invalid file name.");
         }
-        
+
         File file = new File(fileName);
         if (!file.exists()) {
             logger.error("File does not exist: {}", fileName);
             throw new IllegalArgumentException("File does not exist");
         }
-        
+
         if (!importValidationService.validate(fileName)) {
             logger.error("File does not have a valid structure: {}", fileName);
             throw new IllegalArgumentException("Not a valid file structure.");
         }
-        
+
         try (FileInputStream fis = new FileInputStream(fileName)) {
             String importId = FilenameUtils.getBaseName(file.getPath());
             return register(importId, fis);
@@ -120,15 +124,21 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
         return mode;
     }
 
+    @Override
+    public void remove(String modelId) {
+        runtimeModels.remove(modelId);
+        removedRuntimeModelEvent.fire(new RemovedRuntimeModelEvent(modelId));
+    }
+
     public Optional<RuntimeModel> register(String id, InputStream fileStream) {
         if (!acceptingNewImports()) {
             throw new IllegalArgumentException("New imports are not allowed in mode " + mode);
         }
         try {
-            RuntimeModel runtimeModel = parser.parse(id, fileStream);
             if (id == null) {
                 id = UUID.randomUUID().toString();
             }
+            RuntimeModel runtimeModel = parser.parse(id, fileStream);
             runtimeModels.put(id, runtimeModel);
             return Optional.of(runtimeModel);
         } catch (Exception e) {

@@ -34,6 +34,9 @@ import org.uberfire.commons.data.Pair;
 public class RuntimeOptions {
 
     Logger logger = LoggerFactory.getLogger(RuntimeOptions.class);
+    
+    
+    public static final String DASHBOARD_EXTENSION = ".zip";
 
     /**
      * Base Directory where dashboards ZIPs are stored
@@ -78,7 +81,7 @@ public class RuntimeOptions {
     public void init() {
         String multipleImportStr = System.getProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT_PROP, Boolean.FALSE.toString());
         String allowExternalStr = System.getProperty(ALLOW_EXTERNAL_FILE_REGISTER_PROP, Boolean.FALSE.toString());
-        String datasetPartitionStr = System.getProperty(DATASET_PARTITION_PROP, Boolean.FALSE.toString());
+        String datasetPartitionStr = System.getProperty(DATASET_PARTITION_PROP, Boolean.TRUE.toString());
 
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");
@@ -124,8 +127,7 @@ public class RuntimeOptions {
     }
 
     public boolean isMultipleImport() {
-        return true;
-//        return multipleImport;
+        return multipleImport;
     }
 
     public Optional<String> importFileLocation() {
@@ -145,12 +147,11 @@ public class RuntimeOptions {
     }
 
     public boolean isDatasetPartition() {
-        return true;
-//        return datasetPartition;
+        return datasetPartition;
     }
 
     public String buildFilePath(String fileId) {
-        return String.join("/", getImportsBaseDir(), fileId).concat(".zip");
+        return String.join("/", getImportsBaseDir(), fileId).concat(DASHBOARD_EXTENSION);
     }
 
 }

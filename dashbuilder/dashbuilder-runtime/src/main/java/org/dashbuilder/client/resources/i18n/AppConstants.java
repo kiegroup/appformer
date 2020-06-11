@@ -40,5 +40,5 @@ public interface AppConstants extends Messages {
     String notFoundScreenTitle();
 
     String notFoundDashboard(String perspectiveName);
-
+    
 }

@@ -116,7 +116,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
         }
 
         if (!datasetContents.isEmpty()) {
-            newDataSetContentEvent.fire(new NewDataSetContentEvent(datasetContents));
+            newDataSetContentEvent.fire(new NewDataSetContentEvent(modelId, datasetContents));
         }
         NavTree navTree = runtimeNavigationBuilder.build(navTreeOp, layoutTemplates);
 
@@ -173,7 +173,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     }
 
     protected String transformId(String modelId, String id) {
-        return id + "|Dashboard " + modelId;
+        return id + "|RuntimeModel=" + modelId;
     }
-
+    
 }

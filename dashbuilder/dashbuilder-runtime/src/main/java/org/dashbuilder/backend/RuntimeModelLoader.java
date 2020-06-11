@@ -16,6 +16,10 @@
 
 package org.dashbuilder.backend;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -26,6 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
+/**
+ * Responsible for runtime model files loading.
+ *
+ */
 @Startup
 @ApplicationScoped
 public class RuntimeModelLoader {
@@ -40,6 +48,7 @@ public class RuntimeModelLoader {
 
     @PostConstruct
     private void doInitialImport() {
+        createBaseDir();
         runtimeOptions.importFileLocation().ifPresent(importFile -> {
             logger.info("Importing file {}", importFile);
             runtimeModelRegistry.registerFile(importFile);
@@ -49,6 +58,25 @@ public class RuntimeModelLoader {
         if (runtimeOptions.isMultipleImport() && !runtimeOptions.importFileLocation().isPresent()) {
             runtimeModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);
         }
+    }
+
+
+    /**
+     * Create, if do not exist, the base directory for runtime models
+     */
+    private void createBaseDir() {
+        java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
+        if (!baseDirPath.toFile().exists()) {
+            try {
+                Files.createDirectory(baseDirPath);
+            } catch (IOException e) {
+                logger.debug("Error creating base directory for dashboards: {}", baseDirPath, e);
+                throw new RuntimeException("Base directory for dashboards could not be created: " + baseDirPath, e);
+            }
+        } else {
+            logger.info("Base directory for dashboards already exist: {}", runtimeOptions.getImportsBaseDir());
+        }
+
     }
 
 }
