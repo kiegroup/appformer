@@ -125,7 +125,7 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
             throw new IllegalArgumentException("New imports are not allowed in mode " + mode);
         }
         try {
-            RuntimeModel runtimeModel = parser.parse(fileStream);
+            RuntimeModel runtimeModel = parser.parse(id, fileStream);
             if (id == null) {
                 id = UUID.randomUUID().toString();
             }

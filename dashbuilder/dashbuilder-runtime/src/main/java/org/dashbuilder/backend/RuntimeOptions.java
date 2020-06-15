@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.commons.data.Pair;
 
 /**
- * Holds Runtime System properties
+ * Holds Runtime System properties.
  *
  */
 @ApplicationScoped
@@ -35,19 +35,40 @@ public class RuntimeOptions {
 
     Logger logger = LoggerFactory.getLogger(RuntimeOptions.class);
 
+    /**
+     * Base Directory where dashboards ZIPs are stored
+     */
     private static final String IMPORTS_BASE_DIR_PROP = "org.dashbuilder.import.base.dir";
 
+    /**
+     * Set a static dashboard to run with runtime. When this property is set no new imports are allowed.
+     */
     private static final String IMPORT_FILE_LOCATION_PROP = "dashbuilder.runtime.import";
 
+    /**
+     * Limits the size of uploaded dashboards (in kb).
+     */
     private static final String UPLOAD_SIZE_PROP = "dashbuilder.runtime.upload.size";
 
+    /**
+     * When true will allow download of external (remote) files into runtime.
+     */
     private static final String ALLOW_EXTERNAL_FILE_REGISTER_PROP = "dashbuilder.runtime.allowExternal";
 
-    private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT = "dashbuilder.runtime.multiple";
+    /**
+     * If set to true Runtime will always allow use of new imports (multi tenancy)
+     */
+    private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT_PROP = "dashbuilder.runtime.multiple";
 
+    /**
+     * If true datasets IDs will partitioned by the Runtime Model ID.
+     */
+    private static final String DATASET_PARTITION_PROP = "dashbuilder.dataset.partition";
+    
     private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
 
     private boolean multipleImport;
+    private boolean datasetPartition;
     private boolean allowExternal;
     private String importFileLocation;
     private String importsBaseDir;
@@ -55,13 +76,15 @@ public class RuntimeOptions {
 
     @PostConstruct
     public void init() {
-        String multipleImportStr = System.getProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT, Boolean.FALSE.toString());
+        String multipleImportStr = System.getProperty(DASHBUILDER_RUNTIME_MULTIPLE_IMPORT_PROP, Boolean.FALSE.toString());
         String allowExternalStr = System.getProperty(ALLOW_EXTERNAL_FILE_REGISTER_PROP, Boolean.FALSE.toString());
+        String datasetPartitionStr = System.getProperty(DATASET_PARTITION_PROP, Boolean.FALSE.toString());
 
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");
         multipleImport = Boolean.parseBoolean(multipleImportStr);
         allowExternal = Boolean.parseBoolean(allowExternalStr);
+        datasetPartition = Boolean.parseBoolean(datasetPartitionStr);
 
         uploadSize = DEFAULT_UPLOAD_SIZE;
 
@@ -101,7 +124,8 @@ public class RuntimeOptions {
     }
 
     public boolean isMultipleImport() {
-        return multipleImport;
+        return true;
+//        return multipleImport;
     }
 
     public Optional<String> importFileLocation() {
@@ -118,6 +142,11 @@ public class RuntimeOptions {
 
     public boolean isAllowExternal() {
         return allowExternal;
+    }
+
+    public boolean isDatasetPartition() {
+        return true;
+//        return datasetPartition;
     }
 
     public String buildFilePath(String fileId) {

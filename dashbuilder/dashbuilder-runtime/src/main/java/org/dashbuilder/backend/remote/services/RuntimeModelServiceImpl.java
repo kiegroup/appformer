@@ -51,7 +51,7 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
 
     @Override
     public Optional<RuntimeModel> getRuntimeModel(String exportId) {
-        if (exportId == null) {
+        if (exportId == null && !runtimeOptions.isMultipleImport()) {
             return importModelRegistry.single();
         }
 

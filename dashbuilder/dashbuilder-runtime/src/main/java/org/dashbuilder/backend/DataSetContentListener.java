@@ -83,6 +83,7 @@ public class DataSetContentListener {
     private void registerDataSetDefinition(final DataSetContent content) throws Exception {
         try {
             DataSetDef dataSetDef = defMarshaller.fromJson(content.getContent());
+            dataSetDef.setUUID(content.getId());
             registry.registerDataSetDef(dataSetDef);
         } catch (Exception e) {
             logger.warn("Ignoring Dataset {}: error parsing Json", content.getId());
