@@ -30,11 +30,15 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
+import org.uberfire.client.workbench.ouia.OuiaAttribute;
+import org.uberfire.client.workbench.ouia.OuiaComponent;
+import org.uberfire.client.workbench.ouia.OuiaComponentIdAttribute;
+import org.uberfire.client.workbench.ouia.OuiaComponentTypeAttribute;
 import org.uberfire.ext.widgets.core.client.resources.TreeNavigatorResources;
 
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
-public class TreeItem<I extends TreeItem> extends Composite {
+public class TreeItem<I extends TreeItem> extends Composite implements OuiaComponent {
 
     private final Type type;
     protected FlowPanel content;
@@ -425,6 +429,21 @@ public class TreeItem<I extends TreeItem> extends Composite {
 
     FlowPanel getContent() {
         return content;
+    }
+
+    @Override
+    public OuiaComponentTypeAttribute ouiaComponentType() {
+        return new OuiaComponentTypeAttribute("qe-tree-item");
+    }
+
+    @Override
+    public OuiaComponentIdAttribute ouiaComponentId() {
+        return new OuiaComponentIdAttribute("qe-tree-item-" + label);
+    }
+
+    @Override
+    public Consumer<OuiaAttribute> ouiaAttributeRenderer() {
+        return ouiaAttribute -> getElement().setAttribute(ouiaAttribute.getName(), ouiaAttribute.getValue());
     }
 
     @Override
