@@ -45,7 +45,7 @@ public class ClientRuntimeModelLoader {
 
     public void loadModel(Consumer<RuntimeModel> modelLoaded,
                           Command emptyModel,
-                          BiConsumer<Exception, Throwable> error) {
+                          BiConsumer<Object, Throwable> error) {
         String importID = Window.Location.getParameter(IMPORT_ID_PARAM);
         loadModel(importID, modelLoaded, emptyModel, error);
 
@@ -54,7 +54,7 @@ public class ClientRuntimeModelLoader {
     public void loadModel(String modelId,
                           Consumer<RuntimeModel> modelLoaded,
                           Command emptyModel,
-                          BiConsumer<Exception, Throwable> error) {
+                          BiConsumer<Object, Throwable> error) {
         if (modelCache != null) {
             modelLoaded.accept(modelCache);
             return;
@@ -69,7 +69,7 @@ public class ClientRuntimeModelLoader {
             } else {
                 emptyModel.execute();
             }
-        }, (ErrorCallback<Exception>) (Exception message, Throwable throwable) -> {
+        }, (message, throwable) -> {
             error.accept(message, throwable);
             return false;
         }).getRuntimeModel(modelId);

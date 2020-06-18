@@ -124,7 +124,7 @@ public class RuntimeScreen {
         placeManager.goTo(UploadDashboardsScreen.ID);
     }
 
-    private void errorLoadingModel(Exception e, Throwable t) {
+    private void errorLoadingModel(Object e, Throwable t) {
         view.stopLoading();
         view.errorLoadingDashboards(t);
     }

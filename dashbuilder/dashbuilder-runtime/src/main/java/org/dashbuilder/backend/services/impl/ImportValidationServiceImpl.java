@@ -58,7 +58,7 @@ public class ImportValidationServiceImpl implements ImportValidationService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error validating file: " + file, e);
         }
-        
+
         return false;
     }
 
@@ -66,5 +66,4 @@ public class ImportValidationServiceImpl implements ImportValidationService {
         return entry.getName().startsWith(path);
     }
 
-    
 }
