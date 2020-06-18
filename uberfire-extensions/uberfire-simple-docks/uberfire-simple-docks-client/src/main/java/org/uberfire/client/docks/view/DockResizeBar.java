@@ -43,7 +43,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 public class DockResizeBar extends FlowPanel implements OuiaComponent {
 
-    private static final String OUIA_COMPONENT_TYPE = "qe-resize-docks-bar";
+    private static final String OUIA_COMPONENT_TYPE = "resize-docks-bar";
 
     private static WebAppResource CSS = GWT.create(WebAppResource.class);
 

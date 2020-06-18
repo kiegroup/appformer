@@ -290,12 +290,12 @@ public class TreeItemTest {
 
     @Test
     public void testOuiaComponentTypeAttribute() {
-        assertEquals("qe-tree-item", testedItem.ouiaComponentType().getValue());
+        assertEquals("tree-item", testedItem.ouiaComponentType().getValue());
     }
 
     @Test
     public void testOuiaComponentIdAttribute() {
-        assertEquals("qe-tree-item-" + ITEM_LABEL, testedItem.ouiaComponentId().getValue());
+        assertEquals("tree-item-" + ITEM_LABEL, testedItem.ouiaComponentId().getValue());
     }
 
     @Test

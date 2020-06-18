@@ -58,12 +58,12 @@ public class DockResizeBarTest {
 
     @Test
     public void testOuiaComponentTypeAttribute() {
-        assertEquals("qe-resize-docks-bar", dockResizeBar.ouiaComponentType().getValue());
+        assertEquals("resize-docks-bar", dockResizeBar.ouiaComponentType().getValue());
     }
 
     @Test
     public void testOuiaComponentIdAttribute() {
-        assertEquals("qe-resize-docks-bar-W", dockResizeBar.ouiaComponentId().getValue());
+        assertEquals("resize-docks-bar-W", dockResizeBar.ouiaComponentId().getValue());
     }
 
     @Test

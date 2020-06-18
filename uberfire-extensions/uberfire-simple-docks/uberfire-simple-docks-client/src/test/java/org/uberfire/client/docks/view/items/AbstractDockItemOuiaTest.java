@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.client.workbench.docks.UberfireDock;
-import org.uberfire.client.workbench.docks.UberfireDockPosition;
 import org.uberfire.client.workbench.ouia.OuiaComponentTypeAttribute;
 import org.uberfire.mvp.ParameterizedCommand;
 
@@ -46,7 +45,6 @@ public class AbstractDockItemOuiaTest {
 
     @Before
     public void setUp() throws Exception {
-        when(dockMock.getDockPosition()).thenReturn(UberfireDockPosition.WEST);
         when(dockMock.getIdentifier()).thenReturn("xyz");
     }
 
@@ -70,9 +68,9 @@ public class AbstractDockItemOuiaTest {
 
         final OuiaComponentTypeAttribute componentTypeAttribute = dockItem.ouiaComponentType();
 
-        assertEquals("qe-docks-item", componentTypeAttribute.getValue());
+        assertEquals("docks-item", componentTypeAttribute.getValue());
 
-        assertEquals("qe-docks-item-W-xyz", dockItem.ouiaComponentId().getValue());
+        assertEquals("docks-item-xyz", dockItem.ouiaComponentId().getValue());
 
         dockItem.ouiaAttributeRenderer().accept(componentTypeAttribute);
         verify(elementMock).setAttribute(componentTypeAttribute.getName(), componentTypeAttribute.getValue());

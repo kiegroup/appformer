@@ -433,12 +433,12 @@ public class TreeItem<I extends TreeItem> extends Composite implements OuiaCompo
 
     @Override
     public OuiaComponentTypeAttribute ouiaComponentType() {
-        return new OuiaComponentTypeAttribute("qe-tree-item");
+        return new OuiaComponentTypeAttribute("tree-item");
     }
 
     @Override
     public OuiaComponentIdAttribute ouiaComponentId() {
-        return new OuiaComponentIdAttribute("qe-tree-item-" + label);
+        return new OuiaComponentIdAttribute("tree-item-" + label);
     }
 
     @Override

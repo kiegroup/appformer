@@ -47,7 +47,7 @@ public class DocksExpandedBar
                                      RequiresResize,
                                      OuiaComponent {
 
-    private static final String OUIA_COMPONENT_TYPE = "qe-docks-bar-expanded";
+    private static final String OUIA_COMPONENT_TYPE = "expanded-docks-bar";
 
     private static WebAppResource CSS = GWT.create(WebAppResource.class);
     @UiField
@@ -121,7 +121,7 @@ public class DocksExpandedBar
         collapse = GWT.create(Button.class);
         collapse.setSize(ButtonSize.SMALL);
         collapse.addClickHandler(even -> closeCommand.execute(identifier));
-        final String componentType = "qe-docks-collapse-button";
+        final String componentType = "collapse-docks-button";
         collapse.getElement().setAttribute(OuiaComponentTypeAttribute.COMPONENT_TYPE, componentType);
         collapse.getElement().setAttribute(OuiaComponentIdAttribute.COMPONENT_ID, componentType + "-" + identifier);
     }

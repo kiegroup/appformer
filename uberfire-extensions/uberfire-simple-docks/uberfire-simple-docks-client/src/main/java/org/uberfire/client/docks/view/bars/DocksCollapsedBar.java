@@ -40,7 +40,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 public class DocksCollapsedBar extends Composite implements OuiaComponent {
 
-    private static final String OUIA_COMPONENT_TYPE = "qe-docks-bar";
+    private static final String OUIA_COMPONENT_TYPE = "collapsed-docks-bar";
 
     @UiField
     FlowPanel docksBarPanel;

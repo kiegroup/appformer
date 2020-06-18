@@ -39,7 +39,7 @@ import org.uberfire.mvp.ParameterizedCommand;
 
 public abstract class AbstractDockItem extends Composite implements OuiaComponent {
 
-    private static final String OUIA_COMPONENT_TYPE = "qe-docks-item";
+    private static final String OUIA_COMPONENT_TYPE = "docks-item";
 
     private final UberfireDock dock;
 
@@ -157,10 +157,6 @@ public abstract class AbstractDockItem extends Composite implements OuiaComponen
 
     @Override
     public OuiaComponentIdAttribute ouiaComponentId() {
-        return new OuiaComponentIdAttribute(OUIA_COMPONENT_TYPE +
-                                                    "-" +
-                                                    dock.getDockPosition().getShortName() +
-                                                    "-" +
-                                                    dock.getIdentifier());
+        return new OuiaComponentIdAttribute(OUIA_COMPONENT_TYPE + "-" + dock.getIdentifier());
     }
 }

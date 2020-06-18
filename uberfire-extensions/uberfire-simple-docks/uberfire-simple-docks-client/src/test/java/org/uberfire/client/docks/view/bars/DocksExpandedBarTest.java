@@ -106,12 +106,12 @@ public class DocksExpandedBarTest {
 
     @Test
     public void testOuiaComponentTypeAttribute() {
-        assertEquals("qe-docks-bar-expanded", docksExpandedBar.ouiaComponentType().getValue());
+        assertEquals("expanded-docks-bar", docksExpandedBar.ouiaComponentType().getValue());
     }
 
     @Test
     public void testOuiaComponentIdAttribute() {
-        assertEquals("qe-docks-bar-expanded-W", docksExpandedBar.ouiaComponentId().getValue());
+        assertEquals("expanded-docks-bar-W", docksExpandedBar.ouiaComponentId().getValue());
     }
 
     @Test

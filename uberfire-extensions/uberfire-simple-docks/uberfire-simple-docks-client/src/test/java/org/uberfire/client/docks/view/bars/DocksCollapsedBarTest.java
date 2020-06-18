@@ -55,12 +55,12 @@ public class DocksCollapsedBarTest {
 
     @Test
     public void testOuiaComponentTypeAttribute() {
-        assertEquals("qe-docks-bar", docksCollapsedBar.ouiaComponentType().getValue());
+        assertEquals("collapsed-docks-bar", docksCollapsedBar.ouiaComponentType().getValue());
     }
 
     @Test
     public void testOuiaComponentIdAttribute() {
-        assertEquals("qe-docks-bar-W", docksCollapsedBar.ouiaComponentId().getValue());
+        assertEquals("collapsed-docks-bar-W", docksCollapsedBar.ouiaComponentId().getValue());
     }
 
     @Test
