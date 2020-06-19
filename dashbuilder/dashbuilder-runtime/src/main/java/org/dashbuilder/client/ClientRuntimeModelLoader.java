@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.dashbuilder.client;
 
 import java.util.Optional;
@@ -22,33 +23,40 @@ import java.util.function.Consumer;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import org.dashbuilder.client.perspective.RuntimePerspectiveGenerator;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.ErrorCallback;
+import org.uberfire.mvp.Command;
 
 @ApplicationScoped
 public class ClientRuntimeModelLoader {
 
     public static final String IMPORT_ID_PARAM = "import";
 
-    @Inject
     private Caller<RuntimeModelService> importModelServiceCaller;
 
     RuntimeModel modelCache = null;
 
-    @Inject
     RuntimePerspectiveGenerator perspectiveEditorGenerator;
+
+    public ClientRuntimeModelLoader() {
+        // do nothing
+    }
+
+    @Inject
+    public ClientRuntimeModelLoader(Caller<RuntimeModelService> importModelServiceCaller,
+                                    RuntimePerspectiveGenerator perspectiveEditorGenerator) {
+        this.importModelServiceCaller = importModelServiceCaller;
+        this.perspectiveEditorGenerator = perspectiveEditorGenerator;
+    }
 
     public void loadModel(Consumer<RuntimeModel> modelLoaded,
                           Command emptyModel,
                           BiConsumer<Object, Throwable> error) {
         String importID = Window.Location.getParameter(IMPORT_ID_PARAM);
         loadModel(importID, modelLoaded, emptyModel, error);
-
     }
 
     public void loadModel(String modelId,

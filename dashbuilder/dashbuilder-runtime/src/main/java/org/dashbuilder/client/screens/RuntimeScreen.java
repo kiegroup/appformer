@@ -43,7 +43,6 @@ import org.uberfire.workbench.model.menu.Menus;
 public class RuntimeScreen {
 
     public static final String ID = "RuntimeScreen";
-    public static final String IMPORT_ID_PARAM = "import";
 
     private static AppConstants i18n = AppConstants.INSTANCE;
 

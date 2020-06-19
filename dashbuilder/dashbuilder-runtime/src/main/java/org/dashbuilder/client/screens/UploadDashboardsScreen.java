@@ -25,6 +25,7 @@ import elemental2.dom.FormData;
 import elemental2.dom.HTMLFormElement;
 import elemental2.dom.RequestInit;
 import elemental2.dom.Response;
+import org.dashbuilder.client.ClientRuntimeModelLoader;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -104,7 +105,7 @@ public class UploadDashboardsScreen {
 
     private void updateImportId(final String modelId) {
         String newUrl = GWT.getHostPageBaseURL() + "?" +
-                        RuntimeScreen.IMPORT_ID_PARAM + "=" +
+                        ClientRuntimeModelLoader.IMPORT_ID_PARAM + "=" +
                         modelId;
         DomGlobal.window.history.replaceState(null,
                                               "Dashbuilder Runtime |" + modelId,
