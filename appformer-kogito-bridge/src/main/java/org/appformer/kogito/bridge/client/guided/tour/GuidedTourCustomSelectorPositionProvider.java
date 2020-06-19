@@ -22,10 +22,11 @@ import java.util.Optional;
 
 import elemental2.dom.DomGlobal;
 import jsinterop.annotations.JsFunction;
+import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.Rect;
 
-@JsType
+@JsType(namespace = JsPackage.GLOBAL, name = "JsInterop__Envelope__GuidedTour__GuidedTourCustomSelectorPositionProvider")
 public class GuidedTourCustomSelectorPositionProvider {
 
     private static GuidedTourCustomSelectorPositionProvider instance;
