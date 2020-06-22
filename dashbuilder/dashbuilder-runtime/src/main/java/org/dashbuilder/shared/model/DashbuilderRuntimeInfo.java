@@ -18,8 +18,6 @@ package org.dashbuilder.shared.model;
 
 import java.util.Collection;
 
-import org.jboss.errai.common.client.api.annotations.MapsTo;
-
 /**
  * Dashbuilder Runtime information.
  *
@@ -30,9 +28,9 @@ public class DashbuilderRuntimeInfo {
     private Collection<String> availableModels;
     private boolean acceptingNewImports;
 
-    public DashbuilderRuntimeInfo(@MapsTo("mode") String mode,
-                                  @MapsTo("availableModels") Collection<String> availableModels,
-                                  @MapsTo("acceptingNewImports") boolean acceptingNewImports) {
+    public DashbuilderRuntimeInfo(String mode,
+                                  Collection<String> availableModels,
+                                  boolean acceptingNewImports) {
         this.mode = mode;
         this.availableModels = availableModels;
         this.acceptingNewImports = acceptingNewImports;

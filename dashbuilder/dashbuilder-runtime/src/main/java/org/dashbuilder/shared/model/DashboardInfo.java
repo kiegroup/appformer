@@ -29,7 +29,6 @@ public class DashboardInfo {
     private Collection<String> pages;
 
     public DashboardInfo(String runtimeModelId, Collection<String> pages) {
-        super();
         this.runtimeModelId = runtimeModelId;
         this.pages = pages;
     }
