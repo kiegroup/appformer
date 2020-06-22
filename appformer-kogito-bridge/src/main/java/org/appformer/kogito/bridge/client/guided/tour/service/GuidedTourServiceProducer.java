@@ -24,6 +24,9 @@ import org.appformer.kogito.bridge.client.interop.WindowRef;
 
 import static org.appformer.kogito.bridge.client.guided.tour.service.GuidedTourService.DEFAULT;
 
+/**
+ * Produces {@link GuidedTourService} beans according to whether the envelope API is available or not
+ */
 public class GuidedTourServiceProducer {
 
     @Produces

@@ -29,6 +29,9 @@ import org.appformer.kogito.bridge.client.guided.tour.service.GuidedTourService;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.Tutorial;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.UserInteraction;
 
+/**
+ * Provides a bridge between the GWT code and the the native JavaScript implementations.
+ */
 @ApplicationScoped
 public class GuidedTourBridge {
 
@@ -50,19 +53,31 @@ public class GuidedTourBridge {
         registerObserver(globalHTMLObserver);
     }
 
+    /**
+     * Refreshes the Guided Tour component by calling the {@link GuidedTourService}.
+     */
     public void refresh(final UserInteraction userInteraction) {
         getGuidedTourService().refresh(userInteraction);
     }
 
+    /**
+     * Registers a tutorial into the Guided Tour component by calling the {@link GuidedTourService}.
+     */
     public void registerTutorial(final Tutorial tutorial) {
         getGuidedTourService().registerTutorial(tutorial);
     }
 
+    /**
+     * Register a new observer into the {@link GuidedTourBridge}.
+     */
     public void registerObserver(final GuidedTourObserver observer) {
         observer.setMonitorBridge(this);
         observers.add(observer);
     }
 
+    /**
+     * Register a position provider into the {@link GuidedTourCustomSelectorPositionProvider}.
+     */
     public void registerPositionProvider(final String type,
                                          final PositionProviderFunction positionProviderFunction) {
         getPositionProviderInstance().registerPositionProvider(type, positionProviderFunction);

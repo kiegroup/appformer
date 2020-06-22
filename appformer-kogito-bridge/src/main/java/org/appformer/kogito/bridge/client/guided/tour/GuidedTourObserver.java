@@ -18,8 +18,14 @@ package org.appformer.kogito.bridge.client.guided.tour;
 
 import java.util.Optional;
 
+import org.appformer.kogito.bridge.client.guided.tour.service.GuidedTourService;
 import org.jboss.errai.ioc.client.api.Disposer;
 
+/**
+ * {@link GuidedTourObserver} implementation must events and notifies the {@link GuidedTourBridge}.
+ * Notice: {@link GuidedTourObserver} instances must be disposed once the {@link GuidedTourService} is disable, this
+ * provides the proper {@link Disposer}.
+ */
 public abstract class GuidedTourObserver<T extends GuidedTourObserver> {
 
     private final Disposer<T> selfDisposer;

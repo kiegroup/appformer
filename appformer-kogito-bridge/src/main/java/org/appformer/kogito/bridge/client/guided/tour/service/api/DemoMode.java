@@ -19,6 +19,10 @@ package org.appformer.kogito.bridge.client.guided.tour.service.api;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
+/**
+ * Native class defined into the Guided Tour component.
+ * A {@link Step} with mode as a {@link DemoMode} instance shows something, and waits for the "Next step" click.
+ */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class DemoMode implements Mode {
     // empty

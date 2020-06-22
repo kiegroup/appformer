@@ -20,6 +20,10 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
+/**
+ * Native class defined into the Guided Tour component.
+ * Defines a single step in a tutorial.
+ */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class Step {
 

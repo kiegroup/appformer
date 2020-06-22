@@ -20,6 +20,10 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
+/**
+ * Native class defined into the Guided Tour component.
+ * A {@link Step} with mode as a {@link AutoMode} instance shows something, stays opened for some time, and it's auto-skipped.
+ */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class AutoMode implements Mode {
 

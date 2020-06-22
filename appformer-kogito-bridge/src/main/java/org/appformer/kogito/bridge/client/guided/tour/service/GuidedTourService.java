@@ -19,14 +19,33 @@ package org.appformer.kogito.bridge.client.guided.tour.service;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.Tutorial;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.UserInteraction;
 
+/**
+ * Service to access Guided Tour features.
+ */
 public interface GuidedTourService {
 
+    /**
+     * Refreshes the Guided Tour with a new user interaction. Thus, depending of the user interaction, the Guided Tour
+     * may react or do not react upon a given user interaction.
+     * @param userInteraction an user interaction
+     */
     void refresh(final UserInteraction userInteraction);
 
+    /**
+     * Registers a tutorial into the Guided Tour
+     * @param tutorial a tutorial
+     */
     void registerTutorial(final Tutorial tutorial);
 
+    /**
+     * Checks if the Guided Tour is enabled.
+     * @return 'true' when the Guided Tour is enabled, otherwise it returns 'false'
+     */
     boolean isEnabled();
 
+    /**
+     * It's the default implementation of the {@link GuidedTourService}.
+     */
     GuidedTourService DEFAULT = new GuidedTourService() {
 
         @Override

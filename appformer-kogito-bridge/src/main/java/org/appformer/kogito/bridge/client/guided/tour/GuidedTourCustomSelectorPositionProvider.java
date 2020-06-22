@@ -26,6 +26,9 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.Rect;
 
+/**
+ * Provides a {@link JsType} native API for JavaScript consumers that may request positions with a custom query selector.
+ */
 @JsType(namespace = JsPackage.GLOBAL, name = "JsInterop__Envelope__GuidedTour__GuidedTourCustomSelectorPositionProvider")
 public class GuidedTourCustomSelectorPositionProvider {
 
@@ -37,6 +40,9 @@ public class GuidedTourCustomSelectorPositionProvider {
 
     }
 
+    /**
+     * Gets an instance of the {@link GuidedTourCustomSelectorPositionProvider}
+     */
     public static GuidedTourCustomSelectorPositionProvider getInstance() {
         if (instance == null) {
             instance = new GuidedTourCustomSelectorPositionProvider();
@@ -44,6 +50,12 @@ public class GuidedTourCustomSelectorPositionProvider {
         return instance;
     }
 
+    /**
+     * Gets a {@link Rect} position for a given custom 'querySelector', which must follow this convention:
+     * 'TYPE:::ELEMENT'. E.g. Graph:::Node-1, Iframe:::body, Any:::Element1.
+     * @param querySelector a custom query selector
+     * @return the position of the selected element
+     */
     public Rect getPosition(final String querySelector) {
 
         final String[] querySelectorParts = getQuerySelectorParts(querySelector);
@@ -66,6 +78,11 @@ public class GuidedTourCustomSelectorPositionProvider {
         return Rect.NONE();
     }
 
+    /**
+     * Registers a {@link PositionProviderFunction} with its type.
+     * @param type the prefix for the position provider function
+     * @param positionProviderFunction a function that returns a {@link Rect} for a given 'selector'
+     */
     public void registerPositionProvider(final String type,
                                          final PositionProviderFunction positionProviderFunction) {
         providers.put(type, positionProviderFunction);

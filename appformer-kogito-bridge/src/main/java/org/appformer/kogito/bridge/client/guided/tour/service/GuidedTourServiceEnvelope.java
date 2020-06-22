@@ -19,6 +19,9 @@ package org.appformer.kogito.bridge.client.guided.tour.service;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.Tutorial;
 import org.appformer.kogito.bridge.client.guided.tour.service.api.UserInteraction;
 
+/**
+ * Expose Guided Tour features provided by the native envelope on {@link GuidedTourServiceNativeEnvelope}.
+ */
 public class GuidedTourServiceEnvelope implements GuidedTourService {
 
     @Override

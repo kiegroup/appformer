@@ -21,6 +21,10 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
+/**
+ * Native class defined into the Guided Tour component.
+ * A {@link Step} with mode as a {@link BlockMode} instance shows something, and waits for some user interaction.
+ */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class BlockMode implements Mode {
 

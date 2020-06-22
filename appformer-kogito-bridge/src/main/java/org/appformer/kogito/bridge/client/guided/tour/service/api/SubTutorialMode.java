@@ -20,6 +20,10 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
+/**
+ * Native class defined into the Guided Tour component.
+ * A {@link Step} with mode as a {@link SubTutorialMode} encloses an amount of other sub-steps.
+ */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class SubTutorialMode {
 
