@@ -16,10 +16,12 @@
 
 package org.dashbuilder.backend.resources.api;
 
-import java.util.List;
+import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -27,15 +29,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.dashbuilder.backend.resources.FileUploadModel;
+import org.dashbuilder.backend.resources.UploadResourceImpl;
 import org.dashbuilder.backend.services.RuntimeInfoService;
 import org.dashbuilder.shared.model.DashbuilderRuntimeInfo;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 @Path("api/")
 @Produces(MediaType.APPLICATION_JSON)
 public class DashbuilderRuntimeResource {
 
+    private static final String DASHBOARD_BASE_URI = "dashboard";
+    private static final String DASHBOARD_ID_URI = DASHBOARD_BASE_URI + "/{id}";
+
     @Inject
     RuntimeInfoService runtimeInfoService;
+
+    @Inject
+    UploadResourceImpl uploadResourceImpl;
 
     @GET
     public DashbuilderRuntimeInfo info() {
@@ -43,17 +54,18 @@ public class DashbuilderRuntimeResource {
     }
 
     @GET
-    @Path("dashboard")
-    public List<String> perspectives() {
-        return runtimeInfoService.singleModelDashboard();
-    }
-
-    @GET
-    @Path("dashboard/{id}")
+    @Path(DASHBOARD_ID_URI)
     public Response dashboard(@PathParam("id") String id) {
         return runtimeInfoService.dashboardInfo(id)
                                  .map(info -> Response.ok().entity(info).build())
                                  .orElse(Response.status(Status.NOT_FOUND).build());
+    }
+
+    @POST
+    @Path(DASHBOARD_BASE_URI)
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadResource(@MultipartForm FileUploadModel form) throws IOException {
+        return uploadResourceImpl.uploadFile(form);
     }
 
 }

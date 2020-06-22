@@ -16,7 +16,6 @@
 
 package org.dashbuilder.backend.services.impl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ import javax.inject.Inject;
 import org.dashbuilder.backend.services.RuntimeInfoService;
 import org.dashbuilder.shared.model.DashboardInfo;
 import org.dashbuilder.shared.model.DashbuilderRuntimeInfo;
-import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
@@ -55,25 +53,10 @@ public class RuntimeInfoServiceImpl implements RuntimeInfoService {
         return Optional.empty();
     }
 
-    @Override
-    public List<String> singleModelDashboard() {
-        if (!isMulti()) {
-            Optional<RuntimeModel> runtimeModelOp = registry.single();
-            if (runtimeModelOp.isPresent()) {
-                return perspectives(runtimeModelOp.get());
-            }
-        }
-        return Collections.emptyList();
-    }
-
     private List<String> perspectives(RuntimeModel runtimeModel) {
         return runtimeModel.getLayoutTemplates().stream()
                            .map(LayoutTemplate::getName)
                            .collect(toList());
-    }
-
-    private boolean isMulti() {
-        return registry.getMode() == DashbuilderRuntimeMode.MULTIPLE_IMPORT;
     }
 
 }

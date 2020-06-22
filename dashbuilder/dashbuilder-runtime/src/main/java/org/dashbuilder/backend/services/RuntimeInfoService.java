@@ -16,7 +16,6 @@
 
 package org.dashbuilder.backend.services;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.dashbuilder.shared.model.DashboardInfo;
@@ -42,12 +41,5 @@ public interface RuntimeInfoService {
      * The dashboard information for the given runtime model id or empty if no dashboard is found.
      */
     Optional<DashboardInfo> dashboardInfo(String modelId);
-
-    /**
-     * List of perspectives when using single dashboard model. (STATIC on SINGLE modes)
-     * @return
-     * The list of perspectives or empty if no dashboard is installed or not in a single dashboard mode.
-     */
-    List<String> singleModelDashboard();
 
 }
