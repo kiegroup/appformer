@@ -42,6 +42,10 @@ public class Step {
     @JsProperty
     public native void setNavigatorEnabled(final boolean navigatorEnabled);
 
+    /**
+     * Sets the position of the step in the screen.
+     * Allowed values: "right" | "bottom" | "center" | "left". Any different type ise handled as "center".
+     */
     @JsProperty
     public native void setPosition(final String position);
 
