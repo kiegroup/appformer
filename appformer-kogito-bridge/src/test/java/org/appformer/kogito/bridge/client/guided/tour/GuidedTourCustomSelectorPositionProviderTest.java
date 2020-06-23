@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -38,12 +38,18 @@ public class GuidedTourCustomSelectorPositionProviderTest {
     @Mock
     private Console console;
 
+    private Rect none;
+
     private GuidedTourCustomSelectorPositionProvider positionProvider;
 
     @Before
     public void setup() {
         positionProvider = spy(GuidedTourCustomSelectorPositionProvider.getInstance());
+        none = makeRect(0);
+
         DomGlobal.console = console;
+
+        doReturn(none).when(positionProvider).none();
     }
 
     @Test
@@ -67,7 +73,7 @@ public class GuidedTourCustomSelectorPositionProviderTest {
         final Rect position = positionProvider.getPosition("TEST_PROVIDER_2___OBJECT-1");
 
         verify(console).warn("[Guided Tour - Position Provider] Invalid custom query selector: TEST_PROVIDER_2___OBJECT-1");
-        assertNotNull(position);
+        assertEquals(none, position);
     }
 
     @Test
@@ -75,7 +81,7 @@ public class GuidedTourCustomSelectorPositionProviderTest {
         final Rect position = positionProvider.getPosition("TEST_PROVIDER_3:::OBJECT-1");
 
         verify(console).warn("[Guided Tour - Position Provider] The position provider could not be found: TEST_PROVIDER_3");
-        assertNotNull(position);
+        assertEquals(none, position);
     }
 
     @Test
@@ -83,7 +89,7 @@ public class GuidedTourCustomSelectorPositionProviderTest {
         final Rect position = positionProvider.getPosition(null);
 
         verify(console).warn("[Guided Tour - Position Provider] Invalid custom query selector: null");
-        assertNotNull(position);
+        assertEquals(none, position);
     }
 
     private Rect makeRect(final int seed) {

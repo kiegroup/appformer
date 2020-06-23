@@ -75,6 +75,10 @@ public class GuidedTourCustomSelectorPositionProvider {
         } else {
             DomGlobal.console.warn("[Guided Tour - Position Provider] Invalid custom query selector: " + querySelector);
         }
+        return none();
+    }
+
+    Rect none() {
         return Rect.NONE();
     }
 

@@ -120,7 +120,7 @@ public class GuidedTourBridgeTest {
 
         bridge.registerPositionProvider(type, positionProviderFunction);
 
-        verify(bridge).registerPositionProvider(type, positionProviderFunction);
+        verify(positionProvider).registerPositionProvider(type, positionProviderFunction);
     }
 
     class GlobalHTMLObserverFake extends GlobalHTMLObserver {
