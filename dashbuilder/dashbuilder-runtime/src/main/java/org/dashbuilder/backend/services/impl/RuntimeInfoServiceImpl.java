@@ -46,11 +46,8 @@ public class RuntimeInfoServiceImpl implements RuntimeInfoService {
 
     @Override
     public Optional<DashboardInfo> dashboardInfo(String modelId) {
-        Optional<RuntimeModel> runtimeModelOp = registry.get(modelId);
-        if (runtimeModelOp.isPresent()) {
-            return Optional.of(new DashboardInfo(modelId, perspectives(runtimeModelOp.get())));
-        }
-        return Optional.empty();
+        return registry.get(modelId)
+                       .map(model -> new DashboardInfo(modelId, perspectives(model)));
     }
 
     private List<String> perspectives(RuntimeModel runtimeModel) {
