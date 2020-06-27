@@ -1,0 +1,9 @@
+.listTitle {
+    font-size: 1.5em;
+    margin: 0px 8px 0px 8px;
+    float: left;
+}
+
+#uploadWidgetContainer {
+    margin-right: 15px;
+}

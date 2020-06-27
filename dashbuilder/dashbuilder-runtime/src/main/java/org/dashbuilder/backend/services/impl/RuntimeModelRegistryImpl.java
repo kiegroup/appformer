@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -147,7 +148,7 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
     }
 
     @Override
-    public Set<String> availableModels() {
+    public Collection<String> availableModels() {
         return runtimeModels.keySet();
     }
 

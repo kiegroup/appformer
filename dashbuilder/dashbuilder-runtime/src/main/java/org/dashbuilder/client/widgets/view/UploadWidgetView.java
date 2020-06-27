@@ -38,18 +38,19 @@ import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 @Dependent
 @Templated
 public class UploadWidgetView implements UploadWidget.View {
-    
+
     private static final AppConstants i18n = AppConstants.INSTANCE;
-    
+
     UploadWidget presenter;
-    
+
     @Inject
-    @DataField HTMLDivElement uploadButtonContainer;
-    
+    @DataField
+    HTMLDivElement uploadButtonContainer;
+
     @Inject
     @DataField
     HTMLButtonElement btnImport;
-    
+
     @Inject
     @DataField
     HTMLFormElement uploadForm;
@@ -57,18 +58,22 @@ public class UploadWidgetView implements UploadWidget.View {
     @Inject
     @DataField
     HTMLInputElement inputFile;
-    
+
+    @Inject
+    @DataField
+    HTMLInputElement inputFileName;
+
     @Inject
     RuntimeCommunication runtimeCommunication;
-    
+
     @Inject
     BusyIndicatorView loading;
-    
+
     @Override
     public void init(UploadWidget presenter) {
         this.presenter = presenter;
     }
-    
+
     @Override
     public void loading() {
         loading.showBusyIndicator(i18n.uploadingDashboards());
@@ -88,17 +93,30 @@ public class UploadWidgetView implements UploadWidget.View {
     public void errorDuringUpload(Object error) {
         runtimeCommunication.showError(i18n.errorUploadingDashboards(), error);
     }
-    
+
     @EventHandler("btnImport")
     public void handleImport(ClickEvent e) {
         inputFile.click();
     }
-    
+
     @EventHandler("inputFile")
     public void handleInputFileChange(ChangeEvent e) {
+        inputFileName.value = retrieveFileName(inputFile.value);
         presenter.submit(uploadForm);
     }
-    
+
+    private String retrieveFileName(String value) {
+        int pos = 0;
+        if (value.contains("\\")) {
+            pos = value.lastIndexOf("\\");
+        }
+
+        if (value.contains("/")) {
+            pos = value.lastIndexOf("/");
+        }
+        return value.substring(pos + 1);
+    }
+
     @Override
     public HTMLElement getElement() {
         return uploadButtonContainer;

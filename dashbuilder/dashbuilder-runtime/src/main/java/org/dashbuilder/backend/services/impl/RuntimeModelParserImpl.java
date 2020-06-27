@@ -43,6 +43,7 @@ import org.dashbuilder.shared.model.DataSetContent;
 import org.dashbuilder.shared.model.DataSetContentType;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.service.RuntimeModelParser;
+import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 import org.uberfire.ext.layout.editor.api.editor.LayoutRow;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
@@ -66,6 +67,9 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
 
     @Inject
     RuntimeOptions options;
+    
+    @Inject
+    RuntimeModelRegistry registry;
 
     Gson gson;
 

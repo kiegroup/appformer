@@ -13,15 +13,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div id="uploadButtonContainer">
-    <button class="btn btn-primary btn-lg" id="btnImport"
-        data-i18n-key="importButton"></button>
+<div id=dashboardsListRoot>
 
-    <form id="uploadForm" action="/rest/upload" method="post"
-        enctype="multipart/form-data" style="display: none">
-        <input id="inputFile" accept=".zip" type="file"
-            name="selectedFile" /> <input type="hidden"
-            name="inputFileName" id="inputFileName" />
-    </form>
+    <div class="row toolbar-pf">
+        <div class="col-sm-12">
+            <form class="toolbar-pf-actions">
+            
+                <div class="listTitle" data-i18n-key="title"></div>
+                <div class="toolbar-pf-action-right">
+                    <div class="btn-group" id="uploadWidgetContainer"></div>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <div class="container-cards-pf">
+        <div class="row row-cards-pf" data-field="dashboardsList"></div>
+    </div>
 </div>

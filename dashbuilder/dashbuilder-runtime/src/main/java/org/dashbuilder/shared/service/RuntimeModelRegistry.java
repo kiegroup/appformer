@@ -16,6 +16,7 @@
 
 package org.dashbuilder.shared.service;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -78,15 +79,15 @@ public interface RuntimeModelRegistry {
     Optional<RuntimeModel> registerFile(String filePath);
     
     /**
-     * List all models that are currently available.
-     */
-    Set<String> availableModels();
-
-    /**
      * Removes a runtime model.
      * @param runtimeModelid
      * The id of the runtime model to be removed.
      */
     void remove(String runtimeModelid);
+
+    /**
+     * List all models that are currently available.
+     */
+    Collection<String> availableModels();
 
 }

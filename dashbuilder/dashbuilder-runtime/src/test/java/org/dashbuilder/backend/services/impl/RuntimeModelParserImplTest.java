@@ -35,6 +35,7 @@ import org.dashbuilder.navigation.impl.NavTreeBuilder;
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.model.DataSetContent;
 import org.dashbuilder.shared.model.RuntimeModel;
+import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -63,6 +64,9 @@ public class RuntimeModelParserImplTest {
     
     @Mock
     RuntimeOptions runtimeOptions;
+    
+    @Mock
+    RuntimeModelRegistry runtimeModelRegistry;
 
     @InjectMocks
     RuntimeModelParserImpl parser;

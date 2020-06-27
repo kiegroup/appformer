@@ -40,5 +40,11 @@ public interface AppConstants extends Messages {
     String notFoundScreenTitle();
 
     String notFoundDashboard(String perspectiveName);
+
+    String routerScreenTitle();
+
+    String dashboardsListScreenTitle();
+
+    String dashboardListTooltip();
     
 }

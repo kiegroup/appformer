@@ -73,7 +73,7 @@ public class UploadResourceImpl {
             return Response.ok(dashboardName).build();
         }
 
-        Pair<String, String> newImportInfo = runtimeOptions.newFilePath();
+        Pair<String, String> newImportInfo = runtimeOptions.newFilePath(form.getFileName());
         java.nio.file.Path path = Paths.get(newImportInfo.getK2());
         Files.write(path, inputBytes);
 

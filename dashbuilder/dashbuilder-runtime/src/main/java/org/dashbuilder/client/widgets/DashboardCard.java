@@ -20,12 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.DomGlobal;
-import elemental2.dom.FormData;
 import elemental2.dom.HTMLElement;
-import elemental2.dom.HTMLFormElement;
-import elemental2.dom.RequestInit;
-import elemental2.dom.Response;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.RouterScreen;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
@@ -37,29 +32,22 @@ import org.uberfire.client.mvp.UberElemental;
  *
  */
 @Dependent
-public class UploadWidget implements IsElement {
+public class DashboardCard implements IsElement {
 
     static final AppConstants i18n = AppConstants.INSTANCE;
 
     @Inject
     View view;
-    
+
     @Inject
     RouterScreen routerScreen;
 
     @Inject
     PlaceManager placeManager;
-    
 
-    public interface View extends UberElemental<UploadWidget> {
+    public interface View extends UberElemental<DashboardCard> {
 
-        void loading();
-
-        void stopLoading();
-
-        void badResponseUploading(Response response);
-
-        void errorDuringUpload(Object error);
+        void setDashboardId(String title);
 
     }
 
@@ -73,29 +61,12 @@ public class UploadWidget implements IsElement {
         return this.view.getElement();
     }
 
-    public void submit(final HTMLFormElement uploadForm) {
-        RequestInit request = RequestInit.create();
-        request.setMethod("POST");
-        request.setBody(new FormData(uploadForm));
-        view.loading();
-        DomGlobal.window.fetch("./rest/upload", request)
-                        .then((Response response) -> response.text().then(id -> {
-                            view.stopLoading();
-                            if (response.status == 200) {
-                                openNewImport(id);
-                            } else {
-                                view.badResponseUploading(response);
-                            }
-                            return null;
-                        }), error -> {
-                            view.stopLoading();
-                            view.errorDuringUpload(error);
-                            return null;
-                        });
+    public void setDashboardId(String dashboardId) {
+        view.setDashboardId(dashboardId);
     }
 
-    private void openNewImport(final String modelId) {
-        routerScreen.loadDashboard(modelId);
+    public void onCardSelected(String dashboardId) {
+        routerScreen.loadDashboard(dashboardId);
     }
 
 }

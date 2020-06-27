@@ -50,7 +50,7 @@ public class RuntimeEntryPoint {
     Workbench workbench;
 
     @Inject
-    ClientRuntimeModelLoader modelLoader;
+    RuntimeClientLoader modelLoader;
 
     @Inject
     PlaceManager placeManager;

@@ -34,8 +34,7 @@ import org.uberfire.commons.data.Pair;
 public class RuntimeOptions {
 
     Logger logger = LoggerFactory.getLogger(RuntimeOptions.class);
-    
-    
+
     public static final String DASHBOARD_EXTENSION = ".zip";
 
     /**
@@ -61,13 +60,13 @@ public class RuntimeOptions {
     /**
      * If set to true Runtime will always allow use of new imports (multi tenancy)
      */
-    private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT_PROP = "dashbuilder.runtime.multiple";
+    private static final String DASHBUILDER_RUNTIME_MULTIPLE_IMPORT_PROP = "dashbuilder.runtime.multi";
 
     /**
      * If true datasets IDs will partitioned by the Runtime Model ID.
      */
     private static final String DATASET_PARTITION_PROP = "dashbuilder.dataset.partition";
-    
+
     private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
 
     private boolean multipleImport;
@@ -116,14 +115,23 @@ public class RuntimeOptions {
     }
 
     /**
-     * Generates a new valid file path
-     * 
+     * Generates a new valid file path.
+     * @param fileName
+     * The fileName
      * @return
      */
-    public Pair<String, String> newFilePath() {
-        String fileId = System.currentTimeMillis() + "";
-        String filePath = buildFilePath(fileId);
-        return Pair.newPair(fileId, filePath);
+    public Pair<String, String> newFilePath(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            fileName = System.currentTimeMillis() + "";
+        }
+
+        if (fileName.endsWith(DASHBOARD_EXTENSION)) {
+            int lastIndex = fileName.length() - DASHBOARD_EXTENSION.length();
+            fileName = fileName.substring(0, lastIndex);
+        }
+
+        String filePath = buildFilePath(fileName);
+        return Pair.newPair(fileName, filePath);
     }
 
     public boolean isMultipleImport() {

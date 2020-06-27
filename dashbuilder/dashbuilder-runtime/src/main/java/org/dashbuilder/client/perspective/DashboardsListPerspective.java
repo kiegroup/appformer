@@ -18,7 +18,7 @@ package org.dashbuilder.client.perspective;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.dashbuilder.client.screens.RuntimeScreen;
+import org.dashbuilder.client.screens.DashboardsListScreen;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
@@ -29,18 +29,18 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = RuntimePerspective.ID)
-public class RuntimePerspective {
+@WorkbenchPerspective(identifier = DashboardsListPerspective.ID)
+public class DashboardsListPerspective {
 
-    public static final String ID = "RuntimePerspective";
+    public static final String ID = "DashboardsListPerspective";
 
     @Perspective
     public PerspectiveDefinition buildPerspective() {
         PerspectiveDefinition perspective = new PerspectiveDefinitionImpl(StaticWorkbenchPanelPresenter.class.getName());
-        final PlaceRequest place = new DefaultPlaceRequest(RuntimeScreen.ID);
+        final PlaceRequest place = new DefaultPlaceRequest(DashboardsListScreen.ID);
         PartDefinitionImpl dashboardScreen = new PartDefinitionImpl(place);
         perspective.getRoot().addPart(dashboardScreen);
-        perspective.setName("Dashboards");
+        perspective.setName("List Dashboards");
         return perspective;
     }
 

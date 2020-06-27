@@ -19,6 +19,7 @@ package org.dashbuilder.backend;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -29,6 +30,8 @@ import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
+
+import static org.dashbuilder.backend.RuntimeOptions.DASHBOARD_EXTENSION;
 
 /**
  * Responsible for runtime model files loading.
@@ -57,9 +60,9 @@ public class RuntimeModelLoader {
 
         if (runtimeOptions.isMultipleImport() && !runtimeOptions.importFileLocation().isPresent()) {
             runtimeModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);
+            loadAvailableModels();
         }
     }
-
 
     /**
      * Create, if do not exist, the base directory for runtime models
@@ -75,6 +78,23 @@ public class RuntimeModelLoader {
             }
         } else {
             logger.info("Base directory for dashboards already exist: {}", runtimeOptions.getImportsBaseDir());
+        }
+    }
+
+    private void loadAvailableModels() {
+        logger.info("Registering existing models");
+        try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(runtimeOptions.getImportsBaseDir()), 1)) {
+            walk.filter(p -> p.toFile().isFile())
+                .filter(p -> p.toString().toLowerCase().endsWith(DASHBOARD_EXTENSION))
+                .map(p -> p.toString())
+                .peek(p -> logger.info("Registering {}", p))
+                .peek(runtimeModelRegistry::registerFile)
+                .forEach(p -> logger.info("Sucessfully Registered {}", p));
+
+        } catch (Exception e) {
+            logger.info("Error Registering existing models");
+            logger.debug("Error Registering existing models.", e);
+            throw new RuntimeException("Error registering existing models.", e);
         }
 
     }
