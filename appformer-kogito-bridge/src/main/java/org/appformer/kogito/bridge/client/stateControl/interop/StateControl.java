@@ -24,7 +24,7 @@ import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJS
 /**
  * Represents the TypeScript StateControl engine present on the Envelope
  */
-@JsType(isNative = true, namespace = "window", name = "gwtStateControl")
+@JsType(isNative = true, namespace = "window", name = "gwt")
 public class StateControl {
 
     /**
@@ -51,6 +51,6 @@ public class StateControl {
     @JsMethod
     public native void setRedoCommand(StateControlCommand command);
 
-    @JsProperty
-    public static native StateControl get();
+    @JsProperty(name = "stateControl")
+    public native static StateControl get();
 }
