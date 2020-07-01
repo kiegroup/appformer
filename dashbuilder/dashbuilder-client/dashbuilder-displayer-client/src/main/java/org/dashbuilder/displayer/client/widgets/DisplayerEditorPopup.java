@@ -98,7 +98,15 @@ public class DisplayerEditorPopup extends BaseModal {
     public void setOnCloseCommand(Command closeCommand) {
         this.editor.setOnCloseCommand(closeCommand);
     }
+    
+    public void setTypeSelectorEnabled(boolean enableTypeSelector) {
+        editor.setTypeSelectorEnabled(enableTypeSelector);
+    }
 
+    public void setExternalDisplayerEnabled(boolean enabled) {
+        editor.setExternalComponentSettingsEnabled(enabled);
+    }
+    
     /**
      * <p>The popup must be visible in order that the table can display the different row's values. So after popup is shown, initialize the editor.</p>
      */

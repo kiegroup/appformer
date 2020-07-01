@@ -14,19 +14,11 @@
  */
 package org.dashbuilder.displayer.client.widgets;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 
 import javax.enterprise.event.Event;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.group.AggregateFunctionType;
@@ -49,9 +41,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(GwtMockitoTestRunner.class)
 public class DisplayerEditorTest {
 
     @Mock
@@ -116,6 +116,12 @@ public class DisplayerEditorTest {
     
     @Mock
     DisplayerSettingsChangedEvent displayerSettingsChangedEvent;
+    
+    @Mock
+    ExternalComponentPropertiesEditor componentPropertiesEditor;
+    
+    @Mock
+    Event<DisplayerSettingsChangedEvent> displayerSettingsChangedEventSource;
 
     DisplayerEditor presenter = null;
 
@@ -131,7 +137,7 @@ public class DisplayerEditorTest {
 
         presenter = new DisplayerEditor(view, clientServices, displayerLocator, displayerPrototypes,
                 typeSelector, lookupEditor, settingsEditor, editorStatus, displayerHtmlEditor, saveEvent, 
-                closeEvent, rendererManager);
+                closeEvent, rendererManager, componentPropertiesEditor, displayerSettingsChangedEventSource);
 
     }
 

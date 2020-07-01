@@ -100,5 +100,5 @@ public abstract class C3AbstractDisplayerView<P extends C3AbstractDisplayer>
             }
         }
     }
-
+    
 }

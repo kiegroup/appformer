@@ -15,6 +15,8 @@
  */
 package org.dashbuilder.displayer.client.widgets;
 
+import javax.enterprise.context.Dependent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,18 +28,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.dashbuilder.common.client.error.ClientRuntimeError;
 import org.dashbuilder.common.client.widgets.AlertPanel;
-import org.dashbuilder.displayer.client.Displayer;
 import org.dashbuilder.displayer.client.resources.i18n.CommonConstants;
 import org.gwtbootstrap3.client.ui.CheckBox;
 import org.gwtbootstrap3.client.ui.Column;
 import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.TabListItem;
-import org.uberfire.mvp.Command;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
-
-
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import org.uberfire.mvp.Command;
 
 @Dependent
 public class DisplayerEditorView extends Composite
@@ -63,6 +60,9 @@ public class DisplayerEditorView extends Composite
 
     @UiField
     TabListItem optionSettings;
+    
+    @UiField
+    TabListItem optionComponentSettings;
 
     @UiField
     Row viewAsTableButtonRow;
@@ -79,6 +79,8 @@ public class DisplayerEditorView extends Composite
         this.presenter = presenter;
         initWidget(uiBinder.createAndBindUi(this));
         viewAsTableButtonRow.getElement().setAttribute("cellpadding", "5");
+        // disabled by default
+        setComponentSettingsEnabled(false);
     }
 
     @Override
@@ -95,16 +97,25 @@ public class DisplayerEditorView extends Composite
     @Override
     public void setTypeSelectionEnabled(boolean enabled) {
         optionType.setVisible(enabled);
+        goToOtherSectionIfActive(optionType);
     }
 
     @Override
     public void setDisplaySettingsEnabled(boolean enabled) {
         optionSettings.setVisible(enabled);
+        goToOtherSectionIfActive(optionSettings);
     }
 
     @Override
     public void setDataSetLookupConfEnabled(boolean enabled) {
         optionData.setVisible(enabled);
+        goToOtherSectionIfActive(optionData);
+    }
+    
+    @Override
+    public void setComponentSettingsEnabled(boolean enabled) {
+        optionComponentSettings.setVisible(enabled);
+        goToOtherSectionIfActive(optionComponentSettings);
     }
 
     @Override
@@ -127,6 +138,7 @@ public class DisplayerEditorView extends Composite
         optionData.setActive(false);
         optionSettings.setActive(false);
         optionType.setActive(true);
+        optionComponentSettings.setActive(false);
     }
 
     @Override
@@ -134,9 +146,11 @@ public class DisplayerEditorView extends Composite
         leftColumn.clear();
         leftColumn.getElement().getStyle().setOverflowY(Style.Overflow.AUTO);
         leftColumn.add(lookupEditor);
+        
         optionSettings.setActive(false);
         optionType.setActive(false);
         optionData.setActive(true);
+        optionComponentSettings.setActive(false);
     }
 
     @Override
@@ -149,6 +163,20 @@ public class DisplayerEditorView extends Composite
         optionType.setActive(false);
         optionData.setActive(false);
         optionSettings.setActive(true);
+        optionComponentSettings.setActive(false);
+    }
+    
+    @Override
+    public void gotoExternalComponentSettings(ExternalComponentPropertiesEditor externalComponentPropertiesEditor) {
+        leftColumn.clear();
+        leftColumn.getElement().getStyle().setOverflowY(Style.Overflow.AUTO);
+        leftColumn.add(externalComponentPropertiesEditor);
+
+        viewAsTableButtonRow.setVisible(false);
+        optionType.setActive(false);
+        optionData.setActive(false);
+        optionSettings.setActive(false);
+        optionComponentSettings.setActive(true);
     }
 
     @Override
@@ -196,9 +224,21 @@ public class DisplayerEditorView extends Composite
     public void onSettingsSelected(ClickEvent clickEvent) {
         presenter.gotoDisplaySettings();
     }
+    
+    @UiHandler(value = "optionComponentSettings")
+    public void onExternalComponentSettingsSelected(ClickEvent clickEvent) {
+        presenter.gotoExternalComponentSettings();
+    }
 
     @UiHandler(value = "viewAsTableButton")
     public void onRawTableChecked(ClickEvent clickEvent) {
         presenter.showDisplayer();
     }
+ 
+    private void goToOtherSectionIfActive(TabListItem item) {
+        if (item.isActive()) {
+            presenter.gotoFirstSectionEnabled();
+        }
+    }
+    
 }
