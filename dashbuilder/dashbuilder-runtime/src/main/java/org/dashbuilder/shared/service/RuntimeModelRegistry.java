@@ -16,7 +16,6 @@
 
 package org.dashbuilder.shared.service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
