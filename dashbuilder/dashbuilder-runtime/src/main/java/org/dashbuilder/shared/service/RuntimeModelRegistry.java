@@ -18,7 +18,6 @@ package org.dashbuilder.shared.service;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
 import org.dashbuilder.shared.model.RuntimeModel;

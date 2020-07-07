@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.commons.data.Pair;
 
 /**
- * Holds Runtime System properties.
+ * Holds Runtime System properties and information.
  *
  */
 @ApplicationScoped
@@ -36,6 +36,10 @@ public class RuntimeOptions {
     Logger logger = LoggerFactory.getLogger(RuntimeOptions.class);
 
     public static final String DASHBOARD_EXTENSION = ".zip";
+
+    private static final String DEFAULT_MODEL_DIR = "/tmp/dashbuilder/models";
+    
+    private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
 
     /**
      * Base Directory where dashboards ZIPs are stored
@@ -67,8 +71,6 @@ public class RuntimeOptions {
      */
     private static final String DATASET_PARTITION_PROP = "dashbuilder.dataset.partition";
 
-    private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
-
     private boolean multipleImport;
     private boolean datasetPartition;
     private boolean allowExternal;
@@ -83,7 +85,7 @@ public class RuntimeOptions {
         String datasetPartitionStr = System.getProperty(DATASET_PARTITION_PROP, Boolean.TRUE.toString());
 
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
-        importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, "/tmp/dashbuilder");
+        importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, DEFAULT_MODEL_DIR);
         multipleImport = Boolean.parseBoolean(multipleImportStr);
         allowExternal = Boolean.parseBoolean(allowExternalStr);
         datasetPartition = Boolean.parseBoolean(datasetPartitionStr);

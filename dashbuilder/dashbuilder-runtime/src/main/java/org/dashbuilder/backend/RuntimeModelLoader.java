@@ -67,7 +67,7 @@ public class RuntimeModelLoader {
     /**
      * Create, if do not exist, the base directory for runtime models
      */
-    private void createBaseDir() {
+    protected void createBaseDir() {
         java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
         if (!baseDirPath.toFile().exists()) {
             try {
@@ -81,7 +81,7 @@ public class RuntimeModelLoader {
         }
     }
 
-    private void loadAvailableModels() {
+    protected void loadAvailableModels() {
         logger.info("Registering existing models");
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(runtimeOptions.getImportsBaseDir()), 1)) {
             walk.filter(p -> p.toFile().isFile())

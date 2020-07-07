@@ -110,7 +110,7 @@ public class RouterScreen {
         });
     }
 
-    private void route(RuntimeServiceResponse response) {
+    protected void route(RuntimeServiceResponse response) {
         Optional<RuntimeModel> runtimeModelOp = response.getRuntimeModelOp();
 
         if (response.getMode() == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {

@@ -120,6 +120,12 @@
 		<dependency>
 			<groupId>org.kie.soup</groupId>
 			<artifactId>kie-soup-dataset-elasticsearch</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -683,16 +689,35 @@
 		</dependency>
 
 		<!-- Test dependencies -->
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.gwt.gwtmockito</groupId>
 			<artifactId>gwtmockito</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
 			<groupId>org.uberfire</groupId>
 			<artifactId>uberfire-testing-utils</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mockito</groupId>
+					<artifactId>mockito-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -785,7 +810,8 @@
 					</compileSourcesArtifacts>
 					<runTarget>dashbuilder.html</runTarget>
 					<extraJvmArgs>-Xmx4024m -XX:CompileThreshold=7000
-						-Derrai.jboss.home=${errai.jboss.home} -Ddashbuilder.runtime.multi=true</extraJvmArgs>
+						-Derrai.jboss.home=${errai.jboss.home}
+						-Ddashbuilder.runtime.multi=true</extraJvmArgs>
 					<noServer>false</noServer>
 					<server>org.jboss.errai.cdi.server.gwt.EmbeddedWildFlyLauncher</server>
 					<hostedWebapp>src/main/webapp</hostedWebapp>
