@@ -28,12 +28,16 @@ import javax.ws.rs.core.Response;
 
 import org.dashbuilder.transfer.DataTransferExportModel;
 import org.dashbuilder.transfer.DataTransferServices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.Paths;
 
 @ApplicationScoped
 @Path("dashbuilder")
 public class DataTransferResource {
+
+    Logger logger = LoggerFactory.getLogger(DataTransferResource.class);
 
     @Inject
     DataTransferServices dataTransferServices;
@@ -45,10 +49,19 @@ public class DataTransferResource {
     @GET
     @Path("export")
     @Produces("application/zip")
-    public Response export() throws IOException {
-        String exportFile = dataTransferServices.doExport(DataTransferExportModel.exportAll());
-        org.uberfire.java.nio.file.Path path = Paths.get(exportFile);
-        return Response.ok(ioService.readAllBytes(path)).build();
+    public Response export() {
+        try {
+            String exportFile = dataTransferServices.doExport(DataTransferExportModel.exportAll());
+            org.uberfire.java.nio.file.Path path = Paths.get(exportFile);
+            return Response.ok(ioService.readAllBytes(path)).build();
+        } catch (Exception e) {
+            String errorMessage = "Error creating export: " + e.getMessage();
+            logger.error(errorMessage);
+            logger.debug("Not able to create export.", e);
+            return Response.serverError()
+                           .entity(errorMessage)
+                           .build();
+        }
     }
 
 }
