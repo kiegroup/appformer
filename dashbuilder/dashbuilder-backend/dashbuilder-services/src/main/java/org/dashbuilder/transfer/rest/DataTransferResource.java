@@ -16,8 +16,6 @@
 
 package org.dashbuilder.transfer.rest;
 
-import java.io.IOException;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
