@@ -18,6 +18,7 @@ package org.dashbuilder.client.perspective;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.DashboardsListScreen;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
@@ -31,6 +32,9 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @ApplicationScoped
 @WorkbenchPerspective(identifier = DashboardsListPerspective.ID)
 public class DashboardsListPerspective {
+    
+    private static AppConstants i18n = AppConstants.INSTANCE;
+
 
     public static final String ID = "DashboardsListPerspective";
 
@@ -40,7 +44,7 @@ public class DashboardsListPerspective {
         final PlaceRequest place = new DefaultPlaceRequest(DashboardsListScreen.ID);
         PartDefinitionImpl dashboardScreen = new PartDefinitionImpl(place);
         perspective.getRoot().addPart(dashboardScreen);
-        perspective.setName("List Dashboards");
+        perspective.setName(i18n.listDashboardsScreenTitle());
         return perspective;
     }
 

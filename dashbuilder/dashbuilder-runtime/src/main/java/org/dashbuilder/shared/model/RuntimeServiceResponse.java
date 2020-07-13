@@ -20,10 +20,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * Runtime Service response model object that contains any useful information for the client.
  */
+@Portable
 public class RuntimeServiceResponse {
 
     private DashbuilderRuntimeMode mode;

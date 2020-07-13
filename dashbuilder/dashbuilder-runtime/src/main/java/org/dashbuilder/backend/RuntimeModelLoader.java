@@ -84,16 +84,15 @@ public class RuntimeModelLoader {
     protected void loadAvailableModels() {
         logger.info("Registering existing models");
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(runtimeOptions.getImportsBaseDir()), 1)) {
-            walk.filter(p -> p.toFile().isFile())
-                .filter(p -> p.toString().toLowerCase().endsWith(DASHBOARD_EXTENSION))
-                .map(p -> p.toString())
+            walk.filter(p -> p.toFile().isFile() && p.toString().toLowerCase().endsWith(DASHBOARD_EXTENSION))
+                .map(Object::toString)
                 .peek(p -> logger.info("Registering {}", p))
-                .peek(runtimeModelRegistry::registerFile)
-                .forEach(p -> logger.info("Sucessfully Registered {}", p));
+                .forEach(p -> {
+                    runtimeModelRegistry.registerFile(p);
+                    logger.info("Sucessfully Registered {}", p);
+                });
 
         } catch (Exception e) {
-            logger.info("Error Registering existing models");
-            logger.debug("Error Registering existing models.", e);
             throw new RuntimeException("Error registering existing models.", e);
         }
 

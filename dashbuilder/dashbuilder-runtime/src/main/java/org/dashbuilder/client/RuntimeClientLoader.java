@@ -27,14 +27,18 @@ import com.google.gwt.user.client.Window;
 import org.dashbuilder.client.navigation.NavigationManager;
 import org.dashbuilder.client.perspective.generator.RuntimePerspectiveGenerator;
 import org.dashbuilder.client.plugins.RuntimePerspectivePluginManager;
+import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.model.RuntimeServiceResponse;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
+import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mvp.Command;
 
 @ApplicationScoped
 public class RuntimeClientLoader {
+
+    private static AppConstants i18n = AppConstants.INSTANCE;
 
     public static final String IMPORT_ID_PARAM = "import";
 
@@ -46,25 +50,31 @@ public class RuntimeClientLoader {
 
     NavigationManager navigationManager;
 
+    BusyIndicatorView loading;
+
     public RuntimeClientLoader() {
         // do nothing
     }
 
     @Inject
-    public RuntimeClientLoader(Caller<RuntimeModelService> importModelServiceCaller,
+    public RuntimeClientLoader(Caller<RuntimeModelService> runtimeModelServiceCaller,
                                RuntimePerspectiveGenerator perspectiveEditorGenerator,
                                RuntimePerspectivePluginManager runtimePerspectivePluginManager,
-                               NavigationManager navigationManager) {
-        this.runtimeModelServiceCaller = importModelServiceCaller;
+                               NavigationManager navigationManager,
+                               BusyIndicatorView loading) {
+        this.runtimeModelServiceCaller = runtimeModelServiceCaller;
         this.perspectiveEditorGenerator = perspectiveEditorGenerator;
         this.runtimePerspectivePluginManager = runtimePerspectivePluginManager;
         this.navigationManager = navigationManager;
+        this.loading = loading;
     }
 
     public void load(Consumer<RuntimeServiceResponse> responseConsumer,
                      BiConsumer<Object, Throwable> error) {
         String importID = getImportId();
+        loading.showBusyIndicator(i18n.loadingDashboards());
         runtimeModelServiceCaller.call((RuntimeServiceResponse response) -> {
+            loading.hideBusyIndicator();
             response.getRuntimeModelOp().ifPresent(this::registerModel);
             responseConsumer.accept(response);
         }, (msg, t) -> handleError(error, msg, t))
@@ -84,6 +94,7 @@ public class RuntimeClientLoader {
                           Consumer<RuntimeModel> modelLoaded,
                           Command emptyModel,
                           BiConsumer<Object, Throwable> error) {
+        loading.showBusyIndicator(i18n.loadingDashboards());
         runtimeModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> handleResponse(modelLoaded, emptyModel, runtimeModelOp),
                                        (msg, t) -> handleError(error, msg, t))
                                  .getRuntimeModel(importId);
@@ -91,11 +102,13 @@ public class RuntimeClientLoader {
     }
 
     private boolean handleError(BiConsumer<Object, Throwable> error, Object message, Throwable throwable) {
+        loading.hideBusyIndicator();
         error.accept(message, throwable);
         return false;
     }
 
     private void handleResponse(Consumer<RuntimeModel> modelLoaded, Command emptyModel, Optional<RuntimeModel> runtimeModelOp) {
+        loading.hideBusyIndicator();
         if (runtimeModelOp.isPresent()) {
             RuntimeModel runtimeModel = runtimeModelOp.get();
             registerModel(runtimeModel);

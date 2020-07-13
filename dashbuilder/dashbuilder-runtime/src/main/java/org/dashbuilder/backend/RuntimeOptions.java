@@ -38,13 +38,13 @@ public class RuntimeOptions {
     public static final String DASHBOARD_EXTENSION = ".zip";
 
     private static final String DEFAULT_MODEL_DIR = "/tmp/dashbuilder/models";
-    
-    private static final int DEFAULT_UPLOAD_SIZE = 96 * 1024;
+
+    private static final int DEFAULT_UPLOAD_SIZE_KB = 96 * 1024;
 
     /**
      * Base Directory where dashboards ZIPs are stored
      */
-    private static final String IMPORTS_BASE_DIR_PROP = "org.dashbuilder.import.base.dir";
+    private static final String IMPORTS_BASE_DIR_PROP = "dashbuilder.import.base.dir";
 
     /**
      * Set a static dashboard to run with runtime. When this property is set no new imports are allowed.
@@ -90,7 +90,7 @@ public class RuntimeOptions {
         allowExternal = Boolean.parseBoolean(allowExternalStr);
         datasetPartition = Boolean.parseBoolean(datasetPartitionStr);
 
-        uploadSize = DEFAULT_UPLOAD_SIZE;
+        uploadSize = DEFAULT_UPLOAD_SIZE_KB;
 
         String uploadSizeStr = System.getProperty(UPLOAD_SIZE_PROP);
         if (uploadSizeStr != null) {
@@ -122,18 +122,17 @@ public class RuntimeOptions {
      * The fileName
      * @return
      */
-    public Pair<String, String> newFilePath(String fileName) {
+    public Pair<String, String> newFilePath(final String fileName) {
+        String newFileName = fileName;
         if (fileName == null || fileName.trim().isEmpty()) {
-            fileName = System.currentTimeMillis() + "";
-        }
-
-        if (fileName.endsWith(DASHBOARD_EXTENSION)) {
+            newFileName = System.currentTimeMillis() + "";
+        } else if (fileName.endsWith(DASHBOARD_EXTENSION)) {
             int lastIndex = fileName.length() - DASHBOARD_EXTENSION.length();
-            fileName = fileName.substring(0, lastIndex);
+            newFileName = fileName.substring(0, lastIndex);
         }
 
-        String filePath = buildFilePath(fileName);
-        return Pair.newPair(fileName, filePath);
+        String filePath = buildFilePath(newFileName);
+        return Pair.newPair(newFileName, filePath);
     }
 
     public boolean isMultipleImport() {

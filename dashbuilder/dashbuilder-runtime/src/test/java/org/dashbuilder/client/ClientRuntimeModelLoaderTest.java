@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
+import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.Command;
 
@@ -60,6 +61,9 @@ public class ClientRuntimeModelLoaderTest {
 
     @Mock
     NavigationManager navigationManager;
+    
+    @Mock
+    BusyIndicatorView loading;
 
     RuntimeClientLoader clientRuntimeModelLoader;
 
@@ -69,7 +73,8 @@ public class ClientRuntimeModelLoaderTest {
         clientRuntimeModelLoader = new RuntimeClientLoader(importModelServiceCaller,
                                                                 runtimePerspectiveGenerator,
                                                                 runtimePerspectivePluginManager,
-                                                                navigationManager);
+                                                                navigationManager,
+                                                                loading);
     }
 
     @Test

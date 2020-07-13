@@ -67,7 +67,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
 
     @Inject
     RuntimeOptions options;
-    
+
     @Inject
     RuntimeModelRegistry registry;
 
@@ -158,26 +158,27 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     }
 
     private void setLayoutTemplateRuntimeModelId(String modelId, LayoutTemplate lt) {
-       allComponentsStream(lt.getRows())
-          .filter(lc -> lc.getProperties().get("json") != null)
-          .forEach(lc -> {
-              String json = lc.getProperties().get("json");
-              DisplayerSettings settings = displayerSettingsMarshaller.fromJsonString(json);
-              DataSetLookup dataSetLookup = settings.getDataSetLookup();
-              String newId = transformId(modelId, dataSetLookup.getDataSetUUID());
-              dataSetLookup.setDataSetUUID(newId);
-              lc.getProperties().put("json", displayerSettingsMarshaller.toJsonString(settings));
-          });
+        allComponentsStream(lt.getRows())
+                                         .filter(lc -> lc.getProperties().get("json") != null)
+                                         .forEach(lc -> {
+                                             String json = lc.getProperties().get("json");
+                                             DisplayerSettings settings = displayerSettingsMarshaller.fromJsonString(json);
+                                             DataSetLookup dataSetLookup = settings.getDataSetLookup();
+                                             String newId = transformId(modelId, dataSetLookup.getDataSetUUID());
+                                             dataSetLookup.setDataSetUUID(newId);
+                                             lc.getProperties().put("json", displayerSettingsMarshaller.toJsonString(settings));
+                                         });
     }
-    
+
     private Stream<LayoutComponent> allComponentsStream(List<LayoutRow> row) {
-         return row.stream().flatMap(r -> r.getLayoutColumns().stream()).flatMap(cl -> { 
-             return Stream.concat(cl.getLayoutComponents().stream(), allComponentsStream(cl.getRows())); 
-         });
+        return row.stream()
+                  .flatMap(r -> r.getLayoutColumns().stream())
+                  .flatMap(cl -> Stream.concat(cl.getLayoutComponents().stream(),
+                                               allComponentsStream(cl.getRows())));
     }
 
     protected String transformId(String modelId, String id) {
-        return id + "|RuntimeModel=" + modelId;
+        return id + "| RuntimeModel=" + modelId;
     }
-    
+
 }

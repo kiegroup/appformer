@@ -100,7 +100,7 @@ public class UploadResourceImpl {
             logger.debug("Total size {} is greater than the allowed size {}",
                          bytes.length,
                          runtimeOptions.getUploadSize());
-            throw new WebApplicationException("Upload size is greater than the allowed size.",
+            throw new WebApplicationException("Upload size is greater than the allowed size: " + runtimeOptions.getUploadSize(),
                                               Response.Status.BAD_REQUEST);
         }
     }
@@ -116,9 +116,9 @@ public class UploadResourceImpl {
     private Optional<String> checkForExistingFile(byte[] uploadedFile) throws IOException {
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(runtimeOptions.getImportsBaseDir()), 1)) {
             return walk
-                       .filter(p -> p.toFile().isFile())
-                       .filter(p -> p.toString().toLowerCase().endsWith(DASHBOARD_EXTENSION))
-                       .filter(p -> isContentEquals(uploadedFile, p))
+                       .filter(p -> p.toFile().isFile() &&
+                                    p.toString().toLowerCase().endsWith(DASHBOARD_EXTENSION) &&
+                                    isContentEquals(uploadedFile, p))
                        .map(p -> p.getFileName().toString().replace(DASHBOARD_EXTENSION, ""))
                        .findFirst();
 

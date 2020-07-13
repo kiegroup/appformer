@@ -18,12 +18,11 @@ package org.dashbuilder.client.perspective;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import elemental2.dom.DomGlobal;
+import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.RouterScreen;
 import org.uberfire.client.annotations.Perspective;
 import org.uberfire.client.annotations.WorkbenchPerspective;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
-import org.uberfire.lifecycle.OnOpen;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.workbench.model.PerspectiveDefinition;
@@ -34,6 +33,9 @@ import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 @WorkbenchPerspective(identifier = RouterPerspective.ID, isDefault = true)
 public class RouterPerspective {
 
+    private static AppConstants i18n = AppConstants.INSTANCE;
+
+    
     public static final String ID = "RouterPerspective";
 
     @Perspective
@@ -42,7 +44,7 @@ public class RouterPerspective {
         final PlaceRequest place = new DefaultPlaceRequest(RouterScreen.ID);
         PartDefinitionImpl dashboardScreen = new PartDefinitionImpl(place);
         perspective.getRoot().addPart(dashboardScreen);
-        perspective.setName("Router");
+        perspective.setName(i18n.routerPerspective());
         return perspective;
     }
 

@@ -17,11 +17,13 @@
 package org.dashbuilder.shared.event;
 
 import org.jboss.errai.common.client.api.annotations.MapsTo;
+import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
  * Fired when datasets are removed.
  *
  */
+@Portable
 public class RemovedRuntimeModelEvent {
 
     /**
@@ -32,10 +34,9 @@ public class RemovedRuntimeModelEvent {
     public RemovedRuntimeModelEvent(@MapsTo("id") String id) {
         this.runtimeModelId = id;
     }
-    
+
     public String getRuntimeModelId() {
         return runtimeModelId;
     }
-
 
 }

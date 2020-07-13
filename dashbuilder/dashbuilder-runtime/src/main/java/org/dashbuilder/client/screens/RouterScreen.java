@@ -71,9 +71,6 @@ public class RouterScreen {
     RuntimeCommunication runtimeCommunication;
 
     @Inject
-    BusyIndicatorView loading;
-
-    @Inject
     PlaceManager placeManager;
 
     @Inject
@@ -85,11 +82,10 @@ public class RouterScreen {
     @WorkbenchPartTitle
     public String title() {
         return i18n.routerScreenTitle();
-
     }
 
     @WorkbenchPartView
-    public View view() {
+    public View getView() {
         return view;
     }
 
@@ -99,15 +95,8 @@ public class RouterScreen {
     }
 
     public void doRoute() {
-        loading.showBusyIndicator(i18n.loadingDashboards());
-        clientLoader.load(response -> {
-            loading.hideBusyIndicator();
-            route(response);
-        }, (a, throwable) -> {
-            loading.hideBusyIndicator();
-            // Error screen?
-            runtimeCommunication.showError(i18n.errorLoadingDashboards(), throwable);
-        });
+        clientLoader.load(this::route,
+                          (a, t) -> runtimeCommunication.showError(i18n.errorLoadingDashboards(), t));
     }
 
     protected void route(RuntimeServiceResponse response) {

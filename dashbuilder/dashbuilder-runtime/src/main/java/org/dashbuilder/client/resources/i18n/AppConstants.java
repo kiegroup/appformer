@@ -46,5 +46,9 @@ public interface AppConstants extends Messages {
     String dashboardsListScreenTitle();
 
     String dashboardListTooltip();
+
+    String listDashboardsScreenTitle();
+
+    String routerPerspective();
     
 }

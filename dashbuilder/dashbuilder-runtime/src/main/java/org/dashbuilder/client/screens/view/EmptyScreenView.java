@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
-import org.dashbuilder.client.RuntimeCommunication;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.EmptyScreen;
 import org.dashbuilder.client.widgets.UploadWidget;
@@ -41,9 +40,6 @@ public class EmptyScreenView implements EmptyScreen.View {
     @DataField
     HTMLDivElement uploadContainer;
 
-    @Inject
-    RuntimeCommunication runtimeCommunication;
-    
     @Inject
     UploadWidget uploadWidget;
 

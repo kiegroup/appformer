@@ -101,20 +101,8 @@ public class UploadWidgetView implements UploadWidget.View {
 
     @EventHandler("inputFile")
     public void handleInputFileChange(ChangeEvent e) {
-        inputFileName.value = retrieveFileName(inputFile.value);
+        inputFileName.value = presenter.retrieveFileName(inputFile.value);
         presenter.submit(uploadForm);
-    }
-
-    private String retrieveFileName(String value) {
-        int pos = 0;
-        if (value.contains("\\")) {
-            pos = value.lastIndexOf("\\");
-        }
-
-        if (value.contains("/")) {
-            pos = value.lastIndexOf("/");
-        }
-        return value.substring(pos + 1);
     }
 
     @Override

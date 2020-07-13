@@ -95,7 +95,6 @@ public class RuntimeEntryPoint {
         DomGlobal.window.history.pushState(null,
                                            "Dashbuilder Runtime | Not Found",
                                            newUrl);
-        this.hideLoading();
     }
 
     public void error(Object e, Throwable t) {

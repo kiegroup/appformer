@@ -28,7 +28,6 @@ import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.event.RemovedRuntimeModelEvent;
 import org.dashbuilder.shared.model.DataSetContent;
 import org.dashbuilder.shared.model.DataSetContentType;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -57,9 +56,6 @@ public class DataSetContentListenerTest {
 
     @InjectMocks
     DataSetContentListener datasetContentListener;
-
-    @Before
-    public void init() {}
 
     @Test
     public void testRegister() throws Exception {

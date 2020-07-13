@@ -16,39 +16,26 @@
 
 package org.dashbuilder.client.navbar;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.RouterScreen;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuFactory.CustomMenuBuilder;
 import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.MenuPosition;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @ApplicationScoped
 public class DashboardListMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    private AnchorListItem link = new AnchorListItem();
-    
+    private static final AppConstants i18n = AppConstants.INSTANCE;
+
+    @Inject
+    MenuBuilderHelper menuBuilderHelper;
+
     @Inject
     private RouterScreen router;
-
-    @PostConstruct
-    public void buildLink() {
-        link.setIcon(IconType.LIST);
-
-        link.getWidget(0).setStyleName("nav-item-iconic"); // Fix for IE11
-        link.setTitle(AppConstants.INSTANCE.dashboardListTooltip());
-        
-        link.addClickHandler(e -> this.goToList());
-
-    }
 
     @Override
     public void push(CustomMenuBuilder element) {
@@ -57,21 +44,11 @@ public class DashboardListMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
     @Override
     public MenuItem build() {
-        return new BaseMenuCustom<IsWidget>() {
-
-            @Override
-            public IsWidget build() {
-                return link;
-            }
-
-            @Override
-            public MenuPosition getPosition() {
-                return MenuPosition.RIGHT;
-            }
-        };
-
+        return menuBuilderHelper.buildMenuItem(i18n.dashboardListTooltip(),
+                                               IconType.LIST,
+                                               this::goToList);
     }
-    
+
     private void goToList() {
         router.listDashboards();
     }

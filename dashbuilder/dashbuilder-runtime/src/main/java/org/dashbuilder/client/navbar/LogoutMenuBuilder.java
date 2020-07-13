@@ -16,42 +16,29 @@
 
 package org.dashbuilder.client.navbar;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.IsWidget;
 import elemental2.dom.DomGlobal;
 import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuFactory.CustomMenuBuilder;
 import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.MenuPosition;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @ApplicationScoped
 public class LogoutMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    private AnchorListItem link = new AnchorListItem();
-    
+    private static final AppConstants i18n = AppConstants.INSTANCE;
+
+    @Inject
+    MenuBuilderHelper menuBuilderHelper;
+
     @Inject
     private Caller<AuthenticationService> authService;
-
-    @PostConstruct
-    public void buildLink() {
-        link.setIcon(IconType.SIGN_OUT);
-
-        link.getWidget(0).setStyleName("nav-item-iconic"); // Fix for IE11
-        link.setTitle(AppConstants.INSTANCE.logoutMenuTooltip());
-        
-        link.addClickHandler(e -> this.logout());
-
-    }
 
     @Override
     public void push(CustomMenuBuilder element) {
@@ -60,24 +47,15 @@ public class LogoutMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
     @Override
     public MenuItem build() {
-        return new BaseMenuCustom<IsWidget>() {
-
-            @Override
-            public IsWidget build() {
-                return link;
-            }
-
-            @Override
-            public MenuPosition getPosition() {
-                return MenuPosition.RIGHT;
-            }
-        };
-
+        return menuBuilderHelper.buildMenuItem(i18n.logoutMenuTooltip(),
+                                               IconType.SIGN_OUT,
+                                               this::logout);
     }
-    
+
     private void logout() {
         authService.call(r -> {
-            final String location = GWT.getModuleBaseURL().replaceFirst( "/" + GWT.getModuleName() + "/", "/logout.jsp" );
+            final String location = GWT.getModuleBaseURL()
+                                       .replaceFirst("/" + GWT.getModuleName() + "/", "/logout.jsp");
             DomGlobal.window.location.assign(location);
         }).logout();
     }

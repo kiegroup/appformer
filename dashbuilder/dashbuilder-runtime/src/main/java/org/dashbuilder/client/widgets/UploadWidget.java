@@ -43,13 +43,12 @@ public class UploadWidget implements IsElement {
 
     @Inject
     View view;
-    
+
     @Inject
     RouterScreen routerScreen;
 
     @Inject
     PlaceManager placeManager;
-    
 
     public interface View extends UberElemental<UploadWidget> {
 
@@ -96,6 +95,16 @@ public class UploadWidget implements IsElement {
 
     private void openNewImport(final String modelId) {
         routerScreen.loadDashboard(modelId);
+    }
+
+    public String retrieveFileName(String value) {
+        int pos = 0;
+        if (value.contains("\\")) {
+            pos = value.lastIndexOf("\\");
+        } else if (value.contains("/")) {
+            pos = value.lastIndexOf("/");
+        }
+        return value.substring(pos + 1);
     }
 
 }
