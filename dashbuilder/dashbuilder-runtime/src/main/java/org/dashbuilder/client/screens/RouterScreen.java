@@ -38,7 +38,6 @@ import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.mvp.UberElemental;
-import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.lifecycle.OnOpen;
 
 /**

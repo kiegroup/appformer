@@ -100,9 +100,9 @@ public class UploadWidget implements IsElement {
     public String retrieveFileName(String value) {
         int pos = 0;
         if (value.contains("\\")) {
-            pos = value.lastIndexOf("\\");
+            pos = value.lastIndexOf('\\');
         } else if (value.contains("/")) {
-            pos = value.lastIndexOf("/");
+            pos = value.lastIndexOf('/');
         }
         return value.substring(pos + 1);
     }

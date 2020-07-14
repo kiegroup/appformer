@@ -16,7 +16,6 @@
 
 package org.dashbuilder.backend;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -69,16 +68,7 @@ public class RuntimeModelLoader {
      */
     protected void createBaseDir() {
         java.nio.file.Path baseDirPath = Paths.get(runtimeOptions.getImportsBaseDir());
-        if (!baseDirPath.toFile().exists()) {
-            try {
-                Files.createDirectory(baseDirPath);
-            } catch (IOException e) {
-                logger.debug("Error creating base directory for dashboards: {}", baseDirPath, e);
-                throw new RuntimeException("Base directory for dashboards could not be created: " + baseDirPath, e);
-            }
-        } else {
-            logger.info("Base directory for dashboards already exist: {}", runtimeOptions.getImportsBaseDir());
-        }
+        baseDirPath.toFile().mkdirs();
     }
 
     protected void loadAvailableModels() {
@@ -86,8 +76,8 @@ public class RuntimeModelLoader {
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(runtimeOptions.getImportsBaseDir()), 1)) {
             walk.filter(p -> p.toFile().isFile() && p.toString().toLowerCase().endsWith(DASHBOARD_EXTENSION))
                 .map(Object::toString)
-                .peek(p -> logger.info("Registering {}", p))
                 .forEach(p -> {
+                    logger.info("Registering {}", p);
                     runtimeModelRegistry.registerFile(p);
                     logger.info("Sucessfully Registered {}", p);
                 });
