@@ -38,11 +38,11 @@ public class DataTransferResource {
     Logger logger = LoggerFactory.getLogger(DataTransferResource.class);
 
     @Inject
-    DataTransferServices dataTransferServices;
+    private DataTransferServices dataTransferServices;
 
     @Inject
     @Named("ioStrategy")
-    IOService ioService;
+    private IOService ioService;
 
     @GET
     @Path("export")
