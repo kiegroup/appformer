@@ -19,7 +19,7 @@ package org.uberfire.ext.wires.core.grids.client.widget.grid.selections.impl;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 import com.ait.lienzo.client.core.shape.Group;
 import com.ait.lienzo.client.core.types.Point2D;
@@ -322,7 +322,7 @@ public class BaseCellSelectionManager implements CellSelectionManager {
                                                  final SelectionExtension direction) {
         int index = startingIndex;
         int hiddenColumnsCount = 0;
-        Predicate<Integer> outOfBound = columnIndex -> columnIndex < 0 || columnIndex >= gridModel.getColumnCount();
+        IntPredicate outOfBound = columnIndex -> columnIndex < 0 || columnIndex >= gridModel.getColumnCount();
         if (gridModel.getColumnCount() > 0) {
             while (!outOfBound.test(index) && !gridModel.getColumns().get(index).isVisible()) {
                 hiddenColumnsCount++;
