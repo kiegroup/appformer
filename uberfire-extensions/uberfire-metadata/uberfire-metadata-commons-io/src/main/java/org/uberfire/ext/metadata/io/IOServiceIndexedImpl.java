@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -512,8 +513,14 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     }
 
     boolean isIgnored(Path path) {
-        if (path == null || path.getFileName() == null) return true;
-        return path.getFileName().toString().startsWith(".");
+        if (path == null || path.getFileName() == null) {
+            return true;
+        } else if (path.getFileName() != null
+                && Objects.equals(".gitkeep", path.getFileName().toString())) {
+            return false;
+        } else {
+            return path.getFileName().toString().startsWith(".");
+        }
     }
 
     private void cleanupDeletedFS(FileSystem fs) {
