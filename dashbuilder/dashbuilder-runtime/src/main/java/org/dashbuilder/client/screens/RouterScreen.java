@@ -78,6 +78,8 @@ public class RouterScreen {
     @Inject
     View view;
 
+    private DashbuilderRuntimeMode mode;
+
     @WorkbenchPartTitle
     public String title() {
         return i18n.routerScreenTitle();
@@ -99,9 +101,10 @@ public class RouterScreen {
     }
 
     protected void route(RuntimeServiceResponse response) {
+        this.mode  = response.getMode();
         Optional<RuntimeModel> runtimeModelOp = response.getRuntimeModelOp();
 
-        if (response.getMode() == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
+        if (mode == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
             appNavBar.setDashboardListEnabled(true);
             appNavBar.setup();
         }
@@ -119,7 +122,14 @@ public class RouterScreen {
 
         dashboardsListScreen.loadList(response.getAvailableModels());
         placeManager.goTo(DashboardsListPerspective.ID);
-
+    }
+    
+    public void afterDashboardUpload(String id) {
+        if (mode != null && mode == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
+            listDashboards();
+        } else {
+            loadDashboard(id);
+        }      
     }
 
     public void loadDashboard(String importId) {

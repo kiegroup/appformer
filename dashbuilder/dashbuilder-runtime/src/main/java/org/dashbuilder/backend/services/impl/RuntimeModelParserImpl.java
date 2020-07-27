@@ -19,6 +19,7 @@ package org.dashbuilder.backend.services.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -164,9 +165,11 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
                                              String json = lc.getProperties().get("json");
                                              DisplayerSettings settings = displayerSettingsMarshaller.fromJsonString(json);
                                              DataSetLookup dataSetLookup = settings.getDataSetLookup();
-                                             String newId = transformId(modelId, dataSetLookup.getDataSetUUID());
-                                             dataSetLookup.setDataSetUUID(newId);
-                                             lc.getProperties().put("json", displayerSettingsMarshaller.toJsonString(settings));
+                                             if (dataSetLookup != null) {
+                                                 String newId = transformId(modelId, dataSetLookup.getDataSetUUID());
+                                                 dataSetLookup.setDataSetUUID(newId);
+                                                 lc.getProperties().put("json", displayerSettingsMarshaller.toJsonString(settings));
+                                             }
                                          });
     }
 

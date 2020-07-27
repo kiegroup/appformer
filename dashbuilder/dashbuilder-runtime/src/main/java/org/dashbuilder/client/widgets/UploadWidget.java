@@ -102,12 +102,12 @@ public class UploadWidget implements IsElement {
 
     private void openImport(final String newImportName) {
         view.importSuccess(newImportName);
-        routerScreen.listDashboards();
+        routerScreen.afterDashboardUpload(newImportName);
     }
     
     private void importAlreadyExists(final String fileName, final String modelId) {
         view.dashboardAlreadyImportedError(fileName, modelId);
-        routerScreen.listDashboards();
+        routerScreen.afterDashboardUpload(modelId);
     }
 
     public String retrieveFileName(String value) {
