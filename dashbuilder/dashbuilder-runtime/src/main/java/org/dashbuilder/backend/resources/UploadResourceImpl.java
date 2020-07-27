@@ -32,6 +32,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
 import org.dashbuilder.backend.RuntimeOptions;
@@ -70,7 +71,7 @@ public class UploadResourceImpl {
         if (dashboardOp.isPresent()) {
             String dashboardName = dashboardOp.get();
             logger.info("Found existing file with same contents: {}", dashboardName);
-            return Response.ok(dashboardName).build();
+            return Response.status(Status.CONFLICT).entity(dashboardName).build();
         }
 
         Pair<String, String> newImportInfo = runtimeOptions.newFilePath(form.getFileName());

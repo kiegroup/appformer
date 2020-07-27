@@ -44,6 +44,7 @@ public class DashboardCard implements IsElement {
 
     @Inject
     PlaceManager placeManager;
+    
 
     public interface View extends UberElemental<DashboardCard> {
 

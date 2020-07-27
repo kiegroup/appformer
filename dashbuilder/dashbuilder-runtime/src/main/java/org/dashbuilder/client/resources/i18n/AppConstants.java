@@ -51,4 +51,8 @@ public interface AppConstants extends Messages {
 
     String routerPerspective();
     
+    String dashboardAlreadyImport(String newModelId, String exitingModel);
+
+    String importSuccess(String fileName);
+    
 }

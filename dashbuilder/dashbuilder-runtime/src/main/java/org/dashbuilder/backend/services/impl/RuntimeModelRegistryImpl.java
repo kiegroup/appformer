@@ -142,7 +142,7 @@ public class RuntimeModelRegistryImpl implements RuntimeModelRegistry {
             runtimeModels.put(id, runtimeModel);
             return Optional.of(runtimeModel);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error parsing import model.");
+            throw new IllegalArgumentException("Error parsing import model.", e);
         }
     }
 

@@ -276,6 +276,7 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>appformer-js-bridge</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>

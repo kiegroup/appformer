@@ -93,6 +93,11 @@ public class UploadWidgetView implements UploadWidget.View {
     public void errorDuringUpload(Object error) {
         runtimeCommunication.showError(i18n.errorUploadingDashboards(), error);
     }
+    
+    @Override
+    public void dashboardAlreadyImportedError(String newImportName, String existingImport) {
+        runtimeCommunication.showWarning(i18n.dashboardAlreadyImport(newImportName, existingImport));
+    }
 
     @EventHandler("btnImport")
     public void handleImport(ClickEvent e) {
@@ -101,13 +106,19 @@ public class UploadWidgetView implements UploadWidget.View {
 
     @EventHandler("inputFile")
     public void handleInputFileChange(ChangeEvent e) {
-        inputFileName.value = presenter.retrieveFileName(inputFile.value);
-        presenter.submit(uploadForm);
+        String importName = presenter.retrieveFileName(inputFile.value);
+        inputFileName.value = importName;
+        presenter.submit(importName, uploadForm);
     }
 
     @Override
     public HTMLElement getElement() {
         return uploadButtonContainer;
+    }
+
+    @Override
+    public void importSuccess(String importName) {
+        runtimeCommunication.showSuccess(i18n.importSuccess(importName));
     }
 
 }

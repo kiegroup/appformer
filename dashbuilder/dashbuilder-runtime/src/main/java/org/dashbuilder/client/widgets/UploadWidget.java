@@ -60,6 +60,10 @@ public class UploadWidget implements IsElement {
 
         void errorDuringUpload(Object error);
 
+        void dashboardAlreadyImportedError(String importName, String modelId);
+
+        void importSuccess(String importName);
+
     }
 
     @PostConstruct
@@ -72,16 +76,19 @@ public class UploadWidget implements IsElement {
         return this.view.getElement();
     }
 
-    public void submit(final HTMLFormElement uploadForm) {
+    public void submit(String fileName, final HTMLFormElement uploadForm) {
         RequestInit request = RequestInit.create();
         request.setMethod("POST");
         request.setBody(new FormData(uploadForm));
         view.loading();
         DomGlobal.window.fetch("./rest/upload", request)
-                        .then((Response response) -> response.text().then(id -> {
+                        .then((Response response) -> response.text().then(newImportName -> {
                             view.stopLoading();
                             if (response.status == 200) {
-                                openNewImport(id);
+                                openImport(newImportName);
+                            } 
+                            else if(response.status == 409) {
+                                importAlreadyExists(fileName, newImportName);
                             } else {
                                 view.badResponseUploading(response);
                             }
@@ -93,8 +100,14 @@ public class UploadWidget implements IsElement {
                         });
     }
 
-    private void openNewImport(final String modelId) {
-        routerScreen.loadDashboard(modelId);
+    private void openImport(final String newImportName) {
+        view.importSuccess(newImportName);
+        routerScreen.listDashboards();
+    }
+    
+    private void importAlreadyExists(final String fileName, final String modelId) {
+        view.dashboardAlreadyImportedError(fileName, modelId);
+        routerScreen.listDashboards();
     }
 
     public String retrieveFileName(String value) {
