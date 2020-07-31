@@ -30,6 +30,6 @@ public class I18nApiInteropWrapper {
     @JsMethod
     public native Promise<String> getLocale();
 
-    @JsProperty(name = "i18n")
+    @JsProperty(name = "i18nService")
     public native static I18nApiInteropWrapper get();
 }
