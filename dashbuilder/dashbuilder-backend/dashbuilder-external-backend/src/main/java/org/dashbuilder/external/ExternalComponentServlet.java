@@ -66,7 +66,7 @@ public class ExternalComponentServlet extends HttpServlet {
         } catch (IOException e) {
             logger.error("Error handling request to retrieve asset.");
             logger.debug("Error handling request to retrieve asset.", e);
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            errorResponse(resp);
         }
     }
 
@@ -94,6 +94,15 @@ public class ExternalComponentServlet extends HttpServlet {
             logger.info("Not able to find component asset {}", assetPath);
             logger.debug("Error opening external component asset", e);
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+    
+    private void errorResponse(HttpServletResponse resp) {
+        try {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            logger.error("Error setting \"internal server error\" response.");
+            logger.debug("Error setting \"internal server error\" response.", e);
         }
     }
 
