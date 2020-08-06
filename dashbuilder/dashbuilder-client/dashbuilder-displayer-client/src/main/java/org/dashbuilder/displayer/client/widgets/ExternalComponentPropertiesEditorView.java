@@ -27,7 +27,7 @@ import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 public class ExternalComponentPropertiesEditorView extends Composite
                                                    implements ExternalComponentPropertiesEditor.View {
 
-    private final String EXTERNAL_COMP_EDITOR_ID = Document.get().createUniqueId();
+    private final String externalComponentEditorId = Document.get().createUniqueId();
 
     @Inject
     @DataField
@@ -67,12 +67,12 @@ public class ExternalComponentPropertiesEditorView extends Composite
         messageContainer.hidden = true;
         externalComponentPropertiesRoot.hidden = false;
         List<PropertyEditorCategory> catList = new ArrayList<>(categories);
-        propertyEditorWidget.handle(new PropertyEditorEvent(EXTERNAL_COMP_EDITOR_ID, catList));
+        propertyEditorWidget.handle(new PropertyEditorEvent(externalComponentEditorId, catList));
     }
 
     protected void onPropertyEditorChange(@Observes PropertyEditorChangeEvent event) {
         PropertyEditorFieldInfo property = event.getProperty();
-        if (property.getEventId().equalsIgnoreCase(EXTERNAL_COMP_EDITOR_ID)) {
+        if (property.getEventId().equalsIgnoreCase(externalComponentEditorId)) {
             presenter.onPropertyChange(property.getKey(), property.getCurrentStringValue());
         }
     }

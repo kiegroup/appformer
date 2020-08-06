@@ -76,8 +76,8 @@ public class ExternalDisplayerDragComponent extends DisplayerDragComponent imple
     @Override
     protected DisplayerSettings initialSettings(ModalConfigurationContext ctx) {
         DisplayerSettings settings = displayerPrototypes.getProto(EXTERNAL_COMPONENT);
-        String componentId = ctx.getComponentProperty(COMPONENT_ID_KEY);
-        settings.setComponentId(componentId);
+        String _componentId = ctx.getComponentProperty(COMPONENT_ID_KEY);
+        settings.setComponentId(_componentId);
         return settings;
     }
 

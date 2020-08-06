@@ -301,7 +301,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
 
     }
 
-    private void copyFileContents(File newFile, String newFileName) throws java.io.IOException {
+    private void copyFileContents(File newFile, String newFileName) {
         File target = new File(newFileName);
         target.getParentFile().mkdirs();
         if (!target.exists()) {

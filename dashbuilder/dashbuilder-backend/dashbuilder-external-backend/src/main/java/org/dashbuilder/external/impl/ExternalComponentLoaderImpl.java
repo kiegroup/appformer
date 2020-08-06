@@ -75,8 +75,8 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
 
         try (Stream<Path> walker = Files.walk(Paths.get(externalComponentsDir), 1)) {
             return walker.filter(p -> p.toFile().isDirectory())
-                         .map(p -> getComponentDescriptor(p))
-                         .filter(p -> p.exists())
+                         .map(this::getComponentDescriptor)
+                         .filter(File::exists)
                          .map(this::readComponent)
                          .filter(Objects::nonNull)
                          .collect(Collectors.toList());
@@ -100,7 +100,7 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
             component.setId(componentId);
             return component;
         } catch (Exception e) {
-            logger.error("Not able to load component {}. Error: ", componentDescriptor.toString(), e.getMessage());
+            logger.error("Not able to load component {}. Error: {}", componentDescriptor, e.getMessage());
             logger.debug("Error reading component.", e);
         }
         return null;

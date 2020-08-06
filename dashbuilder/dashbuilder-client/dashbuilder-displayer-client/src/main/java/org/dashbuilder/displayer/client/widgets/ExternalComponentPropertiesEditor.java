@@ -105,7 +105,7 @@ public class ExternalComponentPropertiesEditor implements IsWidget {
 
     private void loadProperties() {
         List<ComponentParameter> parameters = currentComp.getParameters();
-        if (parameters != null && parameters.isEmpty()) {
+        if (parameters == null || parameters.isEmpty()) {
             view.noPropertiesComponent();
         } else {
             Map<String, PropertyEditorCategory> categories = new HashMap<>();

@@ -18,7 +18,6 @@ package org.dashbuilder.displayer;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.dataset.ValidationError;

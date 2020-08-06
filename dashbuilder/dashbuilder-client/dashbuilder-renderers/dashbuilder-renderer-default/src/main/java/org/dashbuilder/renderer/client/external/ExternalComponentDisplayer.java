@@ -23,11 +23,11 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
 import org.dashbuilder.common.client.widgets.FilterLabel;
 import org.dashbuilder.common.client.widgets.FilterLabelSet;
 import org.dashbuilder.dataset.DataColumn;
+import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookupConstraints;
 import org.dashbuilder.dataset.group.Interval;
 import org.dashbuilder.displayer.ColumnSettings;
@@ -99,7 +99,6 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
 
     @Override
     protected void createVisualization() {
-        DomGlobal.console.log("Creating Visualization");
         updateVisualization();
     }
 
@@ -131,7 +130,7 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         Map<String, String> componentProperties = displayerSettings.getComponentProperties();
         ExternalComponentMessage message = ExternalComponentMessage.create(componentProperties);
         ExternalDataSet ds = ExternalDataSet.of(buildColumns(),
-                                                buildData());
+                                                buildData(dataSet));
         message.setProperty("dataSet", ds);
         return message;
     }
@@ -147,17 +146,15 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         return externalComponentPresenter;
     }
 
-    public String[][] buildData() {
-        List<DataColumn> columns = dataSet.getColumns();
+    public String[][] buildData(DataSet ds) {
+        List<DataColumn> columns = ds.getColumns();
         int rows = columns.get(0).getValues().size();
         int cols = columns.size();
         String[][] result = new String[rows][];
         for (int i = 0; i < rows; i++) {
-            String line[] = new String[cols];
+            String[] line = new String[cols];
             for (int j = 0; j < cols; j++) {
-                String formattedValue = super.formatValue(i, j);
-                DomGlobal.console.log(formattedValue);
-                line[j] = columnValueToString(dataSet.getValueAt(i, j));
+                line[j] = columnValueToString(ds.getValueAt(i, j));
             }
             result[i] = line;
         }
@@ -181,20 +178,6 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
 
     }
 
-    private void receiveMessage(ExternalComponentMessage message) {
-        Object filterProp = message.getProperty("filter");
-        if (displayerSettings.isFilterEnabled() && filterProp != null) {
-            ExternalFilterRequest filterRequest = Js.cast(filterProp);
-            if (filterRequest.isReset()) {
-                super.filterReset();
-            } else {
-                DataColumn column = dataSet.getColumnByIndex(filterRequest.getColumn());
-                super.filterUpdate(column.getId(), filterRequest.getRow());
-            }
-            updateFilterStatus();
-        }
-    }
-
     protected void updateFilterStatus() {
         filterLabelSet.clear();
         Set<String> columnFilters = filterColumns();
@@ -212,17 +195,31 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         }
     }
 
-    void onFilterLabelRemoved(String columnId, int row) {
+    protected void onFilterLabelRemoved(String columnId, int row) {
         super.filterUpdate(columnId, row);
         if (!displayerSettings.isFilterSelfApplyEnabled()) {
             updateVisualization();
         }
     }
 
-    void onFilterClearAll() {
+    protected void onFilterClearAll() {
         super.filterReset();
         if (!displayerSettings.isFilterSelfApplyEnabled()) {
             updateVisualization();
+        }
+    }
+
+    private void receiveMessage(ExternalComponentMessage message) {
+        Object filterProp = message.getProperty("filter");
+        if (displayerSettings.isFilterEnabled() && filterProp != null) {
+            ExternalFilterRequest filterRequest = Js.cast(filterProp);
+            if (filterRequest.isReset()) {
+                super.filterReset();
+            } else {
+                DataColumn column = dataSet.getColumnByIndex(filterRequest.getColumn());
+                super.filterUpdate(column.getId(), filterRequest.getRow());
+            }
+            updateFilterStatus();
         }
     }
 

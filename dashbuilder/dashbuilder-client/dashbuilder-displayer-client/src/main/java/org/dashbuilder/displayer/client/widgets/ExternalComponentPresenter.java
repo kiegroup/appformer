@@ -33,7 +33,7 @@ public class ExternalComponentPresenter {
     /**
      * The base URL for components server. It should match the 
      */
-    final String COMPONENT_SERVER_PATH = "dashbuilder/component";
+    private static final String COMPONENT_SERVER_PATH = "dashbuilder/component";
     /**
      * The property that should be used by components to find its unique ID during Runtime.
      */

@@ -122,9 +122,6 @@ public class DefaultRenderer extends AbstractRendererLibrary {
             _metricDisplayerMap.put(displayer.getView().getUniqueId(), displayer);
             return displayer;
         }
-        if (SELECTOR.equals(type)) {
-            return beanManager.lookupBean(SelectorLabelSetDisplayer.class).newInstance();
-        }
         
         if (EXTERNAL_COMPONENT.equals(type)) {
             return beanManager.lookupBean(ExternalComponentDisplayer.class).newInstance();

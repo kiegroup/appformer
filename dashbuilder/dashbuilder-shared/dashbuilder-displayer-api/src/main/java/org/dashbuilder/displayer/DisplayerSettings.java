@@ -702,7 +702,7 @@ public class DisplayerSettings {
         return settings.entrySet()
                        .stream()
                        .filter(e -> e.getKey().startsWith(componentId))
-                       .collect(Collectors.toMap(e -> removeComponentPrefix(componentId, e.getKey()), e -> e.getValue()));
+                       .collect(Collectors.toMap(e -> removeComponentPrefix(componentId, e.getKey()), Map.Entry::getValue));
     }
 
     public String getComponentPartition() {

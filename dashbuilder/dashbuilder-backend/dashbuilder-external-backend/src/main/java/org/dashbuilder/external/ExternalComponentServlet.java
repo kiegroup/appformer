@@ -41,7 +41,7 @@ public class ExternalComponentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String CACHE_CONTROL_PARAM = "cache-control";
 
-    Logger logger = LoggerFactory.getLogger(ExternalComponentServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExternalComponentServlet.class);
 
     @Inject
     ExternalComponentAssetProvider assetProvider;
@@ -61,7 +61,13 @@ public class ExternalComponentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handle(req, resp);
+        try {
+            handle(req, resp);
+        } catch (IOException e) {
+            logger.error("Error handling request to retrieve asset.");
+            logger.debug("Error handling request to retrieve asset.", e);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -76,22 +82,18 @@ public class ExternalComponentServlet extends HttpServlet {
 
         String assetPath = Arrays.stream(pathParts).skip(1).collect(joining(File.separator));
 
-        logger.info("Retrieving component asset {}", assetPath);
+        logger.debug("Retrieving component asset {}", assetPath);
 
-        try {
-            InputStream assetStream = assetProvider.openAsset(assetPath);
+        try (InputStream assetStream = assetProvider.openAsset(assetPath)) {
             int size = IOUtils.copy(assetStream, resp.getOutputStream());
-            assetStream.close();
             String mimeType = mimetypesFileTypeMap.getContentType(pathInfo);
             resp.setContentType(mimeType);
             resp.setContentLength(size);
             resp.setHeader("Cache-Control", cacheControlHeaderValue);
-
         } catch (Exception e) {
             logger.info("Not able to find component asset {}", assetPath);
             logger.debug("Error opening external component asset", e);
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
         }
     }
 

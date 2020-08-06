@@ -41,19 +41,19 @@ public class ExternalDragComponent implements ExternalComponentDragDef, HasModal
     @Override
     public IsWidget getShowWidget(RenderingContext ctx) {
         Map<String, String> ltProps = ctx.getComponent().getProperties();
-        String componentId = ltProps.get(COMPONENT_ID_KEY);
+        String _componentId = ltProps.get(COMPONENT_ID_KEY);
         String partition = ltProps.get(COMPONENT_PARTITION_KEY);
-        if (componentId == null) {
+        if (_componentId == null) {
             return new Label("Component not found.");
         }
         
         if (partition != null) {
-            externalComponentPresenter.withComponent(componentId, partition);
+            externalComponentPresenter.withComponent(_componentId, partition);
         } else {
-            externalComponentPresenter.withComponent(componentId);
+            externalComponentPresenter.withComponent(_componentId);
         }
         
-        Map<String, String> componentProperties = retrieveComponentProperties(componentId, ltProps);
+        Map<String, String> componentProperties = retrieveComponentProperties(_componentId, ltProps);
         ExternalComponentMessage message = ExternalComponentMessage.create(componentProperties);
         externalComponentPresenter.sendMessage(message);
         
@@ -88,13 +88,13 @@ public class ExternalDragComponent implements ExternalComponentDragDef, HasModal
 
     @Override
     public Modal getConfigurationModal(ModalConfigurationContext ctx) {
-        String componentId = ctx.getComponentProperty(COMPONENT_ID_KEY);
+        String _componentId = ctx.getComponentProperty(COMPONENT_ID_KEY);
         ExternalComponentEditorPopUp editor = beanManager.lookupBean(ExternalComponentEditorPopUp.class).newInstance();
-        Map<String, String> existingProps = retrieveComponentProperties(componentId, ctx.getComponentProperties());
-        editor.init(componentId,
+        Map<String, String> existingProps = retrieveComponentProperties(_componentId, ctx.getComponentProperties());
+        editor.init(_componentId,
                     existingProps,
                     getCloseCommand(editor, ctx),
-                    getSaveCommand(componentId, editor, ctx));
+                    getSaveCommand(_componentId, editor, ctx));
         return editor;
     }
 
