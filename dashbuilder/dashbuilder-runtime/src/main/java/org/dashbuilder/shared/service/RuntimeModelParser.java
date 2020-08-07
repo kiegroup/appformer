@@ -33,6 +33,6 @@ public interface RuntimeModelParser {
      * @return
      * The parsed runtime model.
      */
-    RuntimeModel parse(InputStream is);
+    RuntimeModel parse(String runtimeModelId, InputStream is);
 
 }

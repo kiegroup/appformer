@@ -29,7 +29,7 @@ import org.uberfire.workbench.model.impl.PartDefinitionImpl;
 import org.uberfire.workbench.model.impl.PerspectiveDefinitionImpl;
 
 @ApplicationScoped
-@WorkbenchPerspective(identifier = RuntimePerspective.ID, isDefault = true)
+@WorkbenchPerspective(identifier = RuntimePerspective.ID)
 public class RuntimePerspective {
 
     public static final String ID = "RuntimePerspective";

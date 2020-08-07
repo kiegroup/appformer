@@ -22,7 +22,6 @@ import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.dashbuilder.client.RuntimeCommunication;
 import org.dashbuilder.client.navbar.AppNavBar;
-import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.client.screens.RuntimeScreen;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -32,8 +31,6 @@ import org.uberfire.workbench.model.menu.Menus;
 @Dependent
 @Templated
 public class RuntimeScreenView implements RuntimeScreen.View {
-
-    private static AppConstants i18n = AppConstants.INSTANCE;
 
     @Inject
     @DataField
@@ -61,21 +58,6 @@ public class RuntimeScreenView implements RuntimeScreen.View {
     @Override
     public void addMenus(Menus menus) {
         appNavBar.setupMenus(menus);
-    }
-
-    @Override
-    public void errorLoadingDashboards(final Throwable throwable) {
-        runtimeCommunication.showError(i18n.errorLoadingDashboards(), throwable);
-    }
-
-    @Override
-    public void loading() {
-        loading.showBusyIndicator(i18n.loadingDashboards());
-    }
-
-    @Override
-    public void stopLoading() {
-        loading.hideBusyIndicator();
     }
 
 }

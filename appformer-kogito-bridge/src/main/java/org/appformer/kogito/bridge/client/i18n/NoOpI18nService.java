@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.dashbuilder.shared.event;
 
-import org.dashbuilder.shared.model.RuntimeModel;
-import org.jboss.errai.common.client.api.annotations.MapsTo;
+package org.appformer.kogito.bridge.client.i18n;
+
+import elemental2.promise.Promise;
 
 /**
- * Fired when runtime model is loaded
- *
+ * This {@link I18nApi} implementation is used when the envelope API is not available
  */
-public class RuntimeModelEvent {
+public class NoOpI18nService implements I18nApi {
 
-    RuntimeModel runtimeModel;
+    @Override
+    public void onLocaleChange(LocaleChangeCallback callback) {
 
-    public RuntimeModelEvent(@MapsTo("runtimeModel") RuntimeModel runtimeModel) {
-        this.runtimeModel = runtimeModel;
     }
 
-    public RuntimeModel getRuntimeModel() {
-        return runtimeModel;
+    @Override
+    public Promise<String> getLocale() {
+        return Promise.resolve("en");
     }
-
 }
