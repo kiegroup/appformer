@@ -5,15 +5,12 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 @JsType(isNative = true, namespace = "window", name = "envelope")
-public class PMMLMarshaller {
+public class PMMLEditorMarshallerService {
 
     @JsMethod
-    public native Object marshall(String xmlContent);
+    public native Object getPMMLModelData(String xmlContent);
 
-    @JsMethod
-    public native String unmarshall(Object pmml);
-
-    @JsProperty(name = "pmmlMarshallerService")
-    public static native PMMLMarshaller get();
+    @JsProperty(name = "pmmlEditorMarshallerService")
+    public static native PMMLEditorMarshallerService get();
 
 }
