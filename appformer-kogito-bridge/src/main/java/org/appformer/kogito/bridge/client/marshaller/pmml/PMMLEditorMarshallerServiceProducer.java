@@ -21,10 +21,9 @@ import javax.enterprise.inject.Produces;
 
 import elemental2.dom.DomGlobal;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
-import org.appformer.kogito.bridge.client.keyboardshortcuts.KeyboardShortcutsService;
 
 /**
- * Produces {@link KeyboardShortcutsService} beans according to whether the envelope API is available or not
+ * Produces {@link PMMLEditorMarshallerService} beans according to whether the envelope API is available or not
  */
 public class PMMLEditorMarshallerServiceProducer {
 
