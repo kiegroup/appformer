@@ -17,6 +17,7 @@
 package org.dashbuilder.external.impl;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,9 +35,13 @@ public class ExternalComponentAssetProviderImpl implements ExternalComponentAsse
     ExternalComponentLoader componentsLoader;
 
     @Override
-    public InputStream openAsset(String componentAssetPath) throws Exception {
-        Path path = Paths.get(componentsLoader.getExternalComponentsDir(), componentAssetPath);
-        return new FileInputStream(path.toFile());
+    public InputStream openAsset(String componentAssetPath) {
+        try {
+            Path path = Paths.get(componentsLoader.getExternalComponentsDir(), componentAssetPath);
+            return new FileInputStream(path.toFile());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

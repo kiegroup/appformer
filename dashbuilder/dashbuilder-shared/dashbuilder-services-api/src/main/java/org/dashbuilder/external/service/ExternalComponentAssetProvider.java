@@ -20,6 +20,6 @@ import java.io.InputStream;
 
 public interface ExternalComponentAssetProvider {
     
-    InputStream openAsset(String componentAssetPath) throws Exception;
+    InputStream openAsset(String componentAssetPath);
 
 }

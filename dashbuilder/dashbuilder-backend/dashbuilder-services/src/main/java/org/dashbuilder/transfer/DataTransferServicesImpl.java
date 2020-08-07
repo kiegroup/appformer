@@ -274,7 +274,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
                     try {
                         importComponentFile(zipEntry.getName(), newFile);
                         imported.add(zipEntry.getName());
-                    } catch (java.io.IOException e) {
+                    } catch (Exception e) {
                         LOGGER.error("Error importing component file {}", zipEntry.getName());
                         LOGGER.debug("Component file import error.", e);
                     }
@@ -292,13 +292,12 @@ public class DataTransferServicesImpl implements DataTransferServices {
         return zipEntry.getName() != null && zipEntry.getName().startsWith(COMPONENTS_EXPORT_PATH);
     }
 
-    private String importComponentFile(String entryName, File newFile) throws java.io.IOException {
+    private String importComponentFile(String entryName, File newFile) {
         String externalComponentsDir = externalComponentLoader.getExternalComponentsDir();
         externalComponentsDir = externalComponentsDir.endsWith(File.separator) ? externalComponentsDir : externalComponentsDir + "/";
         String newFileName = externalComponentsDir + entryName.replaceAll(COMPONENTS_EXPORT_PATH, "");
         copyFileContents(newFile, newFileName);
         return newFileName;
-
     }
 
     private void copyFileContents(File newFile, String newFileName) {

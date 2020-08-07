@@ -106,23 +106,25 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
         try (ZipInputStream zis = new ZipInputStream(is)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
-                if (!entry.isDirectory()) {
-                    String entryName = entry.getName();
-                    if (entryName.startsWith(DATASET_DEF_PREFIX)) {
-                        datasetContents.add(retrieveDataSetContent(entry, zis));
-                    }
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                String entryName = entry.getName();
+                
+                if (entryName.startsWith(DATASET_DEF_PREFIX)) {
+                    datasetContents.add(retrieveDataSetContent(entry, zis));
+                }
 
-                    if (entryName.endsWith(PERSPECTIVE_SUFFIX)) {
-                        layoutTemplates.add(retrieveLayoutTemplate(zis));
-                    }
+                if (entryName.endsWith(PERSPECTIVE_SUFFIX)) {
+                    layoutTemplates.add(retrieveLayoutTemplate(zis));
+                }
 
-                    if (entryName.equalsIgnoreCase(NAVIGATION_FILE)) {
-                        navTreeOp = Optional.of(nextEntryContentAsString(zis));
-                    }
+                if (entryName.equalsIgnoreCase(NAVIGATION_FILE)) {
+                    navTreeOp = Optional.of(nextEntryContentAsString(zis));
+                }
 
-                    if (entryName.startsWith(COMPONENTS_EXPORT_PATH)) {
-                        extractComponentFile(modelId, zis, entry.getName());
-                    }
+                if (entryName.startsWith(COMPONENTS_EXPORT_PATH)) {
+                    extractComponentFile(modelId, zis, entry.getName());
                 }
             }
         }
