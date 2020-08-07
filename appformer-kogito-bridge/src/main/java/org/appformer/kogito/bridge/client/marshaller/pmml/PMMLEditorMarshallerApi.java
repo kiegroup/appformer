@@ -16,16 +16,12 @@
 
 package org.appformer.kogito.bridge.client.marshaller.pmml;
 
-import org.appformer.kogito.bridge.client.keyboardshortcuts.KeyboardShortcutsApi;
 import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
 
 /**
- * A {@link KeyboardShortcutsApi} implementation used when envelope API is available
+ * API for registering Keyboard Shortcuts.
  */
-public class PMMLEditorMarshallerService implements PMMLEditorMarshallerApi {
+public interface PMMLEditorMarshallerApi {
 
-    @Override
-    public PMMLDocumentData getPMMLDocumentData(String xmlContent) {
-        return PMMLEditorMarshallerApiInteropWrapper.get().getPMMLDocumentData(xmlContent);
-    }
+    PMMLDocumentData getPMMLDocumentData(String xmlContent);
 }

@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.appformer.kogito.bridge.client.marshaller.pmml;
 
-import org.appformer.kogito.bridge.client.keyboardshortcuts.KeyboardShortcutsApi;
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
 import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
 
-/**
- * A {@link KeyboardShortcutsApi} implementation used when envelope API is available
- */
-public class PMMLEditorMarshallerService implements PMMLEditorMarshallerApi {
+@JsType(isNative = true, namespace = "window", name = "envelope")
+public class PMMLEditorMarshallerApiInteropWrapper {
 
-    @Override
-    public PMMLDocumentData getPMMLDocumentData(String xmlContent) {
-        return PMMLEditorMarshallerApiInteropWrapper.get().getPMMLDocumentData(xmlContent);
-    }
+    @JsMethod
+    public native PMMLDocumentData getPMMLDocumentData(String xmlContent);
+
+    @JsProperty(name = "pmmlEditorMarshallerService")
+    public static native PMMLEditorMarshallerApiInteropWrapper get();
+
 }
