@@ -24,6 +24,10 @@ public class PMMLEditorMarshallerService implements PMMLEditorMarshallerApi {
 
     @Override
     public PMMLDocumentData getPMMLDocumentData(String xmlContent) {
-        return PMMLEditorMarshallerApiInteropWrapper.get().getPMMLDocumentData(xmlContent);
+        return getWrapper().getPMMLDocumentData(xmlContent);
+    }
+
+    PMMLEditorMarshallerApiInteropWrapper getWrapper() {
+        return PMMLEditorMarshallerApiInteropWrapper.get();
     }
 }
