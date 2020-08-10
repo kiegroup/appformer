@@ -27,7 +27,7 @@ import jsinterop.base.JsArrayLike;
 public class PMMLDocumentData {
 
     @JsOverlay
-    public List<PMMLModelData> getModels() {
+    public final List<PMMLModelData> getModels() {
         if (getNativeModels() == null) {
             setNativeModels(JSIUtils.getNativeArray());
         }

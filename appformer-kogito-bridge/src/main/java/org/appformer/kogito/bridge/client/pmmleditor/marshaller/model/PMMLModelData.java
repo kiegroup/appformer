@@ -27,7 +27,7 @@ import jsinterop.base.JsArrayLike;
 public class PMMLModelData {
 
     @JsOverlay
-    public List<String> getFields() {
+    public final List<String> getFields() {
         if (getNativeFields() == null) {
             setNativeFields(JSIUtils.getNativeArray());
         }
