@@ -37,7 +37,7 @@ public class PMMLDocumentData {
     @JsProperty(name = "models")
     public native JsArrayLike<PMMLModelData> getNativeModels();
 
-    @JsProperty(name = "backgroundData")
+    @JsProperty(name = "models")
     public final native void setNativeModels(JsArrayLike<PMMLModelData> models);
 
 }

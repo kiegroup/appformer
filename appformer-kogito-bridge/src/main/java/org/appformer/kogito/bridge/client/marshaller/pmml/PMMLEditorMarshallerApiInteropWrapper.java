@@ -20,6 +20,9 @@ import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
 
+/**
+ * Javascript bridge to access actual PMMLEditorMarshallerApi available in the envelope namespace
+ */
 @JsType(isNative = true, namespace = "window", name = "envelope")
 public class PMMLEditorMarshallerApiInteropWrapper {
 

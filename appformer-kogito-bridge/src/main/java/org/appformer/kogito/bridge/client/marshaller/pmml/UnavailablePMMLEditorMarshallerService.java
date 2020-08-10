@@ -19,16 +19,12 @@ package org.appformer.kogito.bridge.client.marshaller.pmml;
 import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
 
 /**
- * API which interfaces with PMMLEditor Marshaller available into Kogito Tooling.
+ * This {@link PMMLEditorMarshallerApi} implementation is used when the envelope API is not available
  */
-public interface PMMLEditorMarshallerApi {
+public class UnavailablePMMLEditorMarshallerService implements PMMLEditorMarshallerApi {
 
-    /**
-     * Given a string containing the xmlContent, it returns a {@link PMMLDocumentData} JSInterop class,
-     * which holds all required data used by DMN Editor to manage a PMML file.
-     * @param xmlContent
-     * @return
-     */
-    PMMLDocumentData getPMMLDocumentData(String xmlContent);
-
+    @Override
+    public PMMLDocumentData getPMMLDocumentData(String xmlContent) {
+        return new PMMLDocumentData();
+    }
 }

@@ -36,6 +36,6 @@ public class PMMLEditorMarshallerServiceProducer {
         }
 
         DomGlobal.console.warn("[PMMLEditorMarshallerApi] Envelope API is not available. Producing NoOpKeyboardShortcutsService");
-        return null;
+        return new UnavailablePMMLEditorMarshallerService();
     }
 }
