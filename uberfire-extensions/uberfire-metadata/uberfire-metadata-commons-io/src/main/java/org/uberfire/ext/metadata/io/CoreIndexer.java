@@ -15,15 +15,20 @@
 
 package org.uberfire.ext.metadata.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.ext.metadata.engine.Indexer;
 import org.uberfire.ext.metadata.model.KObject;
 import org.uberfire.ext.metadata.model.KObjectKey;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.NoSuchFileException;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.file.attribute.FileAttribute;
 import org.uberfire.java.nio.file.attribute.FileAttributeView;
 
 public class CoreIndexer implements Indexer {
+
+    private static final Logger logger = LoggerFactory.getLogger(CoreIndexer.class);
 
     private final IOService ioService;
     private final Class<? extends FileAttributeView>[] views;
@@ -44,12 +49,18 @@ public class CoreIndexer implements Indexer {
         if (!ioService.exists(path)) {
             return null;
         }
-        //Default indexing
-        for (Class<? extends FileAttributeView> view : views) {
-            ioService.getFileAttributeView(path, view);
+        KObject kObject = null;
+        try {
+            //Default indexing
+            for (Class<? extends FileAttributeView> view : views) {
+                ioService.getFileAttributeView(path, view);
+            }
+            final FileAttribute<?>[] attrs = ioService.convert(ioService.readAttributes(path));
+            kObject = KObjectUtil.toKObject(path, attrs);
+        } catch (NoSuchFileException e) {
+            logger.error("Unable to index {} : file does not exist.", path.toUri());
         }
-        final FileAttribute<?>[] attrs = ioService.convert(ioService.readAttributes(path));
-        return KObjectUtil.toKObject(path, attrs);
+        return kObject;
     }
 
     @Override
