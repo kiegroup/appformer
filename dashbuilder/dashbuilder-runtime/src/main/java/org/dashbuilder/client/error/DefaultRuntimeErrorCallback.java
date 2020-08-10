@@ -41,7 +41,7 @@ public class DefaultRuntimeErrorCallback {
     AppConstants i18n = AppConstants.INSTANCE;
 
     private boolean errorPopUpLock = false;
-
+    
     public void error(final Throwable throwable) {
         if (errorPopUpLock) {
             return;
@@ -49,9 +49,9 @@ public class DefaultRuntimeErrorCallback {
         loading.hideBusyIndicator();
         errorPopUpLock = true;
         if (isServerOfflineException(throwable)) {
-            yesNoPopup(i18n.DisconnectedFromServer(), i18n.CouldNotConnectToServer());
+            yesNoPopup(i18n.disconnectedFromServer(), i18n.couldNotConnectToServer());
         } else if (isInvalidBusContentException(throwable)) {
-            yesNoPopup(i18n.SessionTimeout(), i18n.InvalidBusResponseProbablySessionTimeout());
+            yesNoPopup(i18n.sessionTimeout(), i18n.invalidBusResponseProbablySessionTimeout());
         } else {
             showMessage(CommonConstants.INSTANCE.ExceptionGeneric0(extractMessageRecursively(throwable)),
                         this::unlock,
@@ -67,6 +67,9 @@ public class DefaultRuntimeErrorCallback {
     }
 
     private String extractMessageRecursively(final Throwable t) {
+        if (t == null) {
+            return "";
+        }
         if (t.getCause() == null) {
             return t.getMessage();
         }
