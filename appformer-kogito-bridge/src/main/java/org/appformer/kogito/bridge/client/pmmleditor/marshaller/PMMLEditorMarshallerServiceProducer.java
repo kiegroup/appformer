@@ -31,11 +31,15 @@ public class PMMLEditorMarshallerServiceProducer {
     @ApplicationScoped
     public PMMLEditorMarshallerApi produce() {
 
-        if (WindowRef.isEnvelopeAvailable()) {
+        if (isEnvelopeAvailable()) {
             return new PMMLEditorMarshallerService();
         }
 
-        DomGlobal.console.warn("[PMMLEditorMarshallerApi] Envelope API is not available. Producing NoOpKeyboardShortcutsService");
+        DomGlobal.console.warn("[PMMLEditorMarshallerApi] Envelope API is not available. Empty PMML models will be passed");
         return new UnavailablePMMLEditorMarshallerService();
+    }
+
+    boolean isEnvelopeAvailable() {
+        return WindowRef.isEnvelopeAvailable();
     }
 }
