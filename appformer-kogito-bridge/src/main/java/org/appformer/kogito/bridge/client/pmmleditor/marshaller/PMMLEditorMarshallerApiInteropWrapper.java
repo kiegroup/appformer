@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.appformer.kogito.bridge.client.marshaller.pmml;
+package org.appformer.kogito.bridge.client.pmmleditor.marshaller;
 
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
-import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
+import org.appformer.kogito.bridge.client.pmmleditor.marshaller.model.PMMLDocumentData;
 
 /**
  * Javascript bridge to access actual PMMLEditorMarshallerApi available in the envelope namespace

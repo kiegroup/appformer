@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.appformer.kogito.bridge.client.marshaller.pmml.model;
+package org.appformer.kogito.bridge.client.pmmleditor.marshaller.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,10 @@ import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
 
 public class JSIUtils {
+
+    private JSIUtils() {
+        // Utils class
+    }
 
     /**
      * Helper method to create a new, empty <code>JsArrayLike</code>

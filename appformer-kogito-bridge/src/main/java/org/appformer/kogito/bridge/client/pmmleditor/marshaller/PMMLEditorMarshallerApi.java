@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.marshaller.pmml;
+package org.appformer.kogito.bridge.client.pmmleditor.marshaller;
 
-import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
+import org.appformer.kogito.bridge.client.pmmleditor.marshaller.model.PMMLDocumentData;
 
 /**
  * API which interfaces with PMMLEditor Marshaller available into Kogito Tooling.

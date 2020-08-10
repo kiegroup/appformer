@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.marshaller.pmml;
+package org.appformer.kogito.bridge.client.pmmleditor.marshaller;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;

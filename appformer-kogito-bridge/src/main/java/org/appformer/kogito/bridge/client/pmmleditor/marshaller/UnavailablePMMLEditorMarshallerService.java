@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.appformer.kogito.bridge.client.marshaller.pmml;
 
-import org.appformer.kogito.bridge.client.marshaller.pmml.model.PMMLDocumentData;
+package org.appformer.kogito.bridge.client.pmmleditor.marshaller;
+
+import org.appformer.kogito.bridge.client.pmmleditor.marshaller.model.PMMLDocumentData;
 
 /**
- * A {@link PMMLEditorMarshallerApi} implementation used when envelope API is available
+ * This {@link PMMLEditorMarshallerApi} implementation is used when the envelope API is not available
  */
-public class PMMLEditorMarshallerService implements PMMLEditorMarshallerApi {
+public class UnavailablePMMLEditorMarshallerService implements PMMLEditorMarshallerApi {
 
     @Override
     public PMMLDocumentData getPMMLDocumentData(String xmlContent) {
-        return PMMLEditorMarshallerApiInteropWrapper.get().getPMMLDocumentData(xmlContent);
+        return new PMMLDocumentData();
     }
 }
