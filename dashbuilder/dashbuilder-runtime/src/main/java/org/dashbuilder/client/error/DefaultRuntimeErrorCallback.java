@@ -41,7 +41,7 @@ public class DefaultRuntimeErrorCallback {
     AppConstants i18n = AppConstants.INSTANCE;
 
     private boolean errorPopUpLock = false;
-    
+
     public void error(final Throwable throwable) {
         if (errorPopUpLock) {
             return;
@@ -61,7 +61,11 @@ public class DefaultRuntimeErrorCallback {
     }
 
     private void yesNoPopup(String title, String content) {
-        final YesNoCancelPopup result = newYesNoCancelPopup(title, content, Window.Location::reload, this::unlock, this::unlock);
+        final YesNoCancelPopup result = newYesNoCancelPopup(title,
+                                                            content,
+                                                            Window.Location::reload,
+                                                            null,
+                                                            this::unlock);
         result.clearScrollHeight();
         result.show();
     }
