@@ -45,7 +45,7 @@ public class JSIUtils {
      */
     public static native <D> JsArrayLike<D> getUnwrappedElementsArray(final JsArrayLike<D> original) /*-{
         var toReturn = [];
-        if(original != null) {
+        if (original != null) {
             toReturn = original.map(function (arrayItem) {
                 var retrieved = arrayItem.value
                 var toSet = retrieved == null ? arrayItem : retrieved
@@ -58,7 +58,7 @@ public class JSIUtils {
     public static<D> List<D> toList(final JsArrayLike<D> jsArrayLike) {
         final List<D> toReturn = new ArrayList<>();
         if (Objects.nonNull(jsArrayLike)) {
-            for (int i = 0; (i<jsArrayLike.getLength()); i ++) {
+            for (int i = 0; (i < jsArrayLike.getLength()); i++) {
                 final D toAdd = Js.uncheckedCast(jsArrayLike.getAt(i));
                 toReturn.add(toAdd);
             }
