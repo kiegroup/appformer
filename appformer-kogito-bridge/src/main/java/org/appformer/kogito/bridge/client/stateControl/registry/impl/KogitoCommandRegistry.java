@@ -22,12 +22,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import elemental2.dom.DomGlobal;
 import org.appformer.client.stateControl.registry.Registry;
 import org.appformer.client.stateControl.registry.RegistryChangeListener;
-import org.appformer.kogito.bridge.client.capability.CapabilityResponse;
-import org.appformer.kogito.bridge.client.capability.CapabilityResponseStatus;
-import org.appformer.kogito.bridge.client.capability.sample.interopt.SampleServiceWrapper;
 import org.appformer.kogito.bridge.client.interop.WindowRef;
 import org.appformer.kogito.bridge.client.stateControl.interop.StateControl;
 import org.appformer.kogito.bridge.client.stateControl.registry.interop.KogitoJSCommandRegistry;
@@ -105,28 +101,7 @@ public class KogitoCommandRegistry<C> implements Registry<C> {
 
     private void notifyRegistryChange() {
         if (registryChangeListener != null) {
-            codeToTestAndThrowAway();
             registryChangeListener.notifyRegistryChange();
         }
-    }
-
-    private void codeToTestAndThrowAway() {
-        SampleServiceWrapper.get().hello("Gwt editor", 5000).then((CapabilityResponse<String> response) -> {
-
-            // Sample - capability not available can be handled like this.
-            if (CapabilityResponseStatus.withName(response.getStatus()) == CapabilityResponseStatus.NOT_AVAILABLE) {
-                DomGlobal.console.info(response.getMessage());
-            }
-
-            // Sample - response completed can be handled like this.
-            if (CapabilityResponseStatus.withName(response.getStatus()) == CapabilityResponseStatus.OK) {
-                DomGlobal.console.info(response.getBody());
-            }
-
-            return null;
-        }).catch_(error -> {
-            DomGlobal.console.error("Error caught: " + error);
-            return null;
-        });
     }
 }

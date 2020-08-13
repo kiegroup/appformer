@@ -28,6 +28,11 @@ public enum CapabilityResponseStatus {
     OK("OK"),
 
     /**
+     * Infrastructure for capabilities is not available.
+     */
+    MISSING_INFRA("MISSING_INFRA"),
+
+    /**
      * Capability could not be resolved.
      */
     NOT_AVAILABLE("NOT_AVAILABLE");
