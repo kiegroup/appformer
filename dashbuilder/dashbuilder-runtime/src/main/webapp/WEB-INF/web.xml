@@ -74,6 +74,10 @@
       <param-name>realmName</param-name>
       <param-value>Dashbuilder Runtime Realm</param-value>
     </init-param>
+    <init-param>
+      <param-name>excludedPaths</param-name>
+      <param-value>/rest/upload</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>HTTP Basic Auth Filter</filter-name>
@@ -86,7 +90,8 @@
     <form-login-config>
       <form-login-page>/login.html</form-login-page>
       <form-error-page>/login.html?loginMessage=Login failed. Please try
-        again.</form-error-page>
+        again.
+      </form-error-page>
     </form-login-config>
   </login-config>
 
