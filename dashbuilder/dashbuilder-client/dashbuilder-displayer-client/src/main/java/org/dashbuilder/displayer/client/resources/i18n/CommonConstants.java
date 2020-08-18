@@ -273,4 +273,10 @@ public interface CommonConstants extends Messages {
     String color_scheme();
 
     String loadingComponent();
+    
+    String componentEditor();
+
+    String componentNotFound();
+
+    String noPropertiesComponent();
 }

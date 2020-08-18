@@ -18,6 +18,7 @@ package org.dashbuilder.external.model;
 
 import java.util.List;
 
+import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -29,6 +30,24 @@ public class ComponentParameter {
     private String defaultValue;
     private String label;
     private List<String> comboValues;
+
+    public ComponentParameter() {
+        // default constructor used internally
+    }
+
+    public ComponentParameter(@MapsTo("name") String name,
+                              @MapsTo("type") String type,
+                              @MapsTo("category") String category,
+                              @MapsTo("defaultValue") String defaultValue,
+                              @MapsTo("label") String label,
+                              @MapsTo("comboValues") List<String> comboValues) {
+        this.name = name;
+        this.type = type;
+        this.category = category;
+        this.defaultValue = defaultValue;
+        this.label = label;
+        this.comboValues = comboValues;
+    }
 
     public String getName() {
         return name;
@@ -45,12 +64,11 @@ public class ComponentParameter {
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public String getCategory() {
         return category;
     }
 
-    
     public void setCategory(String category) {
         this.category = category;
     }

@@ -18,9 +18,7 @@ package org.dashbuilder.displayer.impl;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
 import org.dashbuilder.displayer.ExternalDisplayerSettingsBuilder;
-import org.jboss.errai.common.client.api.annotations.Portable;
 
-@Portable
 public class ExternalDisplayerSettingsBuilderImpl extends AbstractDisplayerSettingsBuilder<ExternalDisplayerSettingsBuilderImpl> implements ExternalDisplayerSettingsBuilder<ExternalDisplayerSettingsBuilderImpl> {
 
     @Override

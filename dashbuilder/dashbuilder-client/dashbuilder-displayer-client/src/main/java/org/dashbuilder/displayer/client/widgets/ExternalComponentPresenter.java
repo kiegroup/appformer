@@ -96,6 +96,10 @@ public class ExternalComponentPresenter {
     public String getComponentId() {
         return componentRuntimeId;
     }
+    
+    private String buildUrl(String componentId) {
+        return buildUrl(componentId, "");
+    }
 
     private String buildUrl(String componentId, String partition) {
         return String.join("/",
@@ -103,14 +107,6 @@ public class ExternalComponentPresenter {
                            COMPONENT_SERVER_PATH,
                            partition, 
                            componentId, 
-                           "index.html");
-    }
-
-    private String buildUrl(String componentId) {
-        return String.join("/",
-                           GWT.getHostPageBaseURL(),
-                           COMPONENT_SERVER_PATH,
-                           componentId,
                            "index.html");
     }
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.dashbuilder.displayer.client.widgets;
 
 import java.util.ArrayList;
@@ -13,6 +29,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Composite;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import org.dashbuilder.displayer.client.resources.i18n.CommonConstants;
 import org.jboss.errai.common.client.dom.elemental2.Elemental2DomUtil;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -26,6 +43,8 @@ import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 @Templated
 public class ExternalComponentPropertiesEditorView extends Composite
                                                    implements ExternalComponentPropertiesEditor.View {
+    
+    private final CommonConstants i18n = CommonConstants.INSTANCE;
 
     private final String externalComponentEditorId = Document.get().createUniqueId();
 
@@ -59,7 +78,7 @@ public class ExternalComponentPropertiesEditorView extends Composite
 
     @Override
     public void componentNotFound() {
-        showMessage("Component was not found.");
+        showMessage(i18n.componentNotFound());
     }
 
     @Override
@@ -79,7 +98,7 @@ public class ExternalComponentPropertiesEditorView extends Composite
 
     @Override
     public void noPropertiesComponent() {
-        showMessage("This component has no properties.");
+        showMessage(i18n.noPropertiesComponent());
     }
 
     private void showMessage(String message) {

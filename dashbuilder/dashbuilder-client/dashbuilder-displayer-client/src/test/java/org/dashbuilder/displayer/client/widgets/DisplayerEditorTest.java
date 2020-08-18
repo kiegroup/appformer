@@ -170,22 +170,22 @@ public class DisplayerEditorTest {
         // Default
         when(editorStatus.getSelectedOption(anyString())).thenReturn(-1);
         presenter.init(null);
-        verify(view).gotoTypeSelection(typeSelector);
+        verify(view).goToTypeSelection(typeSelector);
 
         // Type selector
         when(editorStatus.getSelectedOption(anyString())).thenReturn(0);
         presenter.init(null);
-        verify(view).gotoTypeSelection(typeSelector);
+        verify(view).goToTypeSelection(typeSelector);
 
         // Data lookup conf
         when(editorStatus.getSelectedOption(anyString())).thenReturn(1);
         presenter.init(null);
-        verify(view).gotoDataSetLookupConf(lookupEditor);
+        verify(view).goToDataSetLookupConf(lookupEditor);
 
         // Display settings
         when(editorStatus.getSelectedOption(anyString())).thenReturn(2);
         presenter.init(null);
-        verify(view).gotoDisplaySettings(settingsEditor);
+        verify(view).goToDisplaySettings(settingsEditor);
     }
 
     @Test
@@ -196,9 +196,9 @@ public class DisplayerEditorTest {
 
         when(editorStatus.getSelectedOption(anyString())).thenReturn(-1);
         presenter.init(null);
-        verify(view).gotoDataSetLookupConf(lookupEditor);
-        verify(view, never()).gotoTypeSelection(typeSelector);
-        verify(view, never()).gotoDisplaySettings(settingsEditor);
+        verify(view).goToDataSetLookupConf(lookupEditor);
+        verify(view, never()).goToTypeSelection(typeSelector);
+        verify(view, never()).goToDisplaySettings(settingsEditor);
     }
 
     @Test
@@ -209,9 +209,9 @@ public class DisplayerEditorTest {
 
         when(editorStatus.getSelectedOption(anyString())).thenReturn(-1);
         presenter.init(null);
-        verify(view, never()).gotoDataSetLookupConf(lookupEditor);
-        verify(view, never()).gotoTypeSelection(typeSelector);
-        verify(view).gotoDisplaySettings(settingsEditor);
+        verify(view, never()).goToDataSetLookupConf(lookupEditor);
+        verify(view, never()).goToTypeSelection(typeSelector);
+        verify(view).goToDisplaySettings(settingsEditor);
     }
 
     @Test

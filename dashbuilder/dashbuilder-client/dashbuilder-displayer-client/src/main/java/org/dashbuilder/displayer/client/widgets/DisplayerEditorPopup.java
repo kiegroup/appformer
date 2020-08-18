@@ -72,7 +72,7 @@ public class DisplayerEditorPopup extends BaseModal {
     }
 
     public DisplayerSettings getDisplayerSettings() {
-        return editor.getDisplayerSettings();
+        return this.editor.getDisplayerSettings();
     }
 
     public void setNewDisplayerTitle(String newDisplayerTitle) {
@@ -100,11 +100,11 @@ public class DisplayerEditorPopup extends BaseModal {
     }
     
     public void setTypeSelectorEnabled(boolean enableTypeSelector) {
-        editor.setTypeSelectorEnabled(enableTypeSelector);
+        this.editor.setTypeSelectorEnabled(enableTypeSelector);
     }
 
     public void setExternalDisplayerEnabled(boolean enabled) {
-        editor.setExternalComponentSettingsEnabled(enabled);
+        this.editor.setExternalComponentSettingsEnabled(enabled);
     }
     
     /**

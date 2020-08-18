@@ -73,10 +73,14 @@ public class ExternalComponentServlet extends HttpServlet {
     private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.reset();
         String pathInfo = req.getPathInfo();
-        String[] pathParts = pathInfo.split("/");
+        if (pathInfo == null) {
+            badRequest(resp);
+            return;
+        }
 
+        String[] pathParts = pathInfo.split("/");
         if (pathParts.length < 3) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            badRequest(resp);
             return;
         }
 
@@ -89,14 +93,18 @@ public class ExternalComponentServlet extends HttpServlet {
             String mimeType = mimetypesFileTypeMap.getContentType(pathInfo);
             resp.setContentType(mimeType);
             resp.setContentLength(size);
-            resp.setHeader("Cache-Control", cacheControlHeaderValue);
+            resp.setHeader(CACHE_CONTROL_PARAM, cacheControlHeaderValue);
         } catch (Exception e) {
             logger.info("Not able to find component asset {}", assetPath);
             logger.debug("Error opening external component asset", e);
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
-    
+
+    private void badRequest(HttpServletResponse resp) throws IOException {
+        resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
     private void errorResponse(HttpServletResponse resp) {
         try {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -129,7 +129,7 @@ public class DisplayerEditorView extends Composite
     }
 
     @Override
-    public void gotoTypeSelection(DisplayerTypeSelector typeSelector) {
+    public void goToTypeSelection(DisplayerTypeSelector typeSelector) {
         leftColumn.clear();
         leftColumn.getElement().getStyle().setOverflowY(Style.Overflow.HIDDEN);
         leftColumn.add(typeSelector);
@@ -142,7 +142,7 @@ public class DisplayerEditorView extends Composite
     }
 
     @Override
-    public void gotoDataSetLookupConf(DataSetLookupEditor lookupEditor) {
+    public void goToDataSetLookupConf(DataSetLookupEditor lookupEditor) {
         leftColumn.clear();
         leftColumn.getElement().getStyle().setOverflowY(Style.Overflow.AUTO);
         leftColumn.add(lookupEditor);
@@ -154,7 +154,7 @@ public class DisplayerEditorView extends Composite
     }
 
     @Override
-    public void gotoDisplaySettings(DisplayerSettingsEditor settingsEditor) {
+    public void goToDisplaySettings(DisplayerSettingsEditor settingsEditor) {
         leftColumn.clear();
         leftColumn.getElement().getStyle().setOverflowY(Style.Overflow.AUTO);
         leftColumn.add(settingsEditor);

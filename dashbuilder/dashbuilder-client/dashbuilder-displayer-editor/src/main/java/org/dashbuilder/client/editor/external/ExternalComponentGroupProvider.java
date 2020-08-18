@@ -22,6 +22,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.dashbuilder.client.editor.resources.i18n.Constants;
 import org.dashbuilder.external.model.ExternalComponent;
 import org.dashbuilder.external.service.ExternalComponentService;
 import org.jboss.errai.common.client.api.Caller;
@@ -34,6 +35,8 @@ import org.uberfire.ext.plugin.client.perspective.editor.api.PerspectiveEditorCo
 @EntryPoint
 @ApplicationScoped
 public class ExternalComponentGroupProvider implements PerspectiveEditorComponentGroupProvider {
+    
+    private final Constants i18n = Constants.INSTANCE;
 
     @Inject
     Caller<ExternalComponentService> externalComponentService;
@@ -51,7 +54,7 @@ public class ExternalComponentGroupProvider implements PerspectiveEditorComponen
 
     @Override
     public String getName() {
-        return "External Components";
+        return i18n.externalComponents();
     }
 
     @Override

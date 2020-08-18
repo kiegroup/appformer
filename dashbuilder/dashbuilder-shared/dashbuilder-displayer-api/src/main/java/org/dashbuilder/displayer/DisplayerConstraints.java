@@ -44,9 +44,9 @@ public class DisplayerConstraints {
     public DisplayerConstraints supportingComponentAttributes(boolean supportingComponentAttributes) {
         this.supportingComponentAttributes = supportingComponentAttributes;
         return this;
-    } 
-    
-    public DisplayerConstraints supportsAttribute( DisplayerAttributeDef attributeDef ) {
+    }
+
+    public DisplayerConstraints supportsAttribute(DisplayerAttributeDef attributeDef) {
 
         // Discard excluded attributes
         if (!excludedEditorAttributes.contains(attributeDef)) {
@@ -90,10 +90,12 @@ public class DisplayerConstraints {
 
     public void removeUnsupportedAttributes(DisplayerSettings displayerSettings) {
         String componentId = displayerSettings.getComponentId();
-        Map<String,String> settingsMap = displayerSettings.getSettingsFlatMap();
-        for (String setting : new HashSet<>(settingsMap.keySet())) {
-            if (!supportedEditorAttrStrings.contains(setting) && componentId != null && !setting.startsWith(componentId)) {
-                displayerSettings.removeDisplayerSetting(setting);
+        if (componentId != null) {
+            Map<String, String> settingsMap = displayerSettings.getSettingsFlatMap();
+            for (String setting : new HashSet<>(settingsMap.keySet())) {
+                if (!supportedEditorAttrStrings.contains(setting) && componentId != null && !setting.startsWith(componentId)) {
+                    displayerSettings.removeDisplayerSetting(setting);
+                }
             }
         }
     }
@@ -104,11 +106,12 @@ public class DisplayerConstraints {
         }
         if (settings.getDataSet() != null) {
             ValidationError error = dataSetLookupConstraints.check(settings.getDataSet());
-            if (error != null) return error;
-        }
-        else if (settings.getDataSetLookup() != null) {
+            if (error != null)
+                return error;
+        } else if (settings.getDataSetLookup() != null) {
             ValidationError error = dataSetLookupConstraints.check(settings.getDataSetLookup());
-            if (error != null) return error;
+            if (error != null)
+                return error;
         }
         return null;
     }

@@ -55,7 +55,7 @@ public class ExternalComponentPropertiesEditorTest {
 
     @Mock
     BusyIndicatorView loading;
-    
+
     @Captor
     ArgumentCaptor<Collection<PropertyEditorCategory>> categoriesCaptor;
 
@@ -97,25 +97,18 @@ public class ExternalComponentPropertiesEditorTest {
         ExternalComponent c1 = new ExternalComponent("c1", "c1 name", "c1 icon", false, asList(p1, p2));
 
         when(externalComponentServiceMock.byId(matches(c1.getId()))).thenReturn(Optional.of(c1));
-        externalComponentPropertiesEditor.init(c1.getId(),new HashMap<>(), props -> {
+        externalComponentPropertiesEditor.init(c1.getId(), new HashMap<>(), props -> {
         });
 
         verify(view).addCategories(categoriesCaptor.capture());
-        
+
         Collection<PropertyEditorCategory> categories = categoriesCaptor.getValue();
-        
+
         assertEquals(3, categories.size());
     }
 
     private ComponentParameter param(String category, String defaultValue, String type, String label, String name, List<String> comboValues) {
-        ComponentParameter param1 = new ComponentParameter();
-        param1.setCategory(category);
-        param1.setDefaultValue(defaultValue);
-        param1.setType(type);
-        param1.setLabel(label);
-        param1.setName(name);
-        param1.setComboValues(emptyList());
-        return param1;
+        return new ComponentParameter(name, type, category, defaultValue, label, comboValues);
     }
 
 }

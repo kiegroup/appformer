@@ -62,6 +62,11 @@ import org.uberfire.mvp.Command;
 @Dependent
 public class DisplayerEditor implements IsWidget {
 
+    private static final int DEFAULT_SECTION = 0;
+    private static final int DATASET_LOOKUP_SECTION = 1;
+    private static final int DISPLAY_SETTINGS_SECTION = 2;
+    private static final int EXTERNAL_COMPONENT_SECTION = 3;
+
     public interface View extends UberView<DisplayerEditor> {
 
         String getBrandNewDisplayerTitle();
@@ -80,11 +85,11 @@ public class DisplayerEditor implements IsWidget {
 
         void setComponentSettingsEnabled(boolean enabled);
 
-        void gotoTypeSelection(DisplayerTypeSelector typeSelector);
+        void goToTypeSelection(DisplayerTypeSelector typeSelector);
 
-        void gotoDataSetLookupConf(DataSetLookupEditor lookupEditor);
+        void goToDataSetLookupConf(DataSetLookupEditor lookupEditor);
 
-        void gotoDisplaySettings(DisplayerSettingsEditor settingsEditor);
+        void goToDisplaySettings(DisplayerSettingsEditor settingsEditor);
 
         void showTypeChangedWarning(Command yes, Command no);
 
@@ -341,13 +346,13 @@ public class DisplayerEditor implements IsWidget {
         int lastOption = editorStatus.getSelectedOption(displayerSettings.getUUID());
         if (activeSection < 0 || activeSection != lastOption) {
             switch (lastOption) {
-                case 3:
+                case EXTERNAL_COMPONENT_SECTION:
                     gotoExternalComponentSettings();
                     break;
-                case 2:
+                case DISPLAY_SETTINGS_SECTION:
                     gotoDisplaySettings();
                     break;
-                case 1:
+                case DATASET_LOOKUP_SECTION:
                     gotoDataSetLookupConf();
                     break;
                 default:
@@ -358,26 +363,26 @@ public class DisplayerEditor implements IsWidget {
     }
 
     public void gotoTypeSelection() {
-        activeSection = 0;
+        activeSection = DEFAULT_SECTION;
         editorStatus.saveSelectedOption(displayerSettings.getUUID(), activeSection);
-        view.gotoTypeSelection(typeSelector);
+        view.goToTypeSelection(typeSelector);
     }
 
     public void gotoDataSetLookupConf() {
-        activeSection = 1;
+        activeSection = DATASET_LOOKUP_SECTION;
         editorStatus.saveSelectedOption(displayerSettings.getUUID(), activeSection);
-        view.gotoDataSetLookupConf(lookupEditor);
+        view.goToDataSetLookupConf(lookupEditor);
         view.setTableDisplayModeEnabled(!DisplayerType.TABLE.equals(displayerSettings.getType()));
     }
 
     public void gotoDisplaySettings() {
-        activeSection = 2;
+        activeSection = DISPLAY_SETTINGS_SECTION;
         editorStatus.saveSelectedOption(displayerSettings.getUUID(), activeSection);
-        view.gotoDisplaySettings(settingsEditor);
+        view.goToDisplaySettings(settingsEditor);
     }
 
     public void gotoExternalComponentSettings() {
-        activeSection = 3;
+        activeSection = EXTERNAL_COMPONENT_SECTION;
         editorStatus.saveSelectedOption(displayerSettings.getUUID(), activeSection);
         initComponentEditor();
         view.gotoExternalComponentSettings(externalComponentPropertiesEditor);

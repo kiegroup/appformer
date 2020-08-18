@@ -116,7 +116,7 @@ public class ExternalDragComponent implements ExternalComponentDragDef, HasModal
         };
     }
 
-    private static Map<String, String> retrieveComponentProperties(String componentId, Map<String, String> componentProperties) {
+    private Map<String, String> retrieveComponentProperties(String componentId, Map<String, String> componentProperties) {
         String prefix = getComponentPrefix(componentId);
         return componentProperties.entrySet()
                                   .stream().filter(e -> e.getKey().startsWith(prefix))
@@ -124,7 +124,7 @@ public class ExternalDragComponent implements ExternalComponentDragDef, HasModal
                                                  Map.Entry::getValue));
     }
 
-    private static String getComponentPrefix(String componentId) {
+    private String getComponentPrefix(String componentId) {
         return componentId + ".";
     }
 

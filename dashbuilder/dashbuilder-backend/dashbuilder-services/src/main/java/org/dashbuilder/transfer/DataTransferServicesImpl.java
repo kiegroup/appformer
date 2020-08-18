@@ -153,7 +153,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
         String componentsPath = externalComponentLoader.getExternalComponentsDir();
 
         if (componentsPath != null) {
-            zipComponents(Paths.get("file:" + componentsPath),
+            zipComponents(Paths.get("file://" + componentsPath),
                           zos,
                           p -> true);
         }

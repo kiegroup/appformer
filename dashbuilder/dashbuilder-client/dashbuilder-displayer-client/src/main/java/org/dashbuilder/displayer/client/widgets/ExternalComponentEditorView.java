@@ -45,9 +45,6 @@ public class ExternalComponentEditorView extends Composite implements ExternalCo
 
     @Override
     public void init(ExternalComponentEditor presenter) {
-        componentEditorPropertiesColumn.innerHTML = "";
-        componentEditorPreviewColumn.innerHTML = "";
-
         domUtil.appendWidgetToElement(componentEditorPropertiesColumn, presenter.getPropertiesEditor().asWidget());
         domUtil.appendWidgetToElement(componentEditorPreviewColumn, presenter.getExternalComponentPresenter().getView().asWidget());
     }
