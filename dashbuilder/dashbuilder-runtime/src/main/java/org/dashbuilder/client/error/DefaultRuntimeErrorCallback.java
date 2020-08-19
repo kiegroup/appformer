@@ -35,6 +35,10 @@ import static org.uberfire.ext.widgets.common.client.common.popups.errors.ErrorP
 @Dependent
 public class DefaultRuntimeErrorCallback {
 
+    public static final String PARSING_JSON_SYNTAX_MSG = "Error parsing JSON: SyntaxError: JSON.parse: unexpected character at line 1 column 2 of the JSON data";
+    public static final String PARSING_JSON_MSG = "Error parsing JSON: SyntaxError: Unexpected token � in JSON at position 1";
+    public static final String SCRIPT_ERROR_MSG = "Script error. (:0)";
+
     @Inject
     BusyIndicatorView loading;
 
@@ -49,9 +53,9 @@ public class DefaultRuntimeErrorCallback {
         loading.hideBusyIndicator();
         errorPopUpLock = true;
         if (isServerOfflineException(throwable)) {
-            yesNoPopup(i18n.disconnectedFromServer(), i18n.couldNotConnectToServer());
+            showPopup(i18n.disconnectedFromServer(), i18n.couldNotConnectToServer());
         } else if (isInvalidBusContentException(throwable)) {
-            yesNoPopup(i18n.sessionTimeout(), i18n.invalidBusResponseProbablySessionTimeout());
+            showPopup(i18n.sessionTimeout(), i18n.invalidBusResponseProbablySessionTimeout());
         } else {
             showMessage(CommonConstants.INSTANCE.ExceptionGeneric0(extractMessageRecursively(throwable)),
                         this::unlock,
@@ -60,7 +64,7 @@ public class DefaultRuntimeErrorCallback {
 
     }
 
-    private void yesNoPopup(String title, String content) {
+    private void showPopup(String title, String content) {
         final YesNoCancelPopup result = newYesNoCancelPopup(title,
                                                             content,
                                                             Window.Location::reload,
@@ -70,7 +74,7 @@ public class DefaultRuntimeErrorCallback {
         result.show();
     }
 
-    private String extractMessageRecursively(final Throwable t) {
+    protected static String extractMessageRecursively(final Throwable t) {
         if (t == null) {
             return "";
         }
@@ -84,12 +88,12 @@ public class DefaultRuntimeErrorCallback {
         return throwable instanceof InvalidBusContentException;
     }
 
-    private static boolean isServerOfflineException(final Throwable throwable) {
+    protected static boolean isServerOfflineException(final Throwable throwable) {
         Throwable cause = throwable.getCause();
         String message = throwable.getMessage();
-        List<String> messages = Arrays.asList("Script error. (:0)",
-                                              "Error parsing JSON: SyntaxError: Unexpected token � in JSON at position 1",
-                                              "Error parsing JSON: SyntaxError: JSON.parse: unexpected character at line 1 column 2 of the JSON data");
+        List<String> messages = Arrays.asList(SCRIPT_ERROR_MSG,
+                                              PARSING_JSON_MSG,
+                                              PARSING_JSON_SYNTAX_MSG);
 
         return cause == null && message != null && messages.stream().anyMatch(message::equals);
     }
