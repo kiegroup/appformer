@@ -28,7 +28,7 @@ public interface ExternalComponentDragDef extends LayoutDragComponent, HasDragAn
 
     public default String getDragComponentTitle() {
         final String componentName = getComponentName();
-        return componentName == null ? "Unknow" : componentName;
+        return componentName == null ? "Unknown" : componentName;
     }
 
     public default String getDragComponentIconClass() {

@@ -16,6 +16,7 @@
 
 package org.dashbuilder.client.editor.external;
 
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.external.model.ExternalComponent;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -23,13 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(GwtMockitoTestRunner.class)
 public class ExternalComponentGroupProviderTest {
 
     @Mock

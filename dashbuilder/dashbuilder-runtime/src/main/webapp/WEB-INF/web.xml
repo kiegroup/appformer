@@ -52,7 +52,6 @@
   </welcome-file-list>
 
   <!-- Custom Component assets server -->
-
   <servlet>
     <servlet-name>DashbuilderExternalComponentsServlet</servlet-name>
     <servlet-class>org.dashbuilder.external.ExternalComponentServlet</servlet-class>

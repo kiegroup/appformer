@@ -128,11 +128,11 @@ public class ExternalDragComponent implements ExternalComponentDragDef, HasModal
         return componentId + ".";
     }
 
-    private static String appendComponentPrefix(String componentId, String key) {
+    private String appendComponentPrefix(String componentId, String key) {
         return componentId + "." + key;
     }
 
-    private static String removeComponentPrefix(String componentId, String key) {
+    private String removeComponentPrefix(String componentId, String key) {
         return key.replaceFirst(componentId + ".", "");
     }
 

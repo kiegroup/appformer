@@ -93,7 +93,7 @@ public class DisplayerConstraints {
         if (componentId != null) {
             Map<String, String> settingsMap = displayerSettings.getSettingsFlatMap();
             for (String setting : new HashSet<>(settingsMap.keySet())) {
-                if (!supportedEditorAttrStrings.contains(setting) && componentId != null && !setting.startsWith(componentId)) {
+                if (!supportedEditorAttrStrings.contains(setting) && !setting.startsWith(componentId)) {
                     displayerSettings.removeDisplayerSetting(setting);
                 }
             }
