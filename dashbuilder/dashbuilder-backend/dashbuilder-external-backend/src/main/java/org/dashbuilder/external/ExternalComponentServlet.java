@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.dashbuilder.external.service.ExternalComponentAssetProvider;
+import org.dashbuilder.external.service.ExternalComponentLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,9 @@ public class ExternalComponentServlet extends HttpServlet {
 
     @Inject
     ExternalComponentAssetProvider assetProvider;
+
+    @Inject
+    ExternalComponentLoader loader;
 
     String cacheControlHeaderValue = "no-cache";
     private MimetypesFileTypeMap mimetypesFileTypeMap;
@@ -72,6 +76,13 @@ public class ExternalComponentServlet extends HttpServlet {
 
     private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.reset();
+
+        if (!loader.isEnabled()) {
+            logger.debug("Ignoring request because External Components API is disabled.");
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             badRequest(resp);
