@@ -16,6 +16,7 @@
 package org.dashbuilder.displayer.client.widgets;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
