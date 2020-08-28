@@ -8,7 +8,7 @@ jobs:
       matrix:
         java-version: [8, 11]
       fail-fast: false
-    runs-on: ['self-hosted', 'Linux', 'X64', 'emingora']
+    runs-on: [emingora]
     name: Maven Build
     steps:
       - name: Set up JDK
