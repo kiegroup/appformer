@@ -18,7 +18,6 @@ package org.guvnor.rest.backend;
 
 import java.util.Arrays;
 
-import javax.jws.soap.SOAPBinding;
 import javax.ws.rs.core.Response;
 
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
