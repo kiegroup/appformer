@@ -72,7 +72,6 @@ public class ExternalComponentView extends Composite implements ExternalComponen
             if (lastMessage != null) {
                 postMessageToComponent(lastMessage);
             }
-            return null;
         };
     }
 
