@@ -4,24 +4,12 @@ on: [pull_request]
 
 jobs:
   build-chain:
-    strategy:
-      matrix:
-        java-version: [8, 11]
-      fail-fast: false
     runs-on: ubuntu-latest
     name: Maven Build
     steps:
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java-version }}
-      - uses: s4u/maven-settings-action@v2.1.0
-        with:
-          mirrors: '[{"id": "external-mirror", "name": "External Mirror", "mirrorOf": "central", "url": "https://repo.maven.apache.org/maven2/"}]'
-          githubServer: false
-      - name: Build Chain ${{ matrix.java-version }}
+      - name: Build Chain 8
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v1.4
+        uses: kiegroup/github-action-build-chain@openjdk8
         with:
           build-command: 'mvn -e -nsu -Dfull -Pwildfly clean install -Prun-code-coverage  -Dcontainer.profile=wildfly -Dcontainer=wildfly -Dintegration-tests=true -Dmaven.test.failure.ignore=true'
           build-command-upstream: |
@@ -32,4 +20,3 @@ jobs:
             **/dashbuilder-runtime.war
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        
