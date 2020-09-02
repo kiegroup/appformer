@@ -20,6 +20,7 @@ package org.uberfire.mocks;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
 
 import com.google.common.collect.Iterators;
 
@@ -66,4 +67,10 @@ public class MockInstanceImpl<T> implements Instance<T> {
     public T get() {
         return instances[0];
     }
+
+	@Override
+	public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

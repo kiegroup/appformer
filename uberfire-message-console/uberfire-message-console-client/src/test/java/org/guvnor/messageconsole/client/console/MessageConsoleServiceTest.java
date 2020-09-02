@@ -18,8 +18,11 @@ package org.guvnor.messageconsole.client.console;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletionStage;
 
 import javax.enterprise.event.Event;
+import javax.enterprise.event.NotificationOptions;
+import javax.enterprise.util.TypeLiteral;
 
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -107,5 +110,20 @@ public class MessageConsoleServiceTest {
                                              Annotation... qualifiers) {
             throw new UnsupportedOperationException("Not implemented.");
         }
+
+		@Override
+		public <U extends T> CompletionStage<U> fireAsync(U event) {
+			throw new UnsupportedOperationException("Not implemented.");
+		}
+
+		@Override
+		public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
+			throw new UnsupportedOperationException("Not implemented.");
+		}
+
+		@Override
+		public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+			throw new UnsupportedOperationException("Not implemented.");
+		}
     }
 }

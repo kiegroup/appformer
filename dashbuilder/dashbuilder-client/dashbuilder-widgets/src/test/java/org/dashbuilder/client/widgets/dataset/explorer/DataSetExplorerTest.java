@@ -23,6 +23,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -217,5 +219,10 @@ public class DataSetExplorerTest {
         public DataSetPanel get() {
             return dataSetPanel;
         }
+
+		@Override
+		public <U extends DataSetPanel> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+			return (Instance<U>) dataSetPanel;
+		}
     }
 }
