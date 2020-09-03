@@ -15,8 +15,6 @@
  */
 package org.appformer.kogito.bridge.client.pmmleditor.marshaller.model;
 
-import jsinterop.annotations.JsIgnore;
-import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
@@ -24,17 +22,9 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
 public class PMMLFieldData {
 
-    @JsIgnore
-    public static final String ACTIVE = "active";
-
-    @JsOverlay
-    public final String getUsageType() {
-        return getNativeUsageType() != null ? getNativeUsageType() : ACTIVE;
-    }
-
     @JsProperty(name = "fieldName")
     public native String getFieldName();
 
     @JsProperty(name = "usageType")
-    public native String getNativeUsageType();
+    public native String getUsageType();
 }
