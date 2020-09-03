@@ -32,12 +32,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.dashbuilder.dataset.DataSetDefRegistryCDI;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.events.DataSetDefRegisteredEvent;
@@ -84,9 +86,12 @@ public class DataTransferServicesImpl implements DataTransferServices {
     private NavTreeStorage navTreeStorage;
     private byte[] buffer = new byte[1024];
     private ExternalComponentLoader externalComponentLoader;
+    
+    private String dashbuilderLocation;
+    private String exportDir;
 
     public DataTransferServicesImpl() {}
-
+    
     @Inject
     public DataTransferServicesImpl(
                                     final @Named("ioStrategy") IOService ioService,
@@ -116,6 +121,12 @@ public class DataTransferServicesImpl implements DataTransferServices {
         this.externalComponentLoader = externalComponentLoader;
     }
 
+    @PostConstruct
+    public void init() {
+        dashbuilderLocation = System.getProperty(DB_STANDALONE_LOCATION_PROP);
+        exportDir = System.getProperty(EXPORT_LOCATION_PROP);
+    }
+    
     @Override
     public String doExport(DataTransferExportModel exportModel) throws java.io.IOException {
         String zipLocation = new StringBuilder().append(System.getProperty("java.io.tmpdir"))
@@ -229,7 +240,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
     }
 
     @Override
-    public DataTransferAssets assetsToExport() {
+    public ExportInfo exportInfo() {
         List<String> pages = listPaths(perspectivesFS,
                                        p -> p.endsWith(FILE_EXT)).stream()
                                                                  .map(p -> p.getName(p.getNameCount() - 2))
@@ -242,7 +253,35 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                                                                .map(this::parseDataSetDefinition)
                                                                                .filter(DataSetDef::isPublic)
                                                                                .collect(Collectors.toList());
-        return new DataTransferAssets(datasetsDefs, pages);
+        boolean connectedToDashbuilder = isExternalServerConfigured();
+        return new ExportInfo(datasetsDefs, pages, connectedToDashbuilder);
+    }
+    
+    @Override
+    public String generateExportUrl(DataTransferExportModel exportModel) throws Exception {
+        if (!isExternalServerConfigured()) {
+            throw new RuntimeException("External Server is not configured.");
+        }
+        try {
+            String path = this.doExport(exportModel);
+            String fileName = sessionInfo.getIdentity().getIdentifier() + "-dashboard-latest";
+            String destination = new StringBuilder().append(exportDir)
+                                                    .append(File.separator)
+                                                    .append(fileName)
+                                                    .append(".zip")
+                                                    .toString();
+            FileUtils.deleteQuietly(new File(destination));
+            copyFileContents(Paths.get(path).toFile(), destination);
+            return new URIBuilder(dashbuilderLocation).addParameter("import", fileName).toString();
+        } catch (Exception e) {
+            LOGGER.error("Error generating model link.", e);
+            throw new RuntimeException(e);
+        }
+        
+    }
+    
+    private boolean isExternalServerConfigured() {
+        return exportDir != null && dashbuilderLocation != null;
     }
 
     private List<String> importFiles(Path path) throws Exception {
@@ -310,11 +349,11 @@ public class DataTransferServicesImpl implements DataTransferServices {
         return newFileName;
     }
 
-    private void copyFileContents(File newFile, String newFileName) {
+    private void copyFileContents(File originFile, String newFileName) {
         File target = new File(newFileName);
         target.getParentFile().mkdirs();
         if (!target.exists()) {
-            ioService.copy(Paths.get(newFile.toURI()), Paths.get(target.toURI()));
+            ioService.copy(Paths.get(originFile.toURI()), Paths.get(target.toURI()));
         }
     }
 

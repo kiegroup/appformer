@@ -79,6 +79,10 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
 
     @Inject
     @DataField
+    HTMLButtonElement openExport;
+
+    @Inject
+    @DataField
     @Named("h1")
     HTMLHeadingElement exportHeading;
 
@@ -124,6 +128,11 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     @EventHandler("downloadExport")
     public void downloadAction(ClickEvent click) {
         presenter.confirmDownload();
+    }
+
+    @EventHandler("openExport")
+    public void openAction(ClickEvent click) {
+        presenter.openExport();
     }
 
     @EventHandler("datasetsInfoAnchor")
@@ -205,6 +214,11 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
         wbNotification.fire(new NotificationEvent(i18n.validationError(),
                                                   NotificationEvent.NotificationType.ERROR));
     }
+    
+    @Override
+    public void showOpenExport(boolean externalServerAvailable) {
+        openExport.style.visibility = externalServerAvailable ? "visible" : "hidden";
+    }
 
     private void errorState() {
         state("pficon pficon-error-circle-o",
@@ -229,6 +243,7 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
         exportHeading.textContent = headingText;
         alertContainer.hidden = hideAlert;
         downloadExport.disabled = hideDownload;
+        openExport.disabled = hideDownload;
     }
 
 }

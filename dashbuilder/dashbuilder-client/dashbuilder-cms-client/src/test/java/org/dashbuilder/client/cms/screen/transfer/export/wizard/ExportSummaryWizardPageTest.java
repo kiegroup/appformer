@@ -22,7 +22,7 @@ import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.transfer.DataTransferAssets;
+import org.dashbuilder.transfer.ExportInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,9 +52,9 @@ public class ExportSummaryWizardPageTest {
         HashMap<String, List<String>> validation = new HashMap<>();
         validation.put(PAGE, Collections.singletonList(UUID));
 
-        DataTransferAssets assets = new DataTransferAssets(Collections.singletonList(def1), Collections.emptyList());
+        ExportInfo assets = new ExportInfo(Collections.singletonList(def1), Collections.emptyList(), false);
 
-        exportWizardSummaryPage.setAssets(assets);
+        exportWizardSummaryPage.setExportInfo(assets);
         exportWizardSummaryPage.remapMissingDependencies(validation);
         
         assertEquals(NAME, validation.get(PAGE).get(0));
