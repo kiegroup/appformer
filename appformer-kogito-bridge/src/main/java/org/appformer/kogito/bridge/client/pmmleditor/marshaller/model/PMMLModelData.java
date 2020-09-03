@@ -41,6 +41,6 @@ public class PMMLModelData {
     public native JsArrayLike<String> getNativeFields();
 
     @JsProperty(name = "fields")
-    public native void setNativeFields(JsArrayLike<PMMLModelData> models);
+    public native void setNativeFields(JsArrayLike<String> models);
 
 }
