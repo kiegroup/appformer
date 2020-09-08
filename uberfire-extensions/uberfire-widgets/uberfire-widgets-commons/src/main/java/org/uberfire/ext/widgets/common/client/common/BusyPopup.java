@@ -17,8 +17,10 @@
 package org.uberfire.ext.widgets.common.client.common;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.DecoratedPopupPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -40,6 +42,8 @@ public class BusyPopup extends DecoratedPopupPanel {
             fadeInAnimation.run(250);
         }
     };
+
+    private static boolean canClose = false;
 
     private static MessageState state = MessageState.DORMANT;
     private static final LinearFadeInAnimation fadeInAnimation = new LinearFadeInAnimation(INSTANCE) {
@@ -81,6 +85,21 @@ public class BusyPopup extends DecoratedPopupPanel {
         //Make sure it appears on top of other popups
         getElement().getStyle().setZIndex(Integer.MAX_VALUE);
         setGlassEnabled(true);
+
+        Event.addNativePreviewHandler(event -> {
+
+            if (canClose &&
+                    state == MessageState.VISIBLE &&
+                    event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ESCAPE) {
+                hide();
+            }
+        });
+    }
+
+    public static void showMessage(final String message,
+                                   final boolean canClosePopup) {
+        canClose = canClosePopup;
+        showMessage(message);   
     }
 
     public static void showMessage(final String message) {
