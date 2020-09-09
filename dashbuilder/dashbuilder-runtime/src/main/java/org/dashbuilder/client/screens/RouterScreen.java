@@ -110,8 +110,10 @@ public class RouterScreen {
         }
 
         if (runtimeModelOp.isPresent()) {
+            RuntimeModel runtimeModel = runtimeModelOp.get();
             placeManager.goTo(RuntimePerspective.ID);
-            runtimeScreen.loadDashboards(runtimeModelOp.get());
+            runtimeScreen.loadDashboards(runtimeModel);
+            runtimeScreen.goToIndex(runtimeModel.getLayoutTemplates());
             return;
         }
 

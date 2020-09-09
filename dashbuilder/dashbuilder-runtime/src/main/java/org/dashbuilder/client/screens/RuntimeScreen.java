@@ -76,12 +76,9 @@ public class RuntimeScreen {
         NavTree navTree = runtimeModel.getNavTree();
         Menus menus = menusHelper.buildMenusFromNavTree(navTree).build();
         view.addMenus(menus);
-
-        goToIndex(runtimeModel.getLayoutTemplates());
-
     }
 
-    void goToIndex(List<LayoutTemplate> templates) {
+    public void goToIndex(List<LayoutTemplate> templates) {
         if (templates.size() == 1) {
             placeManager.goTo(templates.get(0).getName());
         } else {
