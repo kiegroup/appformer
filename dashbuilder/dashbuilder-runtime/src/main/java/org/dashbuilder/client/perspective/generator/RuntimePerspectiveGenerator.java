@@ -24,6 +24,8 @@ import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.client.mvp.Activity;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -50,10 +52,17 @@ public class RuntimePerspectiveGenerator {
     private LayoutGenerator layoutGenerator;
 
     public PerspectiveEditorActivity generatePerspective(LayoutTemplate layoutTemplate) {
-        PerspectiveEditorScreenActivity screen = createNewScreen(layoutTemplate);
-        return createNewPerspective(layoutTemplate, screen);
+        if (isANewPerspective(layoutTemplate)) {
+            PerspectiveEditorScreenActivity screen = createNewScreen(layoutTemplate);
+            return createNewPerspective(layoutTemplate,
+                                 screen);
+        } else {
+            PerspectiveEditorScreenActivity screen = updateScreen(layoutTemplate);
+            return updatePerspective(layoutTemplate,
+                              screen);
+        }
     }
-
+    
     private PerspectiveEditorScreenActivity createNewScreen(LayoutTemplate perspective) {
         PerspectiveEditorScreenActivity activity = new PerspectiveEditorScreenActivity(perspective,
                                                                                        layoutGenerator);
@@ -94,6 +103,29 @@ public class RuntimePerspectiveGenerator {
         activityBeansCache.removeActivity(perspectiveName);
         activityBeansCache.addNewPerspectiveActivity(beanManager.lookupBeans(perspectiveName).iterator().next());
         return activity;
+    }
+    
+    private PerspectiveEditorScreenActivity updateScreen(LayoutTemplate layoutTemplate) {
+        final String perspectiveScreenId = PerspectiveEditorScreenActivity.buildScreenId(layoutTemplate.getName());
+        final SyncBeanDef<Activity> activity = activityBeansCache.getActivity(perspectiveScreenId);
+        final PerspectiveEditorScreenActivity screenActivity = (PerspectiveEditorScreenActivity) activity.getInstance();
+        screenActivity.setLayoutTemplate(layoutTemplate);
+        return screenActivity;
+    }
+    
+    private PerspectiveEditorActivity updatePerspective(LayoutTemplate layoutTemplate,
+                                                        PerspectiveEditorScreenActivity screen) {
+                             final SyncBeanDef<Activity> activity = activityBeansCache.getActivity(layoutTemplate.getName());
+                             final PerspectiveEditorActivity perspectiveEditorActivity = (PerspectiveEditorActivity) activity.getInstance();
+                             perspectiveEditorActivity.update(layoutTemplate,
+                                                              screen);
+                             return perspectiveEditorActivity;
+                         }
+    
+    
+    private boolean isANewPerspective(LayoutTemplate layoutTemplate) {
+        final IOCBeanDef<Activity> activity = activityBeansCache.getActivity(layoutTemplate.getName());
+        return activity == null;
     }
 
 }
