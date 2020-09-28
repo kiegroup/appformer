@@ -113,7 +113,7 @@ public class RuntimeOptions {
                 logger.debug("Not able to parse upload size {}", uploadSizeStr, e);
             }
         }
-        logger.info("Max upload size is " + uploadSize);
+        logger.info("Max upload size is {}", uploadSize);
     }
 
     /**

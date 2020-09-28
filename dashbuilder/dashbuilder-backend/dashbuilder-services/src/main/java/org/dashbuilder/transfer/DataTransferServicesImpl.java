@@ -275,7 +275,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
             return new URIBuilder(dashbuilderLocation).addParameter("import", fileName).toString();
         } catch (Exception e) {
             LOGGER.error("Error generating model link.", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error generating model link.", e);
         }
         
     }
