@@ -31,8 +31,8 @@ public class ExportInfo {
     public ExportInfo() {}
 
     public ExportInfo(List<DataSetDef> datasetsDefinitions,
-                       List<String> pages,
-                       boolean externalServerAvailable) {
+                      List<String> pages,
+                      boolean externalServerAvailable) {
         this.datasetsDefinitions = datasetsDefinitions;
         this.pages = pages;
         this.externalServerAvailable = externalServerAvailable;

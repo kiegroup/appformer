@@ -86,12 +86,14 @@ public class DataTransferServicesImpl implements DataTransferServices {
     private NavTreeStorage navTreeStorage;
     private byte[] buffer = new byte[1024];
     private ExternalComponentLoader externalComponentLoader;
-    
+
     private String dashbuilderLocation;
     private String exportDir;
 
-    public DataTransferServicesImpl() {}
-    
+    public DataTransferServicesImpl() {
+        // empty constructor
+    }
+
     @Inject
     public DataTransferServicesImpl(
                                     final @Named("ioStrategy") IOService ioService,
@@ -126,7 +128,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
         dashbuilderLocation = System.getProperty(DB_STANDALONE_LOCATION_PROP);
         exportDir = System.getProperty(EXPORT_LOCATION_PROP);
     }
-    
+
     @Override
     public String doExport(DataTransferExportModel exportModel) throws java.io.IOException {
         String zipLocation = new StringBuilder().append(System.getProperty("java.io.tmpdir"))
@@ -163,18 +165,18 @@ public class DataTransferServicesImpl implements DataTransferServices {
 
         if (externalComponentLoader.isEnabled()) {
             String componentsPath = externalComponentLoader.getExternalComponentsDir();
-    
+
             if (componentsPath != null && exists(componentsPath)) {
                 Path componentsBasePath = Paths.get(new StringBuilder().append(SpacesAPI.Scheme.FILE)
-                                                    .append("://")
-                                                    .append(componentsPath)
-                                                    .toString());
-                externalComponentLoader.load().forEach(c -> {                
-                 Path componentPath = componentsBasePath.resolve(c.getId());
-                 zipComponentFiles(componentsBasePath,
-                                   componentPath,
-                                   zos,
-                                   p -> true);
+                                                                       .append("://")
+                                                                       .append(componentsPath)
+                                                                       .toString());
+                externalComponentLoader.load().forEach(c -> {
+                    Path componentPath = componentsBasePath.resolve(c.getId());
+                    zipComponentFiles(componentsBasePath,
+                                      componentPath,
+                                      zos,
+                                      p -> true);
                 });
             }
         }
@@ -253,10 +255,9 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                                                                .map(this::parseDataSetDefinition)
                                                                                .filter(DataSetDef::isPublic)
                                                                                .collect(Collectors.toList());
-        boolean connectedToDashbuilder = isExternalServerConfigured();
-        return new ExportInfo(datasetsDefs, pages, connectedToDashbuilder);
+        return new ExportInfo(datasetsDefs, pages, isExternalServerConfigured());
     }
-    
+
     @Override
     public String generateExportUrl(DataTransferExportModel exportModel) throws Exception {
         if (!isExternalServerConfigured()) {
@@ -277,9 +278,9 @@ public class DataTransferServicesImpl implements DataTransferServices {
             LOGGER.error("Error generating model link.", e);
             throw new RuntimeException("Error generating model link.", e);
         }
-        
+
     }
-    
+
     private boolean isExternalServerConfigured() {
         return exportDir != null && dashbuilderLocation != null;
     }
@@ -608,7 +609,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
             return false;
         };
     }
-    
+
     private boolean exists(String file) {
         return java.nio.file.Files.exists(java.nio.file.Paths.get(file));
     }

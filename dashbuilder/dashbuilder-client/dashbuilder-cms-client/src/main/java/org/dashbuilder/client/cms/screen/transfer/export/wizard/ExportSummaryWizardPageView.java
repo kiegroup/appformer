@@ -24,6 +24,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.google.gwt.dom.client.Style.VerticalAlign;
 import com.google.gwt.event.dom.client.ClickEvent;
 import elemental2.dom.Element;
 import elemental2.dom.HTMLAnchorElement;
@@ -80,6 +81,10 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     @Inject
     @DataField
     HTMLButtonElement openExport;
+    
+    @Inject
+    @DataField
+    HTMLDivElement actionsContainer;
 
     @Inject
     @DataField
@@ -109,11 +114,18 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     private Event<NotificationEvent> wbNotification;
 
     private ExportSummaryWizardPage presenter;
+    
+    private HelpIcon openHelp;
 
     @Override
     public void init(ExportSummaryWizardPage presenter) {
         this.presenter = presenter;
         alertContainer.hidden = true;
+        
+        openHelp = new HelpIcon();
+        openHelp.setHelpContent(i18n.openHelpText());
+        openHelp.getElement().getStyle().setVerticalAlign(VerticalAlign.SUPER);
+        elementalUtil.appendWidgetToElement(actionsContainer, openHelp);
 
         HelpIcon navigationhelp = new HelpIcon();
         navigationhelp.setHelpContent(i18n.navigationHelpText());
@@ -218,6 +230,7 @@ public class ExportSummaryWizardPageView implements ExportSummaryWizardPage.View
     @Override
     public void showOpenExport(boolean externalServerAvailable) {
         openExport.style.visibility = externalServerAvailable ? "visible" : "hidden";
+        openHelp.setVisible(externalServerAvailable);
     }
 
     private void errorState() {

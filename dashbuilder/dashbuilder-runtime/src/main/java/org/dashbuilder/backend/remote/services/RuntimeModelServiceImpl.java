@@ -117,7 +117,6 @@ public class RuntimeModelServiceImpl implements RuntimeModelService {
 
     private long lastModified(String modelFilePath) {
         try {
-            System.currentTimeMillis();
             return Files.readAttributes(Paths.get(modelFilePath), BasicFileAttributes.class)
                         .lastModifiedTime()
                         .toMillis();

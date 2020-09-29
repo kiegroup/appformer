@@ -41,11 +41,13 @@ public class ExternalComponentsContentListener {
     RuntimeOptions options;
 
     public void onRuntimeModelRemoved(@Observes RemovedRuntimeModelEvent event) {
-        String externalComponentsDir = loader.getExternalComponentsDir();
-        String runtimeModelId = event.getRuntimeModelId();
         if (options.isComponentPartition()) {
-            File runtimeModelComponentsFile = Paths.get(externalComponentsDir, runtimeModelId).toFile();
-            FileUtils.deleteQuietly(runtimeModelComponentsFile);
+            String componentsDir = loader.getExternalComponentsDir();
+            String runtimeModelId = event.getRuntimeModelId();
+            if (componentsDir != null && runtimeModelId != null) {
+                File runtimeModelComponentsFile = Paths.get(componentsDir, runtimeModelId).toFile();
+                FileUtils.deleteQuietly(runtimeModelComponentsFile);
+            }
         }
 
     }
