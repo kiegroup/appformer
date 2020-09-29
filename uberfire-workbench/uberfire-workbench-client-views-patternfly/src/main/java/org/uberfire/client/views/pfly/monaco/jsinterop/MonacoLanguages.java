@@ -38,6 +38,6 @@ public class MonacoLanguages {
     @JsFunction
     public interface ProvideCompletionItemsFunction {
 
-        JavaScriptObject call();
+        JavaScriptObject call(ITextModel model, Position position);
     }
 }
