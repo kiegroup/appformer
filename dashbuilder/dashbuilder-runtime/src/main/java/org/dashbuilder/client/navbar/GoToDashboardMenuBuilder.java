@@ -16,42 +16,27 @@
 
 package org.dashbuilder.client.navbar;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.IsWidget;
 import elemental2.dom.DomGlobal;
 import org.dashbuilder.client.RuntimeEntryPoint;
 import org.dashbuilder.client.resources.i18n.AppConstants;
-import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.uberfire.client.mvp.PerspectiveManager;
-import org.uberfire.client.workbench.events.PerspectiveChange;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuFactory.CustomMenuBuilder;
 import org.uberfire.workbench.model.menu.MenuItem;
-import org.uberfire.workbench.model.menu.MenuPosition;
-import org.uberfire.workbench.model.menu.impl.BaseMenuCustom;
 
 @ApplicationScoped
 public class GoToDashboardMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
-    private AnchorListItem link = new AnchorListItem();
-
     @Inject
     private PerspectiveManager perspectiveManager;
 
-    @PostConstruct
-    public void buildLink() {
-        link.setIcon(IconType.EXTERNAL_LINK);
-
-        link.getWidget(0).setStyleName("nav-item-iconic"); // Fix for IE11
-        link.setTitle(AppConstants.INSTANCE.dashboardOpenTooltip());
-
-        link.addClickHandler(e -> this.openDashboardInNewWindow());
-    }
+    @Inject
+    MenuBuilderHelper menuBuilderHelper;
 
     @Override
     public void push(CustomMenuBuilder element) {
@@ -60,19 +45,9 @@ public class GoToDashboardMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
     @Override
     public MenuItem build() {
-        return new BaseMenuCustom<IsWidget>() {
-
-            @Override
-            public IsWidget build() {
-                return link;
-            }
-
-            @Override
-            public MenuPosition getPosition() {
-                return MenuPosition.RIGHT;
-            }
-        };
-
+        return menuBuilderHelper.buildMenuItem(AppConstants.INSTANCE.dashboardOpenTooltip(),
+                                               IconType.EXTERNAL_LINK,
+                                               this::openDashboardInNewWindow);
     }
 
     private void openDashboardInNewWindow() {
@@ -83,5 +58,5 @@ public class GoToDashboardMenuBuilder implements MenuFactory.CustomMenuBuilder {
                                               .buildString();
         DomGlobal.window.open(standaloneUrl);
     }
-    
+
 }

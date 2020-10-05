@@ -43,7 +43,7 @@ import org.uberfire.client.workbench.Workbench;
 public class RuntimeEntryPoint {
 
     public static final String DASHBOARD_PARAM = "dashboard";
-    
+
     public static final String PERSPECTIVE_PARAM = "perspective";
 
     private static AppConstants i18n = AppConstants.INSTANCE;
@@ -72,7 +72,7 @@ public class RuntimeEntryPoint {
         Map<String, List<String>> params = Window.Location.getParameterMap();
         boolean isStandalone = params.containsKey("standalone");
         List<String> dashboardParams = params.get(DASHBOARD_PARAM);
-        
+
         if (!foundDashboard(dashboardParams)) {
             dashboardParams = params.get(PERSPECTIVE_PARAM);
         }
@@ -94,12 +94,12 @@ public class RuntimeEntryPoint {
             notFound();
         } else {
             targetPerspective();
-        }        
+        }
     }
 
     public void notFound() {
         String newUrl = GWT.getHostPageBaseURL() + "?standalone&" +
-                        "perspective=" + NotFoundPerspective.ID + "&" +
+                        PERSPECTIVE_PARAM + "=" + NotFoundPerspective.ID + "&" +
                         DASHBOARD_PARAM + "=" + dashboard;
         DomGlobal.window.history.pushState(null,
                                            "Dashbuilder Runtime | Not Found",
@@ -110,7 +110,7 @@ public class RuntimeEntryPoint {
 
     public void targetPerspective() {
         String newUrl = Window.Location.createUrlBuilder()
-                                       .setParameter("perspective", dashboard)
+                                       .setParameter(PERSPECTIVE_PARAM, dashboard)
                                        .buildString();
         DomGlobal.window.history.pushState(null,
                                            "Dashbuilder Runtime",
@@ -135,10 +135,9 @@ public class RuntimeEntryPoint {
             loading.remove();
         }
     }
-    
+
     private boolean foundDashboard(List<String> dashboardParams) {
         return dashboardParams != null && !dashboardParams.isEmpty();
     }
-
 
 }
