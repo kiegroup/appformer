@@ -89,6 +89,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
 
     private String dashbuilderLocation;
     private String exportDir;
+    private boolean shareOpenModel;
 
     public DataTransferServicesImpl() {
         // empty constructor
@@ -127,6 +128,9 @@ public class DataTransferServicesImpl implements DataTransferServices {
     public void init() {
         dashbuilderLocation = System.getProperty(DB_STANDALONE_LOCATION_PROP);
         exportDir = System.getProperty(EXPORT_LOCATION_PROP);
+
+        String shareOpenModelStr = System.getProperty(SHARE_OPEN_MODEL_PROP, Boolean.FALSE.toString());
+        shareOpenModel = Boolean.parseBoolean(shareOpenModelStr);
     }
 
     @Override
@@ -265,7 +269,8 @@ public class DataTransferServicesImpl implements DataTransferServices {
         }
         try {
             String path = this.doExport(exportModel);
-            String fileName = sessionInfo.getIdentity().getIdentifier() + "-dashboard-latest";
+            String prefix = shareOpenModel ? "business-central" : sessionInfo.getIdentity().getIdentifier();
+            String fileName = prefix + "-dashboard-latest";
             String destination = new StringBuilder().append(exportDir)
                                                     .append(File.separator)
                                                     .append(fileName)

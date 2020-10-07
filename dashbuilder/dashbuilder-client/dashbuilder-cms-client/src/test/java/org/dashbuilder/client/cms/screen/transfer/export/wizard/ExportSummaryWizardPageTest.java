@@ -52,9 +52,9 @@ public class ExportSummaryWizardPageTest {
         HashMap<String, List<String>> validation = new HashMap<>();
         validation.put(PAGE, Collections.singletonList(UUID));
 
-        ExportInfo assets = new ExportInfo(Collections.singletonList(def1), Collections.emptyList(), false);
+        ExportInfo exportInfo = new ExportInfo(Collections.singletonList(def1), Collections.emptyList(), false);
 
-        exportWizardSummaryPage.setExportInfo(assets);
+        exportWizardSummaryPage.setExportInfo(exportInfo);
         exportWizardSummaryPage.remapMissingDependencies(validation);
         
         assertEquals(NAME, validation.get(PAGE).get(0));
@@ -71,5 +71,5 @@ public class ExportSummaryWizardPageTest {
         
         assertEquals(UUID, validation.get(PAGE).get(0));
     }
-
+    
 }
