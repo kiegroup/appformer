@@ -68,9 +68,8 @@ public class MockInstanceImpl<T> implements Instance<T> {
         return instances[0];
     }
 
-	@Override
-	public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public <U extends T> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+        return null;
+    }
 }

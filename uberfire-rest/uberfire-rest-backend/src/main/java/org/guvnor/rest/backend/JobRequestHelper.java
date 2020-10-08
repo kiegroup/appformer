@@ -397,23 +397,20 @@ public class JobRequestHelper {
                 return null;
             }
 
-			@Override
-			public <U extends TestResultMessage> CompletionStage<U> fireAsync(U event) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public <U extends TestResultMessage> CompletionStage<U> fireAsync(U event) {
+                return null;
+            }
 
-			@Override
-			public <U extends TestResultMessage> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public <U extends TestResultMessage> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
+                return null;
+            }
 
-			@Override
-			public <U extends TestResultMessage> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+            @Override
+            public <U extends TestResultMessage> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+                return null;
+            }
         };
     }
 
