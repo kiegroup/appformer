@@ -30,7 +30,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/")
 public class HealthService {
     
-    private static String SUCCESS_RESPONSE = "{\"success\": true}";
+    private static final String SUCCESS_RESPONSE = "{\"success\": true}";
     
     @GET
     @PermitAll
