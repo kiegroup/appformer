@@ -220,9 +220,9 @@ public class DataSetExplorerTest {
             return dataSetPanel;
         }
 
-		@Override
-		public <U extends DataSetPanel> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-			return (Instance<U>) dataSetPanel;
-		}
+        @Override
+        public <U extends DataSetPanel> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+            return (Instance<U>) dataSetPanel;
+        }
     }
 }

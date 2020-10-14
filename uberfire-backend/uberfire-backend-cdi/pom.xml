@@ -161,8 +161,8 @@
           <artifactId>jboss-annotations-api_1.3_spec</artifactId>
         </exclusion>
         <exclusion>
-        	<groupId>jakarta.enterprise</groupId>
-        	<artifactId>jakarta.enterprise.cdi-api</artifactId>
+          <groupId>jakarta.enterprise</groupId>
+          <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

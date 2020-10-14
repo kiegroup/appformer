@@ -65,8 +65,8 @@
         </exclusion>
         <!-- collides with javax.inject:javax.inject:jar:1:compile -->
         <exclusion>
-	   	  <groupId>jakarta.enterprise</groupId>
-       	  <artifactId>jakarta.enterprise.cdi-api</artifactId>
+          <groupId>jakarta.enterprise</groupId>
+          <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -41,18 +41,18 @@ public class EventSourceMock<T> implements Event<T> {
         throw new UnsupportedOperationException("mocking testing class");
     }
 
-	@Override
-	public <U extends T> CompletionStage<U> fireAsync(U event) {
-		throw new UnsupportedOperationException("mocking testing class");
-	}
+    @Override
+    public <U extends T> CompletionStage<U> fireAsync(U event) {
+        throw new UnsupportedOperationException("mocking testing class");
+    }
 
-	@Override
-	public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
-		throw new UnsupportedOperationException("mocking testing class");
-	}
+    @Override
+    public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
+        throw new UnsupportedOperationException("mocking testing class");
+    }
 
-	@Override
-	public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-		throw new UnsupportedOperationException("mocking testing class");
-	}
+    @Override
+    public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+        throw new UnsupportedOperationException("mocking testing class");
+    }
 }

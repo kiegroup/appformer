@@ -111,19 +111,19 @@ public class MessageConsoleServiceTest {
             throw new UnsupportedOperationException("Not implemented.");
         }
 
-		@Override
-		public <U extends T> CompletionStage<U> fireAsync(U event) {
-			throw new UnsupportedOperationException("Not implemented.");
-		}
+        @Override
+        public <U extends T> CompletionStage<U> fireAsync(U event) {
+            throw new UnsupportedOperationException("Not implemented.");
+        }
 
-		@Override
-		public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
-			throw new UnsupportedOperationException("Not implemented.");
-		}
+        @Override
+        public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
+            throw new UnsupportedOperationException("Not implemented.");
+        }
 
-		@Override
-		public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-			throw new UnsupportedOperationException("Not implemented.");
-		}
+        @Override
+        public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
+            throw new UnsupportedOperationException("Not implemented.");
+        }
     }
 }
