@@ -77,7 +77,7 @@ public class DashbuilderRuntimeResource {
 
     @DELETE
     @Path(DASHBOARD_BASE_URI)
-    public void removeAll() throws IOException {
+    public void removeAll() {
         registry.clear();
     }
 
