@@ -92,7 +92,7 @@ public class ExternalComponentPresenter implements ExternalComponentListener {
     }
 
     @Override
-    public void makeReady() {
+    public void prepare() {
         view.makeReady();
     }
     

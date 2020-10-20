@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import elemental2.core.JsMap;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,10 +45,10 @@ public class ExternalComponentMessageHelperTest {
     @InjectMocks
     ExternalComponentMessage message;
 
-    private ExternalComponentMessageHelper helper;
+    static private ExternalComponentMessageHelper helper;
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setup() {
         helper = new ExternalComponentMessageHelper();
     }
 
@@ -96,6 +96,13 @@ public class ExternalComponentMessageHelperTest {
     public void testNewInitMessage() {
         ExternalComponentMessage initMessage = helper.newInitMessage(Collections.emptyMap());
         assertEquals(ExternalComponentMessageType.INIT.name(), initMessage.type);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullMessageType() {
+        ExternalComponentMessage message = mock(ExternalComponentMessage.class);
+        when(message.getType()).thenReturn(null);
+        helper.messageType(message);
     }
 
 }

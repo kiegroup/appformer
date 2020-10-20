@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class ExternalComponentDispatcher {
 
-    static final CommonConstants i18n = CommonConstants.INSTANCE;
+    private static final CommonConstants i18n = CommonConstants.INSTANCE;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalComponentDispatcher.class);
 
@@ -65,7 +65,7 @@ public class ExternalComponentDispatcher {
 
     public void register(ExternalComponentListener listener) {
         // make the component listener ready by default
-        listener.makeReady();
+        listener.prepare();
         listeners.add(listener);
     }
 
@@ -148,7 +148,7 @@ public class ExternalComponentDispatcher {
     }
 
     private void handleReady(ExternalComponentMessage message) {
-        findDestination(message, ExternalComponentListener::makeReady);
+        findDestination(message, ExternalComponentListener::prepare);
     }
 
     private void handleFilter(ExternalComponentMessage message) {

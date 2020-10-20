@@ -20,7 +20,7 @@ import org.dashbuilder.displayer.external.ExternalComponentMessage;
 import org.dashbuilder.displayer.external.ExternalFilterRequest;
 
 /**
- * Defines a contract for classes that wants to listen for components messages.
+ * Defines a contract for classes that want to listen for components messages.
  *
  */
 public interface ExternalComponentListener {
@@ -33,7 +33,7 @@ public interface ExternalComponentListener {
     
     void onConfigurationIssue(String message);
     
-    void makeReady();
+    void prepare();
 
     void configurationOk();
 

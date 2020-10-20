@@ -72,7 +72,7 @@ public class ExternalComponentMessageHelper {
      * Inbound property to define the result of a function call.
      */
     static final String FUNCTION_RESPONSE_PROP = "functionResponse";
-    
+
     /**
      * Inbound property to define the result of a function call.
      */
@@ -220,18 +220,28 @@ public class ExternalComponentMessageHelper {
 
     /**
      * 
-     * Check if the given message is a INIT message.
+     * Check if the given message is an INIT message.
      * @param message
      * The message to be checked.
      * @return
      * true if it is a message of type INIT.
      */
     public boolean isInit(ExternalComponentMessage message) {
-        return ExternalComponentMessageType.INIT.name().equals(message.getType());
+        String type = verifyTypeNotNull(message);
+        return ExternalComponentMessageType.INIT.name().equals(type);
     }
 
     public ExternalComponentMessageType messageType(ExternalComponentMessage message) {
-        return ExternalComponentMessageType.valueOf(message.getType());
+        String type = verifyTypeNotNull(message);
+        return ExternalComponentMessageType.valueOf(type);
+    }
+
+    private String verifyTypeNotNull(ExternalComponentMessage message) {
+        String type = message.getType();
+        if (type == null) {
+            throw new IllegalArgumentException("Message type cannot be null.");
+        }
+        return type;
     }
 
     private Optional<String> getValue(String valueKey, ExternalComponentMessage message) {
