@@ -104,7 +104,8 @@ public class JobRequestScheduler {
                                            params));
     }
 
-    public void createProjectRequest(final CreateProjectJobRequest jobRequest) {
+    public void createProjectRequest(final CreateProjectJobRequest jobRequest,
+                                     final Map<String, Object> headers) {
         final Map<String, Object> params = getContext(jobRequest);
         params.put("Space",
                    jobRequest.getSpaceName());
@@ -112,6 +113,8 @@ public class JobRequestScheduler {
                    jobRequest.getProjectName());
         params.put("Operation",
                    "createProject");
+        params.put("acceptLanguage",
+                   headers.get("acceptLanguage"));
 
         scheduleJob(jobRequest,
                     new CreateProjectCmd(jobRequestHelper,

@@ -17,7 +17,10 @@ package org.guvnor.rest.backend;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,7 @@ import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -194,6 +198,7 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response createProject(
             @PathParam("spaceName") String spaceName,
+            @HeaderParam("accept-language") Locale locales,
             CreateProjectRequest createProjectRequest) {
         logger.debug("-----createProject--- , spaceName: {} , project name: {}",
                      spaceName,
@@ -202,7 +207,9 @@ public class ProjectResource {
         assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
                            "space",
                            spaceName);
-
+        
+        final Map<String, Object> headers = new HashMap<>();
+        headers.put("acceptLanguage", locales);
         final String id = newId();
         final CreateProjectJobRequest jobRequest = new CreateProjectJobRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
@@ -214,7 +221,8 @@ public class ProjectResource {
         jobRequest.setDescription(createProjectRequest.getDescription());
         addAcceptedJobResult(id);
 
-        jobRequestObserver.createProjectRequest(jobRequest);
+        jobRequestObserver.createProjectRequest(jobRequest,
+                                                headers);
 
         return createAcceptedStatusResponse(jobRequest);
     }
