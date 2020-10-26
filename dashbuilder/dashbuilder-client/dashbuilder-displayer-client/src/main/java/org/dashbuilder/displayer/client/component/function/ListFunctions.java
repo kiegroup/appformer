@@ -15,15 +15,27 @@
  */
 package org.dashbuilder.displayer.client.component.function;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
-import elemental2.core.JsMap;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
-public interface ExternalComponentFunction {
+import org.dashbuilder.displayer.external.ExternalComponentFunction;
 
-    default String getName() {
-        return this.getClass().getSimpleName();
+/**
+ * A meta function to list available functions.
+ *
+ */
+@Dependent
+public class ListFunctions implements ExternalComponentFunction {
+
+    @Inject
+    ComponentFunctionLocator locator;
+
+    @Override
+    public void exec(Map<String, Object> params, Consumer<Object> onFinish, Consumer<String> onError) {
+        onFinish.accept(locator.listFunctions());
     }
 
-    void exec(JsMap<String, Object> params, Consumer<Object> onFinish);
 }
