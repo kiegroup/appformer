@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class ProcessSVGFunction implements BackendComponentFunction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessSVGFunction.class);
-    
+
     private static final String NOT_FOUND_MSG = "Process SVG not found for container {} and process {}";
 
     private static final String CONTAINERID_PARAM = "containerId";
@@ -69,7 +69,7 @@ public class ProcessSVGFunction implements BackendComponentFunction {
         } catch (Exception e) {
             errorRetrievingSVG(e);
         }
-
+        return null;
     }
 
     private void errorRetrievingSVG(Exception e) {
@@ -81,7 +81,7 @@ public class ProcessSVGFunction implements BackendComponentFunction {
     private void notFoundSVGError(String containerId, String processId) {
         String notFoundMessage = String.format(NOT_FOUND_MSG, containerId, processId);
         LOGGER.warn(notFoundMessage);
-        throw new RuntimeException(notFoundMessage) ;
+        throw new RuntimeException(notFoundMessage);
     }
 
     private String getRequiredParam(String param, Map<String, Object> params) {
