@@ -107,7 +107,7 @@
     <version.org.postgres-driver>42.2.14</version.org.postgres-driver>
 
     <!-- required to fix RHDM-293 -->
-    <version.org.apache.logging.log4j.log4j-to-slf4j>2.9.0</version.org.apache.logging.log4j.log4j-to-slf4j>
+    <version.org.apache.logging.log4j.log4j-to-slf4j>${version.org.apache.logging.log4j}</version.org.apache.logging.log4j.log4j-to-slf4j>
 
     <version.org.arquillian.cube>1.15.3</version.org.arquillian.cube>
 
