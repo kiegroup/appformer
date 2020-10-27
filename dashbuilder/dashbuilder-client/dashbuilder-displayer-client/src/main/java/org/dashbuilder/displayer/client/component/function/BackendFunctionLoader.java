@@ -35,7 +35,7 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 @EntryPoint
 public class BackendFunctionLoader {
 
-    private static final String UNKNOW_BACKEND_ERROR = "Unknow backend error.";
+    private static final String UNKNOWN_BACKEND_ERROR = "Unknown backend error.";
 
     @Inject
     ComponentFunctionLocator componentFunctionLocator;
@@ -59,7 +59,7 @@ public class BackendFunctionLoader {
             @Override
             public void exec(Map<String, Object> params, Consumer<Object> onFinish, Consumer<String> onError) {
                 backendFunctionLoaderService.call(onFinish::accept, (Object message, Throwable throwable) -> {
-                    String errorMessage = UNKNOW_BACKEND_ERROR;
+                    String errorMessage = UNKNOWN_BACKEND_ERROR;
                     if (throwable != null && throwable.getMessage() != null) {
                         errorMessage = throwable.getMessage();
                     } else if (message != null) {
