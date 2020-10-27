@@ -77,12 +77,6 @@ public class ExternalComponentServlet extends HttpServlet {
     private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.reset();
 
-        if (!loader.isEnabled()) {
-            logger.debug("Ignoring request because External Components API is disabled.");
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
         String pathInfo = req.getPathInfo();
         if (pathInfo == null) {
             badRequest(resp);

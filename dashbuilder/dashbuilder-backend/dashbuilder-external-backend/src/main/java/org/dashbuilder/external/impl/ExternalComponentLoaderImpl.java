@@ -17,8 +17,12 @@
 package org.dashbuilder.external.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +36,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gson.Gson;
+import org.dashbuilder.components.internal.InternalComponentsInfo;
 import org.dashbuilder.external.model.ExternalComponent;
 import org.dashbuilder.external.service.ExternalComponentLoader;
 import org.slf4j.Logger;
@@ -48,18 +53,21 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
 
     private static final String DEFAULT_COMPONENTS_PATH = "/tmp/dashbuilder/components/";
 
+    private InternalComponentsInfo internalComponentsInfo;
+
     private String externalComponentsDir;
 
     private Gson gson;
 
-    private boolean isExternalComponentEnabled;
+    private boolean externalComponentEnabled;
 
     @PostConstruct
     public void init() {
+        internalComponentsInfo = InternalComponentsInfo.get();
         gson = new Gson();
-        isExternalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString()));
+        externalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString()));
         externalComponentsDir = System.getProperty(EXTERNAL_COMP_DIR_PROP, DEFAULT_COMPONENTS_PATH);
-        if (isExternalComponentEnabled) {
+        if (externalComponentEnabled) {
             Path baseDirPath = Paths.get(externalComponentsDir);
             if (!baseDirPath.toFile().exists()) {
                 baseDirPath.toFile().mkdirs();
@@ -68,22 +76,29 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
     }
 
     @Override
-    public List<ExternalComponent> load() {
-        if (!isExternalComponentEnabled) {
-            return Collections.emptyList();
-        }
+    public List<ExternalComponent> loadInternal() {
+        return internalComponentsInfo.getInternalComponentsList()
+                                     .stream()
+                                     .map(this::readInternalComponent)
+                                     .filter(Objects::nonNull)
+                                     .collect(Collectors.toList());
+    }
 
-        try (Stream<Path> walker = Files.walk(Paths.get(externalComponentsDir), 1)) {
-            return walker.filter(p -> p.toFile().isDirectory())
-                         .map(this::getComponentDescriptor)
-                         .filter(File::exists)
-                         .map(this::readComponent)
-                         .filter(Objects::nonNull)
-                         .collect(Collectors.toList());
+    @Override
+    public List<ExternalComponent> loadExternal() {
+        if (externalComponentEnabled) {
+            try (Stream<Path> walker = Files.walk(Paths.get(externalComponentsDir), 1)) {
+                return walker.filter(p -> p.toFile().isDirectory())
+                             .map(this::getComponentDescriptor)
+                             .filter(File::exists)
+                             .map(this::readComponent)
+                             .filter(Objects::nonNull)
+                             .collect(Collectors.toList());
 
-        } catch (IOException e) {
-            logger.error("Error loading components from {}. Error: {}", externalComponentsDir, e.getMessage());
-            logger.debug("Error loading external components.", e);
+            } catch (IOException e) {
+                logger.error("Error loading components from {}. Error: {}", externalComponentsDir, e.getMessage());
+                logger.debug("Error loading external components.", e);
+            }
         }
         return Collections.emptyList();
     }
@@ -93,14 +108,43 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
         return externalComponentsDir;
     }
 
-    private ExternalComponent readComponent(File componentDescriptor) {
+    @Override
+    public String getInternalComponentsPath() {
+        return internalComponentsInfo.getInternalComponentsRootPath();
+    }
+    
+    private ExternalComponent readInternalComponent(String componentId) {
+        String internalComponentDescriptor = "/" + internalComponentsInfo.getInternalComponentsRootPath() + "/" + componentId + "/" + DESCRIPTOR_FILE;
+        InputStream is = this.getClass().getResourceAsStream(internalComponentDescriptor);
+
+        if (is == null) {
+            logger.error("Not able to read internal component manifest file for component {}", componentId);
+            return null;
+        }
+
+        return readComponent(componentId, new InputStreamReader(is));
+    }
+
+    private ExternalComponent readComponent(File file) {
+        String id = file.getParentFile().getName();
+        FileReader reader;
         try {
-            String componentId = componentDescriptor.getParentFile().getName();
-            ExternalComponent component = gson.fromJson(new FileReader(componentDescriptor), ExternalComponent.class);
+            reader = new FileReader(file);
+            return this.readComponent(id, reader);
+        } catch (FileNotFoundException e) {
+            logger.error("Not able to read component manifest file {}. Error: {}", file.getPath(), e.getMessage());
+            logger.debug("Error reading component file.", e);
+            return null;
+        }
+    }
+
+    private ExternalComponent readComponent(String componentId, Reader manifestReader) {
+        try {
+            ExternalComponent component = gson.fromJson(manifestReader, ExternalComponent.class);
             component.setId(componentId);
             return component;
         } catch (Exception e) {
-            logger.error("Not able to load component {}. Error: {}", componentDescriptor, e.getMessage());
+            logger.error("Not able to load component {}. Error: {}", componentId, e.getMessage());
             logger.debug("Error reading component.", e);
         }
         return null;
@@ -110,8 +154,8 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
         return Paths.get(p.toString(), DESCRIPTOR_FILE).toFile();
     }
 
-    public boolean isEnabled() {
-        return isExternalComponentEnabled;
+    public boolean isExternalComponentsEnabled() {
+        return externalComponentEnabled;
     }
 
 }

@@ -111,7 +111,7 @@ public class DataTransferServicesTest {
 
         when(dataSetDefRegistryCDI.getDataSetDefJsonMarshaller()).thenReturn(dataSetDefJSONMarshaller);
         when(externalComponentLoader.getExternalComponentsDir()).thenReturn(componentsDir.toString());
-        when(externalComponentLoader.isEnabled()).thenReturn(true);
+        when(externalComponentLoader.isExternalComponentsEnabled()).thenReturn(true);
 
         dataTransferServices = new DataTransferServicesImpl(ioService,
                                                             datasetsFS,
@@ -301,7 +301,7 @@ public class DataTransferServicesTest {
     
     @Test
     public void testDoExportWithComponents() throws Exception {
-        when(externalComponentLoader.load()).thenReturn(asList(component("c1")));
+        when(externalComponentLoader.loadExternal()).thenReturn(asList(component("c1")));
 
         createFile(perspectivesFS, "page1/perspective_layout", "");
         createFile(perspectivesFS, "page1/perspective_layout.plugin", "");
@@ -342,8 +342,8 @@ public class DataTransferServicesTest {
     @Test
     @SuppressWarnings("serial")
     public void testDoExportIgnoringComponents() throws Exception {
-        when(externalComponentLoader.isEnabled()).thenReturn(false);
-        when(externalComponentLoader.load()).thenReturn(asList(component("c1")));
+        when(externalComponentLoader.isExternalComponentsEnabled()).thenReturn(false);
+        when(externalComponentLoader.loadExternal()).thenReturn(asList(component("c1")));
         
         createFile(perspectivesFS, "page1/perspective_layout", "");
         createFile(perspectivesFS, "page1/perspective_layout.plugin", "");

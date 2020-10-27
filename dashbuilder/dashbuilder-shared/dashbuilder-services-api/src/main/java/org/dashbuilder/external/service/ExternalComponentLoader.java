@@ -21,11 +21,15 @@ import java.util.List;
 import org.dashbuilder.external.model.ExternalComponent;
 
 public interface ExternalComponentLoader {
-    
-    List<ExternalComponent> load();
+
+    List<ExternalComponent> loadExternal();
+
+    List<ExternalComponent> loadInternal();
 
     String getExternalComponentsDir();
-    
-    boolean isEnabled();
 
+    String getInternalComponentsPath();
+
+    boolean isExternalComponentsEnabled();
+    
 }

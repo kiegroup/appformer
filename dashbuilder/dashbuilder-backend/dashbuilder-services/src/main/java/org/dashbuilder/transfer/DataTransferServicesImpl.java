@@ -167,7 +167,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
             zipFileSystem(navigationFS, zos, readmeFilter);
         }
 
-        if (externalComponentLoader.isEnabled()) {
+        if (externalComponentLoader.isExternalComponentsEnabled()) {
             String componentsPath = externalComponentLoader.getExternalComponentsDir();
 
             if (componentsPath != null && exists(componentsPath)) {
@@ -175,7 +175,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                                                        .append("://")
                                                                        .append(componentsPath)
                                                                        .toString());
-                externalComponentLoader.load().forEach(c -> {
+                externalComponentLoader.loadExternal().forEach(c -> {
                     Path componentPath = componentsBasePath.resolve(c.getId());
                     zipComponentFiles(componentsBasePath,
                                       componentPath,
@@ -325,7 +325,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
 
                 if (isComponent(zipEntry) &&
                     externalComponentLoader.getExternalComponentsDir() != null &&
-                    externalComponentLoader.isEnabled()) {
+                    externalComponentLoader.isExternalComponentsEnabled()) {
                     try {
                         importComponentFile(zipEntry.getName(), newFile);
                         imported.add(zipEntry.getName());

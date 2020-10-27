@@ -19,43 +19,21 @@ package org.dashbuilder.client.editor.external;
 import java.util.Collections;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import org.dashbuilder.client.editor.resources.i18n.Constants;
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ExternalComponentService;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.ioc.client.api.AfterInitialization;
-import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.perspective.editor.api.PerspectiveEditorComponentGroupProvider;
 
-@EntryPoint
-@ApplicationScoped
-public class ExternalComponentGroupProvider implements PerspectiveEditorComponentGroupProvider {
+public abstract class ComponentsGroupProvider implements PerspectiveEditorComponentGroupProvider {
     
-    private final Constants i18n = Constants.INSTANCE;
-
-    @Inject
-    Caller<ExternalComponentService> externalComponentService;
-
-    @Inject
     SyncBeanManager beanManager;
 
     List<ExternalComponent> loadedComponents = Collections.emptyList();
 
-    @AfterInitialization
-    public void loadComponents() {
-        externalComponentService.call((List<ExternalComponent> components) -> loadedComponents = components)
-                                .listComponents();
-    }
+    public abstract void loadComponents();
 
     @Override
-    public String getName() {
-        return i18n.externalComponents();
-    }
+    public abstract String getName();
 
     @Override
     public LayoutDragComponentGroup getComponentGroup() {

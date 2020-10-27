@@ -48,7 +48,7 @@ public class ExternalComponentServiceImplTest {
         ExternalComponent c1 = new ExternalComponent(C1_ID, "c1 name", "c1 icon", false, Collections.emptyList());
         ExternalComponent c2 = new ExternalComponent(C2_ID, "c2 name", "c2 icon", false, Collections.emptyList());
         
-        Mockito.when(loader.load()).thenReturn(asList(c1, c2));
+        Mockito.when(loader.loadExternal()).thenReturn(asList(c1, c2));
         
         assertTrue(externalComponentServiceImpl.byId(C1_ID).isPresent());
         assertTrue(externalComponentServiceImpl.byId(C2_ID).isPresent());

@@ -50,7 +50,7 @@ public class ExternalComponentGroupProviderTest {
     SyncBeanManager beanManager;
 
     @InjectMocks
-    ExternalComponentGroupProvider externalComponentGroupProvider;
+    ExternalComponentsGroupProvider externalComponentGroupProvider;
 
     @Test
     public void testProduceDragComponent() {
