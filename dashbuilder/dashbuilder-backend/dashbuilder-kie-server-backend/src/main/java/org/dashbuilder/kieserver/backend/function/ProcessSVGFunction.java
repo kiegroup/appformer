@@ -33,10 +33,12 @@ import org.slf4j.LoggerFactory;
 public class ProcessSVGFunction implements BackendComponentFunction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessSVGFunction.class);
+    
+    private static final String NOT_FOUND_MSG = "Process SVG not found for container {} and process {}";
 
-    final static String CONTAINERID_PARAM = "containerId";
-    final static String PROCESSID_PARAM = "processId";
-    final static String SERVER_TEMPLATE_PARAM = "serverTemplate";
+    private static final String CONTAINERID_PARAM = "containerId";
+    private static final String PROCESSID_PARAM = "processId";
+    private static final String SERVER_TEMPLATE_PARAM = "serverTemplate";
 
     @Inject
     KieServerQueryClient queryClient;
@@ -59,19 +61,27 @@ public class ProcessSVGFunction implements BackendComponentFunction {
         }
         try {
             return queryClient.processSVG(connectionInfo, containerId, processId);
-        } catch (Exception e) {
-
-            if (e instanceof WebApplicationException) {
-                WebApplicationException webException = (WebApplicationException) e;
-                if (webException.getResponse().getStatus() == 404) {
-                    LOGGER.warn("SVG not found for container " + containerId + ", process " + processId);
-                    throw new RuntimeException("Process SVG not found for container " + containerId + "and process " + processId);
-                }
+        } catch (WebApplicationException e) {
+            if (e.getResponse().getStatus() == 404) {
+                notFoundSVGError(containerId, processId);
             }
-            LOGGER.warn("Error requesting SVG");
-            LOGGER.debug("Error requesting SVG", e);
-            throw new RuntimeException("Error requesting SVG from Kie Server.", e);
+            errorRetrievingSVG(e);
+        } catch (Exception e) {
+            errorRetrievingSVG(e);
         }
+
+    }
+
+    private void errorRetrievingSVG(Exception e) {
+        LOGGER.warn("Error requesting SVG");
+        LOGGER.debug("Error requesting SVG", e);
+        throw new RuntimeException("Error requesting SVG from Kie Server.", e);
+    }
+
+    private void notFoundSVGError(String containerId, String processId) {
+        String notFoundMessage = String.format(NOT_FOUND_MSG, containerId, processId);
+        LOGGER.warn(notFoundMessage);
+        throw new RuntimeException(notFoundMessage) ;
     }
 
     private String getRequiredParam(String param, Map<String, Object> params) {

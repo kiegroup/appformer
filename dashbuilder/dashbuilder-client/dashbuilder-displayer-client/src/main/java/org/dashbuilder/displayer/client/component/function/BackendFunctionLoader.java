@@ -35,6 +35,8 @@ import org.jboss.errai.ioc.client.api.EntryPoint;
 @EntryPoint
 public class BackendFunctionLoader {
 
+    private static final String UNKNOW_BACKEND_ERROR = "Unknow backend error.";
+
     @Inject
     ComponentFunctionLocator componentFunctionLocator;
 
@@ -47,32 +49,27 @@ public class BackendFunctionLoader {
     }
 
     private void registerFunctions(List<String> result) {
-        result.forEach(name -> {
-            componentFunctionLocator.registerFunction(new ExternalComponentFunction() {
+        result.forEach(name -> componentFunctionLocator.registerFunction(new ExternalComponentFunction() {
 
-                @Override
-                public String getName() {
-                    return name;
-                }
+            @Override
+            public String getName() {
+                return name;
+            }
 
-                @Override
-                public void exec(Map<String, Object> params, Consumer<Object> onFinish, Consumer<String> onError) {
-                    backendFunctionLoaderService.call(result -> {
-                        onFinish.accept(result);
-                    }, (Object message, Throwable throwable) -> {
-                        String errorMessage = "Unknow backend error.";
-                        if (throwable != null && throwable.getMessage() != null) {
-                            errorMessage = throwable.getMessage();
-                        } else if (message != null) {
-                            errorMessage = message.toString();
-                        }
-                        onError.accept(errorMessage);
-                        return false;
-                    }).callFunction(name, params);
-                }
-
-            });
-        });
+            @Override
+            public void exec(Map<String, Object> params, Consumer<Object> onFinish, Consumer<String> onError) {
+                backendFunctionLoaderService.call(onFinish::accept, (Object message, Throwable throwable) -> {
+                    String errorMessage = UNKNOW_BACKEND_ERROR;
+                    if (throwable != null && throwable.getMessage() != null) {
+                        errorMessage = throwable.getMessage();
+                    } else if (message != null) {
+                        errorMessage = message.toString();
+                    }
+                    onError.accept(errorMessage);
+                    return false;
+                }).callFunction(name, params);
+            }
+        }));
 
     }
 
