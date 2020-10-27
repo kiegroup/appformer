@@ -30,11 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Dependent
-public class ProcessSVGFunction implements BackendComponentFunction {
+public class ProcessSVGFunction implements BackendComponentFunction<String> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessSVGFunction.class);
 
-    private static final String NOT_FOUND_MSG = "Process SVG not found for container {} and process {}";
+    private static final String ERROR_REQUESTING_SVG = "Error requesting SVG from Kie Server: %s";
+
+    private static final String NOT_FOUND_MSG = "Process SVG not found for container %s and process %s";
 
     private static final String CONTAINERID_PARAM = "containerId";
     private static final String PROCESSID_PARAM = "processId";
@@ -47,12 +49,12 @@ public class ProcessSVGFunction implements BackendComponentFunction {
     KieServerConnectionInfoProvider connectionInfoProvider;
 
     @Override
-    public Object exec(Map<String, Object> params) {
+    public String exec(Map<String, Object> params) {
         String containerId = getRequiredParam(CONTAINERID_PARAM, params);
         String processId = getRequiredParam(PROCESSID_PARAM, params);
         Object serverTemplate = params.get(SERVER_TEMPLATE_PARAM);
         KieServerConnectionInfo connectionInfo;
-        if (serverTemplate != null) {
+        if (serverTemplate != null && !serverTemplate.toString().trim().isEmpty()) {
             connectionInfo = connectionInfoProvider.get(null, serverTemplate.toString())
                                                    .orElseThrow(() -> new RuntimeException("Configuration for server template not found " + serverTemplate));
         } else {
@@ -73,9 +75,10 @@ public class ProcessSVGFunction implements BackendComponentFunction {
     }
 
     private void errorRetrievingSVG(Exception e) {
-        LOGGER.warn("Error requesting SVG");
-        LOGGER.debug("Error requesting SVG", e);
-        throw new RuntimeException("Error requesting SVG from Kie Server.", e);
+        String message = String.format(ERROR_REQUESTING_SVG, e.getMessage());
+        LOGGER.warn(message);
+        LOGGER.debug(message, e);
+        throw new RuntimeException(message, e);
     }
 
     private void notFoundSVGError(String containerId, String processId) {

@@ -26,12 +26,12 @@ import javax.enterprise.context.Dependent;
  *
  */
 @Dependent
-public class BackendDateFunction implements BackendComponentFunction {
+public class BackendDateFunction implements BackendComponentFunction<String> {
 
     private static final String FORMAT_PARAM = "format";
 
     @Override
-    public Object exec(Map<String, Object> params) {
+    public String exec(Map<String, Object> params) {
         Object pattern = params.get(FORMAT_PARAM);
         if (pattern != null) {
             return new SimpleDateFormat(pattern.toString()).format(new Date());

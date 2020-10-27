@@ -100,9 +100,9 @@ public class KieServerQueryClient {
     }
 
     public String processSVG(KieServerConnectionInfo connectionInfo, String containerId, String processId) {
-        Client client = ClientBuilder.newClient();
         Optional<String> location = connectionInfo.getLocation();
         if (location.isPresent()) {
+            Client client = ClientBuilder.newClient();
             WebTarget target = client.target(location.get())
                                      .path(PROCESS_SVG_URI)
                                      .resolveTemplate(CONTAINER_ID_PARAM, containerId)

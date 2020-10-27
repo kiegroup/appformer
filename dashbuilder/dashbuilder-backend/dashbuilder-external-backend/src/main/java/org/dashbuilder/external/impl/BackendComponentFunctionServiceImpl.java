@@ -32,10 +32,10 @@ import org.jboss.errai.bus.server.annotations.Service;
 @ApplicationScoped
 public class BackendComponentFunctionServiceImpl implements BackendComponentFunctionService {
 
-    Map<String, BackendComponentFunction> functions;
+    Map<String, BackendComponentFunction<?>> functions;
     
     @Inject
-    Instance<BackendComponentFunction> functionsInstances;
+    Instance<BackendComponentFunction<?>> functionsInstances;
 
     @PostConstruct
     void loadFunctions() {
@@ -50,7 +50,7 @@ public class BackendComponentFunctionServiceImpl implements BackendComponentFunc
 
     @Override
     public Object callFunction(String name, Map<String, Object> params) {
-        BackendComponentFunction function = functions.get(name);
+        BackendComponentFunction<?> function = functions.get(name);
         return function.exec(params);
     }
 
