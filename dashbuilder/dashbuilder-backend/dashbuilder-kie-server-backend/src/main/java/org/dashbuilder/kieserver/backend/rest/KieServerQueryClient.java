@@ -17,6 +17,7 @@
 package org.dashbuilder.kieserver.backend.rest;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.client.Client;
@@ -100,14 +101,19 @@ public class KieServerQueryClient {
 
     public String processSVG(KieServerConnectionInfo connectionInfo, String containerId, String processId) {
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(connectionInfo.getLocation().get())
-                                 .path(PROCESS_SVG_URI)
-                                 .resolveTemplate(CONTAINER_ID_PARAM, containerId)
-                                 .resolveTemplate(PROCESS_ID_PARAM, processId);
-        addAuth(connectionInfo, target);
-        String svg = target.request().get(String.class);
-        client.close();
-        return svg;
+        Optional<String> location = connectionInfo.getLocation();
+        if (location.isPresent()) {
+            WebTarget target = client.target(location.get())
+                                     .path(PROCESS_SVG_URI)
+                                     .resolveTemplate(CONTAINER_ID_PARAM, containerId)
+                                     .resolveTemplate(PROCESS_ID_PARAM, processId);
+            addAuth(connectionInfo, target);
+            String svg = target.request().get(String.class);
+            client.close();
+            return svg;
+        }
+        
+        throw new RuntimeException("Location for Kie Server is required. Check configuration.");
     }
 
     private WebTarget requestForQueryDefinition(KieServerConnectionInfo connectionInfo,
