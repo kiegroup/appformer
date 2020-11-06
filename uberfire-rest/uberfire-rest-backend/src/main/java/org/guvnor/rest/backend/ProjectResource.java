@@ -39,6 +39,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -90,6 +91,7 @@ import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
 public class ProjectResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
+    private static final String ACCEPT_LANGUAGE = "acceptLanguage";
     private Variant defaultVariant = getDefaultVariant();
 
     protected Variant getDefaultVariant() {
@@ -198,7 +200,7 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response createProject(
             @PathParam("spaceName") String spaceName,
-            @HeaderParam("accept-language") Locale locales,
+            @HeaderParam(HttpHeaders.ACCEPT_LANGUAGE) Locale locales,
             CreateProjectRequest createProjectRequest) {
         logger.debug("-----createProject--- , spaceName: {} , project name: {}",
                      spaceName,
@@ -209,7 +211,7 @@ public class ProjectResource {
                            spaceName);
         
         final Map<String, Object> headers = new HashMap<>();
-        headers.put("acceptLanguage", locales);
+        headers.put(ACCEPT_LANGUAGE, locales);
         final String id = newId();
         final CreateProjectJobRequest jobRequest = new CreateProjectJobRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);

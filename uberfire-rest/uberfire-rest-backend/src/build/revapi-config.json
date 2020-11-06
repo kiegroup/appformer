@@ -24,7 +24,7 @@
           "old": "parameter javax.ws.rs.core.Response org.guvnor.rest.backend.ProjectResource::createProject(java.lang.String, ===org.guvnor.rest.client.CreateProjectRequest===)",
           "new": "parameter javax.ws.rs.core.Response org.guvnor.rest.backend.ProjectResource::createProject(java.lang.String, ===java.util.Locale===, org.guvnor.rest.client.CreateProjectRequest)",
           "annotationType": "javax.ws.rs.HeaderParam",
-          "annotation": "@javax.ws.rs.HeaderParam(\"accept-language\")",
+          "annotation": "@javax.ws.rs.HeaderParam(\"Accept-Language\")",
           "package": "org.guvnor.rest.backend",
           "classSimpleName": "ProjectResource",
           "methodName": "createProject",

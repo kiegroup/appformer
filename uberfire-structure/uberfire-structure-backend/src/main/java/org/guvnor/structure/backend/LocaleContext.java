@@ -22,6 +22,8 @@ public class LocaleContext {
     
     private static final ThreadLocal<Locale> threadLocal = new ThreadLocal<>();
     
+    private LocaleContext() {}
+    
     public static Locale get() {
         return Optional.ofNullable(threadLocal.get())
                 .orElse(Locale.getDefault());
