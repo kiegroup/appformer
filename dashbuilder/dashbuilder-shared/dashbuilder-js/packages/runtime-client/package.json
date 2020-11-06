@@ -1,5 +1,5 @@
 {
-  "name": "@dashbuilder-js/dashbuilder-runtime-client",
+  "name": "@dashbuilder-js/runtime-client",
   "version": "0.1.0",
   "description": "Dashbuilder Runtime client Javascript API.",
   "license": "Apache-2.0",

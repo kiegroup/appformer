@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-export type MessageType =
-  | "INIT"
-  | "DATASET"
-  | "FUNCTION_RESPONSE"
-  | "FUNCTION_CALL"
-  | "FILTER"
-  | "FIX_CONFIGURATION"
-  | "CONFIGURATION_OK"
-  | "READY";
-
-export interface ComponentMessage {
-  type: MessageType;
-  properties: Map<string, any>;
+export interface ColumnSettings {
+  columnId: string;
+  columnName: string;
+  valueExpression: string;
+  emptyTemplate: string;
+  valuePattern?: string;
 }

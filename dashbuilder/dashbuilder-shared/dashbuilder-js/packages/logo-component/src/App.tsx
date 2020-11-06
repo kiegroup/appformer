@@ -16,9 +16,8 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { ComponentMessage } from "./DashbuilderTypes";
 import { Logo, LogoProps } from "./Logo";
-
+import * as ComponentAPI from "@dashbuilder-js/component-api";
 const DEFAULT_SRC = "./images/dashbuilder-logo.png";
 const SRC_PROP = "src";
 const WIDTH_PROP = "width";
@@ -29,23 +28,19 @@ export function App() {
     src: DEFAULT_SRC
   });
 
-  const handleMessage = (e: MessageEvent) => {
-    const message = e.data as ComponentMessage;
-    if (message.type === "INIT") {
-      const componentProps = message.properties || new Map<string, any>();
-      setLogoProps({
-        src: (componentProps.get(SRC_PROP) as string) || DEFAULT_SRC,
-        width: componentProps.get(WIDTH_PROP) as string,
-        height: componentProps.get(HEIGHT_PROP) as string
-      });
-    }
+  const handleInit = (componentProps: Map<string, any>) => {
+    setLogoProps({
+      src: (componentProps.get(SRC_PROP) as string) || DEFAULT_SRC,
+      width: componentProps.get(WIDTH_PROP) as string,
+      height: componentProps.get(HEIGHT_PROP) as string
+    });
   };
 
   useEffect(() => {
-    window.addEventListener("message", handleMessage, false);
+    ComponentAPI.getComponentController(handleInit);
     return () => {
-      window.removeEventListener("message", handleMessage, false);
+      ComponentAPI.destroy();
     };
-  });
+  }, []);
   return <Logo {...logoProps} />;
 }
