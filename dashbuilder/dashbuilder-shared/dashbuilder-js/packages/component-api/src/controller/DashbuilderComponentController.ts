@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as Bus from "./ComponentBus";
 import { DataSet, FilterRequest } from "../dataset";
 import { FunctionCallRequest, FunctionResponse, FunctionResultType } from "../function";
 import { MessageType } from "../message";
 import { MessageProperty } from "../message/MessageProperty";
+import { ComponentBus } from "./ComponentBus";
 import { ComponentController } from "./ComponentController";
 
 interface FunctionCallbacks {
@@ -30,16 +30,18 @@ interface FunctionCallbacks {
 export class DashbuilderComponentController implements ComponentController {
   private callbacks: Map<string, FunctionCallbacks> = new Map();
 
-  private bus = Bus.INSTANCE;
+  constructor(private bus: ComponentBus) {
+    // no op
+  }
 
   public onInit: (params: Map<string, any>) => void = p => {
-    console.log("Received INIT.");
-    console.log(p);
+    console.debug("Received INIT.");
+    console.debug(p);
   };
 
   public onDataSet: (dataSet: DataSet, params?: Map<string, any>) => void = ds => {
-    console.log("Received DataSet.");
-    console.log(ds);
+    console.debug("Received DataSet.");
+    console.debug(ds);
   };
 
   public setOnDataSet(onDataSet: (dataSet: DataSet, params?: Map<string, any>) => void) {
@@ -111,7 +113,7 @@ export class DashbuilderComponentController implements ComponentController {
     this.callbacks.delete(key);
   }
 
-  public setComponentBus(bus: Bus.ComponentBus) {
+  public setComponentBus(bus: ComponentBus) {
     this.bus = bus;
   }
 

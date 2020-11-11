@@ -17,4 +17,4 @@
 export * from "./message";
 export * from "./dataset";
 export * from "./function";
-export * from "./controller/api";
+export * from "./controller";

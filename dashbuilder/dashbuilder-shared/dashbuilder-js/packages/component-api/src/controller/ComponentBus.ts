@@ -18,34 +18,8 @@ import { ComponentMessage } from "../message";
 
 export interface ComponentBus {
   start(): void;
+  withComponentId(componentId: string): void;
   send(message: ComponentMessage): void;
   setListener(onMessage: (message: ComponentMessage) => void): void;
   destroy(): void;
 }
-
-class BrowserComponentBus implements ComponentBus {
-  private listener: (message: ComponentMessage) => void;
-  private readonly messageDispatcher = (e: MessageEvent) => {
-    if (this.listener) {
-      this.listener(e.data as ComponentMessage);
-    }
-  };
-
-  public start() {
-    window.addEventListener("message", this.messageDispatcher, false);
-  }
-
-  public send(message: ComponentMessage): void {
-    window.parent.postMessage(message, window.location.href);
-  }
-
-  public setListener(onMessage: (message: ComponentMessage) => void): void {
-    this.listener = onMessage;
-  }
-
-  public destroy(): void {
-    window.removeEventListener("message", this.messageDispatcher, false);
-  }
-}
-
-export const INSTANCE: ComponentBus = new BrowserComponentBus();

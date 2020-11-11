@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as ComponentAPI from "../controller/api";
-import * as Bus from "../controller/ComponentBus";
+import { Bus } from "../controller";
+import * as ComponentAPI from "../controller";
 import { ColumnType, DataSet, FilterRequest } from "../dataset";
 import { FunctionCallRequest, FunctionResponse, FunctionResultType } from "../function";
 import { ComponentMessage, MessageType } from "../message";
@@ -81,7 +80,7 @@ describe("[Controller API] Sending Requests", () => {
     controller.setComponentBus(bus);
   });
   afterAll(() => {
-    controller.setComponentBus(Bus.INSTANCE);
+    controller.setComponentBus(bus);
   });
   it("Configuration Issues", async () => {
     const configIssue = "some configuration issue.";
@@ -220,7 +219,8 @@ function mockBus(): Bus.ComponentBus {
     destroy: jest.fn(),
     start: jest.fn(),
     send: jest.fn(),
-    setListener: jest.fn()
+    setListener: jest.fn(),
+    withComponentId: jest.fn()
   };
 }
 

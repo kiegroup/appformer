@@ -23,13 +23,14 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
 public class ExternalComponent {
-    
+
     public static final String COMPONENT_ID_KEY = "componentId";
     public static final String COMPONENT_PARTITION_KEY = "componentPartition";
-    
+
     private String id;
     private String name;
     private String icon;
+    private String category;
     private boolean noData;
     private List<ComponentParameter> parameters;
 
@@ -63,6 +64,10 @@ public class ExternalComponent {
 
     public String getIcon() {
         return icon;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public boolean isNoData() {

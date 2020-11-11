@@ -15,11 +15,13 @@
  * */
 
 import { DataSet } from "../dataset";
+import { BrowserComponentBus } from "./BrowserComponentBus";
 import { DashbuilderComponentController } from "./DashbuilderComponentController";
 import { DashbuilderComponentDispatcher } from "./DashbuilderComponentDispatcher";
 
-const controller = new DashbuilderComponentController();
-const listener = new DashbuilderComponentDispatcher(controller);
+const bus = new BrowserComponentBus();
+const controller = new DashbuilderComponentController(bus);
+const listener = new DashbuilderComponentDispatcher(bus, controller);
 
 listener.init();
 
@@ -40,7 +42,6 @@ export function restart() {
   destroy();
   listener.init();
 }
-
 
 export function destroy() {
   listener.stop();
