@@ -8,10 +8,6 @@
   "files": [
     "dist"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kiegroup/kogito-tooling.git"
-  },
   "scripts": {
     "lint": "tslint -c ../../tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
     "test": "jest --silent --verbose --passWithNoTests",

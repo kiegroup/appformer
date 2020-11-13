@@ -36,7 +36,8 @@
               <goal>write-project-properties</goal>
             </goals>
             <configuration>
-              <outputFile> ${project.build.outputDirectory}/dashbuilder-components.properties</outputFile>
+              <outputFile>
+                ${project.build.outputDirectory}/dashbuilder-components.properties</outputFile>
             </configuration>
           </execution>
         </executions>
@@ -70,6 +71,28 @@
               <arguments>run init</arguments>
             </configuration>
           </execution>
+          <execution>
+            <id>npm install lock-treatment-tool and run-node</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install lock-treatment-tool --global-style
+                --no-package-lock --no-save</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>lock-treatment-tool execution</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run locktt --</arguments>
+            </configuration>
+          </execution>
+
           <execution>
             <id>yarn run build:prod</id>
             <goals>
