@@ -20,7 +20,6 @@ import { FunctionCallRequest, FunctionResponse, FunctionResultType } from "../fu
 import { MessageType } from "../message";
 import { MessageProperty } from "../message/MessageProperty";
 import { ComponentController } from "./ComponentController";
-import { EnvironmentVariableMutatorType } from "vscode";
 
 interface FunctionCallbacks {
   onSucess: (result: any) => void;
