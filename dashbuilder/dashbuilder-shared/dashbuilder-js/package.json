@@ -16,7 +16,7 @@
     "react-dom": "16.12.0"
   },
   "scripts": {
-    "init": "yarn cache clean && yarn install --force",
+    "init": "yarn install --force",
     "build:fast": "yarn workspaces run build:fast",
     "build:prod": "yarn workspaces run build:prod",
     "locktt": "locktt"
