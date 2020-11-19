@@ -63,15 +63,6 @@
             </goals>
           </execution>
           <execution>
-            <id>install lerna</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>install lerna</arguments>
-            </configuration>
-          </execution>
-          <execution>
             <id>yarn run init</id>
             <goals>
               <goal>yarn</goal>

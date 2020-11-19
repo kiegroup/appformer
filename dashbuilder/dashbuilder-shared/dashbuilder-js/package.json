@@ -16,11 +16,9 @@
     "react-dom": "16.12.0"
   },
   "scripts": {
-    "init": "npx lerna bootstrap",
-    "build": "npx lerna run build --stream",
-    "build:fast": "npx lerna run build:fast --stream",
-    "build:prod": "npx lerna run build:prod --stream",
-    "test:clearCache": "npx lerna run test:clearCache --stream",
+    "init": "yarn cache clean && yarn install --force",
+    "build:fast": "yarn workspaces run build:fast",
+    "build:prod": "yarn workspaces run build:prod",
     "locktt": "locktt"
   },
   "jest-junit": {
@@ -54,7 +52,6 @@
     "jest": "^25.2.7",
     "jest-junit": "9.0.0",
     "jest-webextension-mock": "^3.5.0",
-    "lerna": "^3.18.3",
     "lock-treatment-tool": "^0.4.1",
     "node-sass": "4.12.0",
     "null-loader": "3.0.0",
