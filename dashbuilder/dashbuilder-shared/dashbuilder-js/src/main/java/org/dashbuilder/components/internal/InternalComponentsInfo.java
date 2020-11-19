@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -84,7 +85,7 @@ public class InternalComponentsInfo {
             logger.warning("Internal components list is empty");
         } else {
             this.internalComponentsList = Arrays.stream(componentsListStr.split("\\,")).collect(Collectors.toList());
-            logger.warning("Registered internal dashbuilder components: " + internalComponentsList);
+            logger.log(Level.WARNING, () -> "Registered internal dashbuilder components: " + internalComponentsList);
         }
     }
 

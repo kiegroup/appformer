@@ -33,7 +33,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 @ApplicationScoped
 public class InternalComponentsGroupProvider extends ComponentsGroupProvider {
     
-    private final Constants i18n = Constants.INSTANCE;
+    private static final Constants i18n = Constants.INSTANCE;
 
     Caller<ExternalComponentService> externalComponentService;
 

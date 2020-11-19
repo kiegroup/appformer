@@ -33,9 +33,6 @@ public abstract class ComponentsGroupProvider implements PerspectiveEditorCompon
     public abstract void loadComponents();
 
     @Override
-    public abstract String getName();
-
-    @Override
     public LayoutDragComponentGroup getComponentGroup() {
         LayoutDragComponentGroup group = new LayoutDragComponentGroup(getName());
 
