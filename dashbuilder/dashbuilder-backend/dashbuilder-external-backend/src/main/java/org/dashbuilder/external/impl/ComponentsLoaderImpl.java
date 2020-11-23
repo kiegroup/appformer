@@ -36,16 +36,16 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gson.Gson;
-import org.dashbuilder.components.internal.InternalComponentsInfo;
+import org.dashbuilder.components.internal.ProvidedComponentsInfo;
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ExternalComponentLoader;
+import org.dashbuilder.external.service.ComponentsLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
+public class ComponentsLoaderImpl implements ComponentsLoader {
 
-    Logger logger = LoggerFactory.getLogger(ExternalComponentLoaderImpl.class);
+    Logger logger = LoggerFactory.getLogger(ComponentsLoaderImpl.class);
 
     public static final String EXTERNAL_COMP_DIR_PROP = "dashbuilder.components.dir";
     public static final String EXTERNAL_COMP_ENABLE_PROP = "dashbuilder.components.enable";
@@ -53,7 +53,7 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
 
     private static final String DEFAULT_COMPONENTS_PATH = "/tmp/dashbuilder/components/";
 
-    private InternalComponentsInfo internalComponentsInfo;
+    private ProvidedComponentsInfo providedComponentsInfo;
 
     private String externalComponentsDir;
 
@@ -63,8 +63,8 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
 
     @PostConstruct
     public void init() {
-        internalComponentsInfo = InternalComponentsInfo.get();
         gson = new Gson();
+        providedComponentsInfo = ProvidedComponentsInfo.get();
         externalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString()));
         externalComponentsDir = System.getProperty(EXTERNAL_COMP_DIR_PROP, DEFAULT_COMPONENTS_PATH);
         if (externalComponentEnabled) {
@@ -76,8 +76,8 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
     }
 
     @Override
-    public List<ExternalComponent> loadInternal() {
-        return internalComponentsInfo.getInternalComponentsList()
+    public List<ExternalComponent> loadProvided() {
+        return providedComponentsInfo.getInternalComponentsList()
                                      .stream()
                                      .map(this::readInternalComponent)
                                      .filter(Objects::nonNull)
@@ -109,19 +109,18 @@ public class ExternalComponentLoaderImpl implements ExternalComponentLoader {
     }
 
     @Override
-    public String getInternalComponentsPath() {
-        return internalComponentsInfo.getInternalComponentsRootPath();
+    public String getProvidedComponentsPath() {
+        return providedComponentsInfo.getInternalComponentsRootPath();
     }
     
     private ExternalComponent readInternalComponent(String componentId) {
-        String internalComponentDescriptor = "/" + internalComponentsInfo.getInternalComponentsRootPath() + "/" + componentId + "/" + DESCRIPTOR_FILE;
+        String internalComponentDescriptor = "/" + providedComponentsInfo.getInternalComponentsRootPath() + "/" + componentId + "/" + DESCRIPTOR_FILE;
         InputStream is = this.getClass().getResourceAsStream(internalComponentDescriptor);
 
         if (is == null) {
             logger.error("Not able to read internal component manifest file for component {}", componentId);
             return null;
         }
-
         return readComponent(componentId, new InputStreamReader(is));
     }
 

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.dashbuilder.external.service.ExternalComponentAssetProvider;
-import org.dashbuilder.external.service.ExternalComponentLoader;
+import org.dashbuilder.external.service.ComponentsLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class ExternalComponentServlet extends HttpServlet {
     ExternalComponentAssetProvider assetProvider;
 
     @Inject
-    ExternalComponentLoader loader;
+    ComponentsLoader loader;
 
     String cacheControlHeaderValue = "no-cache";
     private MimetypesFileTypeMap mimetypesFileTypeMap;

@@ -19,7 +19,7 @@ package org.dashbuilder.external.impl;
 import java.util.Collections;
 
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ExternalComponentLoader;
+import org.dashbuilder.external.service.ComponentsLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,7 +38,7 @@ public class ExternalComponentServiceImplTest {
     private static final String C2_ID = "c2";
 
     @Mock
-    ExternalComponentLoader loader;
+    ComponentsLoader loader;
       
     @InjectMocks
     ExternalComponentServiceImpl externalComponentServiceImpl;

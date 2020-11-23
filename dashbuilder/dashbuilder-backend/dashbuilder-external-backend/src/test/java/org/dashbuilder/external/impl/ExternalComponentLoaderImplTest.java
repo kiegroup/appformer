@@ -84,17 +84,17 @@ public class ExternalComponentLoaderImplTest {
 
     private Path componentPath;
 
-    ExternalComponentLoaderImpl externalComponentLoaderImpl;
+    ComponentsLoaderImpl externalComponentLoaderImpl;
 
     @Before
     public void init() throws URISyntaxException {
         String rootPath = ExternalComponentLoaderImplTest.class.getResource("/")
                                                                .getFile();
-        externalComponentLoaderImpl = new ExternalComponentLoaderImpl();
+        externalComponentLoaderImpl = new ComponentsLoaderImpl();
         componentPath = Paths.get(rootPath, "components");
 
-        System.setProperty(ExternalComponentLoaderImpl.EXTERNAL_COMP_DIR_PROP, componentPath.toString());
-        System.setProperty(ExternalComponentLoaderImpl.EXTERNAL_COMP_ENABLE_PROP, Boolean.TRUE.toString());
+        System.setProperty(ComponentsLoaderImpl.EXTERNAL_COMP_DIR_PROP, componentPath.toString());
+        System.setProperty(ComponentsLoaderImpl.EXTERNAL_COMP_ENABLE_PROP, Boolean.TRUE.toString());
     }
 
     @After
@@ -140,7 +140,7 @@ public class ExternalComponentLoaderImplTest {
 
     @Test
     public void testLoadWhenDisabled() throws IOException {
-        System.setProperty(ExternalComponentLoaderImpl.EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString());
+        System.setProperty(ComponentsLoaderImpl.EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString());
         externalComponentLoaderImpl.init();
         assertFalse(Files.exists(componentPath));
 
@@ -153,7 +153,7 @@ public class ExternalComponentLoaderImplTest {
     @Test
     public void testLoadInternalComponents() throws IOException {
         externalComponentLoaderImpl.init();
-        List<ExternalComponent> internalComponents = externalComponentLoaderImpl.loadInternal();
+        List<ExternalComponent> internalComponents = externalComponentLoaderImpl.loadProvided();
 
         assertEquals(1, internalComponents.size());
 
@@ -206,12 +206,12 @@ public class ExternalComponentLoaderImplTest {
 
     private void createComponentsFiles() {
         try {
-            Path c1 = Paths.get(componentPath.toString(), C1_ID, ExternalComponentLoaderImpl.DESCRIPTOR_FILE);
+            Path c1 = Paths.get(componentPath.toString(), C1_ID, ComponentsLoaderImpl.DESCRIPTOR_FILE);
             c1.toFile().getParentFile().mkdirs();
             c1.toFile().createNewFile();
             Files.write(c1, C1_MANIFEST.getBytes());
 
-            Path c2 = Paths.get(componentPath.toString(), C2_ID, ExternalComponentLoaderImpl.DESCRIPTOR_FILE);
+            Path c2 = Paths.get(componentPath.toString(), C2_ID, ComponentsLoaderImpl.DESCRIPTOR_FILE);
             c2.toFile().getParentFile().mkdirs();
             c2.toFile().createNewFile();
             Files.write(c2, C2_MANIFEST.getBytes());

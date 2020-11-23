@@ -43,7 +43,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.dashbuilder.dataset.DataSetDefRegistryCDI;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.events.DataSetDefRegisteredEvent;
-import org.dashbuilder.external.service.ExternalComponentLoader;
+import org.dashbuilder.external.service.ComponentsLoader;
 import org.dashbuilder.navigation.event.NavTreeChangedEvent;
 import org.dashbuilder.navigation.storage.NavTreeStorage;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -85,7 +85,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
     private Event<NavTreeChangedEvent> navTreeChangedEvent;
     private NavTreeStorage navTreeStorage;
     private byte[] buffer = new byte[1024];
-    private ExternalComponentLoader externalComponentLoader;
+    private ComponentsLoader externalComponentLoader;
 
     private String dashbuilderLocation;
     private String exportDir;
@@ -108,7 +108,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                     final Event<PluginAdded> pluginAddedEvent,
                                     final Event<NavTreeChangedEvent> navTreeChangedEvent,
                                     final NavTreeStorage navTreeStorage,
-                                    final ExternalComponentLoader externalComponentLoader) {
+                                    final ComponentsLoader externalComponentLoader) {
 
         this.ioService = ioService;
         this.datasetsFS = datasetsFS;

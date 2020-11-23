@@ -20,16 +20,27 @@ import java.util.List;
 
 import org.dashbuilder.external.model.ExternalComponent;
 
-public interface ExternalComponentLoader {
+public interface ComponentsLoader {
 
+    /**
+     * Load the list of components externally created by users .
+     * 
+     * @return
+     * The list of external components.
+     */
     List<ExternalComponent> loadExternal();
 
-    List<ExternalComponent> loadInternal();
+    /**
+     * Load external components that are provided (built-in) by Dashbuilder.
+     * @return
+     * The list of provided external components
+     */
+    List<ExternalComponent> loadProvided();
 
     String getExternalComponentsDir();
 
-    String getInternalComponentsPath();
+    String getProvidedComponentsPath();
 
     boolean isExternalComponentsEnabled();
-    
+
 }

@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
 import org.dashbuilder.external.service.ExternalComponentAssetProvider;
-import org.dashbuilder.external.service.ExternalComponentLoader;
+import org.dashbuilder.external.service.ComponentsLoader;
 
 /**
  * Looks for components assets.
@@ -38,7 +38,7 @@ import org.dashbuilder.external.service.ExternalComponentLoader;
 public class ExternalComponentAssetProviderImpl implements ExternalComponentAssetProvider {
 
     @Inject
-    ExternalComponentLoader componentsLoader;
+    ComponentsLoader componentsLoader;
 
     @Override
     public InputStream openAsset(String componentAssetPath) {
@@ -52,7 +52,7 @@ public class ExternalComponentAssetProviderImpl implements ExternalComponentAsse
     }
 
     private Optional<InputStream> getInternalComponentAsset(String componentAssetPath) {
-        String internalComponentsBaseDir = componentsLoader.getInternalComponentsPath();
+        String internalComponentsBaseDir = componentsLoader.getProvidedComponentsPath();
         String fullPath = "/" + internalComponentsBaseDir + "/" + componentAssetPath;
         return Optional.ofNullable(this.getClass().getResourceAsStream(fullPath));
     }

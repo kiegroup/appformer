@@ -40,7 +40,7 @@ import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
 import org.dashbuilder.displayer.json.DisplayerSettingsJSONMarshaller;
-import org.dashbuilder.external.service.ExternalComponentLoader;
+import org.dashbuilder.external.service.ComponentsLoader;
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.model.DataSetContent;
@@ -79,7 +79,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     RuntimeModelRegistry registry;
 
     @Inject
-    ExternalComponentLoader externalComponentLoader;
+    ComponentsLoader externalComponentLoader;
 
     Gson gson;
 
@@ -247,7 +247,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     }
 
     private boolean isExternalComponent(String componentId) {
-        return externalComponentLoader.loadInternal().stream().noneMatch(c -> c.getId().equals(componentId));
+        return externalComponentLoader.loadProvided().stream().noneMatch(c -> c.getId().equals(componentId));
     }
 
 }
