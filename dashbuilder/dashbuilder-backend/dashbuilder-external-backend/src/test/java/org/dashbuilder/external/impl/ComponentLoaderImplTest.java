@@ -158,7 +158,7 @@ public class ComponentLoaderImplTest {
         assertEquals(1, internalComponents.size());
 
         ExternalComponent component = internalComponents.get(0);
-        assertEquals("logo", component.getId());
+        assertEquals("logo-provided", component.getId());
 
         List<ComponentParameter> parameters = component.getParameters();
         assertEquals(3, parameters.size());

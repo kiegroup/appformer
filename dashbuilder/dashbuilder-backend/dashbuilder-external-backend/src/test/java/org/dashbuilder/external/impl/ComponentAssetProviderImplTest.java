@@ -108,9 +108,9 @@ public class ComponentAssetProviderImplTest {
 
     @Test
     public void testInternalComponentAsset() throws Exception {
-        String logoImage = "logo/images/dashbuilder-logo.png";
-        String logoIndexJs = "logo/index.js";
-        String logoIndexHtml = "logo/index.html";
+        String logoImage = "logo-provided/images/dashbuilder-logo.png";
+        String logoIndexJs = "logo-provided/index.js";
+        String logoIndexHtml = "logo-provided/index.html";
 
         assertNotNull(componentAssetProviderImpl.openAsset(logoImage));
         assertNotNull(componentAssetProviderImpl.openAsset(logoIndexJs));
