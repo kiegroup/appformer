@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export * from "./ColumnSettings";
- export * from "./ColumnType";
+export * from "./ColumnType";
 export * from "./Column";
 export * from "./DataSet";
 export * from "./FilterRequest";

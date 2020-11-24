@@ -16,10 +16,19 @@
 
 package org.dashbuilder.external.service;
 
-import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
 
-public interface ExternalComponentAssetProvider {
-    
-    InputStream openAsset(String componentAssetPath);
+import org.dashbuilder.external.model.ExternalComponent;
+import org.jboss.errai.bus.server.annotations.Remote;
+
+@Remote
+public interface ComponentService {
+
+    List<ExternalComponent> listProvidedComponents();
+
+    List<ExternalComponent> listExternalComponents();
+
+    Optional<ExternalComponent> byId(String componentId);
 
 }

@@ -24,7 +24,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
-import org.dashbuilder.external.service.ComponentsLoader;
+import org.dashbuilder.external.service.ComponentLoader;
 import org.dashbuilder.shared.event.RemovedRuntimeModelEvent;
 
 /**
@@ -35,7 +35,7 @@ import org.dashbuilder.shared.event.RemovedRuntimeModelEvent;
 public class ExternalComponentsContentListener {
 
     @Inject
-    ComponentsLoader loader;
+    ComponentLoader loader;
 
     @Inject
     RuntimeOptions options;

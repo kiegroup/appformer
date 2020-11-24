@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.dashbuilder.external.model.ExternalComponent;
 
-public interface ComponentsLoader {
+public interface ComponentLoader {
 
     /**
      * Load the list of components externally created by users .

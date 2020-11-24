@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 import org.dashbuilder.client.editor.resources.i18n.Constants;
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ExternalComponentService;
+import org.dashbuilder.external.service.ComponentService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ioc.client.api.EntryPoint;
@@ -31,14 +31,14 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 
 @EntryPoint
 @ApplicationScoped
-public class InternalComponentsGroupProvider extends ComponentsGroupProvider {
+public class ExternalComponentGroupProvider extends ComponentGroupProvider {
     
-    private static final Constants i18n = Constants.INSTANCE;
+    private final Constants i18n = Constants.INSTANCE;
 
-    Caller<ExternalComponentService> externalComponentService;
+    Caller<ComponentService> externalComponentService;
 
     @Inject
-    public InternalComponentsGroupProvider(Caller<ExternalComponentService> externalComponentService, 
+    public ExternalComponentGroupProvider(Caller<ComponentService> externalComponentService, 
                                           SyncBeanManager beanManager) {
         this.externalComponentService = externalComponentService;
         this.beanManager = beanManager;
@@ -48,12 +48,12 @@ public class InternalComponentsGroupProvider extends ComponentsGroupProvider {
     @AfterInitialization
     public void loadComponents() {
         externalComponentService.call((List<ExternalComponent> components) -> loadedComponents = components)
-                                .listInternalComponents();
+                                .listExternalComponents();
     }
 
     @Override
     public String getName() {
-        return i18n.internalComponentsGroupName();
+        return i18n.externalComponentsGroupName();
     }
 
 }

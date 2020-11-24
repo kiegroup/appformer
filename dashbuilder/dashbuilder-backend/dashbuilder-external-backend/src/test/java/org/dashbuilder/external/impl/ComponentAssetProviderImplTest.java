@@ -23,8 +23,8 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.dashbuilder.components.internal.ProvidedComponentsInfo;
-import org.dashbuilder.external.service.ComponentsLoader;
+import org.dashbuilder.components.internal.ProvidedComponentInfo;
+import org.dashbuilder.external.service.ComponentLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,22 +38,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ExternalComponentAssetProviderImplTest {
+public class ComponentAssetProviderImplTest {
 
     @Mock
-    ComponentsLoader externalComponentLoader;
+    ComponentLoader componentLoader;
 
     @InjectMocks
-    ExternalComponentAssetProviderImpl externalComponentAssetProviderImpl;
+    ComponentAssetProviderImpl componentAssetProviderImpl;
 
     private Path componentsDir;
 
     @Before
     public void prepare() throws IOException {
         componentsDir = Files.createTempDirectory("components");
-        when(externalComponentLoader.getExternalComponentsDir()).thenReturn(componentsDir.toString());
+        when(componentLoader.getExternalComponentsDir()).thenReturn(componentsDir.toString());
 
-        when(externalComponentLoader.getProvidedComponentsPath()).thenReturn(ProvidedComponentsInfo.get().getInternalComponentsRootPath());
+        when(componentLoader.getProvidedComponentsPath()).thenReturn(ProvidedComponentInfo.get().getInternalComponentsRootPath());
     }
 
     @After
@@ -68,8 +68,8 @@ public class ExternalComponentAssetProviderImplTest {
         String componentFileName = "testFile";
         String assetPath = createComponentFile(componentId, componentFileName, componentFileContent);
 
-        when(externalComponentLoader.isExternalComponentsEnabled()).thenReturn(true);
-        String assetFileLoadedContent = IOUtils.toString(externalComponentAssetProviderImpl.openAsset(assetPath), StandardCharsets.UTF_8);
+        when(componentLoader.isExternalComponentsEnabled()).thenReturn(true);
+        String assetFileLoadedContent = IOUtils.toString(componentAssetProviderImpl.openAsset(assetPath), StandardCharsets.UTF_8);
 
         assertEquals(componentFileContent, assetFileLoadedContent);
     }
@@ -82,8 +82,8 @@ public class ExternalComponentAssetProviderImplTest {
 
         String assetPath = createComponentFile(componentId, componentFileName, componentFileContent);
 
-        when(externalComponentLoader.isExternalComponentsEnabled()).thenReturn(false);
-        externalComponentAssetProviderImpl.openAsset(assetPath);
+        when(componentLoader.isExternalComponentsEnabled()).thenReturn(false);
+        componentAssetProviderImpl.openAsset(assetPath);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -96,9 +96,9 @@ public class ExternalComponentAssetProviderImplTest {
         Path shouldNotBeAccessible = Files.createTempFile("should_not_be_accessible", "");
         Path relativePath = componentsDir.relativize(shouldNotBeAccessible);
 
-        when(externalComponentLoader.isExternalComponentsEnabled()).thenReturn(true);
+        when(componentLoader.isExternalComponentsEnabled()).thenReturn(true);
         try {
-            externalComponentAssetProviderImpl.openAsset(relativePath.toString());
+            componentAssetProviderImpl.openAsset(relativePath.toString());
         } catch (Exception e) {
             throw e;
         } finally {
@@ -112,15 +112,15 @@ public class ExternalComponentAssetProviderImplTest {
         String logoIndexJs = "logo/index.js";
         String logoIndexHtml = "logo/index.html";
 
-        assertNotNull(externalComponentAssetProviderImpl.openAsset(logoImage));
-        assertNotNull(externalComponentAssetProviderImpl.openAsset(logoIndexJs));
-        assertNotNull(externalComponentAssetProviderImpl.openAsset(logoIndexHtml));
+        assertNotNull(componentAssetProviderImpl.openAsset(logoImage));
+        assertNotNull(componentAssetProviderImpl.openAsset(logoIndexJs));
+        assertNotNull(componentAssetProviderImpl.openAsset(logoIndexHtml));
 
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInternalComponentAssetPathTraversal() throws Exception {
-        assertNotNull(externalComponentAssetProviderImpl.openAsset("../../../dashbuilder-components.properties"));
+        assertNotNull(componentAssetProviderImpl.openAsset("../../../dashbuilder-components.properties"));
     }
 
     private String createComponentFile(String componentId, String fileName, String fileContent) throws Exception {

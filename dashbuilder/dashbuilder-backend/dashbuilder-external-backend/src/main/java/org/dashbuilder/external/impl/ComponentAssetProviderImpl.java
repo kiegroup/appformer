@@ -27,18 +27,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
-import org.dashbuilder.external.service.ExternalComponentAssetProvider;
-import org.dashbuilder.external.service.ComponentsLoader;
+import org.dashbuilder.external.service.ComponentAssetProvider;
+import org.dashbuilder.external.service.ComponentLoader;
 
 /**
  * Looks for components assets.
  *
  */
 @ApplicationScoped
-public class ExternalComponentAssetProviderImpl implements ExternalComponentAssetProvider {
+public class ComponentAssetProviderImpl implements ComponentAssetProvider {
 
     @Inject
-    ComponentsLoader componentsLoader;
+    ComponentLoader componentsLoader;
 
     @Override
     public InputStream openAsset(String componentAssetPath) {
@@ -58,12 +58,12 @@ public class ExternalComponentAssetProviderImpl implements ExternalComponentAsse
     }
 
     private InputStream getExternalComponentAsset(String componentAssetPath) {
-        Path baseDir = Paths.get(componentsLoader.getExternalComponentsDir());
-        Path assetPath = baseDir.resolve(componentAssetPath);
-
         if (!componentsLoader.isExternalComponentsEnabled()) {
             throw new IllegalArgumentException("External Components are not enabled");
         }
+
+        Path baseDir = Paths.get(componentsLoader.getExternalComponentsDir());
+        Path assetPath = baseDir.resolve(componentAssetPath);
 
         if (isFileInComponentsDir(baseDir, assetPath)) {
             return loadExternalComponentFile(assetPath);

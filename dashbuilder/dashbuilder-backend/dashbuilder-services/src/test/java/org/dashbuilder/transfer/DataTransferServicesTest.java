@@ -35,7 +35,7 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.events.DataSetDefRegisteredEvent;
 import org.dashbuilder.dataset.json.DataSetDefJSONMarshaller;
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ComponentsLoader;
+import org.dashbuilder.external.service.ComponentLoader;
 import org.dashbuilder.navigation.event.NavTreeChangedEvent;
 import org.dashbuilder.navigation.storage.NavTreeStorage;
 import org.junit.After;
@@ -95,7 +95,7 @@ public class DataTransferServicesTest {
     @Mock
     DataSetDefJSONMarshaller dataSetDefJSONMarshaller;
     @Mock
-    ComponentsLoader externalComponentLoader;
+    ComponentLoader externalComponentLoader;
 
     Path componentsDir;
     

@@ -24,7 +24,7 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.uberfire.ext.layout.editor.client.api.LayoutDragComponentGroup;
 import org.uberfire.ext.plugin.client.perspective.editor.api.PerspectiveEditorComponentGroupProvider;
 
-public abstract class ComponentsGroupProvider implements PerspectiveEditorComponentGroupProvider {
+public abstract class ComponentGroupProvider implements PerspectiveEditorComponentGroupProvider {
     
     SyncBeanManager beanManager;
 

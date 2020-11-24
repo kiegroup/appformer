@@ -36,16 +36,16 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import com.google.gson.Gson;
-import org.dashbuilder.components.internal.ProvidedComponentsInfo;
+import org.dashbuilder.components.internal.ProvidedComponentInfo;
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ComponentsLoader;
+import org.dashbuilder.external.service.ComponentLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-public class ComponentsLoaderImpl implements ComponentsLoader {
+public class ComponentLoaderImpl implements ComponentLoader {
 
-    Logger logger = LoggerFactory.getLogger(ComponentsLoaderImpl.class);
+    Logger logger = LoggerFactory.getLogger(ComponentLoaderImpl.class);
 
     public static final String EXTERNAL_COMP_DIR_PROP = "dashbuilder.components.dir";
     public static final String EXTERNAL_COMP_ENABLE_PROP = "dashbuilder.components.enable";
@@ -53,7 +53,7 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
 
     private static final String DEFAULT_COMPONENTS_PATH = "/tmp/dashbuilder/components/";
 
-    private ProvidedComponentsInfo providedComponentsInfo;
+    private ProvidedComponentInfo providedComponentsInfo;
 
     private String externalComponentsDir;
 
@@ -64,7 +64,7 @@ public class ComponentsLoaderImpl implements ComponentsLoader {
     @PostConstruct
     public void init() {
         gson = new Gson();
-        providedComponentsInfo = ProvidedComponentsInfo.get();
+        providedComponentsInfo = ProvidedComponentInfo.get();
         externalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString()));
         externalComponentsDir = System.getProperty(EXTERNAL_COMP_DIR_PROP, DEFAULT_COMPONENTS_PATH);
         if (externalComponentEnabled) {

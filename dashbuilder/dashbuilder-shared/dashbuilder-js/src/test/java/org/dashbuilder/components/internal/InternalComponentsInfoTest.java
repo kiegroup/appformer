@@ -32,7 +32,7 @@ public class InternalComponentsInfoTest {
 
     @Test
     public void testMissingPropertiesFile() {
-        ProvidedComponentsInfo internalComponentsInfo = new ProvidedComponentsInfo();
+        ProvidedComponentInfo internalComponentsInfo = new ProvidedComponentInfo();
         internalComponentsInfo.loadProperties("do not exist");
         List<String> components = internalComponentsInfo.getInternalComponentsList();
         assertTrue(components.isEmpty());
@@ -41,7 +41,7 @@ public class InternalComponentsInfoTest {
 
     @Test
     public void testFoundPropertiesFile() {
-        ProvidedComponentsInfo internalComponentsInfo = ProvidedComponentsInfo.get();
+        ProvidedComponentInfo internalComponentsInfo = ProvidedComponentInfo.get();
         List<String> components = internalComponentsInfo.getInternalComponentsList();
         assertTrue(components.contains("c1"));
         assertTrue(components.contains("c2"));

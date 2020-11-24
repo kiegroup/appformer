@@ -53,7 +53,7 @@ export interface ComponentController {
   filter(filterRequest: FilterRequest): void;
 
   /*
-   * Calls a function and returns a Promise that will be fullfilled when the response is received from DB.
+   * Calls a function and returns a Promise that will be fulfilled when the response is received from DB.
    */
   callFunction(functionCallRequest: FunctionCallRequest): Promise<any>;
 }

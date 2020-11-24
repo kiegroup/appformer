@@ -30,25 +30,25 @@ import java.util.stream.Collectors;
  * Access internal component information and expose during runtime.
  *
  */
-public class ProvidedComponentsInfo {
+public class ProvidedComponentInfo {
 
-    Logger logger = Logger.getLogger(ProvidedComponentsInfo.class.getName());
+    Logger logger = Logger.getLogger(ProvidedComponentInfo.class.getName());
 
     private static final String DASHBUILDER_COMPONENTS_PROPERTIES = "/dashbuilder-components.properties";
     private static final String DASHBUILDER_COMPONENTS_LIST_PROP = "dashbuilder.internal.components.list";
     private static final String DASHBUILDER_COMPONENTS_ROOT_PROP = "dashbuilder.internal.components.root";
 
-    private static ProvidedComponentsInfo instance;
+    private static ProvidedComponentInfo instance;
 
     private List<String> internalComponentsList = Collections.emptyList();
 
     private String internalComponentsRootPath = null;
 
-    ProvidedComponentsInfo() {}
+    ProvidedComponentInfo() {}
 
-    public static ProvidedComponentsInfo get() {
+    public static ProvidedComponentInfo get() {
         if (instance == null) {
-            instance = new ProvidedComponentsInfo();
+            instance = new ProvidedComponentInfo();
             instance.loadProperties(DASHBUILDER_COMPONENTS_PROPERTIES);
         }
         return instance;

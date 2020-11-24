@@ -24,16 +24,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.external.model.ExternalComponent;
-import org.dashbuilder.external.service.ComponentsLoader;
-import org.dashbuilder.external.service.ExternalComponentService;
+import org.dashbuilder.external.service.ComponentLoader;
+import org.dashbuilder.external.service.ComponentService;
 import org.jboss.errai.bus.server.annotations.Service;
 
 @Service
 @ApplicationScoped
-public class ExternalComponentServiceImpl implements ExternalComponentService {
+public class ComponentServiceImpl implements ComponentService {
 
     @Inject
-    ComponentsLoader loader;
+    ComponentLoader loader;
 
     @Override
     public List<ExternalComponent> listExternalComponents() {
@@ -41,14 +41,14 @@ public class ExternalComponentServiceImpl implements ExternalComponentService {
     }
 
     @Override
-    public List<ExternalComponent> listInternalComponents() {
+    public List<ExternalComponent> listProvidedComponents() {
         return loader.loadProvided();
     }
 
     @Override
     public Optional<ExternalComponent> byId(String componentId) {
-        return Stream.concat(loader.loadExternal().stream(),
-                             loader.loadProvided().stream())
+        return Stream.concat(loader.loadProvided().stream(),
+                             loader.loadExternal().stream())
                      .filter(c -> componentId.equals(c.getId()))
                      .findFirst();
     }
