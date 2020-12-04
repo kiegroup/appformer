@@ -40,6 +40,8 @@ import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull
 
 public class TreeItem<I extends TreeItem> extends Composite implements OuiaComponent {
 
+    private static final String OUIA_COMPONENT_TYPE = "tree-item";
+
     private final Type type;
     protected FlowPanel content;
     private Tree<I> tree;
@@ -433,12 +435,12 @@ public class TreeItem<I extends TreeItem> extends Composite implements OuiaCompo
 
     @Override
     public OuiaComponentTypeAttribute ouiaComponentType() {
-        return new OuiaComponentTypeAttribute("tree-item");
+        return new OuiaComponentTypeAttribute(OUIA_COMPONENT_TYPE);
     }
 
     @Override
     public OuiaComponentIdAttribute ouiaComponentId() {
-        return new OuiaComponentIdAttribute("tree-item-" + label);
+        return new OuiaComponentIdAttribute(OUIA_COMPONENT_TYPE + "-" + label);
     }
 
     @Override
