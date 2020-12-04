@@ -19,6 +19,7 @@ package org.uberfire.client.workbench.ouia;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class OuiaComponentIdAttributeTest {
 
@@ -30,5 +31,11 @@ public class OuiaComponentIdAttributeTest {
     @Test
     public void testGetValue() {
         assertEquals("xyz", new OuiaComponentIdAttribute("xyz").getValue());
+    }
+
+    @Test
+    public void testEquality() {
+        assertEquals(new OuiaComponentIdAttribute("a"), new OuiaComponentIdAttribute("a"));
+        assertNotEquals(new OuiaComponentIdAttribute("a"), new OuiaComponentIdAttribute("b"));
     }
 }

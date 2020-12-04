@@ -16,6 +16,8 @@
 
 package org.uberfire.client.workbench.ouia;
 
+import java.util.Objects;
+
 /**
  * Implementation of 'data-ouia-component-type' attribute
  * https://ouia.readthedocs.io/en/latest/README.html#ouia-component
@@ -38,5 +40,23 @@ public class OuiaComponentTypeAttribute implements OuiaAttribute {
     @Override
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OuiaComponentTypeAttribute)) {
+            return false;
+        }
+        OuiaComponentTypeAttribute that = (OuiaComponentTypeAttribute) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(value);
     }
 }

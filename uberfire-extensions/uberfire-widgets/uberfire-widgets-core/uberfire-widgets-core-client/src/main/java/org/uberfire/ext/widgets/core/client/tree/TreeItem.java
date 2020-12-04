@@ -167,6 +167,7 @@ public class TreeItem<I extends TreeItem> extends Composite implements OuiaCompo
             }
             initWidget(loader);
         }
+        initOuiaComponentAttributes();
     }
 
     @SuppressWarnings("unchecked")
