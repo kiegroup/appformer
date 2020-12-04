@@ -16,7 +16,6 @@
 
 package org.dashbuilder.client.editor.external;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -66,7 +65,9 @@ public class ComponentsGroupProducer {
 
     public void addExternalComponents(List<ExternalComponent> components) {
         String groupId = i18n.externalComponentsGroupName();
-        checkGroup(groupId);
+        if (!components.isEmpty()) {
+            checkGroup(groupId);
+        }
         components.forEach(comp -> {
             layoutDragComponentPalette.addDraggableComponent(groupId,
                                                              comp.getId(),

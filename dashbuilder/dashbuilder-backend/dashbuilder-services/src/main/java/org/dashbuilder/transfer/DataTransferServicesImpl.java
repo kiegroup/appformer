@@ -86,6 +86,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
     private NavTreeStorage navTreeStorage;
     private byte[] buffer = new byte[1024];
     private ComponentLoader externalComponentLoader;
+    private LayoutComponentsHelper layoutComponentsHelper;
 
     private String dashbuilderLocation;
     private String exportDir;
@@ -108,7 +109,8 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                     final Event<PluginAdded> pluginAddedEvent,
                                     final Event<NavTreeChangedEvent> navTreeChangedEvent,
                                     final NavTreeStorage navTreeStorage,
-                                    final ComponentLoader externalComponentLoader) {
+                                    final ComponentLoader externalComponentLoader,
+                                    final LayoutComponentsHelper layoutComponentsHelper) {
 
         this.ioService = ioService;
         this.datasetsFS = datasetsFS;
@@ -122,6 +124,7 @@ public class DataTransferServicesImpl implements DataTransferServices {
         this.navTreeChangedEvent = navTreeChangedEvent;
         this.navTreeStorage = navTreeStorage;
         this.externalComponentLoader = externalComponentLoader;
+        this.layoutComponentsHelper = layoutComponentsHelper;
     }
 
     @PostConstruct
@@ -175,13 +178,15 @@ public class DataTransferServicesImpl implements DataTransferServices {
                                                                        .append("://")
                                                                        .append(componentsPath)
                                                                        .toString());
-                externalComponentLoader.loadExternal().forEach(c -> {
-                    Path componentPath = componentsBasePath.resolve(c.getId());
-                    zipComponentFiles(componentsBasePath,
-                                      componentPath,
-                                      zos,
-                                      p -> true);
-                });
+                Predicate<String> pagesComponentsFilter = page -> exportModel.isExportAll() || exportModel.getPages().contains(page);
+                layoutComponentsHelper.findComponentsInTemplates(pagesComponentsFilter)
+                                      .forEach(c -> {
+                                          Path componentPath = componentsBasePath.resolve(c);
+                                          zipComponentFiles(componentsBasePath,
+                                                            componentPath,
+                                                            zos,
+                                                            p -> true);
+                                      });
             }
         }
 
