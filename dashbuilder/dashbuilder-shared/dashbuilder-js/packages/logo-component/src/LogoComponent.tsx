@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { ComponentController } from "@dashbuilder-js/component-api";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Logo, LogoProps } from "./Logo";
-import { ComponentController } from "@dashbuilder-js/component-api/dist/controller/ComponentController";
 const DEFAULT_SRC = "./images/dashbuilder-logo.png";
 const SRC_PROP = "src";
 const WIDTH_PROP = "width";
@@ -31,13 +31,15 @@ export function LogoComponent(props: Props) {
     src: DEFAULT_SRC
   });
 
-  props.controller.setOnInit(componentProps => {
-    setLogoProps({
-      src: (componentProps.get(SRC_PROP) as string) || DEFAULT_SRC,
-      width: componentProps.get(WIDTH_PROP) as string,
-      height: componentProps.get(HEIGHT_PROP) as string
+  useEffect(() => {
+    props.controller.setOnInit(componentProps => {
+      setLogoProps({
+        src: (componentProps.get(SRC_PROP) as string) || DEFAULT_SRC,
+        width: componentProps.get(WIDTH_PROP) as string,
+        height: componentProps.get(HEIGHT_PROP) as string
+      });
     });
-  });
+  }, []);
 
   return <Logo {...logoProps} />;
 }

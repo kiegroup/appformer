@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { Heatmap } from "heatmap.js";
 import * as React from "react";
-import { useEffect, createRef, useState } from "react";
+import { useCallback, useEffect, createRef, useState } from "react";
 import * as heatmap from "heatmap.js";
 
-export interface SVGNodeValue {
+export interface SvgNodeValue {
   nodeId: string;
   value: number;
 }
@@ -62,26 +61,26 @@ const getNodeInfo = (el: HTMLElement): NodeInfo => {
   };
 };
 
-export interface SVGHeatmapProps {
-  svgNodesValues: SVGNodeValue[];
+export interface SvgHeatmapProps {
+  svgNodesValues: SvgNodeValue[];
   svgContent: string;
   width?: string;
   height?: string;
 }
 
-export function SVGHeatmap(props: SVGHeatmapProps) {
+export function SvgHeatmap(props: SvgHeatmapProps) {
   const parentRef = createRef<HTMLDivElement>();
-  const [svgHeatmap, setSvgHeatmap] = useState<Heatmap<any, any, any>>();
-  const [ repaint, setRepaint ] = useState(false);
+  const [svgHeatmap, setSvgHeatmap] = useState<heatmap.Heatmap<any, any, any>>();
+  const [repaint, setRepaint] = useState(false);
 
   useEffect(() => {
     if (props.svgContent) {
-      const heatMapContainer = parentRef.current!;
-      heatMapContainer.innerHTML = props.svgContent;
-      const svg = heatMapContainer.querySelector("svg")!;
+      const heatmapContainer = parentRef.current!;
+      heatmapContainer.innerHTML = props.svgContent;
+      const svg = heatmapContainer.querySelector("svg")!;
       svg.style.width = "100%";
       svg.style.height = "auto";
-      setSvgHeatmap(createHeatmap(heatMapContainer, []));
+      setSvgHeatmap(createHeatmap(heatmapContainer, []));
     }
   }, [props.svgContent]);
 
@@ -111,7 +110,12 @@ export function SVGHeatmap(props: SVGHeatmapProps) {
     }
   }, [svgHeatmap, props.svgNodesValues, repaint]);
 
-  window.onresize = (e: any) => setRepaint(previous => !previous);
+  const onResize = useCallback(() => setRepaint(previous => !previous), [repaint]);
+
+  useEffect(() => {
+    window.addEventListener("resize", onResize, false);
+    return () => window.removeEventListener("resize", onResize, false);
+  }, [repaint]);
 
   return <div style={{ width: props.width || "100%", height: props.height || "100%" }} ref={parentRef} />;
 }

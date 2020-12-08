@@ -32,7 +32,7 @@ import org.uberfire.ext.layout.editor.api.editor.LayoutRow;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 
 @ApplicationScoped
-public class LayoutComponentsHelper {
+public class LayoutComponentHelper {
 
     @Inject
     private PerspectiveServices perspectiveServices;

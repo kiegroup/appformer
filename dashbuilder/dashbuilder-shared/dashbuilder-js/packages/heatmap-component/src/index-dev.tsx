@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.external.service;
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-import java.util.List;
-import java.util.Optional;
+import * as ComponentDev from "@dashbuilder-js/component-dev";
+import * as ComponentAPI from "@dashbuilder-js/component-api";
+import { SVGHeatmapComponent } from "./SVGHeatmapComponent";
 
-import org.dashbuilder.external.model.ExternalComponent;
-import org.jboss.errai.bus.server.annotations.Remote;
+ReactDOM.render(
+  <SVGHeatmapComponent controller={ComponentAPI.getComponentController()} />,
+  document.getElementById("app")!
+);
 
-@Remote
-public interface ComponentService {
-
-    List<ExternalComponent> listProvidedComponents();
-
-    List<ExternalComponent> listExternalComponents();
-    
-    List<ExternalComponent> listAllComponents();
-
-    Optional<ExternalComponent> byId(String componentId);
-    
-    
-
-}
+ComponentDev.start();

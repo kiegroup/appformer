@@ -17,7 +17,6 @@ import { ComponentMessage, MessageProperty } from "../message";
 import { ComponentBus } from "./ComponentBus";
 
 export class BrowserComponentBus implements ComponentBus {
-  private componentId: string;
 
   private listener: (message: ComponentMessage) => void;
 
@@ -29,10 +28,10 @@ export class BrowserComponentBus implements ComponentBus {
     window.addEventListener("message", this.messageListener, false);
   }
 
-  public send(message: ComponentMessage): void {
+  public send(componentId: string, message: ComponentMessage): void {
     console.debug("[BrowserComponentBus] Sending Message");
     console.debug(message);
-    message.properties.set(MessageProperty.COMPONENT_ID, this.componentId);
+    message.properties.set(MessageProperty.COMPONENT_ID, componentId);
     window.parent.postMessage(message, window.location.href);
   }
 
@@ -44,7 +43,4 @@ export class BrowserComponentBus implements ComponentBus {
     window.removeEventListener("message", this.messageListener, false);
   }
 
-  public withComponentId(componentId: string): void {
-    this.componentId = componentId;
-  }
 }

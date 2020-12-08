@@ -19,7 +19,7 @@ import { useEffect, useState, useCallback } from "react";
 
 import { ColumnType, DataSet } from "@dashbuilder-js/component-api";
 import { ComponentController } from "@dashbuilder-js/component-api/dist/controller/ComponentController";
-import { SVGNodeValue, SVGHeatmap } from "@dashbuilder-js/heatmap-base";
+import { SvgNodeValue, SvgHeatmap } from "@dashbuilder-js/heatmap-base";
 import { ProcessSelector } from "./ProcessSelector";
 
 const NOT_ENOUGH_COLUMNS_MSG =
@@ -58,7 +58,7 @@ interface ContainerData {
 
 interface AppState {
   state: AppStateType;
-  nodesValues: SVGNodeValue[];
+  nodesValues: SvgNodeValue[];
   serverTemplate?: string;
   processSvg?: string;
   containerData: ContainerData[];
@@ -211,7 +211,7 @@ export function ProcessesHeatmapsComponent(props: Props) {
   return (
     <div className="allProcessHeatmapsComponent">
       {appState.state !== AppStateType.ERROR && appState.processSvg && (
-        <SVGHeatmap svgNodesValues={appState.nodesValues} svgContent={appState.processSvg!} />
+        <SvgHeatmap svgNodesValues={appState.nodesValues} svgContent={appState.processSvg!} />
       )}
       {appState.state !== AppStateType.ERROR && appState.containerData.length > 0 && (
         <ProcessSelector

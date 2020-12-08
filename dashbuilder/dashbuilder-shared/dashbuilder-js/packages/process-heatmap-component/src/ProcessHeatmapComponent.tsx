@@ -18,7 +18,7 @@ import * as React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { ColumnType, DataSet, FunctionCallRequest } from "@dashbuilder-js/component-api";
 import { ComponentController } from "@dashbuilder-js/component-api/dist/controller/ComponentController";
-import { SVGNodeValue, SVGHeatmap } from "@dashbuilder-js/heatmap-base";
+import { SvgNodeValue, SvgHeatmap } from "@dashbuilder-js/heatmap-base";
 
 const NOT_ENOUGH_COLUMNS_MSG = "Process Heatmap expects 2 columns: Node Id(LABEL or TEXT),Value (NUMBER).";
 const FIRST_COLUMN_INVALID_MSG = "Wrong type for first column, it should be either LABEL or TEXT.";
@@ -40,7 +40,7 @@ enum AppStateType {
 
 interface AppState {
   state: AppStateType;
-  processesNodesValues: SVGNodeValue[];
+  processesNodesValues: SvgNodeValue[];
   svgRequest?: FunctionCallRequest;
   processSVG?: string;
   configurationIssue: string;
@@ -84,27 +84,30 @@ export function ProcessHeatmapComponent(props: Props) {
     configurationIssue: ""
   });
 
-  props.controller.setOnInit((params: Map<string, string>) => {
-    const validationMessage = validateParams(params);
-    if (validationMessage) {
-      setAppState(previousAppState => ({
-        ...previousAppState,
-        state: AppStateType.ERROR,
-        message: validationMessage,
-        configurationIssue: validationMessage
-      }));
-    } else {
-      setAppState(previousAppState => ({
-        ...previousAppState,
-        state: AppStateType.LOADING_SVG,
-        svgRequest: {
-          functionName: "ProcessSVGFunction",
-          parameters: params
-        },
-        configurationIssue: ""
-      }));
-    }
-  });
+  const onInit = useCallback(
+    (params: Map<string, string>) => {
+      const validationMessage = validateParams(params);
+      if (validationMessage) {
+        setAppState(previousAppState => ({
+          ...previousAppState,
+          state: AppStateType.ERROR,
+          message: validationMessage,
+          configurationIssue: validationMessage
+        }));
+      } else {
+        setAppState(previousAppState => ({
+          ...previousAppState,
+          state: AppStateType.LOADING_SVG,
+          svgRequest: {
+            functionName: "ProcessSVGFunction",
+            parameters: params
+          },
+          configurationIssue: ""
+        }));
+      }
+    },
+    [appState]
+  );
 
   const onDataset = useCallback((ds: DataSet, params: Map<string, any>) => {
     const validationMessage = validateParams(params) || validateDataSet(ds);
@@ -125,7 +128,10 @@ export function ProcessHeatmapComponent(props: Props) {
     }
   }, []);
 
-  useEffect(() => props.controller.setOnDataSet(onDataset), [appState]);
+  useEffect(() => {
+    props.controller.setOnInit(onInit);
+    props.controller.setOnDataSet(onDataset);
+  }, [appState]);
 
   useEffect(() => {
     if (appState.configurationIssue) {
@@ -160,7 +166,7 @@ export function ProcessHeatmapComponent(props: Props) {
             return <em style={{ color: "red" }}>{appState.message}</em>;
           case AppStateType.LOADED_SVG:
           case AppStateType.FINISHED:
-            return <SVGHeatmap svgContent={appState.processSVG!} svgNodesValues={appState.processesNodesValues} />;
+            return <SvgHeatmap svgContent={appState.processSVG!} svgNodesValues={appState.processesNodesValues} />;
           default:
             return <em>Status: {appState.state}</em>;
         }

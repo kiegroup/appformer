@@ -32,6 +32,7 @@ public class ExternalComponent {
     private String icon;
     private String category;
     private boolean noData;
+    private boolean provided;
     private List<ComponentParameter> parameters;
 
     public ExternalComponent() {
@@ -77,5 +78,14 @@ public class ExternalComponent {
     public List<ComponentParameter> getParameters() {
         return parameters;
     }
+    
+    public boolean isProvided() {
+        return provided;
+    }
 
+    
+    public void setProvided(boolean provided) {
+        this.provided = provided;
+    }
+    
 }

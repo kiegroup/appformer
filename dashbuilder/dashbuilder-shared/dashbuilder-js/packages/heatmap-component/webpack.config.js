@@ -20,19 +20,21 @@ const { merge } = require("webpack-merge");
 const common = require("../../webpack.common.config");
 
 module.exports = async (env, argv) => {
+  let entryPoint = "./src/index.tsx";
   const copyResources = [
     { from: "./static/index.html", to: "./index.html" },
     { from: "./static/manifest.json", to: "./manifest.json" }
   ];
 
   if (process.env.WEBPACK_DEV_SERVER) {
+    entryPoint = "./src/index-dev.tsx";
     copyResources.push({ from: "./static/manifest.dev.json", to: "./manifest.dev.json" });
     copyResources.push({ from: "./static/dev.svg", to: "./dev.svg" });
   }
 
   return merge(common, {
     entry: {
-      index: "./src/index.tsx"
+      index: entryPoint
     },
     plugins: [new CopyPlugin(copyResources)],
     devServer: {

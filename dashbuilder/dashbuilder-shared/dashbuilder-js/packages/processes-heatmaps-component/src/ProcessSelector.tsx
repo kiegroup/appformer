@@ -41,7 +41,7 @@ export function ProcessSelector(props: ProcessSelectorProps) {
   const processSelectRef = createRef<HTMLSelectElement>();
   const [selectedValue, setSelectedValue] = useState<SelectedValue>();
 
-  const onClickTitled = useCallback((e: any) => {
+  const onTitleClicked = useCallback((e: any) => {
     titleRef.current?.classList.toggle("active");
     const bodyRefEl = bodyRef.current;
     if (bodyRefEl) {
@@ -81,7 +81,7 @@ export function ProcessSelector(props: ProcessSelectorProps) {
   return (
     <div className="processSelectorContainer">
       <div className="container">
-        <h5 className="cardTitle collapsible" onClick={onClickTitled} ref={titleRef}>
+        <h5 className="cardTitle collapsible" onClick={onTitleClicked} ref={titleRef}>
           <b>Process Selector</b>
         </h5>
         <div className="cardBody" ref={bodyRef}>

@@ -18,8 +18,7 @@ import { ComponentMessage } from "../message";
 
 export interface ComponentBus {
   start(): void;
-  withComponentId(componentId: string): void;
-  send(message: ComponentMessage): void;
+  send(componentId: string, message: ComponentMessage): void;
   setListener(onMessage: (message: ComponentMessage) => void): void;
   destroy(): void;
 }

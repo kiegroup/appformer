@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 export * from "./ComponentController";
-export * from "./api";
-export * as Bus from "./ComponentBus"
+export * from "./ComponentBus"

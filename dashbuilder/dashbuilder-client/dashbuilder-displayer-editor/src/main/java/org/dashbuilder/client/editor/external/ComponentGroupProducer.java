@@ -17,6 +17,7 @@
 package org.dashbuilder.client.editor.external;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -33,7 +34,7 @@ import org.uberfire.ext.layout.editor.client.widgets.LayoutComponentPaletteGroup
 import org.uberfire.ext.plugin.client.perspective.editor.events.PerspectiveEditorFocusEvent;
 
 @ApplicationScoped
-public class ComponentsGroupProducer {
+public class ComponentGroupProducer {
 
     private static final Constants i18n = Constants.INSTANCE;
 
@@ -42,9 +43,9 @@ public class ComponentsGroupProducer {
     private Caller<ComponentService> componentService;
 
     @Inject
-    public ComponentsGroupProducer(Caller<ComponentService> externalComponentService,
-                                   SyncBeanManager beanManager,
-                                   LayoutDragComponentPalette layoutDragComponentPalette) {
+    public ComponentGroupProducer(Caller<ComponentService> externalComponentService,
+                                  SyncBeanManager beanManager,
+                                  LayoutDragComponentPalette layoutDragComponentPalette) {
         this.componentService = externalComponentService;
         this.beanManager = beanManager;
         this.layoutDragComponentPalette = layoutDragComponentPalette;
@@ -56,11 +57,15 @@ public class ComponentsGroupProducer {
 
     public void loadComponents() {
 
-        componentService.call((List<ExternalComponent> components) -> addExternalComponents(components))
-                        .listExternalComponents();
+        componentService.call((List<ExternalComponent> components) -> {
+            addProvidedComponents(components.stream()
+                                            .filter(c -> c.isProvided())
+                                            .collect(Collectors.toList()));
+            addExternalComponents(components.stream()
+                                            .filter(c -> !c.isProvided())
+                                            .collect(Collectors.toList()));
+        }).listAllComponents();
 
-        componentService.call((List<ExternalComponent> components) -> addInternalComponents(components))
-                        .listProvidedComponents();
     }
 
     public void addExternalComponents(List<ExternalComponent> components) {
@@ -76,7 +81,7 @@ public class ComponentsGroupProducer {
 
     }
 
-    public void addInternalComponents(List<ExternalComponent> components) {
+    public void addProvidedComponents(List<ExternalComponent> components) {
         components.stream().forEach(component -> {
             String groupId = component.getCategory() != null ? component.getCategory() : i18n.internalComponentsGroupName();
             checkGroup(groupId);

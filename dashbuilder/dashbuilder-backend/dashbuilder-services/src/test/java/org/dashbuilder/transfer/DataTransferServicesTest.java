@@ -97,7 +97,7 @@ public class DataTransferServicesTest {
     @Mock
     ComponentLoader externalComponentLoader;
     @Mock
-    LayoutComponentsHelper layoutComponentsHelper;
+    LayoutComponentHelper layoutComponentsHelper;
 
     Path componentsDir;
     
@@ -305,7 +305,7 @@ public class DataTransferServicesTest {
     @Test
     public void testDoExportWithComponents() throws Exception {
         when(layoutComponentsHelper.findComponentsInTemplates((any()))).thenReturn(asList("c1"));
-        
+
         createFile(perspectivesFS, "page1/perspective_layout", "");
         createFile(perspectivesFS, "page1/perspective_layout.plugin", "");
         

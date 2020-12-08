@@ -33,8 +33,7 @@ export class DashbuilderComponentDispatcher implements InternalComponentDispatch
   private readonly messageDispatcher = (message: ComponentMessage) => {
     if (message.type === MessageType.INIT) {
       this.componentId = message.properties.get(MessageProperty.COMPONENT_ID);
-      this.bus.withComponentId(this.componentId);
-      this.componentController.onInit(message.properties);
+      this.componentController.init(message.properties);
     }
 
     if (message.type === MessageType.DATASET) {

@@ -14,10 +14,11 @@
  * limitations under the License.
  * */
 
-import { DataSet } from "../dataset";
-import { BrowserComponentBus } from "./BrowserComponentBus";
-import { DashbuilderComponentController } from "./DashbuilderComponentController";
-import { DashbuilderComponentDispatcher } from "./DashbuilderComponentDispatcher";
+import { DataSet } from "./dataset";
+import { BrowserComponentBus } from "./controller/BrowserComponentBus";
+import { DashbuilderComponentController } from "./controller/DashbuilderComponentController";
+import { DashbuilderComponentDispatcher } from "./controller/DashbuilderComponentDispatcher";
+import { ComponentController } from "./controller";
 
 const bus = new BrowserComponentBus();
 const controller = new DashbuilderComponentController(bus);
@@ -28,7 +29,7 @@ listener.init();
 export function getComponentController(
   onInit?: (params: Map<string, any>) => void,
   onDataSet?: (dataSet: DataSet, params?: Map<string, any>) => void
-) {
+): ComponentController {
   if (onInit) {
     controller.setOnInit(onInit);
   }

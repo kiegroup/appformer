@@ -17,7 +17,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import * as ComponentDev from "@dashbuilder-js/component-dev";
 import * as ComponentAPI from "@dashbuilder-js/component-api";
 import { SVGHeatmapComponent } from "./SVGHeatmapComponent";
 
@@ -25,7 +24,3 @@ ReactDOM.render(
   <SVGHeatmapComponent controller={ComponentAPI.getComponentController()} />,
   document.getElementById("app")!
 );
-
-if (ComponentDev) {
-  ComponentDev.start();
-}

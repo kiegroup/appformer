@@ -17,8 +17,8 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 
-import { SVGHeatmap, SVGNodeValue } from "@dashbuilder-js/heatmap-base";
-import { DataSet } from "@dashbuilder-js/component-api";
+import { SvgHeatmap, SvgNodeValue } from "@dashbuilder-js/heatmap-base";
+import { ColumnType, DataSet } from "@dashbuilder-js/component-api";
 import { ComponentController } from "@dashbuilder-js/component-api/dist/controller/ComponentController";
 
 const SVG_CONTENT_PARAM = "svgContent";
@@ -34,7 +34,10 @@ const validateDataSet = (ds: DataSet): string | undefined => {
   if (ds.columns.length < 2) {
     return NOT_ENOUGH_COLUMNS_MSG;
   }
-  if ((ds.columns[0].type !== "TEXT" && ds.columns[0].type !== "LABEL") || ds.columns[1].type !== "NUMBER") {
+  if (
+    (ds.columns[0].type !== ColumnType.TEXT && ds.columns[0].type !== ColumnType.LABEL) ||
+    ds.columns[1].type !== ColumnType.NUMBER
+  ) {
     return INVALID_COLUMNS_TYPE_MSG;
   }
 };
@@ -46,7 +49,7 @@ const validateParams = (params: Map<string, string>) => {
     return MISSING_PARAM_MSG;
   }
 };
-const extractNodeInfo = (dataset: string[][]): SVGNodeValue[] =>
+const extractNodeInfo = (dataset: string[][]): SvgNodeValue[] =>
   dataset.map(row => ({
     nodeId: row[0],
     value: +row[1]
@@ -54,7 +57,7 @@ const extractNodeInfo = (dataset: string[][]): SVGNodeValue[] =>
 
 interface AppState {
   svgContent?: string;
-  data: SVGNodeValue[];
+  data: SvgNodeValue[];
   errorMessage?: string;
 }
 
@@ -112,6 +115,6 @@ export function SVGHeatmapComponent(props: Props) {
   return appState?.errorMessage ? (
     <em>{appState.errorMessage}</em>
   ) : (
-    <SVGHeatmap svgContent={appState.svgContent!} svgNodesValues={appState.data} />
+    <SvgHeatmap svgContent={appState.svgContent!} svgNodesValues={appState.data} />
   );
 }
