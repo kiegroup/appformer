@@ -287,7 +287,7 @@ public class GridWidgetDnDMouseMoveHandlerTest {
         verify(state,
                times(1)).setActiveGridWidget(eq(gridWidget));
         verify(state,
-               times(1)).setOperation(eq(GridWidgetHandlersOperation.GRID_MOVE_PENDING));
+               times(1)).setOperation(eq(GridWidgetHandlersOperation.NONE));
     }
 
     @Test

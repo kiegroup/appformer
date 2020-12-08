@@ -159,11 +159,9 @@ public class GridWidgetDnDMouseMoveHandler implements NodeMouseMoveHandler {
                                 renderingInformation,
                                 cx);
 
-            //If over Grid but no operation has been identified default to Grid dragging; when unpinned
             if (!layer.isGridPinned()) {
                 if (state.getActiveGridWidget() == null) {
                     state.setActiveGridWidget(gridWidget);
-                    state.setOperation(GridWidgetDnDHandlersState.GridWidgetHandlersOperation.GRID_MOVE_PENDING);
                 }
             }
         }
