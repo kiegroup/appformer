@@ -18,9 +18,8 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ProcessHeatmapComponent } from "./ProcessHeatmapComponent";
 
-import * as ComponentAPI from "@dashbuilder-js/component-api";
+import { ComponentApi } from "@dashbuilder-js/component-api";
 
-ReactDOM.render(
-  <ProcessHeatmapComponent controller={ComponentAPI.getComponentController()} />,
-  document.getElementById("app")!
-);
+const api = new ComponentApi();
+
+ReactDOM.render(<ProcessHeatmapComponent controller={api.getComponentController()} />, document.getElementById("app")!);

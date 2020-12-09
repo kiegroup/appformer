@@ -17,6 +17,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LogoComponent } from "./LogoComponent";
-import * as ComponentAPI from "@dashbuilder-js/component-api";
+import { ComponentApi } from "@dashbuilder-js/component-api";
 
-ReactDOM.render(<LogoComponent controller={ComponentAPI.getComponentController()} />, document.getElementById("app")!);
+const api = new ComponentApi();
+
+ReactDOM.render(<LogoComponent controller={api.getComponentController()} />, document.getElementById("app")!);

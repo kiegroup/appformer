@@ -43,18 +43,10 @@ interface FunctionDef {
   params: Prop[];
 }
 
-
 interface ComponentDevConfiguration {
   init: Prop[];
   functions: FunctionDef[];
   dataSet: DataSet;
-}
-
-export function start() {
-  fetch(DEV_FILE)
-    .then(r => r.text())
-    .then(text => handleDevConf(text))
-    .catch(e => console.log("Not able to load manifest DEV file: " + e));
 }
 
 function handleDevConf(text: string) {
@@ -150,7 +142,7 @@ function paramsMatch(requestParams: Map<string, any>, devParams: Prop[]): boolea
   const devParamsEmpty = !devParams || devParams.length === 0;
   const requestParamsEmpty = !requestParams || requestParams.size === 0;
   const allMatch =
-  devParams && requestParams ? !devParamsEmpty && devParams.every(p => requestParams.get(p.key) === p.value) : false;
+    devParams && requestParams ? !devParamsEmpty && devParams.every(p => requestParams.get(p.key) === p.value) : false;
   return (devParamsEmpty && requestParamsEmpty) || allMatch;
 }
 
@@ -159,4 +151,13 @@ function sendMessage(message: ComponentMessage) {
   console.debug(message);
   message.properties.set(MessageProperty.COMPONENT_ID, COMP_ID);
   window.postMessage(message, window.location.href);
+}
+
+export class ComponentDev {
+  public start() {
+    fetch(DEV_FILE)
+      .then(r => r.text())
+      .then(text => handleDevConf(text))
+      .catch(e => console.log("Not able to load manifest DEV file: " + e));
+  }
 }

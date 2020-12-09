@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {ComponentBus} from "../controller";
-import * as ComponentAPI from "../api";
+import { ComponentBus } from "../controller";
+import { ComponentApi } from "../ComponentApi";
 import { ColumnType, DataSet, FilterRequest } from "../dataset";
 import { FunctionCallRequest, FunctionResponse, FunctionResultType } from "../function";
 import { ComponentMessage, MessageType } from "../message";
 import { MessageProperty } from "../message/MessageProperty";
 import { DashbuilderComponentController } from "../controller/DashbuilderComponentController";
 
-const controller = ComponentAPI.getComponentController() as DashbuilderComponentController;
+const controller = new ComponentApi().getComponentController() as DashbuilderComponentController;
 
 const sampleDataSet: DataSet = {
   columns: [
@@ -84,7 +84,7 @@ describe("[Controller API] Sending Requests", () => {
     controller.init(params);
     controller.setComponentBus(bus);
   });
- 
+
   it("Configuration Issues", async () => {
     const configIssue = "some configuration issue.";
     const params = new Map<string, any>();
@@ -111,7 +111,7 @@ describe("[Controller API] Sending Requests", () => {
     expect(bus.send).toBeCalledWith(componentId, message);
   });
 
-  it("Filter", async () => {   
+  it("Filter", async () => {
     const filterRequest: FilterRequest = {
       column: 1,
       reset: false,
@@ -222,7 +222,7 @@ function mockBus(): ComponentBus {
     destroy: jest.fn(),
     start: jest.fn(),
     send: jest.fn(),
-    setListener: jest.fn(),
+    setListener: jest.fn()
   };
 }
 

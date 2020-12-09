@@ -17,13 +17,14 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { ProcessesHeatmapsComponent } from "./ProcessesHeatmapsComponent";
-import * as ComponentAPI from "@dashbuilder-js/component-api";
+import { ComponentApi } from "@dashbuilder-js/component-api";
+import { ComponentDev } from "@dashbuilder-js/component-dev";
 
-import * as ComponentDev from "@dashbuilder-js/component-dev";
+const api = new ComponentApi();
 
 ReactDOM.render(
-  <ProcessesHeatmapsComponent controller={ComponentAPI.getComponentController()} />,
+  <ProcessesHeatmapsComponent controller={api.getComponentController()} />,
   document.getElementById("app")!
 );
 
-ComponentDev.start();
+new ComponentDev().start();

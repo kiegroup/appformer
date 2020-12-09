@@ -17,10 +17,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import * as ComponentAPI from "@dashbuilder-js/component-api";
+import { ComponentApi } from "@dashbuilder-js/component-api";
 import { SVGHeatmapComponent } from "./SVGHeatmapComponent";
 
-ReactDOM.render(
-  <SVGHeatmapComponent controller={ComponentAPI.getComponentController()} />,
-  document.getElementById("app")!
-);
+const api = new ComponentApi();
+ReactDOM.render(<SVGHeatmapComponent controller={api.getComponentController()} />, document.getElementById("app")!);
