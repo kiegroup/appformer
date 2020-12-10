@@ -33,17 +33,21 @@
   top: 0;
   left: 0;
   margin: 10px;
+  opacity: 0.6;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
-  max-width: 160px;
-  min-width: 160px;
+  max-width: 130px;
+  min-width: 130px;
 }
+
+.processSelectorContainer:hover {
+  opacity: 1;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
 .errorMessage {
   color: #9F6000;
   background-color: #FEEFB3;
-}
-.processSelectorContainer:hover {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
 .cardTitle {
@@ -57,8 +61,8 @@
 }
 
 .processSelectorContainer select {
-  max-width: 130px;
-  min-width: 130px;
+  max-width: 100px;
+  min-width: 100px;
   background-color: #f1f1f1;
   color: #4d5258;
   border-color: #bbb;
@@ -84,8 +88,7 @@
   right: 0;
   z-index: 99;
 }
-.processSelectorContainer fieldset {
-  margin-bottom: 5px;
+.processSelectorContainer fieldset {  
   border-color: #dddddd;
   border-radius: 10px;
   border-width: 1px;

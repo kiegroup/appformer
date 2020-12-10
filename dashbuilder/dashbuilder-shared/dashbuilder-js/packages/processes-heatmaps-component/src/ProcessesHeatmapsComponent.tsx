@@ -23,7 +23,7 @@ import { SvgNodeValue, SvgHeatmap } from "@dashbuilder-js/heatmap-base";
 import { ProcessSelector } from "./ProcessSelector";
 
 const NOT_ENOUGH_COLUMNS_MSG =
-  "All Processes Heatmaps expects 4 columns: Container Id, Process Id, Node Id ,Value (NUMBER).";
+  "All Processes Heatmaps expects 4 columns: Container Id (or External Id), Process Id, Node Id ,Value (NUMBER).";
 const INVALID_TEXT_COLUMN = "Wrong type for column {0}, it should be either LABEL or TEXT.";
 const VALUE_COLUMN_INVALID_MSG = "Wrong type for node value column, it should be NUMBER.";
 const NO_DATA_MESSAGE = "Dataset is empty. Please provide data with container id, process id, node id and value.";
@@ -202,7 +202,9 @@ export function ProcessesHeatmapsComponent(props: Props) {
           setAppState(previousState => ({
             ...previousState,
             state: AppStateType.ERROR,
-            message: `There was an error retrieving process SVG: ${errorMsg}`
+            processSvg: undefined,
+            message: `Error loading SVG for process "${appState.selectedProcess}" from container "${appState.selectedContainer}". 
+            Please make sure the process SVG exists. Error: ${errorMsg}`
           }))
         );
     }
@@ -213,7 +215,7 @@ export function ProcessesHeatmapsComponent(props: Props) {
       {appState.state !== AppStateType.ERROR && appState.processSvg && (
         <SvgHeatmap svgNodesValues={appState.nodesValues} svgContent={appState.processSvg!} />
       )}
-      {appState.state !== AppStateType.ERROR && appState.containerData.length > 0 && (
+      {appState.containerData.length > 0 && (
         <ProcessSelector
           containers={appState.containerData.map(c => {
             return {
