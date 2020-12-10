@@ -84,7 +84,7 @@ export function ProcessSelector(props: ProcessSelectorProps) {
         <h5 className="cardTitle collapsible" onClick={onTitleClicked} ref={titleRef}>
           <b>Process Selector</b>
         </h5>
-        <div className="cardBody" ref={bodyRef} style={{ display: "none"}}>
+        <div className="cardBody" ref={bodyRef}>
           {props.containers && props.containers.length > 0 && (
             <fieldset>
               <legend>Container</legend>
