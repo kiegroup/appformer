@@ -36,12 +36,16 @@
       <artifactId>errai-security-server</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.jboss.spec.javax.annotation</groupId>
-          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.jboss.spec.javax.xml.bind</groupId>
           <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.annotation</groupId>
+          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
