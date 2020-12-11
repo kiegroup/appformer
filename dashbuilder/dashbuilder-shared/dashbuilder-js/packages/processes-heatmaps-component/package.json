@@ -18,11 +18,11 @@
     "start": "webpack-dev-server -d --host 0.0.0.0"
   },
   "dependencies": {
-    "@dashbuilder-js/component-api": "0.1.0",
+    "@dashbuilder-js/component-api": "0.2.0",
     "@dashbuilder-js/heatmap-base": "0.1.0"
   },
   "devDependencies": {
-    "@dashbuilder-js/component-dev": "0.1.0"
+    "@dashbuilder-js/component-dev": "0.2.0"
   },
   "babel": {
     "presets": [

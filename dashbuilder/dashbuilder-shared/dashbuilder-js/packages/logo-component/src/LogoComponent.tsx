@@ -18,7 +18,6 @@ import { ComponentController } from "@dashbuilder-js/component-api";
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Logo, LogoProps } from "./Logo";
-const DEFAULT_SRC = "./images/dashbuilder-logo.png";
 const SRC_PROP = "src";
 const WIDTH_PROP = "width";
 const HEIGHT_PROP = "height";
@@ -28,13 +27,13 @@ interface Props {
 }
 export function LogoComponent(props: Props) {
   const [logoProps, setLogoProps] = useState<LogoProps>({
-    src: DEFAULT_SRC
+    src: ""
   });
 
   useEffect(() => {
     props.controller.setOnInit(componentProps => {
       setLogoProps({
-        src: (componentProps.get(SRC_PROP) as string) || DEFAULT_SRC,
+        src: (componentProps.get(SRC_PROP) as string) || "",
         width: componentProps.get(WIDTH_PROP) as string,
         height: componentProps.get(HEIGHT_PROP) as string
       });

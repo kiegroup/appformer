@@ -101,7 +101,8 @@ export function ProcessesHeatmapsComponent(props: Props) {
   const [appState, setAppState] = useState<AppState>({
     state: AppStateType.INIT,
     nodesValues: [],
-    containerData: []
+    containerData: [],
+    showStatus: false
   });
 
   const onDataset = useCallback(

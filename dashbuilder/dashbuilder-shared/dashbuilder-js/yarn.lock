@@ -1003,6 +1003,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@dashbuilder-js/component-api@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@dashbuilder-js/component-api/-/component-api-0.1.0.tgz#782009d0d755d237f99858be63169f49923b37e4"
+  integrity sha512-n4NyovE3xXYqcTDfVDM7+B5EFuHhPttbQiyCYHyhNmjgY8Dvn3dpQHlaxd8/6YpTgxWBwHsZ7PZDx345tBXYZg==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
