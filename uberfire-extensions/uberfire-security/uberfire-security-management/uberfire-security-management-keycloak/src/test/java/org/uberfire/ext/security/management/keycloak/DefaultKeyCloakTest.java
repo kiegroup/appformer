@@ -42,7 +42,8 @@ import org.uberfire.ext.security.management.keycloak.client.resource.RoleResourc
 import org.uberfire.ext.security.management.keycloak.client.resource.RoleScopeResource;
 import org.uberfire.ext.security.management.keycloak.client.resource.UserResource;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
