@@ -16,13 +16,17 @@
 package org.dashbuilder.backend.helper;
 
 public class PartitionHelper {
-    
+
     private static final String PARTITION_SEPARATOR = "|";
+
+    private PartitionHelper() {
+        // empty
+    }
 
     public static String partition(String modelId, String id) {
         return id + PARTITION_SEPARATOR + " RuntimeModel=" + modelId;
     }
-    
+
     public static String removePartition(String id) {
         if (id != null) {
             int sepatorIndex = id.indexOf(PARTITION_SEPARATOR);
