@@ -183,6 +183,7 @@ public class RuntimeModelParserImplTest {
         
         when(externalComponentLoader.getExternalComponentsDir()).thenReturn(componentPath.toString());
         when(runtimeOptions.isComponentPartition()).thenReturn(true);
+        when(runtimeOptions.isMultipleImport()).thenReturn(true);
         
         String modelId = "testModel";
         String componentFileContent1 = "This is a component file.";

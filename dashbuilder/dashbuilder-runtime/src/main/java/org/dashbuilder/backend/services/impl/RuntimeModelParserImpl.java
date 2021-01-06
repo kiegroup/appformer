@@ -151,7 +151,7 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
         if (externalComponentsDir != null) {
             externalComponentsDir = externalComponentsDir.endsWith(File.separator) ? externalComponentsDir : externalComponentsDir + File.separator;
             String newFileName = null;
-            if (options.isComponentPartition()) {
+            if (options.isComponentPartition() && options.isMultipleImport()) {
                 newFileName = externalComponentsDir + modelId + File.separator + name.replaceAll(COMPONENTS_EXPORT_PATH, "");
             } else {
                 newFileName = externalComponentsDir + name.replaceAll(COMPONENTS_EXPORT_PATH, "");
