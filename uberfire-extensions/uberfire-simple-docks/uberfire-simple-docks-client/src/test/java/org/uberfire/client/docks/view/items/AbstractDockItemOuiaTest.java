@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.client.workbench.docks.UberfireDock;
+import org.uberfire.client.workbench.docks.UberfireDockPosition;
 import org.uberfire.client.workbench.ouia.OuiaComponentTypeAttribute;
 import org.uberfire.mvp.ParameterizedCommand;
 
@@ -49,14 +50,19 @@ public class AbstractDockItemOuiaTest {
     }
 
     @Test
-    public void testDockItems() {
-        assertOuiaCompliance(new SideDockItem(dockMock,
-                                              mock(ParameterizedCommand.class),
-                                              mock(ParameterizedCommand.class)));
-
+    public void testSouthDockItem() {
+        when(dockMock.getDockPosition()).thenReturn(UberfireDockPosition.SOUTH);
         assertOuiaCompliance(new SouthDockItem(dockMock,
                                                mock(ParameterizedCommand.class),
                                                mock(ParameterizedCommand.class)));
+    }
+
+    @Test
+    public void testSideDockItems() {
+        when(dockMock.getDockPosition()).thenReturn(UberfireDockPosition.WEST);
+        assertOuiaCompliance(new SideDockItem(dockMock,
+                                              mock(ParameterizedCommand.class),
+                                              mock(ParameterizedCommand.class)));
 
         assertOuiaCompliance(new SingleSideDockItem(dockMock,
                                                     mock(ParameterizedCommand.class)));
