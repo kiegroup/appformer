@@ -65,7 +65,6 @@ public class ComponentServiceImpl implements ComponentService {
         
         allComponents.addAll(provided);
         allComponents.addAll(external);
-
         return allComponents;
     }
 
