@@ -64,6 +64,7 @@ public class ComponentServiceImpl implements ComponentService {
         provided.forEach(c -> c.setProvided(true));
         
         allComponents.addAll(provided);
+        allComponents.addAll(external);
 
         return allComponents;
     }
