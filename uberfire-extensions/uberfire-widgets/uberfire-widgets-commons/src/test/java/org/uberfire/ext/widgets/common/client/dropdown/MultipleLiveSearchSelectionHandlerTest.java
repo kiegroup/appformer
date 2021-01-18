@@ -45,11 +45,6 @@ public class MultipleLiveSearchSelectionHandlerTest {
     }
 
     @Test
-    public void tiago() {
-        assertNotEquals(null, CommonConstants.INSTANCE.liveSearchElementsSelected(1));
-    }
-
-    @Test
     public void testRegisterItemWithoutSelectedValue() {
         LiveSearchSelectorItem item = createItem("any");
 
