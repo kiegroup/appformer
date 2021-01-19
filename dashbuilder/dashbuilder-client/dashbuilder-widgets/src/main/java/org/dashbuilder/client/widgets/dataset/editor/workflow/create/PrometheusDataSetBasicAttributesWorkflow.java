@@ -65,7 +65,7 @@ public class PrometheusDataSetBasicAttributesWorkflow extends DataSetBasicAttrib
 
     @Override
     protected Class<? extends PrometheusDataSetDefAttributesEditor> getEditorClass() {
-        return org.dashbuilder.client.widgets.dataset.editor.prometheus.PrometheusDataSetDefAttributesEditor.class;
+        return PrometheusDataSetDefAttributesEditor.class;
     }
 
     @Override

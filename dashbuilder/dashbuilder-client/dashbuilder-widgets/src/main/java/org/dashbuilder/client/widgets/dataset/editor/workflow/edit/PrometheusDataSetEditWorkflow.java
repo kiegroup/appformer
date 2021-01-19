@@ -22,6 +22,7 @@ import javax.validation.ConstraintViolation;
 
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import org.dashbuilder.client.widgets.dataset.editor.driver.PrometheusDataSetDefDriver;
+import org.dashbuilder.client.widgets.dataset.editor.prometheus.PrometheusDataSetEditor;
 import org.dashbuilder.client.widgets.dataset.event.CancelRequestEvent;
 import org.dashbuilder.client.widgets.dataset.event.SaveRequestEvent;
 import org.dashbuilder.client.widgets.dataset.event.TestDataSetRequestEvent;
@@ -57,7 +58,7 @@ public class PrometheusDataSetEditWorkflow extends DataSetEditWorkflow<Prometheu
 
     @Override
     protected Class<? extends PrometheusDataSetDefEditor> getEditorClass() {
-        return org.dashbuilder.client.widgets.dataset.editor.prometheus.PrometheusDataSetEditor.class;
+        return PrometheusDataSetEditor.class;
     }
 
     @Override

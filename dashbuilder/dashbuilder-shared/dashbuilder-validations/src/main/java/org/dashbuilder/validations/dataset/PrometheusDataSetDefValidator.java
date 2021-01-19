@@ -41,19 +41,19 @@ public class PrometheusDataSetDefValidator extends AbstractDataSetDefValidator<P
 
     @Override
     public Iterable<ConstraintViolation<?>> validateCustomAttributes(PrometheusDataSetDef dataSetDef, Object... params) {
-        Set<ConstraintViolation<PrometheusDataSetDef>> _violations = validator.validate(dataSetDef,
-                                                                                        PrometheusDataSetDefValidation.class);
-        return toIterable(_violations);
+        Set<ConstraintViolation<PrometheusDataSetDef>> violations = validator.validate(dataSetDef,
+                                                                                       PrometheusDataSetDefValidation.class);
+        return toIterable(violations);
     }
 
     @Override
     public Iterable<ConstraintViolation<?>> validate(PrometheusDataSetDef dataSetDef, boolean isCacheEnabled, boolean isPushEnabled, boolean isRefreshEnabled, Object... params) {
-        Set<ConstraintViolation<PrometheusDataSetDef>> _violations = validator.validate(dataSetDef,
-                                                                                        getValidationGroups(isCacheEnabled,
-                                                                                                            isPushEnabled,
-                                                                                                            isRefreshEnabled,
-                                                                                                            PrometheusDataSetDefValidation.class));
-        return toIterable(_violations);
+        Set<ConstraintViolation<PrometheusDataSetDef>> violations = validator.validate(dataSetDef,
+                                                                                       getValidationGroups(isCacheEnabled,
+                                                                                                           isPushEnabled,
+                                                                                                           isRefreshEnabled,
+                                                                                                           PrometheusDataSetDefValidation.class));
+        return toIterable(violations);
     }
 
 }

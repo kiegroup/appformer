@@ -32,6 +32,7 @@ import org.dashbuilder.client.widgets.dataset.event.ErrorEvent;
 import org.dashbuilder.client.widgets.dataset.event.TabChangedEvent;
 import org.dashbuilder.common.client.editor.ValueBoxEditor;
 import org.dashbuilder.dataset.client.DataSetClientServices;
+import org.dashbuilder.dataset.client.editor.PrometheusDataSetDefEditor;
 import org.dashbuilder.dataset.def.PrometheusDataSetDef;
 
 /**
@@ -39,7 +40,7 @@ import org.dashbuilder.dataset.def.PrometheusDataSetDef;
  * 
  */
 @Dependent
-public class PrometheusDataSetEditor extends DataSetEditor<PrometheusDataSetDef> implements org.dashbuilder.dataset.client.editor.PrometheusDataSetDefEditor {
+public class PrometheusDataSetEditor extends DataSetEditor<PrometheusDataSetDef> implements PrometheusDataSetDefEditor {
 
     PrometheusDataSetDefAttributesEditor attributesEditor;
 
