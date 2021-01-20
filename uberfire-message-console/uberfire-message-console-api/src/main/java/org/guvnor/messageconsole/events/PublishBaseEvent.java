@@ -35,6 +35,8 @@ public abstract class PublishBaseEvent {
      */
     private String userId;
 
+    private String rootPath;
+
     private Place place = Place.END;
 
     private List<SystemMessage> messagesToPublish = new ArrayList<SystemMessage>();
@@ -70,6 +72,14 @@ public abstract class PublishBaseEvent {
 
     public void setPlace(Place place) {
         this.place = place;
+    }
+
+    public String getRootPath() {
+        return rootPath;
+    }
+
+    public void setRootPath(String rootPath) {
+        this.rootPath = rootPath;
     }
 
     public boolean isShowSystemConsole() {

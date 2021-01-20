@@ -27,6 +27,7 @@ import javax.enterprise.util.TypeLiteral;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.messageconsole.events.FilteredMessagesEvent;
 import org.guvnor.messageconsole.events.PublishMessagesEvent;
 import org.guvnor.messageconsole.events.SystemMessage;
@@ -58,6 +59,9 @@ public class MessageConsoleServiceTest {
     private User identity;
 
     @Mock
+    private WorkspaceProjectContext workspaceProjectContext;
+
+    @Mock
     private StubEventSource<FilteredMessagesEvent> filteredMessagesEvent;
 
     private MessageConsoleService service;
@@ -68,6 +72,7 @@ public class MessageConsoleServiceTest {
                                                  placeManager,
                                                  sessionInfo,
                                                  identity,
+                                                 workspaceProjectContext,
                                                  filteredMessagesEvent);
     }
 

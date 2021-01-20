@@ -38,6 +38,9 @@ public class UnpublishMessagesEvent {
     /**
      * Filter parameter to establish that messagesToUnpublish of this type should be unpublished.
      */
+
+    private String rootPath;
+
     private String messageType;
 
     private List<SystemMessage> messagesToUnpublish = new ArrayList<SystemMessage>();
@@ -66,6 +69,14 @@ public class UnpublishMessagesEvent {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getRootPath() {
+        return rootPath;
+    }
+
+    public void setRootPath(String rootPath) {
+        this.rootPath = rootPath;
     }
 
     public String getMessageType() {

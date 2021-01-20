@@ -42,7 +42,7 @@ public class BuildResultsObserver {
         PublishBatchMessagesEvent batchMessages = new PublishBatchMessagesEvent();
         batchMessages.setCleanExisting(true);
         batchMessages.setMessageType(MessageUtils.BUILD_SYSTEM_MESSAGE);
-
+        batchMessages.setRootPath(results.getRootPathURI());
         if (results.getMessages() != null) {
             for (BuildMessage buildMessage : results.getMessages()) {
                 batchMessages.getMessagesToPublish().add(MessageUtils.convert(buildMessage));
@@ -56,7 +56,7 @@ public class BuildResultsObserver {
 
         PublishBatchMessagesEvent batchMessages = new PublishBatchMessagesEvent();
         batchMessages.setMessageType(MessageUtils.BUILD_SYSTEM_MESSAGE);
-
+        batchMessages.setRootPath(results.getRootPathURI());
         if (results.getAddedMessages() != null) {
             for (BuildMessage buildMessage : results.getAddedMessages()) {
                 batchMessages.getMessagesToPublish().add(MessageUtils.convert(buildMessage));

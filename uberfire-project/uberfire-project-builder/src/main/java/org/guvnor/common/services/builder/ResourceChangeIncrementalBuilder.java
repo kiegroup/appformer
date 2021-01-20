@@ -256,7 +256,6 @@ public class ResourceChangeIncrementalBuilder {
                 try {
                     logger.info("Incremental build request being processed: " + resource.toURI() + " (updated).");
                     final Module module = projectService.resolveModule(resource);
-
                     //Fall back to a Full Build in lieu of an Incremental Build if the Project has not been previously built
                     if (buildService.isBuilt(module)) {
                         final IncrementalBuildResults results = buildService.updatePackageResource(resource);
@@ -330,6 +329,7 @@ public class ResourceChangeIncrementalBuilder {
                         if (buildService.isBuilt(module)) {
                             final IncrementalBuildResults results = buildService.applyBatchResourceChanges(module,
                                                                                                            changes);
+
                             incrementalBuildResultsEvent.fire(results);
                         } else {
                             final BuildResults results = buildService.build(module);
