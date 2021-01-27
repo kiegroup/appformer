@@ -67,6 +67,6 @@ public class TabPanelEntryTest {
         verify(tabEntryMock).setText(title);
         verify(tabEntryMock).initOuiaComponentAttributes();
         verify(ouiaRendererMock).accept(eq(new OuiaComponentTypeAttribute("editor-nav-tab")));
-        verify(ouiaRendererMock).accept(eq(new OuiaComponentIdAttribute("editor-nav-tab-" + title)));
+        verify(ouiaRendererMock).accept(eq(new OuiaComponentIdAttribute(title)));
     }
 }

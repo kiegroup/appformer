@@ -173,7 +173,7 @@ public class TabPanelEntry implements HasActive {
 
         @Override
         public OuiaComponentIdAttribute ouiaComponentId() {
-            return new OuiaComponentIdAttribute("editor-nav-tab-" + getText());
+            return new OuiaComponentIdAttribute(getText());
         }
 
         @Override
