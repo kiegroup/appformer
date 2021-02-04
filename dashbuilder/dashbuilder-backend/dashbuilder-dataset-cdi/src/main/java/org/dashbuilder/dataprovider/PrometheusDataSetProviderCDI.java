@@ -37,8 +37,6 @@ public class PrometheusDataSetProviderCDI extends PrometheusDataSetProvider {
         super(staticDataSetProvider);
     }
 
-    // Listen to changes on the data set definition registry
-
     protected void onDataSetStaleEvent(@Observes DataSetStaleEvent event) {
         DataSetDef def = event.getDataSetDef();
         if (DataSetProviderType.PROMETHEUS.equals(def.getProvider())) {

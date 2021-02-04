@@ -86,7 +86,7 @@ public class DataSetEditorDriverFactory {
     }
 
     @Produces
-    public PrometheusDataSetDefDriver prometheusSetDefDriver() {
+    public PrometheusDataSetDefDriver prometheusDataSetDefDriver() {
         return prometheusSearchDataSetDefDriver;
     }
 }
