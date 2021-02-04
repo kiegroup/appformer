@@ -1,4 +1,4 @@
-name: Kogito Tooling :: Build chain
+name: "Kogito Tooling :: Build chain"
 
 on: [pull_request]
 
