@@ -207,9 +207,6 @@ public class DataSetDefProviderTypeEditor implements IsWidget,
         if (ELASTICSEARCH.equals(type)) {
             return DataSetClientResources.INSTANCE.images().elIcon160().getSafeUri();
         }
-        if (ELASTICSEARCH.equals(type)) {
-            return DataSetClientResources.INSTANCE.images().elIcon160().getSafeUri();
-        }
         if (PROMETHEUS.equals(type)) {
             return DataSetClientResources.INSTANCE.images().prometheusIcon160().getSafeUri();
         }        
