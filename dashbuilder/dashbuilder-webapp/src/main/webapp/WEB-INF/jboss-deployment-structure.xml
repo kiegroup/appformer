@@ -44,6 +44,8 @@
       <module name="org.jboss.as.domain-management"/>
       <module name="org.jboss.msc"/>
       <module name="org.jboss.dmr"/>
+      <!-- For Kafka Connector -->
+      <module name="org.jboss.remoting-jmx"/>
     </dependencies>
   </deployment>
 </jboss-deployment-structure>

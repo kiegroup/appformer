@@ -36,6 +36,8 @@
 			<module name="org.jboss.resteasy.resteasy-multipart-provider" />
 			<module name="org.apache.xerces" />
 			<module name="org.apache.xalan" />
+		        <!-- For Kafka Connector -->
+                        <module name="org.jboss.remoting-jmx"/>
 			
 		</dependencies>
 	</deployment>
