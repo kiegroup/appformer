@@ -537,7 +537,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         if (ws != null && !ws.isClose()) {
             ws.close();
         }
-        indexEngine.delete(KObjectUtil.toKCluster(rootDirectory));
+        indexEngine.delete(KObjectUtil.toRootKCluster(rootDirectory));
     }
 
     @Override

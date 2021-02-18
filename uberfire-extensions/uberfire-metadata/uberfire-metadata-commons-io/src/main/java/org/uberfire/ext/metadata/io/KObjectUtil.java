@@ -245,6 +245,10 @@ public final class KObjectUtil {
         return new KClusterImpl(fsId + CLUSTER_ID_SEGMENT_SEPARATOR + segmentId);
     }
 
+    public static KCluster toRootKCluster(final Path fsPath) {
+        return new KClusterImpl(((FileSystemId) fsPath.getFileSystem()).id() + CLUSTER_ID_SEGMENT_SEPARATOR);
+    }
+
     private static String sha1(final String input) {
         if (input == null || input.trim().length() == 0) {
             return "--";

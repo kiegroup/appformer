@@ -80,7 +80,22 @@ public class LuceneIndexManager implements IndexManager {
         factory.remove(cluster);
         if (setup != null) {
             setup.delete();
+        } else {
+            deleteProjectIndexes(cluster);
         }
+    }
+
+    protected void deleteProjectIndexes(KCluster cluster) {
+        final List<KCluster> clusters = indexes.keySet().stream().parallel()
+                .filter(s -> s.getClusterId().startsWith(cluster.getClusterId()))
+                .collect(Collectors.toList());
+        clusters.forEach(cl -> {
+            final LuceneIndex setup = indexes.remove(cl);
+            factory.remove(cl);
+            if (setup != null) {
+                setup.delete();
+            }
+        });
     }
 
     @Override
