@@ -43,17 +43,21 @@ public class KafkaDataSetDefValidator extends AbstractDataSetDefValidator<KafkaD
     @Override
     public Iterable<ConstraintViolation<?>> validateCustomAttributes(KafkaDataSetDef dataSetDef, Object... params) {
         Set<ConstraintViolation<KafkaDataSetDef>> violations = validator.validate(dataSetDef,
-                                                                                       KafkaDataSetDefValidation.class);
+                                                                                  KafkaDataSetDefValidation.class);
         return toIterable(violations);
     }
 
     @Override
-    public Iterable<ConstraintViolation<?>> validate(KafkaDataSetDef dataSetDef, boolean isCacheEnabled, boolean isPushEnabled, boolean isRefreshEnabled, Object... params) {
+    public Iterable<ConstraintViolation<?>> validate(KafkaDataSetDef dataSetDef,
+                                                     boolean isCacheEnabled,
+                                                     boolean isPushEnabled,
+                                                     boolean isRefreshEnabled,
+                                                     Object... params) {
         Set<ConstraintViolation<KafkaDataSetDef>> violations = validator.validate(dataSetDef,
-                                                                                       getValidationGroups(isCacheEnabled,
-                                                                                                           isPushEnabled,
-                                                                                                           isRefreshEnabled,
-                                                                                                           KafkaDataSetDefValidation.class));
+                                                                                  getValidationGroups(isCacheEnabled,
+                                                                                                      isPushEnabled,
+                                                                                                      isRefreshEnabled,
+                                                                                                      KafkaDataSetDefValidation.class));
         return toIterable(violations);
     }
 

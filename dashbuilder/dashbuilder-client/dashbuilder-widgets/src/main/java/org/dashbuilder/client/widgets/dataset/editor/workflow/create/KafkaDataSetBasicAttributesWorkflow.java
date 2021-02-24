@@ -40,13 +40,13 @@ public class KafkaDataSetBasicAttributesWorkflow extends DataSetBasicAttributesW
 
     @Inject
     public KafkaDataSetBasicAttributesWorkflow(final DataSetClientServices clientServices,
-                                                    final DataSetValidatorProvider validatorProvider,
-                                                    final SyncBeanManager beanManager,
-                                                    final DataSetDefBasicAttributesEditor basicAttributesEditor,
-                                                    final Event<SaveRequestEvent> saveRequestEvent,
-                                                    final Event<TestDataSetRequestEvent> testDataSetEvent,
-                                                    final Event<CancelRequestEvent> cancelRequestEvent,
-                                                    final View view) {
+                                               final DataSetValidatorProvider validatorProvider,
+                                               final SyncBeanManager beanManager,
+                                               final DataSetDefBasicAttributesEditor basicAttributesEditor,
+                                               final Event<SaveRequestEvent> saveRequestEvent,
+                                               final Event<TestDataSetRequestEvent> testDataSetEvent,
+                                               final Event<CancelRequestEvent> cancelRequestEvent,
+                                               final View view) {
 
         super(clientServices,
               validatorProvider,

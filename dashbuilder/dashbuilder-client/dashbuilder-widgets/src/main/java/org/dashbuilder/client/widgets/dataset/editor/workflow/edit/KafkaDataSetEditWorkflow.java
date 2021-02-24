@@ -42,12 +42,12 @@ public class KafkaDataSetEditWorkflow extends DataSetEditWorkflow<KafkaDataSetDe
 
     @Inject
     public KafkaDataSetEditWorkflow(final DataSetClientServices clientServices,
-                                         final DataSetValidatorProvider validatorProvider,
-                                         final SyncBeanManager beanManager,
-                                         final Event<SaveRequestEvent> saveRequestEvent,
-                                         final Event<TestDataSetRequestEvent> testDataSetEvent,
-                                         final Event<CancelRequestEvent> cancelRequestEvent,
-                                         final View view) {
+                                    final DataSetValidatorProvider validatorProvider,
+                                    final SyncBeanManager beanManager,
+                                    final Event<SaveRequestEvent> saveRequestEvent,
+                                    final Event<TestDataSetRequestEvent> testDataSetEvent,
+                                    final Event<CancelRequestEvent> cancelRequestEvent,
+                                    final View view) {
         super(clientServices, validatorProvider, beanManager, saveRequestEvent, testDataSetEvent, cancelRequestEvent, view);
     }
 

@@ -17,7 +17,7 @@ package org.dashbuilder.validations.dataset;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.def.KafkaDataSetDef;
-import org.dashbuilder.dataset.validation.groups.PrometheusDataSetDefValidation;
+import org.dashbuilder.dataset.validation.groups.KafkaDataSetDefValidation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +42,6 @@ public class KafkaDataSetDefValidatorTest extends AbstractValidationTest {
     @Test
     public void testValidate() {
         tested.validateCustomAttributes(kafkaDataSetDef);
-        verify(validator).validate(kafkaDataSetDef, PrometheusDataSetDefValidation.class);
+        verify(validator).validate(kafkaDataSetDef, KafkaDataSetDefValidation.class);
     }
 }
