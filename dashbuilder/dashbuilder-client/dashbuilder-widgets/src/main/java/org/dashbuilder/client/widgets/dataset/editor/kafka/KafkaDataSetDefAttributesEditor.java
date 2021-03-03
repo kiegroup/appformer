@@ -113,7 +113,7 @@ public class KafkaDataSetDefAttributesEditor implements IsWidget, org.dashbuilde
                             Placement.BOTTOM);
         target.getDropDownEditor().addHelpContent(DataSetEditorConstants.INSTANCE.kafka_target(),
                                                   DataSetEditorConstants.INSTANCE.kafka_target_description(),
-                                                  Placement.BOTTOM);
+                                                  Placement.TOP);
         filter.addHelpContent(DataSetEditorConstants.INSTANCE.kafka_filter(),
                               DataSetEditorConstants.INSTANCE.kafka_filter_description(),
                               Placement.BOTTOM);
