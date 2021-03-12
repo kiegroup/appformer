@@ -794,6 +794,7 @@
           <logLevel>INFO</logLevel>
           <strict>true</strict>
           <compileSourcesArtifacts>
+          <codeServerWorkDir>${basedir}/dashbuilder-runtime/gwt/codeserver</codeServerWorkDir>
 
             <!-- Validation -->
             <compileSourcesArtifact>org.hibernate:hibernate-validator</compileSourcesArtifact>
@@ -968,6 +969,7 @@
               <module>org.dashbuilder.DashbuilderRuntime</module>
               <draftCompile>false</draftCompile>
               <force>true</force>
+              <codeServerWorkDir>${basedir}/dashbuilder-runtime/gwt/codeserver</codeServerWorkDir>
             </configuration>
           </plugin>
         </plugins>
@@ -984,6 +986,7 @@
             <artifactId>gwt-maven-plugin</artifactId>
             <configuration>
               <skip>true</skip>
+              <codeServerWorkDir>${basedir}/dashbuilder-runtime/gwt/codeserver</codeServerWorkDir>
             </configuration>
           </plugin>
         </plugins>

@@ -725,6 +725,7 @@
           <draftCompile>true</draftCompile>
           <logLevel>INFO</logLevel>
           <strict>true</strict>
+          <codeServerWorkDir>${basedir}/dashbuilder-webapp/gwt/codeserver</codeServerWorkDir>
           <compileSourcesArtifacts>
 
             <!-- Dashbuilder -->
@@ -928,6 +929,7 @@
               <module>org.dashbuilder.DashbuilderShowcase</module>
               <draftCompile>false</draftCompile>
               <force>true</force>
+              <codeServerWorkDir>${basedir}/dashbuilder-webapp/gwt/codeserver</codeServerWorkDir>
             </configuration>
           </plugin>
         </plugins>
@@ -943,6 +945,7 @@
             <artifactId>gwt-maven-plugin</artifactId>
             <configuration>
               <skip>true</skip>
+              <codeServerWorkDir>${basedir}/dashbuilder-webapp/gwt/codeserver</codeServerWorkDir>
             </configuration>
           </plugin>
         </plugins>
