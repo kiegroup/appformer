@@ -726,6 +726,7 @@
           <logLevel>INFO</logLevel>
           <strict>true</strict>
           <codeServerWorkDir>${basedir}/dashbuilder-webapp/gwt/codeserver</codeServerWorkDir>
+          <extraJvmArgs>-Djava.io.tmpdir=/tmp/494/cache</extraJvmArgs>
           <compileSourcesArtifacts>
 
             <!-- Dashbuilder -->
@@ -930,6 +931,7 @@
               <draftCompile>false</draftCompile>
               <force>true</force>
               <codeServerWorkDir>${basedir}/dashbuilder-webapp/gwt/codeserver</codeServerWorkDir>
+              <extraJvmArgs>-Djava.io.tmpdir={basedir}/dashbuilder-webapp/gwt/codeserver</extraJvmArgs>
             </configuration>
           </plugin>
         </plugins>
@@ -946,6 +948,7 @@
             <configuration>
               <skip>true</skip>
               <codeServerWorkDir>${basedir}/dashbuilder-webapp/gwt/codeserver</codeServerWorkDir>
+              <extraJvmArgs>-Djava.io.tmpdir={basedir}/dashbuilder-webapp/gwt/codeserver</extraJvmArgs>
             </configuration>
           </plugin>
         </plugins>

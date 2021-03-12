@@ -795,6 +795,7 @@
           <strict>true</strict>
           <compileSourcesArtifacts>
           <codeServerWorkDir>${basedir}/dashbuilder-runtime/gwt/codeserver</codeServerWorkDir>
+          <extraJvmArgs>-Djava.io.tmpdir={basedir}/dashbuilder-webapp/gwt/codeserver</extraJvmArgs>
 
             <!-- Validation -->
             <compileSourcesArtifact>org.hibernate:hibernate-validator</compileSourcesArtifact>
@@ -970,6 +971,7 @@
               <draftCompile>false</draftCompile>
               <force>true</force>
               <codeServerWorkDir>${basedir}/dashbuilder-runtime/gwt/codeserver</codeServerWorkDir>
+              <extraJvmArgs>-Djava.io.tmpdir={basedir}/dashbuilder-webapp/gwt/codeserver</extraJvmArgs>
             </configuration>
           </plugin>
         </plugins>
@@ -987,6 +989,7 @@
             <configuration>
               <skip>true</skip>
               <codeServerWorkDir>${basedir}/dashbuilder-runtime/gwt/codeserver</codeServerWorkDir>
+              <extraJvmArgs>-Djava.io.tmpdir={basedir}/dashbuilder-webapp/gwt/codeserver</extraJvmArgs>
             </configuration>
           </plugin>
         </plugins>
