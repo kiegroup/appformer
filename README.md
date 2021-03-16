@@ -42,3 +42,4 @@ In order to build and contribute to our documentation, follow this steps
 Uberfire Framework is released under Apache 2 License.
 
 Check [LICENSE](LICENSE-ASL-2.0.txt) file for more information.
+.
