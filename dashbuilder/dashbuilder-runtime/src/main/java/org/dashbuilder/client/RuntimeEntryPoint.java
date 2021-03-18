@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.core.client.GWT;
@@ -30,6 +31,7 @@ import elemental2.dom.Element;
 import org.dashbuilder.client.error.DefaultRuntimeErrorCallback;
 import org.dashbuilder.client.perspective.NotFoundPerspective;
 import org.dashbuilder.client.resources.i18n.AppConstants;
+import org.dashbuilder.shared.event.UpdatedRuntimeModelEvent;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
@@ -127,6 +129,7 @@ public class RuntimeEntryPoint {
     public void generalErrorHandling(final Throwable t) {
         defaultRuntimeErrorCallback.error(t);
     }
+    
 
     private void hideLoading() {
         workbench.removeStartupBlocker(RuntimeEntryPoint.class);
@@ -139,5 +142,5 @@ public class RuntimeEntryPoint {
     private boolean foundDashboard(List<String> dashboardParams) {
         return dashboardParams != null && !dashboardParams.isEmpty();
     }
-
+    
 }

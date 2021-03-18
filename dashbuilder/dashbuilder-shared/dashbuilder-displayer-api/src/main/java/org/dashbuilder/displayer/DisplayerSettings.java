@@ -44,6 +44,12 @@ public class DisplayerSettings {
         this();
         setType(displayerType);
     }
+    
+    public DisplayerSettings(DisplayerType displayerType, DisplayerSubType subType) {
+        this();
+        setType(displayerType);
+        setSubtype(subType);
+    }
 
     public DisplayerSettings cloneInstance() {
         DisplayerSettings clone = new DisplayerSettings();

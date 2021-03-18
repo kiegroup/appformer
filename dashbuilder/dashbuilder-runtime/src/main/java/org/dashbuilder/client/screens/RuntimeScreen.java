@@ -64,7 +64,7 @@ public class RuntimeScreen {
 
     @Inject
     PlaceManager placeManager;
-    
+
     @Inject
     AppNavBar appNavBar;
 
