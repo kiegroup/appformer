@@ -38,7 +38,7 @@ public class DisplayerBuilder extends AbstractComponentBuilder<DisplayerBuilder>
 
     @Override
     public Component build() {
-        addProperty(JSON_PROP, DisplayerSettingsJSONMarshaller.get().toJsonString(this.settings));
+        property(JSON_PROP, DisplayerSettingsJSONMarshaller.get().toJsonString(this.settings));
         return super.build();
     }
 

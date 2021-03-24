@@ -23,7 +23,7 @@ public class ExternalComponentBuilder extends AbstractComponentBuilder<ExternalC
 
     ExternalComponentBuilder(String componentId) {
         this.componentId = componentId;
-        addProperty(ExternalComponent.COMPONENT_ID_KEY, this.componentId);
+        property(ExternalComponent.COMPONENT_ID_KEY, this.componentId);
     }
 
     public static ExternalComponentBuilder create(String componentId) {
@@ -31,12 +31,12 @@ public class ExternalComponentBuilder extends AbstractComponentBuilder<ExternalC
     }
 
     public ExternalComponentBuilder componentProperty(String key, String value) {
-        addProperty(this.componentId + "." + key, value);
+        property(this.componentId + "." + key, value);
         return this;
     }
     
     public ExternalComponentBuilder partition(String value) {
-        addProperty(ExternalComponent.COMPONENT_PARTITION_KEY, value);
+        property(ExternalComponent.COMPONENT_PARTITION_KEY, value);
         return this;
     }
 

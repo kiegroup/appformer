@@ -48,6 +48,7 @@ import static org.dashbuilder.external.model.ExternalComponent.COMPONENT_ID_KEY;
 class DashboardValidatorImpl implements DashboardValidator {
 
     private static final String MISSING_NAVIGATION_ITEM = "Navigation item %s has no corresponding page";
+    private static final String DUPLICATED_GROUPS = "The Navigation constains duplicate group names";
     private static final String VALID_NAVIGATION = "Navigation is valid";
     private static final String NO_MISSING_DATA_SET = "No missing data set dependencies for page %s";
     private static final String MISSING_DATA_SET = "The following data sets definitions used in page %s were not found: %s";
@@ -81,12 +82,18 @@ class DashboardValidatorImpl implements DashboardValidator {
         navigation.getNavTree().accept(visitor);
 
         List<String> visitedPages = visitor.getVisitedPages();
+        List<String> visitedGroups = visitor.getVisitedGroups();
         if (!visitedPages.isEmpty()) {
             visitedPages.stream()
                         .filter(vp -> dashboard.getPages().stream().noneMatch(p -> p.getLayoutTemplate().getName().equals(vp)))
                         .map(vp -> error(format(MISSING_NAVIGATION_ITEM, vp)))
                         .forEach(results::add);
         }
+        
+        if (containDuplicates(visitedGroups)) {
+            results.add(error(DUPLICATED_GROUPS));
+        }
+        
         if (results.isEmpty()) {
             results.add(ValidationResult.success(VALID_NAVIGATION));
         }
@@ -159,13 +166,20 @@ class DashboardValidatorImpl implements DashboardValidator {
                                                               .collect(Collectors.toList());
 
     }
+    
+    private boolean containDuplicates(List<String> list) {
+        return list.size() > list.stream().distinct().count();
+    }
 
     static class NavigationPagesVisitor implements NavItemVisitor {
 
         private List<String> visitedPages;
+        
+        private List<String> visitedGroups;
 
         NavigationPagesVisitor() {
             this.visitedPages = new ArrayList<>();
+            this.visitedGroups = new ArrayList<>(); 
         }
 
         public List<String> getVisitedPages() {
@@ -174,7 +188,7 @@ class DashboardValidatorImpl implements DashboardValidator {
 
         @Override
         public void visitGroup(NavGroup group) {
-            // empty
+            visitedGroups.add(group.getName());
 
         }
 
@@ -187,7 +201,10 @@ class DashboardValidatorImpl implements DashboardValidator {
         @Override
         public void visitDivider(NavDivider divider) {
             // empty
-
+        }
+        
+        public List<String> getVisitedGroups() {
+            return visitedGroups;
         }
 
     }

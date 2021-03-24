@@ -113,6 +113,17 @@ public class DashboardValidatorImplTest {
         assertEquals("Navigation item page2 has no corresponding page", result.getMessage());
         assertEquals(ValidationResult.ValidationResultType.ERROR, result.getType());
     }
+    
+    @Test
+    public void testNavigationWithMissingGroup() {
+        Page page = page("page");
+        Dashboard dashboard = dashboard(asList(page), navigation(group("test", item(page)), group("test", item(page))));
+        List<ValidationResult> results = impl.validate(dashboard);
+        ValidationResult result = results.get(0);
+        assertEquals(1, results.size());
+        assertEquals("The Navigation constains duplicate group names", result.getMessage());
+        assertEquals(ValidationResult.ValidationResultType.ERROR, result.getType());
+    }
 
     @Test
     public void testNavigationCorrect() {

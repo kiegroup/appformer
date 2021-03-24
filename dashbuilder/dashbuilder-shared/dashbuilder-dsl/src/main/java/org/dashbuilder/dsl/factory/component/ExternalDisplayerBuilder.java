@@ -22,7 +22,7 @@ public class ExternalDisplayerBuilder extends DisplayerBuilder {
 
     ExternalDisplayerBuilder(String componentId, DisplayerSettings settings) {
         super(settings);
-        addProperty(ExternalComponent.COMPONENT_ID_KEY, componentId);
+        property(ExternalComponent.COMPONENT_ID_KEY, componentId);
         settings.setComponentId(componentId);
     }
 

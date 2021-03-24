@@ -26,7 +26,7 @@ public class HtmlComponentBuilder extends AbstractComponentBuilder<HtmlComponent
     }
 
     public HtmlComponentBuilder html(String html) {
-        addProperty(HTML_CODE_PROP, html);
+        property(HTML_CODE_PROP, html);
         return this;
     }
 

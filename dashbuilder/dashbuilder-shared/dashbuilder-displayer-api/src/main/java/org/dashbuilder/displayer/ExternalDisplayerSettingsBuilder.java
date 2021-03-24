@@ -19,7 +19,7 @@ package org.dashbuilder.displayer;
  * A displayer settings builder for external components
  *
  */
-public interface ExternalDisplayerSettingsBuilder<T extends ExternalDisplayerSettingsBuilder> extends DisplayerSettingsBuilder<T> {
+public interface ExternalDisplayerSettingsBuilder<T extends ExternalDisplayerSettingsBuilder> extends ChartSettingsBuilder<T> {
 
     /**
      * Settings the external component id.

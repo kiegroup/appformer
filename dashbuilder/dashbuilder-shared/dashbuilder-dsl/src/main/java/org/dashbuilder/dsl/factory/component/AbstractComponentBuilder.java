@@ -16,6 +16,7 @@
 package org.dashbuilder.dsl.factory.component;
 
 import org.dashbuilder.dsl.model.Component;
+import org.uberfire.ext.layout.editor.api.css.CssProperty;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 
 public abstract class AbstractComponentBuilder<T> {
@@ -32,8 +33,14 @@ public abstract class AbstractComponentBuilder<T> {
     }
 
     @SuppressWarnings("unchecked")
-    protected T addProperty(String key, String value) {
+    public T property(String key, String value) {
         this.layoutComponent.addProperty(key, value);
+        return (T) this;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public T cssProperty(CssProperty property, String value) {
+        this.property(property.getName(), value);
         return (T) this;
     }
 
