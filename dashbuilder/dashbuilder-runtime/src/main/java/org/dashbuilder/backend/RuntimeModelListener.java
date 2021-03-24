@@ -33,11 +33,11 @@ public class RuntimeModelListener {
     Logger logger = LoggerFactory.getLogger(RuntimeModelListener.class);
 
     public void logUpdatedModel(@Observes UpdatedRuntimeModelEvent modelUpdated) {
-        logger.info("Updated model {}", modelUpdated.getRuntimeModelId());
+        logger.info("Updated dashboard {}", modelUpdated.getRuntimeModelId());
     }
 
     public void logRemovedModel(@Observes RemovedRuntimeModelEvent modelUpdated) {
-        logger.info("Removed model {}", modelUpdated.getRuntimeModelId());
+        logger.info("Removed dashboard {}", modelUpdated.getRuntimeModelId());
     }
 
 }

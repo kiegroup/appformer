@@ -48,7 +48,7 @@ import static org.dashbuilder.external.model.ExternalComponent.COMPONENT_ID_KEY;
 class DashboardValidatorImpl implements DashboardValidator {
 
     private static final String MISSING_NAVIGATION_ITEM = "Navigation item %s has no corresponding page";
-    private static final String VALIDE_NAVIGATION = "Navigation is valid.";
+    private static final String VALID_NAVIGATION = "Navigation is valid";
     private static final String NO_MISSING_DATA_SET = "No missing data set dependencies for page %s";
     private static final String MISSING_DATA_SET = "The following data sets definitions used in page %s were not found: %s";
 
@@ -88,7 +88,7 @@ class DashboardValidatorImpl implements DashboardValidator {
                         .forEach(results::add);
         }
         if (results.isEmpty()) {
-            results.add(ValidationResult.success(VALIDE_NAVIGATION));
+            results.add(ValidationResult.success(VALID_NAVIGATION));
         }
         return results;
     }

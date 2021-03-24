@@ -27,12 +27,16 @@ import java.util.stream.Collectors;
 
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.def.DataSetDef;
+import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.group.AggregateFunctionType;
 import org.dashbuilder.displayer.DisplayerSettings;
+import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.displayer.DisplayerSubType;
 import org.dashbuilder.displayer.Position;
+import org.dashbuilder.dsl.factory.navigation.NavigationFactory;
 import org.dashbuilder.dsl.model.Dashboard;
 import org.dashbuilder.dsl.model.Navigation;
+import org.dashbuilder.dsl.model.NavigationGroup;
 import org.dashbuilder.dsl.model.Page;
 import org.dashbuilder.navigation.json.NavTreeJSONMarshaller;
 import org.junit.Before;
@@ -83,7 +87,7 @@ public class DashboardZipSerializerTest {
         assertEquals(read("/components/comp1/manifest.json"), content.get("dashbuilder/components/comp1/manifest.json"));
         assertEquals(read("/components/comp1/index.html"), content.get("dashbuilder/components/comp1/index.html"));
         assertEquals(read("/components/comp1/index.js"), content.get("dashbuilder/components/comp1/index.js"));
-        
+
         assertEquals(read("/data/un_world_pop_medium_variant.csv"), content.get("dashbuilder/datasets/definitions/myDs.csv"));
 
     }
@@ -143,9 +147,9 @@ public class DashboardZipSerializerTest {
                      NavTreeJSONMarshaller.get().toJson(deserialized.getNavigation().getNavTree()).toString());
 
         //Use this to export this dashboard to run on Dashbuilder runtime 
-        //        org.dashbuilder.dsl.serialization.DashboardExporter.get().export(db,
-        //                                                                         "/tmp/dashbuilder/models/Population.zip",
-        //                                                                         org.dashbuilder.dsl.serialization.DashboardExporter.ExportType.ZIP);
+//        org.dashbuilder.dsl.serialization.DashboardExporter.get().export(db,
+//                                                                         "/tmp/dashbuilder/models/Population.zip",
+//                                                                         org.dashbuilder.dsl.serialization.DashboardExporter.ExportType.ZIP);
 
     }
 

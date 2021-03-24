@@ -18,6 +18,10 @@ package org.dashbuilder.dsl.serialization;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer;
@@ -47,16 +51,37 @@ public class DashboardExporter {
     public static DashboardExporter get() {
         return INSTANCE;
     }
-
+    
     public void export(Dashboard dashboard, String path, ExportType type) {
+        export(dashboard, Paths.get(path), type); 
+    }
+    
+    public void export(Dashboard dashboard, Path path, ExportType type) {
         DashboardSerializer serializer = serializerFor(type);
         validate(dashboard);
-        try (FileOutputStream fos = new FileOutputStream(path)) {
+        Path temp = createTempDashboardFile();
+        try (FileOutputStream fos = new FileOutputStream(temp.toFile())) {
             serializer.serialize(dashboard, fos);
+            Files.move(temp, path, StandardCopyOption.REPLACE_EXISTING);
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("File not found: " + path);
+            throw new IllegalArgumentException("File not found: " + path, e);
         } catch (IOException e) {
-            throw new RuntimeException("Error writing to file " + path);
+            throw new RuntimeException("Error writing to file " + path, e);
+        } finally {
+            try {
+                Files.deleteIfExists(temp);
+            } catch (IOException e) {
+                logger.error("Error deleting temp file", e);
+            }
+        }
+        
+    }
+
+    private Path createTempDashboardFile() {
+        try {
+            return Files.createTempFile("dashboard", ".zip");
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating temp file to export dashboard", e);
         }
     }
 

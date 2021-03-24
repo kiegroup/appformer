@@ -82,7 +82,6 @@ public class RuntimeModelWatcherServiceManager {
         watchService = FileSystems.getDefault().newWatchService();
         baseDirPath.register(watchService,
                              StandardWatchEventKinds.ENTRY_CREATE,
-                             StandardWatchEventKinds.ENTRY_MODIFY,
                              StandardWatchEventKinds.ENTRY_DELETE);
         WatchKey key;
         while ((key = watchService.take()) != null) {

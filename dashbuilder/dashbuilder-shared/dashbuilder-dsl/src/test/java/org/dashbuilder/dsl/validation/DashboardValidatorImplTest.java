@@ -121,12 +121,12 @@ public class DashboardValidatorImplTest {
         List<ValidationResult> results = impl.validate(dashboard);
         ValidationResult result = results.get(0);
         assertEquals(1, results.size());
-        assertEquals("Navigation is valid.", result.getMessage());
+        assertEquals("Navigation is valid", result.getMessage());
         assertEquals(ValidationResult.ValidationResultType.SUCCESS, result.getType());
     }
 
     @Test
-    public void testSucessfulValidation() {
+    public void testSuccessfulValidation() {
         DataSetDef def = newStaticDataSetDef().uuid("myds").buildDef();
         DisplayerSettings settings = newAreaChartSettings().subType_Area().dataset(def.getUUID()).buildSettings();
         DisplayerSettings externalSettings = newExternalDisplayerSettings().buildSettings();

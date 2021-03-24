@@ -25,7 +25,7 @@ import org.dashbuilder.dsl.model.Dashboard;
  */
 public interface DashboardValidator {
     
-    static final DashboardValidator instance = new DashboardValidatorImpl();
+    DashboardValidator instance = new DashboardValidatorImpl();
 
     List<ValidationResult> validate(Dashboard dashboard);
     

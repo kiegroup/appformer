@@ -28,8 +28,8 @@ public class NavigationBuilder {
         this.navTree = navTree;
     }
 
-    public static NavigationBuilder newBuilder(NavigationGroup root) {
-        NavTree tree = new NavTreeImpl(NavigationGroupBuilder.newBuilder("Top Group", root).build().getNavGroup());
+    public static NavigationBuilder newBuilder(NavigationGroup... groups) {
+        NavTree tree = new NavTreeImpl(NavigationGroupBuilder.newBuilder("Top Group", groups).build().getNavGroup());
         return new NavigationBuilder(tree);
     }
 

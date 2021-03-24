@@ -32,8 +32,8 @@ public class NavigationFactory {
         return EMPTY_NAVIGATION;
     }
 
-    public static Navigation navigation(NavigationGroup root) {
-        return NavigationBuilder.newBuilder(root).build();
+    public static Navigation navigation(NavigationGroup... rootGroups) {
+        return NavigationBuilder.newBuilder(rootGroups).build();
     }
 
     public static NavigationGroup group(String name, NavigationItem... items) {

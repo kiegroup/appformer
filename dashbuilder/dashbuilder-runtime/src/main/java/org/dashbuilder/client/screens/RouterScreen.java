@@ -158,6 +158,7 @@ public class RouterScreen {
         
         if (updatedModel.equals(clientLoader.getImportId())) {
             doRoute();
+            runtimeScreen.setKeepHistory(true);
         }
     }
     
