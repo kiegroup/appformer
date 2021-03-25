@@ -53,7 +53,7 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         void setSize(int chartWidth, int chartHeight);
 
         void setMargin(int chartMarginTop, int chartMarginRight, int chartMarginBottom, int chartMarginLeft);
-        
+
         void setFilterLabelSet(FilterLabelSet widget);
 
     }

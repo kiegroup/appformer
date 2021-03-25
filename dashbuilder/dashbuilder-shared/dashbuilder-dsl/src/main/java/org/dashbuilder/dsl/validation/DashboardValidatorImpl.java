@@ -39,7 +39,7 @@ import org.dashbuilder.navigation.NavItemVisitor;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static org.dashbuilder.dsl.helper.ComponentsHelper.collectingPropertyValue;
-import static org.dashbuilder.dsl.helper.ComponentsHelper.listComponents;
+import static org.dashbuilder.dsl.helper.ComponentsHelper.listComponentsIds;
 import static org.dashbuilder.dsl.validation.ValidationResult.error;
 import static org.dashbuilder.dsl.validation.ValidationResult.success;
 import static org.dashbuilder.dsl.validation.ValidationResult.warning;
@@ -101,7 +101,7 @@ class DashboardValidatorImpl implements DashboardValidator {
     }
 
     List<ValidationResult> checkComponentsDependencies(Dashboard dashboard) {
-        List<String> components = listComponents(dashboard);
+        List<String> components = listComponentsIds(dashboard);
         return dashboard.getPages().stream()
                         .map(p -> validateComponentsUsage(p, components))
                         .filter(Objects::nonNull)

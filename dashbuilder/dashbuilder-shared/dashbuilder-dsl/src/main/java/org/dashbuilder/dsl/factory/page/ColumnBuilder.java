@@ -67,7 +67,7 @@ public class ColumnBuilder extends AbstractLayoutBuilder<ColumnBuilder> {
     }
 
     @Override
-    protected void _addProperty(String key, String value) {
+    protected void addProperty(String key, String value) {
         this.layoutColumn.getProperties().put(key, value);
     }
 

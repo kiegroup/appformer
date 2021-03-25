@@ -27,16 +27,12 @@ import java.util.stream.Collectors;
 
 import org.dashbuilder.dataset.ColumnType;
 import org.dashbuilder.dataset.def.DataSetDef;
-import org.dashbuilder.dataset.def.DataSetDefFactory;
 import org.dashbuilder.dataset.group.AggregateFunctionType;
 import org.dashbuilder.displayer.DisplayerSettings;
-import org.dashbuilder.displayer.DisplayerSettingsFactory;
 import org.dashbuilder.displayer.DisplayerSubType;
 import org.dashbuilder.displayer.Position;
-import org.dashbuilder.dsl.factory.navigation.NavigationFactory;
 import org.dashbuilder.dsl.model.Dashboard;
 import org.dashbuilder.dsl.model.Navigation;
-import org.dashbuilder.dsl.model.NavigationGroup;
 import org.dashbuilder.dsl.model.Page;
 import org.dashbuilder.navigation.json.NavTreeJSONMarshaller;
 import org.junit.Before;
@@ -145,12 +141,6 @@ public class DashboardZipSerializerTest {
                      deserialized.getDataSets().get(0).getUUID());
         assertEquals(navTreeString,
                      NavTreeJSONMarshaller.get().toJson(deserialized.getNavigation().getNavTree()).toString());
-
-        //Use this to export this dashboard to run on Dashbuilder runtime 
-//        org.dashbuilder.dsl.serialization.DashboardExporter.get().export(db,
-//                                                                         "/tmp/dashbuilder/models/Population.zip",
-//                                                                         org.dashbuilder.dsl.serialization.DashboardExporter.ExportType.ZIP);
-
     }
 
     private String read(String path) throws IOException {

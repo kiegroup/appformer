@@ -50,7 +50,7 @@ public class ComponentsHelper {
         // empty
     }
 
-    public static List<String> listComponents(Dashboard dashboard) {
+    public static List<String> listComponentsIds(Dashboard dashboard) {
         Optional<Path> componentsPath = dashboard.getComponentsPath();
         if (!componentsPath.isPresent()) {
             return Collections.emptyList();

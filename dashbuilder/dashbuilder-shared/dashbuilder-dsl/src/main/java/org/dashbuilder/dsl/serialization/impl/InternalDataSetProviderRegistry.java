@@ -38,6 +38,8 @@ public class InternalDataSetProviderRegistry implements DataSetProviderRegistry 
 
     @Override
     public DataSetProvider getDataSetProvider(DataSetProviderType type) {
+        // returning null because this registry will not be used in runtime, 
+        // so this method should not be called in the scope of the API 
         return null;
     }
 

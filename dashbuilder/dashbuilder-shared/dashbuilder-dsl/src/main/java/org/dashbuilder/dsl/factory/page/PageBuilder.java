@@ -59,7 +59,7 @@ public class PageBuilder extends AbstractLayoutBuilder<PageBuilder> {
     }
 
     @Override
-    protected void _addProperty(String key, String value) {
+    protected void addProperty(String key, String value) {
         this.layoutTemplate.addLayoutProperty(key, value);
     }
 

@@ -106,7 +106,7 @@ public class DashboardExporter {
     }
 
     private static DashboardZipSerializer serializerFor(ExportType type) {
-        // only ZIP us supported at the moment
+        // only ZIP is supported at the moment
         return new DashboardZipSerializer();
     }
 

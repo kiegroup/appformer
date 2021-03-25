@@ -21,16 +21,16 @@ public abstract class AbstractLayoutBuilder<T> {
 
     @SuppressWarnings("unchecked")
     public T property(String key, String value) {
-        this._addProperty(key, value);
+        this.addProperty(key, value);
         return (T) this;
     }
     
     @SuppressWarnings("unchecked")
     public T cssProperty(CssProperty property, String value) {
-        this._addProperty(property.getName(), value);
+        this.addProperty(property.getName(), value);
         return (T) this;
     }
 
-    protected abstract void _addProperty(String key, String value);
+    protected abstract void addProperty(String key, String value);
 
 }

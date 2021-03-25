@@ -46,8 +46,7 @@ public class DisplayerSettings {
     }
     
     public DisplayerSettings(DisplayerType displayerType, DisplayerSubType subType) {
-        this();
-        setType(displayerType);
+        this(displayerType);
         setSubtype(subType);
     }
 

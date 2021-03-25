@@ -63,6 +63,11 @@ public class DashboardZipSerializer implements DashboardSerializer {
 
     Logger logger = LoggerFactory.getLogger(DashboardZipSerializer.class);
 
+    private static final String CSV_EXT = ".csv";
+    private static final String DATASET_EXT = ".dset";
+    private static final String PLUGIN_EXT = ".plugin";
+    private static final String PERSPECTIVE_LAYOUT = "perspective_layout";
+
     private static final String BASE_PATH = "dashbuilder/";
 
     private static final String LAYOUTS_PATH = BASE_PATH + "perspectives/";
@@ -87,12 +92,12 @@ public class DashboardZipSerializer implements DashboardSerializer {
         AtomicReference<Navigation> navigationRef = new AtomicReference<>(NavigationFactory.emptyNavigation());
 
         importContent.forEach((path, content) -> {
-            if (path.startsWith(LAYOUTS_PATH) && path.endsWith("perspective_layout")) {
+            if (path.startsWith(LAYOUTS_PATH) && path.endsWith(PERSPECTIVE_LAYOUT)) {
                 LayoutTemplate template = gson.fromJson(content, LayoutTemplate.class);
                 pages.add(Page.create(template));
             }
 
-            if (path.startsWith(DATA_SETS_PATH) && path.endsWith("dset")) {
+            if (path.startsWith(DATA_SETS_PATH) && path.endsWith(DATASET_EXT)) {
                 DataSetDef def;
                 try {
                     def = DATA_SET_MARSHALLER.fromJson(content);
@@ -155,7 +160,7 @@ public class DashboardZipSerializer implements DashboardSerializer {
             Path path = Paths.get(filePath);
             if (path.toFile().exists()) {
                 try {
-                    writeContent(zos, DATA_SETS_PATH + def.getUUID() + ".csv", Files.readAllBytes(path));
+                    writeContent(zos, DATA_SETS_PATH + def.getUUID() + CSV_EXT, Files.readAllBytes(path));
                 } catch (IOException e) {
                     logger.warn("Not able to write CSV file {} to the exported ZIP", filePath);
                     logger.debug("Not able to write CSV", e);
@@ -187,15 +192,15 @@ public class DashboardZipSerializer implements DashboardSerializer {
 
     private void writePage(ZipOutputStream zos, Page page) {
         LayoutTemplate lt = page.getLayoutTemplate();
-        String path = LAYOUTS_PATH + lt.getName() + "/perspective_layout";
-        String pluginPath = path + ".plugin";
+        String path = LAYOUTS_PATH + lt.getName() + "/" + PERSPECTIVE_LAYOUT;
+        String pluginPath = path + PLUGIN_EXT;
         String content = gson.toJson(lt);
         writeContent(zos, path, content);
         writeContent(zos, pluginPath, new Date().toString());
     }
 
     private void writeDataSetDef(ZipOutputStream zos, DataSetDef def) {
-        String path = DATA_SETS_PATH + def.getUUID() + ".dset";
+        String path = DATA_SETS_PATH + def.getUUID() + DATASET_EXT;
         String content = DATA_SET_MARSHALLER.toJsonString(def);
         writeContent(zos, path, content);
     }

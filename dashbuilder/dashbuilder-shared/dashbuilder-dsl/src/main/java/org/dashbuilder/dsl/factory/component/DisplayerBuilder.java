@@ -30,7 +30,7 @@ public class DisplayerBuilder extends AbstractComponentBuilder<DisplayerBuilder>
 
     public static DisplayerBuilder create(DisplayerSettings settings) {
 
-        if (isValid(settings)) {
+        if (isInvalid(settings)) {
             throw new IllegalArgumentException("You must provide a data set or an UUID to build a displayer component");
         }
         return new DisplayerBuilder(settings);
@@ -47,7 +47,7 @@ public class DisplayerBuilder extends AbstractComponentBuilder<DisplayerBuilder>
         return "org.dashbuilder.client.editor.DisplayerDragComponent";
     }
 
-    private static boolean isValid(DisplayerSettings settings) {
+    private static boolean isInvalid(DisplayerSettings settings) {
         String dataSetUUID = settings.getDataSetLookup().getDataSetUUID();
         return (dataSetUUID == null || dataSetUUID.trim().isEmpty()) && settings.getDataSet() == null;
     }

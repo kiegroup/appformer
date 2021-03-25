@@ -61,7 +61,7 @@ public class RowBuilder extends AbstractLayoutBuilder<RowBuilder> {
     }
 
     @Override
-    protected void _addProperty(String key, String value) {
+    protected void addProperty(String key, String value) {
         this.layoutRow.getProperties().put(key, value);
     }
 

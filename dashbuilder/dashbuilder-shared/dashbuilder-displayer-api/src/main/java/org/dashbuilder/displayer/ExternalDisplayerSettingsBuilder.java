@@ -22,7 +22,7 @@ package org.dashbuilder.displayer;
 public interface ExternalDisplayerSettingsBuilder<T extends ExternalDisplayerSettingsBuilder> extends ChartSettingsBuilder<T> {
 
     /**
-     * Settings the external component id.
+     * Set the external component id.
      * @param id
      *  The component Id
      * @return

@@ -140,5 +140,5 @@ public class RuntimeEntryPoint {
     private boolean foundDashboard(List<String> dashboardParams) {
         return dashboardParams != null && !dashboardParams.isEmpty();
     }
-    
+
 }
