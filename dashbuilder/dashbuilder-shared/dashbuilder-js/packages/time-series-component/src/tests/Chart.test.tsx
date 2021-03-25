@@ -253,12 +253,12 @@ describe("should test series and options for Transposed dataset", () => {
         align: "left"
       },
       xaxis: {
-        type: "category",
-        categories: [2000, 2001, 2002]
+        type: "datetime",
+        categories: ["2000", "2001", "2002"]
       },
       dataLabels: { enabled: false }
     };
-    const result = getOptions(ds, true, "new", "x", false, false, "new", "left", false, "zoom");
+    const result = getOptions(ds, true, "new", "x", false, false, "new", "left", false, "zoom", "datetime");
     expect(result).toStrictEqual(expectedResult);
   });
 });
@@ -333,11 +333,11 @@ describe("should test series and options for NonTransposed dataset", () => {
       },
       xaxis: {
         type: "category",
-        categories: [2000, 2001, 2002]
+        categories: ["2000", "2001", "2002"]
       },
       dataLabels: { enabled: false }
     };
-    const result = getOptions(ds, false, "new", "x", false, false, "new", "left", false, "zoom");
+    const result = getOptions(ds, false, "new", "x", false, false, "new", "left", false, "zoom", "category");
     expect(result).toStrictEqual(expectedResult);
   });
 });

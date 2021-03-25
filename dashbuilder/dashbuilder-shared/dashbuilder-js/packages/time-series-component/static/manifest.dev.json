@@ -13,8 +13,8 @@
       "value": "newChart"
     },
     {
-      "key": "dateCat",
-      "value": "false"
+      "key": "xaxisType",
+      "value": "numeric"
     },
     {
       "key": "dataLabels",
@@ -46,7 +46,7 @@
     },
     {
       "key": "autoSelected",
-      "value": "pan"
+      "value": "zoom"
     }
   ],
   "dataSet": {
@@ -65,21 +65,21 @@
       }
     ],
     "data": [
-      [2000, "series-1", 2],
-      [2000, "series-2", 78],
-      [2000, "series-3", 200],
-      [2001, "series-1", 89],
-      [2001, "series-2", 23],
-      [2001, "series-3", 110],
-      [2002, "series-1", 167],
-      [2002, "series-2", 110],
-      [2002, "series-3", 11],
-      [2003, "series-1", 70],
-      [2003, "series-2", 34],
-      [2003, "series-3", 57],
-      [2004, "series-1", 110],
-      [2004, "series-2", 140],
-      [2004, "series-3", 1]
+      ["1 Feb", "series-1", 2],
+      ["1 Feb", "series-2", 78],
+      ["1 Feb", "series-3", 200],
+      ["2 Feb", "series-1", 89],
+      ["2 Feb", "series-2", 23],
+      ["2 Feb", "series-3", 110],
+      ["3 Feb", "series-1", 167],
+      ["3 Feb", "series-2", 110],
+      ["3 Feb", "series-3", 11],
+      ["4 Feb", "series-1", 70],
+      ["4 Feb", "series-2", 34],
+      ["4 Feb", "series-3", 57],
+      ["5 Feb", "series-1", 110],
+      ["5 Feb", "series-2", 140],
+      ["5 Feb", "series-3", 1]
     ]
   }
 }

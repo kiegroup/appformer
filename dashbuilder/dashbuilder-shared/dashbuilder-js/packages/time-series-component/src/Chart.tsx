@@ -34,7 +34,7 @@ export enum Params {
   TRANSPOSED = "transposed",
   CHARTNAME = "chartName",
   SHOWAREA = "showArea",
-  DATECAT = "dateCat",
+  XAXISTYPE = "xaxisType",
   DATALABELS = "dataLabels",
   ZOOMTYPE = "type",
   ZOOMENABLED = "enabled",
@@ -157,7 +157,8 @@ export function getOptions(
   text: string,
   align: string,
   show: boolean,
-  autoSelected: string
+  autoSelected: string,
+  xaxisType: string
 ): Options {
   const newoptions: Options = {
     chart: {
@@ -166,7 +167,7 @@ export function getOptions(
       toolbar: { show, autoSelected }
     },
     title: { text, align },
-    xaxis: { type: "category", categories: dataset.data.map((d: Array<string | number>) => +d[0]) },
+    xaxis: { type: xaxisType, categories: dataset.data.map((d: Array<string | number>) => d[0]) },
     dataLabels: { enabled: false }
   };
   if (transposed) {
@@ -188,7 +189,7 @@ export function Chart(props: Props) {
         zoom: { type: "", enabled: false, autoScaleYaxis: false },
         toolbar: { show: false, autoSelected: "" }
       },
-      xaxis: { type: "category", categories: [] },
+      xaxis: { type: "", categories: [] },
       dataLabels: { enabled: false },
       title: { text: "", align: "" }
     },
@@ -216,9 +217,9 @@ export function Chart(props: Props) {
         params.get(Params.TITLETEXT),
         params.get(Params.TITLEALIGN),
         params.get(Params.TOOLBARSHOW),
-        params.get(Params.TOOLBARAUTOSELECTED)
+        params.get(Params.TOOLBARAUTOSELECTED),
+        params.get(Params.XAXISTYPE),
       );
-      op.xaxis.type = params.get(Params.DATECAT) === "true" ? "datetime" : "category";
       op.dataLabels.enabled = params.get(Params.DATALABELS) === "true";
       op.chart.zoom.enabled = params.get(Params.ZOOMENABLED) === "true";
       op.chart.zoom.autoScaleYaxis = params.get(Params.ZOOMAUTOSCALEYAXIS) === "true";

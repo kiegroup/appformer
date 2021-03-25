@@ -1,5 +1,6 @@
 {
   "name": "Time Series Chart",
+  "category": "Reporting",
   "icon": "fa fa-bell-o",
   "parameters": [
     {
@@ -15,9 +16,10 @@
       "label": "Show Area"
     },
     {
-      "name": "dateCat",
-      "type": "boolean",
-      "defaultValue": "false",
+      "name": "xaxisType",
+      "type": "combo",
+      "defaultValue": "category",
+      "comboValues": ["category", "datetime", "numeric"],
       "label": "Date Categories"
     },
     {
@@ -28,7 +30,7 @@
     },
     {
       "name": "type",
-      "type": "string",
+      "type": "combo",
       "defaultValue": "x",
       "comboValues": ["x", "y", "xy"],
       "label": "Zoom type"
@@ -36,7 +38,7 @@
     {
       "name": "enabled",
       "type": "boolean",
-      "defaultValue": "false",
+      "defaultValue": "true",
       "label": "Zoom enabled"
     },
     {
@@ -74,7 +76,7 @@
     {
       "name": "chartName",
       "type": "string",
-      "defaultValue": "New chart",
+      "defaultValue": "Newchart",
       "label": "Chart Name"
     }
   ]
