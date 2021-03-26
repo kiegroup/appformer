@@ -61,8 +61,12 @@ import static org.dashbuilder.dsl.helper.ComponentsHelper.listPagesComponents;
 
 public class DashboardZipSerializer implements DashboardSerializer {
 
+    private static final String PATH_SEPARATOR = "/";
+
     Logger logger = LoggerFactory.getLogger(DashboardZipSerializer.class);
 
+    private static int MAX_ENTRIES = 10_000;
+    
     private static final String CSV_EXT = ".csv";
     private static final String DATASET_EXT = ".dset";
     private static final String PLUGIN_EXT = ".plugin";
@@ -172,7 +176,7 @@ public class DashboardZipSerializer implements DashboardSerializer {
 
     private void writeComponent(Path componentsPath, String componentId, ZipOutputStream zos) {
         final Path componentPath = componentsPath.resolve(componentId);
-        final String componentZipPathBase = COMPONENTS_BASE + componentId + "/";
+        final String componentZipPathBase = COMPONENTS_BASE + componentId + PATH_SEPARATOR;
         try (Stream<Path> walker = Files.walk(componentPath, 1)) {
             walker.filter(p -> !p.toFile().isDirectory())
                   .forEach(file -> {
@@ -192,7 +196,7 @@ public class DashboardZipSerializer implements DashboardSerializer {
 
     private void writePage(ZipOutputStream zos, Page page) {
         LayoutTemplate lt = page.getLayoutTemplate();
-        String path = LAYOUTS_PATH + lt.getName() + "/" + PERSPECTIVE_LAYOUT;
+        String path = LAYOUTS_PATH + lt.getName() + PATH_SEPARATOR + PERSPECTIVE_LAYOUT;
         String pluginPath = path + PLUGIN_EXT;
         String content = gson.toJson(lt);
         writeContent(zos, path, content);
@@ -241,8 +245,11 @@ public class DashboardZipSerializer implements DashboardSerializer {
 
         try (ZipFile zipFile = new ZipFile(zipTemp.toFile())) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
-
+            int totalEntries = 0;
             while (entries.hasMoreElements()) {
+                if (++totalEntries > MAX_ENTRIES) {
+                    throw new IllegalArgumentException("ZIP file contains too many entries");
+                }
                 ZipEntry e = entries.nextElement();
                 String content = new BufferedReader(new InputStreamReader(zipFile.getInputStream(e), UTF_8)).lines()
                                                                                                             .collect(Collectors.joining("\n"));

@@ -62,10 +62,13 @@ public class RuntimeModelWatcherServiceManager {
             executorService.execute(() -> {
                 try {
                     createWatcherTask(runtimeOptions.getImportsBaseDir());
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException e) {
                     logger.error("Error setting models watcher: {}", e.getMessage());
                     logger.debug("Error setting models watcher.", e);
                     throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    logger.warn("Thread Interrupted!", e);
+                    Thread.currentThread().interrupt();
                 }
             });
 

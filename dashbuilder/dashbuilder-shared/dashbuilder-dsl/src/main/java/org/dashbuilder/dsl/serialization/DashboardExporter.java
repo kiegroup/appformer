@@ -51,11 +51,11 @@ public class DashboardExporter {
     public static DashboardExporter get() {
         return INSTANCE;
     }
-    
+
     public void export(Dashboard dashboard, String path, ExportType type) {
-        export(dashboard, Paths.get(path), type); 
+        export(dashboard, Paths.get(path), type);
     }
-    
+
     public void export(Dashboard dashboard, Path path, ExportType type) {
         DashboardSerializer serializer = serializerFor(type);
         validate(dashboard);
@@ -74,7 +74,7 @@ public class DashboardExporter {
                 logger.error("Error deleting temp file", e);
             }
         }
-        
+
     }
 
     private Path createTempDashboardFile() {
@@ -87,7 +87,7 @@ public class DashboardExporter {
 
     void validate(Dashboard dashboard) {
         List<ValidationResult> results = validator.validate(dashboard);
-        
+
         printResult(results, ValidationResultType.ERROR, logger::error);
         printResult(results, ValidationResultType.WARNING, logger::warn);
         printResult(results, ValidationResultType.SUCCESS, logger::info);
@@ -107,6 +107,10 @@ public class DashboardExporter {
 
     private static DashboardZipSerializer serializerFor(ExportType type) {
         // only ZIP is supported at the moment
+        switch (type) {
+            case ZIP:
+                return new DashboardZipSerializer();
+        }
         return new DashboardZipSerializer();
     }
 
