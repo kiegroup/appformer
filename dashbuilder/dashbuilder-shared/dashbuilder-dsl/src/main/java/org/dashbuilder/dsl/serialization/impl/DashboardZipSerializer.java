@@ -38,6 +38,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.ws.rs.NotSupportedException;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.dashbuilder.dataset.def.CSVDataSetDef;
@@ -84,11 +86,15 @@ public class DashboardZipSerializer implements DashboardSerializer {
 
     private static final Gson gson = new GsonBuilder().create();
 
+    @Override
+    public Dashboard deserialize(InputStream model) {
+        throw new NotSupportedException("Deserialize is not supported for ZIP Serializer");
+    }
+    
     /**
      * Does not support: CSV files and components files
      */
-    @Override
-    public Dashboard deserialize(InputStream model) {
+    Dashboard internalDeserialize(InputStream model) {
         Map<String, String> importContent = readAllEntriesContent(model);
 
         List<Page> pages = new ArrayList<>();

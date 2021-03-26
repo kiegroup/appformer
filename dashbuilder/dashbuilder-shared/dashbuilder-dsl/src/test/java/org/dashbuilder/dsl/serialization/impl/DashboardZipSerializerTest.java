@@ -133,7 +133,7 @@ public class DashboardZipSerializerTest {
 
         serializer.serialize(db, out);
 
-        Dashboard deserialized = serializer.deserialize(new ByteArrayInputStream(out.toByteArray()));
+        Dashboard deserialized = serializer.internalDeserialize(new ByteArrayInputStream(out.toByteArray()));
 
         assertEquals(page.getLayoutTemplate().getName(),
                      deserialized.getPages().get(0).getLayoutTemplate().getName());
