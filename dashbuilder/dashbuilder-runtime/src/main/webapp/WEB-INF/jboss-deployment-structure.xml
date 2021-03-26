@@ -43,9 +43,6 @@
       <module name="org.apache.xerces" />
       <module name="org.apache.xalan" />
 
-      <!-- For Kafka Connector -->
-      <module name="org.jboss.remoting-jmx" />
-
     </dependencies>
   </deployment>
 </jboss-deployment-structure>
