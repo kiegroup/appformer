@@ -19,7 +19,9 @@ package org.uberfire.ext.security.server;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -34,6 +36,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.common.base.Charsets;
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
 import org.jboss.errai.security.shared.service.AuthenticationService;
@@ -46,6 +49,8 @@ public class BasicAuthSecurityFilter implements Filter {
     public static final String REALM_NAME_PARAM = "realmName";
     public static final String INVALIDATE_PARAM = "invalidate";
     public static final String EXCEPTION_PATHS = "excludedPaths";
+    public static final String ALLOW_ROLES = "allowRoles";
+    public static final String NEED_AUTHORIZATION_PATHS = "needAuthorizationPaths";
 
     @Inject
     AuthenticationService authenticationService;
@@ -53,6 +58,8 @@ public class BasicAuthSecurityFilter implements Filter {
     private String realmName = "UberFire Security Extension Default Realm";
     private Boolean invalidate = true;
     private Set<String> excludedPaths = new HashSet<>();
+    private Set<String> allowRoles = new HashSet<>();
+    private Set<String> needAuthorizationPaths = new HashSet<>();
 
     @Override
     public void init(final FilterConfig filterConfig) {
@@ -67,6 +74,14 @@ public class BasicAuthSecurityFilter implements Filter {
         final String excludedPaths = filterConfig.getInitParameter(EXCEPTION_PATHS);
         if (excludedPaths != null) {
             this.excludedPaths = Arrays.stream(excludedPaths.split(",")).filter(s -> !isBlank(s)).collect(toSet());
+        }
+        final String allowRolesString = filterConfig.getInitParameter(ALLOW_ROLES);
+        if (allowRolesString != null) {
+            this.allowRoles = Arrays.stream(allowRolesString.split(",")).filter(s -> !isBlank(s)).collect(toSet());
+        }
+        final String needAuthorizationPaths = filterConfig.getInitParameter(NEED_AUTHORIZATION_PATHS);
+        if (allowRolesString != null) {
+            this.needAuthorizationPaths = Arrays.stream(needAuthorizationPaths.split(",")).filter(s -> !isBlank(s)).collect(toSet());
         }
     }
 
@@ -91,19 +106,17 @@ public class BasicAuthSecurityFilter implements Filter {
         final User user = authenticationService.getUser();
         try {
             if (user == null) {
-                if (authenticate(request)) {
-                    chain.doFilter(request,
-                                   response);
-                    if (response.isCommitted()) {
-                        authenticationService.logout();
+                login(request, response, chain);
+            } else {
+                if (needAuthorization(request)) {
+                    if (isAuthorize(user.getRoles())) {
+                        chain.doFilter(request, response);
+                    } else {
+                        login(request, response, chain);
                     }
                 } else {
-                    challengeClient(request,
-                                    response);
+                    chain.doFilter(request, response);
                 }
-            } else {
-                chain.doFilter(request,
-                               response);
             }
         } finally {
             // invalidate session only when it did not exists before this request,
@@ -117,7 +130,38 @@ public class BasicAuthSecurityFilter implements Filter {
         }
     }
 
-    private boolean isExceptionPath(final HttpServletRequest request) {
+    private boolean isAuthorize(final Set<Role> roles) {
+        if (roles.isEmpty()) {
+            return true;
+        }
+        Optional<Role> optionalRole = roles.stream().filter(role -> allowRoles.contains(role.getName())).findFirst();
+        return optionalRole.isPresent();
+    }
+
+    private void login(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws IOException, ServletException {
+        if (authenticate(request)) {
+            chain.doFilter(request, response);
+            if (response.isCommitted()) {
+                authenticationService.logout();
+            }
+        } else {
+            challengeClient(request, response);
+        }
+    }
+
+    private boolean needAuthorization(final HttpServletRequest request){
+        final String requestURI = getRequestURI(request);
+        final AtomicBoolean result = new AtomicBoolean(false);
+
+        needAuthorizationPaths.forEach(path -> {
+            if (requestURI.contains(path)) {
+                result.set(true);
+            }
+        });
+        return result.get();
+    }
+
+    private String getRequestURI(final HttpServletRequest request) {
         String requestURI = request.getRequestURI();
 
         while (requestURI != null && requestURI.endsWith("/")) {
@@ -127,6 +171,11 @@ public class BasicAuthSecurityFilter implements Filter {
         if (requestURI != null && requestURI.startsWith(request.getContextPath())) {
             requestURI = requestURI.replaceFirst(request.getContextPath(), "");
         }
+        return requestURI;
+    }
+
+    private boolean isExceptionPath(final HttpServletRequest request) {
+        String requestURI = getRequestURI(request);
 
         return excludedPaths.contains(requestURI);
     }

@@ -17,6 +17,9 @@
 package org.uberfire.ext.security.server;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -26,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.errai.security.shared.api.RoleImpl;
 import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.junit.Test;
@@ -36,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import static org.mockito.Mockito.*;
+import org.jboss.errai.security.shared.api.Role;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasicAuthSecurityFilterTest {
@@ -198,6 +203,97 @@ public class BasicAuthSecurityFilterTest {
         verify(authenticationService,
                times(1)).login(username,
                                password);
+    }
+
+    @Test
+    public void testAuthorizationRestCall() throws IOException, ServletException {
+        final BasicAuthSecurityFilter filter = new BasicAuthSecurityFilter();
+
+        final FilterConfig config = mock(FilterConfig.class);
+        when(config.getInitParameter(BasicAuthSecurityFilter.ALLOW_ROLES)).thenReturn("admin,rest-all");
+        when(config.getInitParameter(BasicAuthSecurityFilter.NEED_AUTHORIZATION_PATHS)).thenReturn("/rest/");
+        filter.init(config);
+
+        UserImpl user = mock(UserImpl.class);
+        RoleImpl role = mock(RoleImpl.class);
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(role);
+        when(user.getRoles()).thenReturn(roleSet);
+        when(role.getName()).thenReturn("admin");
+
+        when(authenticationService.getUser()).thenReturn(user);
+
+        when(request.getRequestURI()).thenReturn("/rest/someone");
+        when(request.getContextPath()).thenReturn("");
+
+        filter.authenticationService = authenticationService;
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain).doFilter(request, response);
+        verify(user).getRoles();
+        verify(authenticationService, never()).login(anyString(), anyString());
+    }
+
+    @Test
+    public void testUnAuthorizationRestCall() throws IOException, ServletException {
+        final BasicAuthSecurityFilter filter = new BasicAuthSecurityFilter();
+
+        final FilterConfig config = mock(FilterConfig.class);
+        when(config.getInitParameter(BasicAuthSecurityFilter.ALLOW_ROLES)).thenReturn("admin,rest-all");
+        when(config.getInitParameter(BasicAuthSecurityFilter.NEED_AUTHORIZATION_PATHS)).thenReturn("/rest/");
+        filter.init(config);
+
+        UserImpl user = mock(UserImpl.class);
+        RoleImpl role = mock(RoleImpl.class);
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(role);
+        when(user.getRoles()).thenReturn(roleSet);
+        when(role.getName()).thenReturn("noAdmin");
+
+        when(authenticationService.getUser()).thenReturn(user);
+
+        when(request.getRequestURI()).thenReturn("/rest/someone");
+        when(request.getContextPath()).thenReturn("");
+
+        filter.authenticationService = authenticationService;
+
+        SessionProvider sessionProvider = new SessionProvider(httpSession, 1);
+        when(request.getSession(anyBoolean())).then((InvocationOnMock invocationOnMock) -> sessionProvider.provideSession());
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain, never()).doFilter(request, response);
+        verify(user).getRoles();
+        verify(httpSession).invalidate();
+    }
+
+    @Test
+    public void testNotNeedAuthorizationGitCall() throws IOException, ServletException {
+        final BasicAuthSecurityFilter filter = new BasicAuthSecurityFilter();
+
+        final FilterConfig config = mock(FilterConfig.class);
+        when(config.getInitParameter(BasicAuthSecurityFilter.ALLOW_ROLES)).thenReturn("admin,rest-all");
+        when(config.getInitParameter(BasicAuthSecurityFilter.NEED_AUTHORIZATION_PATHS)).thenReturn("/rest/");
+        filter.init(config);
+
+        UserImpl user = mock(UserImpl.class);
+        RoleImpl role = mock(RoleImpl.class);
+        Set<Role> roleSet = new HashSet<>();
+        roleSet.add(role);
+
+        when(authenticationService.getUser()).thenReturn(user);
+
+        when(request.getRequestURI()).thenReturn("/git/someone");
+        when(request.getContextPath()).thenReturn("");
+
+        filter.authenticationService = authenticationService;
+
+        filter.doFilter(request, response, chain);
+
+        verify(chain).doFilter(request, response);
+        verify(user, never()).getRoles();
+        verify(authenticationService, never()).login(anyString(), anyString());
     }
 
     private class SessionProvider {
