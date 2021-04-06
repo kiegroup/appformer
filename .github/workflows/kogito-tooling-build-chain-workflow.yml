@@ -22,7 +22,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Run build chain
         id: build-chain
-        uses: kiegroup/github-action-build-chain@master
+        uses: kiegroup/github-action-build-chain@v2.5
         with:
           starting-project: kiegroup/kogito-tooling
           definition-file: https://raw.githubusercontent.com/tiagobento/kogito-online-ci/gh-actions-kogito-tooling-checks-v7/.ci/kogito-tooling-pull-request-config.yaml
