@@ -18,7 +18,7 @@ jobs:
         uses: kiegroup/github-action-build-chain@tiagosflow
         with:
           starting-project: kiegroup/kogito-tooling
-          definition-file: https://raw.githubusercontent.com/tiagobento/kogito-online-ci/gh-actions-kogito-tooling-checks-v7/.ci/kogito-tooling-pull-request-config.yaml
+          definition-file: https://raw.githubusercontent.com/kiegroup/appformer/2b93e3d1728d4a65b7ee7b8d455b38d38948c466/.ci/kogito-tooling-definition.yaml
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
