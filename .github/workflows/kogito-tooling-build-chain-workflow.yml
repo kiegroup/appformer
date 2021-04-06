@@ -1,0 +1,31 @@
+name: "Kogito Tooling :: Build chain."
+
+on: [pull_request]
+
+jobs:
+  build-chain:
+    strategy:
+      fail-fast: false
+    runs-on: ubuntu-latest
+    name: Build chain
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      # See https://docs.github.com/en/actions/guides/building-and-testing-java-with-maven#caching-dependencies
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Run build chain
+        id: build-chain
+        uses: kiegroup/github-action-build-chain@v2.5
+        with:
+          starting-project: kiegroup/kogito-tooling
+          definition-file: https://raw.githubusercontent.com/tiagobento/kogito-online-ci/gh-actions-kogito-tooling-checks-v7/.ci/kogito-tooling-pull-request-config.yaml
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
