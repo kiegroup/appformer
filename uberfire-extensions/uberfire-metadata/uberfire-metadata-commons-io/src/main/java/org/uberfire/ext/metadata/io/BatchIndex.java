@@ -80,10 +80,9 @@ public final class BatchIndex {
 
     public void runAsync(final FileSystem fs) {
 
-        if(!this.indexEngine.isAlive()){
+        if (!this.indexEngine.isAlive()) {
             return;
         }
-
 
         if (fs != null && fs.getRootDirectories().iterator().hasNext()) {
             executorService.execute(new DescriptiveRunnable() {
@@ -95,14 +94,11 @@ public final class BatchIndex {
                 @Override
                 public void run() {
                     final AtomicBoolean indexFinished = new AtomicBoolean(false);
-                    indexEngine.beforeDispose(new Runnable() {
-                        @Override
-                        public void run() {
-                            indexDisposed.set(true);
+                    indexEngine.beforeDispose(() -> {
+                        indexDisposed.set(true);
 
-                            if (!indexFinished.get()) {
-                                fs.getRootDirectories().forEach(rootPath -> indexEngine.delete(KObjectUtil.toKCluster(rootPath)));
-                            }
+                        if (!indexFinished.get()) {
+                            fs.getRootDirectories().forEach(rootPath -> indexEngine.delete(KObjectUtil.toKCluster(rootPath)));
                         }
                     });
 
@@ -156,29 +152,29 @@ public final class BatchIndex {
                         }
 
                         dispatcher.schedule(executorService)
-                        .thenRun(() -> {
-                            logInformation("Completed indexing of " + cluster.getClusterId());
+                                .thenRun(() -> {
+                                    logInformation("Completed indexing of " + cluster.getClusterId());
 
-                            if (batchIndexListener != null) {
-                                batchIndexListener.notifyIndexIngFinished(cluster, rootPath);
-                            }
+                                    if (batchIndexListener != null) {
+                                        batchIndexListener.notifyIndexIngFinished(cluster, rootPath);
+                                    }
 
-                            if (callback != null) {
-                                callback.run();
-                            }
-                        })
-                        .exceptionally(ex -> {
-                            try {
-                                throw ex;
-                            } catch (DisposedException de) {
-                                logWarning("Batch index couldn't finish. [@" + cluster.getClusterId() + "]");
-                            } catch (IllegalStateException ise) {
-                                logError("Index fails - Index has an invalid state. [@" + cluster.getClusterId() + "]", ex);
-                            } catch (Throwable t) {
-                                logError("Index fails. [@" + cluster.getClusterId() + "]", ex);
-                            }
-                            return null;
-                        });
+                                    if (callback != null) {
+                                        callback.run();
+                                    }
+                                })
+                                .exceptionally(ex -> {
+                                    try {
+                                        throw ex;
+                                    } catch (DisposedException de) {
+                                        logWarning("Batch index couldn't finish. [@" + cluster.getClusterId() + "]");
+                                    } catch (IllegalStateException ise) {
+                                        logError("Index fails - Index has an invalid state. [@" + cluster.getClusterId() + "]", ex);
+                                    } catch (Throwable t) {
+                                        logError("Index fails. [@" + cluster.getClusterId() + "]", ex);
+                                    }
+                                    return null;
+                                });
                     } else {
                         logWarning("Batch index couldn't finish. [@" + cluster.getClusterId() + "]");
                     }
@@ -190,7 +186,6 @@ public final class BatchIndex {
                         exceptionCleanup.forEach(action -> action.run());
                     }
                 }
-
             }
         }
     }
@@ -200,42 +195,42 @@ public final class BatchIndex {
                                   root),
                      new SimpleFileVisitor<Path>() {
 
-            @Override
-            public FileVisitResult visitFile(final Path file,
-                                             final BasicFileAttributes attrs) throws IOException {
-                if (indexDisposed.get()) {
-                    return FileVisitResult.TERMINATE;
-                }
-                try {
-                    checkNotNull("file",
-                                 file);
-                    checkNotNull("attrs",
-                                 attrs);
+                         @Override
+                         public FileVisitResult visitFile(final Path file,
+                                                          final BasicFileAttributes attrs) throws IOException {
+                             if (indexDisposed.get()) {
+                                 return FileVisitResult.TERMINATE;
+                             }
+                             try {
+                                 checkNotNull("file",
+                                              file);
+                                 checkNotNull("attrs",
+                                              attrs);
 
-                    if (!file.getFileName().toString().startsWith(".")
-                            || Objects.equals(file.getFileName().toString(), ".gitkeep")) {
+                                 if (!file.getFileName().toString().startsWith(".")
+                                         || Objects.equals(file.getFileName().toString(), ".gitkeep")) {
 
-                        if (!indexDisposed.get()) {
-                            dispatcher.offer(new IndexableIOEvent.NewFileEvent(file));
-                        } else {
-                            return FileVisitResult.TERMINATE;
-                        }
-                    }
-                } catch (final Exception ex) {
-                    if (indexDisposed.get()) {
-                        logWarning("Batch index couldn't finish. [@" + root.toUri().toString() + "]");
-                        return FileVisitResult.TERMINATE;
-                    } else {
-                        logError("Index fails. [@" + file.toString() + "]",
-                                 ex);
-                    }
-                }
-                if (indexDisposed.get()) {
-                    return FileVisitResult.TERMINATE;
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
+                                     if (!indexDisposed.get()) {
+                                         dispatcher.offer(new IndexableIOEvent.NewFileEvent(file));
+                                     } else {
+                                         return FileVisitResult.TERMINATE;
+                                     }
+                                 }
+                             } catch (final Exception ex) {
+                                 if (indexDisposed.get()) {
+                                     logWarning("Batch index couldn't finish. [@" + root.toUri().toString() + "]");
+                                     return FileVisitResult.TERMINATE;
+                                 } else {
+                                     logError("Index fails. [@" + file.toString() + "]",
+                                              ex);
+                                 }
+                             }
+                             if (indexDisposed.get()) {
+                                 return FileVisitResult.TERMINATE;
+                             }
+                             return FileVisitResult.CONTINUE;
+                         }
+                     });
     }
 
     private void logInformation(final String message) {
