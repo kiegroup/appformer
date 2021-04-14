@@ -56,8 +56,12 @@ public class ExecutorServiceProducer {
     }
 
     protected ExecutorService buildFixedThreadPoolExecutorService(String key) {
+        return this.buildFixedThreadPoolExecutorService(key, 0);
+    }
+
+    protected ExecutorService buildFixedThreadPoolExecutorService(String key, int defaultLimit) {
         String stringProperty = System.getProperty(key);
-        int threadLimit = stringProperty == null ? 0 : toInteger(stringProperty);
+        int threadLimit = stringProperty == null ? defaultLimit : toInteger(stringProperty);
         if (threadLimit > 0) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Creating FixedThreadPool Executor Service for: {} with a limit of {}", key, threadLimit);

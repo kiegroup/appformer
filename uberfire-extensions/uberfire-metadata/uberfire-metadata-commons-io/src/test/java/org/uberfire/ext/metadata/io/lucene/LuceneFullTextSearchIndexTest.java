@@ -59,6 +59,7 @@ public class LuceneFullTextSearchIndexTest extends BaseIndexTest {
 
             ioService = new IOServiceIndexedImpl(config.getIndexEngine(),
                                                  Executors.newCachedThreadPool(new DescriptiveThreadFactory()),
+                                                 Executors.newCachedThreadPool(new DescriptiveThreadFactory()),
                                                  indexersFactory(),
                                                  indexerDispatcherFactory(config.getIndexEngine()),
                                                  DublinCoreView.class,
