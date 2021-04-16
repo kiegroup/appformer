@@ -32,6 +32,7 @@ public class BuildResults {
     private GAV gav;
     private ArrayList<BuildMessage> messages = new ArrayList<BuildMessage>();
     private Map<String, String> parameters = new HashMap<>();
+    private String rootPathURI;
 
     public BuildResults() {
         //Marshalling
@@ -96,4 +97,12 @@ public class BuildResults {
 	public String getParameter(String name) {
 		return this.parameters.get(name);
 	}
+
+    public String getRootPathURI() {
+        return rootPathURI;
+    }
+
+    public void setRootPathURI(String rootPathURI) {
+        this.rootPathURI = rootPathURI;
+    }
 }
