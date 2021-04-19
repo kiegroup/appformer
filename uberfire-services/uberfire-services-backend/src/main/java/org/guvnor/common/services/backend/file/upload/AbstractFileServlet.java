@@ -240,12 +240,11 @@ public abstract class AbstractFileServlet extends BaseFilteredServlet {
                          fileData,
                          request,
                          "Uploaded " + getTimestamp());
-            } else if(operation == FileOperation.UPDATE) {
-                    doUpdate(targetPath,
-                             fileData,
-                             request,
-                             "Uploaded " + getTimestamp());
-
+            } else if (operation == FileOperation.UPDATE) {
+                doUpdate(targetPath,
+                         fileData,
+                         request,
+                         "Uploaded " + getTimestamp());
             }
         }
 
