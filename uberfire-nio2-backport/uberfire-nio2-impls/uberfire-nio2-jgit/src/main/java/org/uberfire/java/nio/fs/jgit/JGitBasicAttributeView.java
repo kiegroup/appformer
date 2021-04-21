@@ -16,10 +16,6 @@
 
 package org.uberfire.java.nio.fs.jgit;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.uberfire.java.nio.IOException;
@@ -32,6 +28,8 @@ import org.uberfire.java.nio.file.attribute.FileTime;
 import org.uberfire.java.nio.fs.jgit.util.model.CommitHistory;
 import org.uberfire.java.nio.fs.jgit.util.model.PathInfo;
 import org.uberfire.java.nio.fs.jgit.util.model.PathType;
+
+import java.util.List;
 
 /**
  *
@@ -48,8 +46,8 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
     public BasicFileAttributes readAttributes() throws IOException {
         if (attrs == null) {
             attrs = buildAttrs(path.getFileSystem(),
-                               path.getRefTree(),
-                               path.getPath());
+                    path.getRefTree(),
+                    path.getPath());
         }
         return attrs;
     }
@@ -63,34 +61,29 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
                                            final String branchName,
                                            final String path) {
         final PathInfo pathInfo = fs.getGit().getPathInfo(branchName,
-                                                          path);
+                path);
 
         if (pathInfo == null || pathInfo.getPathType().equals(PathType.NOT_FOUND)) {
             throw new NoSuchFileException(path);
         }
 
         final Ref ref = fs.getGit().getRef(branchName);
+        final CommitTime commits = new CommitTime();
 
-        final List<Date> records = new ArrayList<>();
-
-        if (ref != null) {
-            try {
-                final CommitHistory history = fs.getGit().listCommits(ref, pathInfo.getPath());
-                for (final RevCommit commit : history.getCommits()) {
-                    records.add(commit.getAuthorIdent().getWhen());
-                }
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-        }
         return new BasicFileAttributes() {
 
             @Override
             public FileTime lastModifiedTime() {
-                if (!records.isEmpty()) {
-                    return new FileTimeImpl(records.get(0).getTime());
+                if (commits.getFirstCommitTime() != null) {
+                    return new FileTimeImpl(commits.getFirstCommitTime());
+                } else {
+                    fetchJGitHistoryDates();
+                    if (commits.getFirstCommitTime() != null) {
+                        return new FileTimeImpl(commits.getFirstCommitTime());
+                    } else {
+                        return new FileTimeImpl(0);
+                    }
                 }
-                return new FileTimeImpl(0);
             }
 
             @Override
@@ -100,10 +93,16 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
 
             @Override
             public FileTime creationTime() {
-                if (!records.isEmpty()) {
-                    return new FileTimeImpl(records.get(records.size() - 1).getTime());
+                if (commits.getLastCommitTime() != null) {
+                    return new FileTimeImpl(commits.getLastCommitTime());
+                } else {
+                    fetchJGitHistoryDates();
+                    if (commits.getLastCommitTime() != null) {
+                        return new FileTimeImpl(commits.getLastCommitTime());
+                    } else {
+                        return new FileTimeImpl(0);
+                    }
                 }
-                return new FileTimeImpl(0);
             }
 
             @Override
@@ -135,6 +134,20 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
             public Object fileKey() {
                 return pathInfo.getObjectId() == null ? null : pathInfo.getObjectId().toString();
             }
+
+            private void fetchJGitHistoryDates() {
+                if (ref != null) {
+                    try {
+                        final CommitHistory history = fs.getGit().listCommits(ref, pathInfo.getPath());
+                        List<RevCommit> rec = history.getCommits();
+                        commits.setFirstCommitTime(rec.get(0).getAuthorIdent().getWhen().getTime());
+                        commits.setLastCommitTime(rec.get(rec.size() - 1).getAuthorIdent().getWhen().getTime());
+                    } catch (Exception e) {
+                        throw new IOException(e);
+                    }
+                }
+            }
         };
     }
+
 }
