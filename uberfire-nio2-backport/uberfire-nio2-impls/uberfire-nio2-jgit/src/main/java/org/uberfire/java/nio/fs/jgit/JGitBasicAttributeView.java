@@ -71,14 +71,20 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
 
         final Ref ref = fs.getGit().getRef(branchName);
 
-        final List<Date> records = new ArrayList<>();
+        final List<RevCommit> records = new ArrayList<>();
+        final Long[] result = new Long[2];
+
 
         if (ref != null) {
             try {
                 final CommitHistory history = fs.getGit().listCommits(ref, pathInfo.getPath());
-                for (final RevCommit commit : history.getCommits()) {
-                    records.add(commit.getAuthorIdent().getWhen());
-                }
+                List<RevCommit> rec  = history.getCommits();
+                result[0]  = rec.get(0).getAuthorIdent().getWhen().getTime();
+                result[1]  = rec.get(rec.size() - 1).getAuthorIdent().getWhen().getTime();
+
+//                for (final RevCommit commit : history.getCommits()) {
+//                    records.add(commit.getAuthorIdent().getWhen());
+//                }
             } catch (Exception e) {
                 throw new IOException(e);
             }
@@ -86,9 +92,9 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
         return new BasicFileAttributes() {
 
             @Override
-            public FileTime lastModifiedTime() {
-                if (!records.isEmpty()) {
-                    return new FileTimeImpl(records.get(0).getTime());
+            public FileTime lastModifiedTime()  {
+                if (result[0] != null) {
+                    return new FileTimeImpl(result[0]);
                 }
                 return new FileTimeImpl(0);
             }
@@ -100,8 +106,8 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
 
             @Override
             public FileTime creationTime() {
-                if (!records.isEmpty()) {
-                    return new FileTimeImpl(records.get(records.size() - 1).getTime());
+                if (result[1] != null) {
+                    return new FileTimeImpl(result[1]);
                 }
                 return new FileTimeImpl(0);
             }
