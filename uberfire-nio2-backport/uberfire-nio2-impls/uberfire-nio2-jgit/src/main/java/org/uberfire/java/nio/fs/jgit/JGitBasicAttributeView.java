@@ -71,26 +71,21 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
 
         final Ref ref = fs.getGit().getRef(branchName);
 
-        final List<Date> records = new ArrayList<>();
-
-        if (ref != null) {
-            try {
-                final CommitHistory history = fs.getGit().listCommits(ref, pathInfo.getPath());
-                for (final RevCommit commit : history.getCommits()) {
-                    records.add(commit.getAuthorIdent().getWhen());
-                }
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-        }
         return new BasicFileAttributes() {
+
+            private FileTime lastModifiedDate = null;
+            private FileTime creationDate = null;
 
             @Override
             public FileTime lastModifiedTime() {
-                if (!records.isEmpty()) {
-                    return new FileTimeImpl(records.get(0).getTime());
+                if (lastModifiedDate == null) {
+                    try {
+                        lastModifiedDate = new FileTimeImpl(fs.getGit().getLastCommit(ref).getCommitterIdent().getWhen().getTime());
+                    } catch (final Exception e) {
+                        lastModifiedDate = new FileTimeImpl(0);
+                    }
                 }
-                return new FileTimeImpl(0);
+                return lastModifiedDate;
             }
 
             @Override
@@ -100,10 +95,14 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
 
             @Override
             public FileTime creationTime() {
-                if (!records.isEmpty()) {
-                    return new FileTimeImpl(records.get(records.size() - 1).getTime());
+                if (creationDate == null) {
+                    try {
+                        creationDate = new FileTimeImpl(fs.getGit().getFirstCommit(ref).getCommitterIdent().getWhen().getTime());
+                    } catch (final Exception e) {
+                        creationDate = new FileTimeImpl(0);
+                    }
                 }
-                return new FileTimeImpl(0);
+                return creationDate;
             }
 
             @Override
