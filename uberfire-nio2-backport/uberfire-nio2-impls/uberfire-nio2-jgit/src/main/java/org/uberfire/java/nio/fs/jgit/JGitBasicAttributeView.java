@@ -74,29 +74,20 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
         final List<RevCommit> records = new ArrayList<>();
         final Long[] result = new Long[2];
 
-
-        if (ref != null) {
-            try {
-                final CommitHistory history = fs.getGit().listCommits(ref, pathInfo.getPath());
-                List<RevCommit> rec  = history.getCommits();
-                result[0]  = rec.get(0).getAuthorIdent().getWhen().getTime();
-                result[1]  = rec.get(rec.size() - 1).getAuthorIdent().getWhen().getTime();
-
-//                for (final RevCommit commit : history.getCommits()) {
-//                    records.add(commit.getAuthorIdent().getWhen());
-//                }
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-        }
         return new BasicFileAttributes() {
 
             @Override
             public FileTime lastModifiedTime()  {
                 if (result[0] != null) {
                     return new FileTimeImpl(result[0]);
+                } else {
+                    fetchJGitHistoryDates();
+                    if (result[0] != null) {
+                        return new FileTimeImpl(result[0]);
+                    } else {
+                        return new FileTimeImpl(0);
+                    }
                 }
-                return new FileTimeImpl(0);
             }
 
             @Override
@@ -108,8 +99,14 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
             public FileTime creationTime() {
                 if (result[1] != null) {
                     return new FileTimeImpl(result[1]);
+                } else {
+                    fetchJGitHistoryDates();
+                    if (result[1] != null) {
+                        return new FileTimeImpl(result[1]);
+                    } else {
+                        return new FileTimeImpl(0);
+                    }
                 }
-                return new FileTimeImpl(0);
             }
 
             @Override
@@ -140,6 +137,23 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
             @Override
             public Object fileKey() {
                 return pathInfo.getObjectId() == null ? null : pathInfo.getObjectId().toString();
+            }
+
+            private void fetchJGitHistoryDates() {
+                if (ref != null) {
+                    try {
+                        final CommitHistory history = fs.getGit().listCommits(ref, pathInfo.getPath());
+                        List<RevCommit> rec  = history.getCommits();
+                        result[0]  = rec.get(0).getAuthorIdent().getWhen().getTime();
+                        result[1]  = rec.get(rec.size() - 1).getAuthorIdent().getWhen().getTime();
+
+        //                for (final RevCommit commit : history.getCommits()) {
+        //                    records.add(commit.getAuthorIdent().getWhen());
+        //                }
+                    } catch (Exception e) {
+                        throw new IOException(e);
+                    }
+                }
             }
         };
     }
