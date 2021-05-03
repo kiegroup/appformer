@@ -147,9 +147,6 @@ public class JGitBasicAttributeView extends AbstractBasicFileAttributeView<JGitP
                         result[0]  = rec.get(0).getAuthorIdent().getWhen().getTime();
                         result[1]  = rec.get(rec.size() - 1).getAuthorIdent().getWhen().getTime();
 
-        //                for (final RevCommit commit : history.getCommits()) {
-        //                    records.add(commit.getAuthorIdent().getWhen());
-        //                }
                     } catch (Exception e) {
                         throw new IOException(e);
                     }
