@@ -226,7 +226,6 @@ public abstract class AbstractFileServlet extends BaseFilteredServlet {
     private String uploadFile(final FormData item,
                               final HttpServletRequest request,
                               final HttpServletResponse response) throws IOException {
-        final InputStream fileData = item.getFile().getInputStream();
         final org.uberfire.backend.vfs.Path targetPath = item.getTargetPath();
 
         if (!validateAccess(Paths.convert(targetPath),
@@ -234,22 +233,19 @@ public abstract class AbstractFileServlet extends BaseFilteredServlet {
             return "FAIL";
         }
 
-        try {
-            switch (item.getOperation()) {
-                case CREATE:
-                    doCreate(targetPath,
-                             fileData,
-                             request,
-                             "Uploaded " + getTimestamp());
-                    break;
-                case UPDATE:
-                    doUpdate(targetPath,
-                             fileData,
-                             request,
-                             "Uploaded " + getTimestamp());
+        try (final InputStream fileData = item.getFile().getInputStream()) {
+            final FileOperation operation = item.getOperation();
+            if (operation == FileOperation.CREATE) {
+                doCreate(targetPath,
+                         fileData,
+                         request,
+                         "Uploaded " + getTimestamp());
+            } else if (operation == FileOperation.UPDATE) {
+                doUpdate(targetPath,
+                         fileData,
+                         request,
+                         "Uploaded " + getTimestamp());
             }
-        } finally {
-            item.getFile().getInputStream().close();
         }
 
         return "OK";
