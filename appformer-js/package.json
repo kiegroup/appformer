@@ -10,7 +10,7 @@
     "url": "https://github.com/kiegroup/appformer-js.git"
   },
   "dependencies": {
-    "@types/react": "16.4.18",
+    "@types/react": "16.14.5",
     "@types/react-dom": "16.0.9",
     "bignumber.js": "7.2.1",
     "react": "16.6.0",
