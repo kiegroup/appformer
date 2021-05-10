@@ -49,7 +49,8 @@ public class CreateProjectCmd extends AbstractJobCommand {
                                           jobRequest.getProjectName(),
                                           jobRequest.getProjectGroupId(),
                                           jobRequest.getProjectVersion(),
-                                          jobRequest.getDescription());
+                                          jobRequest.getDescription(),
+                                          jobRequest.getTemplateId());
         } finally {
             JobStatus status = result != null ? result.getStatus() : JobStatus.SERVER_ERROR;
             String groupId = jobRequest.getProjectGroupId() == null ? jobRequest.getProjectName() : jobRequest.getProjectGroupId();
