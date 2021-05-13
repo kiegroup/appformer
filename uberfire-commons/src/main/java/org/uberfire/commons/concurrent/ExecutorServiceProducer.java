@@ -38,20 +38,27 @@ public class ExecutorServiceProducer {
     private final ExecutorService executorService;
     private final ExecutorService unmanagedExecutorService;
     private final ExecutorService indexingExecutorService;
+    private final ExecutorService fsWatchExecutorService;
 
     protected static final String MANAGED_LIMIT_PROPERTY = "org.appformer.concurrent.managed.thread.limit";
     protected static final String UNMANAGED_LIMIT_PROPERTY = "org.appformer.concurrent.unmanaged.thread.limit";
     protected static final String INDEXING_LIMIT_PROPERTY = "org.appformer.concurrent.indexing.thread.limit";
+    protected static final String FS_WATCH_LIMIT_PROPERTY = "org.appformer.concurrent.fs.watch.thread.limit";
 
     public ExecutorServiceProducer() {
         this.executorService = this.buildFixedThreadPoolExecutorService(MANAGED_LIMIT_PROPERTY);
         this.unmanagedExecutorService = this.buildFixedThreadPoolExecutorService(UNMANAGED_LIMIT_PROPERTY);
-        this.indexingExecutorService = this.buildFixedThreadPoolExecutorService(INDEXING_LIMIT_PROPERTY);
+        this.indexingExecutorService = this.buildFixedThreadPoolExecutorService(INDEXING_LIMIT_PROPERTY, 20);
+        this.fsWatchExecutorService = this.buildFixedThreadPoolExecutorService(FS_WATCH_LIMIT_PROPERTY);
     }
 
     protected ExecutorService buildFixedThreadPoolExecutorService(String key) {
+        return this.buildFixedThreadPoolExecutorService(key, 0);
+    }
+
+    protected ExecutorService buildFixedThreadPoolExecutorService(String key, int defaultLimit) {
         String stringProperty = System.getProperty(key);
-        int threadLimit = stringProperty == null ? 0 : toInteger(stringProperty);
+        int threadLimit = stringProperty == null ? defaultLimit : toInteger(stringProperty);
         if (threadLimit > 0) {
             return Executors.newFixedThreadPool(threadLimit,
                                                 new DescriptiveThreadFactory());
@@ -93,6 +100,13 @@ public class ExecutorServiceProducer {
         return this.getIndexingExecutorService();
     }
 
+    @Produces
+    @ApplicationScoped
+    @FSWatch
+    public ExecutorService produceFsWatchExecutorService() {
+        return this.getFsWatchExecutorService();
+    }
+
     protected ExecutorService getManagedExecutorService() {
         return this.executorService;
     }
@@ -103,5 +117,9 @@ public class ExecutorServiceProducer {
 
     protected ExecutorService getIndexingExecutorService() {
         return this.indexingExecutorService;
+    }
+
+    protected ExecutorService getFsWatchExecutorService() {
+        return this.fsWatchExecutorService;
     }
 }

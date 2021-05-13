@@ -72,7 +72,9 @@ public class IOServiceIndexedTest {
     @Mock
     MetaIndexEngine indexEngine;
     @Mock
-    ExecutorService executorService;
+    ExecutorService indexingExecutorService;
+    @Mock
+    ExecutorService fsWatchExecutorService;
     @Mock
     IndexersFactory indexersFactory;
     @Mock
@@ -95,7 +97,7 @@ public class IOServiceIndexedTest {
         when(mockProvider.newFileSystem(any(Path.class), any())).thenReturn(mock(MockFileSystem.class, RETURNS_DEEP_STUBS));
         when(mockProvider.getFileSystem(any(URI.class))).thenReturn(mock(MockFileSystem.class, RETURNS_DEEP_STUBS));
 
-        ioService = spy(new IOServiceIndexedImpl(indexEngine, executorService, indexersFactory, dispatcherFactory));
+        ioService = spy(new IOServiceIndexedImpl(indexEngine, indexingExecutorService, fsWatchExecutorService, indexersFactory, dispatcherFactory));
     }
 
     @Test
