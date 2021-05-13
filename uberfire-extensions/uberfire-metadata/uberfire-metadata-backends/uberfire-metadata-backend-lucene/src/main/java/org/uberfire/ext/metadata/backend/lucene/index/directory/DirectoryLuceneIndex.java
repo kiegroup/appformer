@@ -23,6 +23,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.SerialMergeScheduler;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherFactory;
 import org.uberfire.ext.metadata.backend.lucene.index.BaseLuceneIndex;
@@ -45,6 +46,9 @@ public class DirectoryLuceneIndex extends BaseLuceneIndex {
                                 final Directory directory,
                                 final IndexWriterConfig config) {
         try {
+
+            config.setMergeScheduler(new SerialMergeScheduler());
+
             this.cluster = checkNotNull("cluster",
                                         cluster);
             this.directory = checkNotNull("directory",
