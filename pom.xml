@@ -87,7 +87,7 @@
     <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <version.org.elasticsearch>5.6.15</version.org.elasticsearch>
-    <version.org.infinispan.protostream>4.2.5.Final</version.org.infinispan.protostream>
+    <version.org.infinispan.protostream>4.3.5.Final</version.org.infinispan.protostream>
 
     <!-- Newer version in kie-parent causes ServiceLoader error -->
     <version.ch.qos.logback>1.1.3</version.ch.qos.logback>
@@ -158,8 +158,8 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-enforcer-plugin</artifactId>
-	  <version>${version.enforcer.plugin}</version>
+	        <artifactId>maven-enforcer-plugin</artifactId>
+	        <version>${version.enforcer.plugin}</version>
           <dependencies>
             <dependency>
               <groupId>org.codehaus.mojo</groupId>
@@ -224,6 +224,7 @@
                            and there is very little chance this will get ever fixed. -->
                       <ignoreClass>org.w3c.dom.ElementTraversal</ignoreClass>
                       <ignoreClass>org.w3c.dom.UserDataHandler</ignoreClass>
+                      <ignoreClass>org.uberfire.java.nio.base.version.VersionRecord</ignoreClass>
                     </ignoreClasses>
                     <dependencies>
                       <!-- gwt-user bundles javax.servlet classes which usually conflicts with the servlet dependencies
