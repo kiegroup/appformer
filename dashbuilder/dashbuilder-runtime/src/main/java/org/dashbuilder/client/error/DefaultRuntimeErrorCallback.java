@@ -46,22 +46,53 @@ public class DefaultRuntimeErrorCallback {
 
     private boolean errorPopUpLock = false;
 
+    public enum DefaultErrorType {
+        SERVER_OFFLINE,
+        NOT_LOGGED,
+        NOT_AUTHORIZED,
+        OTHER;
+    }
+
     public void error(final Throwable throwable) {
+        String message = extractMessageRecursively(throwable);
+        if (isServerOfflineException(throwable)) {
+            error(DefaultErrorType.SERVER_OFFLINE, message);
+        } else if (isInvalidBusContentException(throwable)) {
+            error(DefaultErrorType.NOT_LOGGED, message);
+        } else {
+            error(DefaultErrorType.OTHER, message);
+        }
+    }
+
+    public void error(DefaultErrorType type) {
+        error(type, null);
+    }
+
+    public void error(DefaultErrorType type, String message) {
         if (errorPopUpLock) {
             return;
         }
         loading.hideBusyIndicator();
         errorPopUpLock = true;
-        if (isServerOfflineException(throwable)) {
-            showPopup(i18n.disconnectedFromServer(), i18n.couldNotConnectToServer());
-        } else if (isInvalidBusContentException(throwable)) {
-            showPopup(i18n.sessionTimeout(), i18n.invalidBusResponseProbablySessionTimeout());
-        } else {
-            showMessage(CommonConstants.INSTANCE.ExceptionGeneric0(extractMessageRecursively(throwable)),
-                        this::unlock,
-                        this::unlock);
-        }
 
+        switch (type) {
+            case NOT_LOGGED:
+                showPopup(i18n.sessionTimeout(), i18n.invalidBusResponseProbablySessionTimeout());
+                break;
+            case SERVER_OFFLINE:
+                showPopup(i18n.disconnectedFromServer(), i18n.couldNotConnectToServer());
+                break;
+            case NOT_AUTHORIZED:
+                showPopup(i18n.notAuthorizedTitle(), i18n.notAuthorized());
+                break;
+            case OTHER:
+            default:
+                String popupMessage = message == null ? i18n.defaultErrorMessage() : message;
+                showMessage(CommonConstants.INSTANCE.ExceptionGeneric0(popupMessage),
+                            this::unlock,
+                            this::unlock);
+                break;
+        }
     }
 
     private void showPopup(String title, String content) {

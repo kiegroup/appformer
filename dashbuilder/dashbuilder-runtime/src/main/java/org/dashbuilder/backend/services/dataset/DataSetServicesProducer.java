@@ -33,6 +33,7 @@ import org.dashbuilder.dataset.DataSetDefRegistryImpl;
 import org.dashbuilder.dataset.DataSetManager;
 import org.dashbuilder.dataset.DataSetManagerImpl;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
+import org.dashbuilder.dataset.json.DataSetMetadataJSONMarshaller;
 import org.dashbuilder.scheduler.Scheduler;
 
 /**
@@ -75,13 +76,13 @@ public class DataSetServicesProducer {
                                                 DataSetCore.get().getIntervalBuilderLocator(),
                                                 DataSetCore.get().getIntervalBuilderDynamicDate());
     }
-    
+
     @Produces
     @ApplicationScoped
     public PrometheusDataSetProvider producePrometheusProvider(StaticDataSetProvider staticDataSetProvider) {
         return new PrometheusDataSetProvider(staticDataSetProvider);
     }
-    
+
     @Produces
     @ApplicationScoped
     public KafkaDataSetProvider produceKafkaProvider(StaticDataSetProvider staticDataSetProvider) {
@@ -106,6 +107,12 @@ public class DataSetServicesProducer {
                                       staticDataSetProvider,
                                       true,
                                       1024);
+    }
+
+    @Produces
+    @ApplicationScoped
+    public DataSetMetadataJSONMarshaller produceDataSetMetadataJSONMarshaller() {
+        return new DataSetMetadataJSONMarshaller(DataSetCore.get().getDataSetDefJSONMarshaller());
     }
 
 }

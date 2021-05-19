@@ -79,11 +79,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.jboss.xnio</groupId>
       <artifactId>xnio-api</artifactId>
     </dependency>
@@ -113,9 +108,9 @@
     </dependency>
 
     <dependency>
-        <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
-        <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
-        <scope>provided</scope>
+      <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
+      <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -143,7 +138,7 @@
       <groupId>org.kie.soup</groupId>
       <artifactId>kie-soup-dataset-prometheus</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.kie.soup</groupId>
       <artifactId>kie-soup-dataset-kafka</artifactId>
@@ -335,6 +330,7 @@
       <scope>provided</scope>
     </dependency>
 
+<!--  remove this when moving to quarkus -->
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-backend-cdi</artifactId>
@@ -547,11 +543,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-marshalling</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>de.benediktmeurer.gwt-slf4j</groupId>
       <artifactId>gwt-slf4j</artifactId>
       <scope>provided</scope>
@@ -614,7 +605,6 @@
     </dependency>
 
     <!-- Container provided dependencies -->
-
     <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
@@ -784,8 +774,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-
   </dependencies>
 
   <build>
@@ -875,6 +863,7 @@
           </compileSourcesArtifacts>
           <runTarget>dashbuilder.html</runTarget>
           <extraJvmArgs>-Xmx4024m -XX:CompileThreshold=7000
+            -Derrai.codegen.details=true
             -Derrai.jboss.home=${errai.jboss.home}
             -Derrai.dynamic_validation.enabled=true
             -Ddashbuilder.runtime.multi=true

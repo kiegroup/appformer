@@ -23,6 +23,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
+import org.dashbuilder.shared.service.ExternalImportService;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.junit.After;
 import org.junit.Before;
@@ -44,8 +46,13 @@ public class RuntimeModelLoaderTest {
 
     Path baseTempDir;
 
+    Path mockModel;
+
     @Mock
     RuntimeModelRegistry registry;
+
+    @Mock
+    ExternalImportService externalImportService;
 
     @Mock
     RuntimeOptions runtimeOptions;
@@ -56,6 +63,7 @@ public class RuntimeModelLoaderTest {
     @Before
     public void init() throws IOException {
         baseTempDir = Files.createTempDirectory("dashbuilder-tests");
+        mockModel = Files.createFile(baseTempDir.resolve("test.zip"));
     }
 
     @After
@@ -83,7 +91,7 @@ public class RuntimeModelLoaderTest {
         Path p4 = Paths.get(baseDir, "intermediary", "ignored.bkp");
 
         p4.toFile().getParentFile().mkdirs();
-        
+
         for (Path p : Arrays.asList(p1, p2, p3, p4)) {
             p.toFile().createNewFile();
         }
@@ -94,6 +102,28 @@ public class RuntimeModelLoaderTest {
         verify(registry).registerFile(matches(p2.toString()));
         verify(registry, times(0)).registerFile(matches(p3.toString()));
         verify(registry, times(0)).registerFile(matches(p4.toString()));
+    }
+
+    @Test
+    public void testRegisterStaticModelHappyPath() {
+        runtimeModelLoader.registerStaticModel(mockModel.toString());
+        verify(registry).setMode(DashbuilderRuntimeMode.STATIC);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRegisterStaticModelInvalidFile() {
+        runtimeModelLoader.registerStaticModel("do not exist");
+    }
+
+    @Test
+    public void testRegisterStaticModelExternalFile() {
+        String location = "http://acme.com/mymodel.zip";
+        when(runtimeOptions.isAllowExternal()).thenReturn(true);
+
+        runtimeModelLoader.registerStaticModel(location);
+
+        verify(externalImportService).registerExternalImport(location);
+        verify(registry).setMode(DashbuilderRuntimeMode.STATIC);
     }
 
 }

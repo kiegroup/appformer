@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DataSetClientServicesTest {
+public class DataSetClientServicesImplTest {
 
     @Mock
     private ClientDataSetManager clientDataSetManager;
@@ -57,7 +57,7 @@ public class DataSetClientServicesTest {
     @Test
     public void testFetchMetadataWhenMetadataIsNotNull() throws Exception {
         final String uuid = "uuid";
-        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+        final DataSetClientServicesImpl services = makeDataSetClientServices(clientDataSetManager,
                                                                          dataSetLookupServicesCallerMock);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(dataSetMetadata);
@@ -74,7 +74,7 @@ public class DataSetClientServicesTest {
     @Test
     public void testFetchMetadataWhenSetLookupServicesIsNull() throws Exception {
         final String uuid = "uuid";
-        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+        final DataSetClientServicesImpl services = makeDataSetClientServices(clientDataSetManager,
                                                                          null);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(null);
@@ -91,7 +91,7 @@ public class DataSetClientServicesTest {
     @Test
     public void testFetchMetadataWhenRemoteMetadataMapContainsTheUUID() throws Exception {
         final String uuid = "uuid";
-        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+        final DataSetClientServicesImpl services = makeDataSetClientServices(clientDataSetManager,
                                                                          dataSetLookupServicesCallerMock);
 
         services.getRemoteMetadataMap().put(uuid,
@@ -111,7 +111,7 @@ public class DataSetClientServicesTest {
     @Test
     public void testFetchMetadataWhenResultIsNull() throws Exception {
         final String uuid = "uuid";
-        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+        final DataSetClientServicesImpl services = makeDataSetClientServices(clientDataSetManager,
                                                                          dataSetLookupServicesCallerMock);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(null);
@@ -129,7 +129,7 @@ public class DataSetClientServicesTest {
     @Test
     public void testFetchMetadataWhenResultIsNotNull() throws Exception {
         final String uuid = "uuid";
-        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+        final DataSetClientServicesImpl services = makeDataSetClientServices(clientDataSetManager,
                                                                          dataSetLookupServicesCallerMock);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(null);
@@ -148,7 +148,7 @@ public class DataSetClientServicesTest {
     @Test
     public void testFetchMetadataWhenDataSetLookupServicesReturnsAnError() throws Exception {
         final String uuid = "uuid";
-        final DataSetClientServices services = makeDataSetClientServices(clientDataSetManager,
+        final DataSetClientServicesImpl services = makeDataSetClientServices(clientDataSetManager,
                                                                          dataSetLookupServicesCallerMock);
 
         when(clientDataSetManager.getDataSetMetadata(uuid)).thenReturn(null);
@@ -209,9 +209,9 @@ public class DataSetClientServicesTest {
         return isOnErrorCalled;
     }
 
-    private DataSetClientServices makeDataSetClientServices(final ClientDataSetManager clientDataSetManager,
+    private DataSetClientServicesImpl makeDataSetClientServices(final ClientDataSetManager clientDataSetManager,
                                                             final CallerMock<DataSetLookupServices> dataSetLookupServicesCallerMock) {
-        return new DataSetClientServices(clientDataSetManager,
+        return new DataSetClientServicesImpl(clientDataSetManager,
                                          null,
                                          null,
                                          null,

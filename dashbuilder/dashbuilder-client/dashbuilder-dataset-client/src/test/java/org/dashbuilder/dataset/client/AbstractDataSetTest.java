@@ -77,7 +77,7 @@ public abstract class AbstractDataSetTest {
     public void initDataSetClientServices() {
         dataSetExportServicesCaller = new CallerMock<>(dataSetExportServices);
         dataSetLookupServicesCaller = new CallerMock<>(dataSetLookupServices);
-        clientServices = new DataSetClientServices(
+        clientServices = new DataSetClientServicesImpl(
                 clientDataSetManager,
                 pathUrlFactory,
                 clientDataSetCore.getAggregateFunctionManager(),

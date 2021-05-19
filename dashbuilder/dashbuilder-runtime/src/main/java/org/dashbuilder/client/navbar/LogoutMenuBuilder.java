@@ -23,8 +23,6 @@ import com.google.gwt.core.client.GWT;
 import elemental2.dom.DomGlobal;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.gwtbootstrap3.client.ui.constants.IconType;
-import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuFactory.CustomMenuBuilder;
 import org.uberfire.workbench.model.menu.MenuItem;
@@ -36,9 +34,6 @@ public class LogoutMenuBuilder implements MenuFactory.CustomMenuBuilder {
 
     @Inject
     MenuBuilderHelper menuBuilderHelper;
-
-    @Inject
-    private Caller<AuthenticationService> authService;
 
     @Override
     public void push(CustomMenuBuilder element) {
@@ -53,11 +48,9 @@ public class LogoutMenuBuilder implements MenuFactory.CustomMenuBuilder {
     }
 
     private void logout() {
-        authService.call(r -> {
-            final String location = GWT.getModuleBaseURL()
-                                       .replaceFirst("/" + GWT.getModuleName() + "/", "/logout.jsp");
-            DomGlobal.window.location.assign(location);
-        }).logout();
+        final String location = GWT.getModuleBaseURL()
+                                   .replaceFirst("/" + GWT.getModuleName() + "/", "/logout.jsp");
+        DomGlobal.window.location.assign(location);
     }
 
 }

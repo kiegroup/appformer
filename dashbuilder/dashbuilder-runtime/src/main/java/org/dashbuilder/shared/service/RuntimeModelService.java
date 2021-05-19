@@ -18,15 +18,13 @@ package org.dashbuilder.shared.service;
 
 import java.util.Optional;
 
-import org.dashbuilder.shared.model.RuntimeServiceResponse;
 import org.dashbuilder.shared.model.RuntimeModel;
-import org.jboss.errai.bus.server.annotations.Remote;
+import org.dashbuilder.shared.model.RuntimeServiceResponse;
 
 /**
  * Service to access RuntimeModel.
  *
  */
-@Remote
 public interface RuntimeModelService {
 
     /**
@@ -41,7 +39,7 @@ public interface RuntimeModelService {
 
     /**
      * 
-     * Get a runtime model given an ID.
+     * Get a runtime model given an ID or location. 
      * 
      * @param runtimeModelId
      * The Runtime model represented by runtimeModelId.

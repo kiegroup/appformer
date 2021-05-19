@@ -28,15 +28,18 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.apache.commons.io.FilenameUtils;
 import org.dashbuilder.backend.RuntimeOptions;
 import org.dashbuilder.shared.model.RuntimeModel;
+import org.dashbuilder.shared.service.ExternalImportService;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
-import org.dashbuilder.shared.services.ExternalImportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class ExternalImportServiceImpl implements ExternalImportService {
+
+    private static final String ERROR_DOWNLOADING_CONTENT_FROM_URL = "Error downloading and parsing content from URL {}";
 
     private static final String ERROR_PARSING_URL = "Error parsing URL: {}";
 
@@ -67,8 +70,8 @@ public class ExternalImportServiceImpl implements ExternalImportService {
                 checkSize(filePath, totalBytes);
             }
         } catch (IOException e) {
-            logger.debug("Error downloading and parsing content from URL {}", externalModelUrl, e);
-            logger.warn("Error downloading and parsing content from URL {}", externalModelUrl);
+            logger.debug(ERROR_DOWNLOADING_CONTENT_FROM_URL, externalModelUrl, e);
+            logger.warn(ERROR_DOWNLOADING_CONTENT_FROM_URL, externalModelUrl);
             deleteFile(filePath);
             throw new IllegalArgumentException("Not able to download file", e);
         }
@@ -85,7 +88,7 @@ public class ExternalImportServiceImpl implements ExternalImportService {
 
     private String buildURLIdentifier(URL url) {
         try {
-            return Math.abs(url.toURI().hashCode()) + "";
+            return FilenameUtils.getBaseName(url.toURI().toString());
         } catch (URISyntaxException e) {
             logger.debug(ERROR_PARSING_URL, url.toExternalForm(), e);
             logger.warn(ERROR_PARSING_URL, url.toExternalForm());

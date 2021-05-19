@@ -16,6 +16,7 @@
 
 package org.dashbuilder.backend;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,6 +27,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.dashbuilder.shared.model.DashbuilderRuntimeMode;
+import org.dashbuilder.shared.service.ExternalImportService;
 import org.dashbuilder.shared.service.RuntimeModelRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ import static org.dashbuilder.backend.RuntimeOptions.DASHBOARD_EXTENSION;
  * Responsible for runtime model files loading.
  *
  */
+// TODO: Remove this when moving to quarkus
 @Startup
 @ApplicationScoped
 public class RuntimeModelLoader {
@@ -47,21 +50,30 @@ public class RuntimeModelLoader {
     RuntimeModelRegistry runtimeModelRegistry;
 
     @Inject
+    ExternalImportService externalImportService;
+
+    @Inject
     RuntimeOptions runtimeOptions;
 
     @PostConstruct
     private void runtimeModelSetup() {
         setupBaseDir();
-        runtimeOptions.importFileLocation().ifPresent(importFile -> {
-            logger.info("Importing file {}", importFile);
-            runtimeModelRegistry.registerFile(importFile);
-            runtimeModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
-        });
-
+        runtimeOptions.importFileLocation().ifPresent(this::registerStaticModel);
         if (runtimeOptions.isMultipleImport() && !runtimeOptions.importFileLocation().isPresent()) {
             runtimeModelRegistry.setMode(DashbuilderRuntimeMode.MULTIPLE_IMPORT);
             loadAvailableModels();
         }
+    }
+
+    protected void registerStaticModel(String importFile) {
+        if (new File(importFile).exists()) {
+            runtimeModelRegistry.registerFile(importFile);
+        } else if (runtimeOptions.isAllowExternal()) {
+            externalImportService.registerExternalImport(importFile);
+        } else {
+            throw new IllegalArgumentException("Not able to register default model from path: " + importFile);
+        }
+        runtimeModelRegistry.setMode(DashbuilderRuntimeMode.STATIC);
     }
 
     /**

@@ -130,6 +130,8 @@
     <web-resource-collection>
       <web-resource-name>default</web-resource-name>
       <url-pattern>/rest/upload/*</url-pattern>
+      <url-pattern>/rest/dataset/*</url-pattern>
+      <url-pattern>/rest/runtime-model/*</url-pattern>
       <url-pattern>/dashbuilder.html</url-pattern>
       <url-pattern>/org.dashbuilder.DashbuilderRuntime/*</url-pattern>
       <url-pattern>*.erraiBus</url-pattern>

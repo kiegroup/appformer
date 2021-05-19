@@ -17,7 +17,9 @@ package org.dashbuilder.client.navbar;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 import jsinterop.base.Js;
 import org.jboss.errai.ioc.client.api.AfterInitialization;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -40,15 +42,15 @@ public class AppNavBar implements Header {
 
     @Inject
     LogoutMenuBuilder logoutMenu;
-    
+
     @Inject
     GoToDashboardMenuBuilder goToDashboardMenu;
-    
+
     @Inject
     DashboardListMenuBuilder dashboardsListMenu;
-    
+
     private boolean isDashboardListEnabled = false;
-    
+
     private boolean isGoToDashboardMenuEnabled = false;
 
     @AfterInitialization
@@ -70,12 +72,11 @@ public class AppNavBar implements Header {
     public int getOrder() {
         return 20;
     }
-    
+
     public void setDashboardListEnabled(boolean isDashboardListEnabled) {
         this.isDashboardListEnabled = isDashboardListEnabled;
     }
-    
-    
+
     public void setExternalMenuEnabled(boolean isExternalMenuEnabled) {
         this.isGoToDashboardMenuEnabled = isExternalMenuEnabled;
     }
@@ -90,8 +91,14 @@ public class AppNavBar implements Header {
             menuBarPresenter.addMenus(MenuFactory.newTopLevelCustomMenu(dashboardsListMenu).endMenu().build());
         }
         menuBarPresenter.addMenus(MenuFactory.newTopLevelCustomMenu(logoutMenu).endMenu().build());
-        
+
         header.innerHTML = "";
         header.appendChild(Js.cast(menuBarPresenter.getView().getElement()));
+    }
+
+    public void setDisplayMainManu(boolean display) {
+        HTMLElement menuElement = Js.cast(
+                                          DomGlobal.document.querySelector("#mega-menu").querySelector("li.dropdown.uf-yamm--fw"));
+        menuElement.style.display = display ? "block" : "none";
     }
 }

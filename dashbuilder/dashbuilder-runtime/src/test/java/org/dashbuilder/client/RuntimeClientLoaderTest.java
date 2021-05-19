@@ -28,30 +28,23 @@ import org.dashbuilder.client.perspective.generator.RuntimePerspectiveGenerator;
 import org.dashbuilder.client.plugins.RuntimePerspectivePluginManager;
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.model.RuntimeModel;
-import org.dashbuilder.shared.service.RuntimeModelService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.ext.layout.editor.api.editor.LayoutTemplate;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
-import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.Command;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class ClientRuntimeModelLoaderTest {
-
-    CallerMock<RuntimeModelService> importModelServiceCaller;
-
-    @Mock
-    RuntimeModelService runtimeModelService;
+public class RuntimeClientLoaderTest {
 
     @Mock
     RuntimePerspectiveGenerator runtimePerspectiveGenerator;
@@ -61,20 +54,22 @@ public class ClientRuntimeModelLoaderTest {
 
     @Mock
     NavigationManager navigationManager;
-    
+
     @Mock
     BusyIndicatorView loading;
 
-    RuntimeClientLoader clientRuntimeModelLoader;
+    @Mock
+    RuntimeModelResourceClient runtimeModelResourceClient;
+
+    RuntimeClientLoader runtimeClientLoaderLoader;
 
     @Before
     public void setup() {
-        importModelServiceCaller = new CallerMock<>(runtimeModelService);
-        clientRuntimeModelLoader = new RuntimeClientLoader(importModelServiceCaller,
-                                                                runtimePerspectiveGenerator,
-                                                                runtimePerspectivePluginManager,
-                                                                navigationManager,
-                                                                loading);
+        runtimeClientLoaderLoader = new RuntimeClientLoader(runtimeModelResourceClient,
+                                                            runtimePerspectiveGenerator,
+                                                            runtimePerspectivePluginManager,
+                                                            navigationManager,
+                                                            loading);
     }
 
     @Test
@@ -85,13 +80,18 @@ public class ClientRuntimeModelLoaderTest {
         List<LayoutTemplate> perspectives = Arrays.asList(perspective);
         NavTree navTree = mock(NavTree.class);
         RuntimeModel runtimeModel = new RuntimeModel(navTree, perspectives, System.currentTimeMillis());
-        when(runtimeModelService.getRuntimeModel(eq(modelId))).thenReturn(Optional.of(runtimeModel));
+        
+        doAnswer(answer -> {
+            Consumer<Optional<RuntimeModel>> modelConsumer = (Consumer<Optional<RuntimeModel>>) answer.getArgument(1);
+            modelConsumer.accept(Optional.of(runtimeModel));
+            return null;
+        }).when(runtimeModelResourceClient).getRuntimeModel(eq(modelId), any(Consumer.class), any());
 
         Consumer<RuntimeModel> runtimeModelConsumer = mock(Consumer.class);
         Command empty = mock(Command.class);
         BiConsumer<Object, Throwable> error = mock(BiConsumer.class);
 
-        clientRuntimeModelLoader.loadModel(modelId, runtimeModelConsumer, empty, error);
+        runtimeClientLoaderLoader.loadModel(modelId, runtimeModelConsumer, empty, error);
 
         verify(runtimeModelConsumer).accept(runtimeModel);
         verify(runtimePerspectiveGenerator).generatePerspective(eq(perspective));
@@ -105,13 +105,17 @@ public class ClientRuntimeModelLoaderTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testLoadModelNotFound() {
-        when(runtimeModelService.getRuntimeModel(any())).thenReturn(Optional.empty());
-
+        doAnswer(answer -> {
+            Consumer<Optional<RuntimeModel>> modelConsumer = (Consumer<Optional<RuntimeModel>>) answer.getArgument(1);
+            modelConsumer.accept(Optional.empty());
+            return null;
+        }).when(runtimeModelResourceClient).getRuntimeModel(any(), any(Consumer.class), any());
+        
         Consumer<RuntimeModel> runtimeModelConsumer = mock(Consumer.class);
         Command empty = mock(Command.class);
         BiConsumer<Object, Throwable> error = mock(BiConsumer.class);
 
-        clientRuntimeModelLoader.loadModel("", runtimeModelConsumer, empty, error);
+        runtimeClientLoaderLoader.loadModel("", runtimeModelConsumer, empty, error);
 
         verify(runtimeModelConsumer, times(0)).accept(any());
         verify(empty, times(1)).execute();
@@ -121,13 +125,17 @@ public class ClientRuntimeModelLoaderTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testLoadModelError() {
-        when(runtimeModelService.getRuntimeModel(any())).thenThrow(new RuntimeException());
+        doAnswer(answer -> {
+            Consumer<String> errorConsumer = (Consumer<String>) answer.getArgument(2);
+            errorConsumer.accept("some error");
+            return null;
+        }).when(runtimeModelResourceClient).getRuntimeModel(any(), any(Consumer.class), any());
 
         Consumer<RuntimeModel> runtimeModelConsumer = mock(Consumer.class);
         Command empty = mock(Command.class);
         BiConsumer<Object, Throwable> error = mock(BiConsumer.class);
 
-        clientRuntimeModelLoader.loadModel("", runtimeModelConsumer, empty, error);
+        runtimeClientLoaderLoader.loadModel("", runtimeModelConsumer, empty, error);
 
         verify(runtimeModelConsumer, times(0)).accept(any());
         verify(empty, times(0)).execute();

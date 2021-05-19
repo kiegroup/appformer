@@ -20,7 +20,7 @@ import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 /**
- * Fired when datasets are removed.
+ * Fired when runtime models are deleted.
  *
  */
 @Portable

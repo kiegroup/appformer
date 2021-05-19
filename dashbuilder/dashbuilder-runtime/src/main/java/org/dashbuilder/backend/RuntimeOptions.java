@@ -111,7 +111,7 @@ public class RuntimeOptions {
 
     @PostConstruct
     public void init() {
-
+        
         importFileLocation = System.getProperty(IMPORT_FILE_LOCATION_PROP);
         importsBaseDir = System.getProperty(IMPORTS_BASE_DIR_PROP, DEFAULT_MODEL_DIR);
 

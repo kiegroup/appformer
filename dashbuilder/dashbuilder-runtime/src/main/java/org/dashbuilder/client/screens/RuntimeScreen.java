@@ -111,6 +111,10 @@ public class RuntimeScreen {
     public void setKeepHistory(boolean keepHistory) {
         this.keepHistory = keepHistory;
     }
+    
+    public void clearCurrentSelection() {
+        currentRuntimeModel = null;
+    }
 
     void onPerspectiveChange(@Observes PerspectiveChange perspectiveChange) {
         if (currentRuntimeModel != null) {
@@ -124,6 +128,7 @@ public class RuntimeScreen {
                 lastVisited = perspective;
             }
         } else {
+            appNavBar.setExternalMenuEnabled(false);
             appNavBar.setupMenus();
         }
     }

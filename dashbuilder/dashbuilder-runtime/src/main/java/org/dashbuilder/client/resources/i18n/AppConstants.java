@@ -65,4 +65,10 @@ public interface AppConstants extends Messages {
     
     String dashboardOpenTooltip();
 
+    String defaultErrorMessage();
+
+    String notAuthorized();
+
+    String notAuthorizedTitle();
+
 }

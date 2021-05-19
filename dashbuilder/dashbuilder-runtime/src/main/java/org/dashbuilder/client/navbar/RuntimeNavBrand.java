@@ -35,7 +35,7 @@ public class RuntimeNavBrand implements MegaMenuBrand {
 
     @Override
     public String menuAccessorLabel() {
-        return "Dashboards";
+        return "Pages";
     }
 
 }

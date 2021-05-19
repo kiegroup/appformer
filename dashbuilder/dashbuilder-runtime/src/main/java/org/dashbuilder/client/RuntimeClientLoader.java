@@ -30,8 +30,6 @@ import org.dashbuilder.client.plugins.RuntimePerspectivePluginManager;
 import org.dashbuilder.client.resources.i18n.AppConstants;
 import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.model.RuntimeServiceResponse;
-import org.dashbuilder.shared.service.RuntimeModelService;
-import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mvp.Command;
 
@@ -42,7 +40,7 @@ public class RuntimeClientLoader {
 
     public static final String IMPORT_ID_PARAM = "import";
 
-    private Caller<RuntimeModelService> runtimeModelServiceCaller;
+    RuntimeModelResourceClient runtimeModelResourceClient;
 
     RuntimePerspectiveGenerator perspectiveEditorGenerator;
 
@@ -57,12 +55,12 @@ public class RuntimeClientLoader {
     }
 
     @Inject
-    public RuntimeClientLoader(Caller<RuntimeModelService> runtimeModelServiceCaller,
+    public RuntimeClientLoader(RuntimeModelResourceClient runtimeModelResourceClient,
                                RuntimePerspectiveGenerator perspectiveEditorGenerator,
                                RuntimePerspectivePluginManager runtimePerspectivePluginManager,
                                NavigationManager navigationManager,
                                BusyIndicatorView loading) {
-        this.runtimeModelServiceCaller = runtimeModelServiceCaller;
+        this.runtimeModelResourceClient = runtimeModelResourceClient;
         this.perspectiveEditorGenerator = perspectiveEditorGenerator;
         this.runtimePerspectivePluginManager = runtimePerspectivePluginManager;
         this.navigationManager = navigationManager;
@@ -73,13 +71,14 @@ public class RuntimeClientLoader {
                      BiConsumer<Object, Throwable> error) {
         String importID = getImportId();
         loading.showBusyIndicator(i18n.loadingDashboards());
-        runtimeModelServiceCaller.call((RuntimeServiceResponse response) -> {
+        
+        runtimeModelResourceClient.getRuntimeModelInfo(importID, response -> {
             loading.hideBusyIndicator();
             response.getRuntimeModelOp().ifPresent(this::registerModel);
             responseConsumer.accept(response);
-        }, (msg, t) -> handleError(error, msg, t))
-                                 .info(importID);
-
+        }, (msg, t) -> {
+            handleError(error, msg, t);
+        });
     }
 
     public void loadModel(Consumer<RuntimeModel> modelLoaded,
@@ -95,9 +94,13 @@ public class RuntimeClientLoader {
                           Command emptyModel,
                           BiConsumer<Object, Throwable> error) {
         loading.showBusyIndicator(i18n.loadingDashboards());
-        runtimeModelServiceCaller.call((Optional<RuntimeModel> runtimeModelOp) -> handleResponse(modelLoaded, emptyModel, runtimeModelOp),
-                                       (msg, t) -> handleError(error, msg, t))
-                                 .getRuntimeModel(importId);
+        runtimeModelResourceClient.getRuntimeModel(importId,
+                                                   modelOp -> handleResponse(modelLoaded, emptyModel, modelOp),
+                                                   errorMessage -> handleError(error,
+                                                                               errorMessage,
+                                                                               new RuntimeException("Not able to retrieve Runtime Model"))
+
+        );
 
     }
 

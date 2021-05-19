@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package org.dashbuilder.backend.remote.services.dummy;
+package org.dashbuilder.shared.service;
 
-import javax.enterprise.context.ApplicationScoped;
+import java.util.Optional;
 
-import org.dashbuilder.renderer.RendererSettings;
-import org.dashbuilder.renderer.service.RendererSettingsService;
-import org.jboss.errai.bus.server.annotations.Service;
+import org.dashbuilder.shared.model.RuntimeModel;
 
-@Service
-@ApplicationScoped
-public class DummyRendererSettingsService implements RendererSettingsService {
-
-    @Override
-    public RendererSettings getSettings() {
-        return new RendererSettings();
-    }
+/**
+ * Responsible for downloading external models and registering it
+ *
+ */
+public interface ExternalImportService {
+    
+    /**
+     * Register an external model coming from an external server
+     * @param externalModelUrl
+     * the external model URL
+     * @return
+     * Optional containing the downloaded RuntimeModel or empty
+     */
+    Optional<RuntimeModel> registerExternalImport(String externalModelUrl);
 
 }

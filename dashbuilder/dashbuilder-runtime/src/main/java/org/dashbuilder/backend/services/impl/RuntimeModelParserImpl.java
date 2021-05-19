@@ -32,8 +32,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.dashbuilder.backend.RuntimeOptions;
 import org.dashbuilder.backend.helper.PartitionHelper;
 import org.dashbuilder.backend.navigation.RuntimeNavigationBuilder;
@@ -44,6 +44,7 @@ import org.dashbuilder.displayer.json.DisplayerSettingsJSONMarshaller;
 import org.dashbuilder.external.service.ComponentLoader;
 import org.dashbuilder.navigation.NavTree;
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
+import org.dashbuilder.shared.marshalling.LayoutTemplateJSONMarshaller;
 import org.dashbuilder.shared.model.DataSetContent;
 import org.dashbuilder.shared.model.DataSetContentType;
 import org.dashbuilder.shared.model.RuntimeModel;
@@ -82,13 +83,13 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
     @Inject
     ComponentLoader externalComponentLoader;
 
-    Gson gson;
-
     private DisplayerSettingsJSONMarshaller displayerSettingsMarshaller;
 
+    LayoutTemplateJSONMarshaller  marshaller;
+    
     @PostConstruct
     void init() {
-        gson = new GsonBuilder().create();
+        marshaller = LayoutTemplateJSONMarshaller.get();
         displayerSettingsMarshaller = DisplayerSettingsJSONMarshaller.get();
     }
 
@@ -171,9 +172,9 @@ public class RuntimeModelParserImpl implements RuntimeModelParser {
 
     }
 
-    private LayoutTemplate retrieveLayoutTemplate(final ZipInputStream zis) {
+    private LayoutTemplate retrieveLayoutTemplate(final ZipInputStream zis) throws JsonMappingException, JsonProcessingException {
         String content = nextEntryContentAsString(zis);
-        return gson.fromJson(content, LayoutTemplate.class);
+        return marshaller.fromJson(content);
     }
 
     private DataSetContent retrieveDataSetContent(final ZipEntry entry, final ZipInputStream zis) {

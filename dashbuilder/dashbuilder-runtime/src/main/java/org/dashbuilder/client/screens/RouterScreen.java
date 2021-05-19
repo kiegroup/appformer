@@ -103,7 +103,7 @@ public class RouterScreen {
     }
 
     protected void route(RuntimeServiceResponse response) {
-        this.mode  = response.getMode();
+        this.mode = response.getMode();
         Optional<RuntimeModel> runtimeModelOp = response.getRuntimeModelOp();
 
         if (mode == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
@@ -113,27 +113,31 @@ public class RouterScreen {
 
         if (runtimeModelOp.isPresent()) {
             RuntimeModel runtimeModel = runtimeModelOp.get();
+            appNavBar.setDisplayMainManu(true);
             placeManager.goTo(RuntimePerspective.ID);
             runtimeScreen.loadDashboards(runtimeModel);
             runtimeScreen.goToIndex(runtimeModel.getLayoutTemplates());
             return;
         }
+        
+        appNavBar.setDisplayMainManu(false);
 
         if (response.getAvailableModels().isEmpty()) {
             placeManager.goTo(EmptyPerspective.ID);
             return;
         }
 
+        runtimeScreen.clearCurrentSelection();
         dashboardsListScreen.loadList(response.getAvailableModels());
         placeManager.goTo(DashboardsListPerspective.ID);
     }
-    
+
     public void afterDashboardUpload(String id) {
         if (mode != null && mode == DashbuilderRuntimeMode.MULTIPLE_IMPORT) {
             listDashboards();
         } else {
             loadDashboard(id);
-        }      
+        }
     }
 
     public void loadDashboard(String importId) {
@@ -152,14 +156,14 @@ public class RouterScreen {
                                               GWT.getHostPageBaseURL());
         doRoute();
     }
-    
+
     public void onUpdatedRuntimeModelEvent(@Observes UpdatedRuntimeModelEvent updatedRuntimeModelEvent) {
         String updatedModel = updatedRuntimeModelEvent.getRuntimeModelId();
-        
+
         if (updatedModel.equals(clientLoader.getImportId())) {
             doRoute();
             runtimeScreen.setKeepHistory(true);
         }
     }
-    
+
 }
