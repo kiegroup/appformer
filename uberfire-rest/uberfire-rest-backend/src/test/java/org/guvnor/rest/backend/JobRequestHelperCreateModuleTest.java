@@ -117,6 +117,25 @@ public class JobRequestHelperCreateModuleTest {
     }
 
     @Test
+    public void testNullWorkspaceProject() throws Exception {
+        when(workspaceProjectService.newProject(any(OrganizationalUnit.class),
+                                                any(POM.class)))
+                .thenReturn(null);
+        final JobResult jobResult = jobRequestHelper.createProject("jobId",
+                                                                   "spaceName",
+                                                                   "projectName",
+                                                                   "projectGroupId",
+                                                                   "projectVersion",
+                                                                   "projectDescription");
+
+        assertEquals("jobId",
+                     jobResult.getJobId());
+        assertEquals(JobStatus.FAIL,
+                     jobResult.getStatus());
+        assertNull(jobResult.getResult());
+    }
+
+    @Test
     public void testNewProjectWhenGAVAlreadyExists() throws Exception {
 
         final HashSet<MavenRepositoryMetadata> repositories = new HashSet<>();
