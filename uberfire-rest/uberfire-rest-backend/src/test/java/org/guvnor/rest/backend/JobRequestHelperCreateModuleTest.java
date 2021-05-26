@@ -24,6 +24,7 @@ import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.MavenRepositoryMetadata;
 import org.guvnor.common.services.project.model.MavenRepositorySource;
 import org.guvnor.common.services.project.model.POM;
+import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.GAVAlreadyExistsException;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.rest.client.JobResult;
@@ -98,6 +99,9 @@ public class JobRequestHelperCreateModuleTest {
 
     @Test
     public void testRepositoryDoesExist() throws Exception {
+        when(workspaceProjectService.newProject(any(OrganizationalUnit.class),
+                                                any(POM.class)))
+                .thenReturn(mock(WorkspaceProject.class));
         final JobResult jobResult = jobRequestHelper.createProject("jobId",
                                                                    "spaceName",
                                                                    "projectName",
@@ -108,6 +112,25 @@ public class JobRequestHelperCreateModuleTest {
         assertEquals("jobId",
                      jobResult.getJobId());
         assertEquals(JobStatus.SUCCESS,
+                     jobResult.getStatus());
+        assertNotNull(jobResult.getResult());
+    }
+
+    @Test
+    public void testNullWorkspaceProject() throws Exception {
+        when(workspaceProjectService.newProject(any(OrganizationalUnit.class),
+                                                any(POM.class)))
+                .thenReturn(null);
+        final JobResult jobResult = jobRequestHelper.createProject("jobId",
+                                                                   "spaceName",
+                                                                   "projectName",
+                                                                   "projectGroupId",
+                                                                   "projectVersion",
+                                                                   "projectDescription");
+
+        assertEquals("jobId",
+                     jobResult.getJobId());
+        assertEquals(JobStatus.FAIL,
                      jobResult.getStatus());
         assertNull(jobResult.getResult());
     }

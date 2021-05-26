@@ -172,9 +172,10 @@ public class JobRequestHelper {
             pom.getGav().setVersion(projectVersion);
             pom.setDescription(projectDescription);
             pom.setName(projectName);
-
+            
+            WorkspaceProject project = null;
             try {
-                workspaceProjectService.newProject(organizationalUnit,
+                project = workspaceProjectService.newProject(organizationalUnit,
                                                    pom);
             } catch (GAVAlreadyExistsException gae) {
                 result.setStatus(JobStatus.DUPLICATE_RESOURCE);
@@ -186,7 +187,13 @@ public class JobRequestHelper {
                 return result;
             }
 
+            if (project == null) {
+                result.setStatus(JobStatus.FAIL);
+                return result;
+            }
+
             result.setStatus(JobStatus.SUCCESS);
+            result.setResult("Project [" + project.getName() + "] is created");
         }
         return result;
     }
