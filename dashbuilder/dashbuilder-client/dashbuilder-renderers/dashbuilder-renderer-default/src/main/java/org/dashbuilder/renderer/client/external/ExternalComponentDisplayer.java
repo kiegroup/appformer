@@ -127,7 +127,7 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         externalComponentPresenter.sendMessage(message);
 
         view.setSize(displayerSettings.getChartWidth(), displayerSettings.getChartHeight());
-        
+
         view.setMargin(displayerSettings.getChartMarginTop(),
                        displayerSettings.getChartMarginRight(),
                        displayerSettings.getChartMarginBottom(),
@@ -244,12 +244,15 @@ public class ExternalComponentDisplayer extends AbstractErraiDisplayer<ExternalC
         try {
             String columnId = ds.getColumnByIndex(j).getId();
             ColumnSettings settings = displayerSettings.getColumnSettings(columnId);
-            String expression = settings.getValueExpression();
-            if (!StringUtils.isBlank(expression)) {
-                return getEvaluator().evalExpression(value, expression);
+            if (settings != null) {
+                String expression = settings.getValueExpression();
+                if (!StringUtils.isBlank(expression)) {
+                    return getEvaluator().evalExpression(value, expression);
+                }
             }
         } catch (Exception e) {
-            DomGlobal.console.log("Error evaluating value at " + i + "," + j);
+            DomGlobal.console.debug("Error evaluating value at " + i + "," + j);
+            DomGlobal.console.debug(e);
         }
         return value;
     }
