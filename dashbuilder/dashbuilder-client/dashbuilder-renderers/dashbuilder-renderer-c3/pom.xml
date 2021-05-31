@@ -36,8 +36,18 @@
       <artifactId>c3</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.webjars.npm</groupId>
-        <artifactId>d3-geo-projection</artifactId>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>d3-geo-projection</artifactId>
+      <exclusions>
+        <exclusion> 
+          <groupId>org.webjars.npm</groupId>
+          <artifactId>d3-geo</artifactId>
+        </exclusion>
+        <exclusion> 
+          <groupId>org.webjars.npm</groupId>
+          <artifactId>d3-array</artifactId>
+        </exclusion>        
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -68,11 +78,11 @@
       <groupId>com.google.elemental2</groupId>
       <artifactId>elemental2-core</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>com.google.elemental2</groupId>
       <artifactId>elemental2-dom</artifactId>
-    </dependency>    
+    </dependency>
 
     <dependency>
       <groupId>com.google.jsinterop</groupId>
@@ -189,7 +199,7 @@
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
-          </execution>                    
+          </execution>
         </executions>
       </plugin>
       <plugin>
