@@ -42,7 +42,7 @@ public class TestUtil {
 
         when(repository.getBranches()).thenReturn(branchList);
 
-        when(repository.getDefaultBranch()).thenReturn(Optional.of(new Branch("master",
+        when(repository.getDefaultBranch()).thenReturn(Optional.of(new Branch("main",
                                                                               mock(Path.class))));
 
         return repository;

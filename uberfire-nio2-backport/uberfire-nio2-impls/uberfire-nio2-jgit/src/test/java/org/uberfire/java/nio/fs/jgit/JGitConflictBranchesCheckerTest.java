@@ -36,7 +36,7 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
 
     private Git git;
 
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "main";
     private static final String DEVELOP_BRANCH = "develop";
 
     private static final List<String> TXT_FILES =
@@ -53,12 +53,12 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
 
         git = new CreateRepository(gitSource).execute().get();
 
-        commit(git, MASTER_BRANCH, "Adding files into master",
+        commit(git, MAIN_BRANCH, "Adding files into main",
                content(TXT_FILES.get(0), multiline(TXT_FILES.get(0), COMMON_TXT_LINES)),
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), COMMON_TXT_LINES)),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), COMMON_TXT_LINES)));
 
-        new CreateBranch((GitImpl) git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        new CreateBranch((GitImpl) git, MAIN_BRANCH, DEVELOP_BRANCH).execute();
     }
 
     @Test
@@ -67,11 +67,11 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedDev", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2ChangedDev", "Line3", "Line4")));
 
-        commit(git, MASTER_BRANCH, "Updating files",
-               content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedMaster", "Line3", "Line4")),
-               content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2ChangedMaster", "Line3", "Line4")));
+        commit(git, MAIN_BRANCH, "Updating files",
+               content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedMain", "Line3", "Line4")),
+               content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2ChangedMain", "Line3", "Line4")));
 
-        List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<String> conflicts = git.conflictBranchesChecker(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isNotEmpty();
         assertThat(conflicts).hasSize(2);
@@ -85,11 +85,11 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedDev", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2ChangedDev", "Line3", "Line4")));
 
-        commit(git, MASTER_BRANCH, "Updating files",
-               content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedMaster", "Line3", "Line4")),
-               content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2", "Line3", "Line4ChangedMaster")));
+        commit(git, MAIN_BRANCH, "Updating files",
+               content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedMain", "Line3", "Line4")),
+               content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2", "Line3", "Line4ChangedMain")));
 
-        List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<String> conflicts = git.conflictBranchesChecker(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isNotEmpty();
         assertThat(conflicts).hasSize(1);
@@ -102,17 +102,17 @@ public class JGitConflictBranchesCheckerTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2ChangedDev", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2ChangedDev", "Line3", "Line4")));
 
-        commit(git, MASTER_BRANCH, "Updating files",
-               content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2", "Line3", "Line4ChangedMaster")),
-               content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2", "Line3", "Line4ChangedMaster")));
+        commit(git, MAIN_BRANCH, "Updating files",
+               content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2", "Line3", "Line4ChangedMain")),
+               content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2", "Line3", "Line4ChangedMain")));
 
-        List<String> conflicts = git.conflictBranchesChecker(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<String> conflicts = git.conflictBranchesChecker(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(conflicts).isEmpty();
     }
 
     @Test(expected = GitException.class)
     public void testInvalidBranch() {
-        git.conflictBranchesChecker(MASTER_BRANCH, "invalid-branch");
+        git.conflictBranchesChecker(MAIN_BRANCH, "invalid-branch");
     }
 }

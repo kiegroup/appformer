@@ -200,7 +200,7 @@ public class GuvnorM2RepositoryTest {
                                             // length of plaintext password, obviously not
                                             // length of encrypted password
                                             assertEquals("Plaintext pw (repopw) length expected.",
-                                                         6,
+                                                         46,
                                                          ((char[]) valueField.get(authentication)).length);
                                         }
                                         return "StringAuthentication".equals(object[0].getClass().getSimpleName()) && equals3;

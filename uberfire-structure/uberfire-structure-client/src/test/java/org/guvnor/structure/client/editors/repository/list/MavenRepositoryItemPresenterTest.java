@@ -58,8 +58,8 @@ public class MavenRepositoryItemPresenterTest {
     @Before
     public void init() {
 
-        //master branch always present.
-        branches.add(new Branch("master",
+        //main branch always present.
+        branches.add(new Branch("main",
                                 mock(Path.class)));
 
         when(uri1.getProtocol()).thenReturn("test-protocol1");
@@ -118,7 +118,7 @@ public class MavenRepositoryItemPresenterTest {
         when(repository.getBranches()).thenReturn(branches);
 
         presenter.setRepository(repository,
-                                "master");
+                                "main");
 
         verify(view).setPresenter(presenter);
         verify(view).setRepositoryName("TestRepo");
@@ -141,7 +141,7 @@ public class MavenRepositoryItemPresenterTest {
         for (final Branch branch : branches) {
             verify(view).addBranch(branch.getName());
         }
-        verify(view).setSelectedBranch("master");
+        verify(view).setSelectedBranch("main");
         verify(view).refresh();
     }
 
@@ -171,7 +171,7 @@ public class MavenRepositoryItemPresenterTest {
                times(2)).clearBranches();
         //existing branches should have been added for a second time as part of the refresh.
         verify(view,
-               times(2)).addBranch("master");
+               times(2)).addBranch("main");
         verify(view,
                times(2)).addBranch("development");
         verify(view,

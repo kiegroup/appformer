@@ -59,7 +59,7 @@ public class WorkbenchToolBarView extends Composite
     //Map of ToolBar to GWT Widgets used to represent them
     private final Map<String, ButtonGroup> toolBarItemsMap = new HashMap<String, ButtonGroup>();
     @UiField
-    public FlowPanel masterContainer;
+    public FlowPanel mainContainer;
 
     @UiField
     public FlowPanel container;
@@ -165,7 +165,7 @@ public class WorkbenchToolBarView extends Composite
         container.getElement().getStyle().clearTop();
         container.getElement().getStyle().clearPosition();
         container.getElement().getStyle().clearZIndex();
-        masterContainer.add(container);
+        mainContainer.add(container);
 
         tip.setTitle(WorkbenchConstants.INSTANCE.collapseToolbar());
         tip.setPlacement(Placement.LEFT);

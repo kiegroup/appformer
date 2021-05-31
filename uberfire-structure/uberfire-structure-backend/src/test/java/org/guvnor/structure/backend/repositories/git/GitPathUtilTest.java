@@ -26,14 +26,14 @@ public class GitPathUtilTest {
 
     @Test
     public void extractPresentBranchName() throws Exception {
-        final Optional<String> result = GitPathUtil.extractBranch("git://master@space/repo/some/path");
-        assertEquals(Optional.of("master"), result);
+        final Optional<String> result = GitPathUtil.extractBranch("git://main@space/repo/some/path");
+        assertEquals(Optional.of("main"), result);
     }
 
     @Test
     public void extractBranchNameWithSlashes() throws Exception {
-        final Optional<String> result = GitPathUtil.extractBranch("git://my/master/branch@space/repo/some/path");
-        assertEquals(Optional.of("my/master/branch"), result);
+        final Optional<String> result = GitPathUtil.extractBranch("git://my/main/branch@space/repo/some/path");
+        assertEquals(Optional.of("my/main/branch"), result);
     }
 
     @Test
@@ -44,8 +44,8 @@ public class GitPathUtilTest {
 
     @Test
     public void extractLocalBranchNameFromRef() throws Exception {
-        final Optional<String> result = GitPathUtil.extractBranchFromRef("refs/heads/master");
-        assertEquals("master", result.get());
+        final Optional<String> result = GitPathUtil.extractBranchFromRef("refs/heads/main");
+        assertEquals("main", result.get());
     }
 
     @Test
@@ -56,8 +56,8 @@ public class GitPathUtilTest {
 
     @Test
     public void extractRemoteBranchNameFromRef() throws Exception {
-        final Optional<String> result = GitPathUtil.extractBranchFromRef("refs/remotes/upstream/master");
-        assertEquals("master", result.get());
+        final Optional<String> result = GitPathUtil.extractBranchFromRef("refs/remotes/upstream/main");
+        assertEquals("main", result.get());
     }
 
     @Test

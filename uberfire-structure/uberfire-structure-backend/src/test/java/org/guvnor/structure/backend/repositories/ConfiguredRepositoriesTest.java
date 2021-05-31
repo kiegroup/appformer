@@ -72,11 +72,11 @@ public class ConfiguredRepositoriesTest {
         repositoriesSpace1.add(addRepository(SPACE1,
                                              REPO1S1,
                                              createAdminContributors("admin1"),
-                                             "master"));
+                                             "main"));
         repositoriesSpace1.add(addRepository(SPACE1,
                                              REPO2S1,
                                              createAdminContributors("admin1"),
-                                             "master",
+                                             "main",
                                              "dev",
                                              "release"));
 
@@ -91,17 +91,17 @@ public class ConfiguredRepositoriesTest {
         repositoriesSpace2.add(addRepository(SPACE2,
                                              REPO1S2,
                                              Collections.emptyList(),
-                                             "master"));
+                                             "main"));
         repositoriesSpace2.add(addRepository(SPACE2,
                                              REPO2S2,
                                              Collections.emptyList(),
-                                             "master",
+                                             "main",
                                              "dev",
                                              "release"));
         repositoriesSpace2.add(addRepository(SPACE2,
                                              REPO3S2,
                                              Collections.emptyList(),
-                                             "master",
+                                             "main",
                                              "dev",
                                              "release"));
 
@@ -157,7 +157,7 @@ public class ConfiguredRepositoriesTest {
         for (String branch : branches) {
 
             Path path = PathFactory.newPath(alias + ".txt",
-                                            "default://master@myteam/mortgages/" + alias + ".txt");
+                                            "default://main@myteam/mortgages/" + alias + ".txt");
             branchMap.put(branch,
                           new Branch(branch,
                                      path));
@@ -181,7 +181,7 @@ public class ConfiguredRepositoriesTest {
                                                                                         REPO1S1);
         assertEquals(1,
                      single.getBranches().size());
-        assertNotNull(single.getBranch("master"));
+        assertNotNull(single.getBranch("main"));
     }
 
     @Test
@@ -190,7 +190,7 @@ public class ConfiguredRepositoriesTest {
                                                                                         REPO2S1);
         assertEquals(3,
                      single.getBranches().size());
-        assertNotNull(single.getBranch("master"));
+        assertNotNull(single.getBranch("main"));
         assertNotNull(single.getBranch("dev"));
         assertNotNull(single.getBranch("release"));
     }

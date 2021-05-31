@@ -63,7 +63,7 @@ public class JGitUtilTest extends AbstractTestInfra {
         assertThat(new ListRefs(git.getRepository()).execute().size()).isEqualTo(0);
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -99,7 +99,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -111,7 +111,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                            tempFile("temp"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -138,7 +138,7 @@ public class JGitUtilTest extends AbstractTestInfra {
 
         assertThat(new ListRefs(git.getRepository()).execute()).hasSize(2);
 
-        assertThat(new ListRefs(git.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/master");
+        assertThat(new ListRefs(git.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/main");
         assertThat(new ListRefs(git.getRepository()).execute().get(1).getName()).isEqualTo("refs/heads/user_branch");
     }
 
@@ -204,7 +204,7 @@ public class JGitUtilTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitFolder).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit!",
@@ -216,7 +216,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                            tempFile("tempwdf sdf asdf asd2222"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit!",
@@ -239,11 +239,11 @@ public class JGitUtilTest extends AbstractTestInfra {
                                   null,
                                   null).execute().get();
 
-        assertThat(git.getPathInfo("master",
+        assertThat(git.getPathInfo("main",
                                    "pathx/").getPathType()).isEqualTo(NOT_FOUND);
-        assertThat(git.getPathInfo("master",
+        assertThat(git.getPathInfo("main",
                                    "path/to/file2.txt").getPathType()).isEqualTo(FILE);
-        assertThat(git.getPathInfo("master",
+        assertThat(git.getPathInfo("main",
                                    "path/to").getPathType()).isEqualTo(DIRECTORY);
     }
 
@@ -257,7 +257,7 @@ public class JGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit 1",
@@ -269,7 +269,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                            tempFile("who"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit 2",
@@ -281,7 +281,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                            tempFile("you"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit 3",
@@ -293,7 +293,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                            tempFile("gonna"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit 4",
@@ -310,7 +310,7 @@ public class JGitUtilTest extends AbstractTestInfra {
 
         final JGitPathImpl path = mock(JGitPathImpl.class);
         when(path.getFileSystem()).thenReturn(jGitFileSystem);
-        when(path.getRefTree()).thenReturn("master");
+        when(path.getRefTree()).thenReturn("main");
         when(path.getPath()).thenReturn("path/to/file2.txt");
 
         final VersionAttributes versionAttributes = new JGitVersionAttributeView(path).readAttributes();
@@ -336,10 +336,10 @@ public class JGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         final ObjectId oldHead = new GetTreeFromRef(git,
-                                                    "master").execute();
+                                                    "main").execute();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit 1",
@@ -352,7 +352,7 @@ public class JGitUtilTest extends AbstractTestInfra {
                    }}).execute();
 
         final ObjectId newHead = new GetTreeFromRef(git,
-                                                    "master").execute();
+                                                    "main").execute();
 
         List<DiffEntry> diff = new ListDiffs(git,
                                              oldHead,

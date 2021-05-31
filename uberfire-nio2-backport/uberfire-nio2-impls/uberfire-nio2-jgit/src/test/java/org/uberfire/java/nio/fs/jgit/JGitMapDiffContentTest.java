@@ -38,7 +38,7 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
     private Git git;
 
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "main";
 
     private static final List<String> TXT_FILES =
             Stream.of("file0", "file1", "file2", "file3", "file4")
@@ -54,7 +54,7 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
         git = new CreateRepository(gitSource).execute().get();
 
-        commit(git, MASTER_BRANCH, "Adding files into master",
+        commit(git, MAIN_BRANCH, "Adding files into main",
                content(TXT_FILES.get(0), multiline(TXT_FILES.get(0), COMMON_TXT_LINES)),
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), COMMON_TXT_LINES)),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), COMMON_TXT_LINES)));
@@ -62,21 +62,21 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
     @Test
     public void testNoDiffOnlyOneCommit() throws IOException {
-        Map<String, File> content = git.mapDiffContent(MASTER_BRANCH,
-                                                       git.getFirstCommit(git.getRef(MASTER_BRANCH)).getName(),
-                                                       git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+        Map<String, File> content = git.mapDiffContent(MAIN_BRANCH,
+                                                       git.getFirstCommit(git.getRef(MAIN_BRANCH)).getName(),
+                                                       git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
 
         assertThat(content).isEmpty();
     }
 
     @Test
     public void testHasContent() throws IOException {
-        commit(git, MASTER_BRANCH, "Adding file into master",
+        commit(git, MAIN_BRANCH, "Adding file into main",
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        Map<String, File> contents = git.mapDiffContent(MASTER_BRANCH,
-                                                        git.getFirstCommit(git.getRef(MASTER_BRANCH)).getName(),
-                                                        git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+        Map<String, File> contents = git.mapDiffContent(MAIN_BRANCH,
+                                                        git.getFirstCommit(git.getRef(MAIN_BRANCH)).getName(),
+                                                        git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
 
         assertThat(contents).isNotEmpty();
         assertThat(contents).hasSize(1);
@@ -84,13 +84,13 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
     @Test
     public void testHasContents() throws IOException {
-        commit(git, MASTER_BRANCH, "Adding files into master",
+        commit(git, MAIN_BRANCH, "Adding files into main",
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        Map<String, File> contents = git.mapDiffContent(MASTER_BRANCH,
-                                                        git.getFirstCommit(git.getRef(MASTER_BRANCH)).getName(),
-                                                        git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+        Map<String, File> contents = git.mapDiffContent(MAIN_BRANCH,
+                                                        git.getFirstCommit(git.getRef(MAIN_BRANCH)).getName(),
+                                                        git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
 
         assertThat(contents).isNotEmpty();
         assertThat(contents).hasSize(2);
@@ -98,21 +98,21 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
     @Test
     public void testHasDeleteContents() throws IOException {
-        new Commit(git, MASTER_BRANCH, "name", "name@example.com", "Removing file",
+        new Commit(git, MAIN_BRANCH, "name", "name@example.com", "Removing file",
                    null, null, false,
                    new HashMap<String, File>() {{
                        put(TXT_FILES.get(0), null);
                    }}).execute();
 
-        new Commit(git, MASTER_BRANCH, "name", "name@example.com", "Removing file",
+        new Commit(git, MAIN_BRANCH, "name", "name@example.com", "Removing file",
                    null, null, false,
                    new HashMap<String, File>() {{
                        put(TXT_FILES.get(1), null);
                    }}).execute();
 
-        Map<String, File> contents = git.mapDiffContent(MASTER_BRANCH,
-                                                        git.getFirstCommit(git.getRef(MASTER_BRANCH)).getName(),
-                                                        git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+        Map<String, File> contents = git.mapDiffContent(MAIN_BRANCH,
+                                                        git.getFirstCommit(git.getRef(MAIN_BRANCH)).getName(),
+                                                        git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
 
         assertThat(contents).isNotEmpty();
         assertThat(contents).hasSize(2);
@@ -121,18 +121,18 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
     @Test
     public void testWithManyCommitsOneFile() throws IOException {
-        commit(git, MASTER_BRANCH, "Updating a file",
+        commit(git, MAIN_BRANCH, "Updating a file",
                content(TXT_FILES.get(0), "update 1"));
 
-        commit(git, MASTER_BRANCH, "Updating a file",
+        commit(git, MAIN_BRANCH, "Updating a file",
                content(TXT_FILES.get(0), "update 2"));
 
-        commit(git, MASTER_BRANCH, "Updating a file",
+        commit(git, MAIN_BRANCH, "Updating a file",
                content(TXT_FILES.get(0), "update 3"));
 
-        Map<String, File> contents = git.mapDiffContent(MASTER_BRANCH,
-                                                        git.getFirstCommit(git.getRef(MASTER_BRANCH)).getName(),
-                                                        git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+        Map<String, File> contents = git.mapDiffContent(MAIN_BRANCH,
+                                                        git.getFirstCommit(git.getRef(MAIN_BRANCH)).getName(),
+                                                        git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
 
         assertThat(contents).isNotEmpty();
         assertThat(contents).hasSize(1);
@@ -140,27 +140,27 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
 
     @Test
     public void testWithMiddleCommits() throws IOException {
-        commit(git, MASTER_BRANCH, "Updating a file",
+        commit(git, MAIN_BRANCH, "Updating a file",
                content(TXT_FILES.get(0), "update 1"));
 
-        RevCommit startCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit startCommit = git.getLastCommit(MAIN_BRANCH);
 
-        commit(git, MASTER_BRANCH, "Adding files into master",
+        commit(git, MAIN_BRANCH, "Adding files into main",
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        new Commit(git, MASTER_BRANCH, "name", "name@example.com", "Removing file",
+        new Commit(git, MAIN_BRANCH, "name", "name@example.com", "Removing file",
                    null, null, false,
                    new HashMap<String, File>() {{
                        put(TXT_FILES.get(1), null);
                    }}).execute();
 
-        RevCommit endCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit endCommit = git.getLastCommit(MAIN_BRANCH);
 
-        commit(git, MASTER_BRANCH, "Updating a file",
+        commit(git, MAIN_BRANCH, "Updating a file",
                content(TXT_FILES.get(0), "update 3"));
 
-        Map<String, File> contents = git.mapDiffContent(MASTER_BRANCH,
+        Map<String, File> contents = git.mapDiffContent(MAIN_BRANCH,
                                                         startCommit.getName(),
                                                         endCommit.getName());
 
@@ -171,14 +171,14 @@ public class JGitMapDiffContentTest extends AbstractTestInfra {
     @Test(expected = GitException.class)
     public void testWithWrongBranchName() throws IOException {
         git.mapDiffContent("wrong-branch-name",
-                           git.getFirstCommit(git.getRef(MASTER_BRANCH)).getName(),
-                           git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+                           git.getFirstCommit(git.getRef(MAIN_BRANCH)).getName(),
+                           git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
     }
 
     @Test(expected = GitException.class)
     public void testWithInvalidCommit() throws IOException {
-        git.mapDiffContent(MASTER_BRANCH,
+        git.mapDiffContent(MAIN_BRANCH,
                            "invalid-commit-id",
-                           git.getLastCommit(git.getRef(MASTER_BRANCH)).getName());
+                           git.getLastCommit(git.getRef(MAIN_BRANCH)).getName());
     }
 }

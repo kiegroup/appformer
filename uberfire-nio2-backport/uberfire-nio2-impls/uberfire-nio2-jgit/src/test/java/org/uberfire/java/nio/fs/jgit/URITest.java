@@ -45,25 +45,25 @@ public class URITest {
         assertThat(uri3.getPath()).isEqualTo("/path/to/file.txt");
         assertThat(uri3.getQuery()).isNull();
 
-        final URI uri4 = URI.create("git://master@my-repo/:path/to/some/place.txt");
+        final URI uri4 = URI.create("git://main@my-repo/:path/to/some/place.txt");
         assertThat(uri4).isNotNull();
         assertThat(uri4.getScheme()).isEqualTo("git");
-        assertThat(uri4.getAuthority()).isEqualTo("master@my-repo");
+        assertThat(uri4.getAuthority()).isEqualTo("main@my-repo");
         assertThat(uri4.getPath()).isEqualTo("/:path/to/some/place.txt");
         assertThat(uri4.getQuery()).isNull();
 
-        final URI uri5 = URI.create("git://origin/master@my-repo/:path/to/some/place.txt");
+        final URI uri5 = URI.create("git://origin/main@my-repo/:path/to/some/place.txt");
         assertThat(uri5).isNotNull();
         assertThat(uri5.getScheme()).isEqualTo("git");
         assertThat(uri5.getAuthority()).isEqualTo("origin");
-        assertThat(uri5.getPath()).isEqualTo("/master@my-repo/:path/to/some/place.txt");
+        assertThat(uri5.getPath()).isEqualTo("/main@my-repo/:path/to/some/place.txt");
         assertThat(uri5.getQuery()).isNull();
 
-        final URI uri6 = URI.create("git://origin/master@my-repo/path/to/some/place.txt");
+        final URI uri6 = URI.create("git://origin/main@my-repo/path/to/some/place.txt");
         assertThat(uri6).isNotNull();
         assertThat(uri6.getScheme()).isEqualTo("git");
         assertThat(uri6.getAuthority()).isEqualTo("origin");
-        assertThat(uri6.getPath()).isEqualTo("/master@my-repo/path/to/some/place.txt");
+        assertThat(uri6.getPath()).isEqualTo("/main@my-repo/path/to/some/place.txt");
         assertThat(uri6.getQuery()).isNull();
     }
 }

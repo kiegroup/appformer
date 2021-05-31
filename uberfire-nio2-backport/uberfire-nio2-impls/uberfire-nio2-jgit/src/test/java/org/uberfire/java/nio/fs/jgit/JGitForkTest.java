@@ -85,7 +85,7 @@ public class JGitForkTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -97,7 +97,7 @@ public class JGitForkTest extends AbstractTestInfra {
                            tempFile("temp"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -125,7 +125,7 @@ public class JGitForkTest extends AbstractTestInfra {
 
         assertThat(new ListRefs(cloned.getRepository()).execute()).hasSize(2);
 
-        assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/master");
+        assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/main");
         assertThat(new ListRefs(cloned.getRepository()).execute().get(1).getName()).isEqualTo("refs/heads/user_branch");
 
         final String remotePath = new File(((GitImpl) cloned)._remoteList().call().get(0).getURIs().get(0).getPath()).getAbsolutePath();
@@ -141,7 +141,7 @@ public class JGitForkTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -158,7 +158,7 @@ public class JGitForkTest extends AbstractTestInfra {
         final Git originTarget = new CreateRepository(gitTarget).execute().get();
 
         new Commit(originTarget,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -348,20 +348,20 @@ public class JGitForkTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource, null).execute().get();
 
         commit(origin,
-               "master",
+               "main",
                "first",
                content("dir1/file.txt", "foo"),
                content("dir2/file2.txt", "bar"),
                content("file3.txt", "moogah"));
 
-        branch(origin, "master", "dev");
+        branch(origin, "main", "dev");
         commit(origin,
                "dev",
                "second",
                content("dir1/file.txt", "foo1"),
                content("file3.txt", "bar1"));
 
-        branch(origin, "master", "ignored");
+        branch(origin, "main", "ignored");
         commit(origin,
                "ignored",
                "third",
@@ -371,7 +371,7 @@ public class JGitForkTest extends AbstractTestInfra {
         final Git cloned  = new Fork(parentFolder,
                                      SOURCE_GIT,
                                      TARGET_GIT,
-                                     asList("master", "dev"),
+                                     asList("main", "dev"),
                                      CredentialsProvider.getDefault(),
                                      null,
                                      null).execute();
@@ -381,6 +381,6 @@ public class JGitForkTest extends AbstractTestInfra {
                 .map(ref -> ref.getName())
                 .collect(toSet());
         assertThat(clonedRefs).hasSize(2);
-        assertThat(clonedRefs).containsExactly("refs/heads/master", "refs/heads/dev");
+        assertThat(clonedRefs).containsExactly("refs/heads/main", "refs/heads/dev");
     }
 }

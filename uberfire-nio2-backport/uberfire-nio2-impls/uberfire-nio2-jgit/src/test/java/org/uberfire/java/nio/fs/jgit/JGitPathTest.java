@@ -44,13 +44,13 @@ public class JGitPathTest {
     public void testSimpleBranchedGit() {
         final Path path = JGitPathImpl.create(fs,
                                               "",
-                                              "master@my-host",
+                                              "main@my-host",
                                               false);
 
         assertThat(path).isNotNull();
         assertThat(path.isAbsolute()).isTrue();
         assertThat(path.toString()).isEqualTo("/");
-        assertThat(path.toUri().toString()).isEqualTo("git://master@my-host/");
+        assertThat(path.toUri().toString()).isEqualTo("git://main@my-host/");
         assertThat(path.getRoot()).isEqualTo(path);
 
         assertThat(path.getNameCount()).isEqualTo(0);
@@ -64,13 +64,13 @@ public class JGitPathTest {
 
         final Path path = JGitPathImpl.create(fs,
                                               "/",
-                                              "master@my-host",
+                                              "main@my-host",
                                               false);
 
         assertThat(path).isNotNull();
         assertThat(path.isAbsolute()).isTrue();
         assertThat(path.toString()).isEqualTo("/");
-        assertThat(path.toUri().toString()).isEqualTo("git://master@my-host/");
+        assertThat(path.toUri().toString()).isEqualTo("git://main@my-host/");
         assertThat(path.getRoot().toString()).isEqualTo("/");
 
         assertThat(path.getNameCount()).isEqualTo(0);
@@ -82,13 +82,13 @@ public class JGitPathTest {
 
         final Path path = JGitPathImpl.create(fs,
                                               "home",
-                                              "master@my-host",
+                                              "main@my-host",
                                               false);
 
         assertThat(path).isNotNull();
         assertThat(path.isAbsolute()).isFalse();
         assertThat(path.toString()).isEqualTo("home");
-        assertThat(path.toUri().toString()).isEqualTo("git://master@my-host/:home");
+        assertThat(path.toUri().toString()).isEqualTo("git://main@my-host/:home");
         assertThat(path.getRoot().toString()).isEqualTo("");
 
         assertThat(path.getNameCount()).isEqualTo(1);
@@ -100,13 +100,13 @@ public class JGitPathTest {
 
         final Path path = JGitPathImpl.create(fs,
                                               "/path/to/some/place.txt",
-                                              "master@my-host",
+                                              "main@my-host",
                                               false);
 
         assertThat(path).isNotNull();
         assertThat(path.isAbsolute()).isTrue();
         assertThat(path.toString()).isEqualTo("/path/to/some/place.txt");
-        assertThat(path.toUri().toString()).isEqualTo("git://master@my-host/path/to/some/place.txt");
+        assertThat(path.toUri().toString()).isEqualTo("git://main@my-host/path/to/some/place.txt");
 
         assertThat(path.getNameCount()).isEqualTo(4);
 
@@ -120,13 +120,13 @@ public class JGitPathTest {
 
         final Path path = JGitPathImpl.create(fs,
                                               EncodingUtil.decode("/path/to/some/some%20place.txt"),
-                                              "master@my-host",
+                                              "main@my-host",
                                               false);
 
         assertThat(path).isNotNull();
         assertThat(path.isAbsolute()).isTrue();
         assertThat(path.toString()).isEqualTo("/path/to/some/some place.txt");
-        assertThat(path.toUri().toString()).isEqualTo("git://master@my-host/path/to/some/some%20place.txt");
+        assertThat(path.toUri().toString()).isEqualTo("git://main@my-host/path/to/some/some%20place.txt");
 
         assertThat(path.getNameCount()).isEqualTo(4);
 
@@ -187,11 +187,11 @@ public class JGitPathTest {
 
         final Path path = JGitPathImpl.create(fs,
                                               "/path/to",
-                                              "master@my-host",
+                                              "main@my-host",
                                               false);
         final Path other = JGitPathImpl.create(fs,
                                                "/path/to/some/place",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
 
         final Path relative = path.relativize(other);
@@ -200,11 +200,11 @@ public class JGitPathTest {
 
         final Path path2 = JGitPathImpl.create(fs,
                                                "/path/to/some/place",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other2 = JGitPathImpl.create(fs,
                                                 "/path/to",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative2 = path2.relativize(other2);
@@ -213,11 +213,11 @@ public class JGitPathTest {
 
         final Path path3 = JGitPathImpl.create(fs,
                                                "/path/to",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other3 = JGitPathImpl.create(fs,
                                                 "/path/to",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative3 = path3.relativize(other3);
@@ -226,11 +226,11 @@ public class JGitPathTest {
 
         final Path path4 = JGitPathImpl.create(fs,
                                                "path/to",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other4 = JGitPathImpl.create(fs,
                                                 "path/to/some/place",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative4 = path4.relativize(other4);
@@ -239,11 +239,11 @@ public class JGitPathTest {
 
         final Path path5 = JGitPathImpl.create(fs,
                                                "path/to",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other5 = JGitPathImpl.create(fs,
                                                 "some/place",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative5 = path5.relativize(other5);
@@ -252,11 +252,11 @@ public class JGitPathTest {
 
         final Path path6 = JGitPathImpl.create(fs,
                                                "some/place",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other6 = JGitPathImpl.create(fs,
                                                 "path/to",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative6 = path6.relativize(other6);
@@ -265,11 +265,11 @@ public class JGitPathTest {
 
         final Path path7 = JGitPathImpl.create(fs,
                                                "path/to/some/thing/here",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other7 = JGitPathImpl.create(fs,
                                                 "some/place",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative7 = path7.relativize(other7);
@@ -278,11 +278,11 @@ public class JGitPathTest {
 
         final Path path8 = JGitPathImpl.create(fs,
                                                "some/place",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other8 = JGitPathImpl.create(fs,
                                                 "path/to/some/thing/here",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative8 = path8.relativize(other8);
@@ -291,11 +291,11 @@ public class JGitPathTest {
 
         final Path path9 = JGitPathImpl.create(fs,
                                                "/path/to",
-                                               "master@my-host",
+                                               "main@my-host",
                                                false);
         final Path other9 = JGitPathImpl.create(fs,
                                                 "/path/to",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
 
         final Path relative9 = path9.relativize(other9);
@@ -304,11 +304,11 @@ public class JGitPathTest {
 
         final Path path10 = JGitPathImpl.create(fs,
                                                 "path/to",
-                                                "master@my-host",
+                                                "main@my-host",
                                                 false);
         final Path other10 = JGitPathImpl.create(fs,
                                                  "path/to",
-                                                 "master@my-host",
+                                                 "main@my-host",
                                                  false);
 
         final Path relative10 = path10.relativize(other10);

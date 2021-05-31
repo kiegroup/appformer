@@ -81,8 +81,8 @@ public class GuvnorStructureContextHandlersTest {
 
         final GitRepository newRepository = new GitRepository();
         final HashMap<String, Branch> branches = new HashMap<>();
-        branches.put("master",
-                     new Branch("master",
+        branches.put("main",
+                     new Branch("main",
                                 mock(Path.class)));
         newRepository.setBranches(branches);
 
@@ -118,12 +118,12 @@ public class GuvnorStructureContextHandlersTest {
         context.removeHandler(handlerRegistration1);
 
         context.changeBranch("my-repo",
-                             "master");
+                             "main");
 
         verify(handler1,
                never()).onBranchChange("my-repo",
-                                       "master");
+                                       "main");
         verify(handler2).onBranchChange("my-repo",
-                                        "master");
+                                        "main");
     }
 }

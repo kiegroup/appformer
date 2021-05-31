@@ -71,7 +71,7 @@ public interface Repository
     Collection<Branch> getBranches();
 
     /**
-     * In the case of Git repository this would be master.
+     * In the case of Git repository this would be main.
      * @return empty if there are no branches.
      */
     Optional<Branch> getDefaultBranch();
