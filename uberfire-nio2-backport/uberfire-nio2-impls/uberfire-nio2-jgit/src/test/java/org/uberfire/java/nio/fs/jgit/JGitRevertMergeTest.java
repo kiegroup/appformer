@@ -37,7 +37,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     private Git git;
 
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "main";
     private static final String DEVELOP_BRANCH = "develop";
 
     private static final List<String> TXT_FILES =
@@ -56,19 +56,19 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
         git = new CreateRepository(gitSource).execute().get();
 
-        commit(git, MASTER_BRANCH, "Adding files into master",
+        commit(git, MAIN_BRANCH, "Adding files into main",
                content(TXT_FILES.get(0), multiline(TXT_FILES.get(0), COMMON_TXT_LINES)),
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), COMMON_TXT_LINES)),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), COMMON_TXT_LINES)));
 
-        new CreateBranch((GitImpl) git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        new CreateBranch((GitImpl) git, MAIN_BRANCH, DEVELOP_BRANCH).execute();
 
         commit(git, DEVELOP_BRANCH, "Adding files",
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
         commonAncestorCommitId = git.getCommonAncestorCommit(DEVELOP_BRANCH,
-                                                             MASTER_BRANCH).getName();
+                                                             MAIN_BRANCH).getName();
     }
 
     @Test(expected = GitException.class)
@@ -76,7 +76,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
         String mergeCommitId = doMerge();
 
         git.revertMerge("invalid-branch",
-                        MASTER_BRANCH,
+                        MAIN_BRANCH,
                         commonAncestorCommitId,
                         mergeCommitId);
     }
@@ -95,11 +95,11 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
     public void testRevertFailedMergeIsNotLastTargetCommit() throws IOException {
         String mergeCommitId = doMerge();
 
-        commit(git, MASTER_BRANCH, "Updating file",
+        commit(git, MAIN_BRANCH, "Updating file",
                content(TXT_FILES.get(0), "new content"));
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
-                                         MASTER_BRANCH,
+                                         MAIN_BRANCH,
                                          commonAncestorCommitId,
                                          mergeCommitId);
 
@@ -108,13 +108,13 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     @Test
     public void testRevertFailedMergeParentTargetIsNotCommonAncestor() throws IOException {
-        commit(git, MASTER_BRANCH, "Updating file",
+        commit(git, MAIN_BRANCH, "Updating file",
                content(TXT_FILES.get(0), "new content"));
 
         String mergeCommitId = doMerge();
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
-                                         MASTER_BRANCH,
+                                         MAIN_BRANCH,
                                          commonAncestorCommitId,
                                          mergeCommitId);
 
@@ -129,7 +129,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
                content(TXT_FILES.get(0), "new content"));
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
-                                         MASTER_BRANCH,
+                                         MAIN_BRANCH,
                                          commonAncestorCommitId,
                                          mergeCommitId);
 
@@ -141,7 +141,7 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
         String mergeCommitId = doMerge();
 
         boolean result = git.revertMerge(DEVELOP_BRANCH,
-                                         MASTER_BRANCH,
+                                         MAIN_BRANCH,
                                          commonAncestorCommitId,
                                          mergeCommitId);
 
@@ -150,11 +150,11 @@ public class JGitRevertMergeTest extends AbstractTestInfra {
 
     private String doMerge() {
         git.merge(DEVELOP_BRANCH,
-                  MASTER_BRANCH,
+                  MAIN_BRANCH,
                   true,
                   false,
                   MessageCommitInfo.createMergeMessage(DEVELOP_BRANCH));
 
-        return git.getLastCommit(MASTER_BRANCH).getName();
+        return git.getLastCommit(MAIN_BRANCH).getName();
     }
 }

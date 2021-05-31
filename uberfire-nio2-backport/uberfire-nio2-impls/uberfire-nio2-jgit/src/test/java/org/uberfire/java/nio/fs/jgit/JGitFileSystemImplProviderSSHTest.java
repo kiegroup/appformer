@@ -118,7 +118,7 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
 
         //Write a file to origin that we won't amend in the clone
         new Commit(origin.getGit(),
-                   "master",
+                   "main",
                    "user1",
                    "user1@example.com",
                    "commitx",
@@ -165,7 +165,7 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
 
         //Write a file to origin that we won't amend in the clone
         new Commit(origin.getGit(),
-                   "master",
+                   "main",
                    "user1",
                    "user1@example.com",
                    "commitx",

@@ -33,7 +33,7 @@ public class JGitGetCommonAncestorCommitTest extends AbstractTestInfra {
 
     private Git git;
 
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "main";
     private static final String DEVELOP_BRANCH = "develop";
 
     @Before
@@ -47,19 +47,19 @@ public class JGitGetCommonAncestorCommitTest extends AbstractTestInfra {
 
     @Test
     public void successTest() throws IOException {
-        commit(git, MASTER_BRANCH, "Adding file", content("file.txt", "file content"));
+        commit(git, MAIN_BRANCH, "Adding file", content("file.txt", "file content"));
 
-        RevCommit expectedCommonAncestorCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit expectedCommonAncestorCommit = git.getLastCommit(MAIN_BRANCH);
 
-        new CreateBranch((GitImpl) git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        new CreateBranch((GitImpl) git, MAIN_BRANCH, DEVELOP_BRANCH).execute();
 
-        commit(git, MASTER_BRANCH, "Updating file", content("file.txt", "file content 1"));
-        commit(git, MASTER_BRANCH, "Updating file", content("file.txt", "file content 2"));
+        commit(git, MAIN_BRANCH, "Updating file", content("file.txt", "file content 1"));
+        commit(git, MAIN_BRANCH, "Updating file", content("file.txt", "file content 2"));
 
         commit(git, DEVELOP_BRANCH, "Updating file", content("file.txt", "file content 3"));
         commit(git, DEVELOP_BRANCH, "Updating file", content("file.txt", "file content 4"));
 
-        RevCommit actualCommonAncestorCommit = git.getCommonAncestorCommit(MASTER_BRANCH,
+        RevCommit actualCommonAncestorCommit = git.getCommonAncestorCommit(MAIN_BRANCH,
                                                                            DEVELOP_BRANCH);
 
         assertThat(actualCommonAncestorCommit.getName()).isEqualTo(expectedCommonAncestorCommit.getName());
@@ -67,7 +67,7 @@ public class JGitGetCommonAncestorCommitTest extends AbstractTestInfra {
 
     @Test(expected = IllegalArgumentException.class)
     public void invalidBranchTest() {
-        git.getCommonAncestorCommit(MASTER_BRANCH,
+        git.getCommonAncestorCommit(MAIN_BRANCH,
                                     "invalid-branch");
     }
 }

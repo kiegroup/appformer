@@ -41,7 +41,7 @@ public class JGitAddRemoteTest extends AbstractTestInfra {
 
         git = spy(new CreateRepository(gitSource).execute().get());
 
-        commit(git, "master", "Initial commit",
+        commit(git, "main", "Initial commit",
                content("file0", multiline("file0", "content")));
     }
 

@@ -59,7 +59,7 @@ public class ReplaceIndexedObjectTest extends BaseIndexTest {
 
                                   @Override
                                   public Object value() {
-                                      return "default://master@file/kie";
+                                      return "default://main@file/kie";
                                   }
                               });
 
@@ -76,13 +76,13 @@ public class ReplaceIndexedObjectTest extends BaseIndexTest {
 
                                   @Override
                                   public Object value() {
-                                      return "default://master@file/kies";
+                                      return "default://main@file/kies";
                                   }
                               });
             waitForCountDown(1000);
         }
 
-        List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList(toProtobufFormat(getSimpleName()+"/master")),
+        List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList(toProtobufFormat(getSimpleName()+"/main")),
                                                                      new MatchAllDocsQuery(),
                                                                      null,
                                                                      0);

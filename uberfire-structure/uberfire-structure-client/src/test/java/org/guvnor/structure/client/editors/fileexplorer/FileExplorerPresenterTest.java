@@ -44,9 +44,9 @@ public class FileExplorerPresenterTest {
     private FileExplorerPresenter presenter;
     private Collection<Repository> repositories;
     private Repository myRepo;
-    private String myRepoBranch = "master";
+    private String myRepoBranch = "main";
     private Repository yourRepo;
-    private String yourRepoBranch = "master";
+    private String yourRepoBranch = "main";
 
     private GuvnorStructureContextChangeHandler.HandlerRegistration changeHandlerRegistration;
     private GuvnorStructureContextBranchChangeHandler.HandlerRegistration branchChangeHandlerRegistration;
@@ -56,11 +56,11 @@ public class FileExplorerPresenterTest {
         repositories = new ArrayList<>();
 
         myRepo = makeRepository("my-repo",
-                                "master",
+                                "main",
                                 "dev");
         repositories.add(myRepo);
         yourRepo = makeRepository("your-repo",
-                                  "master",
+                                  "main",
                                   "release");
         repositories.add(yourRepo);
 
@@ -124,7 +124,7 @@ public class FileExplorerPresenterTest {
     @Test
     public void testOnStartUp() throws Exception {
 
-        // my repo is not in the default master branch
+        // my repo is not in the default main branch
         myRepoBranch = "dev";
 
         presenter.reset();
@@ -135,6 +135,6 @@ public class FileExplorerPresenterTest {
         verify(view).addNewRepository(myRepo,
                                       "dev");
         verify(view).addNewRepository(yourRepo,
-                                      "master");
+                                      "main");
     }
 }

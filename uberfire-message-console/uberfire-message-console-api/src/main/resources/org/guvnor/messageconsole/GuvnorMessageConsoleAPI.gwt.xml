@@ -23,7 +23,7 @@
   <inherits name='org.uberfire.UberfireAPI'/>
 
   <source path="events" />
-  <source path="whitelist" />
+  <source path="allowlist" />
   <source path="utils" />
 
 </module>

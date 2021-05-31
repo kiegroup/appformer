@@ -23,7 +23,7 @@ Visit our IRC channel (#appformer on freenode) to hang out and share solutions w
 
 Report bugs or request features through our [issue tracker](https://issues.jboss.org/projects/UF).
 
-Contribute code through pull requests to this repository. See our [contributing guidelines](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/master/README.md) for more details.
+Contribute code through pull requests to this repository. See our [contributing guidelines](https://github.com/droolsjbpm/droolsjbpm-build-bootstrap/blob/main/README.md) for more details.
 
 ## Building and contributing to our documentation
 

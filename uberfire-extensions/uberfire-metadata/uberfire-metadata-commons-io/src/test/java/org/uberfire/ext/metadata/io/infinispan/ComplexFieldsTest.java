@@ -94,7 +94,7 @@ public class ComplexFieldsTest extends BaseIndexTest {
 
                                   @Override
                                   public Object value() {
-                                      return "default://master@file/kie";
+                                      return "default://main@file/kie";
                                   }
                               });
         }
@@ -113,16 +113,16 @@ public class ComplexFieldsTest extends BaseIndexTest {
 
                                   @Override
                                   public Object value() {
-                                      return "default://master@files/kie";
+                                      return "default://main@files/kie";
                                   }
                               });
         }
         waitForCountDown(5000);
 
         {
-            List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList("elastic_complex_fields_test__master"),
+            List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList("elastic_complex_fields_test__main"),
                                                                          new WildcardQuery(new Term("file",
-                                                                                                    "default://master@files/kie")),
+                                                                                                    "default://main@files/kie")),
                                                                          null,
                                                                          0);
 
@@ -131,9 +131,9 @@ public class ComplexFieldsTest extends BaseIndexTest {
         }
 
         {
-            List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList("elastic_complex_fields_test__master"),
+            List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList("elastic_complex_fields_test__main"),
                                                                          new WildcardQuery(new Term("file",
-                                                                                                    "default://master@file/kie")),
+                                                                                                    "default://main@file/kie")),
                                                                          null,
                                                                          0);
 
@@ -142,9 +142,9 @@ public class ComplexFieldsTest extends BaseIndexTest {
         }
 
         {
-            List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList("elastic_complex_fields_test__master"),
+            List<KObject> result = config.getIndexProvider().findByQuery(Arrays.asList("elastic_complex_fields_test__main"),
                                                                          new WildcardQuery(new Term("file",
-                                                                                                    "default://master@notFound")),
+                                                                                                    "default://main@notFound")),
                                                                          null,
                                                                          0);
 

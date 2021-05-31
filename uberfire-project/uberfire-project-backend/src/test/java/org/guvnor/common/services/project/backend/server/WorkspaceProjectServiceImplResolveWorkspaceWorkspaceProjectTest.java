@@ -122,7 +122,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
     private Path path;
     private Path branchRoot;
-    private Branch masterBranch;
+    private Branch mainBranch;
     private IOService ioService;
     private Space space;
 
@@ -147,7 +147,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
         doReturn(module).when(moduleService).resolveModule(any());
 
-        masterBranch = new Branch("master",
+        mainBranch = new Branch("main",
                                   path);
 
         doReturn(moduleService).when(moduleServices).get();
@@ -212,7 +212,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
         final GitRepository repository = new GitRepository("alias", space);
         final HashMap<String, Branch> branches = new HashMap<>();
-        branches.put("master", new Branch("master",
+        branches.put("main", new Branch("main",
                                           path));
 
         repository.setBranches(branches);
@@ -231,7 +231,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     @Test
     public void resolveProjectBranch() throws Exception {
 
-        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space, masterBranch);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space, mainBranch);
 
         assertEquals(ou,
                      workspaceProject.getOrganizationalUnit());
@@ -276,22 +276,22 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
         assertNotNull(workspaceProject);
         assertNotNull(workspaceProject.getBranch());
-        assertEquals("master", workspaceProject.getBranch().getName());
+        assertEquals("main", workspaceProject.getBranch().getName());
         assertNotNull(workspaceProject.getMainModule());
     }
 
     @Test
-    public void resolveProjectAndMasterBranch() {
+    public void resolveProjectAndMainBranch() {
         mockRepositoriesAndBranches();
 
         final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
                 space,
                 "project2",
-                "master");
+                "main");
 
         assertNotNull(workspaceProject);
         assertNotNull(workspaceProject.getBranch());
-        assertEquals("master", workspaceProject.getBranch().getName());
+        assertEquals("main", workspaceProject.getBranch().getName());
         assertNotNull(workspaceProject.getMainModule());
     }
 
@@ -306,7 +306,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
         assertNotNull(workspaceProject);
         assertNotNull(workspaceProject.getBranch());
-        assertEquals("master", workspaceProject.getBranch().getName());
+        assertEquals("main", workspaceProject.getBranch().getName());
         assertNull(workspaceProject.getMainModule());
     }
 
@@ -326,9 +326,9 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     }
 
     private void mockRepositoriesAndBranches() {
-        Branch branch1 = createBranch("master");
+        Branch branch1 = createBranch("main");
         Branch branch2 = createBranch("branch2");
-        Branch branch3 = createBranch("master");
+        Branch branch3 = createBranch("main");
         Branch branch4 = createBranch("branch4");
         Branch branch5 = createBranch("branch5");
 
