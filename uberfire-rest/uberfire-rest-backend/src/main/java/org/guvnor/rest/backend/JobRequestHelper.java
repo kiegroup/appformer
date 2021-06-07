@@ -207,7 +207,7 @@ public class JobRequestHelper {
                                                        pom,
                                                        DeploymentMode.VALIDATED,
                                                        null,
-                                                       resolveTemplateRepository(templateId,
+                                                       getTemplateRepository(templateId,
                                                                                  organizationalUnit.getName()));
                 }
             } catch (GAVAlreadyExistsException gae) {
@@ -235,13 +235,9 @@ public class JobRequestHelper {
         return result;
     }
 
-    private Repository resolveTemplateRepository(final String templateId,
+    private Repository getTemplateRepository(final String templateId,
                                                  final String spaceName) {
-        if (templateId != null) {
-            return archetypeService.getTemplateRepository(templateId, spaceName);
-        } else {
-            return archetypeService.getBaseKieTemplateRepository().orElse(null);
-        }
+        return archetypeService.getTemplateRepository(templateId, spaceName);
     }
 
     private String toString(final Set<MavenRepositoryMetadata> repositories) {

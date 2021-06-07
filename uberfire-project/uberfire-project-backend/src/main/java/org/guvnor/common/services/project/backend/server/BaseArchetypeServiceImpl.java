@@ -33,9 +33,4 @@ public class BaseArchetypeServiceImpl implements BaseArchetypeService {
     public Repository getTemplateRepository(String alias, String spaceName) {
         return null;
     }
-
-    @Override
-    public Optional<Repository> getBaseKieTemplateRepository() {
-        return Optional.empty();
-    }
 }

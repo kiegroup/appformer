@@ -30,12 +30,4 @@ public interface BaseArchetypeService {
      * @return repository of the archetype
      */
     Repository getTemplateRepository(String alias, String spaceName);
-
-    /**
-     * Return the base KIE project repository where the Archetype archetype is stored.
-     *
-     * @return repository of the archetype
-     */
-    Optional<Repository> getBaseKieTemplateRepository();
-
 }
