@@ -39,6 +39,8 @@ import org.guvnor.common.services.project.model.MavenRepositoryMetadata;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.common.services.project.service.BaseArchetypeService;
+import org.guvnor.common.services.project.service.DeploymentMode;
 import org.guvnor.common.services.project.service.GAVAlreadyExistsException;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.common.services.shared.test.TestResultMessage;
@@ -51,12 +53,14 @@ import org.guvnor.structure.contributors.ContributorType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
+import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryEnvironmentConfigurations;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.kie.soup.commons.validation.PortablePreconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.annotations.Customizable;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
@@ -92,6 +96,10 @@ public class JobRequestHelper {
 
     @Inject
     private TestRunnerService testService;
+
+    @Inject
+    @Customizable
+    private BaseArchetypeService archetypeService;
 
     public JobResult cloneProject(final String jobId,
                                   final String spaceName,
@@ -149,6 +157,22 @@ public class JobRequestHelper {
                                    String projectGroupId,
                                    String projectVersion,
                                    String projectDescription) {
+        return createProject(jobId,
+                             spaceName,
+                             projectName,
+                             projectGroupId,
+                             projectVersion,
+                             projectDescription,
+                             null);
+    }
+
+    public JobResult createProject(final String jobId,
+                                   final String spaceName,
+                                   final String projectName,
+                                   String projectGroupId,
+                                   String projectVersion,
+                                   String projectDescription,
+                                   String templateId) {
 
         final JobResult result = new JobResult();
         result.setJobId(jobId);
@@ -173,9 +197,19 @@ public class JobRequestHelper {
             pom.setDescription(projectDescription);
             pom.setName(projectName);
 
+            WorkspaceProject project = null;
             try {
-                workspaceProjectService.newProject(organizationalUnit,
-                                                   pom);
+                if (templateId == null) {
+                    project = workspaceProjectService.newProject(organizationalUnit,
+                                                       pom);
+                } else {
+                    project = workspaceProjectService.newProject(organizationalUnit,
+                                                       pom,
+                                                       DeploymentMode.VALIDATED,
+                                                       null,
+                                                       getTemplateRepository(templateId,
+                                                                                 organizationalUnit.getName()));
+                }
             } catch (GAVAlreadyExistsException gae) {
                 result.setStatus(JobStatus.DUPLICATE_RESOURCE);
                 result.setResult("Project's GAV [" + gae.getGAV().toString() + "] already exists at [" + toString(gae.getRepositories()) + "]");
@@ -184,11 +218,26 @@ public class JobRequestHelper {
                 result.setStatus(JobStatus.DUPLICATE_RESOURCE);
                 result.setResult("Project [" + projectName + "] already exists");
                 return result;
+            } catch (IllegalArgumentException iae) {
+                result.setStatus(JobStatus.FAIL);
+                result.setResult(iae.getMessage());
+                return result;
+            }
+
+            if (project == null) {
+                result.setStatus(JobStatus.FAIL);
+                return result;
             }
 
             result.setStatus(JobStatus.SUCCESS);
+            result.setResult("Project [" + project.getName() + "] is created");
         }
         return result;
+    }
+
+    private Repository getTemplateRepository(final String templateId,
+                                                 final String spaceName) {
+        return archetypeService.getTemplateRepository(templateId, spaceName);
     }
 
     private String toString(final Set<MavenRepositoryMetadata> repositories) {

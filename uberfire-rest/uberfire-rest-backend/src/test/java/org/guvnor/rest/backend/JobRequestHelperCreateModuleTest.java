@@ -24,6 +24,9 @@ import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.MavenRepositoryMetadata;
 import org.guvnor.common.services.project.model.MavenRepositorySource;
 import org.guvnor.common.services.project.model.POM;
+import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.common.services.project.service.BaseArchetypeService;
+import org.guvnor.common.services.project.service.DeploymentMode;
 import org.guvnor.common.services.project.service.GAVAlreadyExistsException;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.rest.client.JobResult;
@@ -63,6 +66,9 @@ public class JobRequestHelperCreateModuleTest {
     @Mock
     private OrganizationalUnitService organizationalUnitService;
 
+    @Mock
+    private BaseArchetypeService archetypeService;
+
     @InjectMocks
     private JobRequestHelper jobRequestHelper = new JobRequestHelper();
 
@@ -98,6 +104,9 @@ public class JobRequestHelperCreateModuleTest {
 
     @Test
     public void testRepositoryDoesExist() throws Exception {
+        when(workspaceProjectService.newProject(any(OrganizationalUnit.class),
+                                                any(POM.class)))
+                .thenReturn(mock(WorkspaceProject.class));
         final JobResult jobResult = jobRequestHelper.createProject("jobId",
                                                                    "spaceName",
                                                                    "projectName",
@@ -108,6 +117,25 @@ public class JobRequestHelperCreateModuleTest {
         assertEquals("jobId",
                      jobResult.getJobId());
         assertEquals(JobStatus.SUCCESS,
+                     jobResult.getStatus());
+        assertNotNull(jobResult.getResult());
+    }
+
+    @Test
+    public void testNullWorkspaceProject() throws Exception {
+        when(workspaceProjectService.newProject(any(OrganizationalUnit.class),
+                                                any(POM.class)))
+                .thenReturn(null);
+        final JobResult jobResult = jobRequestHelper.createProject("jobId",
+                                                                   "spaceName",
+                                                                   "projectName",
+                                                                   "projectGroupId",
+                                                                   "projectVersion",
+                                                                   "projectDescription");
+
+        assertEquals("jobId",
+                     jobResult.getJobId());
+        assertEquals(JobStatus.FAIL,
                      jobResult.getStatus());
         assertNull(jobResult.getResult());
     }
@@ -160,6 +188,58 @@ public class JobRequestHelperCreateModuleTest {
                      jobResult.getStatus());
         assertEquals("Project [myProject] already exists",
                      jobResult.getResult());
+    }
+
+    @Test
+    public void testProjectWithTemplates() {
+
+        when(workspaceProjectService.newProject(any(OrganizationalUnit.class),
+                any(POM.class),
+                eq(DeploymentMode.VALIDATED),
+                eq(null),
+                any(Repository.class))).thenReturn(mock(WorkspaceProject.class));
+        when(archetypeService.getTemplateRepository(any(),
+                any())).thenReturn(mock(Repository.class));
+
+        final JobResult jobResult = jobRequestHelper.createProject("jobId",
+                "myOrganizationalUnit",
+                "myProject",
+                "projectGroupId",
+                "projectVersion",
+                "projectDescription",
+                "org.kie.kie.drools.archetype.7.55.0.SNAPSHOT.TEMPLATE");
+
+        assertEquals("jobId",
+                jobResult.getJobId());
+        assertEquals(JobStatus.SUCCESS,
+                jobResult.getStatus());
+        assertNotNull(jobResult.getResult());
+    }
+
+    @Test
+    public void testProjectWithTemplatesNotAvailable() {
+
+        doThrow(new IllegalArgumentException("Template is not available"))
+                .when(workspaceProjectService).newProject(any(OrganizationalUnit.class),
+                                                            any(POM.class),
+                                                            eq(DeploymentMode.VALIDATED),
+                                                            eq(null),
+                                                            any(Repository.class));
+        when(archetypeService.getTemplateRepository(any(),
+                                                    any())).thenReturn(mock(Repository.class));
+        final JobResult jobResult = jobRequestHelper.createProject("jobId",
+                "myOrganizationalUnit",
+                "myProject",
+                "projectGroupId",
+                "projectVersion",
+                "projectDescription",
+                "org.kie.kie.drools.archetype.7.55.0.SNAPSHOT.TEMPLATE");
+        assertEquals("jobId",
+                jobResult.getJobId());
+        assertEquals(JobStatus.FAIL,
+                jobResult.getStatus());
+        assertEquals(jobResult.getResult(),
+                "Template is not available");
     }
 
     @Test

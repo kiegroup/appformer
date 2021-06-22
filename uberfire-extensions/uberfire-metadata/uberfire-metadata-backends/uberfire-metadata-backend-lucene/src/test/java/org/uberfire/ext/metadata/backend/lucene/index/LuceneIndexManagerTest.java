@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LuceneInedexManagerTest {
+public class LuceneIndexManagerTest {
 
     @Mock
     LuceneIndexFactory factory;
