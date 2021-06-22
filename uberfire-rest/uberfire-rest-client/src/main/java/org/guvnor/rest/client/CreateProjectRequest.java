@@ -23,6 +23,7 @@ public class CreateProjectRequest extends Entity {
 
     private String groupId;
     private String version;
+    private String templateId;
 
     public CreateProjectRequest() {
     }
@@ -41,5 +42,13 @@ public class CreateProjectRequest extends Entity {
 
     public String getVersion() {
         return version;
+    }
+
+    public String getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
     }
 }

@@ -112,6 +112,8 @@ public class JobRequestScheduler {
                    jobRequest.getSpaceName());
         params.put("Project",
                    jobRequest.getProjectName());
+        params.put("TemplateId",
+                   jobRequest.getTemplateId());
         params.put("Operation",
                    "createProject");
         params.put(ACCEPT_LANGUAGE,
