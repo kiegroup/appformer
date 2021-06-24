@@ -221,6 +221,7 @@ public class ProjectResource {
         jobRequest.setProjectGroupId(createProjectRequest.getGroupId());
         jobRequest.setProjectVersion(createProjectRequest.getVersion());
         jobRequest.setDescription(createProjectRequest.getDescription());
+        jobRequest.setTemplateId(createProjectRequest.getTemplateId());
         addAcceptedJobResult(id);
 
         jobRequestObserver.createProjectRequest(jobRequest,
