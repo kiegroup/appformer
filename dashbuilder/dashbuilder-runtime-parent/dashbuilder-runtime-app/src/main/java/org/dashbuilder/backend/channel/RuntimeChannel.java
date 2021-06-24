@@ -15,7 +15,6 @@
  */
 package org.dashbuilder.backend.channel;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -53,17 +52,13 @@ public class RuntimeChannel {
     @Inject
     RuntimeOptions runtimeOptions;
 
-    @PostConstruct
-    public void setup() {
-
-    }
 
     @GET
     @Path("subscribe")
     @Produces(MediaType.SERVER_SENT_EVENTS)
     public void listen(@Context SseEventSink sseEventSink) {
-        if (runtimeOptions.isWatchModels()) {
-            this.sseBroadcaster.register(sseEventSink);
+        if (runtimeOptions.isWatchModels() && sseBroadcaster != null) {
+            sseBroadcaster.register(sseEventSink);
             sseEventSink.send(sse.newEvent(SSEType.SUBSCRIBED.name(), ""));
         } else {
             sseEventSink.send(sse.newEvent(SSEType.NOT_SUBSCRIBED.name(), ""));
@@ -71,14 +66,14 @@ public class RuntimeChannel {
     }
 
     public void onRuntimeModelUpdated(@Observes UpdatedRuntimeModelEvent updatedRuntimeModel) {
-        sendEvent(SSEType.MODEL_UPDATED, updatedRuntimeModel.getRuntimeModelId());
+        broadcastEvent(SSEType.MODEL_UPDATED, updatedRuntimeModel.getRuntimeModelId());
     }
 
     public void onRuntimeModelRemoved(@Observes RemovedRuntimeModelEvent removedRuntimeModel) {
-        sendEvent(SSEType.MODEL_REMOVED, removedRuntimeModel.getRuntimeModelId());
+        broadcastEvent(SSEType.MODEL_REMOVED, removedRuntimeModel.getRuntimeModelId());
     }
 
-    private void sendEvent(SSEType type, String data) {
+    private void broadcastEvent(SSEType type, String data) {
         if (sseBroadcaster != null) {
             var sseEvent = eventBuilder.name(type.name())
                                        .mediaType(MediaType.TEXT_PLAIN_TYPE)

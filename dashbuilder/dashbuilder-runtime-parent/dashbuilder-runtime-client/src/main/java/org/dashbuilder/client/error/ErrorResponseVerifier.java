@@ -17,10 +17,12 @@ package org.dashbuilder.client.error;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.MediaType;
 
 import elemental2.dom.Response;
 import elemental2.dom.XMLHttpRequest;
 import org.dashbuilder.client.error.DefaultRuntimeErrorCallback.DefaultErrorType;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 /**
  * Verify if HTTP responses contains a timeout 
@@ -43,11 +45,11 @@ public class ErrorResponseVerifier {
     }
 
     private void verify(int status, String contentType, String statusText) {
-        if (status == 401 || "text/html".equals(contentType)) {
+        if (status == HttpResponseCodes.SC_UNAUTHORIZED || MediaType.TEXT_HTML.equals(contentType)) {
             errorCallback.error(DefaultErrorType.NOT_LOGGED);
         }
 
-        if (status == 403) {
+        if (status == HttpResponseCodes.SC_FORBIDDEN) {
             errorCallback.error(DefaultErrorType.NOT_AUTHORIZED);
         }
     }

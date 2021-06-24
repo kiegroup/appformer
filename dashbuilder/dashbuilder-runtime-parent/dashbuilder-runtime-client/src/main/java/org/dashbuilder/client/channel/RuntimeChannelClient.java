@@ -29,6 +29,8 @@ import org.dashbuilder.shared.event.UpdatedRuntimeModelEvent;
 @ApplicationScoped
 public class RuntimeChannelClient {
 
+    private static final String RUNTIME_CHANNEL_URL = "/rest/runtime-channel/subscribe";
+
     private EventSource eventSource;
 
     @Inject
@@ -38,7 +40,7 @@ public class RuntimeChannelClient {
     Event<RemovedRuntimeModelEvent> removedModelEvent;
 
     public void subscribe() {
-        eventSource = new EventSource("/rest/runtime-channel/subscribe");
+        eventSource = new EventSource(RUNTIME_CHANNEL_URL);
         eventSource.addEventListener(SSEType.MODEL_UPDATED.name(), this::modelUpdated);
         eventSource.addEventListener(SSEType.MODEL_REMOVED.name(), this::modelRemoved);
     }

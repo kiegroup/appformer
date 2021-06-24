@@ -55,7 +55,7 @@ public class DataSetWriter implements MessageBodyWriter<DataSet> {
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException, WebApplicationException {
         var dataSetJSONMarshaller = DataSetJSONMarshaller.get();
-        var json = dataSetJSONMarshaller.toJson(t).toJson();
+        var json = dataSetJSONMarshaller.toJson(t).toString();
         entityStream.write(json.getBytes());
     }
 

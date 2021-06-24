@@ -1,50 +1,31 @@
-# dashbuilder-runtime-quarkus project
+Dashbuilder Runtime App
+--
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This app can run dashboards exported from Dashbuilder Design, Business Central or from Dashbuilder DSL.
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+### Building
 
-## Running the application in dev mode
+First make sure that `dashbuilder-runtime-client` is built with flag `-Dfull` for a production build or `-Dsources` for client debugging.
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+Then run `mvn clean install` and the distribution JAR will be in `target` with name `dashbuidler-runtime-app-x-runner.jar`, where x is the version.
+
+### Running
+
+To run use Java 11:
+
+```
+java -jar dashbuidler-runtime-app-x-runner.jar
 ```
 
-## Packaging and running the application
+You can configure the application using the system properties from class `RuntimeOptions` and SQL connections can be configured using the following system properties:
 
-The application can be packaged using:
-```shell script
-./mvnw package
 ```
-It produces the `dashbuilder-runtime-quarkus-1.0.0-SNAPSHOT-runner.jar` file in the `/target` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/lib` directory.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+-Ddashbuilder.datasources=sample \
+-Ddashbuilder.datasource.sample.jdbcUrl=JDBCCOnnectionURL \
+-Ddashbuilder.datasource.sample.providerClassName=driverAccordingToTheDatabase \
+-Ddashbuilder.datasource.sample.maxSize=10 \
+-Ddashbuilder.datasource.sample.principal=user \
+-Ddashbuilder.datasource.sample.credential=password 
 ```
+The name `sample` must match either the dataset UUID, name or datasource.
 
-The application is now runnable using `java -jar target/dashbuilder-runtime-quarkus-1.0.0-SNAPSHOT-runner.jar`.
-
-## Creating a native executable
-
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/dashbuilder-runtime-quarkus-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
-
-# RESTEasy JAX-RS
-
-<p>A Hello World RESTEasy resource</p>
-
-Guide: https://quarkus.io/guides/rest-json

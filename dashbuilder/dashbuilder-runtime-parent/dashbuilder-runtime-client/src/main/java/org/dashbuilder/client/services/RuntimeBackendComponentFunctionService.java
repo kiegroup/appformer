@@ -21,6 +21,8 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import elemental2.core.Global;
 import elemental2.dom.XMLHttpRequest;
@@ -31,10 +33,8 @@ import org.dashbuilder.json.Json;
 import org.dashbuilder.json.JsonObject;
 import org.dashbuilder.json.JsonValue;
 import org.jboss.errai.bus.server.annotations.ShadowService;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
-// TODO: Need to check how to handle this with Runtime (no backend) - 
-// it will break components that requires to call backend functions
-// perhaps a REST endpoint only to call functions
 @ShadowService
 @ApplicationScoped
 public class RuntimeBackendComponentFunctionService implements BackendComponentFunctionService {
@@ -60,10 +60,10 @@ public class RuntimeBackendComponentFunctionService implements BackendComponentF
         JsonObject object = buildObject(params);
         XMLHttpRequest xhr = new XMLHttpRequest();
         xhr.open("POST", "/rest/function/" + name, false);
-        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         xhr.send(object.toJson());
         verifier.verify(xhr);
-        if (xhr.status == 500) {
+        if (xhr.status == HttpResponseCodes.SC_INTERNAL_SERVER_ERROR) {
             throw new RuntimeException("Not able to invoke function " + name + ": " + xhr.responseText);
         }
         return xhr.responseText;

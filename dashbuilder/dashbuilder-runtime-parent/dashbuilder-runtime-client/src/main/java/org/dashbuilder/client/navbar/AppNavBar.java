@@ -96,7 +96,7 @@ public class AppNavBar implements Header {
         header.appendChild(Js.cast(menuBarPresenter.getView().getElement()));
     }
 
-    public void setDisplayMainManu(boolean display) {
+    public void setDisplayMainMenu(boolean display) {
         HTMLElement menuElement = Js.cast(
                                           DomGlobal.document.querySelector("#mega-menu").querySelector("li.dropdown.uf-yamm--fw"));
         menuElement.style.display = display ? "block" : "none";

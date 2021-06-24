@@ -16,6 +16,7 @@
 package org.dashbuilder.backend.services.dataset.sql;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class SQLDataSourceLoader {
     @PostConstruct
     void loadDataSets() throws SQLException {
         var allProps = new HashMap<String, String>();
-        var datasources = datasourcesProp.orElse(List.of());
+        var datasources = datasourcesProp.orElse(Collections.emptyList());
 
         registeredDataSources = new HashMap<>();
         StreamSupport.stream(config.getPropertyNames().spliterator(), false)

@@ -36,8 +36,7 @@ import org.dashbuilder.dataset.json.DataSetLookupJSONMarshaller;
 @Provider
 @ApplicationScoped
 @Consumes(MediaType.APPLICATION_JSON)
-public class DataSetLookupReader implements MessageBodyReader< DataSetLookup> {
-
+public class DataSetLookupReader implements MessageBodyReader<DataSetLookup> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -54,6 +53,5 @@ public class DataSetLookupReader implements MessageBodyReader< DataSetLookup> {
         var content = IOUtils.toString(entityStream, StandardCharsets.UTF_8);
         return DataSetLookupJSONMarshaller.get().fromJson(content);
     }
-
 
 }

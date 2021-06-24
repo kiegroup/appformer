@@ -22,6 +22,9 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
+import javax.ws.rs.POST;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import elemental2.dom.Headers;
 import elemental2.dom.RequestInit;
@@ -45,6 +48,7 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.json.DataSetJSONMarshaller;
 import org.dashbuilder.dataset.json.DataSetLookupJSONMarshaller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.resteasy.util.HttpResponseCodes;
 import org.uberfire.backend.vfs.Path;
 
 import static elemental2.dom.DomGlobal.fetch;
@@ -84,7 +88,7 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
         fetch(LOOKUP_ENDPOINT).then((Response response) -> {
             verifier.verify(response);
             response.text().then(responseText -> {
-                if (response.status == 500) {
+                if (response.status == HttpResponseCodes.SC_INTERNAL_SERVER_ERROR) {
                     listener.onError(new ClientRuntimeError("Not able to retrieve dataset metadata", new Exception(responseText)));
                 } else {
                     DataSetMetadata meta = parseMetadata(responseText);
@@ -106,12 +110,11 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
         if (metadataCache.containsKey(uuid)) {
             return metadataCache.get(uuid);
         }
-
         XMLHttpRequest xhr = new XMLHttpRequest();
         xhr.open("GET", "/rest/dataset/" + uuid + "/metadata", false);
         xhr.send();
         verifier.verify(xhr);
-        if (xhr.status == 500) {
+        if (xhr.status == HttpResponseCodes.SC_INTERNAL_SERVER_ERROR) {
             throw new RuntimeException("Not able to retrieve data set metadata: " + xhr.responseText);
         }
         DataSetMetadata metadata = parseMetadata(xhr.responseText);
@@ -125,12 +128,12 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
         request.setMethod("POST");
         request.setBody(toJson(lookup));
         Headers headers = new Headers();
-        headers.append("Content-type", "application/json");
+        headers.append(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         request.setHeaders(headers);
         fetch(LOOKUP_ENDPOINT, request).then((Response response) -> {
             verifier.verify(response);
             response.text().then(responseText -> {
-                if (response.status == 500) {
+                if (response.status == HttpResponseCodes.SC_INTERNAL_SERVER_ERROR) {
                     listener.onError(new ClientRuntimeError("Not able to retrieve data set. ", new Exception(responseText)));
                 } else {
                     DataSet dataSet = parseDataSet(responseText);

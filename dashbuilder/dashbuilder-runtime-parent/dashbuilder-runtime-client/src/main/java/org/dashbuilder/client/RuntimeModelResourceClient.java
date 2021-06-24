@@ -33,6 +33,7 @@ import org.dashbuilder.shared.model.RuntimeModel;
 import org.dashbuilder.shared.model.RuntimeServiceResponse;
 import org.dashbuilder.shared.service.RuntimeModelService;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.resteasy.util.HttpResponseCodes;
 
 import static elemental2.dom.DomGlobal.fetch;
 
@@ -50,14 +51,12 @@ public class RuntimeModelResourceClient {
                                 Consumer<String> onError) {
         String url = "/rest/runtime-model/" + runtimeModelId;
         fetch(url).then(response -> {
-            if (response.status == 404) {
+            if (response.status == HttpResponseCodes.SC_NOT_FOUND) {
                 runtimeModelConsumer.accept(Optional.empty());
             }
             verifier.verify(response);
 
-            if (response.status != 200) {
-                handleErrorResponse(response, onError);
-            } else {
+            if (response.ok) {
                 response.text().then(runtimeModelJson -> {
                     RuntimeModel model = RuntimeModelJSONMarshaller.get().fromJson(runtimeModelJson);
                     runtimeModelConsumer.accept(Optional.of(model));
@@ -66,8 +65,9 @@ public class RuntimeModelResourceClient {
                     onError.accept("Error getting Runtime Model: " + error);
                     return null;
                 });
+            } else {
+                handleErrorResponse(response, onError);
             }
-
             return null;
         }).catch_(error -> {
             onError.accept("Error retrieving information from the server: " + error);
@@ -80,7 +80,7 @@ public class RuntimeModelResourceClient {
                                     final BiConsumer<Object, Throwable> onError) {
         URLSearchParams params = new URLSearchParams();
         if (runtimeModelId != null) {
-            String modelId = runtimeModelId; 
+            String modelId = runtimeModelId;
             if (isExternal(runtimeModelId)) {
                 modelId = Global.encodeURI(modelId);
             }
@@ -91,9 +91,7 @@ public class RuntimeModelResourceClient {
         fetch(url).then(response -> {
             verifier.verify(response);
 
-            if (response.status != 200) {
-                handleErrorResponse(response, onError);
-            } else {
+            if (response.ok) {
                 response.text().then(runtimeResponseJson -> {
                     RuntimeServiceResponse serviceResponse = RuntimeServiceResponseJSONMarshaller.get().fromJson(runtimeResponseJson);
                     runtimeModelInfoConsumer.accept(serviceResponse);
@@ -103,6 +101,9 @@ public class RuntimeModelResourceClient {
                     onError.accept(message, new RuntimeException(message));
                     return null;
                 });
+
+            } else {
+                handleErrorResponse(response, onError);
             }
 
             return null;
@@ -119,14 +120,14 @@ public class RuntimeModelResourceClient {
     private void handleErrorResponse(Response response, Consumer<String> onError) {
         onError.accept("Server responded with error " + response.status + ": " + response.statusText);
     }
-    
+
     private boolean isExternal(String importId) {
         try {
             new URL(importId);
             return true;
-          } catch (Exception e) {
-            return false;  
-          }
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

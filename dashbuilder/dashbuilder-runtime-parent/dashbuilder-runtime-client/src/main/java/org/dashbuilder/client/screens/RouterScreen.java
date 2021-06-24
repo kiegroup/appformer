@@ -113,14 +113,14 @@ public class RouterScreen {
 
         if (runtimeModelOp.isPresent()) {
             RuntimeModel runtimeModel = runtimeModelOp.get();
-            appNavBar.setDisplayMainManu(true);
+            appNavBar.setDisplayMainMenu(true);
             placeManager.goTo(RuntimePerspective.ID);
             runtimeScreen.loadDashboards(runtimeModel);
             runtimeScreen.goToIndex(runtimeModel.getLayoutTemplates());
             return;
         }
         
-        appNavBar.setDisplayMainManu(false);
+        appNavBar.setDisplayMainMenu(false);
 
         if (response.getAvailableModels().isEmpty()) {
             placeManager.goTo(EmptyPerspective.ID);
