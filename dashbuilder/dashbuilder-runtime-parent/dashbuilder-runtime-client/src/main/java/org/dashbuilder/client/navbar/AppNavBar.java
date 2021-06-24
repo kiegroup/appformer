@@ -41,9 +41,6 @@ public class AppNavBar implements Header {
     WorkbenchMegaMenuPresenter menuBarPresenter;
 
     @Inject
-    LogoutMenuBuilder logoutMenu;
-
-    @Inject
     GoToDashboardMenuBuilder goToDashboardMenu;
 
     @Inject
@@ -90,7 +87,6 @@ public class AppNavBar implements Header {
         if (isDashboardListEnabled) {
             menuBarPresenter.addMenus(MenuFactory.newTopLevelCustomMenu(dashboardsListMenu).endMenu().build());
         }
-        menuBarPresenter.addMenus(MenuFactory.newTopLevelCustomMenu(logoutMenu).endMenu().build());
 
         header.innerHTML = "";
         header.appendChild(Js.cast(menuBarPresenter.getView().getElement()));
