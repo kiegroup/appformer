@@ -39,17 +39,20 @@ public class ExecutorServiceProducer {
     private final ExecutorService unmanagedExecutorService;
     private final ExecutorService indexingExecutorService;
     private final ExecutorService fsWatchExecutorService;
+    private final ExecutorService restApiExecutorService;
 
     protected static final String MANAGED_LIMIT_PROPERTY = "org.appformer.concurrent.managed.thread.limit";
     protected static final String UNMANAGED_LIMIT_PROPERTY = "org.appformer.concurrent.unmanaged.thread.limit";
     protected static final String INDEXING_LIMIT_PROPERTY = "org.appformer.concurrent.indexing.thread.limit";
     protected static final String FS_WATCH_LIMIT_PROPERTY = "org.appformer.concurrent.fs.watch.thread.limit";
+    protected static final String REST_API_LIMIT_PROPERTY = "org.appformer.concurrent.rest.api.thread.limit";
 
     public ExecutorServiceProducer() {
         this.executorService = this.buildFixedThreadPoolExecutorService(MANAGED_LIMIT_PROPERTY);
         this.unmanagedExecutorService = this.buildFixedThreadPoolExecutorService(UNMANAGED_LIMIT_PROPERTY);
         this.indexingExecutorService = this.buildFixedThreadPoolExecutorService(INDEXING_LIMIT_PROPERTY, 20);
         this.fsWatchExecutorService = this.buildFixedThreadPoolExecutorService(FS_WATCH_LIMIT_PROPERTY);
+        this.restApiExecutorService = this.buildFixedThreadPoolExecutorService(REST_API_LIMIT_PROPERTY, 20);
     }
 
     protected ExecutorService buildFixedThreadPoolExecutorService(String key) {
@@ -60,9 +63,15 @@ public class ExecutorServiceProducer {
         String stringProperty = System.getProperty(key);
         int threadLimit = stringProperty == null ? defaultLimit : toInteger(stringProperty);
         if (threadLimit > 0) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Creating FixedThreadPool Executor Service for: {} with a limit of {}", key, threadLimit);
+            }
             return Executors.newFixedThreadPool(threadLimit,
                                                 new DescriptiveThreadFactory());
         } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Creating CachedThreadPool Executor Service for: {}", key);
+            }
             return Executors.newCachedThreadPool(new DescriptiveThreadFactory());
         }
     }
@@ -107,6 +116,13 @@ public class ExecutorServiceProducer {
         return this.getFsWatchExecutorService();
     }
 
+    @Produces
+    @ApplicationScoped
+    @RestApi
+    public ExecutorService produceRestAPiExecutorService() {
+        return this.getRestApiExecutorService();
+    }
+
     protected ExecutorService getManagedExecutorService() {
         return this.executorService;
     }
@@ -121,5 +137,9 @@ public class ExecutorServiceProducer {
 
     protected ExecutorService getFsWatchExecutorService() {
         return this.fsWatchExecutorService;
+    }
+
+    protected ExecutorService getRestApiExecutorService() {
+        return this.restApiExecutorService;
     }
 }
