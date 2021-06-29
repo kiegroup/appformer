@@ -23,7 +23,7 @@
     <module>dashbuilder-client</module>
     <module>dashbuilder-packaging</module>
     <module>dashbuilder-webapp</module>
-    <module>dashbuilder-runtime</module>
+    <module>dashbuilder-runtime-parent</module>
   </modules>
 
   <profiles>

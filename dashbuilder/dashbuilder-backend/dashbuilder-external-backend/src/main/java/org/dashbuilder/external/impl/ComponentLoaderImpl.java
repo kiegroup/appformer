@@ -64,7 +64,7 @@ public class ComponentLoaderImpl implements ComponentLoader {
     public void init() {
         gson = new Gson();
         providedComponentsInfo = ProvidedComponentInfo.get();
-        externalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.FALSE.toString()));
+        externalComponentEnabled = Boolean.parseBoolean(System.getProperty(EXTERNAL_COMP_ENABLE_PROP, Boolean.TRUE.toString()));
         externalComponentsDir = System.getProperty(EXTERNAL_COMP_DIR_PROP, DEFAULT_COMPONENTS_PATH);
         if (externalComponentEnabled) {
             Path baseDirPath = Paths.get(externalComponentsDir);
