@@ -65,9 +65,7 @@ public class RuntimeBeanDataSetProvider extends BeanDataSetProvider {
         if (def instanceof BeanDataSetDef) {
             return loadDataSetGenerator((BeanDataSetDef) def);
         }
-
         throw new IllegalArgumentException("Not a BeanDataSetDef instance");
-
     }
 
     private DataSetGenerator loadDataSetGenerator(BeanDataSetDef beanDef) {
@@ -76,7 +74,7 @@ public class RuntimeBeanDataSetProvider extends BeanDataSetProvider {
         if (generator != null) {
             return generator;
         } else {
-            throw new IllegalArgumentException("Data set generator class not found: " + beanName);
+            return super.lookupGenerator(beanDef);
         }
     }
 
