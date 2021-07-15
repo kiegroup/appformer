@@ -26,12 +26,12 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>com.redhat.quarkus</quarkus.platform.group-id>
-    <quarkus-plugin.version>1.11.6.Final-redhat-00001</quarkus-plugin.version>
-    <quarkus.platform.version>1.11.6.Final-redhat-00001</quarkus.platform.version>
+    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+    <quarkus-plugin.version>1.11.6.Final</quarkus-plugin.version>
+    <quarkus.platform.version>1.11.6.Final</quarkus.platform.version>
 
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <kie.bom.version>7.57.0-SNAPSHOT</kie.bom.version>
+    <kie.bom.version>7.58.0-SNAPSHOT</kie.bom.version>
   </properties>
   <dependencyManagement>
     <dependencies>
