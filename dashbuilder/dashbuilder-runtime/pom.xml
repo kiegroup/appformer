@@ -664,6 +664,10 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>javax.annotation</groupId>
           <artifactId>jsr250-api</artifactId>
         </exclusion>
@@ -679,6 +683,10 @@
       <artifactId>resteasy-jaxrs</artifactId>
       <scope>provided</scope>
       <exclusions>
+        <exclusion>
+          <groupId>jakarta.validation</groupId>
+          <artifactId>jakarta.validation-api</artifactId>
+        </exclusion>
         <!-- Collides with org.javassist:javassist -->
         <exclusion>
           <groupId>javassist</groupId>
