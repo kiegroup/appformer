@@ -180,7 +180,7 @@ public class InfinispanIndexProvider implements IndexProvider {
                                                      query,
                                                      sort)
                 .stream()
-                .map(q -> this.checkQuery(() -> q.list()))
+                .map(q -> this.checkQuery(() -> q.execute().list()))
                 .flatMap(x -> x.stream())
                 .map(this::toKObject);
         if (limit > 0) {
