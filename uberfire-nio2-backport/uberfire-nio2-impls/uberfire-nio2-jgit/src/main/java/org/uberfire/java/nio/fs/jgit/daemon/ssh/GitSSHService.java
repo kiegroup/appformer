@@ -141,8 +141,7 @@ public class GitSSHService {
             certDir.mkdirs();
         }
 
-        final AbstractGeneratorHostKeyProvider keyPairProvider = new SimpleGeneratorHostKeyProvider(new File(certDir,
-                                                                                                             "hostkey.ser"));
+        final AbstractGeneratorHostKeyProvider keyPairProvider = new SimpleGeneratorHostKeyProvider(certDir.toPath().resolve("hostkey.ser"));
 
         try {
             SecurityUtils.getKeyPairGenerator(algorithm);
@@ -154,7 +153,7 @@ public class GitSSHService {
         }
 
         sshd.setKeyPairProvider(keyPairProvider);
-        sshd.setCommandFactory(command -> {
+        sshd.setCommandFactory((channel, command) -> {
             if (command.startsWith("git-upload-pack")) {
                 return new GitUploadCommand(command,
                                             repositoryResolver,

@@ -16,10 +16,13 @@
 
 package org.uberfire.java.nio.fs.jgit.daemon.ssh;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.sshd.server.Environment;
+import org.apache.sshd.server.channel.ChannelSession;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.ReceivePack;
@@ -59,4 +62,5 @@ public class GitReceiveCommand extends BaseGitCommand {
         } catch (final Exception ignored) {
         }
     }
+
 }

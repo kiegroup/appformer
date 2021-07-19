@@ -161,7 +161,7 @@ public class InfinispanIndexProvider implements IndexProvider {
                                                      query,
                                                      null)
                 .stream()
-                .map(q -> this.checkQuery(() -> q.list()))
+                .map(q -> this.checkQuery(() -> q.execute().list()))
                 .flatMap(x -> x.stream())
                 .map(this::toKObject);
         if (limit > 0) {
@@ -222,7 +222,7 @@ public class InfinispanIndexProvider implements IndexProvider {
                                    query,
                                    null)
                 .stream()
-                .mapToInt(q -> this.checkHitsQuery(() -> q.getResultSize()))
+                .mapToInt(q -> this.checkHitsQuery(() -> new Long(q.execute().hitCount().orElse(0)).intValue()))
                 .sum();
     }
 
