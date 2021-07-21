@@ -603,6 +603,12 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-jboss</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish</groupId>
+	  <artifactId>jakarta.json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

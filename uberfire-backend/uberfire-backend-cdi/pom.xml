@@ -229,6 +229,12 @@
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-cdi-jboss</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish</groupId>
+	  <artifactId>jakarta.json</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>
