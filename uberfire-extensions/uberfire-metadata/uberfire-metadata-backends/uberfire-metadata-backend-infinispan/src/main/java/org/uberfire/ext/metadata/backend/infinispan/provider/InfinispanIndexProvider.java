@@ -161,7 +161,7 @@ public class InfinispanIndexProvider implements IndexProvider {
                                                      query,
                                                      null)
                 .stream()
-                .map(q -> this.checkQuery(() -> q.execute().list()))
+                .map(this::checkQuery)
                 .flatMap(x -> x.stream())
                 .map(this::toKObject);
         if (limit > 0) {
@@ -180,7 +180,7 @@ public class InfinispanIndexProvider implements IndexProvider {
                                                      query,
                                                      sort)
                 .stream()
-                .map(q -> this.checkQuery(() -> q.execute().list()))
+                .map(this::checkQuery)
                 .flatMap(x -> x.stream())
                 .map(this::toKObject);
         if (limit > 0) {
@@ -188,6 +188,10 @@ public class InfinispanIndexProvider implements IndexProvider {
         }
         return stream
                 .collect(toList());
+    }
+    
+    private List<KObject> checkQuery(org.infinispan.query.dsl.Query q) {
+        return this.checkQuery(() -> q.execute().list());
     }
 
     private List<KObject> checkQuery(Supplier<List<KObject>> supplier) {
