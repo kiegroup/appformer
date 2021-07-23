@@ -39,8 +39,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -58,10 +58,7 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-security-api</artifactId>
       <exclusions>
-        <exclusion>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
-        </exclusion>
+
       </exclusions>
     </dependency>
 

@@ -49,8 +49,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -76,10 +76,6 @@
         <exclusion>
           <groupId>org.jboss.spec.javax.annotation</groupId>
           <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

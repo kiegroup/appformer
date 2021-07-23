@@ -90,10 +90,6 @@
           <groupId>org.jboss.spec.javax.annotation</groupId>
           <artifactId>jboss-annotations-api_1.3_spec</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -230,17 +226,12 @@
           <groupId>org.jboss.spec.javax.annotation</groupId>
           <artifactId>jboss-annotations-api_1.3_spec</artifactId>
         </exclusion>
-        <!-- collides with javax.inject:javax.inject:jar:1:compile -->
-        <exclusion>
-          <groupId>jakarta.enterprise</groupId>
-          <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.annotation</groupId>
-      <artifactId>jboss-annotations-api_1.2_spec</artifactId>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -259,12 +250,6 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-test-utils</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
       <scope>test</scope>
     </dependency>
 

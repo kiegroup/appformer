@@ -40,8 +40,8 @@
 
     <!-- as javax.inject is excluded in parent pom's errai-bus dep. It had to be declared here -->
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
       <scope>provided</scope>
     </dependency>
 

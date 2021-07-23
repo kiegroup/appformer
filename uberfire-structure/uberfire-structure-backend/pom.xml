@@ -15,17 +15,11 @@
   <description>UberFire - Structure Backend</description>
 
   <dependencies>
+    <dependency>
+      <groupId>jakarta.ejb</groupId>
+      <artifactId>jakarta.ejb-api</artifactId>
+    </dependency>
     <!-- dependencies added because of illegal transitive dependency check -->
-    <dependency>
-      <groupId>org.jboss.spec.javax.ejb</groupId>
-      <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-nio2-model</artifactId>
@@ -74,10 +68,6 @@
         <exclusion>
           <groupId>org.jboss.spec.javax.annotation</groupId>
           <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jakarta.validation</groupId>
-          <artifactId>jakarta.validation-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -194,11 +184,6 @@
         <exclusion>
           <groupId>org.jboss.spec.javax.annotation</groupId>
           <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion>
-        <!-- collides with javax.inject:javax.inject:jar:1:compile -->
-        <exclusion>
-          <groupId>jakarta.enterprise</groupId>
-          <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
