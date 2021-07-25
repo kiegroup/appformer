@@ -34,7 +34,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>javax.enterprise:cdi-api:jar</include>
+        <include>jakarta.enterprise:jakarta.enterprise.cdi-api:jar</include>
 
         <include>jakarta.interceptor:jakarta.interceptor-api</include>
         <include>jakarta.annotation:jakarta.annotation-api:jar</include>
@@ -42,8 +42,8 @@
         <include>jakarta.ws.rs:jakarta.ws.rs-api</include>
         <include>com.sun.xml.bind:jaxb-impl:jar</include>
         <include>com.sun.xml.bind:jaxb-xjc:jar</include>
-        <include>javax.inject:javax.inject:jar</include>
-        <include>javax.activation:activation:jar</include>
+        <include>jakarta.inject:jakarta.inject-api:jar</include>
+        <include>jakarta.activation:jakarta.activation-api:jar</include>
 
         <include>org.slf4j:slf4j-api:jar</include>
         <!-- Use JUL as logging impl as that is used by Tomcat itself. -->

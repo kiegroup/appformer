@@ -887,17 +887,7 @@
       <dependency>
         <groupId>jakarta.enterprise</groupId>
         <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        <version>${version.jakarta.enterprise.jakarta.enterprise.cdi-api}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.interceptor</groupId>
-            <artifactId>javax.interceptor-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>${version.jakarta.enterprise.cdi-api}</version>
       </dependency>
 
       <dependency>
