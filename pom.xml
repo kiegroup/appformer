@@ -945,33 +945,6 @@
         <version>${version.org.apache.tomcat}</version>
       </dependency>
 
-      <!-- GWT and GWT Extensions -->
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <version>${version.com.google.gwt}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${version.com.google.gwt}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
       <dependency>
         <groupId>com.google.jsinterop</groupId>
         <artifactId>base</artifactId>
@@ -1000,18 +973,6 @@
           <exclusion>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.gwt.gwtmockito</groupId>
-        <artifactId>gwtmockito</artifactId>
-        <version>${version.com.google.gwt.gwtmockito}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.mortbay.jasper</groupId>
-            <artifactId>apache-el</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
