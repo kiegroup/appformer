@@ -104,4 +104,7 @@ public interface CommonCss
 
     @ClassName("columnPickerButton")
     String columnPickerButton();
+
+    @ClassName("popoverTextBreakWord")
+    String popoverTextBreakWord();
 }
