@@ -49,7 +49,7 @@ public class DirectoryFactoryTest {
     @Mock
     File projectDir;
     @Mock
-    File masterBranchDir;
+    File mainBranchDir;
     @Mock
     File developBranchDir;
 
@@ -62,12 +62,12 @@ public class DirectoryFactoryTest {
         when(spaceDir.getName()).thenReturn("myteam");
 
         when(projectDir.isDirectory()).thenReturn(true);
-        when(projectDir.listFiles()).thenReturn(new File[]{masterBranchDir, developBranchDir});
+        when(projectDir.listFiles()).thenReturn(new File[]{mainBranchDir, developBranchDir});
         when(projectDir.getName()).thenReturn("myproject");
         when(projectDir.getParentFile()).thenReturn(spaceDir);
 
-        when(masterBranchDir.getName()).thenReturn("master");
-        when(masterBranchDir.getParentFile()).thenReturn(projectDir);
+        when(mainBranchDir.getName()).thenReturn("main");
+        when(mainBranchDir.getParentFile()).thenReturn(projectDir);
 
         when(developBranchDir.getName()).thenReturn("develop");
         when(developBranchDir.getParentFile()).thenReturn(projectDir);
@@ -82,15 +82,15 @@ public class DirectoryFactoryTest {
 
     @Test(expected = IllegalStateException.class)
     public void loadsExistingIndicesOnStartup() throws Exception {
-        KCluster kcluster = new KClusterImpl("myteam/myproject/master");
+        KCluster kcluster = new KClusterImpl("myteam/myproject/main");
         // Should throw error from index existing already.
         factory.newCluster(kcluster);
     }
 
     @Test
     public void testClusterIdOf() {
-        String clusterId = DirectoryFactory.clusterIdOf(masterBranchDir);
-        assertThat(clusterId).isEqualTo("myteam/myproject/master");
+        String clusterId = DirectoryFactory.clusterIdOf(mainBranchDir);
+        assertThat(clusterId).isEqualTo("myteam/myproject/main");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class DirectoryFactoryTest {
                                  analyzer,
                                  hostingDir);
         List<String> indexes = this.factory.getIndexes().keySet().stream().map(KCluster::getClusterId).collect(Collectors.toList());
-        assertThat(indexes).containsExactly("myteam/myproject/master",
+        assertThat(indexes).containsExactly("myteam/myproject/main",
                                             "myteam/myproject/develop");
     }
 }
