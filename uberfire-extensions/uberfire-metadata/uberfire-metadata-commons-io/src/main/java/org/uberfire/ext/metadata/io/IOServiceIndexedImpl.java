@@ -27,14 +27,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.async.DescriptiveRunnable;
-import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.ext.metadata.engine.BatchIndexListener;
 import org.uberfire.ext.metadata.engine.MetaIndexEngine;
 import org.uberfire.ext.metadata.engine.Observer;
@@ -499,7 +497,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         // "dot path" is updated the FileAttributeView(s) are re-indexed.
         Path path = context.getPath();
         if (isIgnored(path)) {
-            if (!IOServiceIndexedUtil.isBlackListed(path)) {
+            if (!IOServiceIndexedUtil.isInDenyList(path)) {
                 final Path realPath = DotFileUtils.undot(path);
                 if (!eventRealPaths.contains(realPath)) {
                     path = realPath;
