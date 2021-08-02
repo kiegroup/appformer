@@ -160,9 +160,6 @@
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-navigation-api</artifactId>
-      <exclusions>
-
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -492,26 +489,19 @@
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-javax-enterprise</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-client</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <!-- Collides with org.jboss.spec.javax.el:jboss-el-api_2.2_spec -->
-        <exclusion>
-          <groupId>javax.el</groupId>
-          <artifactId>el-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-jboss-as-support</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-javax-enterprise</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

@@ -16,10 +16,6 @@
 
 package org.uberfire.client.workbench;
 
-import java.lang.annotation.Annotation;
-
-import javax.enterprise.event.Event;
-
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
@@ -47,6 +43,7 @@ import org.uberfire.client.workbench.panels.WorkbenchPanelView;
 import org.uberfire.client.workbench.panels.impl.SimpleWorkbenchPanelPresenter;
 import org.uberfire.client.workbench.panels.impl.StaticWorkbenchPanelPresenter;
 import org.uberfire.client.workbench.part.WorkbenchPartPresenter;
+import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.mvp.impl.PathPlaceRequest;
@@ -412,55 +409,32 @@ public class PanelManagerTest {
     // TODO test part disposal (not NORTH/SOUTH/EAST/WEST) side effect of AbstractPanelManagerImpl.removePart()
     // TODO test part reattachment (NORTH/SOUTH/EAST/WEST) side effect of AbstractPanelManagerImpl.removePart()
 
-    /**
-     * Mockito fails to produce a valid mock for a raw {@code Event<Anything>} due to classloader issues. Trivial
-     * subclasses of this class provide Mockito something that it can mock successfully and inject into our
-     * {@code @InjectMocks} object.
-     */
-    static class StubEventSource<T> implements Event<T> {
 
-        @Override
-        public void fire(T event) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public Event<T> select(Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public <U extends T> Event<U> select(Class<U> subtype,
-                                             Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-    }
-
-    static class StubPlaceGainFocusEvent extends StubEventSource<PlaceGainFocusEvent> {
+    static class StubPlaceGainFocusEvent extends EventSourceMock<PlaceGainFocusEvent> {
 
     }
 
-    static class StubPlaceLostFocusEvent extends StubEventSource<PlaceLostFocusEvent> {
+    static class StubPlaceLostFocusEvent extends EventSourceMock<PlaceLostFocusEvent> {
 
     }
 
-    static class StubSelectPlaceEvent extends StubEventSource<SelectPlaceEvent> {
+    static class StubSelectPlaceEvent extends EventSourceMock<SelectPlaceEvent> {
 
     }
 
-    static class StubPanelFocusEvent extends StubEventSource<PanelFocusEvent> {
+    static class StubPanelFocusEvent extends EventSourceMock<PanelFocusEvent> {
 
     }
 
-    static class StubPlaceMaximizedEvent extends StubEventSource<PlaceMaximizedEvent> {
+    static class StubPlaceMaximizedEvent extends EventSourceMock<PlaceMaximizedEvent> {
 
     }
 
-    static class StubPlaceMinimizedEvent extends StubEventSource<PlaceMinimizedEvent> {
+    static class StubPlaceMinimizedEvent extends EventSourceMock<PlaceMinimizedEvent> {
 
     }
 
-    static class StubPlaceHiddenEvent extends StubEventSource<PlaceHiddenEvent> {
+    static class StubPlaceHiddenEvent extends EventSourceMock<PlaceHiddenEvent> {
 
     }
 }

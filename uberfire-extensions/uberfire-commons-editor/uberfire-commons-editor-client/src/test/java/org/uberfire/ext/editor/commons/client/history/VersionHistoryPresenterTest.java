@@ -16,13 +16,8 @@
 
 package org.uberfire.ext.editor.commons.client.history;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.NotificationOptions;
-import javax.enterprise.util.TypeLiteral;
 
 import com.google.gwt.view.client.AsyncDataProvider;
 import org.jboss.errai.common.client.api.Caller;
@@ -35,9 +30,15 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.history.event.VersionSelectedEvent;
 import org.uberfire.ext.editor.commons.version.VersionService;
 import org.uberfire.java.nio.base.version.VersionRecord;
+import org.uberfire.mocks.EventSourceMock;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class VersionHistoryPresenterTest {
 
@@ -61,7 +62,7 @@ public class VersionHistoryPresenterTest {
         when(path222.toURI()).thenReturn("hehe//test.file");
         path333 = mock(Path.class);
         when(path333.toURI()).thenReturn("hehe//test.file");
-        event = spy(new VersionSelectedEventMock());
+        event = mock(VersionSelectedEventMock.class);
 
         screen = new VersionHistoryPresenter(
                 view,
@@ -209,40 +210,6 @@ public class VersionHistoryPresenterTest {
         }
     }
 
-    private class VersionSelectedEventMock
-            implements Event<VersionSelectedEvent> {
-
-        @Override
-        public void fire(VersionSelectedEvent event) {
-
-        }
-
-        @Override
-        public <U extends VersionSelectedEvent> CompletionStage<U> fireAsync(U u) {
-            return null;
-        }
-
-        @Override
-        public <U extends VersionSelectedEvent> CompletionStage<U> fireAsync(U u,
-                                                                             NotificationOptions notificationOptions) {
-            return null;
-        }
-
-        @Override
-        public Event<VersionSelectedEvent> select(Annotation... annotations) {
-            return null;
-        }
-
-        @Override
-        public <U extends VersionSelectedEvent> Event<U> select(Class<U> uClass,
-                                                                Annotation... annotations) {
-            return null;
-        }
-
-        @Override
-        public <U extends VersionSelectedEvent> Event<U> select(TypeLiteral<U> subtype,
-                                                                Annotation... qualifiers) {
-            return null;
-        }
+    private class VersionSelectedEventMock extends EventSourceMock<VersionSelectedEvent> {
     }
 }

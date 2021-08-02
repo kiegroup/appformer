@@ -164,12 +164,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-javax-enterprise</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.elemental2</groupId>
       <artifactId>elemental2-promise</artifactId>
     </dependency>

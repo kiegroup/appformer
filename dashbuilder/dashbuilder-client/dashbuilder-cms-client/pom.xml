@@ -41,9 +41,6 @@
     <dependency>
       <groupId>org.dashbuilder</groupId>
       <artifactId>dashbuilder-navigation-api</artifactId>
-      <exclusions>
-
-      </exclusions>
     </dependency>
 
     <dependency>
