@@ -31,7 +31,7 @@
     <quarkus.platform.version>1.11.6.Final</quarkus.platform.version>
 
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <kie.bom.version>7.58.0-SNAPSHOT</kie.bom.version>
+    <kie.bom.version>7.59.0-SNAPSHOT</kie.bom.version>
   </properties>
   <dependencyManagement>
     <dependencies>
