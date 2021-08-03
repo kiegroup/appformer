@@ -1,12 +1,12 @@
 /*
  * Copyright 2016 Red Hat, Inc. and/or its affiliates.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.uberfire.ext.security.management.wildfly.properties;
+package org.uberfire.ext.security.management.wildfly.filesystem;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -27,18 +27,19 @@ import org.uberfire.ext.security.management.service.AbstractUserManagementServic
 
 /**
  * <p>The Wildfly/EAP management service beans.</p>
+ *
  * @since 0.8.0
  */
 @Dependent
 @Named(value = "WildflyUserManagementService")
 public class WildflyUserManagementService extends AbstractUserManagementService {
 
-    WildflyUserPropertiesManager userManager;
-    WildflyGroupPropertiesManager groupManager;
+    WildflyUserFileSystemManager userManager;
+    WildflyGroupFileSystemManager groupManager;
 
     @Inject
-    public WildflyUserManagementService(final WildflyUserPropertiesManager userManager,
-                                        final WildflyGroupPropertiesManager groupManager,
+    public WildflyUserManagementService(final WildflyUserFileSystemManager userManager,
+                                        final WildflyGroupFileSystemManager groupManager,
                                         final UberfireRoleManager roleManager) {
         super(roleManager);
         this.userManager = userManager;
