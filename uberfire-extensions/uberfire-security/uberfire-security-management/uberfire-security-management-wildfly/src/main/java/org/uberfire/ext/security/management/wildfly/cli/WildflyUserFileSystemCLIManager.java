@@ -1,12 +1,12 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
- *  
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,51 +30,49 @@ import org.uberfire.ext.security.management.api.UserManager;
 import org.uberfire.ext.security.management.api.UserManagerSettings;
 import org.uberfire.ext.security.management.api.UserSystemManager;
 import org.uberfire.ext.security.management.api.exception.SecurityManagementException;
-import org.uberfire.ext.security.management.wildfly.properties.WildflyGroupPropertiesManager;
-import org.uberfire.ext.security.management.wildfly.properties.WildflyUserPropertiesManager;
+import org.uberfire.ext.security.management.wildfly.filesystem.WildflyGroupFileSystemManager;
+import org.uberfire.ext.security.management.wildfly.filesystem.WildflyUserFileSystemManager;
 
 /**
  * <p>Users manager service provider implementation for JBoss Wildfly.</p>
  * <p>It wraps the Wildfly users manager based on properties file, but instead of the need to specify the path for the properties files, its absolute path discovery is automatically handled by using to the administration API for the server.</p>
+ *
  * @since 0.8.0
  */
-public class WildflyUserPropertiesCLIManager extends BaseWildflyCLIManager implements UserManager,
+public class WildflyUserFileSystemCLIManager extends BaseWildflyCLIManager implements UserManager,
                                                                                       ContextualManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WildflyUserPropertiesCLIManager.class);
-    private WildflyUserPropertiesManager usersPropertiesManager;
+    private static final Logger LOG = LoggerFactory.getLogger(WildflyUserFileSystemCLIManager.class);
+    private WildflyUserFileSystemManager usersPropertiesManager;
 
-    public WildflyUserPropertiesCLIManager() {
+    public WildflyUserFileSystemCLIManager() {
         this(new ConfigProperties(System.getProperties()));
     }
 
-    public WildflyUserPropertiesCLIManager(final Map<String, String> gitPrefs) {
+    public WildflyUserFileSystemCLIManager(final Map<String, String> gitPrefs) {
         this(new ConfigProperties(gitPrefs));
     }
 
-    public WildflyUserPropertiesCLIManager(final ConfigProperties gitPrefs) {
+    public WildflyUserFileSystemCLIManager(final ConfigProperties gitPrefs) {
         loadConfig(gitPrefs);
-    }
-
-    private String getUsersPropertiesFilePath() throws Exception {
-        return super.getPropertiesFilePath("authentication");
     }
 
     private void init(final UserSystemManager usManager) {
         try {
-            final String usersFilePath = getUsersPropertiesFilePath();
-            final Map<String, String> arguments = new HashMap<String, String>(2);
-            arguments.put("org.uberfire.ext.security.management.wildfly.properties.realm",
-                          realm);
-            arguments.put("org.uberfire.ext.security.management.wildfly.properties.users-file-path",
-                          usersFilePath);
-            this.usersPropertiesManager = new WildflyUserPropertiesManager(arguments) {
+            final Map<String, String> arguments = new HashMap<String, String>(3);
+            arguments.put("org.uberfire.ext.security.management.wildfly.filesystem.folder-path",
+                          folderPath);
+            arguments.put("org.uberfire.ext.security.management.wildfly.filesystem.levels",
+                          levels);
+            arguments.put("org.uberfire.ext.security.management.wildfly.filesystem.encoded",
+                          encoded);
+            this.usersPropertiesManager = new WildflyUserFileSystemManager(arguments) {
                 @Override
-                protected synchronized WildflyGroupPropertiesManager getGroupsPropertiesManager() {
+                protected synchronized WildflyGroupFileSystemManager getGroupsFileSystemManager() {
                     try {
-                        return ((WildflyGroupPropertiesCLIManager) usManager.groups()).groupsPropertiesManager;
+                        return ((WildflyGroupFileSystemCLIManager) usManager.groups()).groupsPropertiesManager;
                     } catch (ClassCastException e) {
-                        return super.getGroupsPropertiesManager();
+                        return super.getGroupsFileSystemManager();
                     }
                 }
             };

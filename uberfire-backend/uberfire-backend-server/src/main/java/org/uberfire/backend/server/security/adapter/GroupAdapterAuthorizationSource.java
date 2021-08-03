@@ -36,7 +36,6 @@ import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.GroupImpl;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.RoleImpl;
-import org.kie.soup.security.utils.BasicAuthorizationPrincipal;
 import org.uberfire.backend.server.security.RoleRegistry;
 import org.uberfire.security.authz.adapter.GroupsAdapter;
 
@@ -126,9 +125,6 @@ public class GroupAdapterAuthorizationSource {
             Set<java.security.Principal> principals = subject.getPrincipals();
             if (principals != null) {
                 for (java.security.Principal p : principals) {
-                    if (p instanceof BasicAuthorizationPrincipal) {
-                        continue;
-                    }
                     if (p instanceof java.security.acl.Group) {
                         for (final String rolePrincipleName : rolePrincipleNames) {
                             if (rolePrincipleName.equalsIgnoreCase(p.getName())) {
