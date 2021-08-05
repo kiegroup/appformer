@@ -16,19 +16,17 @@
 
 package org.guvnor.structure.client.security;
 
-import java.util.Collection;
-import java.util.Optional;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
+import org.guvnor.structure.security.OrganizationalUnitAction;
+import org.jboss.errai.security.shared.api.identity.User;
+import org.uberfire.security.Contributor;
+import org.uberfire.security.ContributorType;
+import org.uberfire.security.authz.AuthorizationManager;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-
-import org.guvnor.structure.contributors.Contributor;
-import org.guvnor.structure.contributors.ContributorType;
-import org.guvnor.structure.organizationalunit.OrganizationalUnit;
-import org.guvnor.structure.repositories.Repository;
-import org.guvnor.structure.security.OrganizationalUnitAction;
-import org.guvnor.structure.security.RepositoryAction;
-import org.jboss.errai.security.shared.api.identity.User;
-import org.uberfire.security.authz.AuthorizationManager;
+import java.util.Collection;
+import java.util.Optional;
 
 @ApplicationScoped
 public class OrganizationalUnitController {

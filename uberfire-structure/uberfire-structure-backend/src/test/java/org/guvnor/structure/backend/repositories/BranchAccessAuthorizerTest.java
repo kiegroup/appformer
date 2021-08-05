@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.guvnor.structure.contributors.Contributor;
-import org.guvnor.structure.contributors.ContributorType;
+import org.uberfire.security.Contributor;
+import org.uberfire.security.ContributorType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;

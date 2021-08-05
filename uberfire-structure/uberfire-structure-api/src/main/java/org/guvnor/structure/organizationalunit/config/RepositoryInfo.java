@@ -20,7 +20,7 @@ package org.guvnor.structure.organizationalunit.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.repositories.EnvironmentParameters;
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;

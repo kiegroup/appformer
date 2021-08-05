@@ -16,7 +16,7 @@
 
 package org.guvnor.structure.client.security;
 
-import org.guvnor.structure.contributors.ContributorType;
+import org.uberfire.security.ContributorType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;

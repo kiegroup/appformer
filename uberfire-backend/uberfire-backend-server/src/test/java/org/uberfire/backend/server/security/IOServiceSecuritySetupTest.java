@@ -16,11 +16,8 @@
 
 package org.uberfire.backend.server.security;
 
-import java.net.URI;
-import java.util.Arrays;
-
-import javax.enterprise.inject.Instance;
-
+import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.junit.After;
@@ -33,11 +30,18 @@ import org.uberfire.java.nio.base.FileSystemId;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.security.FileSystemAuthorizer;
+import org.uberfire.security.ResourceAction;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.security.authz.PermissionManager;
 import org.uberfire.security.impl.authz.DefaultAuthorizationManager;
 import org.uberfire.security.impl.authz.DefaultPermissionManager;
 import org.uberfire.security.impl.authz.DefaultPermissionTypeRegistry;
+import org.uberfire.spaces.Space;
+import org.uberfire.spaces.SpacesAPI;
+
+import javax.enterprise.inject.Instance;
+import java.net.URI;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -49,20 +53,25 @@ public class IOServiceSecuritySetupTest {
     Instance<AuthenticationService> authenticationManagers;
 
     AuthorizationManager authorizationManager;
+    RepositoryService repositoryService;
+    SpacesAPI spacesAPI;
     IOServiceSecuritySetup setupBean;
 
     @Before
     public void setup() {
         // this is the fallback configuration when no @IOSecurityAuth bean is found
         System.setProperty("org.uberfire.io.auth",
-                           MockAuthenticationService.class.getName());
+                MockAuthenticationService.class.getName());
 
         PermissionManager permissionManager = new DefaultPermissionManager(new DefaultPermissionTypeRegistry());
         authorizationManager = spy(new DefaultAuthorizationManager(permissionManager));
-
+        repositoryService = mock(RepositoryService.class);
+        spacesAPI = mock(SpacesAPI.class);
         setupBean = new IOServiceSecuritySetup();
         setupBean.authenticationManagers = authenticationManagers;
         setupBean.authorizationManager = authorizationManager;
+        setupBean.repositoryService = repositoryService;
+        setupBean.spacesAPI = spacesAPI;
     }
 
     @After
@@ -84,19 +93,22 @@ public class IOServiceSecuritySetupTest {
         // and they should work :)
         User user = mockFsp.authenticator.login("fake", "fake");
         assertEquals(MockAuthenticationService.FAKE_USER.getIdentifier(),
-                     user.getIdentifier());
+                user.getIdentifier());
 
         final FileSystem mockfs = mock(FileSystem.class);
         final FileSystem mockedFSId = mock(FileSystem.class,
-                                           withSettings().extraInterfaces(FileSystemId.class));
+                withSettings().extraInterfaces(FileSystemId.class));
         final Path rootPath = mock(Path.class);
         when(rootPath.toUri()).thenReturn(URI.create("/"));
-        when(mockfs.getRootDirectories()).thenReturn(Arrays.asList(rootPath));
 
         when(rootPath.getFileSystem()).thenReturn(mockedFSId);
 
+        when(mockfs.getPath(mockfs.getName())).thenReturn(rootPath);
+        Space space = mock(Space.class);
+        when(spacesAPI.resolveSpace(any())).thenReturn(Optional.of(space));
+
         assertTrue(mockFsp.authorizer.authorize(mockfs,
-                                                user));
+                user));
     }
 
     @Test
@@ -114,7 +126,7 @@ public class IOServiceSecuritySetupTest {
 
         // make sure the call went to the one we provided
         verify(mockAuthenticationService).login("fake",
-                                                "fake");
+                "fake");
     }
 
     @Test
@@ -128,18 +140,49 @@ public class IOServiceSecuritySetupTest {
         FileSystem mockfs = mock(FileSystem.class);
 
         final FileSystem mockedFSId = mock(FileSystem.class,
-                                           withSettings().extraInterfaces(FileSystemId.class));
+                withSettings().extraInterfaces(FileSystemId.class));
         final Path rootPath = mock(Path.class);
+        final Repository repository = mock(Repository.class);
         when(rootPath.toUri()).thenReturn(URI.create("/"));
-        when(mockfs.getRootDirectories()).thenReturn(Arrays.asList(rootPath));
         when(rootPath.getFileSystem()).thenReturn(mockedFSId);
 
         User fileSystemUser = installedAuthenticator.login("fake", "fake");
-
+        when(mockfs.getPath(mockfs.getName())).thenReturn(rootPath);
+        Space space = mock(Space.class);
+        when(spacesAPI.resolveSpace(any())).thenReturn(Optional.of(space));
+        when(repositoryService.getRepositoryFromSpace(any(), any())).thenReturn(repository);
         installedAuthorizer.authorize(mockfs,
-                                      fileSystemUser);
+                fileSystemUser);
+        // make sure the call went to the one we provided
+        verify(authorizationManager).authorize(repository, repository.getContributors(), ResourceAction.READ, fileSystemUser);
+    }
+
+    @Test
+    public void testNonRepositoryAuthorization() throws Exception {
+        when(authenticationManagers.isUnsatisfied()).thenReturn(true);
+
+        setupBean.setup();
+
+        FileSystemAuthorizer installedAuthorizer = MockSecuredFilesystemProvider.LATEST_INSTANCE.authorizer;
+        AuthenticationService installedAuthenticator = MockSecuredFilesystemProvider.LATEST_INSTANCE.authenticator;
+        FileSystem mockfs = mock(FileSystem.class);
+
+        final FileSystem mockedFSId = mock(FileSystem.class,
+                withSettings().extraInterfaces(FileSystemId.class));
+        final Path rootPath = mock(Path.class);
+        final Repository repository = mock(Repository.class);
+        when(rootPath.toUri()).thenReturn(URI.create("/"));
+        when(rootPath.getFileSystem()).thenReturn(mockedFSId);
+
+        User fileSystemUser = installedAuthenticator.login("fake", "fake");
+        when(mockfs.getPath(mockfs.getName())).thenReturn(rootPath);
+        Space space = mock(Space.class);
+        when(spacesAPI.resolveSpace(any())).thenReturn(Optional.of(space));
+        when(repositoryService.getRepositoryFromSpace(any(), any())).thenReturn(null);
+        installedAuthorizer.authorize(mockfs,
+                fileSystemUser);
         // make sure the call went to the one we provided
         verify(authorizationManager).authorize(any(FileSystemResourceAdaptor.class),
-                                               any(User.class));
+                any(User.class));
     }
 }
