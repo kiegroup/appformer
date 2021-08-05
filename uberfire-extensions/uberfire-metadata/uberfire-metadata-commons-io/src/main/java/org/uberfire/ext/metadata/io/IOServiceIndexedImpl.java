@@ -27,12 +27,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.async.DescriptiveRunnable;
+import org.uberfire.commons.async.DescriptiveThreadFactory;
 import org.uberfire.ext.metadata.engine.BatchIndexListener;
 import org.uberfire.ext.metadata.engine.MetaIndexEngine;
 import org.uberfire.ext.metadata.engine.Observer;
@@ -77,17 +79,20 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     private final Collection<IndexerDispatcher> activeIndexerDispatchers = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final IndexerDispatcherFactory dispatcherFactory;
 
-    private ExecutorService executorService;
+    private final ExecutorService fsWatchIndexingExecutorService;
+    private final ExecutorService indexingExecutorService;
 
     @SafeVarargs
     public IOServiceIndexedImpl(final MetaIndexEngine indexEngine,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final Class<? extends FileAttributeView>... views) {
         this(indexEngine,
              new NOPObserver(),
-             executorService,
+             indexingExecutorService,
+             fsWatchExecutorService,
              indexersFactory,
              dispatcherFactory,
              new NOPBatchIndexListener(),
@@ -97,14 +102,16 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     @SafeVarargs
     public IOServiceIndexedImpl(final String id,
                                 final MetaIndexEngine indexEngine,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final Class<? extends FileAttributeView>... views) {
         this(id,
              indexEngine,
              new NOPObserver(),
-             executorService,
+             indexingExecutorService,
+             fsWatchExecutorService,
              indexersFactory,
              dispatcherFactory,
              new NOPBatchIndexListener(),
@@ -114,14 +121,16 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     @SafeVarargs
     public IOServiceIndexedImpl(final IOWatchService watchService,
                                 final MetaIndexEngine indexEngine,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final Class<? extends FileAttributeView>... views) {
         this(watchService,
              indexEngine,
              new NOPObserver(),
-             executorService,
+             indexingExecutorService,
+             fsWatchExecutorService,
              indexersFactory,
              dispatcherFactory,
              new NOPBatchIndexListener(),
@@ -132,7 +141,8 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     public IOServiceIndexedImpl(final String id,
                                 final IOWatchService watchService,
                                 final MetaIndexEngine indexEngine,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final Class<? extends FileAttributeView>... views) {
@@ -140,7 +150,8 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
              watchService,
              indexEngine,
              new NOPObserver(),
-             executorService,
+             indexingExecutorService,
+             fsWatchExecutorService,
              indexersFactory,
              dispatcherFactory,
              new NOPBatchIndexListener(),
@@ -150,7 +161,8 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     @SafeVarargs
     public IOServiceIndexedImpl(final MetaIndexEngine indexEngine,
                                 final Observer observer,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final BatchIndexListener batchIndexListener,
@@ -160,12 +172,13 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                         indexEngine);
         this.views = views;
 
-        this.executorService = executorService;
+        this.indexingExecutorService = indexingExecutorService;
+        this.fsWatchIndexingExecutorService = fsWatchExecutorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
         this.batchIndex = new BatchIndex(indexEngine,
                                          observer,
-                                         executorService,
+                                         indexingExecutorService,
                                          indexersFactory,
                                          dispatcherFactory,
                                          batchIndexListener,
@@ -177,7 +190,8 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     public IOServiceIndexedImpl(final String id,
                                 final MetaIndexEngine indexEngine,
                                 final Observer observer,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final BatchIndexListener batchIndexListener,
@@ -186,12 +200,13 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         this.indexEngine = checkNotNull("indexEngine",
                                         indexEngine);
         this.views = views;
-        this.executorService = executorService;
+        this.indexingExecutorService = indexingExecutorService;
+        this.fsWatchIndexingExecutorService = fsWatchExecutorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
         this.batchIndex = new BatchIndex(indexEngine,
                                          observer,
-                                         executorService,
+                                         indexingExecutorService,
                                          indexersFactory,
                                          dispatcherFactory,
                                          batchIndexListener,
@@ -203,7 +218,8 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
     public IOServiceIndexedImpl(final IOWatchService watchService,
                                 final MetaIndexEngine indexEngine,
                                 final Observer observer,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final BatchIndexListener batchIndexListener,
@@ -213,12 +229,13 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                         indexEngine);
         this.views = views;
 
-        this.executorService = executorService;
+        this.indexingExecutorService = indexingExecutorService;
+        this.fsWatchIndexingExecutorService = fsWatchExecutorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
         this.batchIndex = new BatchIndex(indexEngine,
                                          observer,
-                                         executorService,
+                                         indexingExecutorService,
                                          indexersFactory,
                                          dispatcherFactory,
                                          batchIndexListener,
@@ -231,7 +248,8 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                 final IOWatchService watchService,
                                 final MetaIndexEngine indexEngine,
                                 final Observer observer,
-                                final ExecutorService executorService,
+                                final ExecutorService indexingExecutorService,
+                                final ExecutorService fsWatchExecutorService,
                                 final IndexersFactory indexersFactory,
                                 final IndexerDispatcherFactory dispatcherFactory,
                                 final BatchIndexListener batchIndexListener,
@@ -242,12 +260,13 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                         indexEngine);
         this.views = views;
 
-        this.executorService = executorService;
+        this.indexingExecutorService = indexingExecutorService;
+        this.fsWatchIndexingExecutorService = fsWatchExecutorService;
         this.indexersFactory = indexersFactory;
         this.dispatcherFactory = dispatcherFactory;
         this.batchIndex = new BatchIndex(indexEngine,
                                          observer,
-                                         executorService,
+                                         indexingExecutorService,
                                          indexersFactory,
                                          dispatcherFactory,
                                          batchIndexListener,
@@ -319,9 +338,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         watchServicesByFS.put(fs.getName(),
                               ws);
 
-        final ExecutorService defaultInstance = this.executorService;
-
-        defaultInstance.execute(new DescriptiveRunnable() {
+        this.fsWatchIndexingExecutorService.execute(new DescriptiveRunnable() {
             @Override
             public String getDescription() {
                 return "IOServiceIndexedImpl(" + ws.toString() + ")";
@@ -368,7 +385,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                                                       List<WatchEvent<?>> events,
                                                       KCluster kCluster) {
                             activeIndexerDispatchers.add(dispatcher);
-                            dispatcher.schedule(executorService)
+                            dispatcher.schedule(indexingExecutorService)
                                     .thenRun(() -> LOGGER.info("Completed indexing {} events in cluster [{}].",
                                                                events.size(),
                                                                kCluster))
@@ -420,7 +437,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
                             return isDisposed || ws.isClose();
                         }
                     };
-                    defaultInstance.execute(job);
+                    fsWatchIndexingExecutorService.execute(job);
                 }
             }
         });
@@ -537,7 +554,7 @@ public class IOServiceIndexedImpl extends IOServiceDotFileImpl {
         if (ws != null && !ws.isClose()) {
             ws.close();
         }
-        indexEngine.delete(KObjectUtil.toKCluster(rootDirectory));
+        indexEngine.delete(KObjectUtil.toRootKCluster(rootDirectory));
     }
 
     @Override

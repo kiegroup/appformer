@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.i18n;
+package org.uberfire.java.nio.fs.jgit;
 
-import elemental2.promise.Promise;
+public class CommitTime {
 
-/**
- * This {@link I18nApi} implementation is used when the envelope API is not available
- */
-public class NoOpI18nService implements I18nApi {
+    private Long firstCommitTime;
+    private Long lastCommitTime;
 
-    @Override
-    public void onLocaleChange(LocaleChangeCallback callback) {
-
+    public Long getFirstCommitTime() {
+        return firstCommitTime;
     }
 
-    @Override
-    public Promise<String> getLocale() {
-        return Promise.resolve("en");
+    public void setFirstCommitTime(Long firstCommitTime) {
+        this.firstCommitTime = firstCommitTime;
+    }
+
+    public Long getLastCommitTime() {
+        return lastCommitTime;
+    }
+
+    public void setLastCommitTime(Long lastCommitTime) {
+        this.lastCommitTime = lastCommitTime;
     }
 }

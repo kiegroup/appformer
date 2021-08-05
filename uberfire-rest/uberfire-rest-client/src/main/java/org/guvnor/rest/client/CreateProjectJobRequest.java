@@ -25,6 +25,7 @@ public class CreateProjectJobRequest extends JobRequest {
     private String projectGroupId;
     private String projectVersion;
     private String description;
+    private String templateId;
 
     public String getSpaceName() {
         return spaceName;
@@ -64,5 +65,13 @@ public class CreateProjectJobRequest extends JobRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
     }
 }

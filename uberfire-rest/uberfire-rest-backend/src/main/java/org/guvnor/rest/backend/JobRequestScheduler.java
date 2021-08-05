@@ -52,6 +52,7 @@ import org.guvnor.rest.client.SpaceRequest;
 import org.guvnor.rest.client.TestProjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.commons.concurrent.RestApi;
 import org.uberfire.commons.concurrent.Unmanaged;
 
 import static org.guvnor.rest.backend.cmd.AbstractJobCommand.JOB_REQUEST_KEY;
@@ -84,7 +85,7 @@ public class JobRequestScheduler {
     of the operations itself.
     */
     @Inject
-    public JobRequestScheduler(@Unmanaged ExecutorService executorService,
+    public JobRequestScheduler(@RestApi ExecutorService executorService,
                                JobResultManager jobResultManager,
                                JobRequestHelper jobRequestHelper) {
         this.executorService = executorService;
@@ -112,6 +113,8 @@ public class JobRequestScheduler {
                    jobRequest.getSpaceName());
         params.put("Project",
                    jobRequest.getProjectName());
+        params.put("TemplateId",
+                   jobRequest.getTemplateId());
         params.put("Operation",
                    "createProject");
         params.put(ACCEPT_LANGUAGE,

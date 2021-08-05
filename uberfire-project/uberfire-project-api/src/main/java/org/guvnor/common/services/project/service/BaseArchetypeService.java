@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.i18n;
+package org.guvnor.common.services.project.service;
 
-import jsinterop.annotations.JsFunction;
+import java.util.Optional;
 
-@JsFunction
-@FunctionalInterface
-public interface LocaleChangeCallback {
+import org.guvnor.structure.repositories.Repository;
+
+public interface BaseArchetypeService {
 
     /**
-     * Executes the command
+     * Return the repository where the archetype is stored.
+     *
+     * @param alias archetype alias
+     * @param spaceName archetype space
+     * @return repository of the archetype
      */
-    void execute(String locale);
+    Repository getTemplateRepository(String alias, String spaceName);
 }

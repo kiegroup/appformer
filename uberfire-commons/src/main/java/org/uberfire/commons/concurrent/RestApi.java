@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.workspace;
+package org.uberfire.commons.concurrent;
 
-/**
- * Service to perform actions on the workspace.
- */
-public interface WorkspaceService {
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-    /**
-     * Open the file located in the given path.
-     * @param path Either an absolute path or a relative one to the caller file.
-     */
-    void openFile(String path);
+import javax.inject.Qualifier;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface RestApi {
+
 }

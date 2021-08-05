@@ -18,7 +18,9 @@ package org.guvnor.common.services.project.builder.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.guvnor.common.services.project.model.GAV;
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -29,6 +31,8 @@ public class IncrementalBuildResults {
     private GAV gav;
     private ArrayList<BuildMessage> addedMessages = new ArrayList<BuildMessage>();
     private ArrayList<BuildMessage> removedMessages = new ArrayList<BuildMessage>();
+    private Map<String, String> parameters = new HashMap<>();
+    private String rootPathURI;
 
     public IncrementalBuildResults() {
         //Marshalling
@@ -64,5 +68,25 @@ public class IncrementalBuildResults {
 
     public void addAllRemovedMessages(List<BuildMessage> buildMessages) {
         removedMessages.addAll(buildMessages);
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void addParameter(String name, String value) {
+        this.parameters.put(name, value);
+    }
+
+    public String getParameter(String name) {
+        return this.parameters.get(name);
+    }
+
+    public String getRootPathURI() {
+        return rootPathURI;
+    }
+
+    public void setRootPathURI(String rootPathURI) {
+        this.rootPathURI = rootPathURI;
     }
 }

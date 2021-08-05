@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.appformer.kogito.bridge.client.stateControl.interop;
+package org.uberfire.commons.concurrent;
 
-import jsinterop.annotations.JsFunction;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-/**
- * Represents a command that can be executed by the TypeScript StateControl engine
- */
-@JsFunction
-@FunctionalInterface
-public interface StateControlCommand {
+import javax.inject.Qualifier;
 
-    /**
-     * Executes the command
-     */
-    void execute();
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface FSWatch {
+
 }

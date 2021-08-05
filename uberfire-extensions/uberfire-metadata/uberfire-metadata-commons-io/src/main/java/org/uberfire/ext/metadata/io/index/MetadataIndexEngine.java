@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,8 +199,22 @@ public class MetadataIndexEngine implements MetaIndexEngine {
 
     @Override
     public void delete(KCluster cluster) {
-        this.batchLocks.remove(cluster);
-        this.provider.delete(cluster.getClusterId());
+        if (batchLocks.containsKey(cluster)) {
+            this.batchLocks.remove(cluster);
+            this.provider.delete(cluster.getClusterId());
+        } else {
+            deleteAllProjectsLocks(cluster);
+        }
+    }
+
+    private void deleteAllProjectsLocks(KCluster cluster) {
+        final List<KCluster> clusters = this.batchLocks.keySet().stream().parallel()
+                .filter(s -> s.getClusterId().startsWith(cluster.getClusterId()))
+                .collect(Collectors.toList());
+        clusters.forEach(cl -> {
+            this.batchLocks.remove(cl);
+            this.provider.delete(cl.getClusterId());
+        });
     }
 
     @Override
