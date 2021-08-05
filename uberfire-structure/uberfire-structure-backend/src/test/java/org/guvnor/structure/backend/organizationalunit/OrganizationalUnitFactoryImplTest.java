@@ -20,31 +20,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
-import org.guvnor.structure.backend.config.ConfigurationFactoryImpl;
-import org.guvnor.structure.contributors.Contributor;
-import org.guvnor.structure.contributors.ContributorType;
+import org.uberfire.security.Contributor;
+import org.uberfire.security.ContributorType;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.config.RepositoryConfiguration;
 import org.guvnor.structure.organizationalunit.config.RepositoryInfo;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.guvnor.structure.server.config.ConfigGroup;
-import org.guvnor.structure.server.config.ConfigurationFactory;
-import org.guvnor.structure.server.config.ConfigurationService;
 import org.guvnor.structure.server.config.PasswordService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)

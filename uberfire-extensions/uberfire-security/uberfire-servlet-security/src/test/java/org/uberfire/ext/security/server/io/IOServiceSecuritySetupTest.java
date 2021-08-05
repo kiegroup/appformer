@@ -16,25 +16,25 @@
 
 package org.uberfire.ext.security.server.io;
 
-import java.net.URI;
-import java.util.Arrays;
-
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Test;
 import org.uberfire.commons.lifecycle.PriorityDisposableRegistry;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
+import org.uberfire.security.Contributor;
 import org.uberfire.security.Resource;
 import org.uberfire.security.ResourceAction;
 import org.uberfire.security.ResourceType;
-import org.uberfire.security.authz.AuthorizationManager;
-import org.uberfire.security.authz.Permission;
-import org.uberfire.security.authz.PermissionCheck;
-import org.uberfire.security.authz.ResourceCheck;
-import org.uberfire.security.authz.VotingStrategy;
+import org.uberfire.security.authz.*;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class IOServiceSecuritySetupTest {
 
@@ -178,6 +178,14 @@ public class IOServiceSecuritySetupTest {
         @Override
         public boolean authorize(Permission permission,
                                  User user) {
+            return grant;
+        }
+
+        @Override
+        public boolean authorize(Resource contributorResource,
+                                 Collection<Contributor> contributors,
+                                 ResourceAction action,
+                                 User user){
             return grant;
         }
 

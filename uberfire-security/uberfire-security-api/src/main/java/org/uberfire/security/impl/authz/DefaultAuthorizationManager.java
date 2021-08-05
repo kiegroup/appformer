@@ -16,15 +16,14 @@
 
 package org.uberfire.security.impl.authz;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
-import org.uberfire.security.Resource;
-import org.uberfire.security.ResourceAction;
-import org.uberfire.security.ResourceType;
+import org.uberfire.security.*;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.security.authz.AuthorizationResult;
 import org.uberfire.security.authz.Permission;
@@ -65,6 +64,27 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
                          action,
                          user,
                          null);
+    }
+
+    @Override
+    public boolean authorize(Resource resource,
+                             Collection<Contributor> contributors,
+                             ResourceAction action,
+                             User user) {
+        boolean contributorAccess = false;
+        if (resource instanceof ContributorResource) {
+            ContributorResource contributorResource = (ContributorResource) resource;
+            contributorAccess = checkContributor(contributorResource,   user);
+        }
+
+        return authorize(resource,
+                action,
+                user,
+                null) || contributorAccess;
+    }
+
+    private boolean checkContributor(ContributorResource contributorResource, User user) {
+        return contributorResource.getContributors().stream().anyMatch(c -> c.getUsername().equals(user.getIdentifier()));
     }
 
     @Override

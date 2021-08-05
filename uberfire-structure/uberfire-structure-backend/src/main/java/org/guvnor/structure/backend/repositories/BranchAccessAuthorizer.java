@@ -20,7 +20,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.eclipse.jgit.transport.ReceiveCommand;
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;

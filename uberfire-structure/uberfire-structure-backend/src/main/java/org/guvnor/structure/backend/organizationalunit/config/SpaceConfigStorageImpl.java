@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
-import org.guvnor.structure.contributors.ContributorType;
+import org.uberfire.security.ContributorType;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.organizationalunit.config.RolePermissions;
 import org.guvnor.structure.organizationalunit.config.SpaceConfigStorage;

@@ -20,16 +20,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.security.RepositoryResourceType;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.commons.data.Cacheable;
+import org.uberfire.security.ContributorResource;
 import org.uberfire.security.authz.RuntimeContentResource;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
 public interface Repository
-        extends RuntimeContentResource,
+        extends ContributorResource, RuntimeContentResource,
                 Cacheable {
 
     RepositoryResourceType RESOURCE_TYPE = new RepositoryResourceType();
@@ -61,8 +62,6 @@ public interface Repository
     Optional<Branch> getBranch(final Path branchRoot);
 
     Collection<String> getGroups();
-
-    Collection<Contributor> getContributors();
 
     /**
      * Returns "read-only" view of all branches available in this repository.

@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.repositories.Repository;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.uberfire.spaces.Space;

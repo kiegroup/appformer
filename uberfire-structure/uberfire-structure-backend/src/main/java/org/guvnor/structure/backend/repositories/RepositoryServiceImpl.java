@@ -31,7 +31,7 @@ import javax.inject.Named;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.project.events.RepositoryContributorsUpdatedEvent;
 import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.config.RepositoryConfiguration;
