@@ -628,11 +628,11 @@ public class ProjectControllerTest {
     }
 
     @Test
-    public void userCannotSubmitChangeRequestWhenInMainBranchTest() {
+    public void userCannotSubmitChangeRequestWhenInDefaultBranchTest() {
         WorkspaceProject project = mock(WorkspaceProject.class);
-        Branch main = mock(Branch.class);
-        doReturn("master").when(main).getName();
-        doReturn(main).when(project).getBranch();
+        Branch defaultBranch = mock(Branch.class);
+        doReturn("master").when(defaultBranch).getName();
+        doReturn(defaultBranch).when(project).getBranch();
 
         projectController.canSubmitChangeRequest(project).then(userCanSubmitChangeRequest -> {
             assertFalse(userCanSubmitChangeRequest);
