@@ -64,12 +64,12 @@ public class JGitMirrorTest extends AbstractTestInfra {
         assertThat(cloned.getRepository().getAllRefs()).is(new Condition<Map<String, Ref>>() {
             @Override
             public boolean matches(final Map<String, Ref> refs) {
-                final boolean hasMainRef = refs.get("refs/heads/master") != null;
+                final boolean hasDefaultBranchRef = refs.get("refs/heads/master") != null;
                 final boolean hasNewWebsiteRef = refs.get("refs/heads/new-website") != null;
-                final boolean hasRemoteOriginMain = refs.get("refs/remotes/origin/master") != null;
+                final boolean hasRemoteOriginDefaultBranch = refs.get("refs/remotes/origin/master") != null;
                 final boolean hasRemoteOriginNewWebSite = refs.get("refs/remotes/origin/master") != null;
 
-                return hasMainRef && hasNewWebsiteRef && hasRemoteOriginMain & hasRemoteOriginNewWebSite;
+                return hasDefaultBranchRef && hasNewWebsiteRef && hasRemoteOriginDefaultBranch & hasRemoteOriginNewWebSite;
             }
         });
 
@@ -99,12 +99,12 @@ public class JGitMirrorTest extends AbstractTestInfra {
         assertThat(cloned.getRepository().getAllRefs()).is(new Condition<Map<String, Ref>>() {
             @Override
             public boolean matches(final Map<String, Ref> refs) {
-                final boolean hasMainRef = refs.get("refs/heads/master") != null;
+                final boolean hasDefaultBranchRef = refs.get("refs/heads/master") != null;
                 final boolean hasNewWebsiteRef = refs.get("refs/heads/new-website") != null;
-                final boolean hasRemoteOriginMain = refs.get("refs/remotes/origin/master") != null;
+                final boolean hasRemoteOriginDefaultBranch = refs.get("refs/remotes/origin/master") != null;
                 final boolean hasRemoteOriginNewWebSite = refs.get("refs/remotes/origin/master") != null;
 
-                return hasMainRef && hasNewWebsiteRef && hasRemoteOriginMain & hasRemoteOriginNewWebSite;
+                return hasDefaultBranchRef && hasNewWebsiteRef && hasRemoteOriginDefaultBranch & hasRemoteOriginNewWebSite;
             }
         });
 
