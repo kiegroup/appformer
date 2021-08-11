@@ -18,12 +18,11 @@ package org.dashbuilder.kieserver.backend.rest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
-
-import org.jboss.resteasy.util.Base64;
 
 public class BasicAuthFilter implements ClientRequestFilter {
 
@@ -44,6 +43,6 @@ public class BasicAuthFilter implements ClientRequestFilter {
 
     private String getEncodedToken() {
         String token = this.user + ":" + this.password;
-        return "Basic " + Base64.encodeBytes(token.getBytes(StandardCharsets.UTF_8));
+        return "Basic " + new String(Base64.getEncoder().encode(token.getBytes(StandardCharsets.UTF_8)));
     }
 }
