@@ -37,7 +37,8 @@
         <include>jakarta.activation:jakarta.activation-api</include>
         <include>jakarta.enterprise:jakarta.enterprise.cdi-api</include>
         <include>jakarta.inject:jakarta.inject-api</include>
-        <include>javax.mail:mail</include>
+        <include>jakarta.mail:jakarta.mail-api</include>
+        <include>com.sun.mail:jakarta.mail</include>
         <include>javax.validation:validation-api</include>
 
         <include>jakarta.annotation:jakarta.annotation-api</include>
