@@ -34,6 +34,7 @@ import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
 import org.dashbuilder.dataset.def.SQLDataSetDef;
 import org.dashbuilder.dataset.json.DataSetDefJSONMarshaller;
+import org.dashbuilder.kieserver.KieServerConnectionInfoProvider;
 import org.dashbuilder.kieserver.RemoteDataSetDef;
 import org.dashbuilder.shared.event.NewDataSetContentEvent;
 import org.dashbuilder.shared.event.RemovedRuntimeModelEvent;
@@ -61,6 +62,9 @@ public class DataSetContentListener {
 
     @Inject
     SQLDataSourceLocator sqlDataSourceLocator;
+
+    @Inject
+    KieServerConnectionInfoProvider kieServerConnectionInfoProvider;
 
     DataSetDefJSONMarshaller defMarshaller;
 
@@ -131,15 +135,23 @@ public class DataSetContentListener {
         }
 
         if (dataSetDef instanceof RemoteDataSetDef) {
+            var remoteDef = ((RemoteDataSetDef) dataSetDef);
             var queryName = PartitionHelper.removePartition(dataSetDef.getUUID());
-            ((RemoteDataSetDef) dataSetDef).setQueryName(queryName);
+            checkRemoteDataSetDef(remoteDef);
+            remoteDef.setQueryName(queryName);
         }
 
-        if (dataSetDef instanceof SQLDataSetDef) {
+        else if (dataSetDef instanceof SQLDataSetDef) {
             checkSQLDataSet((SQLDataSetDef) dataSetDef);
         }
 
         registry.registerDataSetDef(dataSetDef);
+    }
+
+    private void checkRemoteDataSetDef(RemoteDataSetDef remoteDef) {
+        kieServerConnectionInfoProvider.get(remoteDef.getUUID(), remoteDef.getServerTemplateId())
+                                       .orElseThrow(() -> new RuntimeException("Configuration for remote dataset" + remoteDef.getName() + " not found"));
+
     }
 
     private void checkSQLDataSet(SQLDataSetDef dataSetDef) throws Exception {
