@@ -72,7 +72,7 @@ public class VersionServiceImplTest {
 
         versionService.restore(path,
                                "Restore comment",
-                               "master");
+                               "main");
 
         order.verify(ioService).startBatch(nioPath.getFileSystem());
 

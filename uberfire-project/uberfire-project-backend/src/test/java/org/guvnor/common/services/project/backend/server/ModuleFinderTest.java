@@ -98,7 +98,7 @@ public class ModuleFinderTest {
         final Path folderPath = ioService.get(this.getClass().getResource("/LegacyRepositoryStructure/Project1/").toURI());
 
         final Set<Module> modules = finder.find(getResourceResolver(),
-                                                new Branch("master",
+                                                new Branch("main",
                                                            Paths.convert(folderPath)));
 
         assertFalse(modules.isEmpty());
@@ -109,7 +109,7 @@ public class ModuleFinderTest {
         final Path folderPath = ioService.get(this.getClass().getResource("/LegacyRepositoryStructure/").toURI());
 
         final Set<Module> modules = finder.find(getResourceResolver(),
-                                                new Branch("master",
+                                                new Branch("main",
                                                            Paths.convert(folderPath)));
 
         assertEquals(2,

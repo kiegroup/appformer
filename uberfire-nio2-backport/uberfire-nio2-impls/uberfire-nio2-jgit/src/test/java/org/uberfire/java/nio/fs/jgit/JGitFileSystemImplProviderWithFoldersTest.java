@@ -62,7 +62,7 @@ public class JGitFileSystemImplProviderWithFoldersTest extends AbstractTestInfra
         final JGitFileSystem fs = (JGitFileSystem) provider.newFileSystem(oldUri,
                                                                           env);
 
-        final Path path = provider.getPath(URI.create("git://master@test/old/some/path/myfile.txt"));
+        final Path path = provider.getPath(URI.create("git://main@test/old/some/path/myfile.txt"));
         provider.setAttribute(path,
                               FileSystemState.FILE_SYSTEM_STATE_ATTR,
                               FileSystemState.BATCH);
@@ -89,7 +89,7 @@ public class JGitFileSystemImplProviderWithFoldersTest extends AbstractTestInfra
                                        Boolean.TRUE);
                                }});
 
-        String path = "git://master@test/repo/readme.md";
+        String path = "git://main@test/repo/readme.md";
         final URI uri = URI.create(path);
         final String extracted = provider.extractPath(uri);
         assertThat(extracted).isEqualTo("/readme.md");
@@ -102,7 +102,7 @@ public class JGitFileSystemImplProviderWithFoldersTest extends AbstractTestInfra
         final FileSystem fs = provider.newFileSystem(newRepo,
                                                      EMPTY_ENV);
 
-        String path = "git://origin/master@test/repo/readme.md";
+        String path = "git://origin/main@test/repo/readme.md";
         final URI uri = URI.create(path);
         final String extracted = provider.extractPath(uri);
         assertThat(extracted).isEqualTo("/readme.md");
@@ -116,7 +116,7 @@ public class JGitFileSystemImplProviderWithFoldersTest extends AbstractTestInfra
                                        Boolean.TRUE);
                                }});
 
-        String path = "git://origin/master@test/repo/readme.md";
+        String path = "git://origin/main@test/repo/readme.md";
         final URI uri = URI.create(path);
         final String extracted = provider.extractFSNameWithPath(uri);
         assertThat(extracted).isEqualTo("test/repo/readme.md");
@@ -124,7 +124,7 @@ public class JGitFileSystemImplProviderWithFoldersTest extends AbstractTestInfra
 
     @Test
     public void testExtractSimpleRepoName() {
-        String path = "git://master@test/repo/readme.md";
+        String path = "git://main@test/repo/readme.md";
         final URI uri = URI.create(path);
         final String extracted = provider.extractFSNameWithPath(uri);
         assertThat(extracted).isEqualTo("test/repo/readme.md");

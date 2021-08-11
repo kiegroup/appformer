@@ -47,7 +47,7 @@
     }
   </ui:style>
 
-  <g:FlowPanel ui:field="masterContainer">
+  <g:FlowPanel ui:field="mainContainer">
     <g:FlowPanel ui:field="container" addStyleNames="{style.container} {res.CSS.toolbar}">
       <b:ButtonToolBar ui:field="toolBar" addStyleNames="{style.reset_toolbar_margin}"/>
       <b:Tooltip ui:field="tip">

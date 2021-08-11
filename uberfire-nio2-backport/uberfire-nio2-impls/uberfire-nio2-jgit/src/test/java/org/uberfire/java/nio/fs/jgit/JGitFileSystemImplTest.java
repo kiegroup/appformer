@@ -415,7 +415,7 @@ public class JGitFileSystemImplTest extends AbstractTestInfra {
 
         final Path path1 = fileSystem1.getPath("master",
                                                "/path/to/some.txt");
-        final Path path2 = fileSystem2.getPath("master",
+        final Path path2 = fileSystem2.getPath("main",
                                                "/path/to/some.txt");
 
         AssertionsForClassTypes.assertThat(path1).isNotEqualTo(path2);

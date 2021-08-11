@@ -96,7 +96,7 @@ public class PlaceRequestHistoryMapperImplTest {
     @Test
     public void createPathPlaceRequest() throws Exception {
         final Path path = PathFactory.newPath("file",
-                                              "default://master@repo/path/to/file");
+                                              "default://main@repo/path/to/file");
         final PlaceRequest placeRequestOriginal = new PathPlaceRequest(path);
 
         PlaceRequest placeRequest = placeRequestHistoryMapper.getPlaceRequest(placeRequestOriginal.getFullIdentifier());
@@ -109,7 +109,7 @@ public class PlaceRequestHistoryMapperImplTest {
     @Test
     public void createPathPlaceRequestWithSpaces() throws Exception {
         final Path path = PathFactory.newPath("Dummy rule.drl",
-                                              "default://master@uf-playground/mortgages/src/main/resources/org/mortgages/Dummy%20rule.drl");
+                                              "default://main@uf-playground/mortgages/src/main/resources/org/mortgages/Dummy%20rule.drl");
         final PlaceRequest placeRequestOriginal = new PathPlaceRequest(path);
 
         PlaceRequest placeRequest = placeRequestHistoryMapper.getPlaceRequest(placeRequestOriginal.getFullIdentifier());

@@ -79,7 +79,7 @@ public class JGitCloneTest extends AbstractTestInfra {
         assertEquals(new ListRefs(cloned.getRepository()).execute().size(),
                      new ListRefs(origin.getRepository()).execute().size());
 
-        assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/master");
+        assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/main");
         assertThat(new ListRefs(cloned.getRepository()).execute().get(1).getName()).isEqualTo("refs/heads/user_branch");
     }
 
@@ -154,7 +154,7 @@ public class JGitCloneTest extends AbstractTestInfra {
         assertEquals(new ListRefs(cloned.getRepository()).execute().size(),
                      new ListRefs(origin.getRepository()).execute().size());
 
-        assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/master");
+        assertThat(new ListRefs(cloned.getRepository()).execute().get(0).getName()).isEqualTo("refs/heads/main");
         assertThat(new ListRefs(cloned.getRepository()).execute().get(1).getName()).isEqualTo("refs/heads/user_branch");
 
         boolean foundPreCommitHook = false;
@@ -189,7 +189,7 @@ public class JGitCloneTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "commit",
@@ -287,20 +287,20 @@ public class JGitCloneTest extends AbstractTestInfra {
         final Git origin = setupGitRepo(gitSource, null);
 
         commit(origin,
-               "master",
+               "main",
                "first",
                content("dir1/file.txt", "foo"),
                content("dir2/file2.txt", "bar"),
                content("file3.txt", "moogah"));
 
-        branch(origin, "master", "dev");
+        branch(origin, "main", "dev");
         commit(origin,
                "dev",
                "second",
                content("dir1/file.txt", "foo1"),
                content("file3.txt", "bar1"));
 
-        branch(origin, "master", "ignored");
+        branch(origin, "main", "ignored");
         commit(origin,
                "ignored",
                "third",
@@ -309,7 +309,7 @@ public class JGitCloneTest extends AbstractTestInfra {
         final Git cloned = new Clone(gitTarget,
                                            gitSource.getAbsolutePath(),
                                            false,
-                                           asList("master", "dev"),
+                                           asList("main", "dev"),
                                            CredentialsProvider.getDefault(),
                                            null,
                                            null,
@@ -320,7 +320,7 @@ public class JGitCloneTest extends AbstractTestInfra {
                 .map(ref -> ref.getName())
                 .collect(toSet());
         assertThat(clonedRefs).hasSize(2);
-        assertThat(clonedRefs).containsExactly("refs/heads/master", "refs/heads/dev");
+        assertThat(clonedRefs).containsExactly("refs/heads/main", "refs/heads/dev");
     }
 
 }

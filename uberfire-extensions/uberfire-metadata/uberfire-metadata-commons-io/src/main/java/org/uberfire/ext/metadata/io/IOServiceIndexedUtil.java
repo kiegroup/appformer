@@ -23,13 +23,13 @@ import org.uberfire.java.nio.file.Path;
 
 public final class IOServiceIndexedUtil {
 
-    private static Set<String> blackList = new HashSet<String>() {{
+    private static Set<String> denyList = new HashSet<String>() {{
         add(".gitignore");
         add(".gitkeep");
     }};
 
-    public static boolean isBlackListed(final Path path) {
-        final boolean isGitInternalFile = blackList.contains(path.getFileName().toString());
+    public static boolean isInDenyList(final Path path) {
+        final boolean isGitInternalFile = denyList.contains(path.getFileName().toString());
         return isGitInternalFile;
     }
 }

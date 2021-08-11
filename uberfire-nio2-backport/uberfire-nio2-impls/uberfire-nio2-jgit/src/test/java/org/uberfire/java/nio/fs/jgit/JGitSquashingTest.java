@@ -69,7 +69,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitFolder).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 1!",
@@ -81,7 +81,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("initial content file 1"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 2!",
@@ -96,7 +96,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
         RevCommit secondCommit = logs.iterator().next();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 3!",
@@ -109,7 +109,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                    }}).execute();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 4!",
@@ -121,7 +121,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("new content file 2"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 5!",
@@ -140,20 +140,20 @@ public class JGitSquashingTest extends AbstractTestInfra {
         }
         assertThat(commitsCount).isEqualTo(5);
 
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "pathx/").getPathType()).isEqualTo(NOT_FOUND);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/to/file1.txt").getPathType()).isEqualTo(FILE);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/to/file2.txt").getPathType()).isEqualTo(FILE);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/to/file3.txt").getPathType()).isEqualTo(FILE);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/to").getPathType()).isEqualTo(DIRECTORY);
 
         logger.info("Squashing from " + secondCommit.getName() + "  to HEAD");
         new Squash((GitImpl) origin,
-                   "master",
+                   "main",
                    secondCommit.getName(),
                    "squashed message").execute();
 
@@ -176,7 +176,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitFolder).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "aparedes",
                    "aparedes@example.com",
                    "commit 1!",
@@ -200,7 +200,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("initial content file 2"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "aparedes",
                    "aparedes@example.com",
                    "commit 3!",
@@ -212,7 +212,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("initial content file 1"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "aparedes",
                    "aparedes@example.com",
                    "commit 4!",
@@ -224,17 +224,17 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("initial content file 1"));
                    }}).execute();
 
-        List<RevCommit> masterCommits = getCommitsFromBranch((GitImpl) origin,
-                                                             "master");
+        List<RevCommit> mainCommits = getCommitsFromBranch((GitImpl) origin,
+                                                             "main");
         List<RevCommit> developCommits = getCommitsFromBranch((GitImpl) origin,
                                                               "develop");
 
-        assertThat(masterCommits.size()).isEqualTo(3);
+        assertThat(mainCommits.size()).isEqualTo(3);
         assertThat(developCommits.size()).isEqualTo(1);
 
         try {
             new Squash((GitImpl) origin,
-                       "master",
+                       "main",
                        developCommits.get(0).getName(),
                        "squashed message").execute();
             fail("If it reaches here the test has failed because he found the commit into the branch");
@@ -271,7 +271,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitFolder).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 1!",
@@ -283,7 +283,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("initial content file 1"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 2!",
@@ -298,7 +298,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
         RevCommit secondCommit = logs.iterator().next();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 3!",
@@ -311,7 +311,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                    }}).execute();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 4!",
@@ -323,7 +323,7 @@ public class JGitSquashingTest extends AbstractTestInfra {
                            tempFile("new content file 2"));
                    }}).execute();
         new Commit(origin,
-                   "master",
+                   "main",
                    "salaboy",
                    "salaboy@example.com",
                    "commit 5!",
@@ -339,20 +339,20 @@ public class JGitSquashingTest extends AbstractTestInfra {
             logger.info(">>> Origin Commit: " + commit.getFullMessage() + " - " + commit.toString());
         }
 
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "pathx/").getPathType()).isEqualTo(NOT_FOUND);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "file1.txt").getPathType()).isEqualTo(FILE);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/to/file2.txt").getPathType()).isEqualTo(FILE);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/file3.txt").getPathType()).isEqualTo(FILE);
-        assertThat(origin.getPathInfo("master",
+        assertThat(origin.getPathInfo("main",
                                       "path/to").getPathType()).isEqualTo(DIRECTORY);
 
         logger.info("Squashing from " + secondCommit.getName() + "  to HEAD");
         new Squash((GitImpl) origin,
-                   "master",
+                   "main",
                    secondCommit.getName(),
                    "squashed message").execute();
 

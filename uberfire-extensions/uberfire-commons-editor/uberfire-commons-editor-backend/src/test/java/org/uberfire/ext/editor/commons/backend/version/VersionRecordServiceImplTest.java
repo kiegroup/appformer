@@ -186,7 +186,7 @@ public class VersionRecordServiceImplTest {
     }
 
     @Test
-    public void testLoadRecordMaster() throws Exception {
+    public void testLoadRecordMain() throws Exception {
 
         ioService.setExistingPaths(pathToFile);
 

@@ -42,17 +42,17 @@ public class HiddenBranchRefFilterTest {
     public void setUp() {
 
         refs = new HashMap<>();
-        refs.put("master",
+        refs.put("main",
                  ref);
         refs.put("develop",
                  ref);
-        refs.put("PR--from/develop-master",
+        refs.put("PR--from/develop-main",
                  ref);
-        refs.put("PR-1--master",
+        refs.put("PR-1--main",
                  ref);
-        refs.put("PR-master",
+        refs.put("PR-main",
                  ref);
-        refs.put("PR-1-from/develop-master",
+        refs.put("PR-1-from/develop-main",
                  ref);
 
         filter = new HiddenBranchRefFilter();
@@ -64,6 +64,6 @@ public class HiddenBranchRefFilterTest {
         final Set<Map.Entry<String, Ref>> set = filteredRefs.entrySet();
         assertEquals(5,
                      set.size());
-        assertFalse(set.stream().anyMatch(entry -> entry.getKey().equals("PR-1-from/develop-master")));
+        assertFalse(set.stream().anyMatch(entry -> entry.getKey().equals("PR-1-from/develop-main")));
     }
 }
