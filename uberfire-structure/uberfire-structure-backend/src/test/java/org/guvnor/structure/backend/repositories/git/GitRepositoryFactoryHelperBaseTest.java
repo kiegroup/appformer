@@ -133,7 +133,7 @@ public abstract class GitRepositoryFactoryHelperBaseTest {
     @Test
     public void testNewRepositoryReplaceIfExists() {
 
-        rootDirectories.add(createPath("default://master@uf-playground"));
+        rootDirectories.add(createPath("default://main@uf-playground"));
 
         RepositoryConfiguration config = this.getConfig();
         config.add("replaceIfExists",
@@ -164,7 +164,7 @@ public abstract class GitRepositoryFactoryHelperBaseTest {
 
     @Test
     public void testFileSystemHooks() {
-        rootDirectories.add(createPath("default://master@uf-playground"));
+        rootDirectories.add(createPath("default://main@uf-playground"));
 
         RepositoryInfo repositoryInfo = new RepositoryInfo("test",
                                                            false,
@@ -219,7 +219,7 @@ public abstract class GitRepositoryFactoryHelperBaseTest {
     public void testBranches() {
 
         rootDirectories.add(createPath("default://origin@uf-playground"));
-        rootDirectories.add(createPath("default://master@uf-playground"));
+        rootDirectories.add(createPath("default://main@uf-playground"));
         rootDirectories.add(createPath("default://branch1@uf-playground"));
 
         RepositoryInfo repositoryInfo = new RepositoryInfo("test",
@@ -230,7 +230,7 @@ public abstract class GitRepositoryFactoryHelperBaseTest {
 
         assertEquals(3,
                      repository.getBranches().size());
-        assertTrue(repository.getDefaultBranch().get().getPath().toURI().contains("master"));
+        assertTrue(repository.getDefaultBranch().get().getPath().toURI().contains("main"));
     }
 
     @Test

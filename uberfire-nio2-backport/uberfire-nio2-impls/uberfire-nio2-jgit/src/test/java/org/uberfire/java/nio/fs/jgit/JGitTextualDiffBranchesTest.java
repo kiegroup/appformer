@@ -41,7 +41,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
 
     private Git git;
 
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "main";
     private static final String DEVELOP_BRANCH = "develop";
 
     private static final List<String> TXT_FILES =
@@ -58,12 +58,12 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
 
         git = new CreateRepository(gitSource).execute().get();
 
-        commit(git, MASTER_BRANCH, "Adding files into master",
+        commit(git, MAIN_BRANCH, "Adding files into main",
                content(TXT_FILES.get(0), multiline(TXT_FILES.get(0), COMMON_TXT_LINES)),
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), COMMON_TXT_LINES)),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), COMMON_TXT_LINES)));
 
-        new CreateBranch((GitImpl) git, MASTER_BRANCH, DEVELOP_BRANCH).execute();
+        new CreateBranch((GitImpl) git, MAIN_BRANCH, DEVELOP_BRANCH).execute();
     }
 
     @Test
@@ -72,7 +72,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(diffs).isNotEmpty();
         assertThat(diffs).hasSize(2);
@@ -90,16 +90,16 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
 
     @Test
     public void testDiffWithAddedFilesSameBranch() throws IOException {
-        RevCommit startCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit startCommit = git.getLastCommit(MAIN_BRANCH);
 
-        commit(git, MASTER_BRANCH, "Adding files",
+        commit(git, MAIN_BRANCH, "Adding files",
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)),
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        RevCommit endCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit endCommit = git.getLastCommit(MAIN_BRANCH);
 
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH,
-                                                      MASTER_BRANCH,
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH,
+                                                      MAIN_BRANCH,
                                                       startCommit.getName(),
                                                       endCommit.getName());
 
@@ -112,10 +112,10 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Adding file",
                content(TXT_FILES.get(3), multiline(TXT_FILES.get(3), COMMON_TXT_LINES)));
 
-        commit(git, MASTER_BRANCH, "Adding file",
+        commit(git, MAIN_BRANCH, "Adding file",
                content(TXT_FILES.get(4), multiline(TXT_FILES.get(4), COMMON_TXT_LINES)));
 
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(diffs).isNotEmpty();
         assertThat(diffs).hasSize(1);
@@ -137,7 +137,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
                        put(TXT_FILES.get(0), null);
                    }}).execute();
 
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(diffs).isNotEmpty();
         assertThat(diffs).hasSize(1);
@@ -156,7 +156,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1", "Line2Changed", "Line3", "Line4")),
                content(TXT_FILES.get(2), multiline(TXT_FILES.get(2), "Line1", "Line2Changed", "Line3", "Line4")));
 
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(diffs).isNotEmpty();
         assertThat(diffs).hasSize(2);
@@ -178,7 +178,7 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
         commit(git, DEVELOP_BRANCH, "Updating file",
                content(TXT_FILES.get(1), multiline(TXT_FILES.get(1), "Line1Changed", "Line2", "Line3", "Line4Changed")));
 
-        List<TextualDiff> fileDiffs = git.textualDiffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<TextualDiff> fileDiffs = git.textualDiffRefs(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(fileDiffs).isNotEmpty();
         assertThat(fileDiffs).hasSize(1);
@@ -186,14 +186,14 @@ public class JGitTextualDiffBranchesTest extends AbstractTestInfra {
 
     @Test
     public void testDiffWithEvenBranches() {
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH, DEVELOP_BRANCH);
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH, DEVELOP_BRANCH);
 
         assertThat(diffs).isEmpty();
     }
 
     @Test(expected = GitException.class)
     public void testDiffWithNonExistentBranch() {
-        List<TextualDiff> diffs = git.textualDiffRefs(MASTER_BRANCH, "nonExistentBranch");
+        List<TextualDiff> diffs = git.textualDiffRefs(MAIN_BRANCH, "nonExistentBranch");
 
         assertThat(diffs).isEmpty();
     }

@@ -147,11 +147,11 @@ public class ProjectResourceJobTest {
     }
 
     @Test
-    public void compileProjectMasterBranch() throws Exception {
+    public void compileProjectMainBranch() throws Exception {
 
         projectResource.compileProject("spaceName",
                                        "projectName",
-                                       "master");
+                                       "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -190,11 +190,11 @@ public class ProjectResourceJobTest {
     }
 
     @Test
-    public void installProjectMasterBranch() throws Exception {
+    public void installProjectMainBranch() throws Exception {
 
         projectResource.installProject("spaceName",
                                        "projectName",
-                                       "master");
+                                       "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -233,11 +233,11 @@ public class ProjectResourceJobTest {
     }
 
     @Test
-    public void testProjectMasterBranch() throws Exception {
+    public void testProjectMainBranch() throws Exception {
 
         projectResource.testProject("spaceName",
                                     "projectName",
-                                    "master");
+                                    "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -276,11 +276,11 @@ public class ProjectResourceJobTest {
     }
 
     @Test
-    public void deployProjectMasterBranch() throws Exception {
+    public void deployProjectMainBranch() throws Exception {
 
         projectResource.deployProject("spaceName",
                                       "projectName",
-                                      "master");
+                                      "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());

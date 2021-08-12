@@ -45,19 +45,19 @@ public class JGitHistoryTest extends AbstractTestInfra {
                                            .orElseThrow(() -> new IllegalStateException("Unable to create git repo for tests."));
 
         commit(git,
-               "master",
+               "main",
                "create files",
                content("non-moving.txt", multiline("a", "b", "c")),
                content("moving.txt", multiline("1", "2", "3")));
         moveCommit(singleMove("moving.txt", "moving1.txt"), "rename moving file");
         commit(git,
-               "master",
+               "main",
                "change content, no moves",
                content("non-moving.txt", multiline("a", "b", "d")),
                content("moving1.txt", multiline("1", "2", "4")));
         moveCommit(singleMove("moving1.txt", "dir/moving2.txt"), "move moving file to new dir");
         commit(git,
-               "master",
+               "main",
                "simulate checkout old version",
                content("moving1.txt", multiline("1", "2", "4")));
     }
@@ -69,12 +69,12 @@ public class JGitHistoryTest extends AbstractTestInfra {
     }
 
     private void moveCommit(Map<String, String> moves, String message) {
-        git.commit("master", new CommitInfo(null, "name", "name@example.com", message, null, null), false, null, new MoveCommitContent(moves));
+        git.commit("main", new CommitInfo(null, "name", "name@example.com", message, null, null), false, null, new MoveCommitContent(moves));
     }
 
     @Test
     public void listCommitsForUnmovedFile() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), "non-moving.txt").execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), "non-moving.txt").execute();
         assertEquals("non-moving.txt", history.getTrackedFilePath());
         assertEquals(2, history.getCommits().size());
         assertEquals("/non-moving.txt", history.trackedFileNameChangeFor(history.getCommits().get(0).getId()));
@@ -83,7 +83,7 @@ public class JGitHistoryTest extends AbstractTestInfra {
 
     @Test
     public void listCommitsForMovedFile() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), "dir/moving2.txt").execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), "dir/moving2.txt").execute();
         assertEquals("dir/moving2.txt", history.getTrackedFilePath());
         assertEquals(4, history.getCommits().size());
 
@@ -110,7 +110,7 @@ public class JGitHistoryTest extends AbstractTestInfra {
 
     @Test
     public void listCommitsForRestoredFile() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), "moving1.txt").execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), "moving1.txt").execute();
         assertEquals("moving1.txt", history.getTrackedFilePath());
         assertEquals(4, history.getCommits().size());
 
@@ -137,7 +137,7 @@ public class JGitHistoryTest extends AbstractTestInfra {
 
     @Test
     public void listCommitsOnDirectory() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), "dir").execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), "dir").execute();
         assertEquals("dir", history.getTrackedFilePath());
         assertEquals(1, history.getCommits().size());
 
@@ -149,7 +149,7 @@ public class JGitHistoryTest extends AbstractTestInfra {
 
     @Test
     public void listCommitsOnRootDirectoryViaAbsolute() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), "/").execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), "/").execute();
         assertEquals("/", history.getTrackedFilePath());
         assertEquals(5, history.getCommits().size());
 
@@ -161,7 +161,7 @@ public class JGitHistoryTest extends AbstractTestInfra {
 
     @Test
     public void listCommitsOnRootDirectoryViaNull() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), null).execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), null).execute();
         assertEquals("/", history.getTrackedFilePath());
         assertEquals(5, history.getCommits().size());
 
@@ -173,7 +173,7 @@ public class JGitHistoryTest extends AbstractTestInfra {
 
     @Test
     public void listCommitsOnRootDirectoryViaEmpty() throws Exception {
-        final CommitHistory history = new ListCommits(git, git.getRef("master"), "").execute();
+        final CommitHistory history = new ListCommits(git, git.getRef("main"), "").execute();
         assertEquals("/", history.getTrackedFilePath());
         assertEquals(5, history.getCommits().size());
 

@@ -105,7 +105,7 @@ public class K8SFileSystemInitTest {
          * Handling this hard coded dependency
          * https://github.com/kiegroup/appformer/blob/92d05f8620fb775a9fdd96574273de2deda3d215/uberfire-structure/uberfire-structure-backend/src/main/java/org/guvnor/structure/backend/config/ConfigurationServiceImpl.java#L129
          */
-        assertThat(root.toUri().toString().contains("/master@")).isTrue();
+        assertThat(root.toUri().toString().contains("/main@")).isTrue();
         assertThat(root).isEqualTo(fileSystem.getPath("/path").getRoot());
         assertThat(root).isEqualTo(fileSystem.getPath("/path").getParent());
         assertThat(root.getRoot().equals(root)).isTrue();

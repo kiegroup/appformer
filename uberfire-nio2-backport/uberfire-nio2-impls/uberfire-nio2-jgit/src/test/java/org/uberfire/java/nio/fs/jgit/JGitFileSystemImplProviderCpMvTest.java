@@ -42,7 +42,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@copybranch-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@copybranch-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -91,7 +91,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         provider.newFileSystem(newRepo,
                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("git://master@copyasset-test-repo/myfile1.txt"));
+        final Path path = provider.getPath(URI.create("git://main@copyasset-test-repo/myfile1.txt"));
         {
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -131,7 +131,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         provider.newFileSystem(newRepo,
                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("git://master@copydir-test-repo/myfile1.txt"));
+        final Path path = provider.getPath(URI.create("git://main@copydir-test-repo/myfile1.txt"));
         {
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -152,7 +152,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@copydir-test-repo/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo/"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo/"));
 
             provider.copy(source,
                           target);
@@ -165,7 +165,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@copydir-test-repo/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo/some/place/here/"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo/some/place/here/"));
 
             provider.copy(source,
                           target);
@@ -178,7 +178,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@copydir-test-repo/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo/soXme/place/here"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo/soXme/place/here"));
 
             provider.copy(source,
                           target);
@@ -191,7 +191,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@copydir-test-repo/"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo/other_here/"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo/other_here/"));
 
             provider.copy(source,
                           target);
@@ -204,7 +204,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@copydir-test-repo/not_exists"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo/xxxxxxxxother_here/"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo/xxxxxxxxother_here/"));
 
             assertThatThrownBy(() -> provider.copy(source, target))
                     .isInstanceOf(NoSuchFileException.class);
@@ -212,7 +212,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@copydir-test-repo/"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo/other_here/"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo/other_here/"));
 
             assertThatThrownBy(() -> provider.copy(source, target))
                     .isInstanceOf(FileAlreadyExistsException.class);
@@ -229,19 +229,19 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         provider.newFileSystem(newRepo2,
                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("git://master@copyasset-test-repo1/myfile1.txt"));
+        final Path path = provider.getPath(URI.create("git://main@copyasset-test-repo1/myfile1.txt"));
         {
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
             outStream.close();
         }
 
-        final Path target = provider.getPath(URI.create("git://master@copyasset-test-repo2/myfile1.txt"));
+        final Path target = provider.getPath(URI.create("git://main@copyasset-test-repo2/myfile1.txt"));
 
         provider.copy(path,
                       target);
 
-        final DirectoryStream<Path> stream = provider.newDirectoryStream(provider.getPath(URI.create("git://master@copyasset-test-repo2/")),
+        final DirectoryStream<Path> stream = provider.newDirectoryStream(provider.getPath(URI.create("git://main@copyasset-test-repo2/")),
                                                                          null);
 
         for (Path path1 : stream) {
@@ -261,19 +261,19 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         provider.newFileSystem(newRepo2,
                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("git://master@copydir-test-repo1/myfile1.txt"));
+        final Path path = provider.getPath(URI.create("git://main@copydir-test-repo1/myfile1.txt"));
         {
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
             outStream.close();
         }
-        final Path path2 = provider.getPath(URI.create("git://master@copydir-test-repo2/path/myfile2.txt"));
+        final Path path2 = provider.getPath(URI.create("git://main@copydir-test-repo2/path/myfile2.txt"));
         {
             final OutputStream outStream2 = provider.newOutputStream(path2);
             outStream2.write("my cool content".getBytes());
             outStream2.close();
         }
-        final Path path3 = provider.getPath(URI.create("git://master@copydir-test-repo2/path/myfile3.txt"));
+        final Path path3 = provider.getPath(URI.create("git://main@copydir-test-repo2/path/myfile3.txt"));
         {
             final OutputStream outStream3 = provider.newOutputStream(path3);
             outStream3.write("my cool content".getBytes());
@@ -281,8 +281,8 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         }
 
         {
-            final Path source = provider.getPath(URI.create("git://master@copydir-test-repo2/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo1/"));
+            final Path source = provider.getPath(URI.create("git://main@copydir-test-repo2/path"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo1/"));
 
             provider.copy(source,
                           target);
@@ -294,8 +294,8 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         }
 
         {
-            final Path source = provider.getPath(URI.create("git://master@copydir-test-repo2/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo1/some/place/here/"));
+            final Path source = provider.getPath(URI.create("git://main@copydir-test-repo2/path"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo1/some/place/here/"));
 
             provider.copy(source,
                           target);
@@ -307,8 +307,8 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         }
 
         {
-            final Path source = provider.getPath(URI.create("git://master@copydir-test-repo2/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo1/soXme/place/here"));
+            final Path source = provider.getPath(URI.create("git://main@copydir-test-repo2/path"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo1/soXme/place/here"));
 
             provider.copy(source,
                           target);
@@ -320,16 +320,16 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         }
 
         {
-            final Path source = provider.getPath(URI.create("git://master@copydir-test-repo1/not_exists"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo2/xxxxxxxxother_here/"));
+            final Path source = provider.getPath(URI.create("git://main@copydir-test-repo1/not_exists"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo2/xxxxxxxxother_here/"));
 
             assertThatThrownBy(() -> provider.copy(source, target))
                     .isInstanceOf(NoSuchFileException.class);
         }
 
         {
-            final Path source = provider.getPath(URI.create("git://master@copydir-test-repo2/path"));
-            final Path target = provider.getPath(URI.create("git://master@copydir-test-repo1/some/place/here/"));
+            final Path source = provider.getPath(URI.create("git://main@copydir-test-repo2/path"));
+            final Path target = provider.getPath(URI.create("git://main@copydir-test-repo1/some/place/here/"));
 
             assertThatThrownBy(() -> provider.copy(source, target))
                     .isInstanceOf(FileAlreadyExistsException.class);
@@ -343,7 +343,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@movebranch-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@movebranch-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -366,7 +366,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         }
 
         final Path source = provider.getPath(URI.create("git://user_branch@movebranch-test-repo/"));
-        final Path target = provider.getPath(URI.create("git://master@movebranch-test-repo/"));
+        final Path target = provider.getPath(URI.create("git://main@movebranch-test-repo/"));
 
         assertThatThrownBy(() -> provider.move(source, target))
                 .isInstanceOf(FileAlreadyExistsException.class);
@@ -388,7 +388,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         provider.newFileSystem(newRepo,
                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("git://master@moveasset-test-repo/myfile1.txt"));
+        final Path path = provider.getPath(URI.create("git://main@moveasset-test-repo/myfile1.txt"));
         {
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -424,7 +424,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         provider.newFileSystem(newRepo,
                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("git://master@movedir-test-repo/myfile1.txt"));
+        final Path path = provider.getPath(URI.create("git://main@movedir-test-repo/myfile1.txt"));
         {
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -445,7 +445,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
 
         {
             final Path source = provider.getPath(URI.create("git://user_branch@movedir-test-repo/path"));
-            final Path target = provider.getPath(URI.create("git://master@movedir-test-repo/"));
+            final Path target = provider.getPath(URI.create("git://main@movedir-test-repo/"));
 
             try {
                 provider.move(source,
@@ -463,7 +463,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@cherrypick-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@cherrypick-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
@@ -488,7 +488,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         String commit2CherryPick;
         String cherryPickContent = "my 2nd cool content";
         {
-            final Path path = provider.getPath(URI.create("git://master@cherrypick-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@cherrypick-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write(cherryPickContent.getBytes());
@@ -514,7 +514,7 @@ public class JGitFileSystemImplProviderCpMvTest extends AbstractTestInfra {
         String commit2CherryPick2;
         String cherryPickContent2 = "my 4tn cool content";
         {
-            final Path path = provider.getPath(URI.create("git://master@cherrypick-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@cherrypick-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write(cherryPickContent2.getBytes());

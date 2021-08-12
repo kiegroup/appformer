@@ -76,7 +76,7 @@ public class DownloadMenuItemBuilderTest {
 
         final Command command = downloadMenuItemBuilder.makeMenuItemCommand(pathSupplier);
 
-        when(path.toURI()).thenReturn("default://master@MySpace/Mortgages/src/main/resources/rule.drl");
+        when(path.toURI()).thenReturn("default://main@MySpace/Mortgages/src/main/resources/rule.drl");
         doNothing().when(downloadMenuItemBuilder).open(any());
 
         command.execute();
@@ -87,9 +87,9 @@ public class DownloadMenuItemBuilderTest {
     @Test
     public void testDownload() {
 
-        final String expectedDownloadURL = "defaulteditor/download?path=default%3A%2F%2Fmaster%40MySpace%2FMortgages%2Fsrc%2Fmain%2Fresources%2Frule.drl";
+        final String expectedDownloadURL = "defaulteditor/download?path=default%3A%2F%2Fmain%40MySpace%2FMortgages%2Fsrc%2Fmain%2Fresources%2Frule.drl";
 
-        when(path.toURI()).thenReturn("default://master@MySpace/Mortgages/src/main/resources/rule.drl");
+        when(path.toURI()).thenReturn("default://main@MySpace/Mortgages/src/main/resources/rule.drl");
         doNothing().when(downloadMenuItemBuilder).open(any());
 
         downloadMenuItemBuilder.download(pathSupplier);
@@ -100,9 +100,9 @@ public class DownloadMenuItemBuilderTest {
     @Test
     public void testDownloadSpaceAndAmpersand() {
 
-        final String expectedDownloadURL = "defaulteditor/download?path=default%3A%2F%2Fmaster%40MySpace%2FMortgages%2Fsrc%2Fmain%2Fresources%2Fa+%26+b.drl";
+        final String expectedDownloadURL = "defaulteditor/download?path=default%3A%2F%2Fmain%40MySpace%2FMortgages%2Fsrc%2Fmain%2Fresources%2Fa+%26+b.drl";
 
-        when(path.toURI()).thenReturn("default://master@MySpace/Mortgages/src/main/resources/a & b.drl");
+        when(path.toURI()).thenReturn("default://main@MySpace/Mortgages/src/main/resources/a & b.drl");
         doNothing().when(downloadMenuItemBuilder).open(any());
 
         downloadMenuItemBuilder.download(pathSupplier);

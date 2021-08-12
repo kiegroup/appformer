@@ -144,19 +144,19 @@ public class RepositoriesPresenterTest {
         itemPresenter1 = createItemPresenter(itemView1,
                                              guvnorStructureContext,
                                              r1,
-                                             "master");
+                                             "main");
         itemPresenter2 = createItemPresenter(itemView2,
                                              guvnorStructureContext,
                                              r2,
-                                             "master");
+                                             "main");
         itemPresenter3 = createItemPresenter(itemView3,
                                              guvnorStructureContext,
                                              r3,
-                                             "master");
+                                             "main");
         itemPresenter4 = createItemPresenter(itemView4,
                                              guvnorStructureContext,
                                              r4,
-                                             "master");
+                                             "main");
 
         presenter = new RepositoriesPresenter(view,
                                               guvnorStructureContext);
@@ -164,13 +164,13 @@ public class RepositoriesPresenterTest {
         when(repositoryService.getRepositories(eq(new Space("space")))).thenReturn(repositories);
 
         when(view.addRepository(r1,
-                                "master")).thenReturn(itemPresenter1);
+                                "main")).thenReturn(itemPresenter1);
         when(view.addRepository(r2,
-                                "master")).thenReturn(itemPresenter2);
+                                "main")).thenReturn(itemPresenter2);
         when(view.addRepository(r3,
-                                "master")).thenReturn(itemPresenter3);
+                                "main")).thenReturn(itemPresenter3);
         when(view.addRepository(r4,
-                                "master")).thenReturn(itemPresenter4);
+                                "main")).thenReturn(itemPresenter4);
 
         doAnswer(new Answer<Void>() {
             @Override
@@ -203,8 +203,8 @@ public class RepositoriesPresenterTest {
 
         presenter.onStartup();
 
-        //Emulates the master branch was selected for the given repository prior the new branch was created.
-        when(itemView1.getSelectedBranch()).thenReturn("master");
+        //Emulates the main branch was selected for the given repository prior the new branch was created.
+        when(itemView1.getSelectedBranch()).thenReturn("main");
 
         final Branch theNewBranch = new Branch("theNewBranch",
                                                branchPath);
@@ -214,7 +214,7 @@ public class RepositoriesPresenterTest {
         //Emulates the context receiving the new branch event for a branch created in r1.
         guvnorStructureContext.onNewBranch(new NewBranchEvent(r1,
                                                               "theNewBranch",
-                                                              "master",
+                                                              "main",
                                                               "user"));
 
         verify(handler).onNewBranchAdded("r1",
@@ -239,7 +239,7 @@ public class RepositoriesPresenterTest {
                                         String space) {
         GitRepository repository = new GitRepository(alias,
                                                      new Space(space));
-        repository.addBranch(new Branch("master",
+        repository.addBranch(new Branch("main",
                                         branchPath));
         return repository;
     }

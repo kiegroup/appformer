@@ -103,7 +103,7 @@ public class ACLMigrationToolTest {
         when(orgUnit1.getGroups()).thenReturn(Collections.singleton("group1"));
 
         when(repo1.getIdentifier()).thenReturn("repo1");
-        final Branch master = new Branch("master",
+        final Branch main = new Branch("main",
                                          repo1root);
 
         when(repo1.getResourceType()).thenReturn(Repository.RESOURCE_TYPE);

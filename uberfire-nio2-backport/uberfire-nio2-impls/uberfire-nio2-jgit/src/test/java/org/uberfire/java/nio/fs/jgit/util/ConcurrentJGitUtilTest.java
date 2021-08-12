@@ -54,7 +54,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "1st commit",
@@ -66,7 +66,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "2nd commit",
@@ -79,20 +79,20 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                    }}).execute();
 
         try {
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file1.txt"));
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file1.txt"));
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file1.txt"));
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file1.txt"));
         } catch (Exception ex) {
             fail();
         }
 
         try {
-            git.getPathInfo("master",
+            git.getPathInfo("main",
                             "path/to/file1.txt");
             fail("forced to fail!");
         } catch (RuntimeException ex) {
@@ -110,7 +110,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "1st commit",
@@ -122,7 +122,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "2nd commit",
@@ -135,20 +135,20 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                    }}).execute();
 
         try {
-            assertNotNull(git.blobAsInputStream("master",
+            assertNotNull(git.blobAsInputStream("main",
                                                 "path/to/file1.txt"));
-            assertNotNull(git.blobAsInputStream("master",
+            assertNotNull(git.blobAsInputStream("main",
                                                 "path/to/file1.txt"));
-            assertNotNull(git.blobAsInputStream("master",
+            assertNotNull(git.blobAsInputStream("main",
                                                 "path/to/file1.txt"));
-            assertNotNull(git.blobAsInputStream("master",
+            assertNotNull(git.blobAsInputStream("main",
                                                 "path/to/file1.txt"));
         } catch (Exception ex) {
             fail();
         }
 
         try {
-            assertNotNull(git.blobAsInputStream("master",
+            assertNotNull(git.blobAsInputStream("main",
                                                 "path/to/file1.txt"));
             fail("forced to fail!");
         } catch (NoSuchFileException ex) {
@@ -166,7 +166,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "1st commit",
@@ -178,7 +178,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "2nd commit",
@@ -191,20 +191,20 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                    }}).execute();
 
         try {
-            assertNotNull(git.listPathContent("master",
+            assertNotNull(git.listPathContent("main",
                                               "path/to/"));
-            assertNotNull(git.listPathContent("master",
+            assertNotNull(git.listPathContent("main",
                                               "path/to/"));
-            assertNotNull(git.listPathContent("master",
+            assertNotNull(git.listPathContent("main",
                                               "path/to/"));
-            assertNotNull(git.listPathContent("master",
+            assertNotNull(git.listPathContent("main",
                                               "path/to/"));
         } catch (Exception ex) {
             fail();
         }
 
         try {
-            assertNotNull(git.listPathContent("master",
+            assertNotNull(git.listPathContent("main",
                                               "path/to/"));
             fail("forced to fail!");
         } catch (RuntimeException ex) {
@@ -222,7 +222,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "1st commit",
@@ -234,7 +234,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "2nd commit",
@@ -247,20 +247,20 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                    }}).execute();
 
         try {
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file2.txt"));
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file2.txt"));
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file2.txt"));
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file2.txt"));
         } catch (Exception ex) {
             fail();
         }
 
         try {
-            assertNotNull(git.getPathInfo("master",
+            assertNotNull(git.getPathInfo("main",
                                           "path/to/file2.txt"));
             fail("forced to fail!");
         } catch (RuntimeException ex) {
@@ -278,7 +278,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "1st commit",
@@ -290,7 +290,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "2nd commit",
@@ -303,16 +303,16 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                    }}).execute();
 
         try {
-            assertNotNull(git.getLastCommit("master"));
-            assertNotNull(git.getLastCommit("master"));
-            assertNotNull(git.getLastCommit("master"));
-            assertNotNull(git.getLastCommit("master"));
+            assertNotNull(git.getLastCommit("main"));
+            assertNotNull(git.getLastCommit("main"));
+            assertNotNull(git.getLastCommit("main"));
+            assertNotNull(git.getLastCommit("main"));
         } catch (Exception ex) {
             fail();
         }
 
         try {
-            assertNotNull(git.getLastCommit("master"));
+            assertNotNull(git.getLastCommit("main"));
             fail("forced to fail!");
         } catch (RuntimeException ex) {
         }
@@ -329,7 +329,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
         final Git git = new CreateRepository(gitFolder).execute().get();
 
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "1st commit",
@@ -341,7 +341,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
         new Commit(git,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "2nd commit",
@@ -353,7 +353,7 @@ public class ConcurrentJGitUtilTest extends AbstractTestInfra {
                            tempFile("temp2222"));
                    }}).execute();
 
-        final RevCommit commit = git.getLastCommit("master");
+        final RevCommit commit = git.getLastCommit("main");
         try {
             assertNotNull(git.listCommits(null,
                                           commit));

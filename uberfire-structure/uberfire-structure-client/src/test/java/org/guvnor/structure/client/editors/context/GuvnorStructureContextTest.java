@@ -76,10 +76,10 @@ public class GuvnorStructureContextTest {
         repositories = new ArrayList<>();
 
         repositories.add(makeRepository("my-repo",
-                                        "master",
+                                        "main",
                                         "dev"));
         repositories.add(makeRepository("your-repo",
-                                        "master",
+                                        "main",
                                         "release"));
 
         OrganizationalUnit ou = mock(OrganizationalUnit.class);
@@ -115,7 +115,7 @@ public class GuvnorStructureContextTest {
         assertEquals(2,
                      result.size());
 
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("my-repo"));
         assertEquals("release",
                      context.getCurrentBranch("your-repo"));
@@ -128,18 +128,18 @@ public class GuvnorStructureContextTest {
     public void testReLoadPicksUpNewRepositories() throws Exception {
 
         repositories.add(makeRepository("my-new-repo",
-                                        "master"));
+                                        "main"));
 
         context.getRepositories(callback);
 
         assertEquals(3,
                      result.size());
 
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("my-repo"));
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("your-repo"));
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("my-new-repo"));
 
         verify(callback,
@@ -156,7 +156,7 @@ public class GuvnorStructureContextTest {
         assertEquals(1,
                      result.size());
 
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("my-repo"));
         assertNull(context.getCurrentBranch("your-repo"));
     }
@@ -164,7 +164,7 @@ public class GuvnorStructureContextTest {
     @Test
     public void testReLoadPicksUpRemovedBranch() throws Exception {
 
-        // This deletes master branch
+        // This deletes main branch
         final List<Branch> branchList = new ArrayList<>();
         final Branch devBranch = new Branch("dev",
                                             mock(Path.class));
@@ -176,16 +176,16 @@ public class GuvnorStructureContextTest {
 
         assertEquals("dev",
                      context.getCurrentBranch("my-repo"));
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("your-repo"));
     }
 
     @Test
     public void testNewRepository() throws Exception {
         context.onNewRepository(new NewRepositoryEvent(makeRepository("new-repo",
-                                                                      "master")));
+                                                                      "main")));
 
-        assertEquals("master",
+        assertEquals("main",
                      context.getCurrentBranch("new-repo"));
     }
 
@@ -207,7 +207,7 @@ public class GuvnorStructureContextTest {
     @Test
     public void testLoadDefaultBranches() throws Exception {
         for (Repository repository : result) {
-            assertEquals("master",
+            assertEquals("main",
                          context.getCurrentBranch(repository.getAlias()));
         }
     }
@@ -223,7 +223,7 @@ public class GuvnorStructureContextTest {
                 assertEquals("dev",
                              context.getCurrentBranch(repository.getAlias()));
             } else {
-                assertEquals("master",
+                assertEquals("main",
                              context.getCurrentBranch(repository.getAlias()));
             }
         }

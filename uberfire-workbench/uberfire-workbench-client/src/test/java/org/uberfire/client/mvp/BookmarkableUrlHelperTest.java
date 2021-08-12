@@ -615,7 +615,7 @@ public class BookmarkableUrlHelperTest extends TestCase {
     @Test
     public void testRegisterCloseEditor() {
         final Path path = PathFactory.newPath("file",
-                                              "default://master@repo/path/to/file");
+                                              "default://main@repo/path/to/file");
         final PlaceRequest ppr = new PathPlaceRequest(path);
 
         ppr.setIdentifier("Perspective Editor");
@@ -630,7 +630,7 @@ public class BookmarkableUrlHelperTest extends TestCase {
                      url);
 
         // invoke with invalid field type
-        final PlaceRequest dpr = new DefaultPlaceRequest("default://master@repo/path/to/file");
+        final PlaceRequest dpr = new DefaultPlaceRequest("default://main@repo/path/to/file");
 
         url = BookmarkableUrlHelper
                 .registerCloseEditor(perspectiveOpenUrl,
@@ -642,7 +642,7 @@ public class BookmarkableUrlHelperTest extends TestCase {
     @Test
     public void testRegisterCloseEditorWithScreens() {
         final Path path = PathFactory.newPath("file",
-                                              "default://master@repo/path/to/file");
+                                              "default://main@repo/path/to/file");
         final PlaceRequest ppr = new PathPlaceRequest(path);
 
         ppr.setIdentifier("Perspective Editor");

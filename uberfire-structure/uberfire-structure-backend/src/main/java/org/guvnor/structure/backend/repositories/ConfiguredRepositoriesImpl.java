@@ -60,7 +60,7 @@ public class ConfiguredRepositoriesImpl implements ConfiguredRepositories {
     /**
      * @param space Space of the repository.
      * @param alias Name of the repository.
-     * @return Repository that has a random branch as a root, usually master if master exists.
+     * @return Repository that has a random branch as a root, usually main if main exists.
      */
     public Repository getRepositoryByRepositoryAlias(final Space space,
                                                      final String alias) {
@@ -73,7 +73,7 @@ public class ConfiguredRepositoriesImpl implements ConfiguredRepositories {
     /**
      * @param alias Name of the repository.
      * @param space Space of the repository.
-     * @return Repository that has a random branch as a root, usually master if master exists.
+     * @return Repository that has a random branch as a root, usually main if main exists.
      */
     public Repository getRepositoryByRepositoryAlias(final Space space,
                                                      final String alias,
@@ -107,7 +107,7 @@ public class ConfiguredRepositoriesImpl implements ConfiguredRepositories {
     /**
      * @param space Space of the repository.
      * @param root Path to the repository root in any branch.
-     * @return Repository root branch is still the default, usually master.
+     * @return Repository root branch is still the default, usually main.
      */
     public Repository getRepositoryByRootPath(final Space space,
                                               final Path root) {

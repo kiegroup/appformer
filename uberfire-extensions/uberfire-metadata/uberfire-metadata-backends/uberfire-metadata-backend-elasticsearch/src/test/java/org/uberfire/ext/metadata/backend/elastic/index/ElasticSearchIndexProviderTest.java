@@ -67,8 +67,8 @@ public class ElasticSearchIndexProviderTest {
     @Test
     public void testEscapeSpecialCharacters() {
 
-        String expected = "(+field:value AND +field2:\\+AAA123=) OR url:\"git\\:\\/\\/master@path\\/to\\/file\"";
-        String queryString = "(+field:value AND +field2:+AAA123=) OR url:git://master@path/to/file";
+        String expected = "(+field:value AND +field2:\\+AAA123=) OR url:\"git\\:\\/\\/main@path\\/to\\/file\"";
+        String queryString = "(+field:value AND +field2:+AAA123=) OR url:git://main@path/to/file";
         String escapedQueryString = this.provider.escapeSpecialCharacters(queryString);
         assertEquals(expected,
                      escapedQueryString);

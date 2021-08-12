@@ -55,7 +55,7 @@ public class JGitFileSystemImplProviderEncodingTest extends AbstractTestInfra {
                                                                                       Collections.emptyMap());
 
         new Commit(origin.getGit(),
-                   "master",
+                   "main",
                    "user1",
                    "user1@example.com",
                    "commitx",
@@ -68,7 +68,7 @@ public class JGitFileSystemImplProviderEncodingTest extends AbstractTestInfra {
                    }}).execute();
 
         new Commit(origin.getGit(),
-                   "master",
+                   "main",
                    "user1",
                    "user1@example.com",
                    "commitx",
@@ -81,7 +81,7 @@ public class JGitFileSystemImplProviderEncodingTest extends AbstractTestInfra {
                    }}).execute();
 
         new Commit(origin.getGit(),
-                   "master",
+                   "main",
                    "user1",
                    "user1@example.com",
                    "commitx",

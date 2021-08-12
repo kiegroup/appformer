@@ -55,8 +55,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class K8SFileSystemProviderIntegrationTest {
 
-    private static final String KUBERNETES_MASTER_API_URL = System.getProperty(Config.KUBERNETES_MASTER_SYSTEM_PROPERTY);
-    private static final String KUBERNETES_MASTER_API_TOKEN = System.getProperty(Config.KUBERNETES_OAUTH_TOKEN_SYSTEM_PROPERTY);
+    private static final String KUBERNETES_MAIN_API_URL = System.getProperty(Config.KUBERNETES_MASTER_SYSTEM_PROPERTY);
+    private static final String KUBERNETES_MAIN_API_TOKEN = System.getProperty(Config.KUBERNETES_OAUTH_TOKEN_SYSTEM_PROPERTY);
     private static final String TEST_NAMESPACE = "k8sfsp-test";
     private static KubernetesClient client;
 
@@ -67,8 +67,8 @@ public class K8SFileSystemProviderIntegrationTest {
         System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY, TEST_NAMESPACE);
 
         Config config = new ConfigBuilder()
-                .withMasterUrl(KUBERNETES_MASTER_API_URL)
-                .withOauthToken(KUBERNETES_MASTER_API_TOKEN)
+                .withMasterUrl(KUBERNETES_MAIN_API_URL)
+                .withOauthToken(KUBERNETES_MAIN_API_TOKEN)
                 .withTrustCerts(true)
                 .withNamespace(TEST_NAMESPACE)
                 .build();
