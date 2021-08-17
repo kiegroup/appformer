@@ -24,7 +24,7 @@ under the License.
     <server>
       <id>example.project.http</id>
       <username>repouser</username>
-		<password>{fXaKtxSMwu4Hp4SQewRWABFcl11BRrvzeL4EZabDEyM=}</password>
+		  <password>{XpIfWM7/vnwHKeay1yVDI37YpqPWZp9KC6EFd2sUZno=}</password>
     </server>
   </servers>
 </settings>
