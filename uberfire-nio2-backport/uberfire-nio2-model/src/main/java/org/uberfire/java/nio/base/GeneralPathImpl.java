@@ -42,7 +42,7 @@ public class GeneralPathImpl
                             boolean isNormalized) {
         super(fs,
               path,
-              isRoot ? "main@localhost" : "",
+              isRoot ? "master@localhost" : "",
               isRoot,
               isRealPath,
               isNormalized);
