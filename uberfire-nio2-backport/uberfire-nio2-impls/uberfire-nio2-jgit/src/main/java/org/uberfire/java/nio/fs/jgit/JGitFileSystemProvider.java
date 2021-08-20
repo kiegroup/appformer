@@ -102,10 +102,8 @@ import org.uberfire.java.nio.base.version.VersionAttributeView;
 import org.uberfire.java.nio.base.version.VersionAttributes;
 import org.uberfire.java.nio.channels.AsynchronousFileChannel;
 import org.uberfire.java.nio.channels.SeekableByteChannel;
-import org.uberfire.java.nio.file.AccessDeniedException;
 import org.uberfire.java.nio.file.AccessMode;
 import org.uberfire.java.nio.file.AmbiguousFileSystemNameException;
-import org.uberfire.java.nio.file.AtomicMoveNotSupportedException;
 import org.uberfire.java.nio.file.CopyOption;
 import org.uberfire.java.nio.file.DeleteOption;
 import org.uberfire.java.nio.file.DirectoryNotEmptyException;
@@ -187,33 +185,20 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
     private static final Logger LOG = LoggerFactory.getLogger(JGitFileSystemProvider.class);
     private static final TimeUnit LOCK_LAST_ACCESS_TIME_UNIT = TimeUnit.SECONDS;
     private static final long LOCK_LAST_ACCESS_THRESHOLD = 10;
-
-    private final Map<String, String> fullHostNames = new HashMap<>();
-
-    private boolean isDefault;
-
-    private final Object postponedEventsLock = new Object();
-
-    private Daemon daemonService = null;
-
-    private GitSSHService gitSSHService = null;
-
-    private FS detectedFS = FS.DETECTED;
-
-    private ExecutorService executorService;
-
     final KetchSystem system = new KetchSystem();
-
     final KetchLeaderCache leaders = new KetchLeaderCache(system);
-
+    private final Map<String, String> fullHostNames = new HashMap<>();
+    private final Object postponedEventsLock = new Object();
+    private final ExecutorService executorService;
+    JGitFileSystemProviderConfiguration config;
+    JGitFileSystemsManager fsManager;
+    JGitFileSystemsEventsManager fsEventsManager;
+    private boolean isDefault;
+    private Daemon daemonService = null;
+    private GitSSHService gitSSHService = null;
+    private FS detectedFS = FS.DETECTED;
     private AuthenticationService httpAuthenticator;
     private FileSystemAuthorizer authorizer;
-
-    JGitFileSystemProviderConfiguration config;
-
-    JGitFileSystemsManager fsManager;
-
-    JGitFileSystemsEventsManager fsEventsManager;
 
     /**
      * Creates a JGit filesystem provider which takes its configuration from system properties. In a normal production
@@ -260,6 +245,41 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         setupDaemon();
 
         setupGitSSH();
+    }
+
+    static Map<FileSystemHooks, ?> extractFSHooks(Map<String, ?> env) {
+
+        return Arrays.stream(FileSystemHooks.values())
+                .filter(h -> env.get(h.name()) != null)
+                .collect(Collectors.toMap(Function.identity(),
+                                          k -> env.get(k.name())));
+    }
+
+    //by spec, it should be a list of pairs, but here we're just using a map.
+    private static Map<String, String> getQueryParams(final URI uri) {
+        final String[] params = uri.getQuery().split("&");
+        return new HashMap<String, String>(params.length) {{
+            for (String param : params) {
+                final String[] kv = param.split("=");
+                final String name = kv[0];
+                final String value;
+                if (kv.length == 2) {
+                    value = kv[1];
+                } else {
+                    value = "";
+                }
+
+                put(name,
+                    value);
+            }
+        }};
+    }
+
+    protected static String removeRefsFromTree(final String tree) {
+        if (tree != null && tree.startsWith("refs/")) {
+            return tree.replaceFirst("(refs/(remotes/[^/]*|heads|tags)/)", "");
+        }
+        return tree;
     }
 
     private void setupFSEvents() {
@@ -402,31 +422,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
 
     public Map<String, String> getFullHostNames() {
         return new HashMap<>(fullHostNames);
-    }
-
-    public class RepositoryResolverImpl<T> implements RepositoryResolver<T> {
-
-        @Override
-        public Repository open(final T client,
-                               final String name)
-                throws RepositoryNotFoundException, ServiceNotAuthorizedException {
-            final User user = extractUser(client);
-            final JGitFileSystem fs = fsManager.get(name);
-            if (fs == null) {
-                throw new RepositoryNotFoundException(name);
-            }
-
-            if (authorizer != null && !authorizer.authorize(fs,
-                                                            user)) {
-                throw new ServiceNotAuthorizedException("User not authorized.");
-            }
-
-            return fs.getGit().getRepository();
-        }
-
-        public JGitFileSystem resolveFileSystem(final Repository repository) {
-            return fsManager.get(repository);
-        }
     }
 
     private User extractUser(Object client) {
@@ -649,14 +644,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         return fs;
     }
 
-    static Map<FileSystemHooks, ?> extractFSHooks(Map<String, ?> env) {
-
-        return Arrays.stream(FileSystemHooks.values())
-                .filter(h -> env.get(h.name()) != null)
-                .collect(Collectors.toMap(Function.identity(),
-                                          k -> env.get(k.name())));
-    }
-
     private void validateFSName(URI uri,
                                 String fsName) {
         if (fsManager.containsKey(fsName)) {
@@ -724,7 +711,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         String envPassword = extractEnvProperty(GIT_ENV_KEY_PASSWORD,
                                                 env);
         Boolean envMirror = (Boolean) env.get(GIT_ENV_KEY_MIRROR);
-        boolean isMirror = envMirror == null ? true : envMirror;
+        boolean isMirror = envMirror == null || envMirror;
 
         CredentialsProvider credential = buildCredential(envUsername,
                                                          envPassword);
@@ -1852,7 +1839,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
     public void move(final Path source,
                      final Path target,
                      final CopyOption... options)
-            throws DirectoryNotEmptyException, AtomicMoveNotSupportedException, IOException, SecurityException {
+            throws IOException, SecurityException {
         checkNotNull("source",
                      source);
         checkNotNull("target",
@@ -2052,7 +2039,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
     public void checkAccess(final Path path,
                             final AccessMode... modes)
             throws
-            UnsupportedOperationException, NoSuchFileException, AccessDeniedException, IOException, SecurityException {
+            UnsupportedOperationException, IOException, SecurityException {
         checkNotNull("path",
                      path);
 
@@ -2133,7 +2120,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
     public <A extends BasicFileAttributes> A readAttributes(final Path path,
                                                             final Class<A> type,
                                                             final LinkOption... options)
-            throws NoSuchFileException, UnsupportedOperationException, IOException, SecurityException {
+            throws UnsupportedOperationException, IOException, SecurityException {
         checkNotNull("path",
                      path);
         checkNotNull("type",
@@ -2338,26 +2325,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         return uri.getQuery() != null && uri.getQuery().contains("push");
     }
 
-    //by spec, it should be a list of pairs, but here we're just using a map.
-    private static Map<String, String> getQueryParams(final URI uri) {
-        final String[] params = uri.getQuery().split("&");
-        return new HashMap<String, String>(params.length) {{
-            for (String param : params) {
-                final String[] kv = param.split("=");
-                final String name = kv[0];
-                final String value;
-                if (kv.length == 2) {
-                    value = kv[1];
-                } else {
-                    value = "";
-                }
-
-                put(name,
-                    value);
-            }
-        }};
-    }
-
     private CredentialsProvider buildCredential(String username,
                                                 String password) {
         if (username != null) {
@@ -2541,12 +2508,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                                        oldHead,
                                                        newHead);
 
-        final String tree;
-        if (_tree.startsWith("refs/")) {
-            tree = _tree.substring(_tree.lastIndexOf("/") + 1);
-        } else {
-            tree = _tree;
-        }
+        final String tree = removeRefsFromTree(_tree);
 
         final String host = tree + "@" + fs.getName();
 
@@ -2569,12 +2531,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                      final ObjectId oldHead,
                                      final ObjectId newHead) {
 
-        final String tree;
-        if (_tree.startsWith("refs/")) {
-            tree = _tree.substring(_tree.lastIndexOf("/") + 1);
-        } else {
-            tree = _tree;
-        }
+        final String tree = removeRefsFromTree(_tree);
 
         final String host = tree + "@" + fs.getName();
 
@@ -2627,6 +2584,14 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         return config;
     }
 
+    public void setDetectedFS(final FS detectedFS) {
+        this.detectedFS = detectedFS;
+    }
+
+    public JGitFileSystemsManager getFsManager() {
+        return fsManager;
+    }
+
     /**
      * implement Executor directly due to bugs in some older CDI implementations.
      */
@@ -2645,11 +2610,28 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         }
     }
 
-    public void setDetectedFS(final FS detectedFS) {
-        this.detectedFS = detectedFS;
-    }
+    public class RepositoryResolverImpl<T> implements RepositoryResolver<T> {
 
-    public JGitFileSystemsManager getFsManager() {
-        return fsManager;
+        @Override
+        public Repository open(final T client,
+                               final String name)
+                throws RepositoryNotFoundException, ServiceNotAuthorizedException {
+            final User user = extractUser(client);
+            final JGitFileSystem fs = fsManager.get(name);
+            if (fs == null) {
+                throw new RepositoryNotFoundException(name);
+            }
+
+            if (authorizer != null && !authorizer.authorize(fs,
+                                                            user)) {
+                throw new ServiceNotAuthorizedException("User not authorized.");
+            }
+
+            return fs.getGit().getRepository();
+        }
+
+        public JGitFileSystem resolveFileSystem(final Repository repository) {
+            return fsManager.get(repository);
+        }
     }
 }

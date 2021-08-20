@@ -17,7 +17,6 @@
 package org.uberfire.java.nio.fs.jgit;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,11 +79,22 @@ import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.uberfire.java.nio.file.StandardDeleteOption.NON_EMPTY_DIRECTORIES;
+import static org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider.removeRefsFromTree;
 
 public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
 
@@ -1626,26 +1636,6 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
         }
     }
 
-    private static class MyInvalidFileAttributeView implements BasicFileAttributeView {
-
-        @Override
-        public BasicFileAttributes readAttributes() throws org.uberfire.java.nio.IOException {
-            return null;
-        }
-
-        @Override
-        public void setTimes(FileTime lastModifiedTime,
-                             FileTime lastAccessTime,
-                             FileTime createTime) throws org.uberfire.java.nio.IOException {
-
-        }
-
-        @Override
-        public String name() {
-            return null;
-        }
-    }
-
     @Test
     public void checkProperAmend() throws Exception {
 
@@ -2128,7 +2118,8 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
     public void extractFSHooksTest() {
         Map<String, Object> env = new HashMap<>();
 
-        Object hook = (FileSystemHooks.FileSystemHook) context -> { };
+        Object hook = (FileSystemHooks.FileSystemHook) context -> {
+        };
 
         env.put("dora", "bento");
         env.put(FileSystemHooks.ExternalUpdate.name(), hook);
@@ -2144,7 +2135,8 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
     public void extractCheckBranchAccessHookTest() {
         Map<String, Object> env = new HashMap<>();
 
-        Object hook = (FileSystemHooks.FileSystemHook) context -> { };
+        Object hook = (FileSystemHooks.FileSystemHook) context -> {
+        };
 
         env.put("dora", "bento");
         env.put(FileSystemHooks.BranchAccessCheck.name(), hook);
@@ -2281,6 +2273,30 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
         assertThat(contentMoved).isNotNull().isEqualTo("little baby another-branch");
     }
 
+    @Test
+    public void test_removeRefsFromTree() {
+        assertThat(removeRefsFromTree("mybranch")).
+                isEqualTo("mybranch");
+
+        assertThat(removeRefsFromTree("my/branch")).
+                isEqualTo("my/branch");
+
+        assertThat(removeRefsFromTree("refs/remotes/origin/my/branch"))
+                .isEqualTo("my/branch");
+
+        assertThat(removeRefsFromTree("refs/heads/my/branch"))
+                .isEqualTo("my/branch");
+
+        assertThat(removeRefsFromTree("refs/tags/my/tag"))
+                .isEqualTo("my/tag");
+
+        assertThat(removeRefsFromTree("refs/heads/tags"))
+                .isEqualTo("tags");
+
+        assertThat(removeRefsFromTree("refs/tags/heads/tags"))
+                .isEqualTo("heads/tags");
+    }
+
     private String extractContent(Path path) throws IOException {
         final InputStream inputStream = provider.newInputStream(path);
         assertThat(inputStream).isNotNull();
@@ -2290,10 +2306,6 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
         inputStream.close();
 
         return content;
-    }
-
-    private interface MyAttrs extends BasicFileAttributes {
-
     }
 
     private VersionRecord makeVersionRecord(final String author,
@@ -2343,5 +2355,29 @@ public class JGitFileSystemImplProviderTest extends AbstractTestInfra {
             commits.add(commit);
         }
         return commits;
+    }
+
+    private interface MyAttrs extends BasicFileAttributes {
+
+    }
+
+    private static class MyInvalidFileAttributeView implements BasicFileAttributeView {
+
+        @Override
+        public BasicFileAttributes readAttributes() throws org.uberfire.java.nio.IOException {
+            return null;
+        }
+
+        @Override
+        public void setTimes(FileTime lastModifiedTime,
+                             FileTime lastAccessTime,
+                             FileTime createTime) throws org.uberfire.java.nio.IOException {
+
+        }
+
+        @Override
+        public String name() {
+            return null;
+        }
     }
 }
