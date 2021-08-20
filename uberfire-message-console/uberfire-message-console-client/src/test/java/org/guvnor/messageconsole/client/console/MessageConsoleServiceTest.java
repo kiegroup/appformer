@@ -15,18 +15,11 @@
  */
 package org.guvnor.messageconsole.client.console;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.NotificationOptions;
-import javax.enterprise.util.TypeLiteral;
 
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.messageconsole.events.FilteredMessagesEvent;
 import org.guvnor.messageconsole.events.PublishMessagesEvent;
@@ -38,10 +31,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.rpc.SessionInfo;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class MessageConsoleServiceTest {
@@ -98,37 +94,7 @@ public class MessageConsoleServiceTest {
         verify(filteredMessagesEvent, times(1)).fire(any());
     }
 
-    static class StubEventSource<T> implements Event<T> {
+    static class StubEventSource<T> extends EventSourceMock<T> {
 
-        @Override
-        public void fire(T event) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public Event<T> select(Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public <U extends T> Event<U> select(Class<U> subtype,
-                                             Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public <U extends T> CompletionStage<U> fireAsync(U event) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public <U extends T> CompletionStage<U> fireAsync(U event, NotificationOptions options) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public <U extends T> Event<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
     }
 }

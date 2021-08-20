@@ -38,12 +38,6 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-server</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.spec.javax.annotation</groupId>
-          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -103,8 +97,8 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

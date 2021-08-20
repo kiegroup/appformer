@@ -32,26 +32,20 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+      <groupId>jakarta.servlet.jsp</groupId>
+      <artifactId>jakarta.servlet.jsp-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
-      <artifactId>jboss-jsp-api_2.3_spec</artifactId>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.xml.bind</groupId>
-      <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.spec.javax.security.jacc</groupId>
-      <artifactId>jboss-jacc-api_1.5_spec</artifactId>
+      <groupId>jakarta.security.jacc</groupId>
+      <artifactId>jakarta.security.jacc-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -491,37 +485,23 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-server</artifactId>
-      <exclusions>
-        <!-- Collides with org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec -->
-        <exclusion>
-          <groupId>org.jboss.spec.javax.annotation</groupId>
-          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-security-client</artifactId>
-      <scope>provided</scope>
-      <exclusions>
-        <!-- Collides with org.jboss.spec.javax.el:jboss-el-api_2.2_spec -->
-        <exclusion>
-          <groupId>javax.el</groupId>
-          <artifactId>el-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.errai</groupId>
-      <artifactId>errai-jboss-as-support</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-javax-enterprise</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-security-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.errai</groupId>
+      <artifactId>errai-jboss-as-support</artifactId>
     </dependency>
 
     <dependency>
@@ -575,21 +555,14 @@
     <!-- Container provided dependencies -->
 
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <!-- Collides with org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec -->
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -612,44 +585,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-cdi</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
       <scope>provided</scope>
-      <exclusions>
-        <!-- Collides with jboss-annotations-api_1.2_spec -->
-        <exclusion>
-          <groupId>org.jboss.spec.javax.annotation</groupId>
-          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion> 
-        <!-- Collides with org.javassist:javassist -->
-        <exclusion>
-          <groupId>javassist</groupId>
-          <artifactId>javassist</artifactId>
-        </exclusion>
-        <!-- Collides with org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec -->
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- GWT and GWT Extensions -->

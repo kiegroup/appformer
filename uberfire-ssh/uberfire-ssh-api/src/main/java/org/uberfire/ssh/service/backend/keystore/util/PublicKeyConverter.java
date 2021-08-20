@@ -24,7 +24,8 @@ import org.apache.sshd.common.config.keys.PublicKeyEntryResolver;
 public class PublicKeyConverter {
 
     public static PublicKey fromString(final String keyStr) throws Exception {
-        return AuthorizedKeyEntry.parseAuthorizedKeyEntry(keyStr).resolvePublicKey(PublicKeyEntryResolver.IGNORING);
+        // sending null after updating to SSHD2.4
+        return AuthorizedKeyEntry.parseAuthorizedKeyEntry(keyStr).resolvePublicKey(null, PublicKeyEntryResolver.IGNORING);
     }
 
     public static String fromPublicKey(PublicKey publicKey) {

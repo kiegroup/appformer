@@ -74,22 +74,16 @@
 
     <!-- REST dependencies -->
     <dependency>
-      <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.spec.javax.xml.bind</groupId>
-      <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-cdi</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.resteasy</groupId>
-          <artifactId>resteasy-jaxrs</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- TEST: reflection -->
