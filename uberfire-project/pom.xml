@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-parent</artifactId>
-    <version>7.59.0.Final</version>
+    <version>7.59.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-project</artifactId>
