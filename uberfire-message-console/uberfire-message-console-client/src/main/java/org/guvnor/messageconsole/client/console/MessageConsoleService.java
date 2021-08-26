@@ -21,7 +21,7 @@ import com.google.gwt.view.client.ListDataProvider;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.messageconsole.events.*;
-import org.guvnor.messageconsole.whitelist.MessageConsoleWhiteList;
+import org.guvnor.messageconsole.allowlist.MessageConsoleAllowList;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -86,7 +86,7 @@ public class MessageConsoleService {
                 publishEvent.getRootPath(),
                 publishEvent.getPlace(),
                 publishEvent.getMessagesToPublish());
-        if (publishEvent.isShowSystemConsole() && checkWhiteList()) {
+        if (publishEvent.isShowSystemConsole() && checkAllowList()) {
             placeManager.goTo(MESSAGE_CONSOLE);
         }
         fireFilteredMessagesEvent();
@@ -98,7 +98,7 @@ public class MessageConsoleService {
                 unpublishEvent.getRootPath(),
                 unpublishEvent.getMessageType(),
                 unpublishEvent.getMessagesToUnpublish());
-        if (unpublishEvent.isShowSystemConsole() && checkWhiteList()) {
+        if (unpublishEvent.isShowSystemConsole() && checkAllowList()) {
             placeManager.goTo(MESSAGE_CONSOLE);
         }
         fireFilteredMessagesEvent();
@@ -120,7 +120,7 @@ public class MessageConsoleService {
                 publishBatchEvent.getRootPath(),
                 publishBatchEvent.getPlace(),
                 publishBatchEvent.getMessagesToPublish());
-        if (publishBatchEvent.isShowSystemConsole() && checkWhiteList()) {
+        if (publishBatchEvent.isShowSystemConsole() && checkAllowList()) {
             placeManager.goTo(MESSAGE_CONSOLE);
         }
         fireFilteredMessagesEvent();
@@ -259,24 +259,24 @@ public class MessageConsoleService {
         return result;
     }
 
-    private boolean checkWhiteList() {
+    private boolean checkAllowList() {
 
         // I herd you like lists so I put a list into your list
-        Collection<SyncBeanDef<MessageConsoleWhiteList>> whiteListList = getAvailableWhiteLists();
+        Collection<SyncBeanDef<MessageConsoleAllowList>> allowLists = getAvailableAllowLists();
 
-        if (whiteListList.isEmpty()) {
+        if (allowLists.isEmpty()) {
             return true;
         } else {
-            return reLookupBean(whiteListList.iterator().next()).getInstance().contains(currentPerspective);
+            return reLookupBean(allowLists.iterator().next()).getInstance().contains(currentPerspective);
         }
     }
 
-    private SyncBeanDef<MessageConsoleWhiteList> reLookupBean(SyncBeanDef<MessageConsoleWhiteList> baseBean) {
-        return (SyncBeanDef<MessageConsoleWhiteList>) iocManager.lookupBean(baseBean.getBeanClass());
+    private SyncBeanDef<MessageConsoleAllowList> reLookupBean(SyncBeanDef<MessageConsoleAllowList> baseBean) {
+        return (SyncBeanDef<MessageConsoleAllowList>) iocManager.lookupBean(baseBean.getBeanClass());
     }
 
-    private Collection<SyncBeanDef<MessageConsoleWhiteList>> getAvailableWhiteLists() {
-        return iocManager.lookupBeans(MessageConsoleWhiteList.class);
+    private Collection<SyncBeanDef<MessageConsoleAllowList>> getAvailableAllowLists() {
+        return iocManager.lookupBeans(MessageConsoleAllowList.class);
     }
 
     //This is required for Unit Testing

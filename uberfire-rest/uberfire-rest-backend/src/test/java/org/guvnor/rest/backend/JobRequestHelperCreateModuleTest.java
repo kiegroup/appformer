@@ -76,7 +76,7 @@ public class JobRequestHelperCreateModuleTest {
     public void setUp() throws Exception {
         fileSystemProvider = new SimpleFileSystemProvider();
 
-        final Path root = fileSystemProvider.getPath(URI.create("default://master@myRepository/"));
+        final Path root = fileSystemProvider.getPath(URI.create("default://main@myRepository/"));
 
         OrganizationalUnit ou = mock(OrganizationalUnit.class);
         when(organizationalUnitService.getOrganizationalUnit(any())).thenReturn(ou);

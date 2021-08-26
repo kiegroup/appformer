@@ -16,11 +16,8 @@
 
 package org.uberfire.client.workbench;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -43,6 +40,7 @@ import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.ApplicationReadyEvent;
 import org.uberfire.client.workbench.widgets.dnd.WorkbenchDragAndDropManager;
 import org.uberfire.client.workbench.widgets.dnd.WorkbenchPickupDragController;
+import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.Resource;
@@ -51,7 +49,14 @@ import org.uberfire.security.authz.AuthorizationPolicy;
 import org.uberfire.security.authz.PermissionManager;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class WorkbenchStartupTest {
@@ -197,22 +202,7 @@ public class WorkbenchStartupTest {
      * Mockito failed to produce a valid mock for a raw {@code Event<ApplicationReadyEvent>} due to classloader issues.
      * This class provides it something that it can mock properly.
      */
-    public static class StubAppReadyEventSource implements Event<ApplicationReadyEvent> {
+    public static class StubAppReadyEventSource extends EventSourceMock<ApplicationReadyEvent> {
 
-        @Override
-        public void fire(ApplicationReadyEvent event) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public Event<ApplicationReadyEvent> select(Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
-
-        @Override
-        public <U extends ApplicationReadyEvent> Event<U> select(Class<U> subtype,
-                                                                 Annotation... qualifiers) {
-            throw new UnsupportedOperationException("Not implemented.");
-        }
     }
 }

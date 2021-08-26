@@ -50,10 +50,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -63,7 +63,7 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -120,11 +120,11 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         new Merge(origin,
                   "develop",
-                  "master").execute();
+                  "main").execute();
 
         final List<DiffEntry> result = new ListDiffs(origin,
                                                      new GetTreeFromRef(origin,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(origin,
                                                                         "develop").execute()).execute();
 
@@ -140,10 +140,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -153,7 +153,7 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -210,14 +210,14 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         new Merge(origin,
                   "develop",
-                  "master",
+                  "main",
                   true,
                   false,
                   MessageCommitInfo.createMergeMessage("develop")).execute();
 
         final List<DiffEntry> result = new ListDiffs(origin,
                                                      new GetTreeFromRef(origin,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(origin,
                                                                         "develop").execute()).execute();
 
@@ -233,10 +233,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -245,10 +245,10 @@ public class JGitMergeTest extends AbstractTestInfra {
                            tempFile("temp1"));
                    }}).execute();
 
-        RevCommit commitBeforeMerge = origin.getLastCommit("master");
+        RevCommit commitBeforeMerge = origin.getLastCommit("main");
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -305,16 +305,16 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         new Merge(origin,
                   "develop",
-                  "master",
+                  "main",
                   true,
                   true,
                   MessageCommitInfo.createMergeMessage("develop")).execute();
 
-        RevCommit commitAfterMerge = origin.getLastCommit("master");
+        RevCommit commitAfterMerge = origin.getLastCommit("main");
 
         final List<DiffEntry> result = new ListDiffs(origin,
                                                      new GetTreeFromRef(origin,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(origin,
                                                                         "develop").execute()).execute();
 
@@ -331,10 +331,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -344,7 +344,7 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -362,7 +362,7 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         List<String> commitIds = new Merge(origin,
                                            "develop",
-                                           "master").execute();
+                                           "main").execute();
 
         assertThat(commitIds).isEmpty();
     }
@@ -372,7 +372,7 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         new Merge(null,
                   "develop",
-                  "master").execute();
+                  "main").execute();
     }
 
     @Test(expected = GitException.class)
@@ -384,10 +384,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -397,7 +397,7 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -471,10 +471,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -484,7 +484,7 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -501,10 +501,10 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -515,11 +515,11 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         new Merge(origin,
                   "develop",
-                  "master").execute();
+                  "main").execute();
 
         final List<DiffEntry> result = new ListDiffs(origin,
                                                      new GetTreeFromRef(origin,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(origin,
                                                                         "develop").execute()).execute();
 
@@ -539,10 +539,10 @@ public class JGitMergeTest extends AbstractTestInfra {
         final Git origin = new CreateRepository(gitSource).execute().get();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -552,7 +552,7 @@ public class JGitMergeTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -570,11 +570,11 @@ public class JGitMergeTest extends AbstractTestInfra {
 
         new Merge(origin,
                   "develop",
-                  "master").execute();
+                  "main").execute();
 
         final List<DiffEntry> result = new ListDiffs(origin,
                                                      new GetTreeFromRef(origin,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(origin,
                                                                         "develop").execute()).execute();
 

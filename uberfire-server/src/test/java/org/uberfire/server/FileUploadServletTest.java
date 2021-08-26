@@ -56,8 +56,8 @@ public class FileUploadServletTest {
     private static final String PARAM_FILENAME = "fileName";
     private static final String PARAM_UPDATE = "update";
 
-    private static final String TEST_ROOT_PATH = "default://master@test-repository/test-project/src/main/resources/test";
-    private static final String TEST_ROOT_PATH_WITH_SPACES = "default://master@mtest-repository/my test project/src/main/resources/test";
+    private static final String TEST_ROOT_PATH = "default://main@test-repository/test-project/src/main/resources/test";
+    private static final String TEST_ROOT_PATH_WITH_SPACES = "default://main@mtest-repository/my test project/src/main/resources/test";
 
     private static final String BOUNDARY = "---------------------------9051914041544843365972754266";
     private static final String BOUNDARY_DELIMITER = "--";

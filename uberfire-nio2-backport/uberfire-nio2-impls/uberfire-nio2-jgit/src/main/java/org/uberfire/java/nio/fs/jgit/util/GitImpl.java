@@ -105,7 +105,7 @@ public class GitImpl implements Git {
     private static final String DEFAULT_JGIT_RETRY_SLEEP_TIME = "50";
     private static int JGIT_RETRY_TIMES = initRetryValue();
     private static final int JGIT_RETRY_SLEEP_TIME = initSleepTime();
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "master";
     private boolean isEnabled = false;
 
     private static int initSleepTime() {
@@ -395,7 +395,7 @@ public class GitImpl implements Git {
 
     @Override
     public boolean resetWithSquash(String commitMessage) throws IOException {
-        return resetWithSquash(MASTER_BRANCH,
+        return resetWithSquash(MAIN_BRANCH,
                                commitMessage);
     }
 

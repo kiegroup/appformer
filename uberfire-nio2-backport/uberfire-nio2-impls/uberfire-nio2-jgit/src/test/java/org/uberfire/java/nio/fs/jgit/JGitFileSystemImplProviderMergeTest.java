@@ -41,17 +41,17 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
             outStream.close();
         }
 
-        final Path master = provider.getPath(URI.create("git://master@merge-test-repo"));
+        final Path main = provider.getPath(URI.create("git://main@merge-test-repo"));
         final Path userBranch = provider.getPath(URI.create("git://user_branch@merge-test-repo"));
 
-        provider.copy(master,
+        provider.copy(main,
                       userBranch);
 
         {
@@ -70,14 +70,14 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
         }
 
         provider.copy(userBranch,
-                      master,
+                      main,
                       new MergeCopyOption());
 
-        final Git gitRepo = ((JGitFileSystem) master.getFileSystem()).getGit();
+        final Git gitRepo = ((JGitFileSystem) main.getFileSystem()).getGit();
 
         final List<DiffEntry> result = new ListDiffs(gitRepo,
                                                      new GetTreeFromRef(gitRepo,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(gitRepo,
                                                                         "user_branch").execute()).execute();
 
@@ -91,17 +91,17 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
             outStream.close();
         }
 
-        final Path master = provider.getPath(URI.create("git://master@merge-test-repo"));
+        final Path main = provider.getPath(URI.create("git://main@merge-test-repo"));
         final Path userBranch = provider.getPath(URI.create("git://user_branch@merge-test-repo"));
 
-        provider.copy(master,
+        provider.copy(main,
                       userBranch);
 
         {
@@ -126,7 +126,7 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
             outStream3.close();
         }
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my very cool content".getBytes());
@@ -134,7 +134,7 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
         }
 
         provider.copy(userBranch,
-                      master,
+                      main,
                       new MergeCopyOption());
     }
 
@@ -145,17 +145,17 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write(this.loadImage("images/drools.png"));
             outStream.close();
         }
 
-        final Path master = provider.getPath(URI.create("git://master@merge-test-repo"));
+        final Path main = provider.getPath(URI.create("git://main@merge-test-repo"));
         final Path userBranch = provider.getPath(URI.create("git://user_branch@merge-test-repo"));
 
-        provider.copy(master,
+        provider.copy(main,
                       userBranch);
 
         {
@@ -174,13 +174,13 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
         }
 
         provider.copy(userBranch,
-                      master,
+                      main,
                       new MergeCopyOption());
 
-        final Git gitRepo = ((JGitFileSystem) master.getFileSystem()).getGit();
+        final Git gitRepo = ((JGitFileSystem) main.getFileSystem()).getGit();
         final List<DiffEntry> result = new ListDiffs(gitRepo,
                                                      new GetTreeFromRef(gitRepo,
-                                                                        "master").execute(),
+                                                                        "main").execute(),
                                                      new GetTreeFromRef(gitRepo,
                                                                         "user_branch").execute()).execute();
 
@@ -194,17 +194,17 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write(this.loadImage("images/drools.png"));
             outStream.close();
         }
 
-        final Path master = provider.getPath(URI.create("git://master@merge-test-repo"));
+        final Path main = provider.getPath(URI.create("git://main@merge-test-repo"));
         final Path userBranch = provider.getPath(URI.create("git://user_branch@merge-test-repo"));
 
-        provider.copy(master,
+        provider.copy(main,
                       userBranch);
 
         {
@@ -229,7 +229,7 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
             outStream.close();
         }
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write(this.loadImage(""));
@@ -237,7 +237,7 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
         }
 
         provider.copy(userBranch,
-                      master,
+                      main,
                       new MergeCopyOption());
     }
 
@@ -248,18 +248,18 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
             outStream.close();
         }
 
-        final Path master = provider.getPath(URI.create("git://master@merge-test-repo"));
+        final Path main = provider.getPath(URI.create("git://main@merge-test-repo"));
         final Path develop = provider.getPath(URI.create("git://develop@merge-test-repo"));
 
         provider.copy(develop,
-                      master,
+                      main,
                       new MergeCopyOption());
     }
 
@@ -270,14 +270,14 @@ public class JGitFileSystemImplProviderMergeTest extends AbstractTestInfra {
                                EMPTY_ENV);
 
         {
-            final Path path = provider.getPath(URI.create("git://master@merge-test-repo/myfile1.txt"));
+            final Path path = provider.getPath(URI.create("git://main@merge-test-repo/myfile1.txt"));
 
             final OutputStream outStream = provider.newOutputStream(path);
             outStream.write("my cool content".getBytes());
             outStream.close();
         }
 
-        final Path master = provider.getPath(URI.create("git://master@merge-test-repo"));
+        final Path main = provider.getPath(URI.create("git://main@merge-test-repo"));
         final Path develop = provider.getPath(URI.create("git://develop@merge-test-repo"));
 
         provider.copy(develop,

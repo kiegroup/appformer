@@ -31,13 +31,13 @@ public class PathUtilTest {
 
     @Test
     public void stripGitProtocolAndBranch() throws Exception {
-        final String result = pathUtil.stripProtocolAndBranch("git://master@space/repo/some/path");
+        final String result = pathUtil.stripProtocolAndBranch("git://main@space/repo/some/path");
         assertEquals("space/repo/some/path", result);
     }
 
     @Test
     public void stripDefaultProtocolAndBranch() throws Exception {
-        final String result = pathUtil.stripProtocolAndBranch("default://master@space/repo/some/path");
+        final String result = pathUtil.stripProtocolAndBranch("default://main@space/repo/some/path");
         assertEquals("space/repo/some/path", result);
     }
 

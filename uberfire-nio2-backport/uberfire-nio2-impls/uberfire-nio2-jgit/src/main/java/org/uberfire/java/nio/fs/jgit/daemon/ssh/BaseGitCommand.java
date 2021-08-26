@@ -26,6 +26,7 @@ import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SessionAware;
+import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.session.ServerSession;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Repository;
@@ -99,7 +100,7 @@ public abstract class BaseGitCommand implements Command,
     }
 
     @Override
-    public void start(final Environment env) throws IOException {
+    public void start(final ChannelSession channel, final Environment env) throws IOException {
         executorService.execute(new DescriptiveRunnable() {
             @Override
             public String getDescription() {
@@ -166,7 +167,8 @@ public abstract class BaseGitCommand implements Command,
                                     final OutputStream err);
 
     @Override
-    public void destroy() {
+    public void destroy(ChannelSession channel) throws Exception {
+        // empty
     }
 
     public User getUser() {

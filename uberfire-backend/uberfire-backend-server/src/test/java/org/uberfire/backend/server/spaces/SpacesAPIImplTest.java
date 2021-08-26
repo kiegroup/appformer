@@ -45,7 +45,7 @@ public class SpacesAPIImplTest {
 
     @Test
     public void resolveSpaceNameTest() throws Exception {
-        Optional<Space> space = spaces.resolveSpace("default://master@myteam/mortgages/");
+        Optional<Space> space = spaces.resolveSpace("default://main@myteam/mortgages/");
 
         assertTrue(space.isPresent());
         assertEquals("myteam", space.get().getName());
@@ -53,7 +53,7 @@ public class SpacesAPIImplTest {
 
     @Test
     public void resolveSpaceNameWhenBranchNameHasSlashesTest() throws Exception {
-        Optional<Space> space = spaces.resolveSpace("default://my/master/branch@myteam/mortgages/");
+        Optional<Space> space = spaces.resolveSpace("default://my/main/branch@myteam/mortgages/");
 
         assertTrue(space.isPresent());
         assertEquals("myteam", space.get().getName());

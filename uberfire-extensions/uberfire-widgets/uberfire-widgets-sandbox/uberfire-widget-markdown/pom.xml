@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-widgets-sandbox</artifactId>
-    <version>7.59.0-SNAPSHOT</version>
+    <version>7.60.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-widget-markdown</artifactId>
@@ -84,8 +84,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.enterprise</groupId>
-      <artifactId>cdi-api</artifactId>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
 

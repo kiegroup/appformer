@@ -21,14 +21,14 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-parent</artifactId>
-    <version>7.59.0-SNAPSHOT</version>
+    <version>7.60.0-SNAPSHOT</version>
     <!-- Keep in sync with the parent version of uberfire-bom/pom.xml -->
   </parent>
 
 
   <groupId>org.uberfire</groupId>
   <artifactId>uberfire-parent</artifactId>
-  <version>7.59.0-SNAPSHOT</version>
+  <version>7.60.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>UberFire parent</name>
@@ -87,7 +87,7 @@
     <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
     <version.org.elasticsearch>5.6.15</version.org.elasticsearch>
-    <version.org.infinispan.protostream>4.2.5.Final</version.org.infinispan.protostream>
+    <version.org.infinispan.protostream>4.3.5.Final</version.org.infinispan.protostream>
 
     <!-- Newer version in kie-parent causes ServiceLoader error -->
     <version.ch.qos.logback>1.1.3</version.ch.qos.logback>
@@ -156,139 +156,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-	  <artifactId>maven-enforcer-plugin</artifactId>
-	  <version>${version.enforcer.plugin}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>extra-enforcer-rules</artifactId>
-              <version>1.0</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>ban-unwanted-deps</id>
-              <goals>
-                <goal>enforce</goal>
-              </goals>
-              <phase>validate</phase>
-              <configuration>
-                <rules>
-                  <bannedDependencies>
-                    <excludes>
-                      <!-- Ban unwanted logging deps -->
-                      <!-- In case of transitive dependency, exclude it and use jcl-over-slf4j instead -->
-                      <exclude>commons-logging:commons-log*</exclude>
-                      <!-- In case of transitive dependency, exclude it and use log4j-over-slf4j instead -->
-                      <exclude>log4j:log4j</exclude>
-
-                      <!-- Ban 'javassist:javassist' in favor of 'org.javassist:javassist' -->
-                      <exclude>javassist:javassist</exclude>
-                    </excludes>
-                  </bannedDependencies>
-                </rules>
-              </configuration>
-            </execution>
-            <execution>
-              <id>ban-duplicated-classes</id>
-              <goals>
-                <goal>enforce</goal>
-              </goals>
-              <phase>validate</phase>
-              <configuration>
-                <rules>
-                  <banDuplicateClasses>
-                    <ignoreClasses>
-                      <!-- Ban 'org.elasticsearch:elasticsearch' internal classes, as the artifact contains
-                        some duplicated classes for Joda time ones and it has the joda artifact
-                        as transitive dependency as well. -->
-                      <ignoreClass>org.joda.time.*</ignoreClass>
-                      <!-- Classes bundled in errai-javax-enterprise which are GWT friendly.
-                           See https://github.com/errai/errai/blob/master/errai-javax-enterprise/README -->
-                      <ignoreClass>javax.interceptor.InvocationContext</ignoreClass>
-                      <ignoreClass>javax.inject.Provider</ignoreClass>
-                      <ignoreClass>javax.inject.Named</ignoreClass>
-                      <ignoreClass>javax.inject.Scope</ignoreClass>
-                      <ignoreClass>javax.inject.Qualifier</ignoreClass>
-                      <ignoreClass>javax.inject.Singleton</ignoreClass>
-                      <ignoreClass>javax.enterprise.*</ignoreClass>
-                      <!-- Classes from gwt-user duplicated in errai-uibinder -->
-                      <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderWriter</ignoreClass>
-                      <ignoreClass>com.google.gwt.uibinder.rebind.UiBinderGenerator</ignoreClass>
-                      <!-- Duplicated by XStream's transitive deps, with very little chance to get properly fixed -->
-                      <ignoreClass>org.xmlpull.v1.XmlPullParserException</ignoreClass>
-                      <ignoreClass>org.xmlpull.v1.XmlPullParser</ignoreClass>
-                      <!-- Duplicated in xml-apis:xml-apis:jar:1.4.01 and xerces:xercesImpl:jar:2.11.0.SP4. The class is identical
-                           and there is very little chance this will get ever fixed. -->
-                      <ignoreClass>org.w3c.dom.ElementTraversal</ignoreClass>
-                      <ignoreClass>org.w3c.dom.UserDataHandler</ignoreClass>
-                    </ignoreClasses>
-                    <dependencies>
-                      <!-- gwt-user bundles javax.servlet classes which usually conflicts with the servlet dependencies
-                           in -webapp modules. -->
-                      <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-user</artifactId>
-                        <type>jar</type>
-                        <ignoreClasses>
-                          <ignoreClass>javax.servlet.*</ignoreClass>
-                        </ignoreClasses>
-                      </dependency>
-                      <!-- gwt-dev bundles dozens of different 3rd party dependencies, but can not be usually excluded
-                           as e.g. GWT Mockito tests are using the com.google.gwt classes inside. Ignoring it for the
-                           duplicate classes check seems to be the only way. -->
-                      <dependency>
-                        <groupId>com.google.gwt</groupId>
-                        <artifactId>gwt-dev</artifactId>
-                        <type>jar</type>
-                        <ignoreClasses>
-                          <ignoreClass>*</ignoreClass>
-                        </ignoreClasses>
-                      </dependency>
-                      <!-- netty-all duplicates many netty-* jars but they are managed to the same version -->
-                      <dependency>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-all</artifactId>
-                        <type>jar</type>
-                        <ignoreClasses>
-                          <ignoreClass>*</ignoreClass>
-                        </ignoreClasses>
-                      </dependency>
-                      <dependency>
-                        <groupId>org.apache.xmlbeans</groupId>
-                        <artifactId>xmlbeans</artifactId>
-                        <type>jar</type>
-                        <ignoreClasses>
-                          <!-- Classes duplicated by the jar itself (bug), see https://issues.apache.org/jira/browse/XMLBEANS-499 -->
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.XMLName</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.XMLInputStream</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.utils.NestedThrowable$Util</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.XMLStreamException</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.ReferenceResolver</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.XMLEvent</ignoreClass>
-                          <ignoreClass>org.apache.xmlbeans.xml.stream.Location</ignoreClass>
-                        </ignoreClasses>
-                      </dependency>
-                      <dependency>
-                        <groupId>org.wildfly.security</groupId>
-                        <artifactId>wildfly-elytron</artifactId>
-                        <type>jar</type>
-                        <ignoreClasses>
-                          <ignoreClass>*</ignoreClass>
-                        </ignoreClasses>
-                      </dependency>
-                    </dependencies>
-                    <findAllDuplicates>true</findAllDuplicates>
-                  </banDuplicateClasses>
-                </rules>
-                <fail>true</fail>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
@@ -884,19 +751,9 @@
       </dependency>
 
       <dependency>
-        <groupId>javax.enterprise</groupId>
-        <artifactId>cdi-api</artifactId>
-        <version>${version.javax.enterprise}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.interceptor</groupId>
-            <artifactId>javax.interceptor-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>${version.jakarta.enterprise.cdi-api}</version>
       </dependency>
 
       <dependency>
@@ -954,33 +811,6 @@
         <version>${version.org.apache.tomcat}</version>
       </dependency>
 
-      <!-- GWT and GWT Extensions -->
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <version>${version.com.google.gwt}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${version.com.google.gwt}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
       <dependency>
         <groupId>com.google.jsinterop</groupId>
         <artifactId>base</artifactId>
@@ -1009,18 +839,6 @@
           <exclusion>
             <groupId>javassist</groupId>
             <artifactId>javassist</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.gwt.gwtmockito</groupId>
-        <artifactId>gwtmockito</artifactId>
-        <version>${version.com.google.gwt.gwtmockito}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.mortbay.jasper</groupId>
-            <artifactId>apache-el</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1092,6 +910,10 @@
         <version>${version.org.infinispan}</version>
         <exclusions>
           <exclusion>
+            <groupId>org.jboss.spec.javax.transaction</groupId>
+            <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
           </exclusion>
@@ -1128,6 +950,14 @@
         <artifactId>artemis-jms-client</artifactId>
         <version>${version.org.apache.activemq.artemis}</version>
         <exclusions>
+          <exclusion>
+            <groupId>org.jboss.spec.javax.jms</groupId>
+            <artifactId>jboss-jms-api_2.0_spec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-json_1.0_spec</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
@@ -1308,6 +1138,10 @@
         <scope>test</scope>
         <exclusions>
           <exclusion>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+          </exclusion> 
+          <exclusion>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
@@ -1372,7 +1206,14 @@
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
 
   </dependencies>
 

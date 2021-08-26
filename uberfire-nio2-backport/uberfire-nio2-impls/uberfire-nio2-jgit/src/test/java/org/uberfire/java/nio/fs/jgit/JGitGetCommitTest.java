@@ -31,7 +31,7 @@ public class JGitGetCommitTest extends AbstractTestInfra {
 
     private Git git;
 
-    private static final String MASTER_BRANCH = "master";
+    private static final String MAIN_BRANCH = "main";
 
     @Before
     public void setup() throws IOException {
@@ -44,9 +44,9 @@ public class JGitGetCommitTest extends AbstractTestInfra {
 
     @Test
     public void successTest() throws IOException {
-        commit(git, MASTER_BRANCH, "Adding file", content("file.txt", "file content"));
+        commit(git, MAIN_BRANCH, "Adding file", content("file.txt", "file content"));
 
-        RevCommit lastCommit = git.getLastCommit(MASTER_BRANCH);
+        RevCommit lastCommit = git.getLastCommit(MAIN_BRANCH);
 
         RevCommit commit = git.getCommit(lastCommit.getName());
 

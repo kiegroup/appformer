@@ -97,7 +97,7 @@ public final class KieProtostreamMarshaller extends ProtoStreamMarshaller {
 
     @Override
     protected ByteBuffer objectToBuffer(Object o,
-                                        int estimatedSize) throws IOException, InterruptedException {
+                                        int estimatedSize) throws IOException {
         try {
             String value = extractType(o);
             if (value != null) {

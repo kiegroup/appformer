@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-showcase</artifactId>
-    <version>7.59.0-SNAPSHOT</version>
+    <version>7.60.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-client-webapp</artifactId>
@@ -169,12 +169,6 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-server</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.spec.javax.annotation</groupId>
-          <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
