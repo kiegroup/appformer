@@ -21,8 +21,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.dashbuilder</groupId>
-    <artifactId>dashbuilder-parent</artifactId>
-    <version>7.60.0-SNAPSHOT</version>
+    <artifactId>dashbuilder-runtime-parent</artifactId>
+    <version>8.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -50,6 +50,10 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.dashbuilder</groupId>
+      <artifactId>dashbuilder-runtime-shared</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-multipart-provider</artifactId>
