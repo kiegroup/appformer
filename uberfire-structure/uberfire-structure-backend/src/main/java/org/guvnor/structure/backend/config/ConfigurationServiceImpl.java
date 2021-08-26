@@ -246,8 +246,7 @@ public class ConfigurationServiceImpl implements ConfigurationService,
         final Path typeDir = ioService.get(systemRepository.getUri()).resolve(type.getDir());
         final Path namespaceDir = typeDir.resolve(namespace);
 
-        final List<ConfigGroup> configGroups = getConfiguration(namespaceDir,
-                                                                type);
+        final List<ConfigGroup> configGroups = getConfiguration(namespaceDir, type, namespace);
         if (configGroups != null) {
             if (!configGroupsByTypeWithNamespace.containsKey(type)) {
                 configGroupsByTypeWithNamespace.put(type,
@@ -288,9 +287,9 @@ public class ConfigurationServiceImpl implements ConfigurationService,
         // Return the updated cache
         return configGroupsByTypeWithNamespace.get(type);
     }
-
     private List<ConfigGroup> getConfiguration(final Path dir,
-                                               final ConfigType type) {
+                                               final ConfigType type,
+                                               final String namespace) {
         final List<ConfigGroup> configGroups = new ArrayList<>();
 
         if (!ioService.exists(dir)) {
@@ -298,7 +297,7 @@ public class ConfigurationServiceImpl implements ConfigurationService,
         }
 
         final DirectoryStream<Path> foundConfigs = getDirectoryStreamForFilesWithParticularExtension(dir,
-                                                                                                     type.getExt());
+                type.getExt());
 
         //Only load and cache if a file was found!
         final Iterator<Path> it = foundConfigs.iterator();
@@ -306,6 +305,9 @@ public class ConfigurationServiceImpl implements ConfigurationService,
             while (it.hasNext()) {
                 final String content = ioService.readAllString(it.next());
                 final ConfigGroup configGroup = marshaller.unmarshall(content);
+                if (namespace != null) {
+                    configGroup.setNamespace(namespace);
+                }
                 configGroups.add(configGroup);
             }
 
@@ -313,6 +315,12 @@ public class ConfigurationServiceImpl implements ConfigurationService,
         }
 
         return null;
+    }
+
+
+    private List<ConfigGroup> getConfiguration(final Path dir,
+                                               final ConfigType type) {
+        return getConfiguration(dir, type, null);
     }
 
     private DirectoryStream<Path> getDirectoryStreamForFilesWithParticularExtension(final Path dir,
