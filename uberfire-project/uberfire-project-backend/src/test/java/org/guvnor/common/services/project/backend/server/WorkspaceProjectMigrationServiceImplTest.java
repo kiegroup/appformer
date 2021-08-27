@@ -86,7 +86,7 @@ public class WorkspaceProjectMigrationServiceImplTest {
     private IOService ioService;
 
     @Mock
-    private Path legacyMasterBranchProject1RootPath;
+    private Path legacyMainBranchProject1RootPath;
 
     @Mock
     private Path legacyDevBranchProject1RootPath;
@@ -121,7 +121,7 @@ public class WorkspaceProjectMigrationServiceImplTest {
     @Captor
     private ArgumentCaptor<RepositoryEnvironmentConfigurations> configsCaptor;
 
-    private Branch legacyMasterBranch;
+    private Branch legacyMainBranch;
     private Branch legacyDevBranch;
 
     @Before
@@ -162,14 +162,14 @@ public class WorkspaceProjectMigrationServiceImplTest {
 
         doAnswer(invocation -> null).when(service).cleanupOrigin(any());
 
-        legacyMasterBranch = mockBranch("legacyMasterBranch");
+        legacyMainBranch = mockBranch("legacyMainBranch");
         legacyDevBranch = mockBranch("legacyDevBranch");
 
         when(legacyDevBranchProject1RootPath.toURI()).thenReturn(uri("legacyDevBranch",
                                                                      "legacyProject1"));
         when(legacyDevBranchProject2RootPath.toURI()).thenReturn(uri("legacyDevBranch",
                                                                      "legacyProject2"));
-        when(legacyMasterBranchProject1RootPath.toURI()).thenReturn(uri("legacyMasterBranch",
+        when(legacyMainBranchProject1RootPath.toURI()).thenReturn(uri("legacyMainBranch",
                                                                         "legacyProject1"));
 
         final Repository legacyRepository = mockLegacyRepository();
@@ -177,10 +177,10 @@ public class WorkspaceProjectMigrationServiceImplTest {
         doReturn(new Space("space")).when(organizationalUnit).getSpace();
         final WorkspaceProject legacyWorkspaceProject = new WorkspaceProject(organizationalUnit,
                                                                              legacyRepository,
-                                                                             legacyMasterBranch,
+                                                                             legacyMainBranch,
                                                                              null);
 
-        setUpMasterBranch();
+        setUpMainBranch();
         setUpDevBranch();
 
         mockRepository(organizationalUnit);
@@ -221,7 +221,7 @@ public class WorkspaceProjectMigrationServiceImplTest {
                                                            List.class);
             final List<String> expectedBranches;
             if (subdirectory.equals("legacyProject1")) {
-                expectedBranches = Arrays.asList("legacyMasterBranch",
+                expectedBranches = Arrays.asList("legacyMainBranch",
                                                  "legacyDevBranch");
             } else if (subdirectory.equals("legacyProject2")) {
                 expectedBranches = Arrays.asList("legacyDevBranch");
@@ -273,28 +273,28 @@ public class WorkspaceProjectMigrationServiceImplTest {
         doReturn(devBranchModules).when(moduleService).getAllModules(legacyDevBranch);
     }
 
-    private void setUpMasterBranch() {
-        final HashSet<Module> masterBranchModules = new HashSet<>();
+    private void setUpMainBranch() {
+        final HashSet<Module> mainBranchModules = new HashSet<>();
 
         final Module mockModule = mockModule("legacyProject1",
-                                             legacyMasterBranchProject1RootPath);
-        masterBranchModules.add(mockModule);
+                                             legacyMainBranchProject1RootPath);
+        mainBranchModules.add(mockModule);
 
-        doReturn(masterBranchModules).when(moduleService).getAllModules(legacyMasterBranch);
-        final Path masterRoot = mock(Path.class);
-        when(legacyMasterBranch.getPath()).thenReturn(masterRoot);
+        doReturn(mainBranchModules).when(moduleService).getAllModules(legacyMainBranch);
+        final Path mainRoot = mock(Path.class);
+        when(legacyMainBranch.getPath()).thenReturn(mainRoot);
     }
 
     private Branch mockBranch(final String branchName) {
-        final Branch masterBranch = mock(Branch.class);
-        doReturn(branchName).when(masterBranch).getName();
-        return masterBranch;
+        final Branch mainBranch = mock(Branch.class);
+        doReturn(branchName).when(mainBranch).getName();
+        return mainBranch;
     }
 
     private Repository mockLegacyRepository() {
         final Repository legacyRepository = mock(Repository.class);
         final ArrayList<Branch> branches = new ArrayList<>();
-        branches.add(legacyMasterBranch);
+        branches.add(legacyMainBranch);
         branches.add(legacyDevBranch);
         doReturn(branches).when(legacyRepository).getBranches();
 
@@ -302,7 +302,7 @@ public class WorkspaceProjectMigrationServiceImplTest {
         ous.add(organizationalUnit);
         doReturn(ous).when(organizationalUnitService).getOrganizationalUnits(legacyRepository);
 
-        when(legacyRepository.getDefaultBranch()).thenReturn(Optional.of(legacyMasterBranch));
+        when(legacyRepository.getDefaultBranch()).thenReturn(Optional.of(legacyMainBranch));
 
         doReturn(space).when(legacyRepository).getSpace();
 

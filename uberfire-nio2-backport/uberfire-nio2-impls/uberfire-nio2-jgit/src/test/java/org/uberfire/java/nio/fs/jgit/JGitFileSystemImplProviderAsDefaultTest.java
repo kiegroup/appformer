@@ -39,16 +39,16 @@ public class JGitFileSystemImplProviderAsDefaultTest extends AbstractTestInfra {
         FileSystem fs = provider.newFileSystem(newRepo,
                                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("default://master@default-new-get-repo-name/home"));
+        final Path path = provider.getPath(URI.create("default://main@default-new-get-repo-name/home"));
 
         assertThat(path).isNotNull();
         assertThat(path.getRoot().toString()).isEqualTo("/");
         assertThat(path.toString()).isEqualTo("/home");
         assertThat(path.toUri().getScheme()).isEqualTo("default");
 
-        final Path pathRelative = provider.getPath(URI.create("default://master@default-new-get-repo-name/:home"));
+        final Path pathRelative = provider.getPath(URI.create("default://main@default-new-get-repo-name/:home"));
         assertThat(pathRelative).isNotNull();
-        assertThat(pathRelative.toUri().toString()).isEqualTo("default://master@default-new-get-repo-name/:home");
+        assertThat(pathRelative.toUri().toString()).isEqualTo("default://main@default-new-get-repo-name/:home");
         assertThat(pathRelative.getRoot().toString()).isEqualTo("");
         assertThat(pathRelative.toString()).isEqualTo("home");
 
@@ -62,17 +62,17 @@ public class JGitFileSystemImplProviderAsDefaultTest extends AbstractTestInfra {
         FileSystem fs = provider.newFileSystem(newRepo,
                                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("default://origin/master@default-new-complex-get-repo-name/home"));
+        final Path path = provider.getPath(URI.create("default://origin/main@default-new-complex-get-repo-name/home"));
 
         assertThat(path).isNotNull();
         assertThat(path.getRoot().toString()).isEqualTo("/");
         assertThat(path.toString()).isEqualTo("/home");
         assertThat(path.toUri().getScheme()).isEqualTo("default");
 
-        final Path pathRelative = provider.getPath(URI.create("default://origin/master@default-new-complex-get-repo-name/:home"));
+        final Path pathRelative = provider.getPath(URI.create("default://origin/main@default-new-complex-get-repo-name/:home"));
         assertThat(pathRelative).isNotNull();
         assertThat(pathRelative.getRoot().toString()).isEqualTo("");
-        assertThat(pathRelative.getRoot().toUri().toString()).isEqualTo("default://origin/master@default-new-complex-get-repo-name");
+        assertThat(pathRelative.getRoot().toUri().toString()).isEqualTo("default://origin/main@default-new-complex-get-repo-name");
         assertThat(pathRelative.toString()).isEqualTo("home");
 
         fs.close();
@@ -85,7 +85,7 @@ public class JGitFileSystemImplProviderAsDefaultTest extends AbstractTestInfra {
         FileSystem fs = provider.newFileSystem(newRepo,
                                                EMPTY_ENV);
 
-        final Path path = provider.getPath(URI.create("default://origin/master@default-new-complex-get-repo-name/home/default-new-complex-get-repo-name/somefolder"));
+        final Path path = provider.getPath(URI.create("default://origin/main@default-new-complex-get-repo-name/home/default-new-complex-get-repo-name/somefolder"));
 
         assertThat(path).isNotNull();
         assertThat(path.getRoot().toString()).isEqualTo("/");

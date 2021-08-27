@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.guvnor.messageconsole.whitelist;
+package org.guvnor.messageconsole.allowlist;
 
-public interface MessageConsoleWhiteList {
+public interface MessageConsoleAllowList {
 
     boolean contains(String currentPerspective);
 }

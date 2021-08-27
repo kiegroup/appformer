@@ -67,7 +67,7 @@ public class WorkbenchStandaloneModeTest {
         doReturn(true).when(workbenchCustomStandalonePerspectiveDefinitions).isUnsatisfied();
 
         final Map<String, List<String>> parameters = new HashMap<>();
-        parameters.put("path", Collections.singletonList("git://master@MySpace/MyProject/src/main/java/com/myspace/myproject/myasset.java"));
+        parameters.put("path", Collections.singletonList("git://main@MySpace/MyProject/src/main/java/com/myspace/myproject/myasset.java"));
 
         workbench.handleStandaloneMode(parameters);
 
@@ -83,7 +83,7 @@ public class WorkbenchStandaloneModeTest {
         doReturn(workbenchCustomStandalonePerspectiveDefinition).when(workbenchCustomStandalonePerspectiveDefinitions).get();
 
         final Map<String, List<String>> parameters = new HashMap<>();
-        parameters.put("path", Collections.singletonList("git://master@MySpace/MyProject/src/main/java/com/myspace/myproject/myasset.java"));
+        parameters.put("path", Collections.singletonList("git://main@MySpace/MyProject/src/main/java/com/myspace/myproject/myasset.java"));
 
         workbench.handleStandaloneMode(parameters);
 
@@ -97,7 +97,7 @@ public class WorkbenchStandaloneModeTest {
         doNothing().when(workbench).openEditor(any());
 
         final Map<String, List<String>> parameters = new HashMap<>();
-        parameters.put("path", Collections.singletonList("git://master@MySpace/MyProject/src/main/java/com/myspace/myproject/myasset.java"));
+        parameters.put("path", Collections.singletonList("git://main@MySpace/MyProject/src/main/java/com/myspace/myproject/myasset.java"));
 
         final Path path = mock(Path.class);
         doReturn(false).when(workbenchCustomStandalonePerspectiveDefinitions).isUnsatisfied();

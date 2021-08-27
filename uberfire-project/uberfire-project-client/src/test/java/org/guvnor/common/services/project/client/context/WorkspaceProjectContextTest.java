@@ -111,7 +111,7 @@ public class WorkspaceProjectContextTest {
         context.setActiveModule(oldModule);
 
         final OrganizationalUnit newOrganizationalUnit = mock(OrganizationalUnit.class);
-        final Branch newBranch = new Branch("master",
+        final Branch newBranch = new Branch("main",
                                             mock(Path.class));
         final Package newPackage = new Package();
         final Module newModule = new Module();

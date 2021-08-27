@@ -71,14 +71,14 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                         TARGET_GIT + ".git");
 
         final Git origin = gitRepo(sourceDir);
-        commit(origin, "master", "first", content("dir1/file.txt", "foo"));
-        commit(origin, "master", "second", content("dir2/file2.txt", "bar"));
-        commit(origin, "master", "third", content("file3.txt", "moogah"));
+        commit(origin, "main", "first", content("dir1/file.txt", "foo"));
+        commit(origin, "main", "second", content("dir2/file2.txt", "bar"));
+        commit(origin, "main", "third", content("file3.txt", "moogah"));
 
         final Git cloned = new SubdirectoryClone(targetDir,
                                                  sourceDir.getAbsoluteFile().toURI().toString(),
                                                  "dir1",
-                                                 singletonList("master"),
+                                                 singletonList("main"),
                                                  CredentialsProvider.getDefault(),
                                                  null,
                                                  null).execute();
@@ -88,11 +88,11 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
         assertThat(cloned).isNotNull();
         assertThat(listRefs(cloned)).hasSize(1);
 
-        final List<RevCommit> cloneCommits = getCommits(cloned, "master");
+        final List<RevCommit> cloneCommits = getCommits(cloned, "main");
         assertThat(cloneCommits).hasSize(1);
 
         final RevCommit clonedCommit = cloneCommits.get(0);
-        final RevCommit originCommit = getCommits(origin, "master").get(2); // Ordered children first
+        final RevCommit originCommit = getCommits(origin, "main").get(2); // Ordered children first
 
         assertClonedCommitData(origin, "dir1", clonedCommit, originCommit);
     }
@@ -109,20 +109,20 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
 
         final Git origin = gitRepo(sourceDir);
         commit(origin,
-               "master",
+               "main",
                "first",
                content("dir1/file.txt", "foo"),
                content("dir2/file2.txt", "bar"),
                content("file3.txt", "moogah"));
 
-        branch(origin, "master", "dev");
+        branch(origin, "main", "dev");
         commit(origin,
                "dev",
                "second",
                content("dir1/file.txt", "foo1"),
                content("file3.txt", "bar1"));
 
-        branch(origin, "master", "ignored");
+        branch(origin, "main", "ignored");
         commit(origin,
                "ignored",
                "third",
@@ -131,7 +131,7 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
         final Git cloned = new SubdirectoryClone(targetDir,
                                                  sourceDir.getAbsoluteFile().toURI().toString(),
                                                  "dir1",
-                                                 asList("master", "dev"),
+                                                 asList("main", "dev"),
                                                  CredentialsProvider.getDefault(),
                                                  null,
                                                  null).execute();
@@ -141,14 +141,14 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                                        .map(ref -> ref.getName())
                                                        .collect(toSet());
         assertThat(clonedRefs).hasSize(2);
-        assertThat(clonedRefs).containsExactly("refs/heads/master", "refs/heads/dev");
+        assertThat(clonedRefs).containsExactly("refs/heads/main", "refs/heads/dev");
 
 
-        // Check master commits
+        // Check main commits
         {
-            final List<RevCommit> cloneCommits = getCommits(cloned, "master");
+            final List<RevCommit> cloneCommits = getCommits(cloned, "main");
             assertThat(cloneCommits).hasSize(1);
-            assertClonedCommitData(origin, "dir1", cloneCommits.get(0), getCommits(origin, "master").get(0));
+            assertClonedCommitData(origin, "dir1", cloneCommits.get(0), getCommits(origin, "main").get(0));
         }
 
         // Check dev commits
@@ -174,13 +174,13 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
 
         final Git origin = gitRepo(sourceDir);
         commit(origin,
-               "master",
+               "main",
                "first",
                content("dir1/file.txt", "foo"),
                content("dir2/file2.txt", "bar"),
                content("file3.txt", "moogah"));
 
-        branch(origin, "master", "dev");
+        branch(origin, "main", "dev");
         commit(origin,
                "dev",
                "second",
@@ -188,12 +188,12 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                content("file3.txt", "bar1"));
 
         commit(origin,
-               "master",
+               "main",
                "another",
                content("dir1/file2.txt", "blah"));
 
         mergeCommit(origin,
-                    "master",
+                    "main",
                     "dev",
                     content("dir1/file.txt", "merged value!"),
                     content("dir2/file2.txt", "merged value!"),
@@ -202,7 +202,7 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
         final Git cloned = new SubdirectoryClone(targetDir,
                                                  sourceDir.getAbsoluteFile().toURI().toString(),
                                                  "dir1",
-                                                 asList("master", "dev"),
+                                                 asList("main", "dev"),
                                                  CredentialsProvider.getDefault(),
                                                  null,
                                                  null).execute();
@@ -212,14 +212,14 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                                        .map(ref -> ref.getName())
                                                        .collect(toSet());
         assertThat(clonedRefs).hasSize(2);
-        assertThat(clonedRefs).containsExactly("refs/heads/master", "refs/heads/dev");
+        assertThat(clonedRefs).containsExactly("refs/heads/main", "refs/heads/dev");
 
-        // Check master commits
+        // Check main commits
         {
-            final List<RevCommit> cloneCommits = getCommits(cloned, "master");
-            assertThat(cloneCommits).hasSize(4); // 2 on master + 1 on dev + 1 merge commit
+            final List<RevCommit> cloneCommits = getCommits(cloned, "main");
+            assertThat(cloneCommits).hasSize(4); // 2 on main + 1 on dev + 1 merge commit
 
-            final List<RevCommit> originCommits = getCommits(origin, "master");
+            final List<RevCommit> originCommits = getCommits(origin, "main");
             assertClonedCommitData(origin, "dir1", cloneCommits.get(0), originCommits.get(0));
             assertClonedCommitData(origin, "dir1", cloneCommits.get(1), originCommits.get(1));
             assertClonedCommitData(origin, "dir1", cloneCommits.get(2), originCommits.get(2));
@@ -259,14 +259,14 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                         TARGET_GIT + ".git");
 
         final Git origin = gitRepo(sourceDir);
-        commit(origin, "master", "first", content("dir1/file.txt", "foo"));
-        commit(origin, "master", "second", content("dir2/file2.txt", "bar"));
-        commit(origin, "master", "third", content("file3.txt", "moogah"));
+        commit(origin, "main", "first", content("dir1/file.txt", "foo"));
+        commit(origin, "main", "second", content("dir2/file2.txt", "bar"));
+        commit(origin, "main", "third", content("file3.txt", "moogah"));
 
         final Git cloned = new SubdirectoryClone(targetDir,
                                                  sourceDir.getAbsoluteFile().toURI().toString(),
                                                  "dir1",
-                                                 singletonList("master"),
+                                                 singletonList("main"),
                                                  CredentialsProvider.getDefault(),
                                                  null,
                                                  hooksDir).execute();
@@ -276,11 +276,11 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
         assertThat(cloned).isNotNull();
         assertThat(listRefs(cloned)).hasSize(1);
 
-        final List<RevCommit> cloneCommits = getCommits(cloned, "master");
+        final List<RevCommit> cloneCommits = getCommits(cloned, "main");
         assertThat(cloneCommits).hasSize(1);
 
         final RevCommit clonedCommit = cloneCommits.get(0);
-        final RevCommit originCommit = getCommits(origin, "master").get(2); // Ordered children first
+        final RevCommit originCommit = getCommits(origin, "main").get(2); // Ordered children first
 
         assertClonedCommitData(origin, "dir1", clonedCommit, originCommit);
         
@@ -318,9 +318,9 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
         assertThat(clonedTreeId).isEqualTo(originDirId);
     }
 
-    private ObjectId findIdForPath(final Git origin, final RevCommit originMasterTip, final String searchPath) throws Exception {
+    private ObjectId findIdForPath(final Git origin, final RevCommit originMainTip, final String searchPath) throws Exception {
         try (TreeWalk treeWalk = new TreeWalk(origin.getRepository())) {
-            final int treeId = treeWalk.addTree(originMasterTip.getTree());
+            final int treeId = treeWalk.addTree(originMainTip.getTree());
             treeWalk.setRecursive(false);
             final CanonicalTreeParser treeParser = treeWalk.getTree(treeId, CanonicalTreeParser.class);
             while (treeWalk.next()) {
@@ -331,7 +331,7 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
             }
         }
 
-        throw new AssertionError(String.format("Could not find path [%s] in commit [%s].", searchPath, originMasterTip.name()));
+        throw new AssertionError(String.format("Could not find path [%s] in commit [%s].", searchPath, originMainTip.name()));
     }
 
     private List<RevCommit> getCommits(final Git git, String branch) throws Exception {

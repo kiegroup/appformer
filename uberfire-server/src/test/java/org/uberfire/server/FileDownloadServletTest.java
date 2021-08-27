@@ -44,7 +44,7 @@ public class FileDownloadServletTest {
 
     private static final String PARAM_PATH = "path";
 
-    private static final String TEST_ROOT_PATH = "default://master@test-repository/test-project/src/main/resources/test";
+    private static final String TEST_ROOT_PATH = "default://main@test-repository/test-project/src/main/resources/test";
 
     @Mock
     private IOService ioService;
@@ -75,7 +75,7 @@ public class FileDownloadServletTest {
     @Test
     public void testMakeURI() throws Exception {
 
-        final String pathURI = "default://master@MySpace/aa/src/main/resources/com/myspace/aa/vv vv.drl";
+        final String pathURI = "default://main@MySpace/aa/src/main/resources/com/myspace/aa/vv vv.drl";
         final URI uri = downloadServlet.makeURI(pathURI);
 
         assertEquals("/aa/src/main/resources/com/myspace/aa/vv+vv.drl", uri.getRawPath());

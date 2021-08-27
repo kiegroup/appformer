@@ -140,7 +140,7 @@ public class ConfigurationServiceImpl implements ConfigurationService,
         }
 
         if (defaultRoot == null) {
-            throw new RuntimeException("Could not resolve 'systemFS' main root directory.");
+            throw new RuntimeException("Could not resolve 'systemFS' master root directory.");
         }
 
         // enable monitor by default

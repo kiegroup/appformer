@@ -52,10 +52,10 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
         final Repository gitRepo = origin.getRepository();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -65,7 +65,7 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         new Commit(origin,
@@ -132,7 +132,7 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
 
         final Path path = provider.getPath(newRepo);
         final List<FileDiff> diffs = (List<FileDiff>) provider.readAttributes(path,
-                                                                              "diff:master,develop").get("diff");
+                                                                              "diff:main,develop").get("diff");
 
         diffs.forEach(elem -> logger.info(elem.toString()));
 
@@ -150,10 +150,10 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
         final Repository gitRepo = origin.getRepository();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
-                   "master-1",
+                   "main-1",
                    null,
                    null,
                    false,
@@ -163,7 +163,7 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
                    }}).execute();
 
         new Commit(origin,
-                   "master",
+                   "main",
                    "name",
                    "name@example.com",
                    "develop-1",
@@ -176,7 +176,7 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
                    }}).execute();
 
         new CreateBranch((GitImpl) origin,
-                         "master",
+                         "main",
                          "develop").execute();
 
         final URI newRepo = URI.create("git://diff-repo");
@@ -191,7 +191,7 @@ public class JGitFileSystemImplProviderDiffTest extends AbstractTestInfra {
 
         final Path path = provider.getPath(newRepo);
         final List<FileDiff> diffs = (List<FileDiff>) provider.readAttributes(path,
-                                                                              "diff:master,develop").get("diff");
+                                                                              "diff:main,develop").get("diff");
 
         diffs.forEach(elem -> logger.info(elem.toString()));
 

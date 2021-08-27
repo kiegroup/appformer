@@ -20,7 +20,6 @@
 <module>
 
   <inherits name="org.uberfire.commons.UberfireCommons"/>
-  <inherits name="javax.enterprise.Support"/>
 
   <source path='api'/>
   <source path='impl'/>

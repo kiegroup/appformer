@@ -76,10 +76,10 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
 
         final Thread t = new Thread(() -> {
 
-            final Path master = provider.getPath(URI.create("git://master@byteman-lock-squash-repo"));
+            final Path main = provider.getPath(URI.create("git://main@byteman-lock-squash-repo"));
             final RevCommit commit = commitThreeTimesAndGetReference(fs,
                                                                      "byteman-lock-squash-repo",
-                                                                     "master",
+                                                                     "main",
                                                                      "t1");
 
             Thread t1 = new Thread(() -> {
@@ -93,7 +93,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                 SquashOption squashOption = new SquashOption(record);
 
                 logger.info("COMMITTER-1: Squashing");
-                provider.setAttribute(master,
+                provider.setAttribute(main,
                                       SquashOption.SQUASH_ATTR,
                                       squashOption);
                 printLog(fs.getGit());
@@ -111,7 +111,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                 SquashOption squashOption = new SquashOption(record);
 
                 logger.info("COMMITTER-2: Squashing");
-                provider.setAttribute(master,
+                provider.setAttribute(main,
                                       SquashOption.SQUASH_ATTR,
                                       squashOption);
                 printLog(fs.getGit());
@@ -134,7 +134,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
 
         assertEquals(3,
                      getCommitsFromBranch((GitImpl) fs.getGit(),
-                                          "master").size());
+                                          "main").size());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                                           EMPTY_ENV);
 
         final CyclicBarrier threadsFinishedBarrier = new CyclicBarrier(3);
-        final Path master = provider.getPath(URI.create("git://three-squash-repo"));
+        final Path main = provider.getPath(URI.create("git://three-squash-repo"));
         final RevCommit commit = commitThreeTimesAndGetReference(fs,
                                                                  "three-squash-repo",
                                                                  "master",
@@ -161,7 +161,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                      commit.getName());
             SquashOption squashOption = new SquashOption(record);
             logger.info("COMMITTER-1: Squashing");
-            provider.setAttribute(master,
+            provider.setAttribute(main,
                                   SquashOption.SQUASH_ATTR,
                                   squashOption);
             printLog(fs.getGit());
@@ -178,7 +178,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                      commit.getName());
             SquashOption squashOption = new SquashOption(record);
             logger.info("COMMITTER-2: Squashing");
-            provider.setAttribute(master,
+            provider.setAttribute(main,
                                   SquashOption.SQUASH_ATTR,
                                   squashOption);
             printLog(fs.getGit());
@@ -205,10 +205,10 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                                           EMPTY_ENV);
 
         final CyclicBarrier threadsFinishedBarrier = new CyclicBarrier(3);
-        final Path master = provider.getPath(URI.create("git://master@byteman-six-squash-repo"));
+        final Path main = provider.getPath(URI.create("git://main@byteman-six-squash-repo"));
         final RevCommit commit = commitSixTimesAndGetReference(fs,
                                                                "byteman-six-squash-repo",
-                                                               "master",
+                                                               "main",
                                                                "t1");
 
         Thread t1 = new Thread(() -> {
@@ -221,7 +221,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                      commit.getName());
             SquashOption squashOption = new SquashOption(record);
             logger.info("COMMITTER-1: Squashing");
-            provider.setAttribute(master,
+            provider.setAttribute(main,
                                   SquashOption.SQUASH_ATTR,
                                   squashOption);
             printLog(fs.getGit());
@@ -238,7 +238,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                      commit.getName());
             SquashOption squashOption = new SquashOption(record);
             logger.info("COMMITTER-2: Squashing");
-            provider.setAttribute(master,
+            provider.setAttribute(main,
                                   SquashOption.SQUASH_ATTR,
                                   squashOption);
             printLog(fs.getGit());
@@ -254,7 +254,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
 
         assertEquals(2,
                      getCommitsFromBranch((GitImpl) fs.getGit(),
-                                          "master").size());
+                                          "main").size());
     }
 
     @Test
@@ -265,10 +265,10 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
         final JGitFileSystem fs = (JGitFileSystem) provider.newFileSystem(newRepo,
                                                                           EMPTY_ENV);
 
-        final Path master = provider.getPath(URI.create("git://master@byteman-exception-squash-repo"));
+        final Path main = provider.getPath(URI.create("git://main@byteman-exception-squash-repo"));
         final RevCommit commit = commitThreeTimesAndGetReference(fs,
                                                                  "byteman-exception-squash-repo",
-                                                                 "master",
+                                                                 "main",
                                                                  "t1");
 
         logger.info("<<<<<<<<<<<<< COMMIT TO SQUASH " + commit.getName() + " --- " + commit.getFullMessage());
@@ -282,7 +282,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
         logger.info("COMMITTER-1: Squashing");
 
         try {
-            provider.setAttribute(master,
+            provider.setAttribute(main,
                                   SquashOption.SQUASH_ATTR,
                                   squashOption);
         } catch (Exception e) {
@@ -292,7 +292,7 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
 
         assertEquals(3,
                      getCommitsFromBranch((GitImpl) fs.getGit(),
-                                          "master").size());
+                                          "main").size());
     }
 
     @Test
@@ -304,12 +304,12 @@ public class JGitFileSystemImplProviderBytemanTest extends AbstractTestInfra {
                                                                                          EMPTY_ENV);
         JGitFileSystem fs = fsProxy.getRealJGitFileSystem();
 
-        final Path path = provider.getPath(URI.create("git://master@byteman-exception-commit-repo/myfile.txt"));
+        final Path path = provider.getPath(URI.create("git://main@byteman-exception-commit-repo/myfile.txt"));
 
         try {
             writeFile(fs,
                       path,
-                      "master");
+                      "main");
         } catch (RuntimeException e) {
         }
 

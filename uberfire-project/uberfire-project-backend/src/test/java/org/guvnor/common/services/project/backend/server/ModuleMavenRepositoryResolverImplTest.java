@@ -1255,7 +1255,7 @@ public class ModuleMavenRepositoryResolverImplTest {
     @Test
     public void testGetRepositoriesResolvingArtifact_Disabled2() {
         final Module module = mock(Module.class);
-        doReturn("file://master@a/a%20b").when(module).getIdentifier();
+        doReturn("file://main@a/a%20b").when(module).getIdentifier();
         doCallRealMethod().when(module).getEncodedIdentifier();
         final org.uberfire.backend.vfs.Path vfsPomXmlPath = mock(org.uberfire.backend.vfs.Path.class);
         final String oldSettingsXmlPath = System.getProperty(MavenSettings.CUSTOM_SETTINGS_PROPERTY);

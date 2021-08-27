@@ -242,7 +242,7 @@ var wysihtmlParserRules = {
         },
         "a": {
             "check_attributes": {
-                "href": "href", // if you compiled master manually then change this from 'url' to 'href'
+                "href": "href", // if you compiled main manually then change this from 'url' to 'href'
                 "rel": "any",
                 "target": "any",
                 "id": "any"
@@ -255,7 +255,7 @@ var wysihtmlParserRules = {
             "check_attributes": {
                 "width": "dimension",
                 "alt": "alt",
-                "src": "src", // if you compiled master manually then change this from 'url' to 'src'
+                "src": "src", // if you compiled main manually then change this from 'url' to 'src'
                 "height": "dimension",
                 "id": "any"
             },
