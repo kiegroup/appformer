@@ -374,6 +374,12 @@
 
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-preferences-processors</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-runtime-plugins-api</artifactId>
     </dependency>
 
