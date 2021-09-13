@@ -43,7 +43,7 @@ import org.guvnor.common.services.project.service.ModuleService;
 import org.guvnor.common.services.project.service.POMService;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.common.services.project.utils.NewWorkspaceProjectUtils;
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;

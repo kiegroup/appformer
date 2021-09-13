@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package org.guvnor.structure.contributors;
+package org.uberfire.security;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
-public enum ContributorType {
-
-    OWNER, ADMIN, CONTRIBUTOR;
-
-    public static List<ContributorType> PRIORITY_ORDER = Arrays.asList(OWNER, ADMIN, CONTRIBUTOR);
+public interface ContributorResource {
+    Collection<Contributor> getContributors();
 }

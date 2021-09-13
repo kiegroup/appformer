@@ -17,9 +17,9 @@
 package org.uberfire.security.authz;
 
 import org.jboss.errai.security.shared.api.identity.User;
-import org.uberfire.security.Resource;
-import org.uberfire.security.ResourceAction;
-import org.uberfire.security.ResourceType;
+import org.uberfire.security.*;
+
+import java.util.Collection;
 
 /**
  * Main entry interface for querying the authorization management subsystem about
@@ -212,6 +212,14 @@ public interface AuthorizationManager {
     boolean authorize(Permission permission,
                       User user);
 
+    /**
+     * It checks whether user is one of the contributors of resource
+     * as well permissions to access resource from security admin screen
+     */
+    public boolean authorize(Resource resource,
+                             Collection<Contributor> contributors,
+                             ResourceAction action,
+                             User user);
     /**
      * It redirects to {@link #check(Resource, User, VotingStrategy)}
      * using the default voting strategy defined at {@link PermissionManager}.

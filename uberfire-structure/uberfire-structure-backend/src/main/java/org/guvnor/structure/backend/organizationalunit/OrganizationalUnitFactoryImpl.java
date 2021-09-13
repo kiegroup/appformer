@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.config.RepositoryInfo;
 import org.guvnor.structure.organizationalunit.config.SpaceInfo;
