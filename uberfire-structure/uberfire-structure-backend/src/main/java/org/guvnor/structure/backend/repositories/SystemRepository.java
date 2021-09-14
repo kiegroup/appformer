@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;

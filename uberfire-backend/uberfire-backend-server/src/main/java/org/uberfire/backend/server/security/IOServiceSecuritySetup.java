@@ -16,21 +16,28 @@
 
 package org.uberfire.backend.server.security;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
+import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.repositories.RepositoryService;
+import org.guvnor.structure.security.RepositoryAction;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.backend.server.util.Paths;
+import org.uberfire.backend.vfs.Path;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.java.nio.file.FileSystemMetadata;
 import org.uberfire.java.nio.file.api.FileSystemProviders;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
 import org.uberfire.java.nio.security.SecuredFileSystemProvider;
 import org.uberfire.security.authz.AuthorizationManager;
+import org.uberfire.spaces.Space;
+import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.ssh.service.backend.auth.SSHKeyAuthenticator;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 @ApplicationScoped
 @Startup
@@ -53,6 +60,12 @@ public class IOServiceSecuritySetup {
     AuthorizationManager authorizationManager;
 
     @Inject
+    RepositoryService repositoryService;
+
+    @Inject
+    SpacesAPI spacesAPI;
+
+    @Inject
     SSHKeyAuthenticator sshKeyAuthenticator;
 
     @PostConstruct
@@ -61,15 +74,15 @@ public class IOServiceSecuritySetup {
 
         if (authenticationManagers.isUnsatisfied()) {
             final String authType = System.getProperty("org.uberfire.io.auth",
-                                                       null);
+                    null);
             final String domain = System.getProperty(AUTH_DOMAIN_KEY,
-                                                     JAASAuthenticationService.DEFAULT_DOMAIN);
+                    JAASAuthenticationService.DEFAULT_DOMAIN);
 
             if (authType == null || authType.toLowerCase().equals("jaas") || authType.toLowerCase().equals("container")) {
                 nonHTTPAuthenticationManager = new JAASAuthenticationService(domain);
             } else {
                 nonHTTPAuthenticationManager = loadClazz(authType,
-                                                         AuthenticationService.class);
+                        AuthenticationService.class);
             }
         } else {
             nonHTTPAuthenticationManager = authenticationManagers.get();
@@ -80,10 +93,24 @@ public class IOServiceSecuritySetup {
                 SecuredFileSystemProvider sfp = (SecuredFileSystemProvider) fp;
                 sfp.setJAASAuthenticator(nonHTTPAuthenticationManager);
                 sfp.setHTTPAuthenticator(httpAuthManager);
-                sfp.setAuthorizer((fs, fileSystemUser) ->
-                                          authorizationManager.authorize(
-                                                  new FileSystemResourceAdaptor(new FileSystemMetadata(fs)),
-                                                  fileSystemUser)
+                sfp.setAuthorizer((fs, fileSystemUser) -> {
+                            Path vfsPath = Paths.convert(fs.getPath(fs.getName()));
+                            Space space = spacesAPI.resolveSpace(vfsPath.toURI()).orElseThrow(() -> new IllegalArgumentException("Cannot resolve space from given path: " + vfsPath));
+                            Repository repository = repositoryService.getRepositoryFromSpace(space, vfsPath.getFileName());
+
+                            if (repository == null) {
+                                return authorizationManager.authorize(
+                                        new FileSystemResourceAdaptor(new FileSystemMetadata(fs)),
+                                        fileSystemUser);
+                            }
+
+                            return authorizationManager.authorize(
+                                    repository,
+                                    repository.getContributors(),
+                                    RepositoryAction.READ,
+                                    fileSystemUser);
+                        }
+
 
                 );
                 sfp.setSSHAuthenticator((userName, key) -> sshKeyAuthenticator.authenticate(userName, key));
@@ -111,7 +138,7 @@ public class IOServiceSecuritySetup {
         } catch (final Exception e) {
             // FIXME this could only be due to a deployment error. why do we continue in this case?
             LOG.error("Failed to load class '" + clazzName + "' as type " + typeOf + ". Continuing as if none was specified.",
-                      e);
+                    e);
         }
 
         return null;

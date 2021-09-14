@@ -17,15 +17,16 @@ package org.guvnor.structure.organizationalunit;
 
 import java.util.Collection;
 
-import org.guvnor.structure.contributors.Contributor;
+import org.uberfire.security.Contributor;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.security.OrgUnitResourceType;
 import org.uberfire.commons.data.Cacheable;
+import org.uberfire.security.ContributorResource;
 import org.uberfire.security.authz.RuntimeContentResource;
 import org.uberfire.spaces.Space;
 
-public interface OrganizationalUnit extends RuntimeContentResource,
-                                            Cacheable {
+public interface OrganizationalUnit extends ContributorResource ,RuntimeContentResource,
+                                            Cacheable{
 
     OrgUnitResourceType RESOURCE_TYPE = new OrgUnitResourceType();
 
@@ -42,8 +43,6 @@ public interface OrganizationalUnit extends RuntimeContentResource,
     Collection<Repository> getRepositories();
 
     Collection<String> getGroups();
-
-    Collection<Contributor> getContributors();
 
     boolean isDeleted();
 
