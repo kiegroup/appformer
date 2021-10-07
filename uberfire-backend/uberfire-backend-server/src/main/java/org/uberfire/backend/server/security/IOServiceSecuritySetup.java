@@ -16,6 +16,11 @@
 
 package org.uberfire.backend.server.security;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.security.RepositoryAction;
@@ -29,15 +34,11 @@ import org.uberfire.java.nio.file.FileSystemMetadata;
 import org.uberfire.java.nio.file.api.FileSystemProviders;
 import org.uberfire.java.nio.file.spi.FileSystemProvider;
 import org.uberfire.java.nio.security.SecuredFileSystemProvider;
+import org.uberfire.security.WorkbenchUserManager;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 import org.uberfire.ssh.service.backend.auth.SSHKeyAuthenticator;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
 @ApplicationScoped
 @Startup
@@ -68,6 +69,9 @@ public class IOServiceSecuritySetup {
     @Inject
     SSHKeyAuthenticator sshKeyAuthenticator;
 
+    @Inject
+    WorkbenchUserManager workbenchUserManager;
+
     @PostConstruct
     public void setup() {
         final AuthenticationService nonHTTPAuthenticationManager;
@@ -78,11 +82,13 @@ public class IOServiceSecuritySetup {
             final String domain = System.getProperty(AUTH_DOMAIN_KEY,
                     JAASAuthenticationService.DEFAULT_DOMAIN);
 
-            if (authType == null || authType.toLowerCase().equals("jaas") || authType.toLowerCase().equals("container")) {
+            if (authType == null) {
+                nonHTTPAuthenticationManager = new ElytronAuthenticationService(workbenchUserManager);
+            } else if (authType.toLowerCase().equals("jaas") || authType.toLowerCase().equals("container")) {
                 nonHTTPAuthenticationManager = new JAASAuthenticationService(domain);
             } else {
                 nonHTTPAuthenticationManager = loadClazz(authType,
-                        AuthenticationService.class);
+                                                         AuthenticationService.class);
             }
         } else {
             nonHTTPAuthenticationManager = authenticationManagers.get();
