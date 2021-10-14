@@ -18,6 +18,7 @@ package org.uberfire.ext.security.server;
 
 import java.security.Principal;
 import java.security.acl.Group;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -72,7 +73,7 @@ public class ServletSecurityAuthenticationServiceTest {
     public void setup() throws Exception {
 
         Principal p1 = mock(Principal.class);
-        when(p1.getName()).thenReturn(USERNAME);
+        doReturn(USERNAME).when(p1).getName();
         doReturn(p1).when(request).getUserPrincipal();
         doReturn(httpSession).when(request).getSession();
         doReturn(null).when(httpSession).getAttribute(eq(USER_SESSION_ATTR_NAME));
@@ -105,13 +106,11 @@ public class ServletSecurityAuthenticationServiceTest {
 
         RoleRegistry.get().registerRole("admin");
         RoleRegistry.get().registerRole("role1");
-        Set<Principal> principals = mockPrincipals("admin",
-                                                   "role1",
-                                                   "group1",
-                                                   null);
-        Subject subject = new Subject();
-        subject.getPrincipals().addAll(principals);
-        doReturn(subject).when(tested).getSubjectFromPolicyContext();
+        final ArrayList<Object> principals = new ArrayList<>();
+        principals.add("admin");
+        principals.add("role1");
+        principals.add("group1");
+        doReturn(principals).when(tested).getPrincipals();
 
         User user = tested.login(USERNAME,
                                  PASSWORD);
@@ -131,8 +130,7 @@ public class ServletSecurityAuthenticationServiceTest {
     @Test
     public void testLoginNoPrincipal() throws Exception {
 
-        Subject subject = new Subject();
-        doReturn(subject).when(tested).getSubjectFromPolicyContext();
+        doReturn(new ArrayList<>()).when(tested).getPrincipals();
 
         User user = tested.login(USERNAME,
                                  PASSWORD);
@@ -144,72 +142,6 @@ public class ServletSecurityAuthenticationServiceTest {
                      user.getRoles().size());
         assertEquals(0,
                      user.getGroups().size());
-    }
-
-    @Test
-    public void testLoginSubjectGroups() throws Exception {
-        String username = "user1";
-        String password = "password1";
-        RoleRegistry.get().registerRole("admin");
-        RoleRegistry.get().registerRole("role1");
-        Set<Principal> principals = mockPrincipals("admin",
-                                                   "role1",
-                                                   "group1");
-        Group aclGroup = mock(Group.class);
-        doReturn(ServletSecurityAuthenticationService.DEFAULT_ROLE_PRINCIPLE_NAME).when(aclGroup).getName();
-        Set<Principal> aclGroups = mockPrincipals("g1",
-                                                  "g2");
-        Enumeration<? extends Principal> aclGroupsEnum = Collections.enumeration(aclGroups);
-        doReturn(aclGroupsEnum).when(aclGroup).members();
-        Subject subject = new Subject();
-        subject.getPrincipals().addAll(principals);
-        subject.getPrincipals().add(aclGroup);
-        doReturn(subject).when(tested).getSubjectFromPolicyContext();
-
-        User user = tested.login(username,
-                                 password);
-
-        assertNotNull(user);
-        assertEquals(username,
-                     user.getIdentifier());
-        assertEquals(2,
-                     user.getRoles().size());
-        assertTrue(user.getRoles().contains(new RoleImpl("admin")));
-        assertTrue(user.getRoles().contains(new RoleImpl("role1")));
-        assertEquals(3,
-                     user.getGroups().size());
-        assertTrue(user.getGroups().contains(new GroupImpl("group1")));
-        assertTrue(user.getGroups().contains(new GroupImpl("g1")));
-        assertTrue(user.getGroups().contains(new GroupImpl("g2")));
-    }
-
-    @Test
-    public void testLoginWithUsernameInPrincipal() throws Exception {
-        RoleRegistry.get().registerRole("admin");
-        RoleRegistry.get().registerRole("role1");
-        Set<Principal> principals = mockPrincipals("admin",
-                                                   "role1",
-                                                   "group1",
-                                                   USERNAME,
-                                                   null);
-        Subject subject = new Subject();
-        subject.getPrincipals().addAll(principals);
-        doReturn(subject).when(tested).getSubjectFromPolicyContext();
-
-        User user = tested.login(USERNAME,
-                                 PASSWORD);
-
-        assertNotNull(user);
-        assertEquals(USERNAME,
-                     user.getIdentifier());
-        assertEquals(2,
-                     user.getRoles().size());
-        assertTrue(user.getRoles().contains(new RoleImpl("admin")));
-        assertTrue(user.getRoles().contains(new RoleImpl("role1")));
-        assertEquals(1,
-                     user.getGroups().size());
-        assertTrue(user.getGroups().contains(new GroupImpl("group1")));
-        assertFalse(user.getGroups().contains(new GroupImpl("user1")));
     }
 
     @Test
@@ -237,15 +169,5 @@ public class ServletSecurityAuthenticationServiceTest {
             // the exception message needs to be the same as defined above
             assertEquals(exceptionMsg, ise.getMessage());
         }
-    }
-
-    private Set<Principal> mockPrincipals(String... names) {
-        Set<Principal> principals = new HashSet<Principal>();
-        for (String name : names) {
-            Principal p1 = mock(Principal.class);
-            when(p1.getName()).thenReturn(name);
-            principals.add(p1);
-        }
-        return principals;
     }
 }
