@@ -15,13 +15,12 @@
  */
 package org.uberfire.ext.security.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.security.auth.Subject;
-import javax.security.jacc.PolicyContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -34,22 +33,15 @@ import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.uberfire.backend.server.security.RoleRegistry;
 import org.uberfire.backend.server.security.adapter.GroupAdapterAuthorizationSource;
+import org.wildfly.security.auth.server.SecurityDomain;
 
 @Service
 @ApplicationScoped
 public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizationSource implements AuthenticationService {
 
     static final String USER_SESSION_ATTR_NAME = "uf.security.user";
-    static final String DEFAULT_ROLE_PRINCIPLE_NAME = "Roles";
-
-    private String[] rolePrincipleNames = new String[]{DEFAULT_ROLE_PRINCIPLE_NAME};
 
     public ServletSecurityAuthenticationService() {
-        final String value = System.getProperty("org.uberfire.security.principal.names",
-                                                "");
-        if (value != null && !value.trim().isEmpty()) {
-            rolePrincipleNames = value.split(",");
-        }
     }
 
     protected static HttpServletRequest getRequestForThread() {
@@ -105,7 +97,6 @@ public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizat
                 }
             }
         }
-
     }
 
     @Override
@@ -121,7 +112,7 @@ public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizat
             user = (User) session.getAttribute(USER_SESSION_ATTR_NAME);
             if (user == null) {
                 // Use roles present in the registry.
-                final Collection<Role> userRoles = new HashSet<Role>();
+                final Collection<Role> userRoles = new HashSet<>();
                 for (final Role checkRole : RoleRegistry.get().getRegisteredRoles()) {
                     if (request.isUserInRole(checkRole.getName())) {
                         userRoles.add(checkRole);
@@ -129,15 +120,12 @@ public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizat
                 }
                 // Obtain roles and groups from entities present in the javax security Principal instance.
                 final String name = request.getUserPrincipal().getName();
-                Subject subject = getSubjectFromPolicyContext();
-                List<String> principals = loadEntitiesFromSubjectAndAdapters(name,
-                                                                             subject,
-                                                                             rolePrincipleNames);
-                Collection<Role> roles = getRoles(principals);
+                final List<String> principals = getPrincipals();
+                final Collection<Role> roles = getRoles(principals);
                 if (null != roles && !roles.isEmpty()) {
                     userRoles.addAll(roles);
                 }
-                Collection<org.jboss.errai.security.shared.api.Group> userGroups = getGroups(principals, name);
+                final Collection<org.jboss.errai.security.shared.api.Group> userGroups = getGroups(principals, name);
                 // Create the user instance.
                 user = new UserImpl(name,
                                     userRoles,
@@ -150,13 +138,14 @@ public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizat
         return user;
     }
 
-    Subject getSubjectFromPolicyContext() {
-        Subject subject;
-        try {
-            subject = (Subject) PolicyContext.getContext("javax.security.auth.Subject.container");
-        } catch (final Exception e) {
-            subject = null;
+    protected List<String> getPrincipals() {
+        final List<String> result = new ArrayList<>();
+        final SecurityDomain securityDomain = SecurityDomain.getCurrent();
+        if (securityDomain != null) {
+            for (String role : securityDomain.getCurrentSecurityIdentity().getRoles()) {
+                result.add(role);
+            }
         }
-        return subject;
+        return result;
     }
 }
