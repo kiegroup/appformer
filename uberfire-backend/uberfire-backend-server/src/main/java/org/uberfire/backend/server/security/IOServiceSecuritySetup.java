@@ -27,6 +27,7 @@ import org.guvnor.structure.security.RepositoryAction;
 import org.jboss.errai.security.shared.service.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.commons.services.cdi.Startup;
@@ -72,6 +73,9 @@ public class IOServiceSecuritySetup {
     @Inject
     WorkbenchUserManager workbenchUserManager;
 
+    @Inject
+    ElytronIdentityHelper elytronIdentityHelper;
+
     @PostConstruct
     public void setup() {
         final AuthenticationService nonHTTPAuthenticationManager;
@@ -83,7 +87,7 @@ public class IOServiceSecuritySetup {
                     JAASAuthenticationService.DEFAULT_DOMAIN);
 
             if (authType == null) {
-                nonHTTPAuthenticationManager = new ElytronAuthenticationService(workbenchUserManager);
+                nonHTTPAuthenticationManager = new ElytronAuthenticationService(elytronIdentityHelper);
             } else if (authType.toLowerCase().equals("jaas") || authType.toLowerCase().equals("container")) {
                 nonHTTPAuthenticationManager = new JAASAuthenticationService(domain);
             } else {
