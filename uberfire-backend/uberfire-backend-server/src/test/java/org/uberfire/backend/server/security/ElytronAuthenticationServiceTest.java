@@ -20,31 +20,25 @@ import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
-import org.uberfire.security.WorkbenchUserManager;
-import org.wildfly.security.auth.server.RealmUnavailableException;
-import org.wildfly.security.evidence.Evidence;
+import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 public class ElytronAuthenticationServiceTest {
 
     private ElytronAuthenticationService tested;
-    private WorkbenchUserManager workbenchUserManager;
+    private ElytronIdentityHelper elytronIdentityHelper;
 
     @Before
     public void setup() {
-        workbenchUserManager = mock(WorkbenchUserManager.class);
+        elytronIdentityHelper = mock(ElytronIdentityHelper.class);
 
-        tested = new ElytronAuthenticationService(workbenchUserManager) {
-            @Override
-            protected void login(final String username,
-                                 final Evidence evidence) throws RealmUnavailableException {
-            }
-        };
+        tested = new ElytronAuthenticationService(elytronIdentityHelper);
     }
 
     @Test
@@ -66,7 +60,7 @@ public class ElytronAuthenticationServiceTest {
         assertFalse(tested.isLoggedIn());
 
         final User mock = mock(User.class);
-        doReturn(mock).when(workbenchUserManager).getUser(username);
+        doReturn(mock).when(elytronIdentityHelper).getIdentity(username, password);
 
         assertEquals(mock, tested.login(username,
                                         password));
@@ -82,19 +76,12 @@ public class ElytronAuthenticationServiceTest {
 
     @Test(expected = FailedAuthenticationException.class)
     public void testLoginFailure() throws Exception {
-        tested = new ElytronAuthenticationService(workbenchUserManager) {
-            @Override
-            protected void login(final String username,
-                                 final Evidence evidence) throws RealmUnavailableException {
-                throw new RealmUnavailableException();
-            }
-        };
+        tested = new ElytronAuthenticationService(elytronIdentityHelper);
 
         final String username = "user1";
         final String password = "wrong pass";
 
-        final User mock = mock(User.class);
-        doReturn(mock).when(workbenchUserManager).getUser(username);
+        doThrow(new FailedAuthenticationException()).when(elytronIdentityHelper).getIdentity(username, password);
 
         tested.login(username,
                      password);
