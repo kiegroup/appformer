@@ -115,7 +115,7 @@ public class KeyCloakElytronIdentityHelper implements ElytronIdentityHelper {
         throw new FailedAuthenticationException();
     }
 
-    private static class ElytronHelperCallbackHandler implements CallbackHandler {
+    static class ElytronHelperCallbackHandler implements CallbackHandler {
         private final String userName;
         private final String password;
 
@@ -125,7 +125,7 @@ public class KeyCloakElytronIdentityHelper implements ElytronIdentityHelper {
         }
 
         @Override
-        public void handle(Callback[] callbacks) throws java.io.IOException, UnsupportedCallbackException {
+        public void handle(Callback[] callbacks) {
             Stream.of(callbacks).forEach(callback -> {
                 if (callback instanceof NameCallback) {
                     NameCallback nc = (NameCallback) callback;
