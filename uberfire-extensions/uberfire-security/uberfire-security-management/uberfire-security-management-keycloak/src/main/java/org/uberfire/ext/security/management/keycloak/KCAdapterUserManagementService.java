@@ -33,8 +33,9 @@ import org.uberfire.ext.security.management.service.AbstractUserManagementServic
  * @since 0.9.0
  */
 @Dependent
-@Named(value = "KCAdapterUserManagementService")
+@Named(value = KCAdapterUserManagementService.NAME)
 public class KCAdapterUserManagementService extends AbstractUserManagementService {
+    public static final String NAME = "KCAdapterUserManagementService";
 
     KeyCloakUserManager userManager;
     KeyCloakGroupManager groupManager;
