@@ -16,9 +16,6 @@
 
 package org.uberfire.ext.security.management.keycloak.elytron;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,13 +23,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
 import javax.interceptor.Interceptor;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 
 import org.jboss.errai.security.shared.api.Role;
@@ -40,18 +38,18 @@ import org.jboss.errai.security.shared.api.RoleImpl;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
+import org.keycloak.adapters.jaas.DirectAccessGrantsLoginModule;
 import org.keycloak.adapters.jaas.RolePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
-import org.keycloak.adapters.jaas.DirectAccessGrantsLoginModule;
 
 /**
  * Implementation of {@link ElytronIdentityHelper} for Keycloak integration. It tries to authenticate the given credentials
  * to Keycloak by using the {@link DirectAccessGrantsLoginModule}. Requires a keycloak-config-file and a SystemProperty
  * {@value KIE_GIT_FILE_SYSTEM_PROP} specifying the path of that file.
  */
-@Priority(Interceptor.Priority.APPLICATION+10)
+@Priority(Interceptor.Priority.APPLICATION + 10)
 @Alternative
 public class KeyCloakElytronIdentityHelper implements ElytronIdentityHelper {
 
@@ -92,7 +90,7 @@ public class KeyCloakElytronIdentityHelper implements ElytronIdentityHelper {
         keycloakDelegate.initialize(subject, new ElytronHelperCallbackHandler(userName, password), new HashMap<>(), options);
 
         try {
-            if(keycloakDelegate.login()) {
+            if (keycloakDelegate.login()) {
                 keycloakDelegate.commit();
 
                 Collection<Role> roles = subject.getPrincipals(RolePrincipal.class)
@@ -116,6 +114,7 @@ public class KeyCloakElytronIdentityHelper implements ElytronIdentityHelper {
     }
 
     static class ElytronHelperCallbackHandler implements CallbackHandler {
+
         private final String userName;
         private final String password;
 
