@@ -42,6 +42,7 @@ public class ServletSecurityAuthenticationService extends GroupAdapterAuthorizat
     static final String USER_SESSION_ATTR_NAME = "uf.security.user";
 
     public ServletSecurityAuthenticationService() {
+        // For CDI
     }
 
     protected static HttpServletRequest getRequestForThread() {

@@ -25,12 +25,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.security.auth.Subject;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jboss.errai.security.shared.api.GroupImpl;
 import org.jboss.errai.security.shared.api.RoleImpl;
 import org.jboss.errai.security.shared.api.identity.User;
+import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,12 +45,14 @@ import org.uberfire.backend.server.security.RoleRegistry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,6 +103,12 @@ public class ServletSecurityAuthenticationServiceTest {
     public void testNotLoggedIn() {
         doReturn(null).when(request).getUserPrincipal();
         assertFalse(tested.isLoggedIn());
+    }
+
+    @Test(expected = FailedAuthenticationException.class)
+    public void testLoginFailure() throws ServletException {
+        doThrow(new ServletException()).when(request).login("test","test");
+        tested.login("test","test");
     }
 
     @Test
@@ -154,6 +164,16 @@ public class ServletSecurityAuthenticationServiceTest {
     }
 
     @Test
+    public void testLogoutNoSession() throws Exception {
+        doReturn(null).when(request).getSession(false);
+        tested.logout();
+        verify(request,
+               times(1)).logout();
+        verify(httpSession,
+               never()).invalidate();
+    }
+
+    @Test
     public void testSwallowIllegalStateExceptionDuringLogoutWithKeycloak() {
         doThrow(new IllegalStateException("UT000021: Session already invalidated")).when(httpSession).invalidate();
         tested.logout();
@@ -170,4 +190,24 @@ public class ServletSecurityAuthenticationServiceTest {
             assertEquals(exceptionMsg, ise.getMessage());
         }
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGetRequestForThreadNoRequest() {
+        SecurityIntegrationFilter.requests.set(null);
+        tested.getRequestForThread();
+        SecurityIntegrationFilter.requests.set(request);
+    }
+
+    @Test
+    public void testGetUserNoUserPrincipal() {
+        doReturn(null).when(request).getUserPrincipal();
+        assertNull(tested.getUser());
+    }
+
+    @Test
+    public void testGetUserNoSession() {
+        doReturn(null).when(request).getSession();
+        assertNull(tested.getUser());
+    }
+
 }
