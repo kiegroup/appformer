@@ -23,9 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
-import javax.interceptor.Interceptor;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -49,7 +47,6 @@ import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
  * to Keycloak by using the {@link DirectAccessGrantsLoginModule}. Requires a keycloak-config-file and a SystemProperty
  * {@value KIE_GIT_FILE_SYSTEM_PROP} specifying the path of that file.
  */
-@Priority(Interceptor.Priority.APPLICATION + 10)
 @Alternative
 public class KeyCloakElytronIdentityHelper implements ElytronIdentityHelper {
 
