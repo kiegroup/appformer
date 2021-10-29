@@ -18,14 +18,16 @@ package org.uberfire.ext.security.management.keycloak.elytron;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 
 import org.uberfire.backend.server.security.elytron.DefaultElytronIdentityHelper;
 import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
+import org.uberfire.backend.server.security.elytron.ElytronIdentityHelperProducer;
 import org.uberfire.ext.security.management.keycloak.KCAdapterUserManagementService;
 import org.uberfire.ext.security.management.keycloak.KCCredentialsUserManagementService;
+import org.uberfire.security.WorkbenchUserManager;
 
 /**
  * Produces {@link ElytronIdentityHelper} based on the user management service configured on the
@@ -35,16 +37,16 @@ import org.uberfire.ext.security.management.keycloak.KCCredentialsUserManagement
  * a {@link DefaultElytronIdentityHelper}
  */
 @ApplicationScoped
-public class KeyCloakElytronIdentityHelperProducer {
+@Specializes
+public class KeyCloakElytronIdentityHelperProducer extends ElytronIdentityHelperProducer {
 
     public static final String MANAGEMENT_SERVICES_SYSTEM_PROP = "org.uberfire.ext.security.management.api.userManagementServices";
 
-    private final Instance<DefaultElytronIdentityHelper> defaultHelperInstance;
     private boolean isKeyCloak;
 
     @Inject
-    public KeyCloakElytronIdentityHelperProducer(Instance<DefaultElytronIdentityHelper> defaultHelperInstance) {
-        this.defaultHelperInstance = defaultHelperInstance;
+    public KeyCloakElytronIdentityHelperProducer(WorkbenchUserManager workbenchUserManager) {
+        super(workbenchUserManager);
     }
 
     @PostConstruct
@@ -54,10 +56,11 @@ public class KeyCloakElytronIdentityHelperProducer {
     }
 
     @Produces
-    public ElytronIdentityHelper getHelper() {
+    @Override
+    public ElytronIdentityHelper getDefaultElytronIdentityHelper() {
         if (isKeyCloak) {
             return new KeyCloakElytronIdentityHelper();
         }
-        return defaultHelperInstance.get();
+        return super.getDefaultElytronIdentityHelper();
     }
 }

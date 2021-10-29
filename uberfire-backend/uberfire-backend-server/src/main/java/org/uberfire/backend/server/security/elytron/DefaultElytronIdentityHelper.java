@@ -16,7 +16,7 @@
 
 package org.uberfire.backend.server.security.elytron;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
@@ -32,8 +32,9 @@ import org.wildfly.security.evidence.PasswordGuessEvidence;
  * Default implementation of {@link ElytronIdentityHelper}, it relies in the platform {@link SecurityDomain} to obtain
  * the user credentials
  */
-@ApplicationScoped
+@Alternative
 public class DefaultElytronIdentityHelper implements ElytronIdentityHelper {
+
     private static final Logger logger = LoggerFactory.getLogger(DefaultElytronIdentityHelper.class);
 
     private final WorkbenchUserManager workbenchUserManager;
@@ -47,7 +48,7 @@ public class DefaultElytronIdentityHelper implements ElytronIdentityHelper {
     public User getIdentity(String userName, String password) {
 
         try {
-            if(login(userName, password)) {
+            if (login(userName, password)) {
                 return workbenchUserManager.getUser(userName);
             }
         } catch (Exception ex) {
