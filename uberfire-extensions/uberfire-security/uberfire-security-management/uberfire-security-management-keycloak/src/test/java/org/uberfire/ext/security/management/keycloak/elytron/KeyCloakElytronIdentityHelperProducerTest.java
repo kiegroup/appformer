@@ -16,8 +16,6 @@
 
 package org.uberfire.ext.security.management.keycloak.elytron;
 
-import javax.enterprise.inject.Instance;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,29 +26,23 @@ import org.uberfire.backend.server.security.elytron.DefaultElytronIdentityHelper
 import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
 import org.uberfire.ext.security.management.keycloak.KCAdapterUserManagementService;
 import org.uberfire.ext.security.management.keycloak.KCCredentialsUserManagementService;
+import org.uberfire.security.WorkbenchUserManager;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.uberfire.ext.security.management.keycloak.elytron.KeyCloakElytronIdentityHelperProducer.MANAGEMENT_SERVICES_SYSTEM_PROP;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KeyCloakElytronIdentityHelperProducerTest {
 
     @Mock
-    private DefaultElytronIdentityHelper defaultElytronIdentityHelper;
-
-    @Mock
-    private Instance<DefaultElytronIdentityHelper> instance;
+    private WorkbenchUserManager workbenchUserManager;
 
     private KeyCloakElytronIdentityHelperProducer producer;
 
     @Before
     public void init() {
-        when(instance.get()).thenReturn(defaultElytronIdentityHelper);
-
-        producer = new KeyCloakElytronIdentityHelperProducer(instance);
+        producer = new KeyCloakElytronIdentityHelperProducer(workbenchUserManager);
     }
 
     @Test
@@ -59,7 +51,7 @@ public class KeyCloakElytronIdentityHelperProducerTest {
 
         producer.init();
 
-        ElytronIdentityHelper helper = producer.getHelper();
+        ElytronIdentityHelper helper = producer.getDefaultElytronIdentityHelper();
 
         assertNotNull(helper);
         assertTrue(helper instanceof KeyCloakElytronIdentityHelper);
@@ -71,7 +63,7 @@ public class KeyCloakElytronIdentityHelperProducerTest {
 
         producer.init();
 
-        ElytronIdentityHelper helper = producer.getHelper();
+        ElytronIdentityHelper helper = producer.getDefaultElytronIdentityHelper();
 
         assertNotNull(helper);
         assertTrue(helper instanceof KeyCloakElytronIdentityHelper);
@@ -83,7 +75,7 @@ public class KeyCloakElytronIdentityHelperProducerTest {
 
         producer.init();
 
-        ElytronIdentityHelper helper = producer.getHelper();
+        ElytronIdentityHelper helper = producer.getDefaultElytronIdentityHelper();
 
         assertNotNull(helper);
         assertTrue(helper instanceof DefaultElytronIdentityHelper);
@@ -93,7 +85,7 @@ public class KeyCloakElytronIdentityHelperProducerTest {
     public void testProduceDefaultHelperNoValue() {
         producer.init();
 
-        ElytronIdentityHelper helper = producer.getHelper();
+        ElytronIdentityHelper helper = producer.getDefaultElytronIdentityHelper();
 
         assertNotNull(helper);
         assertTrue(helper instanceof DefaultElytronIdentityHelper);
