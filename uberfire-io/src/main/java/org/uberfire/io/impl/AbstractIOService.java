@@ -16,23 +16,6 @@
 
 package org.uberfire.io.impl;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.lifecycle.PriorityDisposableRegistry;
@@ -42,42 +25,35 @@ import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.base.AbstractPath;
 import org.uberfire.java.nio.base.FileSystemState;
 import org.uberfire.java.nio.channels.SeekableByteChannel;
-import org.uberfire.java.nio.file.CopyOption;
-import org.uberfire.java.nio.file.DirectoryNotEmptyException;
-import org.uberfire.java.nio.file.DirectoryStream;
-import org.uberfire.java.nio.file.FileAlreadyExistsException;
-import org.uberfire.java.nio.file.FileSystem;
-import org.uberfire.java.nio.file.FileSystemAlreadyExistsException;
-import org.uberfire.java.nio.file.FileSystemMetadata;
-import org.uberfire.java.nio.file.FileSystemNotFoundException;
-import org.uberfire.java.nio.file.FileSystems;
-import org.uberfire.java.nio.file.Files;
-import org.uberfire.java.nio.file.NoSuchFileException;
-import org.uberfire.java.nio.file.NotDirectoryException;
-import org.uberfire.java.nio.file.OpenOption;
-import org.uberfire.java.nio.file.Option;
-import org.uberfire.java.nio.file.Path;
-import org.uberfire.java.nio.file.Paths;
-import org.uberfire.java.nio.file.ProviderNotFoundException;
-import org.uberfire.java.nio.file.StandardOpenOption;
+import org.uberfire.java.nio.file.*;
 import org.uberfire.java.nio.file.attribute.FileAttribute;
 import org.uberfire.java.nio.file.attribute.FileTime;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
-import static org.uberfire.java.nio.file.StandardOpenOption.CREATE_NEW;
-import static org.uberfire.java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static org.uberfire.java.nio.file.StandardOpenOption.WRITE;
+import static org.uberfire.java.nio.file.StandardOpenOption.*;
 
 public abstract class AbstractIOService implements IOServiceIdentifiable,
-                                                   IOServiceLockable {
+        IOServiceLockable {
 
     protected static final String DEFAULT_SERVICE_NAME = "default";
     protected static final Charset UTF_8 = Charset.forName("UTF-8");
     private static final Logger logger = LoggerFactory.getLogger(AbstractIOService.class);
     private static final Set<StandardOpenOption> CREATE_NEW_FILE_OPTIONS = EnumSet.of(CREATE_NEW,
-                                                                                      WRITE);
+            WRITE);
+    private static final Pattern p = Pattern.compile("/[\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069]/ug");
     protected final IOWatchService ioWatchService;
-
     protected final Set<FileSystemMetadata> fileSystems = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final BatchLockControl batchLockControl = new BatchLockControl();
     protected NewFileSystemListener newFileSystemListener = null;
@@ -540,8 +516,8 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
                       final OpenOption... options)
             throws IllegalArgumentException, IOException, UnsupportedOperationException {
         return write(path,
-                     content.getBytes(cs),
-                     new HashSet<OpenOption>(Arrays.asList(options)));
+                sanitizeContent(content).getBytes(cs),
+                new HashSet<OpenOption>(Arrays.asList(options)));
     }
 
     @Override
@@ -653,9 +629,9 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
             throws IllegalArgumentException, IOException, UnsupportedOperationException {
 
         return write(path,
-                     content.getBytes(cs),
-                     options,
-                     attrs);
+                sanitizeContent(content).getBytes(cs),
+                options,
+                attrs);
     }
 
     @Override
@@ -688,6 +664,15 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
 
     protected abstract Set<? extends OpenOption> buildOptions(final Set<? extends OpenOption> options,
                                                               final OpenOption... other);
+
+    private String sanitizeContent(String str) {
+        Matcher m = p.matcher(str);
+        if (m.matches()) {
+            return m.replaceAll("");
+        }
+        return str;
+
+    }
 
     @Override
     public String getId() {
