@@ -23,27 +23,22 @@ import javax.inject.Inject;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
 import org.jboss.errai.security.shared.service.AuthenticationService;
-import org.uberfire.security.WorkbenchUserManager;
-import org.wildfly.security.auth.server.RealmUnavailableException;
-import org.wildfly.security.auth.server.SecurityDomain;
-import org.wildfly.security.evidence.Evidence;
-import org.wildfly.security.evidence.PasswordGuessEvidence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
 
 @ApplicationScoped
 @Alternative
 public class ElytronAuthenticationService implements AuthenticationService {
+    private static final Logger logger = LoggerFactory.getLogger(ElytronAuthenticationService.class);
 
-    private WorkbenchUserManager workbenchUserManager;
+    private final ElytronIdentityHelper elytronIdentityHelper;
 
     private final ThreadLocal<User> userOnThisThread = new ThreadLocal<>();
 
-    public ElytronAuthenticationService() {
-
-    }
-
     @Inject
-    public ElytronAuthenticationService(final WorkbenchUserManager workbenchUserManager) {
-        this.workbenchUserManager = workbenchUserManager;
+    public ElytronAuthenticationService(final  ElytronIdentityHelper elytronIdentityHelper) {
+        this.elytronIdentityHelper = elytronIdentityHelper;
     }
 
     @Override
@@ -51,23 +46,15 @@ public class ElytronAuthenticationService implements AuthenticationService {
                       final String password) {
 
         try {
-            final Evidence evidence = new PasswordGuessEvidence(password.toCharArray());
-            login(username, evidence);
-            final User user = workbenchUserManager.getUser(username);
+            User user = elytronIdentityHelper.getIdentity(username, password);
 
             userOnThisThread.set(user);
 
             return user;
-        } catch (RealmUnavailableException e) {
-            throw new FailedAuthenticationException();
-        } catch (Exception e) {
-            throw new FailedAuthenticationException();
+        } catch (Exception ex) {
+            logger.debug("Cannot login user '{}':", username, ex);
         }
-    }
-
-    protected void login(final String username,
-                         final Evidence evidence) throws RealmUnavailableException {
-        SecurityDomain.getCurrent().authenticate(username, evidence);
+        throw new FailedAuthenticationException();
     }
 
     @Override
