@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,7 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
     private static final Logger logger = LoggerFactory.getLogger(AbstractIOService.class);
     private static final Set<StandardOpenOption> CREATE_NEW_FILE_OPTIONS = EnumSet.of(CREATE_NEW,
                                                                                       WRITE);
+    private static final Pattern pattern = Pattern.compile("/[\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069]/ug");
     protected final IOWatchService ioWatchService;
 
     protected final Set<FileSystemMetadata> fileSystems = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -472,8 +475,7 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
         if (result == null || result.length == 0) {
             return "";
         }
-        return new String(result,
-                          cs);
+        return sanitizeContent(new String(result, cs));
     }
 
     @Override
@@ -540,7 +542,7 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
                       final OpenOption... options)
             throws IllegalArgumentException, IOException, UnsupportedOperationException {
         return write(path,
-                     content.getBytes(cs),
+                     sanitizeContent(content).getBytes(cs),
                      new HashSet<OpenOption>(Arrays.asList(options)));
     }
 
@@ -653,7 +655,7 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
             throws IllegalArgumentException, IOException, UnsupportedOperationException {
 
         return write(path,
-                     content.getBytes(cs),
+                     sanitizeContent(content).getBytes(cs),
                      options,
                      attrs);
     }
@@ -688,6 +690,14 @@ public abstract class AbstractIOService implements IOServiceIdentifiable,
 
     protected abstract Set<? extends OpenOption> buildOptions(final Set<? extends OpenOption> options,
                                                               final OpenOption... other);
+
+    private String sanitizeContent(final String content) {
+        Matcher m = pattern.matcher(content);
+        if (m.matches()) {
+            return m.replaceAll("");
+        }
+        return content;
+    }
 
     @Override
     public String getId() {
