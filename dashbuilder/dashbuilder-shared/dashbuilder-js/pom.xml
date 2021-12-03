@@ -95,27 +95,15 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm install lock-treatment-tool and run-node</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>install lock-treatment-tool --global-style
-                --no-package-lock --no-save</arguments>
-            </configuration>
-          </execution>
-          <execution>
             <id>lock-treatment-tool execution</id>
             <phase>initialize</phase>
             <goals>
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>run locktt --</arguments>
+              <arguments>exec @kie/lock-treatment-tool</arguments>
             </configuration>
           </execution>
-
           <execution>
             <id>yarn run build:prod</id>
             <goals>
