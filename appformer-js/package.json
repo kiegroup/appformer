@@ -57,7 +57,7 @@
     "webpack": "4.15.1",
     "webpack-cli": "3.0.8",
     "babel-jest": "23.0.0",
-    "@kie/lock-treatment-tool": "^0.0.1",
+    "@kie/lock-treatment-tool": "^0.0.2",
     "write-file-atomic": "2.4.1"
   }
 }
