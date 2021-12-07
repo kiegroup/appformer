@@ -36,8 +36,10 @@
     "classNameTemplate": "org.appformer.js.tests.{filename}.{classname}"
   },
   "devDependencies": {
+    "@kie/lock-treatment-tool": "0.0.2",
     "@types/jest": "23.3.1",
     "babel-core": "6.26.3",
+    "babel-jest": "23.0.0",
     "babel-loader": "7.1.5",
     "babel-preset-env": "1.7.0",
     "babel-preset-react": "6.24.1",
@@ -56,8 +58,6 @@
     "watch": "1.0.2",
     "webpack": "4.15.1",
     "webpack-cli": "3.0.8",
-    "babel-jest": "23.0.0",
-    "lock-treatment-tool": "^0.4.1",
     "write-file-atomic": "2.4.1"
   }
 }

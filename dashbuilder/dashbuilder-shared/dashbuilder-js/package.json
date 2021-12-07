@@ -50,7 +50,7 @@
     "jest": "^25.2.7",
     "jest-junit": "^9.0.0",
     "jest-webextension-mock": "^3.5.0",
-    "lock-treatment-tool": "^0.4.1",
+    "@kie/lock-treatment-tool": "^0.0.2",
     "node-sass": "^4.12.0",
     "null-loader": "^3.0.0",
     "prettier": "^1.19.1",
