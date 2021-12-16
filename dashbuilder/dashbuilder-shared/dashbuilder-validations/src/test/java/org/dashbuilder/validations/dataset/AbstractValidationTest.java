@@ -3,6 +3,7 @@ package org.dashbuilder.validations.dataset;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
 import static org.mockito.Mockito.*;
@@ -40,6 +41,11 @@ public class AbstractValidationTest {
 
         @Override
         public <T> T unwrap(Class<T> type) {
+            return null;
+        }
+
+        @Override
+        public ExecutableValidator forExecutables() {
             return null;
         }
     }

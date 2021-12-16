@@ -45,6 +45,12 @@
       <groupId>com.google.gwt.gwtmockito</groupId>
       <artifactId>gwtmockito</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>
