@@ -1,6 +1,9 @@
 package org.uberfire.java.nio.fs.jgit;
 
+import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
+import com.jcraft.jsch.ProxySOCKS4;
+import com.jcraft.jsch.ProxySOCKS5;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.eclipse.jgit.errors.UnsupportedCredentialItem;
@@ -13,6 +16,9 @@ import org.eclipse.jgit.transport.URIish;
 public class JGitSSHConfigSessionFactory extends org.eclipse.jgit.transport.JschConfigSessionFactory {
 
     private final JGitFileSystemProviderConfiguration config;
+
+    private static final String SOCK5PROXY = "sock5";
+    private static final String SOCK4PROXY = "sock4";
 
     public JGitSSHConfigSessionFactory(final JGitFileSystemProviderConfiguration config) {
         this.config = config;
@@ -53,7 +59,8 @@ public class JGitSSHConfigSessionFactory extends org.eclipse.jgit.transport.Jsch
         }
     }
 
-    ProxyHTTP buildProxy(final JGitFileSystemProviderConfiguration config) {
+    Proxy buildProxy(final JGitFileSystemProviderConfiguration config) {
+        Proxy proxy;
         final String host;
         final int port;
         String user = null;
@@ -69,10 +76,19 @@ public class JGitSSHConfigSessionFactory extends org.eclipse.jgit.transport.Jsch
             user = config.getHttpsProxyUser();
             passw = config.getHttpsProxyPassword();
         }
-        final ProxyHTTP proxyHTTP = new ProxyHTTP(host, port);
-        if (user != null) {
+        if (config.getProxyType().equalsIgnoreCase(SOCK5PROXY)) {
+            ProxySOCKS5 proxySOCKS5 = new ProxySOCKS5(host, port);
+            proxySOCKS5.setUserPasswd(user, passw);
+            proxy = proxySOCKS5;
+        } else if (config.getProxyType().equalsIgnoreCase(SOCK4PROXY)) {
+            ProxySOCKS4 proxySOCKS4 = new ProxySOCKS4(host, port);
+            proxySOCKS4.setUserPasswd(user, passw);
+            proxy = proxySOCKS4;
+        } else {
+            ProxyHTTP proxyHTTP = new ProxyHTTP(host, port);
             proxyHTTP.setUserPasswd(user, passw);
+            proxy = proxyHTTP;
         }
-        return proxyHTTP;
+        return proxy;
     }
 }

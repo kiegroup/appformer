@@ -3,6 +3,7 @@ package org.uberfire.java.nio.fs.jgit;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import org.eclipse.jgit.transport.OpenSshConfig;
@@ -45,8 +46,8 @@ public class JGitSSHConfigSessionFactoryTest {
 
         final JGitSSHConfigSessionFactory instance = new JGitSSHConfigSessionFactory(config) {
             @Override
-            ProxyHTTP buildProxy(final JGitFileSystemProviderConfiguration config) {
-                ProxyHTTP proxy = super.buildProxy(config);
+            Proxy buildProxy(final JGitFileSystemProviderConfiguration config) {
+                Proxy proxy = super.buildProxy(config);
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_host", "somehost");
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_port", 10);
                 assertThat(proxy).hasFieldOrPropertyWithValue("user", null);
@@ -72,8 +73,8 @@ public class JGitSSHConfigSessionFactoryTest {
 
         final JGitSSHConfigSessionFactory instance = new JGitSSHConfigSessionFactory(config) {
             @Override
-            ProxyHTTP buildProxy(final JGitFileSystemProviderConfiguration config) {
-                ProxyHTTP proxy = super.buildProxy(config);
+            Proxy buildProxy(final JGitFileSystemProviderConfiguration config) {
+                Proxy proxy = super.buildProxy(config);
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_host", "somehost");
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_port", 10);
                 assertThat(proxy).hasFieldOrPropertyWithValue("user", "user");
@@ -97,8 +98,8 @@ public class JGitSSHConfigSessionFactoryTest {
 
         final JGitSSHConfigSessionFactory instance = new JGitSSHConfigSessionFactory(config) {
             @Override
-            ProxyHTTP buildProxy(final JGitFileSystemProviderConfiguration config) {
-                ProxyHTTP proxy = super.buildProxy(config);
+            Proxy buildProxy(final JGitFileSystemProviderConfiguration config) {
+                Proxy proxy = super.buildProxy(config);
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_host", "somehost");
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_port", 10);
                 assertThat(proxy).hasFieldOrPropertyWithValue("user", null);
@@ -124,8 +125,8 @@ public class JGitSSHConfigSessionFactoryTest {
 
         final JGitSSHConfigSessionFactory instance = new JGitSSHConfigSessionFactory(config) {
             @Override
-            ProxyHTTP buildProxy(final JGitFileSystemProviderConfiguration config) {
-                ProxyHTTP proxy = super.buildProxy(config);
+            Proxy buildProxy(final JGitFileSystemProviderConfiguration config) {
+                Proxy proxy = super.buildProxy(config);
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_host", "somehost");
                 assertThat(proxy).hasFieldOrPropertyWithValue("proxy_port", 10);
                 assertThat(proxy).hasFieldOrPropertyWithValue("user", "user");
