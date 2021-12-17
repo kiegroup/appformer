@@ -71,6 +71,7 @@ public class RoleLoader {
 
         Set<String> result = new HashSet<>();
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         Document doc = builder.build(webXml.toFile());
         Element root = doc.getRootElement();
 
