@@ -59,5 +59,8 @@
     "webpack": "4.15.1",
     "webpack-cli": "3.0.8",
     "write-file-atomic": "2.4.1"
+  },
+  "resolutions": {
+    "write-file-atomic": "2.4.1"
   }
 }
