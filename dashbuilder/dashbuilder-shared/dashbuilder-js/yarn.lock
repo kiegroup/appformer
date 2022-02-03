@@ -1347,6 +1347,14 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@kie/lock-treatment-tool@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@kie/lock-treatment-tool/-/lock-treatment-tool-0.0.2.tgz#9f8a5b6a4a874ff263b14745c408e63e49d440c3"
+  integrity sha512-ZPsAtd7VfFvqzgurjjmxanG2FtdxMA/A1MGaYTHMPxrfKjZZ8/Ssiwbfpnhr8bgiR5iTiXc6u5fR42A5t5Nhow==
+  dependencies:
+    line-reader "^0.3.0"
+    yargs "^14.2.0"
+
 "@sheerun/mutationobserver-shim@^0.3.2":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
@@ -7402,14 +7410,6 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
-lock-treatment-tool@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/lock-treatment-tool/-/lock-treatment-tool-0.4.1.tgz#cb164ced311f3dff23863df476053904b287238b"
-  integrity sha512-Ge5Eds0tSxG9Lt1xmqSZm/tBPGCIx/CY72ncBp7Dxkp1HQWy2mLoMJ5NlVJ4T9A0cQ35XkLZqZBFNF8NV6FO4A==
-  dependencies:
-    line-reader "^0.3.0"
-    yargs "^14.2.0"
-
 lodash._baseisequal@^3.0.0:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/lodash._baseisequal/-/lodash._baseisequal-3.0.7.tgz#d8025f76339d29342767dcc887ce5cb95a5b51f1"
@@ -8057,9 +8057,9 @@ npm-run-path@^4.0.0:
     set-blocking "~2.0.0"
 
 nth-check@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/nth-check/-/nth-check-2.0.0.tgz#1bb4f6dac70072fc313e8c9cd1417b5074c0a125"
-  integrity sha512-i4sc/Kj8htBrAiH1viZ0TgU8Y5XqCaV/FziYK6TBczxmeKm3AEFWqqF3195yKudrarqy7Zu80Ra5dobFjn9X/Q==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/nth-check/-/nth-check-2.0.1.tgz#2efe162f5c3da06a28959fbd3db75dbeea9f0fc2"
+  integrity sha512-it1vE95zF6dTT9lBsYbxvqh0Soy4SPowchj0UBGj/V6cTPnXXtQOPUbhZ6CmGzAD/rW22LQK6E96pcdJXk4A4w==
   dependencies:
     boolbase "^1.0.0"
 
