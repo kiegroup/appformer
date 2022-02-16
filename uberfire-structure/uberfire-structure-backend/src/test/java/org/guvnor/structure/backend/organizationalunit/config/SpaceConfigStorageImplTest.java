@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
+import org.guvnor.structure.organizationalunit.config.SpaceInfo;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequest;
 import org.guvnor.structure.repositories.changerequest.portable.ChangeRequestComment;
+import org.jboss.errai.marshalling.client.api.exceptions.MarshallingException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,15 +33,21 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.backend.server.io.object.ObjectStorage;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.file.Paths;
 import org.uberfire.mocks.FileSystemTestingUtils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.same;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SpaceConfigStorageImplTest {
@@ -389,5 +397,20 @@ public class SpaceConfigStorageImplTest {
         final List<Long> ids = spaceConfigStorage.getChangeRequestCommentIds("MyOtherProject", 1L);
 
         assertSame(0, ids.size());
+    }
+
+    @Test
+    public void testLoadSpaceInfo() {
+        SpaceInfo spaceInfo = mock(SpaceInfo.class);
+        String path = "src/test/resources/dummyOverride/FixedSpaceInfo.json";
+        doThrow(new RuntimeException(new MarshallingException())).doReturn(spaceInfo).when(objectStorage).read(anyString());
+        when(objectStorage.exists(anyString())).thenReturn(true);
+        when(objectStorage.getPath(any())).thenReturn(Paths.get(path));
+        when(spaceConfigStorage.buildSpaceConfigFilePath(anyString())).thenReturn(path);
+
+        SpaceInfo si = spaceConfigStorage.loadSpaceInfo();
+
+        verify(objectStorage).exists(eq(path));
+        assertEquals(si, spaceInfo);
     }
 }
