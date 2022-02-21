@@ -1347,6 +1347,14 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@kie/lock-treatment-tool@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@kie/lock-treatment-tool/-/lock-treatment-tool-0.0.2.tgz#9f8a5b6a4a874ff263b14745c408e63e49d440c3"
+  integrity sha512-ZPsAtd7VfFvqzgurjjmxanG2FtdxMA/A1MGaYTHMPxrfKjZZ8/Ssiwbfpnhr8bgiR5iTiXc6u5fR42A5t5Nhow==
+  dependencies:
+    line-reader "^0.3.0"
+    yargs "^14.2.0"
+
 "@sheerun/mutationobserver-shim@^0.3.2":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
@@ -5073,9 +5081,9 @@ flush-write-stream@^1.0.0:
     readable-stream "^2.3.6"
 
 follow-redirects@^1.0.0:
-  version "1.13.3"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.3.tgz#e5598ad50174c1bc4e872301e82ac2cd97f90267"
-  integrity sha512-DUgl6+HDzB0iEptNQEXLx/KhTmDb8tZUHSeLqpnjpknR70H0nC2t9N73BK6fN4hOvJ84pKlIQVQ4k5FFlBedKA==
+  version "1.14.9"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
+  integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -7401,14 +7409,6 @@ locate-path@^5.0.0:
   integrity sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==
   dependencies:
     p-locate "^4.1.0"
-
-lock-treatment-tool@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/lock-treatment-tool/-/lock-treatment-tool-0.4.1.tgz#cb164ced311f3dff23863df476053904b287238b"
-  integrity sha512-Ge5Eds0tSxG9Lt1xmqSZm/tBPGCIx/CY72ncBp7Dxkp1HQWy2mLoMJ5NlVJ4T9A0cQ35XkLZqZBFNF8NV6FO4A==
-  dependencies:
-    line-reader "^0.3.0"
-    yargs "^14.2.0"
 
 lodash._baseisequal@^3.0.0:
   version "3.0.7"
