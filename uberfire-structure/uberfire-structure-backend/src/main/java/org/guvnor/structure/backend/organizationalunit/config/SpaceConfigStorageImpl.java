@@ -297,11 +297,11 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
         try {
             return objectStorage.read(buildSpaceConfigFilePath(SPACE_INFO));
         } catch (RuntimeException e) {
+            logger.error(e.getMessage());
             if (e.getCause() instanceof MarshallingException) {
-                logger.error(e.getMessage());
                 return fixContributorClassInSpaceInfo();
             }
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -320,7 +320,8 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
         return objectStorage.read(path);
     }
