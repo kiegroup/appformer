@@ -27,6 +27,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jboss.errai.marshalling.client.Marshalling;
+import org.jboss.errai.marshalling.client.api.exceptions.MarshallingException;
 import org.uberfire.security.ContributorType;
 import org.guvnor.structure.organizationalunit.config.BranchPermissions;
 import org.guvnor.structure.organizationalunit.config.RolePermissions;
@@ -292,7 +294,36 @@ public class SpaceConfigStorageImpl implements SpaceConfigStorage {
     }
 
     public SpaceInfo loadSpaceInfo() {
-        return objectStorage.read(buildSpaceConfigFilePath(SPACE_INFO));
+        try {
+            return objectStorage.read(buildSpaceConfigFilePath(SPACE_INFO));
+        } catch (RuntimeException e) {
+            logger.error(e.getMessage());
+            if (e.getCause() instanceof MarshallingException) {
+                return fixContributorClassInSpaceInfo();
+            }
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private SpaceInfo fixContributorClassInSpaceInfo() {
+        final String OLD_CONTRIBUTOR_CLASS = "org.guvnor.structure.contributors.Contributor";
+        final String NEW_CONTRIBUTOR_CLASS = "org.uberfire.security.Contributor";
+        final String path = buildSpaceConfigFilePath(SPACE_INFO);
+        try {
+            if (objectStorage.exists(path)) {
+                String content = new String(Files.readAllBytes(objectStorage.getPath(path)));
+                if (content.contains(OLD_CONTRIBUTOR_CLASS)) {
+                    objectStorage.write(path,
+                                        Marshalling.fromJSON(content.replaceAll(OLD_CONTRIBUTOR_CLASS,
+                                                                                NEW_CONTRIBUTOR_CLASS),
+                                                             SpaceInfo.class));
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+        return objectStorage.read(path);
     }
 
     @Override
