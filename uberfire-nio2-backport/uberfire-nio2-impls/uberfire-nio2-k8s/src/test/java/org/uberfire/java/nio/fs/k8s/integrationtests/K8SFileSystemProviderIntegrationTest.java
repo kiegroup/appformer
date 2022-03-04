@@ -21,10 +21,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit; 
 
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
@@ -32,7 +33,6 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.apache.commons.io.IOUtils;
 import org.awaitility.Awaitility;
-import org.awaitility.Duration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -194,7 +194,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createRootKey.watchable()).isEqualTo(root);
 
             List<WatchEvent<?>> rootEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createRootKey, rootEvents, 1));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createRootKey, rootEvents, 1));
             assertThat(rootEvents).asList().hasSize(1);
 
             WatchEvent<?> firstEvent = rootEvents.get(0);
@@ -208,7 +208,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createWatchDirKey.watchable()).isEqualTo(watchDir);
 
             List<WatchEvent<?>> watchDirEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 1));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 1));
             assertThat(watchDirEvents).asList().hasSize(1);
 
             WatchEvent<?> firstWatchDirEvent = watchDirEvents.get(0);
@@ -237,7 +237,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createRootKey.watchable()).isEqualTo(root);
 
             List<WatchEvent<?>> rootEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createRootKey, rootEvents, 1));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createRootKey, rootEvents, 1));
             assertThat(rootEvents).asList().hasSize(1);
 
             WatchEvent<?> firstEvent = rootEvents.get(0);
@@ -251,7 +251,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createWatchDirKey.watchable()).isEqualTo(fileInRootFolder);
 
             List<WatchEvent<?>> watchDirEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 1));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 1));
             assertThat(watchDirEvents).asList().hasSize(1);
 
             WatchEvent<?> firstWatchDirEvent = watchDirEvents.get(0);
@@ -282,7 +282,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createRootKey.watchable()).isEqualTo(root);
 
             List<WatchEvent<?>> rootEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createRootKey, rootEvents, 2));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createRootKey, rootEvents, 2));
             assertThat(rootEvents).asList().hasSize(2);
 
             WatchEvent<?> firstEvent = rootEvents.get(0);
@@ -301,7 +301,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createWatchDirKey.watchable()).isEqualTo(fileInRootFolder);
 
             List<WatchEvent<?>> watchDirEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 2));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 2));
             assertThat(watchDirEvents).asList().hasSize(2);
 
             WatchEvent<?> firstWatchDirEvent = watchDirEvents.get(0);
@@ -337,7 +337,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createRootKey.watchable()).isEqualTo(root);
 
             List<WatchEvent<?>> rootEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createRootKey, rootEvents, 2));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createRootKey, rootEvents, 2));
             assertThat(rootEvents).asList().hasSize(2);
 
             WatchEvent<?> firstEvent = rootEvents.get(0);
@@ -356,7 +356,7 @@ public class K8SFileSystemProviderIntegrationTest {
             assertThat(createWatchDirKey.watchable()).isEqualTo(fileInRootFolder);
 
             List<WatchEvent<?>> watchDirEvents = new ArrayList<>();
-            Awaitility.await().atMost(Duration.FIVE_SECONDS).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 2));
+            Awaitility.await().atMost(Duration.ofSeconds(5)).until(fetchWatchEvents(createWatchDirKey, watchDirEvents, 2));
             assertThat(watchDirEvents).asList().hasSize(2);
 
             WatchEvent<?> firstWatchDirEvent = watchDirEvents.get(0);
