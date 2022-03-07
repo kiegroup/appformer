@@ -18,6 +18,7 @@ package org.uberfire.java.nio.fs.jgit;
 
 import java.io.IOException;
 import java.util.Map;
+import org.apache.sshd.core.CoreModuleProperties;
 
 import org.apache.sshd.server.SshServer;
 import org.junit.Test;
@@ -41,6 +42,6 @@ public class JGitFileSystemImplProviderSSHBadConfigTest extends AbstractTestInfr
     @Test
     public void testCheckDefaultSSHIdleWithInvalidArg() throws IOException {
         assertEquals(JGitFileSystemProviderConfiguration.DEFAULT_SSH_IDLE_TIMEOUT,
-                     provider.getGitSSHService().getProperties().get(SshServer.IDLE_TIMEOUT));
+                     provider.getGitSSHService().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName()));
     }
 }
