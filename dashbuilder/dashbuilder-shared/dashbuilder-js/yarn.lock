@@ -1347,6 +1347,14 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
+"@kie/lock-treatment-tool@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@kie/lock-treatment-tool/-/lock-treatment-tool-0.0.2.tgz#9f8a5b6a4a874ff263b14745c408e63e49d440c3"
+  integrity sha512-ZPsAtd7VfFvqzgurjjmxanG2FtdxMA/A1MGaYTHMPxrfKjZZ8/Ssiwbfpnhr8bgiR5iTiXc6u5fR42A5t5Nhow==
+  dependencies:
+    line-reader "^0.3.0"
+    yargs "^14.2.0"
+
 "@sheerun/mutationobserver-shim@^0.3.2":
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
@@ -7402,14 +7410,6 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
-lock-treatment-tool@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/lock-treatment-tool/-/lock-treatment-tool-0.4.1.tgz#cb164ced311f3dff23863df476053904b287238b"
-  integrity sha512-Ge5Eds0tSxG9Lt1xmqSZm/tBPGCIx/CY72ncBp7Dxkp1HQWy2mLoMJ5NlVJ4T9A0cQ35XkLZqZBFNF8NV6FO4A==
-  dependencies:
-    line-reader "^0.3.0"
-    yargs "^14.2.0"
-
 lodash._baseisequal@^3.0.0:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/lodash._baseisequal/-/lodash._baseisequal-3.0.7.tgz#d8025f76339d29342767dcc887ce5cb95a5b51f1"
@@ -8497,6 +8497,11 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
+picocolors@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-0.2.1.tgz#570670f793646851d1ba135996962abad587859f"
+  integrity sha512-cMlDqaLEqfSaW8Z7N5Jw+lyIW869EzT73/F5lhtY9cLGoVxSXznfgfXMO0Z5K0o0Q2TkTXq+0KFsdnSe3jDViA==
+
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.2.tgz#21f333e9b6b8eaff02468f5146ea406d345f4dad"
@@ -8618,13 +8623,12 @@ postcss-value-parser@^4.1.0:
   integrity sha512-97DXOFbQJhk71ne5/Mt6cOu6yxsSfM0QGQyl0L25Gca4yGWEGJaig7l7gbCX623VqTBNGLRLaVUCnNkcedlRSQ==
 
 postcss@^7.0.14, postcss@^7.0.32, postcss@^7.0.5, postcss@^7.0.6:
-  version "7.0.35"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-7.0.35.tgz#d2be00b998f7f211d8a276974079f2e92b970e24"
-  integrity sha512-3QT8bBJeX/S5zKTTjTCIjRF3If4avAT6kqxcASlTWEtAFCb9NH0OUxNDfgZSWdP5fJnBYCMEWkIFfWeugjzYMg==
+  version "7.0.39"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-7.0.39.tgz#9624375d965630e2e1f2c02a935c82a59cb48309"
+  integrity sha512-yioayjNbHn6z1/Bywyb2Y4s3yvDAeXGOyxqD+LnVOinq6Mdmd++SW2wUNVzavyyHxd6+DxzWGIuosg6P1Rj8uA==
   dependencies:
-    chalk "^2.4.2"
+    picocolors "^0.2.1"
     source-map "^0.6.1"
-    supports-color "^6.1.0"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
