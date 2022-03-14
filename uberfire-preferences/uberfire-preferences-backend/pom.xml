@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-preferences</artifactId>
-    <version>7.67.0.Final</version>
+    <version>7.67.1-SNAPSHOT</version>
   </parent>
   <name>Uberfire Preferences Backend</name>
   <description>Uberfire Preferences Backend</description>
