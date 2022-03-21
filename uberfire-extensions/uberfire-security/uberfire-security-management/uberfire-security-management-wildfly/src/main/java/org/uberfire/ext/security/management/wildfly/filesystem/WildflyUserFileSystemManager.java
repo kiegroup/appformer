@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.jboss.as.domain.management.security.PropertiesFileLoader;
 import org.jboss.errai.security.shared.api.Group;
 import org.jboss.errai.security.shared.api.Role;
 import org.jboss.errai.security.shared.api.identity.User;
@@ -42,7 +41,6 @@ import org.uberfire.ext.security.management.api.ContextualManager;
 import org.uberfire.ext.security.management.api.UserManager;
 import org.uberfire.ext.security.management.api.UserManagerSettings;
 import org.uberfire.ext.security.management.api.UserSystemManager;
-import org.uberfire.ext.security.management.api.exception.InvalidEntityIdentifierException;
 import org.uberfire.ext.security.management.api.exception.SecurityManagementException;
 import org.uberfire.ext.security.management.api.exception.UserNotFoundException;
 import org.uberfire.ext.security.management.impl.UserManagerSettingsImpl;
@@ -70,7 +68,6 @@ public class WildflyUserFileSystemManager
         implements ContextualManager,
                    UserManager {
 
-    public static final String VALID_USERNAME_SYMBOLS = "\",\", \"-\", \".\", \"/\", \"=\", \"@\", \"\\\"";
     private static final Logger LOG = LoggerFactory.getLogger(WildflyUserFileSystemManager.class);
 
     private static final Provider ELYTRON_PROVIDER = new WildFlyElytronPasswordProvider();
@@ -129,7 +126,6 @@ public class WildflyUserFileSystemManager
 
     @Override
     public User get(final String identifier) throws SecurityManagementException {
-        validateUserIdentifier(identifier);
         final ModifiableRealmIdentity modifiableIdentity = realmProvider.getRealm().getRealmIdentityForUpdate(new NamePrincipal(identifier));
 
         try {
@@ -210,7 +206,6 @@ public class WildflyUserFileSystemManager
         if (null == username || 0 == username.trim().length()) {
             throw new IllegalArgumentException("No username specified.");
         }
-        validateUserIdentifier(username);
 
         try {
             final ModifiableRealmIdentity modifiableIdentity = realmProvider.getRealm().getRealmIdentityForUpdate(new NamePrincipal(username));
@@ -345,26 +340,6 @@ public class WildflyUserFileSystemManager
             LOG.error("Error changing user's password",
                       e);
             throw new SecurityManagementException(e);
-        }
-    }
-
-    /**
-     * Validates the candidate user identifier by following same Wildfly's patterns for usernames in properties realms,
-     * and by following the behavior for the <code>add-user.sh</code> script as well,
-     * here is the actual username validation constraints:
-     * <code>
-     * WFLYDM0028: Username must be alphanumeric with the exception of
-     * the following accepted symbols (",", "-", ".", "/", "=", "@", "\")
-     * </code>
-     *
-     * @param identifier The identifier to validate.
-     */
-    private void validateUserIdentifier(String identifier) {
-        if (!PropertiesFileLoader.PROPERTY_PATTERN
-                .matcher(identifier + "=0")
-                .matches()) {
-            throw new InvalidEntityIdentifierException(identifier,
-                                                       VALID_USERNAME_SYMBOLS);
         }
     }
 }
