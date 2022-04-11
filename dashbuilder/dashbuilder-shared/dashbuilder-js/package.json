@@ -51,7 +51,7 @@
     "jest-junit": "^9.0.0",
     "jest-webextension-mock": "^3.5.0",
     "@kie/lock-treatment-tool": "^0.0.2",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "null-loader": "^3.0.0",
     "prettier": "^1.19.1",
     "style-loader": "^1.0.0",
