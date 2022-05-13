@@ -36,7 +36,7 @@
     "classNameTemplate": "org.appformer.js.tests.{filename}.{classname}"
   },
   "devDependencies": {
-    "@kie/lock-treatment-tool": "0.0.2",
+    "@kie/lock-treatment-tool": "^0.1.0",
     "@types/jest": "23.3.1",
     "babel-core": "6.26.3",
     "babel-jest": "23.0.0",
