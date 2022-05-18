@@ -1,73 +1,23 @@
 /*
-* Copyright 2013 Red Hat, Inc. and/or its affiliates.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.guvnor.rest.backend;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-
-import javax.annotation.security.RolesAllowed;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Variant;
 
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
-import org.guvnor.rest.client.AddBranchJobRequest;
-import org.guvnor.rest.client.AddBranchRequest;
-import org.guvnor.rest.client.BranchResponse;
-import org.guvnor.rest.client.CloneProjectJobRequest;
-import org.guvnor.rest.client.CloneProjectRequest;
-import org.guvnor.rest.client.CompileProjectRequest;
-import org.guvnor.rest.client.CreateProjectJobRequest;
-import org.guvnor.rest.client.CreateProjectRequest;
-import org.guvnor.rest.client.DeleteProjectRequest;
-import org.guvnor.rest.client.DeployProjectRequest;
-import org.guvnor.rest.client.InstallProjectRequest;
-import org.guvnor.rest.client.JobRequest;
-import org.guvnor.rest.client.JobResult;
-import org.guvnor.rest.client.JobStatus;
-import org.guvnor.rest.client.ProjectResponse;
-import org.guvnor.rest.client.RemoveBranchJobRequest;
-import org.guvnor.rest.client.RemoveSpaceRequest;
-import org.guvnor.rest.client.Space;
-import org.guvnor.rest.client.SpaceRequest;
-import org.guvnor.rest.client.TestProjectRequest;
+import org.guvnor.rest.client.*;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
 import org.guvnor.structure.repositories.Branch;
@@ -78,6 +28,17 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.SpacesAPI;
+
+import javax.annotation.security.RolesAllowed;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.Status;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static org.guvnor.rest.backend.PermissionConstants.REST_PROJECT_ROLE;
 import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
@@ -92,14 +53,9 @@ public class ProjectResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectResource.class);
     private static final String ACCEPT_LANGUAGE = "acceptLanguage";
-    private Variant defaultVariant = getDefaultVariant();
-
-    protected Variant getDefaultVariant() {
-        return Variant.mediaTypes(MediaType.APPLICATION_JSON_TYPE).add().build().get(0);
-    }
-
     @Context
     protected UriInfo uriInfo;
+    private Variant defaultVariant = getDefaultVariant();
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
@@ -115,8 +71,11 @@ public class ProjectResource {
     private SpacesAPI spacesAPI;
     @Inject
     private SessionInfo sessionInfo;
-
     private AtomicLong counter = new AtomicLong(0);
+
+    protected Variant getDefaultVariant() {
+        return Variant.mediaTypes(MediaType.APPLICATION_JSON_TYPE).add().build().get(0);
+    }
 
     private void addAcceptedJobResult(String jobId) {
         JobResult jobResult = new JobResult();
@@ -131,7 +90,7 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public JobResult getJobStatus(@PathParam("jobId") String jobId) {
         logger.debug("-----getJobStatus--- , jobId: {}",
-                     jobId);
+                jobId);
 
         JobResult job = jobManager.getJob(jobId);
         if (job == null) {
@@ -151,7 +110,7 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public JobResult removeJob(@PathParam("jobId") String jobId) {
         logger.debug("-----removeJob--- , jobId: {}",
-                     jobId);
+                jobId);
 
         final JobResult job = getJobResult(jobId);
         job.setStatus(JobStatus.GONE);
@@ -178,7 +137,7 @@ public class ProjectResource {
     public Response cloneProject(@PathParam("spaceName") String spaceName,
                                  CloneProjectRequest cloneProjectRequest) {
         logger.debug("-----cloneProject--- , CloneProjectRequest name: {}",
-                     cloneProjectRequest.getName());
+                cloneProjectRequest.getName());
 
         final String id = newId();
         final CloneProjectJobRequest jobRequest = new CloneProjectJobRequest();
@@ -203,13 +162,13 @@ public class ProjectResource {
             @HeaderParam(HttpHeaders.ACCEPT_LANGUAGE) Locale locales,
             CreateProjectRequest createProjectRequest) {
         logger.debug("-----createProject--- , spaceName: {} , project name: {}",
-                     spaceName,
-                     createProjectRequest.getName());
+                spaceName,
+                createProjectRequest.getName());
 
         assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
-        
+                "space",
+                spaceName);
+
         final Map<String, Object> headers = new HashMap<>();
         headers.put(ACCEPT_LANGUAGE, locales);
         final String id = newId();
@@ -225,7 +184,7 @@ public class ProjectResource {
         addAcceptedJobResult(id);
 
         jobRequestObserver.createProjectRequest(jobRequest,
-                                                headers);
+                headers);
 
         return createAcceptedStatusResponse(jobRequest);
     }
@@ -235,14 +194,15 @@ public class ProjectResource {
     @Path("/spaces/{spaceName}/projects")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Collection<ProjectResponse> getProjects(@PathParam("spaceName") String spaceName) {
-        logger.info("-----getProjects--- , spaceName: {}",
-                    spaceName);
 
         org.guvnor.structure.organizationalunit.OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
 
         assertObjectExists(organizationalUnit,
-                           "space",
-                           spaceName);
+                "space",
+                spaceName);
+
+        logger.info("-----getProjects--- , spaceName: {}",
+                organizationalUnit.getName());
 
         final Collection<WorkspaceProject> projects = workspaceProjectService.getAllWorkspaceProjects(organizationalUnit);
 
@@ -261,17 +221,21 @@ public class ProjectResource {
     public Response deleteProject(
             @PathParam("spaceName") String spaceName,
             @PathParam("projectName") String projectName) {
-        logger.debug("-----deleteProject--- , space name: {}, project name: {}",
-                     spaceName,
-                     projectName);
 
+        OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
         final org.uberfire.spaces.Space space = spacesAPI.getSpace(spaceName);
-        assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
-        assertObjectExists(workspaceProjectService.resolveProject(space, projectName),
-                           "project",
-                           projectName);
+        assertObjectExists(organizationalUnit,
+                "space",
+                spaceName);
+        WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space, projectName);
+        assertObjectExists(workspaceProject,
+                "project",
+                projectName);
+
+        logger.debug("-----deleteProject--- , space name: {}, project name: {}",
+                organizationalUnit.getName(),
+                workspaceProject.getName());
+
         final String id = newId();
         final DeleteProjectRequest jobRequest = new DeleteProjectRequest();
         jobRequest.setStatus(JobStatus.ACCEPTED);
@@ -291,19 +255,21 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public ProjectResponse getProject(@PathParam("spaceName") String spaceName,
                                       @PathParam("projectName") String projectName) {
-        logger.debug("-----getProject---, space name: {}, project name: {}",
-                     spaceName,
-                     projectName);
 
-        assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
+        OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
+        assertObjectExists(organizationalUnit,
+                "space",
+                spaceName);
 
         final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(spacesAPI.getSpace(spaceName), projectName);
 
         assertObjectExists(workspaceProject,
-                           "project",
-                           projectName);
+                "project",
+                projectName);
+
+        logger.debug("-----getProject---, space name: {}, project name: {}",
+                organizationalUnit.getName(),
+                workspaceProject.getName());
 
         final ProjectResponse projectResponse = getProjectResponse(workspaceProject);
 
@@ -317,21 +283,23 @@ public class ProjectResource {
     public Collection<BranchResponse> getBranches(@PathParam("spaceName") String spaceName,
                                                   @PathParam("projectName") String projectName) {
 
-        logger.debug("-----getBranches---, space name: {}, project name: {}",
-                     spaceName,
-                     projectName);
 
-        assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
+        OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
+        assertObjectExists(organizationalUnit,
+                "space",
+                spaceName);
 
         final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
                 spacesAPI.getSpace(spaceName),
                 projectName);
 
         assertObjectExists(workspaceProject,
-                           "project",
-                           projectName);
+                "project",
+                projectName);
+
+        logger.debug("-----getBranches---, space name: {}, project name: {}",
+                organizationalUnit.getName(),
+                workspaceProject.getName());
 
         return workspaceProject
                 .getRepository()
@@ -350,22 +318,23 @@ public class ProjectResource {
                               @PathParam("projectName") String projectName,
                               AddBranchRequest addBranchRequest) {
 
-        logger.debug("-----addBranch--- , spaceName: {} , project name: {}, branch Name: {}",
-                     spaceName,
-                     projectName,
-                     addBranchRequest.getNewBranchName());
-
-        assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
+        OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
+        assertObjectExists(organizationalUnit,
+                "space",
+                spaceName);
 
         final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
                 spacesAPI.getSpace(spaceName),
                 projectName);
 
         assertObjectExists(workspaceProject,
-                           "project",
-                           projectName);
+                "project",
+                projectName);
+
+        logger.debug("-----addBranch--- , spaceName: {} , project name: {}, branch Name: {}",
+                organizationalUnit.getName(),
+                workspaceProject.getName(),
+                addBranchRequest.getNewBranchName());
 
         final String id = newId();
         final AddBranchJobRequest jobRequest = new AddBranchJobRequest();
@@ -392,22 +361,25 @@ public class ProjectResource {
                                  @PathParam("projectName") String projectName,
                                  @PathParam("branchName") String branchName) {
 
-        logger.debug("-----removeBranch--- , spaceName: {} , project name: {}, branch Name: {}",
-                     spaceName,
-                     projectName,
-                     branchName);
-
-        assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
+        OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
+        assertObjectExists(organizationalUnit,
+                "space",
+                spaceName);
 
         final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
                 spacesAPI.getSpace(spaceName),
-                projectName);
+                projectName,
+                branchName);
 
         assertObjectExists(workspaceProject,
-                           "project",
-                           projectName);
+                "project",
+                projectName);
+
+        logger.debug("-----removeBranch--- , spaceName: {} , project name: {}, branch Name: {}",
+                organizationalUnit.getName(),
+                workspaceProject.getName(),
+                workspaceProject.getBranch().getName());
+
 
         final String id = newId();
         final RemoveBranchJobRequest jobRequest = new RemoveBranchJobRequest();
@@ -463,8 +435,8 @@ public class ProjectResource {
             @PathParam("projectName") String projectName) {
 
         return compileProject(spaceName,
-                              projectName,
-                              null);
+                projectName,
+                null);
     }
 
     @POST
@@ -476,10 +448,19 @@ public class ProjectResource {
             @PathParam("projectName") String projectName,
             @PathParam("branchName") String branchName) {
 
+        org.uberfire.spaces.Space space = spacesAPI.getSpace(spaceName);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
+                spacesAPI.getSpace(spaceName),
+                projectName,
+                branchName);
+        assertObjectExists(workspaceProject,
+                "project",
+                projectName);
+
         logger.debug("-----compileProject--- , space name: {}, project name: {}, branch name: {}",
-                     spaceName,
-                     projectName,
-                     branchName);
+                space.getName(),
+                workspaceProject.getName(),
+                workspaceProject.getBranch().getName());
 
         final String id = newId();
         final CompileProjectRequest jobRequest = new CompileProjectRequest();
@@ -504,8 +485,8 @@ public class ProjectResource {
             @PathParam("projectName") String projectName) {
 
         return installProject(spaceName,
-                              projectName,
-                              null);
+                projectName,
+                null);
     }
 
     @POST
@@ -517,9 +498,17 @@ public class ProjectResource {
             @PathParam("projectName") String projectName,
             @PathParam("branchName") String branchName) {
 
+        org.uberfire.spaces.Space space = spacesAPI.getSpace(spaceName);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
+                space,
+                projectName,
+                branchName);
+        assertObjectExists(workspaceProject,
+                "project",
+                projectName);
         logger.debug("-----installProject--- , project name: {}, branch name: {}",
-                     projectName,
-                     branchName);
+                workspaceProject.getName(),
+                workspaceProject.getBranch().getName());
 
         PortablePreconditions.checkNotNull("spaceName", spaceName);
         PortablePreconditions.checkNotNull("projectName", projectName);
@@ -548,8 +537,8 @@ public class ProjectResource {
             @PathParam("projectName") String projectName) {
 
         return testProject(spaceName,
-                           projectName,
-                           null);
+                projectName,
+                null);
     }
 
     @POST
@@ -562,9 +551,17 @@ public class ProjectResource {
             @PathParam("projectName") String projectName,
             @PathParam("branchName") String branchName) {
 
+        org.uberfire.spaces.Space space = spacesAPI.getSpace(spaceName);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
+                space,
+                projectName,
+                branchName);
+        assertObjectExists(workspaceProject,
+                "project",
+                projectName);
         logger.debug("-----testProject--- , project name: {}, branch name: {}",
-                     projectName,
-                     branchName);
+                workspaceProject.getName(),
+                workspaceProject.getBranch().getName());
 
         final String id = newId();
         final TestProjectRequest jobRequest = new TestProjectRequest();
@@ -589,8 +586,8 @@ public class ProjectResource {
             @PathParam("projectName") String projectName) {
 
         return deployProject(spaceName,
-                             projectName,
-                             null);
+                projectName,
+                null);
     }
 
     @POST
@@ -602,9 +599,18 @@ public class ProjectResource {
             @PathParam("projectName") String projectName,
             @PathParam("branchName") String branchName) {
 
+        org.uberfire.spaces.Space space = spacesAPI.getSpace(spaceName);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(
+                space,
+                projectName,
+                branchName);
+        assertObjectExists(workspaceProject,
+                "project",
+                projectName);
         logger.debug("-----deployProject--- , project name: {}, branch name: {}",
-                     projectName,
-                     branchName);
+                workspaceProject.getName(),
+                workspaceProject.getBranch().getName());
+
 
         final String id = newId();
         final DeployProjectRequest jobRequest = new DeployProjectRequest();
@@ -657,12 +663,12 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Space getSpace(@PathParam("spaceName") String spaceName) {
         logger.debug("-----getSpace ---, Space name: {}",
-                     spaceName);
+                spaceName);
         final OrganizationalUnit ou = organizationalUnitService.getOrganizationalUnit(spaceName);
 
         assertObjectExists(ou,
-                           "space",
-                           spaceName);
+                "space",
+                spaceName);
 
         return getSpace(ou);
     }
@@ -674,9 +680,9 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response createSpace(Space space) {
         logger.debug("-----createSpace--- , Space name: {}, Space owner: {}, Default group id : {}",
-                     space.getName(),
-                     space.getOwner(),
-                     space.getDefaultGroupId());
+                space.getName(),
+                space.getOwner(),
+                space.getDefaultGroupId());
 
         final String id = newId();
         final SpaceRequest jobRequest = new SpaceRequest();
@@ -700,8 +706,8 @@ public class ProjectResource {
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response updateSpace(Space space) {
         logger.debug("-----updateSpace--- , Space name: {}, Default group id : {}",
-                     space.getName(),
-                     space.getDefaultGroupId());
+                space.getName(),
+                space.getDefaultGroupId());
 
         final String id = newId();
         final SpaceRequest jobRequest = new SpaceRequest();
@@ -723,12 +729,13 @@ public class ProjectResource {
     @Path("/spaces/{spaceName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response deleteSpace(@PathParam("spaceName") String spaceName) {
-        logger.debug("-----deleteSpace--- , Space name: {}",
-                     spaceName);
+        OrganizationalUnit organizationalUnit = organizationalUnitService.getOrganizationalUnit(spaceName);
+        assertObjectExists(organizationalUnit,
+                "space",
+                spaceName);
 
-        assertObjectExists(organizationalUnitService.getOrganizationalUnit(spaceName),
-                           "space",
-                           spaceName);
+        logger.debug("-----deleteSpace--- , Space name: {}",
+                organizationalUnit.getName());
 
         final String id = newId();
         final RemoveSpaceRequest jobRequest = new RemoveSpaceRequest();
@@ -747,7 +754,7 @@ public class ProjectResource {
                                       final String objectName) {
         if (o == null) {
             throw new WebApplicationException(String.format("Could not find %s with name %s.", objectInfo, objectName),
-                                              Response.status(Status.NOT_FOUND).build());
+                    Response.status(Status.NOT_FOUND).build());
         }
     }
 

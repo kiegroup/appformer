@@ -1,34 +1,26 @@
 /*
-* Copyright 2018 Red Hat, Inc. and/or its affiliates.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.guvnor.rest.backend;
 
-import java.util.Locale;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-
+import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
-import org.guvnor.rest.client.CloneProjectRequest;
-import org.guvnor.rest.client.CreateProjectRequest;
-import org.guvnor.rest.client.AddBranchRequest;
-import org.guvnor.rest.client.JobRequest;
-import org.guvnor.rest.client.JobResult;
-import org.guvnor.rest.client.JobStatus;
-import org.guvnor.rest.client.Space;
+import org.guvnor.rest.client.*;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
+import org.guvnor.structure.repositories.Branch;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +33,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.spaces.SpacesAPI;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Variant;
+import java.util.Locale;
+
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectResourceJobTest {
@@ -91,6 +86,20 @@ public class ProjectResourceJobTest {
     public void setup() {
         User user = mock(User.class);
         when(user.getIdentifier()).thenReturn("user");
+
+        WorkspaceProject workspaceProject = mock(WorkspaceProject.class);
+        when(workspaceProject.getName()).thenReturn("projectName");
+        Branch projectbranch = mock(Branch.class);
+        when(projectbranch.getName()).thenReturn("branch123");
+
+        when(workspaceProject.getBranch()).thenReturn(projectbranch);
+        when(workspaceProjectService.resolveProject(any(org.uberfire.spaces.Space.class), any(String.class))).thenReturn(workspaceProject);
+        when(workspaceProjectService.resolveProject(any(org.uberfire.spaces.Space.class), any(String.class), any())).thenReturn(workspaceProject);
+
+        OrganizationalUnit organizationalUnit = mock(OrganizationalUnit.class);
+        when(organizationalUnit.getName()).thenReturn("spaceName");
+        when(organizationalUnitService.getOrganizationalUnit(any())).thenReturn(organizationalUnit);
+        when(spacesAPI.getSpace(any())).thenReturn(mock(org.uberfire.spaces.Space.class));
         when(sessionInfo.getIdentity()).thenReturn(user);
     }
 
@@ -98,7 +107,7 @@ public class ProjectResourceJobTest {
     public void cloneProject() throws Exception {
 
         projectResource.cloneProject("spaceName",
-                                     new CloneProjectRequest());
+                new CloneProjectRequest());
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -108,8 +117,8 @@ public class ProjectResourceJobTest {
     public void createProject() throws Exception {
 
         projectResource.createProject("spaceName",
-                                      Locale.ENGLISH,
-                                      new CreateProjectRequest());
+                Locale.ENGLISH,
+                new CreateProjectRequest());
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -119,7 +128,7 @@ public class ProjectResourceJobTest {
     public void deleteProject() throws Exception {
 
         projectResource.deleteProject("spaceName",
-                                      "projectName");
+                "projectName");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -129,7 +138,7 @@ public class ProjectResourceJobTest {
     public void compileProject() throws Exception {
 
         projectResource.compileProject("spaceName",
-                                       "projectName");
+                "projectName");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -139,8 +148,8 @@ public class ProjectResourceJobTest {
     public void compileProjectNullBranch() throws Exception {
 
         projectResource.compileProject("spaceName",
-                                       "projectName",
-                                       null);
+                "projectName",
+                null);
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -150,8 +159,8 @@ public class ProjectResourceJobTest {
     public void compileProjectMainBranch() throws Exception {
 
         projectResource.compileProject("spaceName",
-                                       "projectName",
-                                       "main");
+                "projectName",
+                "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -161,8 +170,8 @@ public class ProjectResourceJobTest {
     public void compileProjectNonExistingBranch() throws Exception {
 
         projectResource.compileProject("spaceName",
-                                       "projectName",
-                                       "branch123");
+                "projectName",
+                "branch123");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -172,7 +181,7 @@ public class ProjectResourceJobTest {
     public void installProject() throws Exception {
 
         projectResource.installProject("spaceName",
-                                       "projectName");
+                "projectName");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -182,8 +191,8 @@ public class ProjectResourceJobTest {
     public void installProjectNullBranch() throws Exception {
 
         projectResource.installProject("spaceName",
-                                       "projectName",
-                                       null);
+                "projectName",
+                null);
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -193,8 +202,8 @@ public class ProjectResourceJobTest {
     public void installProjectMainBranch() throws Exception {
 
         projectResource.installProject("spaceName",
-                                       "projectName",
-                                       "main");
+                "projectName",
+                "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -204,8 +213,8 @@ public class ProjectResourceJobTest {
     public void installProjectNonExistingBranch() throws Exception {
 
         projectResource.installProject("spaceName",
-                                       "projectName",
-                                       "branch123");
+                "projectName",
+                "branch123");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -215,7 +224,8 @@ public class ProjectResourceJobTest {
     public void testProject() throws Exception {
 
         projectResource.testProject("spaceName",
-                                    "projectName");
+                "projectName",
+                "branch123");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -225,8 +235,8 @@ public class ProjectResourceJobTest {
     public void testProjectNullBranch() throws Exception {
 
         projectResource.testProject("spaceName",
-                                    "projectName",
-                                    null);
+                "projectName",
+                null);
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -236,8 +246,8 @@ public class ProjectResourceJobTest {
     public void testProjectMainBranch() throws Exception {
 
         projectResource.testProject("spaceName",
-                                    "projectName",
-                                    "main");
+                "projectName",
+                "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -247,8 +257,8 @@ public class ProjectResourceJobTest {
     public void testProjectNonExisting() throws Exception {
 
         projectResource.testProject("spaceName",
-                                    "projectName",
-                                    "branch123");
+                "projectName",
+                "branch123");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -258,7 +268,7 @@ public class ProjectResourceJobTest {
     public void deployProject() throws Exception {
 
         projectResource.deployProject("spaceName",
-                                      "projectName");
+                "projectName");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -268,8 +278,8 @@ public class ProjectResourceJobTest {
     public void deployProjectNullBranch() throws Exception {
 
         projectResource.deployProject("spaceName",
-                                      "projectName",
-                                      null);
+                "projectName",
+                null);
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -279,8 +289,8 @@ public class ProjectResourceJobTest {
     public void deployProjectMainBranch() throws Exception {
 
         projectResource.deployProject("spaceName",
-                                      "projectName",
-                                      "main");
+                "projectName",
+                "main");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -290,8 +300,8 @@ public class ProjectResourceJobTest {
     public void deployProjectNonExistingBranch() throws Exception {
 
         projectResource.deployProject("spaceName",
-                                      "projectName",
-                                      "branch123");
+                "projectName",
+                "branch123");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -327,8 +337,8 @@ public class ProjectResourceJobTest {
     @Test
     public void addBranch() {
         projectResource.addBranch("spaceName",
-                                  "projectName",
-                                  new AddBranchRequest());
+                "projectName",
+                new AddBranchRequest());
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
@@ -337,8 +347,8 @@ public class ProjectResourceJobTest {
     @Test
     public void removeBranch() {
         projectResource.removeBranch("spaceName",
-                                     "projectName",
-                                     "branchName");
+                "projectName",
+                "branchName");
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());

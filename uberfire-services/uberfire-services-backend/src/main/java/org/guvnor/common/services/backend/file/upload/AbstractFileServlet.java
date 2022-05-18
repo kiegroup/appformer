@@ -292,11 +292,10 @@ public abstract class AbstractFileServlet extends BaseFilteredServlet {
                          output);
             //Use the encoded form from in the URL (rather than encode/decode for fun!)
             //See http://tools.ietf.org/html/rfc6266 for details of filename* content-disposition usage
-            final String fileName = url.substring(url.lastIndexOf("/") + 1);
 
             response.setContentType("application/x-download");
             response.setHeader("Content-Disposition",
-                               "attachment; filename*=utf-8''" + fileName);
+                               "attachment; filename*=utf-8''" + sourcePath.getFileName());
 
             response.setContentLength(output.size());
             response.getOutputStream().write(output.toByteArray());
