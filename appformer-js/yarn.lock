@@ -26,6 +26,14 @@
     "@types/istanbul-lib-coverage" "^1.1.0"
     "@types/yargs" "^12.0.9"
 
+"@kie/lock-treatment-tool@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@kie/lock-treatment-tool/-/lock-treatment-tool-0.0.2.tgz#9f8a5b6a4a874ff263b14745c408e63e49d440c3"
+  integrity sha512-ZPsAtd7VfFvqzgurjjmxanG2FtdxMA/A1MGaYTHMPxrfKjZZ8/Ssiwbfpnhr8bgiR5iTiXc6u5fR42A5t5Nhow==
+  dependencies:
+    line-reader "^0.3.0"
+    yargs "^14.2.0"
+
 "@lerna/add@^3.3.2":
   version "3.13.1"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-3.13.1.tgz#2cd7838857edb3b43ed73e3c21f69a20beb9b702"
@@ -5017,14 +5025,6 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
-
-lock-treatment-tool@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/lock-treatment-tool/-/lock-treatment-tool-0.4.1.tgz#cb164ced311f3dff23863df476053904b287238b"
-  integrity sha512-Ge5Eds0tSxG9Lt1xmqSZm/tBPGCIx/CY72ncBp7Dxkp1HQWy2mLoMJ5NlVJ4T9A0cQ35XkLZqZBFNF8NV6FO4A==
-  dependencies:
-    line-reader "^0.3.0"
-    yargs "^14.2.0"
 
 lodash._reinterpolate@~3.0.0:
   version "3.0.0"
