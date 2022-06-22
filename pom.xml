@@ -86,7 +86,7 @@
     <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
     <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
-    <version.org.elasticsearch>5.6.15</version.org.elasticsearch>
+    <version.org.elasticsearch>6.8.15</version.org.elasticsearch>
     <version.org.infinispan.protostream>4.3.5.Final</version.org.infinispan.protostream>
 
     <!-- Newer version in kie-parent causes ServiceLoader error -->
