@@ -33,9 +33,9 @@ public class CredentialsClientFactory extends BaseClientFactory {
 
     private static final String DEFAULT_REALM = "example";
     private static final String DEFAULT_USER = "examples-admin-client";
-    private static final String DEFAULT_PASSWORD = "password";
+    private static final String DEFAULT_PASSWORD = "";
     private static final String DEFAULT_CLIENT_ID = "examples-admin-client";
-    private static final String DEFAULT_CLIENT_SECRET = "password";
+    private static final String DEFAULT_CLIENT_SECRET = "";
     private static final String DEFAULT_USE_RESOURCE_ROLE_MAPPING = "false";
     private static final String DEFAULT_RESOURCE = "kie";
 
@@ -57,6 +57,9 @@ public class CredentialsClientFactory extends BaseClientFactory {
         final ConfigProperties.ConfigProperty resource = config.get("org.uberfire.ext.security.management.keycloak.resource",
                                                                     DEFAULT_RESOURCE);
 
+        if (clientId.getValue().isEmpty() && clientSecret.getValue().isEmpty()) {
+            throw new IllegalArgumentException("Keycloack ID and client secret are unset.");
+        }
         this.client = Keycloak.getInstance(authServer.getValue(),
                                            realm.getValue(),
                                            resource.getValue(),
