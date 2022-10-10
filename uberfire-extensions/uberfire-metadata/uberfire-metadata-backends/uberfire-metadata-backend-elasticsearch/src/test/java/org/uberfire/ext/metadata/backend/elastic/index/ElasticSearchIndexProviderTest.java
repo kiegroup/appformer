@@ -130,35 +130,4 @@ public class ElasticSearchIndexProviderTest {
         verify(transportClient).prepareIndex(eq("system_ou_plugins"),
                                              eq("plugins"));
     }
-
-    @Test
-    public void testAddNullSort() {
-
-        this.provider.findByQueryRaw(Arrays.asList("index"),
-                                     new TermQuery(new Term("",
-                                                            "")),
-                                     new Sort(SortField.FIELD_DOC),
-                                     0);
-
-        verify(this.provider,
-               never()).addSort(any(),
-                                any());
-    }
-
-    @Test
-    public void testWithSort() {
-
-        SortField sortField = new SortField("aField",
-                                            SortField.Type.STRING);
-
-        this.provider.findByQueryRaw(Arrays.asList("index"),
-                                     new TermQuery(new Term("",
-                                                            "")),
-                                     new Sort(sortField),
-                                     0);
-
-        verify(this.provider,
-               times(1)).addSort(any(),
-                                 eq(sortField));
-    }
 }
