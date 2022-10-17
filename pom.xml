@@ -734,6 +734,14 @@
       </dependency>
 
       <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-bom</artifactId>
+        <version>${version.org.kie}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
         <groupId>org.kie.soup</groupId>
         <artifactId>kie-soup-bom</artifactId>
         <version>${version.org.kie.soup}</version>
@@ -998,33 +1006,6 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>${version.ch.qos.logback}</version>
-      </dependency>
-
-      <!-- KIE Lienzo modules -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>lienzo-core</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>lienzo-core</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>lienzo-tests</artifactId>
-        <version>${version.org.kie}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>lienzo-tests</artifactId>
-        <version>${version.org.kie}</version>
-        <classifier>sources</classifier>
       </dependency>
 
       <dependency>
