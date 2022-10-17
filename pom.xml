@@ -86,7 +86,6 @@
     <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
     <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
 
-    <version.org.elasticsearch>5.6.15</version.org.elasticsearch>
     <version.org.infinispan.protostream>4.3.5.Final</version.org.infinispan.protostream>
 
     <!-- Newer version in kie-parent causes ServiceLoader error -->
@@ -874,35 +873,6 @@
         <scope>test</scope>
       </dependency>
 
-
-      <!-- INDEXING -->
-      <dependency>
-        <groupId>org.elasticsearch.client</groupId>
-        <artifactId>transport</artifactId>
-        <version>${version.org.elasticsearch}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.elasticsearch</groupId>
-        <artifactId>elasticsearch</artifactId>
-        <version>${version.org.elasticsearch}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.elasticsearch.client</groupId>
-        <artifactId>elasticsearch-rest-client</artifactId>
-        <version>${version.org.elasticsearch}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty</artifactId>
@@ -1073,15 +1043,6 @@
         <groupId>com.jcraft</groupId>
         <artifactId>jsch</artifactId>
         <version>${version.com.jcraft}</version>
-      </dependency>
-
-      <!-- Required to run the ElasticSearch server when performing the unit test executions.
-          The ELS data provider requires groovy scripts enabled on the server.-->
-      <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <classifier>indy</classifier>
-        <version>${version.org.codehaus.groovy}</version>
       </dependency>
 
       <!-- JSON parsing. -->

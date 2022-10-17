@@ -55,5 +55,3 @@ In order to run this example you must enable and configure the <code>collectd</c
     }
 
 6.- Run the web application and navigate to *System metrics* dashboard                
-
-#TODO: Use of elasticseach provider instead of the csv one.
