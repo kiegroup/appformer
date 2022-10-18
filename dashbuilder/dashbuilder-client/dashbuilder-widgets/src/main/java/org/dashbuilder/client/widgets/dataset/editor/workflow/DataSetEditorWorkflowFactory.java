@@ -8,14 +8,12 @@ import org.dashbuilder.client.widgets.dataset.editor.workflow.create.BeanDataSet
 import org.dashbuilder.client.widgets.dataset.editor.workflow.create.CSVDataSetBasicAttributesWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.create.DataSetBasicAttributesWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.create.DataSetProviderTypeWorkflow;
-import org.dashbuilder.client.widgets.dataset.editor.workflow.create.ElasticSearchDataSetBasicAttributesWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.create.KafkaDataSetBasicAttributesWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.create.PrometheusDataSetBasicAttributesWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.create.SQLDataSetBasicAttributesWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.BeanDataSetEditWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.CSVDataSetEditWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.DataSetEditWorkflow;
-import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.ElasticSearchDataSetEditWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.KafkaDataSetEditWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.PrometheusDataSetEditWorkflow;
 import org.dashbuilder.client.widgets.dataset.editor.workflow.edit.SQLDataSetEditWorkflow;
@@ -54,7 +52,6 @@ public class DataSetEditorWorkflowFactory {
         final boolean isSQL = type != null && DataSetProviderType.SQL.equals(type);
         final boolean isBean = type != null && DataSetProviderType.BEAN.equals(type);
         final boolean isCSV = type != null && DataSetProviderType.CSV.equals(type);
-        final boolean isEL = type != null && DataSetProviderType.ELASTICSEARCH.equals(type);
         final boolean isPrometheus = type != null && DataSetProviderType.PROMETHEUS.equals(type);
         final boolean isKafka = type != null && DataSetProviderType.KAFKA.equals(type);
         
@@ -65,8 +62,6 @@ public class DataSetEditorWorkflowFactory {
             workflowClass = CSVDataSetEditWorkflow.class;
         } else if (isBean) {
             workflowClass = BeanDataSetEditWorkflow.class;
-        } else if (isEL) {
-            workflowClass = ElasticSearchDataSetEditWorkflow.class;
         } else if (isPrometheus) {
             workflowClass = PrometheusDataSetEditWorkflow.class;
         } else if (isKafka) {
@@ -107,7 +102,6 @@ public class DataSetEditorWorkflowFactory {
         final boolean isSQL = type != null && DataSetProviderType.SQL.equals(type);
         final boolean isBean = type != null && DataSetProviderType.BEAN.equals(type);
         final boolean isCSV = type != null && DataSetProviderType.CSV.equals(type);
-        final boolean isEL = type != null && DataSetProviderType.ELASTICSEARCH.equals(type);
         final boolean isPrometheus = type != null && DataSetProviderType.PROMETHEUS.equals(type);
         final boolean isKafka = type != null && DataSetProviderType.KAFKA.equals(type);
         
@@ -118,8 +112,6 @@ public class DataSetEditorWorkflowFactory {
             workflowClass = CSVDataSetBasicAttributesWorkflow.class;
         } else if (isBean) {
             workflowClass = BeanDataSetBasicAttributesWorkflow.class;
-        } else if (isEL) {
-            workflowClass = ElasticSearchDataSetBasicAttributesWorkflow.class;
         } else if (isPrometheus) {
             workflowClass = PrometheusDataSetBasicAttributesWorkflow.class;            
         } else if (isKafka) {

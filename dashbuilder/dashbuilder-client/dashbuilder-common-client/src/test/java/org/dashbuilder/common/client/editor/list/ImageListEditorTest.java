@@ -39,7 +39,6 @@ public abstract class ImageListEditorTest extends AbstractEditorTest {
         expectedTypes.add(DataSetProviderType.BEAN);
         expectedTypes.add(DataSetProviderType.CSV);
         expectedTypes.add(DataSetProviderType.SQL);
-        expectedTypes.add(DataSetProviderType.ELASTICSEARCH);
         expectedEntries.addAll(mockEntries());
     }
 
@@ -158,7 +157,6 @@ public abstract class ImageListEditorTest extends AbstractEditorTest {
         result.add(mockEntry(DataSetProviderType.BEAN));
         result.add(mockEntry(DataSetProviderType.CSV));
         result.add(mockEntry(DataSetProviderType.SQL));
-        result.add(mockEntry(DataSetProviderType.ELASTICSEARCH));
         return result;
     }
 
