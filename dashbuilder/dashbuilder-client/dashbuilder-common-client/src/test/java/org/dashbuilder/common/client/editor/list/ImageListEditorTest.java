@@ -28,7 +28,7 @@ public abstract class ImageListEditorTest extends AbstractEditorTest {
     
     @Mock EventSourceMock<ValueChangeEvent<DataSetProviderType>> valueChangeEvent;
     
-    protected final Collection<DataSetProviderType> expectedTypes = new ArrayList<DataSetProviderType>(4);
+    protected final Collection<DataSetProviderType> expectedTypes = new ArrayList<DataSetProviderType>(3);
     protected final List<ImageListEditor<DataSetProviderType>.Entry> expectedEntries = new ArrayList<ImageListEditor<org.dashbuilder.dataprovider.DataSetProviderType>.Entry>(4);
     protected ImageListEditor<DataSetProviderType> presenter;
     protected ImageListEditorView<DataSetProviderType> view;
@@ -147,7 +147,7 @@ public abstract class ImageListEditorTest extends AbstractEditorTest {
         verify(view, times(0)).clearError();
         verify(view, times(0)).showError(any(SafeHtml.class));
         verify(view, times(1)).clear();
-        verify(view, times(4)).add(any(SafeUri.class), anyString(), anyString(), any(SafeHtml.class),
+        verify(view, times(3)).add(any(SafeUri.class), anyString(), anyString(), any(SafeHtml.class),
                 any(SafeHtml.class), anyBoolean(), any(Command.class));
         Assert.assertEquals(expectedEntries, presenter.entries);
     }
