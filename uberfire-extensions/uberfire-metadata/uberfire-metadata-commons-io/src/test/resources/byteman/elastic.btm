@@ -132,28 +132,3 @@ IF countDown("indexCountdown")
 DO traceln("countdown active");
    signalWake("testReady", true);
 ENDRULE
-
-RULE create count down
-CLASS org.uberfire.ext.metadata.io.elasticsearch.BaseIndexTest
-METHOD setupCountDown(int)
-AT ENTRY
-IF true
-DO createCountDown("indexCountdown", $1);
-   countDown("indexCountdown");
-ENDRULE
-
-RULE wait for count down
-CLASS org.uberfire.ext.metadata.io.elasticsearch.BaseIndexTest
-METHOD waitForCountDown(int)
-AT ENTRY
-IF TRUE
-DO waitFor("testReady", $1);
-ENDRULE
-
-RULE return startBatch value
-CLASS org.uberfire.ext.metadata.io.elasticsearch.BaseIndexTest
-METHOD getStartBatchCount()
-AT EXIT
-IF TRUE
-DO return readCounter("startBatch");
-ENDRULE

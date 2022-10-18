@@ -358,9 +358,6 @@ public abstract class DataSetEditor<T extends DataSetDef> implements IsWidget,
         if (SQL.equals(type)) {
             return DataSetEditorConstants.INSTANCE.sql();
         }
-        if (ELASTICSEARCH.equals(type)) {
-            return DataSetEditorConstants.INSTANCE.elasticSearch();
-        }
         return "";
     }
 

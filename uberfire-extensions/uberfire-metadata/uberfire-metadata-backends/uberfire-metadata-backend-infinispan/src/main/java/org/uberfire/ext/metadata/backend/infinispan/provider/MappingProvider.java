@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.uberfire.ext.metadata.analyzer.ElasticSearchAnalyzerWrapper;
 import org.uberfire.ext.metadata.backend.infinispan.proto.schema.Field;
 import org.uberfire.ext.metadata.backend.infinispan.proto.schema.Message;
 import org.uberfire.ext.metadata.backend.infinispan.proto.schema.ProtobufScope;
@@ -206,15 +205,6 @@ public class MappingProvider {
     private String createAnalyzerField(String name,
                                        String type,
                                        boolean isSearchable) {
-
-        if (this.analyzer instanceof ElasticSearchAnalyzerWrapper) {
-            if (ProtobufType.STRING.name().toLowerCase().equals(type.toLowerCase()) && isSearchable) {
-                ElasticSearchAnalyzerWrapper elasticSearchAnalyzerWrapper = (ElasticSearchAnalyzerWrapper) analyzer;
-                return elasticSearchAnalyzerWrapper.getFieldAnalyzer(name);
-            }
-        } else {
-            throw new IllegalArgumentException("ElasticSearchAnalyzerWrapper is expected to be compatible with Elasticsearch");
-        }
         return "";
     }
 
