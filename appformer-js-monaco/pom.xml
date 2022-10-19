@@ -53,7 +53,7 @@
                         <goal>npm</goal>
                         </goals>
                         <configuration>
-                        <arguments>exec @kie/lock-treatment-tool --</arguments>
+                        <arguments>exec @kie/lock-treatment-tool@^0.2.2 --</arguments>
                         </configuration>
                     </execution>
                     <execution>
