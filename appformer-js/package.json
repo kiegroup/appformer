@@ -20,8 +20,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx,js,jsx}'",
     "test": "jest",
     "init": "yarn install --force",
-    "build": "yarn run lint && yarn test && webpack --mode production",
-    "locktt": "locktt"
+    "build": "yarn run lint && yarn test && webpack --mode production"
   },
   "babel": {
     "presets": [
@@ -36,7 +35,6 @@
     "classNameTemplate": "org.appformer.js.tests.{filename}.{classname}"
   },
   "devDependencies": {
-    "@kie/lock-treatment-tool": "0.0.2",
     "@types/jest": "23.3.1",
     "babel-core": "6.26.3",
     "babel-jest": "23.0.0",

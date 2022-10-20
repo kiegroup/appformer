@@ -18,8 +18,7 @@
   "scripts": {
     "init": "yarn install --force",
     "build:fast": "yarn workspaces run build:fast",
-    "build:prod": "yarn workspaces run build:prod",
-    "locktt": "locktt"
+    "build:prod": "yarn workspaces run build:prod"
   },
   "jest-junit": {
     "outputDirectory": "./target",
@@ -50,7 +49,6 @@
     "jest": "^25.2.7",
     "jest-junit": "^9.0.0",
     "jest-webextension-mock": "^3.5.0",
-    "@kie/lock-treatment-tool": "^0.0.2",
     "node-sass": "^4.12.0",
     "null-loader": "^3.0.0",
     "prettier": "^1.19.1",
