@@ -15,6 +15,9 @@
     <version>7.67.2-SNAPSHOT</version>
     <name>AppFormer.js :: Core</name>
     <description>AppFormer.js Core</description>
+    <properties>
+        <lock-treatment-tool.version>^0.2.2</lock-treatment-tool.version>
+    </properties>
 
     <build>
         <plugins>
@@ -45,7 +48,7 @@
                         <goal>npm</goal>
                         </goals>
                         <configuration>
-                        <arguments>exec @kie/lock-treatment-tool@^0.2.2 --</arguments>
+                        <arguments>exec @kie/lock-treatment-tool@${lock-treatment-tool.version} --</arguments>
                         </configuration>
                     </execution>
                     <execution>
