@@ -7,8 +7,7 @@
   "scripts": {
     "init": "yarn install --force",
     "clean": "rimraf dist",
-    "build": "yarn clean && webpack",
-    "locktt": "locktt"
+    "build": "yarn clean && webpack"
   },
   "devDependencies": {
     "@kiegroup/monaco-editor": "1.0.0",

@@ -101,7 +101,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>exec @kie/lock-treatment-tool --</arguments>
+              <arguments>exec @kie/lock-treatment-tool@${version.lock-treatment-tool} --</arguments>
             </configuration>
           </execution>
           <execution>
