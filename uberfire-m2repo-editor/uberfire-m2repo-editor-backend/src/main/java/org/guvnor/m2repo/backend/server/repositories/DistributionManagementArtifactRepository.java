@@ -21,16 +21,20 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.maven.model.DeploymentRepository;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.appformer.maven.integration.Aether;
@@ -44,6 +48,7 @@ import org.eclipse.aether.deployment.DeploymentException;
 import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.repository.RepositoryPolicy;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.guvnor.common.services.project.model.GAV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,10 +177,7 @@ public class DistributionManagementArtifactRepository implements ArtifactReposit
 
     private RemoteRepository getRemoteRepoFromDeployment(final DeploymentRepository repo,
                                                          final MavenEmbedder embedder) {
-        RemoteRepository.Builder remoteRepoBuilder = new RemoteRepository.Builder(repo.getId(),
-                                                                                  repo.getLayout(),
-                                                                                  repo
-                                                                                          .getUrl())
+        RemoteRepository.Builder remoteRepoBuilder = new RemoteRepository.Builder(repo.getId(), repo.getLayout(), repo.getUrl())
                 .setSnapshotPolicy(new RepositoryPolicy(true,
                                                         RepositoryPolicy.UPDATE_POLICY_DAILY,
                                                         RepositoryPolicy.CHECKSUM_POLICY_WARN))
@@ -186,6 +188,13 @@ public class DistributionManagementArtifactRepository implements ArtifactReposit
         Settings settings = MavenSettings.getSettings();
         Server server = settings.getServer(repo.getId());
 
+        Proxy activeProxy = settings.getActiveProxy();
+
+        if (activeProxy != null) {
+            if (activeProxy.getNonProxyHosts() == null || !repositoryUrlMatchNonProxyHosts(settings.getActiveProxy().getNonProxyHosts(), remoteRepoBuilder.build().getUrl())) {
+                remoteRepoBuilder.setProxy(getActiveAetherProxyFromSettings(settings));
+            }
+        }
         if (server != null) {
             Authentication authentication = embedder.getMavenSession().getRepositorySession()
                     .getAuthenticationSelector()
@@ -194,6 +203,28 @@ public class DistributionManagementArtifactRepository implements ArtifactReposit
         }
 
         return remoteRepoBuilder.build();
+    }
+
+    private boolean repositoryUrlMatchNonProxyHosts(String nonProxyHosts, String artifactURL) {
+        String nonProxyHostsRegexp = nonProxyHosts.replace("*", ".*");
+        try {
+            Pattern p = Pattern.compile(nonProxyHostsRegexp);
+            URL url = new URL(artifactURL);
+            return p.matcher(url.getHost()).find();
+        } catch (MalformedURLException e) {
+            logger.warn("Failed to parse URL proxy {}, cause {}", artifactURL, e.getMessage());
+            return false;
+        }
+    }
+
+    private org.eclipse.aether.repository.Proxy getActiveAetherProxyFromSettings(final Settings settings) {
+        return new org.eclipse.aether.repository.Proxy(settings.getActiveProxy().getProtocol(),
+                                                       settings.getActiveProxy().getHost(),
+                                                       settings.getActiveProxy().getPort(),
+                                                       new AuthenticationBuilder()
+                                                               .addUsername(settings.getActiveProxy().getUsername())
+                                                               .addPassword(settings.getActiveProxy().getPassword())
+                                                               .build());
     }
 
     @Override
