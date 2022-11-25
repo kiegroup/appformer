@@ -90,7 +90,7 @@
 
     <!-- Newer version in kie-parent causes ServiceLoader error -->
     <version.ch.qos.logback>1.2.9</version.ch.qos.logback>
-    <version.jnuit.docker.rule>0.3</version.jnuit.docker.rule>
+    <version.jnuit.docker.rule>0.4.1</version.jnuit.docker.rule>
     <version.com.spotify.docker>5.0.2</version.com.spotify.docker>
     <version.org.uberfire.latestFinal.release>1.4.0.Final</version.org.uberfire.latestFinal.release>
     <revapi.oldUberFireVersion>${version.org.uberfire.latestFinal.release}</revapi.oldUberFireVersion>
