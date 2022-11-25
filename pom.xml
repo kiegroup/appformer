@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.kie</groupId>
     <artifactId>kie-parent</artifactId>
-    <version>7.67.2-SNAPSHOT</version>
+    <version>7.73.0.Final</version>
     <!-- Keep in sync with the parent version of uberfire-bom/pom.xml -->
   </parent>
 
