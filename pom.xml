@@ -301,7 +301,7 @@
         <plugin>
           <groupId>org.commonjava.maven.plugins</groupId>
           <artifactId>project-sources-maven-plugin</artifactId>
-          <version>1.0</version>
+          <version>1.1</version>
           <executions>
             <execution>
               <id>project-sources-archive</id>
