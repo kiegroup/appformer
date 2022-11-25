@@ -74,7 +74,7 @@
     <version.org.webjars.bower.d3geoprojection>2.5.1</version.org.webjars.bower.d3geoprojection>
     <version.org.webjars.bower.jqueryui>1.12.1</version.org.webjars.bower.jqueryui>
 
-    <version.org.jboss.jboss-msc>1.2.7.SP1</version.org.jboss.jboss-msc>
+    <version.org.jboss.jboss-msc>1.4.13.Final</version.org.jboss.jboss-msc>
 
     <version.org.apache.activemq.artemis>2.19.1</version.org.apache.activemq.artemis>
     <netty-transport-native-epoll-classifier>linux-x86_64</netty-transport-native-epoll-classifier>
