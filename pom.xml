@@ -465,7 +465,7 @@
       <plugin>
         <groupId>org.zanata</groupId>
         <artifactId>zanata-maven-plugin</artifactId>
-        <version>2.3.0</version>
+        <version>4.6.2</version>
         <configuration>
           <excludes>**/ErraiApp.properties</excludes>
           <projectConfig>${session.executionRootDirectory}/src/main/config/zanata.xml</projectConfig>
