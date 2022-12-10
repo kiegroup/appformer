@@ -17,7 +17,6 @@ package org.dashbuilder.client.widgets.dataset.editor;
 
 import static org.dashbuilder.dataprovider.DataSetProviderType.BEAN;
 import static org.dashbuilder.dataprovider.DataSetProviderType.CSV;
-import static org.dashbuilder.dataprovider.DataSetProviderType.ELASTICSEARCH;
 import static org.dashbuilder.dataprovider.DataSetProviderType.PROMETHEUS;
 import static org.dashbuilder.dataprovider.DataSetProviderType.SQL;
 import static org.dashbuilder.dataprovider.DataSetProviderType.KAFKA;
@@ -124,7 +123,7 @@ public class DataSetDefProviderTypeEditor implements IsWidget,
     /**
      * The provider types supported by this editor
      */
-    DataSetProviderType[] CORE_TYPES = new DataSetProviderType[]{BEAN, CSV, SQL, ELASTICSEARCH, PROMETHEUS, KAFKA};
+    DataSetProviderType[] CORE_TYPES = new DataSetProviderType[]{BEAN, CSV, SQL, PROMETHEUS, KAFKA};
 
     protected Collection<ImageListEditor<DataSetProviderType>.Entry> getDefaultEntries() {
         final DataSetProviderType[] providerTypes = CORE_TYPES;
@@ -167,9 +166,6 @@ public class DataSetDefProviderTypeEditor implements IsWidget,
         if (SQL.equals(type)) {
             return DataSetEditorConstants.INSTANCE.sql();
         }
-        if (ELASTICSEARCH.equals(type)) {
-            return DataSetEditorConstants.INSTANCE.elasticSearch();
-        }
         if (PROMETHEUS.equals(type)) {
             return DataSetEditorConstants.INSTANCE.prometheus();
         }
@@ -189,9 +185,6 @@ public class DataSetDefProviderTypeEditor implements IsWidget,
         if (SQL.equals(type)) {
             return DataSetEditorConstants.INSTANCE.sql_description();
         }
-        if (ELASTICSEARCH.equals(type)) {
-            return DataSetEditorConstants.INSTANCE.elasticSearch_description();
-        }
         if (PROMETHEUS.equals(type)) {
             return DataSetEditorConstants.INSTANCE.prometheus_description();
         }
@@ -210,9 +203,6 @@ public class DataSetDefProviderTypeEditor implements IsWidget,
         }
         if (SQL.equals(type)) {
             return DataSetClientResources.INSTANCE.images().sqlIcon160().getSafeUri();
-        }
-        if (ELASTICSEARCH.equals(type)) {
-            return DataSetClientResources.INSTANCE.images().elIcon160().getSafeUri();
         }
         if (PROMETHEUS.equals(type)) {
             return DataSetClientResources.INSTANCE.images().prometheusIcon160().getSafeUri();

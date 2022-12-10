@@ -59,7 +59,6 @@ public class DataSetExplorer implements IsWidget {
 
     List<DataSetProviderType> SUPPORTED_TYPES = Arrays.asList(BEAN,
                                                               CSV,
-                                                              ELASTICSEARCH,
                                                               SQL,
                                                               PROMETHEUS,
                                                               KAFKA);

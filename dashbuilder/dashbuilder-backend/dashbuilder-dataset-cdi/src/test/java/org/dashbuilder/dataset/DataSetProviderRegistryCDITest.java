@@ -48,7 +48,6 @@ public class DataSetProviderRegistryCDITest extends BaseCDITest {
         assertTrue(typeList.contains(DataSetProviderType.BEAN));
         assertTrue(typeList.contains(DataSetProviderType.CSV));
         assertTrue(typeList.contains(DataSetProviderType.SQL));
-        assertTrue(typeList.contains(DataSetProviderType.ELASTICSEARCH));
 
         // In CDI contexts, DataSetProvider implementations are automatically registered
         assertTrue(typeList.contains(CustomDataSetProvider.TYPE));

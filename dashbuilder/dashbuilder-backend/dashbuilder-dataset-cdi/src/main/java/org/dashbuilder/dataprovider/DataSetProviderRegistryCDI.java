@@ -40,9 +40,6 @@ public class DataSetProviderRegistryCDI extends DataSetProviderRegistryImpl {
     private SQLDataSetProviderCDI sqlDataSetProviderCDI;
 
     @Inject
-    private ElasticSearchDataSetProviderCDI elasticSearchDataSetProviderCDI;
-    
-    @Inject
     private PrometheusDataSetProviderCDI prometheusDataSetProviderCDI;
     
     @Inject
@@ -69,7 +66,6 @@ public class DataSetProviderRegistryCDI extends DataSetProviderRegistryImpl {
         super.registerDataProvider(beanDataSetProviderCDI);
         super.registerDataProvider(csvDataSetProviderCDI);
         super.registerDataProvider(sqlDataSetProviderCDI);
-        super.registerDataProvider(elasticSearchDataSetProviderCDI);
         super.registerDataProvider(prometheusDataSetProviderCDI);
         super.registerDataProvider(kafkaDataSetProviderCDI);
     }
@@ -90,10 +86,6 @@ public class DataSetProviderRegistryCDI extends DataSetProviderRegistryImpl {
         return sqlDataSetProviderCDI;
     }
 
-    public ElasticSearchDataSetProviderCDI getElasticSearchDataSetProviderCDI() {
-        return elasticSearchDataSetProviderCDI;
-    }
-    
     public PrometheusDataSetProviderCDI getPrometheusDataSetProviderCDI() {
         return prometheusDataSetProviderCDI;
     }

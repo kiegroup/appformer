@@ -146,9 +146,6 @@ public class DataSetPanel implements IsWidget {
         if (SQL.equals(dataSetDef.getProvider())) {
             return DataSetClientResources.INSTANCE.images().sqlIcon32().getSafeUri();
         }
-        if (ELASTICSEARCH.equals(dataSetDef.getProvider())) {
-            return DataSetClientResources.INSTANCE.images().elIcon32().getSafeUri();
-        }
         if (PROMETHEUS.equals(dataSetDef.getProvider())) {
             return DataSetClientResources.INSTANCE.images().prometheusIcon32().getSafeUri();
         }
@@ -175,9 +172,6 @@ public class DataSetPanel implements IsWidget {
         }
         if (SQL.equals(dataSetDef.getProvider())) {
             return DataSetExplorerConstants.INSTANCE.sql();
-        }
-        if (ELASTICSEARCH.equals(dataSetDef.getProvider())) {
-            return DataSetExplorerConstants.INSTANCE.el();
         }
         if (PROMETHEUS.equals(dataSetDef.getProvider())) {
             return DataSetExplorerConstants.INSTANCE.prometheus();

@@ -41,7 +41,6 @@ import org.uberfire.ext.metadata.backend.lucene.index.directory.DirectoryType;
 import org.uberfire.ext.metadata.backend.lucene.provider.LuceneIndexProvider;
 import org.uberfire.ext.metadata.engine.MetaModelStore;
 import org.uberfire.ext.metadata.event.IndexEvent;
-import org.uberfire.ext.metadata.io.analyzer.KiePerFieldAnalyzerWrapper;
 import org.uberfire.ext.metadata.io.index.MetadataIndexEngine;
 import org.uberfire.ext.metadata.metamodel.InMemoryMetaModelStore;
 import org.uberfire.ext.metadata.metamodel.NullMetaModelStore;
@@ -174,14 +173,7 @@ public class MetadataConfigBuilder {
     }
 
     public void withDefaultAnalyzer() {
-        if (this.customAnalyzerWrapperFactory == null) {
-            this.analyzer = new KiePerFieldAnalyzerWrapper(new StandardAnalyzer(CharArraySet.EMPTY_SET),
-                                                           new HashMap<String, Analyzer>() {{
-                                                               putAll(analyzers);
-                                                           }});
-        } else {
-            this.analyzer = this.customAnalyzerWrapperFactory.getAnalyzerWrapper(new StandardAnalyzer(CharArraySet.EMPTY_SET),
-                                                                                 analyzers);
-        }
+        this.analyzer = this.customAnalyzerWrapperFactory.getAnalyzerWrapper(new StandardAnalyzer(CharArraySet.EMPTY_SET),
+                                                                                analyzers);
     }
 }
