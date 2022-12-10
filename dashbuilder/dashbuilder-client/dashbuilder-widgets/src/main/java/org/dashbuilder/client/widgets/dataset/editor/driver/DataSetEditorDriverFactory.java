@@ -15,14 +15,12 @@ public class DataSetEditorDriverFactory {
     final DataSetDefBasicAttributesDriver dataSetDefBasicAttributesDriver = GWT.create(DataSetDefBasicAttributesDriver.class);
     final SQLDataSetDefAttributesDriver sqlDataSetDefAttributesDriver = GWT.create(SQLDataSetDefAttributesDriver.class);
     final BeanDataSetDefAttributesDriver beanDataSetDefAttributesDriver = GWT.create(BeanDataSetDefAttributesDriver.class);
-    final ElasticSearchDataSetDefAttributesDriver elasticSearchDataSetDefAttributesDriver = GWT.create(ElasticSearchDataSetDefAttributesDriver.class);
     final PrometheusDataSetDefAttributesDriver prometheusSearchDataSetDefAttributesDriver = GWT.create(PrometheusDataSetDefAttributesDriver.class);
     final KafkaDataSetDefAttributesDriver kafkaSearchDataSetDefAttributesDriver = GWT.create(KafkaDataSetDefAttributesDriver.class);
     final CSVDataSetDefAttributesDriver csvDataSetDefAttributesDriver = GWT.create(CSVDataSetDefAttributesDriver.class);
     final SQLDataSetDefDriver sqlDataSetDefDriver = GWT.create(SQLDataSetDefDriver.class);
     final BeanDataSetDefDriver beanDataSetDefDriver = GWT.create(BeanDataSetDefDriver.class);
     final CSVDataSetDefDriver csvDataSetDefDriver = GWT.create(CSVDataSetDefDriver.class);
-    final ElasticSearchDataSetDefDriver elasticSearchDataSetDefDriver = GWT.create(ElasticSearchDataSetDefDriver.class);
     final PrometheusDataSetDefDriver prometheusSearchDataSetDefDriver = GWT.create(PrometheusDataSetDefDriver.class);
     final KafkaDataSetDefDriver kafkaSearchDataSetDefDriver = GWT.create(KafkaDataSetDefDriver.class);
     final DataColumnDefDriver dataColumnDefDriver = GWT.create(DataColumnDefDriver.class);
@@ -70,16 +68,6 @@ public class DataSetEditorDriverFactory {
     @Produces
     public BeanDataSetDefDriver beanDataSetDefDriver() {
         return beanDataSetDefDriver;
-    }
-
-    @Produces
-    public ElasticSearchDataSetDefAttributesDriver elasticSearchDataSetDefAttributesDriver() {
-        return elasticSearchDataSetDefAttributesDriver;
-    }
-
-    @Produces
-    public ElasticSearchDataSetDefDriver elasticSearchDataSetDefDriver() {
-        return elasticSearchDataSetDefDriver;
     }
 
     @Produces

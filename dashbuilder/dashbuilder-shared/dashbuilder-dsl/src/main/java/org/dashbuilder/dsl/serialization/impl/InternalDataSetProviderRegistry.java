@@ -59,7 +59,6 @@ public class InternalDataSetProviderRegistry implements DataSetProviderRegistry 
         providers = new HashSet<>();
         providers.add(DataSetProviderType.BEAN);
         providers.add(DataSetProviderType.CSV);
-        providers.add(DataSetProviderType.ELASTICSEARCH);
         providers.add(DataSetProviderType.KAFKA);
         providers.add(DataSetProviderType.PROMETHEUS);
         providers.add(DataSetProviderType.SQL);
