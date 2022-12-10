@@ -21,7 +21,6 @@ import org.dashbuilder.dataprovider.DataSetProviderType;
 import org.dashbuilder.validations.DataSetValidatorProvider;
 import org.dashbuilder.validations.dataset.BeanDataSetDefValidator;
 import org.dashbuilder.validations.dataset.CSVDataSetDefValidator;
-import org.dashbuilder.validations.dataset.ElasticSearchDataSetDefValidator;
 import org.dashbuilder.validations.dataset.SQLDataSetDefValidator;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.mockito.Mock;
@@ -37,9 +36,6 @@ public abstract class AbstractDataSetWorkflowTest {
     protected CSVDataSetDefValidator csvDataSetDefValidator;
 
     @Mock
-    protected ElasticSearchDataSetDefValidator elasticSearchDataSetDefValidator;
-
-    @Mock
     protected SQLDataSetDefValidator sqlDataSetDefValidator;
 
     protected DataSetValidatorProvider validatorProvider;
@@ -48,14 +44,12 @@ public abstract class AbstractDataSetWorkflowTest {
 
         when( beanDataSetDefValidator.getSupportedProvider() ).thenReturn( DataSetProviderType.BEAN );
         when( csvDataSetDefValidator.getSupportedProvider() ).thenReturn( DataSetProviderType.CSV );
-        when( elasticSearchDataSetDefValidator.getSupportedProvider() ).thenReturn( DataSetProviderType.ELASTICSEARCH );
         when( sqlDataSetDefValidator.getSupportedProvider() ).thenReturn( DataSetProviderType.SQL );
 
         validatorProvider = new DataSetValidatorProvider( mock( ManagedInstance.class ) ) {
             {
                 registerValidator( beanDataSetDefValidator );
                 registerValidator( csvDataSetDefValidator );
-                registerValidator( elasticSearchDataSetDefValidator );
                 registerValidator( sqlDataSetDefValidator );
             }
         };
