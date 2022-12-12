@@ -26,7 +26,6 @@ import org.dashbuilder.DataSetCore;
 import org.dashbuilder.dataprovider.DataSetProvider;
 import org.dashbuilder.dataprovider.DataSetProviderRegistryImpl;
 import org.dashbuilder.dataprovider.StaticDataSetProvider;
-import org.dashbuilder.dataprovider.backend.elasticsearch.ElasticSearchDataSetProvider;
 import org.dashbuilder.dataprovider.csv.CSVDataSetProvider;
 import org.dashbuilder.dataprovider.sql.SQLDataSetProvider;
 import org.dashbuilder.dataset.json.DataSetDefJSONMarshaller;
@@ -45,9 +44,6 @@ public class RuntimeDataSetProviderRegistry extends DataSetProviderRegistryImpl 
 
     @Inject
     private SQLDataSetProvider sqlDataSetProvider;
-
-    @Inject
-    private ElasticSearchDataSetProvider elasticSearchDataSetProvider;
 
     @Inject
     private Instance<DataSetProvider> providerSet;
@@ -70,7 +66,6 @@ public class RuntimeDataSetProviderRegistry extends DataSetProviderRegistryImpl 
         super.registerDataProvider(beanDataSetProvider);
         super.registerDataProvider(csvDataSetProvider);
         super.registerDataProvider(sqlDataSetProvider);
-        super.registerDataProvider(elasticSearchDataSetProvider);
     }
 
     public StaticDataSetProvider getStaticDataSetProvider() {
@@ -87,10 +82,6 @@ public class RuntimeDataSetProviderRegistry extends DataSetProviderRegistryImpl 
 
     public SQLDataSetProvider getSqlDataSetProvider() {
         return sqlDataSetProvider;
-    }
-
-    public ElasticSearchDataSetProvider getElasticSearchDataSetProvider() {
-        return elasticSearchDataSetProvider;
     }
 
     public DataSetDefJSONMarshaller getDataSetDefJSONMarshaller() {
