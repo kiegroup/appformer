@@ -24,10 +24,7 @@ import java.util.function.Consumer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.uberfire.ext.metadata.ElasticSearchConfig;
 import org.uberfire.ext.metadata.MetadataConfig;
-import org.uberfire.ext.metadata.backend.elastic.index.ElasticSearchIndexProvider;
-import org.uberfire.ext.metadata.backend.elastic.provider.ElasticSearchContext;
 import org.uberfire.ext.metadata.backend.infinispan.InfinispanSearchConfig;
 import org.uberfire.ext.metadata.backend.infinispan.provider.InfinispanContext;
 import org.uberfire.ext.metadata.backend.infinispan.provider.InfinispanIndexProvider;
@@ -44,7 +41,6 @@ import org.uberfire.ext.metadata.backend.lucene.index.directory.DirectoryType;
 import org.uberfire.ext.metadata.backend.lucene.provider.LuceneIndexProvider;
 import org.uberfire.ext.metadata.engine.MetaModelStore;
 import org.uberfire.ext.metadata.event.IndexEvent;
-import org.uberfire.ext.metadata.io.analyzer.KiePerFieldAnalyzerWrapper;
 import org.uberfire.ext.metadata.io.index.MetadataIndexEngine;
 import org.uberfire.ext.metadata.metamodel.InMemoryMetaModelStore;
 import org.uberfire.ext.metadata.metamodel.NullMetaModelStore;
@@ -52,7 +48,6 @@ import org.uberfire.ext.metadata.metamodel.NullMetaModelStore;
 public class MetadataConfigBuilder {
 
     private static final String LUCENE = "lucene";
-    private static final String ELASTIC = "elastic";
     private static final String ISPN = "infinispan";
 
     public static final String ORG_UBERFIRE_EXT_METADATA_INDEX = "org.appformer.ext.metadata.index";
@@ -142,16 +137,7 @@ public class MetadataConfigBuilder {
             withDefaultAnalyzer();
         }
 
-        if (this.metadataIndex.toLowerCase().equals(ELASTIC)) {
-            ElasticSearchIndexProvider indexProvider = new ElasticSearchIndexProvider(this.metaModelStore,
-                                                                                      ElasticSearchContext.getInstance(),
-                                                                                      analyzer);
-            return new ElasticSearchConfig(new MetadataIndexEngine(indexProvider,
-                                                                   metaModelStore),
-                                           metaModelStore,
-                                           indexProvider,
-                                           analyzer);
-        } else if (this.metadataIndex.toLowerCase().equals(ISPN)) {
+        if (this.metadataIndex.toLowerCase().equals(ISPN)) {
             InfinispanContext context = InfinispanContext.getInstance();
             MappingProvider mappingProvider = new MappingProvider(this.analyzer);
             InfinispanIndexProvider infinispanIndexProvider = new InfinispanIndexProvider(context,
@@ -187,14 +173,7 @@ public class MetadataConfigBuilder {
     }
 
     public void withDefaultAnalyzer() {
-        if (this.customAnalyzerWrapperFactory == null) {
-            this.analyzer = new KiePerFieldAnalyzerWrapper(new StandardAnalyzer(CharArraySet.EMPTY_SET),
-                                                           new HashMap<String, Analyzer>() {{
-                                                               putAll(analyzers);
-                                                           }});
-        } else {
-            this.analyzer = this.customAnalyzerWrapperFactory.getAnalyzerWrapper(new StandardAnalyzer(CharArraySet.EMPTY_SET),
-                                                                                 analyzers);
-        }
+        this.analyzer = this.customAnalyzerWrapperFactory.getAnalyzerWrapper(new StandardAnalyzer(CharArraySet.EMPTY_SET),
+                                                                                analyzers);
     }
 }
