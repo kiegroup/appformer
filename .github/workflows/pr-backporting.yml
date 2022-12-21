@@ -26,7 +26,7 @@ jobs:
   
   backporting:
     if: ${{ github.event.pull_request.state == 'closed' && github.event.pull_request.merged && needs.compute-targets.outputs.target-branches != '[]' }}
-    name: "[${{ success() && matrix.target-branch ||  'Skipped' }}] - Backporting"
+    name: "[${{ needs.compute-targets.result == 'success' && needs.compute-targets.result ||  needs.compute-targets.result }}] - Backporting"
     runs-on: ubuntu-latest
     needs: compute-targets
     strategy:
