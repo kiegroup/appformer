@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
 import org.uberfire.java.nio.security.SSHAuthenticator;
 
-//import static org.apache.sshd.common.NamedFactory.setUpBuiltinFactories;
 import org.apache.sshd.core.CoreModuleProperties;
 import org.apache.sshd.server.ServerBuilder;
 import static org.apache.sshd.server.ServerBuilder.builder;
@@ -53,17 +52,6 @@ import static org.uberfire.java.nio.fs.jgit.daemon.common.PortUtil.validateOrGet
 public class GitSSHService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GitSSHService.class);
-
-    private final List<BuiltinCiphers> managedCiphers =
-            Collections.unmodifiableList(Arrays.asList(
-                    BuiltinCiphers.aes128ctr,
-                    BuiltinCiphers.aes192ctr,
-                    BuiltinCiphers.aes256ctr,
-//                    BuiltinCiphers.arcfour256,
-//                    BuiltinCiphers.arcfour128,
-                    BuiltinCiphers.aes192cbc,
-                    BuiltinCiphers.aes256cbc
-            ));
 
     private final List<BuiltinMacs> managedMACs =
             Collections.unmodifiableList(Arrays.asList(
@@ -194,49 +182,8 @@ public class GitSSHService {
 
     private void buildSSHServer(String gitSshCiphers,
                                 String gitSshMacs) {
-
-
         sshd = buildSshServer(gitSshCiphers, gitSshMacs);
     }
-
-//    private List<BuiltinCiphers> checkAndSetGitCiphers(String gitSshCiphers) {
-//        if (gitSshCiphers == null || gitSshCiphers.isEmpty()) {
-//            return managedCiphers;
-//        } else {
-//            List<BuiltinCiphers> ciphersHandled = new ArrayList<>();
-//            for (String cipherCode : Arrays.asList(gitSshCiphers.split(","))) {
-//                BuiltinCiphers cipher = BuiltinCiphers.fromFactoryName(cipherCode.trim().toLowerCase());
-//                if (cipher != null && managedCiphers.contains(cipher)) {
-//                    ciphersHandled.add(cipher);
-//                    LOG.info("Added Cipher {} to the git ssh configuration. ", cipher);
-//                } else {
-//                    LOG.warn("Cipher {} not handled in git ssh configuration. ", cipher);
-//                }
-//            }
-//            return ciphersHandled;
-//        }
-//    }
-//    
-//    private List<BuiltinMacs> checkAndSetGitMacs(String gitSshMacs) {
-//
-//        if (gitSshMacs == null || gitSshMacs.isEmpty()) {
-//            return managedMACs;
-//        } else {
-//
-//            List<BuiltinMacs> macs = new ArrayList<>();
-//            List<String> macsInput = Arrays.asList(gitSshMacs.split(","));
-//            for (String macCode : macsInput) {
-//                BuiltinMacs mac = BuiltinMacs.fromFactoryName(macCode.trim().toLowerCase());
-//                if (mac != null && managedMACs.contains(mac)) {
-//                    macs.add(mac);
-//                    LOG.info("Added MAC {} to the git ssh configuration. ", mac);
-//                } else {
-//                    LOG.warn("MAC {} not handled in git ssh configuration. ", mac);
-//                }
-//            }
-//            return macs;
-//        }
-//    }
 
     public void stop() {
         try {
@@ -280,10 +227,6 @@ public class GitSSHService {
 
     public void setSshAuthenticator(SSHAuthenticator sshAuthenticator) {
         this.sshAuthenticator = sshAuthenticator;
-    }
-
-    public List<BuiltinCiphers> getManagedCiphers() {
-        return managedCiphers;
     }
 
     public List<BuiltinMacs> getManagedMACs() {

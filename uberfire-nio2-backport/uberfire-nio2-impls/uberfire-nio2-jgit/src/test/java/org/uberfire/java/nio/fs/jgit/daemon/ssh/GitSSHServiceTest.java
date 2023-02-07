@@ -302,7 +302,7 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(8);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
@@ -340,7 +340,7 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(8);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
@@ -378,7 +378,7 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(8);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
@@ -414,7 +414,7 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(8);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
@@ -450,7 +450,7 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(8);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
@@ -487,7 +487,7 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(8);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
