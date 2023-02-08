@@ -24,10 +24,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
+import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.cipher.BuiltinCiphers;
+import org.apache.sshd.common.cipher.Cipher;
 import org.apache.sshd.common.mac.BuiltinMacs;
+import org.apache.sshd.common.mac.Mac;
 import org.apache.sshd.common.util.security.SecurityUtils;
+import org.apache.sshd.core.CoreModuleProperties;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.pubkey.CachingPublicKeyAuthenticator;
 import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
@@ -42,8 +47,8 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
 import org.uberfire.java.nio.security.SSHAuthenticator;
 
-import org.apache.sshd.core.CoreModuleProperties;
-import org.apache.sshd.server.ServerBuilder;
+import static org.apache.sshd.common.BaseBuilder.setUpDefaultCiphers;
+import static org.apache.sshd.common.BaseBuilder.setUpDefaultMacs;
 import static org.apache.sshd.server.ServerBuilder.builder;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotEmpty;
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
@@ -52,17 +57,6 @@ import static org.uberfire.java.nio.fs.jgit.daemon.common.PortUtil.validateOrGet
 public class GitSSHService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GitSSHService.class);
-
-    private final List<BuiltinMacs> managedMACs =
-            Collections.unmodifiableList(Arrays.asList(
-                    //BuiltinMacs.hmacmd5,
-                    BuiltinMacs.hmacsha1,
-                    BuiltinMacs.hmacsha256,
-                    BuiltinMacs.hmacsha512/*,
-                    BuiltinMacs.hmacsha196,
-                    BuiltinMacs.hmacmd596*/
-            ));
-
     private SshServer sshd;
     private AuthenticationService authenticationService;
     private SSHAuthenticator sshAuthenticator;
@@ -71,8 +65,8 @@ public class GitSSHService {
                                      String macsConfigured) {
 
         return builder()
-                .cipherFactories(ServerBuilder.setUpDefaultCiphers(true))
-                .macFactories(ServerBuilder.setUpDefaultMacs(true))
+                .cipherFactories(checkAndSetGitCiphers(ciphersConfigured))
+                .macFactories(checkAndSetGitMacs(macsConfigured))
                 .build();
     }
 
@@ -185,6 +179,32 @@ public class GitSSHService {
         sshd = buildSshServer(gitSshCiphers, gitSshMacs);
     }
 
+    private List<NamedFactory<Cipher>> checkAndSetGitCiphers(String gitSshCiphers) {
+
+        if (gitSshCiphers == null || gitSshCiphers.isEmpty()) {
+            return setUpDefaultCiphers(true);
+        } else {
+            return Arrays.asList(gitSshCiphers.split(","))
+                    .stream()
+                    .map(c -> BuiltinCiphers.fromFactoryName(c.trim().toLowerCase()))
+                    .filter(c -> c != null)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private List<NamedFactory<Mac>> checkAndSetGitMacs(String gitSshMacs) {
+
+        if (gitSshMacs == null || gitSshMacs.isEmpty()) {
+            return setUpDefaultMacs(true);
+        } else {
+            return Arrays.asList(gitSshMacs.split(","))
+                    .stream()
+                    .map(m -> BuiltinMacs.fromFactoryName(m.trim().toLowerCase()))
+                    .filter(c -> c != null)
+                    .collect(Collectors.toList());
+        }
+    }
+
     public void stop() {
         try {
             sshd.stop(true);
@@ -227,9 +247,5 @@ public class GitSSHService {
 
     public void setSshAuthenticator(SSHAuthenticator sshAuthenticator) {
         this.sshAuthenticator = sshAuthenticator;
-    }
-
-    public List<BuiltinMacs> getManagedMACs() {
-        return managedMACs;
     }
 }
