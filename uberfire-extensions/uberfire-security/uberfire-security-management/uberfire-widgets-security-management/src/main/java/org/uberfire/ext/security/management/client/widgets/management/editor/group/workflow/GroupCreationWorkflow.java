@@ -244,9 +244,7 @@ public class GroupCreationWorkflow implements IsWidget {
     }
 
     private boolean isSafeValue(final String identifier) {
-        final String safeValue = new SafeHtmlBuilder()
-                .appendEscaped(identifier)
-                .toSafeHtml().asString();
+        final String safeValue = new SafeHtmlBuilder().appendEscaped(identifier).toSafeHtml().asString();
         return identifier.equals(safeValue);
     }
 

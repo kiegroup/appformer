@@ -253,7 +253,9 @@ public class UserCreationWorkflow extends BaseUserEditorWorkflow {
 
     private void checkCreate(final String identifier,
                              final CheckCreateCallback callback) {
-        if(isSafeValue(identifier, callback)) {
+        if(!isSafeValue(identifier)) {
+            callback.invalid(new SecurityManagementException(UsersManagementWidgetsConstants.INSTANCE.invalidUserName()));
+        } else {
             showLoadingBox();
             userSystemManager.users(new RemoteCallback<User>() {
                                         @Override
@@ -283,16 +285,9 @@ public class UserCreationWorkflow extends BaseUserEditorWorkflow {
         }
     }
 
-    private boolean isSafeValue(final String identifier,
-                                    final CheckCreateCallback callback) {
-        final String safeValue = new SafeHtmlBuilder()
-                .appendEscaped(identifier)
-                .toSafeHtml().asString();
-        if (!identifier.equals(safeValue)) {
-            callback.invalid(new SecurityManagementException(UsersManagementWidgetsConstants.INSTANCE.invalidUserName()));
-            return false;
-        }
-        return true;
+    private boolean isSafeValue(final String identifier) {
+        final String safeValue = new SafeHtmlBuilder().appendEscaped(identifier).toSafeHtml().asString();
+        return identifier.equals(safeValue);
     }
 
     private String getUserNameNotValidMessage(final InvalidEntityIdentifierException e) {
