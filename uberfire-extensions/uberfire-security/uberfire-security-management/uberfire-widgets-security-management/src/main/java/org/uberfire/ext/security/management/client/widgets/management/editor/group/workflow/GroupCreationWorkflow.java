@@ -25,6 +25,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -113,9 +114,9 @@ public class GroupCreationWorkflow implements IsWidget {
         this.onCreateGroupEvent = onCreateGroupEvent;
         this.view = view;
     }
-    
+
      /*  ******************************************************************************************************
-                                     PUBLIC PRESENTER API 
+                                     PUBLIC PRESENTER API
          ****************************************************************************************************** */
 
     @PostConstruct
@@ -154,7 +155,7 @@ public class GroupCreationWorkflow implements IsWidget {
         groupUsersAssignment.clear();
         group = null;
     }
-    
+
     /*  ******************************************************************************************************
                                  PRIVATE METHODS AND VALIDATORS
      ****************************************************************************************************** */
@@ -190,7 +191,11 @@ public class GroupCreationWorkflow implements IsWidget {
 
     protected void checkCreate() {
         final String identifier = createEntity.getEntityIdentifier();
+
         if (identifier != null) {
+            if (!isSafeValue(identifier)) {
+                showErrorMessage(UsersManagementWidgetsConstants.INSTANCE.invalidGroupName());
+            } else {
             loadingBox.show();
 
             // Check constrained groups, they cannot be created (such as registered roles).
@@ -234,7 +239,13 @@ public class GroupCreationWorkflow implements IsWidget {
                                              }
                                          }).get(identifier);
             }
+            }
         }
+    }
+
+    private boolean isSafeValue(final String identifier) {
+        final String safeValue = new SafeHtmlBuilder().appendEscaped(identifier).toSafeHtml().asString();
+        return identifier.equals(safeValue);
     }
 
     private String getGroupIdentifierNotValidMessage(final InvalidEntityIdentifierException e) {

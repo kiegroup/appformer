@@ -213,6 +213,14 @@ public class GroupCreationWorkflowTest extends AbstractSecurityManagementTest {
     }
 
     @Test
+    public void testOnCreateEntityXSSContent() {
+        when(createEntity.getEntityIdentifier()).thenReturn("<img/src/onerror=alert('XSS')>");
+        tested.checkCreate();
+        verify(errorEvent,
+               times(1)).fire(any(OnErrorEvent.class));
+    }
+
+    @Test
     public void testCheckCreateConstrainedGroup() {
         Collection<String> cGroups = new ArrayList<String>(1);
         cGroups.add("admin");
