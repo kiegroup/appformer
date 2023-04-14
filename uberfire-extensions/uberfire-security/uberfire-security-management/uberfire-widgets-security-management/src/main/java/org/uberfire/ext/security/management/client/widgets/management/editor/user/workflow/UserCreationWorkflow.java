@@ -1,12 +1,12 @@
 /*
  * Copyright 2016 Red Hat, Inc. and/or its affiliates.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -105,7 +106,7 @@ public class UserCreationWorkflow extends BaseUserEditorWorkflow {
     }
 
     /*  ******************************************************************************************************
-                                     PUBLIC PRESENTER API 
+                                     PUBLIC PRESENTER API
          ****************************************************************************************************** */
 
     public void create() {
@@ -138,7 +139,7 @@ public class UserCreationWorkflow extends BaseUserEditorWorkflow {
     }
 
     /*  ******************************************************************************************************
-                                 VIEW CALLBACKS 
+                                 VIEW CALLBACKS
      ****************************************************************************************************** */
 
     void onCreateEntityClick() {
@@ -167,7 +168,7 @@ public class UserCreationWorkflow extends BaseUserEditorWorkflow {
         }
     }
 
-    
+
     /*  ******************************************************************************************************
                                  PRIVATE METHODS AND VALIDATORS
      ****************************************************************************************************** */
@@ -252,32 +253,41 @@ public class UserCreationWorkflow extends BaseUserEditorWorkflow {
 
     private void checkCreate(final String identifier,
                              final CheckCreateCallback callback) {
-        showLoadingBox();
-        userSystemManager.users(new RemoteCallback<User>() {
-                                    @Override
-                                    public void callback(User o) {
-                                        // User found, so identifier is not valid.
-                                        hideLoadingBox();
-                                        callback.invalid(new UserAlreadyExistsException(identifier));
-                                    }
-                                },
-                                new ErrorCallback<Message>() {
-                                    @Override
-                                    public boolean error(Message o,
-                                                         Throwable throwable) {
-                                        hideLoadingBox();
-                                        if (throwable instanceof UserNotFoundException) {
-                                            // User not found, so identifier is valid.
-                                            callback.valid();
-                                        } else if (throwable instanceof InvalidEntityIdentifierException) {
-                                            callback.invalid(new SecurityManagementException(getUserNameNotValidMessage((InvalidEntityIdentifierException) throwable),
-                                                                                             throwable));
-                                        } else {
-                                            callback.error(throwable);
+        if(!isSafeValue(identifier)) {
+            callback.invalid(new SecurityManagementException(UsersManagementWidgetsConstants.INSTANCE.invalidUserName()));
+        } else {
+            showLoadingBox();
+            userSystemManager.users(new RemoteCallback<User>() {
+                                        @Override
+                                        public void callback(User o) {
+                                            // User found, so identifier is not valid.
+                                            hideLoadingBox();
+                                            callback.invalid(new UserAlreadyExistsException(identifier));
                                         }
-                                        return false;
-                                    }
-                                }).get(identifier);
+                                    },
+                                    new ErrorCallback<Message>() {
+                                        @Override
+                                        public boolean error(Message o,
+                                                             Throwable throwable) {
+                                            hideLoadingBox();
+                                            if (throwable instanceof UserNotFoundException) {
+                                                // User not found, so identifier is valid.
+                                                callback.valid();
+                                            } else if (throwable instanceof InvalidEntityIdentifierException) {
+                                                callback.invalid(new SecurityManagementException(getUserNameNotValidMessage((InvalidEntityIdentifierException) throwable),
+                                                                                                 throwable));
+                                            } else {
+                                                callback.error(throwable);
+                                            }
+                                            return false;
+                                        }
+                                    }).get(identifier);
+        }
+    }
+
+    private boolean isSafeValue(final String identifier) {
+        final String safeValue = new SafeHtmlBuilder().appendEscaped(identifier).toSafeHtml().asString();
+        return identifier.equals(safeValue);
     }
 
     private String getUserNameNotValidMessage(final InvalidEntityIdentifierException e) {
