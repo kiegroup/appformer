@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.sshd.core.CoreModuleProperties;
 
 import org.apache.sshd.server.SshServer;
 import org.assertj.core.api.Assertions;
@@ -107,7 +108,7 @@ public class JGitFileSystemImplProviderSSHTest extends AbstractTestInfra {
         CredentialsProvider.setDefault(new UsernamePasswordCredentialsProvider("admin",
                                                                                ""));
         assertEquals("10001",
-                     provider.getGitSSHService().getProperties().get(SshServer.IDLE_TIMEOUT));
+                     provider.getGitSSHService().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName()));
 
         //Setup origin
         final URI originRepo = URI.create("git://repo");
