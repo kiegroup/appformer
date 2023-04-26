@@ -25,7 +25,7 @@ import org.apache.sshd.common.session.Session;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
-import org.apache.sshd.server.SessionAware;
+import org.apache.sshd.server.session.ServerSessionAware;
 import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.session.ServerSession;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
@@ -39,7 +39,7 @@ import org.uberfire.commons.async.DescriptiveRunnable;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
 
 public abstract class BaseGitCommand implements Command,
-                                                SessionAware,
+                                                ServerSessionAware,
                                                 Runnable {
 
     public final static Session.AttributeKey<User> SUBJECT_KEY = new Session.AttributeKey<User>();
