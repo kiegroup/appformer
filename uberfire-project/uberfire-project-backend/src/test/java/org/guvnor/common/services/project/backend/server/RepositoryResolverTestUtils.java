@@ -49,9 +49,9 @@ import static org.appformer.maven.integration.MavenRepository.toFileName;
 public class RepositoryResolverTestUtils {
 
     private static final String REPO_1 = "<repository>\n" +
-            "<id>jboss-origin-repository-group</id>\n" +
-            "<name>JBoss.org Public Repository Group</name>\n" +
-            "<url>https://origin-repository.jboss.org/nexus/content/groups/ea/</url>\n" +
+            "<id>jboss-snapshots-repository-group</id>\n" +
+            "<name>JBoss.org Public Snapshots Repository Group</name>\n" +
+            "<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>\n" +
             "</repository>\n";
 
     private static final String REPO_2 = "<repository>\n" +
