@@ -19,29 +19,22 @@ package org.uberfire.java.nio.fs.jgit.daemon.ssh;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-
-import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.cipher.BuiltinCiphers;
-import org.apache.sshd.common.cipher.Cipher;
 import org.apache.sshd.common.mac.BuiltinMacs;
-import org.apache.sshd.common.mac.Mac;
-import org.apache.sshd.server.SshServer;
+import org.apache.sshd.core.CoreModuleProperties;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.jgit.transport.resolver.ReceivePackFactory;
 import org.eclipse.jgit.transport.resolver.UploadPackFactory;
 import org.eclipse.jgit.util.FileUtils;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.mockito.Mockito.*;
 import org.uberfire.commons.concurrent.ExecutorServiceProducer;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class GitSSHServiceTest {
 
@@ -140,7 +133,7 @@ public class GitSSHServiceTest {
         sshService.start();
         assertTrue(sshService.isRunning());
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
@@ -309,13 +302,13 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(7);
+        assertThat(ciphersReaded).hasSize(10);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
         checkMacsName(macsReaded);
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
@@ -347,13 +340,13 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(7);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
         checkMacsName(macsReaded);
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
@@ -385,13 +378,13 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(7);
+        assertThat(ciphersReaded).hasSize(10);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
         checkMacsName(macsReaded);
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
@@ -421,13 +414,13 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(7);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
         checkMacsName(macsReaded);
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
@@ -457,13 +450,13 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(7);
+        assertThat(ciphersReaded).hasSize(9);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
         checkMacsName(macsReaded);
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
@@ -494,13 +487,13 @@ public class GitSSHServiceTest {
         List<String> ciphersReaded = sshService.getSshServer().getCipherFactoriesNames();
         List<String> macsReaded = sshService.getSshServer().getMacFactoriesNames();
 
-        assertThat(ciphersReaded).hasSize(5);
+        assertThat(ciphersReaded).hasSize(7);
         checkCiphersName(ciphersReaded);
 
         assertThat(macsReaded).hasSize(6);
         checkMacsName(macsReaded);
 
-        assertThat(sshService.getSshServer().getProperties().get(SshServer.IDLE_TIMEOUT)).isEqualTo(idleTimeout);
+        assertThat(sshService.getSshServer().getProperties().get(CoreModuleProperties.IDLE_TIMEOUT.getName())).isEqualTo(idleTimeout);
 
         sshService.stop();
 
