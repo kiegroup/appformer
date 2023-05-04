@@ -148,8 +148,8 @@ public class ModuleMavenRepositoryResolverImplTest {
                                      "http://repository.jboss.org/nexus/content/groups/public/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
-            assertContainsRepository("jboss-origin-repository-group",
-                                     "https://origin-repository.jboss.org/nexus/content/groups/ea/",
+            assertContainsRepository("jboss-snapshots-repository-group",
+                                     "https://repository.jboss.org/nexus/content/repositories/snapshots/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
             assertContainsRepository("jboss-public-repository-group",
@@ -213,8 +213,8 @@ public class ModuleMavenRepositoryResolverImplTest {
                                      "http://repository.jboss.org/nexus/content/groups/public/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
-            assertContainsRepository("jboss-origin-repository-group",
-                                     "https://origin-repository.jboss.org/nexus/content/groups/ea/",
+            assertContainsRepository("jboss-snapshots-repository-group",
+                                     "https://repository.jboss.org/nexus/content/repositories/snapshots/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
             assertContainsRepository("jboss-public-repository-group",
@@ -282,8 +282,8 @@ public class ModuleMavenRepositoryResolverImplTest {
                                      "http://repository.jboss.org/nexus/content/groups/public/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
-            assertContainsRepository("jboss-origin-repository-group",
-                                     "https://origin-repository.jboss.org/nexus/content/groups/ea/",
+            assertContainsRepository("jboss-snapshots-repository-group",
+                                     "https://repository.jboss.org/nexus/content/repositories/snapshots/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
             assertContainsRepository("jboss-public-repository-group",
@@ -351,8 +351,8 @@ public class ModuleMavenRepositoryResolverImplTest {
                                      "http://repository.jboss.org/nexus/content/groups/public/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
-            assertContainsRepository("jboss-origin-repository-group",
-                                     "https://origin-repository.jboss.org/nexus/content/groups/ea/",
+            assertContainsRepository("jboss-snapshots-repository-group",
+                                     "https://repository.jboss.org/nexus/content/repositories/snapshots/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
             assertContainsRepository("jboss-public-repository-group",
@@ -416,8 +416,8 @@ public class ModuleMavenRepositoryResolverImplTest {
                                      "http://repository.jboss.org/nexus/content/groups/public/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
-            assertContainsRepository("jboss-origin-repository-group",
-                                     "https://origin-repository.jboss.org/nexus/content/groups/ea/",
+            assertContainsRepository("jboss-snapshots-repository-group",
+                                     "https://repository.jboss.org/nexus/content/repositories/snapshots/",
                                      MavenRepositorySource.SETTINGS,
                                      metadata);
             assertContainsRepository("jboss-public-repository-group",
