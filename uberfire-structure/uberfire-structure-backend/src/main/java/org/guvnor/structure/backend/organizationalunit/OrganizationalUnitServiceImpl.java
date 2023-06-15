@@ -33,6 +33,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.uberfire.security.Contributor;
 import org.guvnor.structure.contributors.SpaceContributorsUpdatedEvent;
 import org.guvnor.structure.organizationalunit.NewOrganizationalUnitEvent;
@@ -320,7 +321,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
             final SpaceInfo spaceInfo = new SpaceInfo(name,
                                                       description,
                                                       _defaultGroupId,
-                                                      contributors,
+                                                      escapeContributorsNames(contributors),
                                                       getRepositoryAliases(repositories),
                                                       Collections.emptyList());
             spaceConfigStorageRegistry.get(name).saveSpaceInfo(spaceInfo);
@@ -378,7 +379,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
                         spaceInfo.setDefaultGroupId(_defaultGroupId);
 
                         if (contributors != null) {
-                            spaceInfo.setContributors(contributors);
+                            spaceInfo.setContributors(escapeContributorsNames(contributors));
                         }
 
                         if (description != null) {
@@ -618,5 +619,14 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         return new OrganizationalUnitImpl(spaceName,
                                           defaultGroupId,
                                           true);
+    }
+
+    private Collection<Contributor> escapeContributorsNames(Collection<Contributor> contributors) {
+        Collection<Contributor> escapedContributors = new ArrayList<>();
+        contributors.forEach((contributor -> {
+            String escapedName = StringEscapeUtils.escapeHtml4(contributor.getUsername());
+            escapedContributors.add(new Contributor(escapedName, contributor.getType()));
+        }));
+        return escapedContributors;
     }
 }
