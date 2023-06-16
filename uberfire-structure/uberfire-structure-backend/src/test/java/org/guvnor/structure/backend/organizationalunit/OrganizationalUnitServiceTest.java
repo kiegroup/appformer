@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.enterprise.event.Event;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.guvnor.structure.backend.organizationalunit.config.SpaceConfigStorageRegistryImpl;
@@ -268,6 +269,77 @@ public class OrganizationalUnitServiceTest {
         assertEquals(SPACE_DESCRIPTION, ou.getDescription());
         assertEquals(DEFAULT_GROUP_ID, ou.getDefaultGroupId());
         assertEquals(contributors, ou.getContributors());
+        Assertions.assertThat(ou.getContributors()).hasSize(1);
+        Assertions.assertThat(ou.getContributors()).hasOnlyOneElementSatisfying((contributor) -> {
+            contributor.getUsername().equals(StringEscapeUtils.escapeHtml4(ADMIN));
+        });
+    }
+
+    @Test
+    public void createOrganizationalUnitWithPersistentXssInContributorTest() {
+        final String persistentXssContributor = "<img/src/onerror=alert(\"XSS\")>";
+        final String escapedPersistentXssContributor = StringEscapeUtils.escapeHtml4(persistentXssContributor);
+
+        List<Contributor> contributors = new ArrayList<>();
+        contributors.add(new Contributor(persistentXssContributor,
+                                         ContributorType.ADMIN));
+
+        setOUCreationPermission(true);
+
+        final OrganizationalUnit ou = organizationalUnitService.createOrganizationalUnit(SPACE_NAME,
+                                                                                         DEFAULT_GROUP_ID,
+                                                                                         new ArrayList<>(),
+                                                                                         contributors,
+                                                                                         SPACE_DESCRIPTION);
+
+        assertNotNull(ou);
+        verify(organizationalUnitFactory).newOrganizationalUnit(any());
+        assertEquals(SPACE_NAME, ou.getName());
+        assertEquals(SPACE_DESCRIPTION, ou.getDescription());
+        assertEquals(DEFAULT_GROUP_ID, ou.getDefaultGroupId());
+
+        Assertions.assertThat(ou.getContributors()).hasSize(1);
+        Assertions.assertThat(ou.getContributors()).hasOnlyOneElementSatisfying((contributor) -> {
+            contributor.getUsername().equals(escapedPersistentXssContributor);
+        });
+    }
+
+    @Test
+    public void createOrganizationalUnitWithPersistentXssAndValidContributorTest() {
+        final String persistentXssContributor = "<img/src/onerror=alert(\"XSS\")>";
+        final String escapedPersistentXssContributor = StringEscapeUtils.escapeHtml4(persistentXssContributor);
+        final String escapedAdminContributor = StringEscapeUtils.escapeHtml4(ADMIN);
+        final String regularContributor = "head_technician_junior-intern";
+
+        List<Contributor> contributors = new ArrayList<>();
+        contributors.add(new Contributor(persistentXssContributor,
+                                         ContributorType.CONTRIBUTOR));
+        contributors.add(new Contributor(ADMIN,
+                                         ContributorType.ADMIN));
+        contributors.add(new Contributor(regularContributor,
+                                         ContributorType.OWNER));
+
+        setOUCreationPermission(true);
+
+        final OrganizationalUnit ou = organizationalUnitService.createOrganizationalUnit(SPACE_NAME,
+                                                                                         DEFAULT_GROUP_ID,
+                                                                                         new ArrayList<>(),
+                                                                                         contributors,
+                                                                                         SPACE_DESCRIPTION);
+
+        assertNotNull(ou);
+        verify(organizationalUnitFactory).newOrganizationalUnit(any());
+        assertEquals(SPACE_NAME, ou.getName());
+        assertEquals(SPACE_DESCRIPTION, ou.getDescription());
+        assertEquals(DEFAULT_GROUP_ID, ou.getDefaultGroupId());
+
+        Assertions.assertThat(ou.getContributors()).hasSize(3);
+        Assertions.assertThat(ou.getContributors()).containsExactly(new Contributor(escapedPersistentXssContributor,
+                                                                                    ContributorType.CONTRIBUTOR),
+                                                                    new Contributor(escapedAdminContributor,
+                                                                                    ContributorType.ADMIN),
+                                                                    new Contributor(StringEscapeUtils.escapeHtml4(regularContributor),
+                                                                                    ContributorType.OWNER));
     }
 
     @Test
@@ -320,6 +392,40 @@ public class OrganizationalUnitServiceTest {
         Assertions.assertThat(spaceInfo)
                 .hasFieldOrPropertyWithValue("name", SPACE_NAME)
                 .hasFieldOrPropertyWithValue("defaultGroupId", newGroupId);
+
+        verify(spaceConfigStorage).startBatch();
+        verify(spaceConfigStorage).saveSpaceInfo(eq(spaceInfo));
+        verify(spaceConfigStorage).endBatch();
+    }
+
+    @Test
+    public void testContributorsPersistentXssOnUpdateOrganizationalUnit() {
+        final String persistentXssContributor = "<img/src/onerror=alert(\"XSS\")>";
+        final String escapedPersistentXssContributor = StringEscapeUtils.escapeHtml4(persistentXssContributor);
+
+        OrganizationalUnit organizationalUnit =
+                organizationalUnitService.updateOrganizationalUnit(SPACE_NAME,
+                                                                   DEFAULT_GROUP_ID,
+                                                                   Collections.singletonList(
+                                                                           new Contributor(
+                                                                                   persistentXssContributor,
+                                                                                   ContributorType.ADMIN
+                                                                           )
+                                                                   )
+                );
+
+        Assertions.assertThat(organizationalUnit)
+                .hasFieldOrPropertyWithValue("name", SPACE_NAME)
+                .hasFieldOrPropertyWithValue("defaultGroupId", DEFAULT_GROUP_ID);
+
+        Assertions.assertThat(organizationalUnit.getContributors()).hasSize(1);
+        Assertions.assertThat(organizationalUnit.getContributors()).hasOnlyOneElementSatisfying((contributor) -> {
+            contributor.getUsername().equals(escapedPersistentXssContributor);
+        });
+
+        Assertions.assertThat(spaceInfo)
+                .hasFieldOrPropertyWithValue("name", SPACE_NAME)
+                .hasFieldOrPropertyWithValue("defaultGroupId", DEFAULT_GROUP_ID);
 
         verify(spaceConfigStorage).startBatch();
         verify(spaceConfigStorage).saveSpaceInfo(eq(spaceInfo));
