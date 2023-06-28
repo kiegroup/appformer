@@ -39,6 +39,7 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
+import static org.guvnor.structure.backend.InputEscapeUtils.escapeHtmlInput;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -195,7 +196,7 @@ public class RepositoryServiceImplTest {
         when(registry.getBatch(anyString())).thenReturn(new SpaceConfigStorageRegistryImpl.SpaceStorageBatchImpl(spaceConfigStorage));
 
         final String xssName = "<img/src/onerror=alert(\"XSS\")>";
-        final String escapedXssName = repositoryService.escapeHtmlInput(xssName);
+        final String escapedXssName = escapeHtmlInput(xssName);
         repositoryService.updateContributors(repository,
                                              Collections.singletonList(new Contributor(xssName,
                                                                                        ContributorType.OWNER)));

@@ -65,6 +65,8 @@ import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
+import static org.guvnor.structure.backend.InputEscapeUtils.escapeContributorsNames;
+
 @Service
 @ApplicationScoped
 public class OrganizationalUnitServiceImpl implements OrganizationalUnitService {
@@ -619,24 +621,5 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
         return new OrganizationalUnitImpl(spaceName,
                                           defaultGroupId,
                                           true);
-    }
-
-    private Collection<Contributor> escapeContributorsNames(Collection<Contributor> contributors) {
-        Collection<Contributor> escapedContributors = new ArrayList<>();
-        contributors.forEach((contributor -> {
-            String escapedName = escapeHtmlInput(contributor.getUsername());
-            escapedContributors.add(new Contributor(escapedName, contributor.getType()));
-        }));
-        return escapedContributors;
-    }
-
-    String escapeHtmlInput(String input) {
-        if (input != null) {
-            String escapedInput = StringEscapeUtils.escapeHtml4(input);
-            escapedInput = escapedInput.replace("'", "");
-            return escapedInput;
-        } else {
-            return null;
-        }
     }
 }
