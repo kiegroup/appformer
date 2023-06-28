@@ -28,6 +28,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.project.events.RepositoryContributorsUpdatedEvent;
 import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
@@ -539,7 +540,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         thisRepositoryConfig.ifPresent(config -> {
             config.getConfiguration().add("contributors",
-                                          contributors);
+                                          escapeContributorsNames(contributors));
             this.saveRepositoryConfig(repository.getSpace().getName(),
                                       config);
             repositoryContributorsUpdatedEvent.fire(new RepositoryContributorsUpdatedEvent(getRepositoryFromSpace(repository.getSpace(),
@@ -616,6 +617,25 @@ public class RepositoryServiceImpl implements RepositoryService {
             repositoryConfiguration.add(newKey, encrypted);
         } else {
             repositoryConfiguration.add(key, configuration.getValue());
+        }
+    }
+
+    public Collection<Contributor> escapeContributorsNames(Collection<Contributor> contributors) {
+        Collection<Contributor> escapedContributors = new ArrayList<>();
+        contributors.forEach((contributor -> {
+            String escapedName = escapeHtmlInput(contributor.getUsername());
+            escapedContributors.add(new Contributor(escapedName, contributor.getType()));
+        }));
+        return escapedContributors;
+    }
+
+    String escapeHtmlInput(String input) {
+        if (input != null) {
+            String escapedInput = StringEscapeUtils.escapeHtml4(input);
+            escapedInput = escapedInput.replace("'", "");
+            return escapedInput;
+        } else {
+            return null;
         }
     }
 

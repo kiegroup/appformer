@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.enterprise.event.Event;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 import org.guvnor.structure.backend.organizationalunit.config.SpaceConfigStorageRegistryImpl;
@@ -271,14 +270,14 @@ public class OrganizationalUnitServiceTest {
         assertEquals(contributors, ou.getContributors());
         Assertions.assertThat(ou.getContributors()).hasSize(1);
         Assertions.assertThat(ou.getContributors()).hasOnlyOneElementSatisfying((contributor) -> {
-            contributor.getUsername().equals(StringEscapeUtils.escapeHtml4(ADMIN));
+            contributor.getUsername().equals(organizationalUnitService.escapeHtmlInput(ADMIN));
         });
     }
 
     @Test
     public void createOrganizationalUnitWithPersistentXssInContributorTest() {
         final String persistentXssContributor = "<img/src/onerror=alert(\"XSS\")>";
-        final String escapedPersistentXssContributor = StringEscapeUtils.escapeHtml4(persistentXssContributor);
+        final String escapedPersistentXssContributor = organizationalUnitService.escapeHtmlInput(persistentXssContributor);
 
         List<Contributor> contributors = new ArrayList<>();
         contributors.add(new Contributor(persistentXssContributor,
@@ -307,9 +306,10 @@ public class OrganizationalUnitServiceTest {
     @Test
     public void createOrganizationalUnitWithPersistentXssAndValidContributorTest() {
         final String persistentXssContributor = "<img/src/onerror=alert(\"XSS\")>";
-        final String escapedPersistentXssContributor = StringEscapeUtils.escapeHtml4(persistentXssContributor);
-        final String escapedAdminContributor = StringEscapeUtils.escapeHtml4(ADMIN);
+        final String escapedPersistentXssContributor = organizationalUnitService.escapeHtmlInput(persistentXssContributor);
+        final String escapedAdminContributor = organizationalUnitService.escapeHtmlInput(ADMIN);
         final String regularContributor = "head_technician_junior-intern";
+        final String escapedRegularContributor = organizationalUnitService.escapeHtmlInput(regularContributor);
 
         List<Contributor> contributors = new ArrayList<>();
         contributors.add(new Contributor(persistentXssContributor,
@@ -338,7 +338,7 @@ public class OrganizationalUnitServiceTest {
                                                                                     ContributorType.CONTRIBUTOR),
                                                                     new Contributor(escapedAdminContributor,
                                                                                     ContributorType.ADMIN),
-                                                                    new Contributor(StringEscapeUtils.escapeHtml4(regularContributor),
+                                                                    new Contributor(escapedRegularContributor,
                                                                                     ContributorType.OWNER));
     }
 
@@ -401,7 +401,7 @@ public class OrganizationalUnitServiceTest {
     @Test
     public void testContributorsPersistentXssOnUpdateOrganizationalUnit() {
         final String persistentXssContributor = "<img/src/onerror=alert(\"XSS\")>";
-        final String escapedPersistentXssContributor = StringEscapeUtils.escapeHtml4(persistentXssContributor);
+        final String escapedPersistentXssContributor = organizationalUnitService.escapeHtmlInput(persistentXssContributor);
 
         OrganizationalUnit organizationalUnit =
                 organizationalUnitService.updateOrganizationalUnit(SPACE_NAME,

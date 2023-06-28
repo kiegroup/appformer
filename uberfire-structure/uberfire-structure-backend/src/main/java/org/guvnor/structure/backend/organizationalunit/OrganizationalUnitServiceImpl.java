@@ -624,10 +624,19 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
     private Collection<Contributor> escapeContributorsNames(Collection<Contributor> contributors) {
         Collection<Contributor> escapedContributors = new ArrayList<>();
         contributors.forEach((contributor -> {
-            String escapedName = StringEscapeUtils.escapeHtml4(contributor.getUsername());
-            escapedName = escapedName.replace("'", "");
+            String escapedName = escapeHtmlInput(contributor.getUsername());
             escapedContributors.add(new Contributor(escapedName, contributor.getType()));
         }));
         return escapedContributors;
+    }
+
+    String escapeHtmlInput(String input) {
+        if (input != null) {
+            String escapedInput = StringEscapeUtils.escapeHtml4(input);
+            escapedInput = escapedInput.replace("'", "");
+            return escapedInput;
+        } else {
+            return null;
+        }
     }
 }

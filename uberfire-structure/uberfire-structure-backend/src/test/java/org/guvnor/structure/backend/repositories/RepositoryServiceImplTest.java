@@ -172,6 +172,53 @@ public class RepositoryServiceImplTest {
     }
 
     @Test
+    public void updateContributorsWithXSSNameTest() {
+
+        final Space space = new Space("space");
+        doReturn(space).when(repository).getSpace();
+        doReturn("alias").when(repository).getAlias();
+
+        doReturn(repository).when(configuredRepositories).getRepositoryByRepositoryAlias(any(),
+                                                                                         any());
+
+        final SpaceConfigStorage spaceConfigStorage = mock(SpaceConfigStorage.class);
+        doReturn(new SpaceInfo("space",
+                               "Test space",
+                               "defaultGroupId",
+                               Collections.emptyList(),
+                               new ArrayList<>(Arrays.asList(new RepositoryInfo("alias",
+                                                                                false,
+                                                                                new RepositoryConfiguration()))),
+                               Collections.emptyList())).when(spaceConfigStorage).loadSpaceInfo();
+
+        when(registry.get(anyString())).thenReturn(spaceConfigStorage);
+        when(registry.getBatch(anyString())).thenReturn(new SpaceConfigStorageRegistryImpl.SpaceStorageBatchImpl(spaceConfigStorage));
+
+        final String xssName = "<img/src/onerror=alert(\"XSS\")>";
+        final String escapedXssName = repositoryService.escapeHtmlInput(xssName);
+        repositoryService.updateContributors(repository,
+                                             Collections.singletonList(new Contributor(xssName,
+                                                                                       ContributorType.OWNER)));
+
+        verify(updatedEvent).fire(captor.capture());
+        assertEquals("alias",
+                     captor.getValue().getRepository().getAlias());
+        assertEquals("space",
+                     captor.getValue().getRepository().getSpace().getName());
+        verify(repositoryService).saveRepositoryConfig(eq("space"),
+                                                       configCaptor.capture());
+
+        assertEquals(escapedXssName,
+                     configCaptor.getValue().getContributors().get(0).getUsername());
+        assertEquals(ContributorType.OWNER,
+                     configCaptor.getValue().getContributors().get(0).getType());
+
+        verify(spaceConfigStorage).startBatch();
+        verify(spaceConfigStorage).saveSpaceInfo(any());
+        verify(spaceConfigStorage).endBatch();
+    }
+
+    @Test
     public void testDoRemoveInOrder() {
 
         Consumer<Repository> notification = mock(Consumer.class);
