@@ -33,7 +33,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.uberfire.security.Contributor;
 import org.guvnor.structure.contributors.SpaceContributorsUpdatedEvent;
 import org.guvnor.structure.organizationalunit.NewOrganizationalUnitEvent;
