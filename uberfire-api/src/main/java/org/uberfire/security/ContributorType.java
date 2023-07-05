@@ -23,5 +23,5 @@ public enum ContributorType {
 
     OWNER, ADMIN, CONTRIBUTOR;
 
-    public static List<ContributorType> PRIORITY_ORDER = Arrays.asList(OWNER, ADMIN, CONTRIBUTOR);
+    public static final List<ContributorType> PRIORITY_ORDER = Arrays.asList(OWNER, ADMIN, CONTRIBUTOR);
 }
