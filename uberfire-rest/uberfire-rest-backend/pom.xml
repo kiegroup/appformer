@@ -72,6 +72,11 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+    </dependency>
+
     <!-- REST dependencies -->
     <dependency>
       <groupId>jakarta.annotation</groupId>

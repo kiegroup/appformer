@@ -316,6 +316,28 @@ public class ProjectResourceJobTest {
     }
 
     @Test
+    public void updateSpaceWithXSSOwer() throws Exception {
+        String xssOwner = "<img/src/onerror=alert(\"XSS\")>";
+        Space testedSpace = new Space();
+        testedSpace.setOwner(xssOwner);
+        projectResource.updateSpace(testedSpace);
+
+        verify(jobManager).putJob(jobResultArgumentCaptor.capture());
+        assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
+    }
+
+    @Test
+    public void createSpaceWithXSSOwner() throws Exception {
+        String xssOwner = "<img/src/onerror=alert(document.cookie)>";
+        Space testedSpace = new Space();
+        testedSpace.setOwner(xssOwner);
+        projectResource.createSpace(testedSpace);
+
+        verify(jobManager).putJob(jobResultArgumentCaptor.capture());
+        assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
+    }
+
+    @Test
     public void deleteSpace() throws Exception {
 
         projectResource.deleteSpace("spaceName");
@@ -329,6 +351,19 @@ public class ProjectResourceJobTest {
         projectResource.addBranch("spaceName",
                                   "projectName",
                                   new AddBranchRequest());
+
+        verify(jobManager).putJob(jobResultArgumentCaptor.capture());
+        assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());
+    }
+
+    @Test
+    public void addBranchWithXSSName() {
+        AddBranchRequest addBranchRequest = new AddBranchRequest();
+        addBranchRequest.setNewBranchName("<img/src/onerror=alert(\"Xss\")>");
+
+        projectResource.addBranch("spaceName",
+                                  "projectName",
+                                  addBranchRequest);
 
         verify(jobManager).putJob(jobResultArgumentCaptor.capture());
         assertEquals(JobStatus.ACCEPTED, jobResultArgumentCaptor.getValue().getStatus());

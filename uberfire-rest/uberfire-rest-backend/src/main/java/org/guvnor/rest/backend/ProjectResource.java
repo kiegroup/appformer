@@ -46,6 +46,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
 import org.guvnor.rest.client.AddBranchJobRequest;
@@ -373,7 +374,7 @@ public class ProjectResource {
         jobRequest.setJobId(id);
         jobRequest.setSpaceName(spaceName);
         jobRequest.setProjectName(projectName);
-        jobRequest.setNewBranchName(addBranchRequest.getNewBranchName());
+        jobRequest.setNewBranchName(escapeHtmlInput(addBranchRequest.getNewBranchName()));
         jobRequest.setBaseBranchName(addBranchRequest.getBaseBranchName());
         jobRequest.setUserIdentifier(sessionInfo.getIdentity().getIdentifier());
         addAcceptedJobResult(id);
@@ -452,6 +453,16 @@ public class ProjectResource {
 
         projectResponse.setPublicURIs(publicURIs);
         return projectResponse;
+    }
+
+    private String escapeHtmlInput(String input) {
+        if (input != null) {
+            String escapedInput = StringEscapeUtils.escapeHtml4(input);
+            escapedInput = escapedInput.replace("'", "");
+            return escapedInput;
+        } else {
+            return null;
+        }
     }
 
     @POST
@@ -684,7 +695,7 @@ public class ProjectResource {
         jobRequest.setJobId(id);
         jobRequest.setSpaceName(space.getName());
         jobRequest.setDescription(space.getDescription());
-        jobRequest.setOwner(space.getOwner());
+        jobRequest.setOwner(escapeHtmlInput(space.getOwner()));
         jobRequest.setDefaultGroupId(space.getDefaultGroupId());
         addAcceptedJobResult(id);
 
@@ -709,7 +720,7 @@ public class ProjectResource {
         jobRequest.setJobId(id);
         jobRequest.setSpaceName(space.getName());
         jobRequest.setDescription(space.getDescription());
-        jobRequest.setOwner(space.getOwner());
+        jobRequest.setOwner(escapeHtmlInput(space.getOwner()));
         jobRequest.setDefaultGroupId(space.getDefaultGroupId());
         addAcceptedJobResult(id);
 
