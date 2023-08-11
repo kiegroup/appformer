@@ -64,6 +64,8 @@ import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
+import static org.guvnor.structure.backend.InputEscapeUtils.escapeContributorsNames;
+
 @Service
 @ApplicationScoped
 public class OrganizationalUnitServiceImpl implements OrganizationalUnitService {
@@ -320,7 +322,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
             final SpaceInfo spaceInfo = new SpaceInfo(name,
                                                       description,
                                                       _defaultGroupId,
-                                                      contributors,
+                                                      escapeContributorsNames(contributors),
                                                       getRepositoryAliases(repositories),
                                                       Collections.emptyList());
             spaceConfigStorageRegistry.get(name).saveSpaceInfo(spaceInfo);
@@ -378,7 +380,7 @@ public class OrganizationalUnitServiceImpl implements OrganizationalUnitService 
                         spaceInfo.setDefaultGroupId(_defaultGroupId);
 
                         if (contributors != null) {
-                            spaceInfo.setContributors(contributors);
+                            spaceInfo.setContributors(escapeContributorsNames(contributors));
                         }
 
                         if (description != null) {
