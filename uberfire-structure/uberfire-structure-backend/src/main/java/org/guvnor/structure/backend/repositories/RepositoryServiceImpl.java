@@ -67,6 +67,7 @@ import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
+import static org.guvnor.structure.backend.InputEscapeUtils.escapeContributorsNames;
 import static org.guvnor.structure.repositories.EnvironmentParameters.CRYPT_PREFIX;
 import static org.guvnor.structure.repositories.EnvironmentParameters.SECURE_PREFIX;
 import static org.guvnor.structure.repositories.EnvironmentParameters.SCHEME;
@@ -539,7 +540,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         thisRepositoryConfig.ifPresent(config -> {
             config.getConfiguration().add("contributors",
-                                          contributors);
+                                          escapeContributorsNames(contributors));
             this.saveRepositoryConfig(repository.getSpace().getName(),
                                       config);
             repositoryContributorsUpdatedEvent.fire(new RepositoryContributorsUpdatedEvent(getRepositoryFromSpace(repository.getSpace(),
