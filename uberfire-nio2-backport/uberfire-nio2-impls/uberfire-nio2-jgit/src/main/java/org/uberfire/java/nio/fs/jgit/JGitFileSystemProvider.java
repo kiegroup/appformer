@@ -72,6 +72,8 @@ import org.eclipse.jgit.transport.resolver.ReceivePackFactory;
 import org.eclipse.jgit.transport.resolver.RepositoryResolver;
 import org.eclipse.jgit.transport.resolver.ServiceNotAuthorizedException;
 import org.eclipse.jgit.transport.resolver.UploadPackFactory;
+import org.eclipse.jgit.transport.sshd.JGitKeyCache;
+import org.eclipse.jgit.transport.sshd.SshdSessionFactoryBuilder;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.FileUtils;
 import org.eclipse.jgit.util.ProcessResult;
@@ -325,7 +327,14 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
     }
 
     private void setupSSH() {
-        SshSessionFactory.setInstance(new JGitSSHConfigSessionFactory(config));
+
+        SshdSessionFactoryBuilder builder = new SshdSessionFactoryBuilder();
+
+        if (config.isSshOverHttpProxy() || config.isSshOverHttpsProxy()) {
+            builder.setProxyDataFactory(new JGitSSHProxyResolver(config));
+        }
+
+        SshSessionFactory.setInstance(builder.build(new JGitKeyCache()));
     }
 
     private void setupGitDefaultCredentials() {
