@@ -20,23 +20,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.uberfire.security.WorkbenchUserManager;
-
 /**
  * Default producer for {@link ElytronIdentityHelper}
  */
 @ApplicationScoped
 public class ElytronIdentityHelperProducer {
 
-    private final WorkbenchUserManager workbenchUserManager;
-
     @Inject
-    public ElytronIdentityHelperProducer(WorkbenchUserManager workbenchUserManager) {
-        this.workbenchUserManager = workbenchUserManager;
+    public ElytronIdentityHelperProducer() {
     }
 
     @Produces
     public ElytronIdentityHelper getDefaultElytronIdentityHelper() {
-        return new DefaultElytronIdentityHelper(workbenchUserManager);
+        return new DefaultElytronIdentityHelper();
     }
 }
