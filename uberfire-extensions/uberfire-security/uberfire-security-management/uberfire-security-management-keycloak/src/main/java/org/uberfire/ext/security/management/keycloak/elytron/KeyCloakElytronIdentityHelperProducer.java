@@ -27,7 +27,6 @@ import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
 import org.uberfire.backend.server.security.elytron.ElytronIdentityHelperProducer;
 import org.uberfire.ext.security.management.keycloak.KCAdapterUserManagementService;
 import org.uberfire.ext.security.management.keycloak.KCCredentialsUserManagementService;
-import org.uberfire.security.WorkbenchUserManager;
 
 /**
  * Produces {@link ElytronIdentityHelper} based on the user management service configured on the
@@ -45,8 +44,7 @@ public class KeyCloakElytronIdentityHelperProducer extends ElytronIdentityHelper
     private boolean isKeyCloak;
 
     @Inject
-    public KeyCloakElytronIdentityHelperProducer(WorkbenchUserManager workbenchUserManager) {
-        super(workbenchUserManager);
+    public KeyCloakElytronIdentityHelperProducer() {
     }
 
     @PostConstruct
