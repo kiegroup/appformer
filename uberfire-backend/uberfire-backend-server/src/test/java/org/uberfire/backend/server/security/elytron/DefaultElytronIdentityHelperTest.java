@@ -16,20 +16,27 @@
 
 package org.uberfire.backend.server.security.elytron;
 
+import org.jboss.errai.security.shared.api.RoleImpl;
+import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.exception.FailedAuthenticationException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.uberfire.security.WorkbenchUserManager;
+import org.wildfly.security.auth.server.RealmUnavailableException;
+import org.wildfly.security.auth.server.SecurityIdentity;
+import org.wildfly.security.authz.Roles;
+import org.wildfly.security.evidence.Evidence;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultElytronIdentityHelperTest {
@@ -38,37 +45,49 @@ public class DefaultElytronIdentityHelperTest {
     private static final String PASSWORD = "password";
 
     private DefaultElytronIdentityHelper helper;
-
-    @Mock
-    private WorkbenchUserManager workbenchUserManager;
+    private ArrayList<String> roles = new ArrayList<>();
 
     @Before
     public void init() {
-        helper = spy(new DefaultElytronIdentityHelper(workbenchUserManager)  {
+        helper = spy(new DefaultElytronIdentityHelper() {
             @Override
-            protected boolean login(String userName, String password) {
-                return true;
+            protected Iterator<String> login(String userName, Evidence evidence) {
+                return roles.iterator();
             }
         });
     }
 
+    @After
+    public void after() {
+        roles.clear();
+    }
+
     @Test
-    public void testSuccessfulLogin() {
+    public void testSuccessfulLogin() throws RealmUnavailableException {
+        roles.add("admin");
+        roles.add("rest-all");
 
-        when(helper.login(eq(USERNAME), eq(PASSWORD))).thenReturn(true);
+        final User identity = helper.getIdentity(USERNAME, PASSWORD);
 
-        helper.getIdentity(USERNAME, PASSWORD);
+        assertEquals(USERNAME, identity.getIdentifier());
+        assertTrue(identity.getRoles().contains(new RoleImpl("admin")));
+        assertTrue(identity.getRoles().contains(new RoleImpl("rest-all")));
+        assertEquals(2, identity.getRoles().size());
+    }
 
-        verify(workbenchUserManager).getUser(USERNAME);
+    @Test
+    public void testSuccessfulLoginNoRoles() throws RealmUnavailableException {
+
+        final User identity = helper.getIdentity(USERNAME, PASSWORD);
+
+        assertTrue(identity.getRoles().isEmpty());
     }
 
     @Test(expected = FailedAuthenticationException.class)
-    public void testUnSuccessfulLogin() {
+    public void testUnSuccessfulLogin() throws RealmUnavailableException {
 
-        doThrow(new RuntimeException("whatever error")).when(helper).login(eq(USERNAME), eq(PASSWORD));
+        doThrow(new RuntimeException("whatever error")).when(helper).login(any(), any());
 
         helper.getIdentity(USERNAME, PASSWORD);
-
-        verify(workbenchUserManager, never()).getUser(USERNAME);
     }
 }
