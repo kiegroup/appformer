@@ -34,12 +34,9 @@ public class ElytronIdentityHelperProducerTest {
 
     private ElytronIdentityHelperProducer producer;
 
-    @Mock
-    private WorkbenchUserManager workbenchUserManager;
-
     @Before
     public void init() {
-        producer = new ElytronIdentityHelperProducer(workbenchUserManager);
+        producer = new ElytronIdentityHelperProducer();
     }
 
     @Test
