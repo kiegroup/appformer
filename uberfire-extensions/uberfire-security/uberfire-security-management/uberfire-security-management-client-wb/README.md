@@ -66,11 +66,6 @@ To use the perspectives, screens and widgets provided by this module, please fol
           <artifactId>uberfire-security-management-wildfly</artifactId>
         </dependency>
     
-        <dependency>
-          <groupId>org.uberfire</groupId>
-          <artifactId>uberfire-security-management-tomcat</artifactId>
-        </dependency>
-
 2.1.- Specifying the provider to use using a properties file              
 
 * You can specify the concrete provider to use by adding a properties file named `security-management.properties` in your web application root classpath. (e.g. `src/main/resources/security-management.properties`)                       

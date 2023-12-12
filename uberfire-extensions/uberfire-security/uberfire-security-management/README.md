@@ -19,7 +19,6 @@ So the users, groups and roles potentially come from different realms, such as t
 Due to this fact, the UF users management feature is based on services and their implementations. It defaults with the users, groups and roles services and three concrete implementations for:         
 * JBoss Wildfly / EAP - Properties based realms              
 * JBoss KeyCloak based realms           
-* Tomcat XML based realms            
 
 NOTE: If you are using the application against another security system, you can build your own users, groups and roles service provider implementations.               
 
@@ -33,7 +32,7 @@ which can be potentially supported by the provider implementation or not,  Pleas
 UberFire Users, Roles and Groups
 --------------------------------
 
-UberFire's security system provides an entities model based on users, groups and roles. As many security realms, such as the default for Wildfly, EAP, Tomcat or Keycloak, does either support groups or roles, not both, here is how UF behaves:                    
+UberFire's security system provides an entities model based on users, groups and roles. As many security realms, such as the default for Wildfly, EAP or Keycloak, does either support groups or roles, not both, here is how UF behaves:                    
 
 * The users are the users that come from the security realm                 
 * The roles are the groups or roles, depending on what the concrete realm provides, that come from the security realm and are registered in the Roles Registry (see `org.uberfire.ext.security.server.RolesRegistry`)               
@@ -55,7 +54,6 @@ Here is a short summary of the project sub-modules:
 * [`uberfire-security-management-client`](./uberfire-security-management-client/) - Provides the different classes and implementations for the users, groups and roles management client stuff.                         
 * [`uberfire-security-management-client-wb`](./uberfire-security-management-client-wb/README.md) - Provides the perspectives and screens for the client side integration into the UF workbench.                         
 * [`uberfire-security-management-keycloak`](./uberfire-security-management-keycloak/README.md) - Provides the concrete users, groups and roles service provider implementations for JBoss KeyCloak.                          
-* [`uberfire-security-management-tomcat`](./uberfire-security-management-tomcat/README.md) - Provides the concrete users, groups and roles service provider implementations for Apache Tomcat.                          
 * [`uberfire-security-management-wildfly`](./uberfire-security-management-wildfly/README.md) - Provides the concrete users, groups and roles service provider implementations for JBoss Wildfly or JBoss EAP.                          
 * [`uberfire-widgets-security-management`](./uberfire-widgets-security-management/README.md) - Provides the widgets for the users, groups and roles management, such as explorers, editors, etc.                         
 * [`uberfire-security-management-webapp`](./uberfire-security-management-webapp/README.md) - A simple web application that defaults with the users and group management perspectives and uses, by default, the embedded wildfly's realm.                         

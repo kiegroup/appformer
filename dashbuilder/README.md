@@ -112,7 +112,7 @@ composite dashboards using an straightforward API. Feature set:
 * Showcase App. providing a built-in displayer gallery plus some dashboard samples
 * Default renderer based on the Google Visualization library
 * Additional table renderer based on the Uberfire PagedTable widget
-* Tomcat 7 and JBoss AS 7 distributions provided
+* JBoss AS 7 distribution provided
 
 Build & run
 ===========
@@ -173,6 +173,6 @@ In order to build the production mode:
     cd dashbuilder
     mvn clean install -DskipTests -Dfull
 
-Once build is finished, you'll find the WAR distributions for Wildfly and Tomcat into <code>dashbuilder/dashbuilder-distros/target/</code>.
+Once build is finished, you'll find the WAR distribution for Wildfly in <code>dashbuilder/dashbuilder-distros/target/</code>.
 
 Just deploy the WAR file into your application server!
