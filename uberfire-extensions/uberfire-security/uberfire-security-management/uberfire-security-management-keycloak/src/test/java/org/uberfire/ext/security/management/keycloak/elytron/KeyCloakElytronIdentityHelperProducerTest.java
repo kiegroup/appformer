@@ -20,13 +20,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.backend.server.security.elytron.DefaultElytronIdentityHelper;
 import org.uberfire.backend.server.security.elytron.ElytronIdentityHelper;
 import org.uberfire.ext.security.management.keycloak.KCAdapterUserManagementService;
 import org.uberfire.ext.security.management.keycloak.KCCredentialsUserManagementService;
-import org.uberfire.security.WorkbenchUserManager;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -35,14 +33,11 @@ import static org.uberfire.ext.security.management.keycloak.elytron.KeyCloakElyt
 @RunWith(MockitoJUnitRunner.class)
 public class KeyCloakElytronIdentityHelperProducerTest {
 
-    @Mock
-    private WorkbenchUserManager workbenchUserManager;
-
     private KeyCloakElytronIdentityHelperProducer producer;
 
     @Before
     public void init() {
-        producer = new KeyCloakElytronIdentityHelperProducer(workbenchUserManager);
+        producer = new KeyCloakElytronIdentityHelperProducer();
     }
 
     @Test
