@@ -34,7 +34,6 @@
         <configuration>
           <finalName>dashbuilder-${project.version}</finalName>
           <descriptors>
-            <descriptor>src/main/assembly/assembly-tomcat-8.xml</descriptor>
             <descriptor>src/main/assembly/assembly-wildfly-10.xml</descriptor>
           </descriptors>
           <archive>
@@ -152,18 +151,6 @@
     <dependency>
       <groupId>org.jboss.weld.se</groupId>
       <artifactId>weld-se-core</artifactId>
-    </dependency>
-
-    <!-- UF Security management provider for Tomcat. -->
-    <dependency>
-      <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-security-management-tomcat</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>javax.annotation-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
   </dependencies>
