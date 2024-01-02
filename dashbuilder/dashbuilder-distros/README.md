@@ -20,12 +20,9 @@ This module is not build by default. You can build it in two ways:
 Distributions
 -------------
  
-Currently, the following artifacts are generated:                   
+Currently, the following artifact is generated:                   
 
 * **dashbuilder-wildfly10.war:**  Product distribution for the JBoss WildFly 10.x application server.
 
   Detailed installation instructions [here](./src/main/wildfly10/README.md).
 
-* **dashbuilder-tomcat8.war:**  Product distribution for Apache Tomcat 8 server.
-
-  Detailed installation instructions [here](./src/main/tomcat8/README.md).
