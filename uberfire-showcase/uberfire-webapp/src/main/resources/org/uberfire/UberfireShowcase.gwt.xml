@@ -45,6 +45,7 @@
   <extend-property name="locale" values="pt_BR"/>
   <extend-property name="locale" values="zh_CN"/>
   <extend-property name="locale" values="de"/>
+  <extend-property name="locale" values="it"/>
 
   <collapse-property name="locale" values="*"/>
 
