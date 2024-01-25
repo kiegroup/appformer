@@ -135,7 +135,7 @@ Follow these steps in order to update or enable the Keycloak users and group man
 * Add if no present the uberfire-security-management-keycloak-X.Y.Z.jar                             
 * Add keycloak-core-X.Y.Z.Final.jar
 * Add keycloak-common-X.Y.Z.Final.jar
-* Remove any existing provider implementation, if any (ex: uberfire-security-management-wildfly-X.Y.Z.jar, remove uberfire-security-management-tomcat-X.Y.Z.jar,etc)                   
+* Remove any existing provider implementation, if any (ex: uberfire-security-management-wildfly-X.Y.Z.jar, etc)                   
 
 2.- Replace the whole content for file `WEB-INF/classes/security-management.properties`, if not present, create it:                    
 
