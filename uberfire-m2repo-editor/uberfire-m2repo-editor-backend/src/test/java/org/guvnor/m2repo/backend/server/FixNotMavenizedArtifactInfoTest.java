@@ -61,7 +61,7 @@ public class FixNotMavenizedArtifactInfoTest {
         final String pomResult = fixNotMavenizedArtifactInfo.buildPom(gav);
         assertThat(pomResult).isEqualTo("<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
                                                 "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                                                "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" +
+                                                "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n" +
                                                 "\n" +
                                                 "  <modelVersion>4.0.0</modelVersion>\n" +
                                                 "  <groupId>junit</groupId>\n" +
