@@ -40,7 +40,7 @@
     <!-- GWT & Errai Bean Validation (JSR303) required artifacts. -->
 
     <dependency>
-      <groupId>com.google.gwt</groupId>
+      <groupId>org.gwtproject</groupId>
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
     </dependency>
