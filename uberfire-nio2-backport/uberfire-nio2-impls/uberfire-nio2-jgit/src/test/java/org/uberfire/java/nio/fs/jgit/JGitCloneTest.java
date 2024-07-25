@@ -28,18 +28,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Set;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.hooks.PostCommitHook;
 import org.eclipse.jgit.hooks.PreCommitHook;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.StoredConfig;
-import org.eclipse.jgit.storage.file.FileBasedConfig;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.junit.Test;
-import org.uberfire.commons.config.ConfigProperties;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.commands.Clone;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
@@ -69,7 +66,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                      false,
                                      null,
                                      CredentialsProvider.getDefault(),
-                                     null,
                                      null,
                                      true).execute().get();
 
@@ -101,7 +97,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                      null,
                                      CredentialsProvider.getDefault(),
                                      null,
-                                     null,
                                      true).execute().get();
 
         assertThat(cloned).isNotNull();
@@ -115,7 +110,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                            false,
                                            null,
                                            CredentialsProvider.getDefault(),
-                                           null,
                                            null,
                                            true).execute().get())
                 .isInstanceOf(Clone.CloneException.class);
@@ -144,7 +138,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                      false,
                                      null,
                                      CredentialsProvider.getDefault(),
-                                     null,
                                      hooksDir,
                                      true).execute().get();
 
@@ -223,7 +216,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                               null,
                                               CredentialsProvider.getDefault(),
                                               null,
-                                              null,
                                               sslVerify).execute().get();
 
         assertThat(clonedNotMirror).isNotNull();
@@ -259,7 +251,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                            isMirror,
                                            null,
                                            CredentialsProvider.getDefault(),
-                                           null,
                                            null,
                                            sslVerify).execute().get();
 
@@ -311,7 +302,6 @@ public class JGitCloneTest extends AbstractTestInfra {
                                            false,
                                            asList("main", "dev"),
                                            CredentialsProvider.getDefault(),
-                                           null,
                                            null,
                                            false).execute().get();
 

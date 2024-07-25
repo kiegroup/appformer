@@ -40,6 +40,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.uberfire.java.nio.fs.jgit.util.GitImpl.MAIN_BRANCH;
 
 public class JGitFileSystemImplTest extends AbstractTestInfra {
 
@@ -78,7 +79,7 @@ public class JGitFileSystemImplTest extends AbstractTestInfra {
         final JGitFileSystemProvider fsProvider = mock(JGitFileSystemProvider.class);
 
         final File tempDir = createTempDirectory();
-        final Git git = new GitImpl(GitImpl._cloneRepository().setNoCheckout(false).setBare(true).setCloneAllBranches(true).setURI(setupGit().getRepository().getDirectory().toString()).setDirectory(tempDir).call());
+        final Git git = new GitImpl(GitImpl._cloneRepository().setNoCheckout(false).setBare(true).setCloneAllBranches(true).setURI(setupGit().getRepository().getDirectory().toString()).setDirectory(tempDir).setBranch(MAIN_BRANCH).call());
 
         final JGitFileSystemImpl fileSystem = new JGitFileSystemImpl(fsProvider,
                                                                      null,

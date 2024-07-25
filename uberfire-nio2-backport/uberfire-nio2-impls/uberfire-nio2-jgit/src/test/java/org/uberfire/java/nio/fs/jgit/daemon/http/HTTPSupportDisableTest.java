@@ -5,10 +5,8 @@ import java.util.Map;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletRegistration;
 
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.uberfire.java.nio.fs.jgit.AbstractTestInfra;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProvider;
 import org.uberfire.java.nio.fs.jgit.JGitFileSystemProviderConfiguration;

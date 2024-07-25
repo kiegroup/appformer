@@ -41,7 +41,6 @@ public class JGitFileSystemProviderConfiguration {
 
     public static final String GIT_NIO_DIR = "org.uberfire.nio.git.dir";
     public static final String GIT_NIO_DIR_NAME = "org.uberfire.nio.git.dirname";
-    public static final String ENABLE_GIT_KETCH = "org.uberfire.nio.git.ketch";
     public static final String HOOK_DIR = "org.uberfire.nio.git.hooks";
 
     public static final String GIT_HTTP_HOST = "org.uberfire.nio.git.http.host";
@@ -149,7 +148,6 @@ public class JGitFileSystemProviderConfiguration {
 
     private File hookDir;
 
-    boolean enableKetch = false;
     private String proxyType;
     private boolean sshOverHttpProxy;
     private String httpProxyHost;
@@ -177,8 +175,6 @@ public class JGitFileSystemProviderConfiguration {
         LOG.debug("Configuring from properties:");
 
         final String currentDirectory = System.getProperty(USER_DIR);
-        final ConfigProperties.ConfigProperty enableKetchProp = systemConfig.get(ENABLE_GIT_KETCH,
-                                                                                 DEFAULT_ENABLE_GIT_KETCH);
         final ConfigProperties.ConfigProperty hookDirProp = systemConfig.get(HOOK_DIR,
                                                                              null);
         final ConfigProperties.ConfigProperty bareReposDirProp = systemConfig.get(GIT_NIO_DIR,
@@ -292,10 +288,6 @@ public class JGitFileSystemProviderConfiguration {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug(systemConfig.getConfigurationSummary("Summary of JGit configuration:"));
-        }
-
-        if (enableKetchProp != null && enableKetchProp.getValue() != null) {
-            enableKetch = enableKetchProp.getBooleanValue();
         }
 
         if (hookDirProp != null && hookDirProp.getValue() != null) {
@@ -453,10 +445,6 @@ public class JGitFileSystemProviderConfiguration {
 
     public File getHookDir() {
         return hookDir;
-    }
-
-    public boolean isEnableKetch() {
-        return enableKetch;
     }
 
     public String getProxyType() {

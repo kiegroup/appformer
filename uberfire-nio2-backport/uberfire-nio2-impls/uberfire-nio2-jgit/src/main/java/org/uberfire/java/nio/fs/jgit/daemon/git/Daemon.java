@@ -32,7 +32,6 @@ import java.util.zip.Deflater;
 
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.internal.JGitText;
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.pack.PackConfig;
 import org.eclipse.jgit.transport.ServiceMayNotContinueException;
@@ -76,15 +75,6 @@ public class Daemon {
 
     private final Executor acceptThreadPool;
 
-    public Daemon(final InetSocketAddress addr,
-                  final Executor acceptThreadPool,
-                  final ExecutorService executorService) {
-        this(addr,
-             acceptThreadPool,
-             executorService,
-             null);
-    }
-
     /**
      * Configures a new daemon for the specified network address. The daemon will not attempt to bind to an address or
      * accept connections until a call to {@link #start()}.
@@ -95,8 +85,7 @@ public class Daemon {
      */
     public Daemon(final InetSocketAddress addr,
                   final Executor acceptThreadPool,
-                  final ExecutorService executorService,
-                  final KetchLeaderCache leaders) {
+                  final ExecutorService executorService) {
         myAddress = addr;
         this.acceptThreadPool = checkNotNull("acceptThreadPool",
                                              acceptThreadPool);

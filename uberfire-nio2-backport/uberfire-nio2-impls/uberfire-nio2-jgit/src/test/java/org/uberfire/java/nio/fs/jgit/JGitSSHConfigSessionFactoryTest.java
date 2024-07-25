@@ -6,7 +6,7 @@ import java.util.HashMap;
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
-import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.ssh.jsch.OpenSshConfig;
 import org.junit.Test;
 import org.uberfire.commons.config.ConfigProperties;
 

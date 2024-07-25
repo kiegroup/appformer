@@ -36,7 +36,6 @@ import org.uberfire.java.nio.fs.jgit.util.commands.ListRefs;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class JGitMirrorTest extends AbstractTestInfra {
 
@@ -54,7 +53,6 @@ public class JGitMirrorTest extends AbstractTestInfra {
                   true,
                   null,
                   CredentialsProvider.getDefault(),
-                  null,
                   null).execute();
 
         final Git cloned = Git.open(directory);
@@ -89,7 +87,6 @@ public class JGitMirrorTest extends AbstractTestInfra {
                   false,
                   null,
                   CredentialsProvider.getDefault(),
-                  null,
                   null).execute();
 
         final Git cloned = Git.open(directory);
@@ -131,7 +128,6 @@ public class JGitMirrorTest extends AbstractTestInfra {
                   false,
                   null,
                   null,
-                  null,
                   null).execute();
 
         final Git cloned = Git.open(directory);
@@ -163,7 +159,6 @@ public class JGitMirrorTest extends AbstractTestInfra {
                       false,
                       null,
                       CredentialsProvider.getDefault(),
-                      null,
                       null).execute();
             fail("If got here the test is wrong because the ORIGIN does no exist");
         } catch (Clone.CloneException ex) {

@@ -18,7 +18,6 @@ package org.uberfire.java.nio.fs.jgit.util.commands;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.internal.storage.reftree.RefTreeDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.fs.jgit.util.GitImpl;
@@ -35,9 +34,7 @@ public class GarbageCollector {
 
     public void execute() {
         try {
-            if (!(git.getRepository().getRefDatabase() instanceof RefTreeDatabase)) {
-                git._gc().call();
-            }
+            git._gc().call();
         } catch (GitAPIException | JGitInternalException e) {
             if (this.logger.isDebugEnabled()) {
                 this.logger.error("Garbage collector can't perform this operation right now, please try it later.",

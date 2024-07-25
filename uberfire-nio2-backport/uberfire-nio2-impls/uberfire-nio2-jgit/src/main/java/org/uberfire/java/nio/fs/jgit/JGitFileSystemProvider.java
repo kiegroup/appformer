@@ -53,8 +53,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
-import org.eclipse.jgit.internal.ketch.KetchSystem;
 import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -140,14 +138,7 @@ import org.uberfire.java.nio.fs.jgit.util.GitHookSupport;
 import org.uberfire.java.nio.fs.jgit.util.ProxyAuthenticator;
 import org.uberfire.java.nio.fs.jgit.util.commands.Clone;
 import org.uberfire.java.nio.fs.jgit.util.commands.PathUtil;
-import org.uberfire.java.nio.fs.jgit.util.model.CommitContent;
-import org.uberfire.java.nio.fs.jgit.util.model.CommitInfo;
-import org.uberfire.java.nio.fs.jgit.util.model.CopyCommitContent;
-import org.uberfire.java.nio.fs.jgit.util.model.DefaultCommitContent;
-import org.uberfire.java.nio.fs.jgit.util.model.MoveCommitContent;
-import org.uberfire.java.nio.fs.jgit.util.model.PathInfo;
-import org.uberfire.java.nio.fs.jgit.util.model.PathType;
-import org.uberfire.java.nio.fs.jgit.util.model.RevertCommitContent;
+import org.uberfire.java.nio.fs.jgit.util.model.*;
 import org.uberfire.java.nio.fs.jgit.ws.JGitFileSystemsEventsManager;
 import org.uberfire.java.nio.fs.jgit.ws.JGitWatchEvent;
 import org.uberfire.java.nio.security.FileSystemAuthorizer;
@@ -185,8 +176,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
     private static final Logger LOG = LoggerFactory.getLogger(JGitFileSystemProvider.class);
     private static final TimeUnit LOCK_LAST_ACCESS_TIME_UNIT = TimeUnit.SECONDS;
     private static final long LOCK_LAST_ACCESS_THRESHOLD = 10;
-    final KetchSystem system = new KetchSystem();
-    final KetchLeaderCache leaders = new KetchLeaderCache(system);
     private final Map<String, String> fullHostNames = new HashMap<>();
     private final Object postponedEventsLock = new Object();
     private final ExecutorService executorService;
@@ -511,8 +500,7 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
             daemonService = new Daemon(new InetSocketAddress(config.getDaemonHostAddr(),
                                                              config.getDaemonPort()),
                                        new ExecutorWrapper(executorService),
-                                       executorService,
-                                       config.isEnableKetch() ? leaders : null);
+                                       executorService);
             daemonService.setRepositoryResolver(new RepositoryResolverImpl<>());
             try {
                 daemonService.start();
@@ -632,11 +620,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
             }
         }
 
-        if (config.isEnableKetch()) {
-            createNewGitRepo(env,
-                             fsName).enableKetch();
-        }
-
         if (config.isDaemonEnabled() && daemonService != null && !daemonService.isRunning()) {
             buildAndStartDaemon();
         }
@@ -728,7 +711,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                    fsName,
                                    branches,
                                    credential,
-                                   config.isEnableKetch() ? leaders : null,
                                    config.getHookDir(),
                                    config.isSslVerify());
                 } else if (subdirectory != null) {
@@ -740,7 +722,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                                 subdirectory,
                                                 branches,
                                                 credential,
-                                                leaders,
                                                 config.getHookDir(),
                                                 config.isSslVerify());
                 } else {
@@ -749,7 +730,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
                                     isMirror,
                                     branches,
                                     credential,
-                                    config.isEnableKetch() ? leaders : null,
                                     config.getHookDir(),
                                     config.isSslVerify());
                 }
@@ -760,7 +740,6 @@ public class JGitFileSystemProvider implements SecuredFileSystemProvider,
         } else {
             git = Git.createRepository(repoDest,
                                        config.getHookDir(),
-                                       config.isEnableKetch() ? leaders : null,
                                        config.isSslVerify());
         }
         return git;

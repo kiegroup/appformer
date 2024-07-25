@@ -18,7 +18,6 @@ package org.uberfire.java.nio.fs.jgit.ws;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +34,6 @@ import org.uberfire.java.nio.fs.jgit.ws.cluster.JGitEventsBroadcast;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.uberfire.commons.cluster.ClusterParameters.APPFORMER_JMS_CONNECTION_MODE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JGitFileSystemsEventsManagerTest {

@@ -7,13 +7,14 @@ import com.jcraft.jsch.ProxySOCKS5;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.eclipse.jgit.errors.UnsupportedCredentialItem;
+import org.eclipse.jgit.internal.transport.ssh.jsch.CredentialsProviderUserInfo;
 import org.eclipse.jgit.transport.CredentialItem;
 import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.transport.CredentialsProviderUserInfo;
-import org.eclipse.jgit.transport.OpenSshConfig;
 import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.ssh.jsch.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.ssh.jsch.OpenSshConfig;
 
-public class JGitSSHConfigSessionFactory extends org.eclipse.jgit.transport.JschConfigSessionFactory {
+public class JGitSSHConfigSessionFactory extends JschConfigSessionFactory {
 
     private final JGitFileSystemProviderConfiguration config;
 
