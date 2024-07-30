@@ -17,12 +17,15 @@
 package org.uberfire.ext.metadata.backend.infinispan.provider;
 
 import org.infinispan.client.hotrod.impl.RemoteCacheImpl;
+import org.infinispan.client.hotrod.impl.operations.PingResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -37,12 +40,12 @@ public class InfinispanPingServiceTest {
     private RemoteCacheImpl remoteCache;
 
     @Before
-    public void setUp() {
-        when(remoteCache.ping().isSuccess()).thenReturn(true);
+    public void setUp() throws ExecutionException, InterruptedException {
+        when(((PingResponse) remoteCache.ping().toCompletableFuture().get()).isSuccess()).thenReturn(true);
     }
 
     @Test
-    public void testPingSuccess() {
+    public void testPingSuccess() throws ExecutionException, InterruptedException {
         {
             InfinispanPingService service = spy(new InfinispanPingService(remoteCache));
             assertTrue(service.ping());
@@ -50,7 +53,7 @@ public class InfinispanPingServiceTest {
         }
 
         {
-            when(remoteCache.ping().isSuccess()).thenReturn(false);
+            when(((PingResponse) remoteCache.ping().toCompletableFuture().get()).isSuccess()).thenReturn(false);
             InfinispanPingService service = spy(new InfinispanPingService(remoteCache));
             assertFalse(service.ping());
             service.stop();
