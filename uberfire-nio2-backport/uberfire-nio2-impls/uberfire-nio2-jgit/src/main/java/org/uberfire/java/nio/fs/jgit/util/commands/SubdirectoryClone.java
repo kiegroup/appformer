@@ -43,7 +43,6 @@ import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.UnmergedPathException;
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
 import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.lib.CommitBuilder;
 import org.eclipse.jgit.lib.FileMode;
@@ -79,7 +78,6 @@ public class SubdirectoryClone {
     private final File repoDir;
     private final String origin;
     private final CredentialsProvider credentialsProvider;
-    private final KetchLeaderCache leaders;
     private final File hookDir;
     private final boolean sslVerify;
 
@@ -93,7 +91,6 @@ public class SubdirectoryClone {
      * @param subdirectory The subdirectory within the origin being copied. Must not be null.
      * @param branches The branches that should be copied. Must not be null.
      * @param credentialsProvider Provides credentials for the initial cloning of the origin. May be null.
-     * @param leaders Used for initial cloning. May be null.
      * @param hookDir Used to specify the directory containing the Git Hooks to add to the repository. May be null.
      */
     public SubdirectoryClone(final File directory,
@@ -101,14 +98,12 @@ public class SubdirectoryClone {
                              final String subdirectory,
                              final List<String> branches,
                              final CredentialsProvider credentialsProvider,
-                             final KetchLeaderCache leaders,
                              final File hookDir) {
         this(directory,
              origin,
              subdirectory,
              branches,
              credentialsProvider,
-             leaders,
              hookDir,
              JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
     }
@@ -118,7 +113,6 @@ public class SubdirectoryClone {
      * @param subdirectory The subdirectory within the origin being copied. Must not be null.
      * @param branches The branches that should be copied. Must not be null.
      * @param credentialsProvider Provides credentials for the initial cloning of the origin. May be null.
-     * @param leaders Used for initial cloning. May be null.
      * @param hookDir Used to specify the directory containing the Git Hooks to add to the repository. May be null.
      * @param sslVerify Used to disable http ssl verify on the repository
      */
@@ -127,7 +121,6 @@ public class SubdirectoryClone {
                              final String subdirectory,
                              final List<String> branches,
                              final CredentialsProvider credentialsProvider,
-                             final KetchLeaderCache leaders,
                              final File hookDir,
                              final boolean sslVerify) {
         this.subdirectory = ensureTrailingSlash(subdirectory);
@@ -137,7 +130,6 @@ public class SubdirectoryClone {
         this.origin = checkNotEmpty("origin",
                                     origin);
         this.credentialsProvider = credentialsProvider;
-        this.leaders = leaders;
         this.hookDir = hookDir;
         this.sslVerify = sslVerify;
     }
@@ -151,7 +143,7 @@ public class SubdirectoryClone {
     }
 
     public Git execute() {
-        final Git git = new Clone(repoDir, origin, false, branches, credentialsProvider, leaders, hookDir, sslVerify).execute().get();
+        final Git git = new Clone(repoDir, origin, false, branches, credentialsProvider, hookDir, sslVerify).execute().get();
         final Repository repository = git.getRepository();
 
         try (final ObjectReader reader = repository.newObjectReader();

@@ -24,26 +24,14 @@ import static org.assertj.core.api.Assertions.fail;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.hooks.PostCommitHook;
 import org.eclipse.jgit.hooks.PreCommitHook;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.PersonIdent;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevSort;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.eclipse.jgit.treewalk.TreeWalk;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +102,6 @@ public class JGitForkTest extends AbstractTestInfra {
                  TARGET_GIT,
                  null,
                  CredentialsProvider.getDefault(),
-                 null,
                  null).execute();
 
         final File gitCloned = new File(parentFolder,
@@ -175,7 +162,6 @@ public class JGitForkTest extends AbstractTestInfra {
                  TARGET_GIT,
                  null,
                  CredentialsProvider.getDefault(),
-                 null,
                  null).execute();
     }
 
@@ -189,7 +175,6 @@ public class JGitForkTest extends AbstractTestInfra {
                      TARGET_GIT,
                      null,
                      CredentialsProvider.getDefault(),
-                     null,
                      null).execute();
             fail("If got here is because it could for the repository");
         } catch (Clone.CloneException e) {
@@ -310,7 +295,6 @@ public class JGitForkTest extends AbstractTestInfra {
                  TARGET_GIT,
                  null,
                  CredentialsProvider.getDefault(),
-                 null,
                  hooksDir).execute();
 
         assertThat(cloned).isNotNull();
@@ -373,7 +357,6 @@ public class JGitForkTest extends AbstractTestInfra {
                                      TARGET_GIT,
                                      asList("main", "dev"),
                                      CredentialsProvider.getDefault(),
-                                     null,
                                      null).execute();
 
         assertThat(cloned).isNotNull();

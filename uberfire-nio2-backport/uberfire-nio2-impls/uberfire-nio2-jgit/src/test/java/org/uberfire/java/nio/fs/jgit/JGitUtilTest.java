@@ -131,7 +131,6 @@ public class JGitUtilTest extends AbstractTestInfra {
                                   false,
                                   null,
                                   CredentialsProvider.getDefault(),
-                                  null,
                                   null).execute().get();
 
         assertThat(git).isNotNull();
@@ -183,7 +182,6 @@ public class JGitUtilTest extends AbstractTestInfra {
                                   false,
                                   null,
                                   CredentialsProvider.getDefault(),
-                                  null,
                                   null).execute().get();
 
         assertThat(git.getPathInfo("user_branch",
@@ -236,7 +234,6 @@ public class JGitUtilTest extends AbstractTestInfra {
                                   false,
                                   null,
                                   CredentialsProvider.getDefault(),
-                                  null,
                                   null).execute().get();
 
         assertThat(git.getPathInfo("main",

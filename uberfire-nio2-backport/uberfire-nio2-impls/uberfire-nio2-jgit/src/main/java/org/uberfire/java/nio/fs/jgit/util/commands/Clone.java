@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
 import org.eclipse.jgit.internal.storage.file.WindowCache;
 import org.eclipse.jgit.storage.file.WindowCacheConfig;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -46,24 +45,22 @@ public class Clone {
     private final List<String> branches;
     private final CredentialsProvider credentialsProvider;
     private final boolean isMirror;
-    private final KetchLeaderCache leaders;
     private final File hookDir;
     private final boolean sslVerify;
 
     private Logger logger = LoggerFactory.getLogger(Clone.class);
+
     public Clone(final File directory,
                  final String origin,
                  final boolean isMirror,
                  final List<String> branches,
                  final CredentialsProvider credentialsProvider,
-                 final KetchLeaderCache leaders,
                  final File hookDir) {
         this(directory,
              origin,
              isMirror,
              branches,
              credentialsProvider,
-             leaders,
              hookDir,
              JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
     }
@@ -73,7 +70,6 @@ public class Clone {
                  final boolean isMirror,
                  final List<String> branches,
                  final CredentialsProvider credentialsProvider,
-                 final KetchLeaderCache leaders,
                  final File hookDir,
                  final boolean sslVerify) {
         this.repoDir = checkNotNull("directory",
@@ -83,7 +79,6 @@ public class Clone {
         this.isMirror = isMirror;
         this.branches = branches;
         this.credentialsProvider = credentialsProvider;
-        this.leaders = leaders;
         this.hookDir = hookDir;
         this.sslVerify = sslVerify;
     }
@@ -117,11 +112,6 @@ public class Clone {
                           refSpecList);
 
                 git.syncRemote(remote);
-
-                if (git.isKetchEnabled()) {
-                    git.convertRefTree();
-                    git.updateLeaders(leaders);
-                }
 
                 git.setHeadAsInitialized();
 

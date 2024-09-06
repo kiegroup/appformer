@@ -40,9 +40,6 @@ import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.internal.ketch.KetchLeader;
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
-import org.eclipse.jgit.internal.storage.reftree.RefTreeDatabase;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -62,7 +59,6 @@ import org.uberfire.java.nio.fs.jgit.util.commands.BlobAsInputStream;
 import org.uberfire.java.nio.fs.jgit.util.commands.CherryPick;
 import org.uberfire.java.nio.fs.jgit.util.commands.Commit;
 import org.uberfire.java.nio.fs.jgit.util.commands.ConflictBranchesChecker;
-import org.uberfire.java.nio.fs.jgit.util.commands.ConvertRefTree;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.DeleteBranch;
 import org.uberfire.java.nio.fs.jgit.util.commands.DiffBranches;
@@ -82,7 +78,6 @@ import org.uberfire.java.nio.fs.jgit.util.commands.ListRefs;
 import org.uberfire.java.nio.fs.jgit.util.commands.MapDiffContent;
 import org.uberfire.java.nio.fs.jgit.util.commands.Merge;
 import org.uberfire.java.nio.fs.jgit.util.commands.Push;
-import org.uberfire.java.nio.fs.jgit.util.commands.RefTreeUpdateCommand;
 import org.uberfire.java.nio.fs.jgit.util.commands.RemoveRemote;
 import org.uberfire.java.nio.fs.jgit.util.commands.ResolveObjectIds;
 import org.uberfire.java.nio.fs.jgit.util.commands.ResolveRevCommit;
@@ -105,9 +100,7 @@ public class GitImpl implements Git {
     private static final String DEFAULT_JGIT_RETRY_SLEEP_TIME = "50";
     private static int JGIT_RETRY_TIMES = initRetryValue();
     private static final int JGIT_RETRY_SLEEP_TIME = initSleepTime();
-    private static final String MAIN_BRANCH = "master";
-    private boolean isEnabled = false;
-
+    public static final String MAIN_BRANCH = "master";
     private static int initSleepTime() {
         final ConfigProperties config = new ConfigProperties(System.getProperties());
         return config.get("org.uberfire.nio.git.retry.onfail.sleep",
@@ -133,28 +126,10 @@ public class GitImpl implements Git {
     }
 
     private org.eclipse.jgit.api.Git git;
-    private KetchLeaderCache leaders;
     private final AtomicBoolean isHeadInitialized = new AtomicBoolean(false);
 
     public GitImpl(final org.eclipse.jgit.api.Git git) {
-        this(git,
-             null);
-    }
-
-    public GitImpl(final org.eclipse.jgit.api.Git git,
-                   final KetchLeaderCache leaders) {
         this.git = git;
-        this.leaders = leaders;
-    }
-
-    @Override
-    public void convertRefTree() {
-        try {
-            new ConvertRefTree(this).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -546,44 +521,14 @@ public class GitImpl implements Git {
     public void refUpdate(final String branch,
                           final RevCommit commit)
             throws IOException, ConcurrentRefUpdateException {
-        if (getRepository().getRefDatabase() instanceof RefTreeDatabase) {
-            new RefTreeUpdateCommand(this,
-                                     branch,
-                                     commit).execute();
-        } else {
             new SimpleRefUpdateCommand(this,
                                        branch,
                                        commit).execute();
-        }
-    }
-
-    @Override
-    public KetchLeader getKetchLeader() {
-        try {
-            return leaders.get(getRepository());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public boolean isKetchEnabled() {
-        return isEnabled;
-    }
-
-    @Override
-    public void enableKetch() {
-        isEnabled = true;
     }
 
     @Override
     public void updateRepo(final Repository repo) {
         this.git = new org.eclipse.jgit.api.Git(repo);
-    }
-
-    @Override
-    public void updateLeaders(final KetchLeaderCache leaders) {
-        this.leaders = leaders;
     }
 
     @Override

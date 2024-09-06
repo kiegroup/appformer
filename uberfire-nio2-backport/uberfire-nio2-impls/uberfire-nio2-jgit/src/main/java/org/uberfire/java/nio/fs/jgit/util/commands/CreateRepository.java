@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -35,7 +34,6 @@ public class CreateRepository {
 
     private final File repoDir;
     private final File hookDir;
-    private final KetchLeaderCache leaders;
     private final boolean sslVerify;
 
     private static final List<String> HOOK_IGNORED = Arrays.asList("system",
@@ -46,14 +44,12 @@ public class CreateRepository {
     public CreateRepository(final File repoDir) {
         this(repoDir,
              null,
-             null,
              JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
     }
 
     public CreateRepository(final File repoDir,
                             final boolean sslVerify) {
         this(repoDir,
-             null,
              null,
              sslVerify);
     }
@@ -62,35 +58,14 @@ public class CreateRepository {
                             final File hookDir) {
         this(repoDir,
              hookDir,
-             null,
              JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
     }
 
     public CreateRepository(final File repoDir,
                             final File hookDir,
-                            final boolean sslVerify) {
-        this(repoDir,
-             hookDir,
-             null,
-             sslVerify);
-    }
-
-    public CreateRepository(final File repoDir,
-                            final File hookDir,
-                            final KetchLeaderCache leaders) {
-        this(repoDir,
-             hookDir,
-             leaders,
-             JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
-    }
-
-    public CreateRepository(final File repoDir,
-                            final File hookDir,
-                            final KetchLeaderCache leaders,
                             final boolean sslVerify) {
         this.repoDir = repoDir;
         this.hookDir = hookDir;
-        this.leaders = leaders;
         this.sslVerify = sslVerify;
     }
 
@@ -98,20 +73,6 @@ public class CreateRepository {
         try {
             boolean newRepository = !repoDir.exists();
             final org.eclipse.jgit.api.Git _git = org.eclipse.jgit.api.Git.init().setBare(true).setDirectory(repoDir).call();
-
-            if (leaders != null) {
-                new WriteConfiguration(_git.getRepository(),
-                                       cfg -> {
-                                           cfg.setInt("core",
-                                                      null,
-                                                      "repositoryformatversion",
-                                                      1);
-                                           cfg.setString("extensions",
-                                                         null,
-                                                         "refsStorage",
-                                                         "reftree");
-                                       }).execute();
-            }
 
             final Repository repo = new FileRepositoryBuilder()
                     .setGitDir(repoDir)
@@ -139,8 +100,7 @@ public class CreateRepository {
                 }
             }
 
-            return Optional.of(new GitImpl(git,
-                                           leaders));
+            return Optional.of(new GitImpl(git));
         } catch (final Exception ex) {
             throw new IOException(ex);
         }

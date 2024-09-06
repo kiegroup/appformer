@@ -66,7 +66,7 @@ public class CustomDiffCommand extends GitCommand<List<DiffEntry>> {
     private ProgressMonitor monitor = NullProgressMonitor.INSTANCE;
 
     /**
-     * @param repo
+     * @param git
      */
     protected CustomDiffCommand(Git git) {
         super(git.getRepository());

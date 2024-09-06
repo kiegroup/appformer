@@ -28,8 +28,6 @@ import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.internal.ketch.KetchLeader;
-import org.eclipse.jgit.internal.ketch.KetchLeaderCache;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -67,37 +65,16 @@ public interface Git {
 
     static Git createRepository(final File repoDir,
                                 final File hookDir) {
-        return createRepository(repoDir,
-                                hookDir,
-                                null,
-                                JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY);
-    }
-
-    static Git createRepository(final File repoDir,
-                                final File hookDir,
-                                final boolean sslVerify) {
-        return createRepository(repoDir,
-                                hookDir,
-                                null,
-                                sslVerify);
-    }
-
-    static Git createRepository(final File repoDir,
-                                final File hookDir,
-                                final KetchLeaderCache leaders) {
         return new CreateRepository(repoDir,
                                     hookDir,
-                                    leaders,
                                     JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY).execute().get();
     }
 
     static Git createRepository(final File repoDir,
                                 final File hookDir,
-                                final KetchLeaderCache leaders,
                                 final boolean sslVerify) {
         return new CreateRepository(repoDir,
                                     hookDir,
-                                    leaders,
                                     sslVerify).execute().get();
     }
 
@@ -106,14 +83,12 @@ public interface Git {
                     final String name,
                     final List<String> branches,
                     final CredentialsProvider credential,
-                    final KetchLeaderCache leaders,
                     final File hookDir) {
         return new Fork(gitRepoContainerDir,
                         origin,
                         name,
                         branches,
                         credential,
-                        leaders,
                         hookDir,
                         JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY).execute();
     }
@@ -123,7 +98,6 @@ public interface Git {
                     final String name,
                     final List<String> branches,
                     final CredentialsProvider credential,
-                    final KetchLeaderCache leaders,
                     final File hookDir,
                     final boolean sslVerify) {
         return new Fork(gitRepoContainerDir,
@@ -131,7 +105,6 @@ public interface Git {
                         name,
                         branches,
                         credential,
-                        leaders,
                         hookDir,
                         sslVerify).execute();
     }
@@ -141,14 +114,12 @@ public interface Git {
                      final boolean isMirror,
                      final List<String> branches,
                      final CredentialsProvider credential,
-                     final KetchLeaderCache leaders,
                      final File hookDir) {
         return new Clone(repoDest,
                          origin,
                          isMirror,
                          branches,
                          credential,
-                         leaders,
                          hookDir,
                          JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY).execute().get();
     }
@@ -158,7 +129,6 @@ public interface Git {
                      final boolean isMirror,
                      final List<String> branches,
                      final CredentialsProvider credential,
-                     final KetchLeaderCache leaders,
                      final File hookDir,
                      final boolean sslVerify) {
         return new Clone(repoDest,
@@ -166,7 +136,6 @@ public interface Git {
                          isMirror,
                          branches,
                          credential,
-                         leaders,
                          hookDir,
                          sslVerify).execute().get();
     }
@@ -176,14 +145,12 @@ public interface Git {
                                  final String subdirectory,
                                  final List<String> branches,
                                  final CredentialsProvider credential,
-                                 final KetchLeaderCache leaders,
                                  final File hookDir) {
         return new SubdirectoryClone(repoDest,
                                      origin,
                                      subdirectory,
                                      branches,
                                      credential,
-                                     leaders,
                                      hookDir,
                                      JGitFileSystemProviderConfiguration.DEFAULT_GIT_HTTP_SSL_VERIFY).execute();
     }
@@ -193,7 +160,6 @@ public interface Git {
                                  final String subdirectory,
                                  final List<String> branches,
                                  final CredentialsProvider credential,
-                                 final KetchLeaderCache leaders,
                                  final File hookDir,
                                  final boolean sslVerify) {
         return new SubdirectoryClone(repoDest,
@@ -201,12 +167,9 @@ public interface Git {
                                      subdirectory,
                                      branches,
                                      credential,
-                                     leaders,
                                      hookDir,
                                      sslVerify).execute();
     }
-
-    void convertRefTree();
 
     void deleteRef(final Ref ref);
 
@@ -337,15 +300,7 @@ public interface Git {
     void refUpdate(final String branch,
                    final RevCommit commit) throws IOException, ConcurrentRefUpdateException;
 
-    KetchLeader getKetchLeader();
-
-    boolean isKetchEnabled();
-
-    void enableKetch();
-
     void updateRepo(Repository repo);
-
-    void updateLeaders(final KetchLeaderCache leaders);
 
     void removeRemote(String remote,
                       String ref);

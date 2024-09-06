@@ -41,7 +41,6 @@ import org.eclipse.jgit.lib.FileMode;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectInserter;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
@@ -52,7 +51,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.junit.Test;
 import org.uberfire.java.nio.fs.jgit.util.Git;
 import org.uberfire.java.nio.fs.jgit.util.commands.CreateRepository;
-import org.uberfire.java.nio.fs.jgit.util.commands.ListRefs;
 import org.uberfire.java.nio.fs.jgit.util.commands.SubdirectoryClone;
 
 public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
@@ -80,7 +78,6 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                                  "dir1",
                                                  singletonList("main"),
                                                  CredentialsProvider.getDefault(),
-                                                 null,
                                                  null).execute();
 
         assertThat(origin.getRepository().getRemoteNames()).isEmpty();
@@ -133,7 +130,6 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                                  "dir1",
                                                  asList("main", "dev"),
                                                  CredentialsProvider.getDefault(),
-                                                 null,
                                                  null).execute();
 
         assertThat(cloned).isNotNull();
@@ -204,7 +200,6 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                                  "dir1",
                                                  asList("main", "dev"),
                                                  CredentialsProvider.getDefault(),
-                                                 null,
                                                  null).execute();
 
         assertThat(cloned).isNotNull();
@@ -268,7 +263,6 @@ public class JGitSubdirectoryCloneTest extends AbstractTestInfra {
                                                  "dir1",
                                                  singletonList("main"),
                                                  CredentialsProvider.getDefault(),
-                                                 null,
                                                  hooksDir).execute();
 
         assertThat(origin.getRepository().getRemoteNames()).isEmpty();
