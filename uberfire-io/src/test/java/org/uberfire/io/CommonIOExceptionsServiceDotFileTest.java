@@ -82,7 +82,7 @@ public abstract class CommonIOExceptionsServiceDotFileTest extends CommonIOServi
         ioService().createDirectory(path);
     }
 
-    @Test(expected = FileAlreadyExistsException.class)
+    @Test(expected = org.uberfire.java.nio.IOException.class)
     public void createDirectoriesFileAlreadyExistsException() {
         final Path path = getDirectoryPath().resolveSibling("otherDir").resolve("innerDir");
 
