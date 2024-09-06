@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.client.hotrod.impl.RemoteCacheImpl;
+import org.infinispan.client.hotrod.impl.operations.PingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public class InfinispanPingService {
         this.executor.submit(() -> {
             while (!stop) {
                 try {
-                    this.alive = remoteCache.ping().isSuccess();
+                    this.alive = ((PingResponse) remoteCache.ping().toCompletableFuture().get()).isSuccess();
                 } catch (Exception e) {
                     if (logger.isDebugEnabled()) {
                         logger.error("Infinispan server is not started");

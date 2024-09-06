@@ -35,6 +35,7 @@ import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.configuration.SaslQop;
 import org.infinispan.client.hotrod.exceptions.HotRodClientException;
 import org.infinispan.client.hotrod.impl.RemoteCacheImpl;
+import org.infinispan.client.hotrod.impl.operations.PingResponse;
 import org.infinispan.client.hotrod.marshall.ProtoStreamMarshaller;
 import org.infinispan.commons.CacheConfigurationException;
 import org.infinispan.protostream.BaseMarshaller;
@@ -390,7 +391,7 @@ public class InfinispanContext implements Disposable {
         RemoteCacheImpl remoteCache = (RemoteCacheImpl) this.cacheManager.getCache();
 
         try {
-            boolean isStarted = remoteCache.ping().isSuccess();
+            boolean isStarted = ((PingResponse) remoteCache.ping().toCompletableFuture().get()).isSuccess();
             if (logger.isDebugEnabled()) {
                 logger.debug("Infinispan server is not started");
             }
