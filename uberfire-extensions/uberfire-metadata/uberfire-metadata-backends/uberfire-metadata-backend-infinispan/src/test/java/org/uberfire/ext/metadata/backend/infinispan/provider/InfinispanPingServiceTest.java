@@ -25,27 +25,30 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InfinispanPingServiceTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private RemoteCacheImpl remoteCache;
+    private RemoteCacheImpl<?,?> remoteCache;
+
+    @Mock
+    PingResponse pingResponse;
 
     @Before
-    public void setUp() throws ExecutionException, InterruptedException {
-        when(((PingResponse) remoteCache.ping().toCompletableFuture().get()).isSuccess()).thenReturn(true);
+    public void setUp() {
+        when(pingResponse.isSuccess()).thenReturn(true);
+        when(remoteCache.ping().toCompletableFuture()).thenReturn(CompletableFuture.completedFuture(pingResponse));
     }
 
     @Test
-    public void testPingSuccess() throws ExecutionException, InterruptedException {
+    public void testPingSuccess() {
         {
             InfinispanPingService service = spy(new InfinispanPingService(remoteCache));
             assertTrue(service.ping());
@@ -53,7 +56,7 @@ public class InfinispanPingServiceTest {
         }
 
         {
-            when(((PingResponse) remoteCache.ping().toCompletableFuture().get()).isSuccess()).thenReturn(false);
+            when(pingResponse.isSuccess()).thenReturn(false);
             InfinispanPingService service = spy(new InfinispanPingService(remoteCache));
             assertFalse(service.ping());
             service.stop();
