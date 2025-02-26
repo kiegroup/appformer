@@ -106,10 +106,10 @@
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
       <exclusions>
-          <exclusion>
-              <groupId>com.sun.activation</groupId>
-              <artifactId>jakarta.activation</artifactId>
-          </exclusion>
+        <exclusion>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
