@@ -52,6 +52,7 @@ public class InfinispanPingServiceTest {
     public void testPingSuccess() {
         {
             InfinispanPingService service = spy(new InfinispanPingService(remoteCache));
+            when(pingResponse.isSuccess()).thenReturn(true);
             assertTrue(service.ping());
             service.stop();
         }
