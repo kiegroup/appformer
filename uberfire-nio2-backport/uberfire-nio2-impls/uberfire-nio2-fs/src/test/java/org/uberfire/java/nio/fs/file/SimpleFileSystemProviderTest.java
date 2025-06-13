@@ -594,7 +594,7 @@ public class SimpleFileSystemProviderTest {
         assertThat(path.toFile()).doesNotExist();
     }
 
-    @Test(expected = org.uberfire.java.nio.IOException.class)
+    @Test
     public void checkDeleteIfExistsNonExistent() {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 

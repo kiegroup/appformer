@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uberfire.java.nio.IOException;
 import org.uberfire.java.nio.base.BasicFileAttributesImpl;
 import org.uberfire.java.nio.base.ExtendedAttributeView;
@@ -73,8 +75,10 @@ import static org.uberfire.java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 
 public class SimpleFileSystemProvider implements FileSystemProvider {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleFileSystemProvider.class);
     private static final String STREAM_CLOSED = "This stream is closed.";
     private static final String USER_DIR = "user.dir";
+
     protected BaseSimpleFileSystem fileSystem;
     private final OSType osType;
     private final File[] roots;
@@ -419,7 +423,7 @@ public class SimpleFileSystemProvider implements FileSystemProvider {
     @Override
     public boolean deleteIfExists(final Path path,
                                   final DeleteOption... options)
-            throws DirectoryNotEmptyException, IOException, SecurityException {
+            throws IOException, SecurityException {
         checkNotNull("path",
                      path);
         synchronized (this) {
@@ -430,16 +434,18 @@ public class SimpleFileSystemProvider implements FileSystemProvider {
                     throw new DirectoryNotEmptyException(path.toString());
                 }
 
-                final boolean result = file.exists();
+                boolean fileRemoved = file.exists();
 
-                try {
-                    FileUtils.forceDelete(file);
-                } catch (final FileNotFoundException ignore) {
-                } catch (java.io.IOException e) {
-                    throw new IOException(e);
+                if (file.exists()) {
+                    try {
+                        FileUtils.forceDelete(file);
+                    } catch (java.io.IOException e) {
+                        fileRemoved = false;
+                        LOGGER.error("Error trying to delete file {}", file.getAbsolutePath(), e);
+                    }
                 }
 
-                return result;
+                return fileRemoved;
             } finally {
                 toGeneralPathImpl(path).clearCache();
             }
