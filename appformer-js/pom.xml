@@ -10,6 +10,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <!-- Just some comment that changes nothing just to force fdb -->
+
     <packaging>jar</packaging>
     <artifactId>appformer-js</artifactId>
     <version>7.67.2-SNAPSHOT</version>
