@@ -51,7 +51,7 @@ So the following JAXRS, RestEasy and Keycloak dependencies must be present in th
    
        <dependency>
          <groupId>org.jboss.resteasy</groupId>
-         <artifactId>resteasy-jackson-provider</artifactId>
+         <artifactId>resteasy-jackson2-provider</artifactId>
          <version>...</version>
        </dependency>
 
@@ -160,7 +160,7 @@ Note: Use the concrete values for your environment.
      
         <dependencies>
             ...
-            <module name="org.jboss.resteasy.resteasy-jackson-provider" services="import"/>
+            <module name="org.jboss.resteasy.resteasy-jackson2-provider" services="import"/>
             ...
         </dependencies>
      
