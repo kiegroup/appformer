@@ -50,7 +50,7 @@ export class JavaWrapperUtils {
 
   public static isJavaType(fqcn: string): boolean {
     for (const type in JavaType) {
-      if (JavaType[type] === fqcn) {
+      if (JavaType[type as keyof typeof JavaType] === fqcn) {
         return true;
       }
     }

@@ -54,8 +54,8 @@ function searchChildren(args: {
   const stack = [root];
   stack.push(root);
 
-  const accepted = new Set();
-  const visited = new Set();
+  const accepted = new Set<HTMLElement>();
+  const visited = new Set<HTMLElement>();
 
   while (stack.length > 0) {
     node = stack.pop()!;

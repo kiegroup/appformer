@@ -76,7 +76,7 @@ export function render(element: Element, container: HTMLElement, callback = (): 
   singleton!.render(element, container, callback);
 }
 
-export function fireEvent<T>(obj: Portable<T>) {
+export function fireEvent<T extends Portable<T>>(obj: Portable<T>) {
   singleton!.fireEvent(marshall(obj) as any);
 }
 

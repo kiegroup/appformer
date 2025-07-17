@@ -1409,7 +1409,7 @@ describe("unmarshall", () => {
       const marshalledInput = marshaller.marshall(input, new MarshallingContext())!;
 
       // remove its fqcn
-      delete marshalledInput[ErraiObjectConstants.ENCODED_TYPE];
+      delete (marshalledInput as any)[ErraiObjectConstants.ENCODED_TYPE];
 
       expect(() => marshaller.unmarshall(marshalledInput, unmarshallContext)).toThrowError();
     });

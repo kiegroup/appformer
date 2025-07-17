@@ -25,7 +25,7 @@ import { ErraiObjectConstants } from "./model/ErraiObjectConstants";
  * @param obj
  */
 
-export function marshall<T>(obj: Portable<T>): string | null {
+export function marshall<T extends Portable<T>>(obj: Portable<T>): string | null {
   if (obj === null || obj === undefined) {
     return null;
   }
@@ -42,7 +42,7 @@ export function marshall<T>(obj: Portable<T>): string | null {
  * @param oracle
  * A map containing fqcns as keys and a function returning an empty Portable<T> associated with that fqcn.
  */
-export function unmarshall<T>(json: string, oracle: Map<string, () => Portable<any>>): Portable<T> | null | void {
+export function unmarshall<T extends Portable<T>>(json: string, oracle: Map<string, () => Portable<any>>): Portable<T> | null | void {
   if (json === null || json === undefined) {
     return undefined;
   }
