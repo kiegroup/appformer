@@ -111,6 +111,16 @@
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-security-server</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.deltaspike.core</groupId>
+          <artifactId>deltaspike-core-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.deltaspike.core</groupId>
+          <artifactId>deltaspike-core-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
