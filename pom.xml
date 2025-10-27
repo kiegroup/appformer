@@ -108,6 +108,8 @@
     <version.org.jboss.marshalling.api>1.2.3.GA</version.org.jboss.marshalling.api>
     <!-- Version 2.0.1.Final which is coming from kie-parent is not compatible with dashbuilder-validator module -->
     <version.javax.validation>1.0.0.GA</version.javax.validation>
+
+    <version.glassfish.javax.json>1.1.4</version.glassfish.javax.json>
   </properties>
 
   <repositories>
@@ -1021,6 +1023,12 @@
         <groupId>org.jboss.msc</groupId>
         <artifactId>jboss-msc</artifactId>
         <version>${version.org.jboss.jboss-msc}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.json</artifactId>
+        <version>${version.glassfish.javax.json}</version>
       </dependency>
 
       <!-- log4j-to-slf4j -->
