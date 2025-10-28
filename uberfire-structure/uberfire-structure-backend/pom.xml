@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
-      <artifactId>javax.json</artifactId>
+      <artifactId>jakarta.json</artifactId>
     </dependency>
     <!-- dependencies added because of illegal transitive dependency check -->
     <dependency>
