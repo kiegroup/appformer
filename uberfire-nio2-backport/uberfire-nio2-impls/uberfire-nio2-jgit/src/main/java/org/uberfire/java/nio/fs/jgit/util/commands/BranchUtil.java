@@ -41,7 +41,7 @@ public class BranchUtil {
                 .call()
                 .stream()
                 .map(Ref::getName)
-                .map(fullname -> fullname.substring(fullname.lastIndexOf('/') + 1))
+                .map(fullname -> fullname.replaceFirst("^refs/heads/", ""))
                 .filter(name -> !branchesToKeep.contains(name))
                 .toArray(String[]::new);
         git.branchDelete()
