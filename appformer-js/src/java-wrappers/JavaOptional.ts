@@ -40,7 +40,14 @@ export class JavaOptional<T> extends JavaWrapper<T | undefined> {
   }
 
   public set(val: ((current: T | undefined) => T | undefined) | T | undefined): void {
-    if (typeof val === "function") {
+    // Type guard to check if val is an updater function
+    const isUpdaterFunction = (
+      v: ((current: T | undefined) => T | undefined) | T | undefined
+    ): v is (current: T | undefined) => T | undefined => {
+      return typeof v === "function";
+    };
+
+    if (isUpdaterFunction(val)) {
       this._value = val(this.get());
     } else {
       this._value = val;

@@ -15,6 +15,7 @@
  */
 
 module.exports = {
+  testEnvironment: "jsdom",
   reporters: ["default"],
   moduleDirectories: ["node_modules", "src"],
   moduleFileExtensions: ["js", "jsx", "ts", "tsx"],

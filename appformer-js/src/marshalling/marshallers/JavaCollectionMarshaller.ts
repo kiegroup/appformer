@@ -68,7 +68,7 @@ abstract class JavaCollectionMarshaller<T extends Iterable<Portable<any> | null>
 
     const unmarshalledValues = [];
     for (const element of Array.from(collection)) {
-      unmarshalledValues.push(MarshallerProvider.getForObject(element).unmarshall(element, ctx));
+      unmarshalledValues.push(MarshallerProvider.getForObject(element as Portable<any>).unmarshall(element, ctx));
     }
 
     const javaCollection = this.fromArray(unmarshalledValues);

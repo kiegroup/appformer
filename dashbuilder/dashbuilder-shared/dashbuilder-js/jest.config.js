@@ -15,6 +15,7 @@
  */
 
 module.exports = {
+  testEnvironment: "jsdom",
   reporters: [
         "default",
                 [

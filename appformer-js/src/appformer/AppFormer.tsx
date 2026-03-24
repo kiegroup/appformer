@@ -90,7 +90,7 @@ export class AppFormer {
    * The event object.
    */
   // tslint:disable-next-line
-  public fireEvent<T>(obj: Portable<T>): void {}
+  public fireEvent<T extends Portable<T>>(obj: Portable<T>): void {}
 
   /**
    * Executes an RPC call to an Errai Remote.

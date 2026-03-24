@@ -6,7 +6,7 @@
     "./src"
   ],
   "compilerOptions": {
-    "outDir": "./",
+    "outDir": "./dist",
     "lib": [
       "es6",
       "dom"
