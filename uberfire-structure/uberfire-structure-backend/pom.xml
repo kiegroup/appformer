@@ -20,6 +20,10 @@
       <artifactId>jakarta.json-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>jakarta.json</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jakarta.ejb</groupId>
       <artifactId>jakarta.ejb-api</artifactId>
     </dependency>
