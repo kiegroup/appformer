@@ -599,7 +599,7 @@ public class SimpleFileSystemProviderTest {
         final SimpleFileSystemProvider fsProvider = new SimpleFileSystemProvider();
 
         final Path path = GeneralPathImpl.create(fsProvider.getFileSystem(URI.create("file:///")),
-                                                 "/path/to/file.txt",
+                                                 "/path/to/file-does-not-exist.txt",
                                                  false);
 
         assertThat(path.toFile()).doesNotExist();
