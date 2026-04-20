@@ -156,7 +156,7 @@ Note: Use the concrete values for your environment.
 
 3.- Ensure on file `/META-INF/jboss-deployment-structure.xml`:
 
-* Dependency to `org.jboss.resteasy.resteasy-jackson-provider` module          
+* Dependency to `org.jboss.resteasy.resteasy-jackson2-provider` module          
      
         <dependencies>
             ...
